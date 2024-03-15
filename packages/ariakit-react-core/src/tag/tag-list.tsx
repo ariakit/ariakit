@@ -1,6 +1,6 @@
 import type { ElementType, MouseEvent } from "react";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
-import { isFocusable } from "@ariakit/core/utils/focus";
+import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
@@ -49,8 +49,13 @@ export const useTagList = createHook<TagName, TagListOptions>(
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
       const target = event.target as HTMLElement;
-      if (target && isFocusable(target)) return;
+      const currentTarget = event.currentTarget;
+      const focusableTarget = getClosestFocusable(target);
+      const isSelfFocusable = focusableTarget === currentTarget;
+      // TODO: Comment
+      if (!isSelfFocusable && currentTarget.contains(focusableTarget)) return;
       const { inputElement } = store.getState();
+      // TODO: Comment
       queueBeforeEvent(event.currentTarget, "mouseup", () =>
         inputElement?.focus(),
       );

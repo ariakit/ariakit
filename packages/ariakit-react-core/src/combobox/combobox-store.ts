@@ -131,7 +131,7 @@ export interface ComboboxStoreOptions<
    */
   setSelectedValue?: (value: ComboboxStoreState<T>["selectedValue"]) => void;
   /**
-   * A reference to a [tag store](https://ariakit.org/api/use-tag-store). It's
+   * A reference to a [tag store](https://ariakit.org/apis/use-tag-store). It's
    * automatically set rendering combobox within a tag list.
    */
   tag?: TagStore | null;
