@@ -1,6 +1,6 @@
 import type { ElementType, MouseEvent } from "react";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
-import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
+import { getClosestFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
