@@ -226,8 +226,12 @@ for (const plan of ["month", "year"] as const) {
     await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
     const stripe = getStripeClient();
-    const subs = await stripe.subscriptions.list({ customer: customer.id });
-    expect(subs.data.length).toBe(0);
+    // Wait for stripe
+    await page.waitForTimeout(1000);
+    await expect(async () => {
+      const subs = await stripe.subscriptions.list({ customer: customer.id });
+      expect(subs.data.length).toBe(0);
+    }).toPass({ intervals: [2000, 5000, 10000] });
 
     await q.button("Back to page").click();
     await page.waitForURL("/components");
