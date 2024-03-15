@@ -16,7 +16,7 @@ const checkmark = (
     stroke="currentColor"
     strokeLinecap="round"
     strokeLinejoin="round"
-    strokeWidth="1.5pt"
+    strokeWidth={1.5}
     viewBox="0 0 16 16"
     height="1em"
     width="1em"
@@ -56,6 +56,7 @@ export const useCheckboxCheck = createHook<TagName, CheckboxCheckOptions>(
       ...props,
       children,
       style: {
+        // fontSize: "40px",
         width: "1em",
         height: "1em",
         pointerEvents: "none",

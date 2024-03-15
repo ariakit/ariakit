@@ -61,7 +61,6 @@
     "./toolbar/toolbar-context": "./src/toolbar/toolbar-context.tsx",
     "./toolbar/toolbar-container": "./src/toolbar/toolbar-container.ts",
     "./tag/tag": "./src/tag/tag.tsx",
-    "./tag/tag-toggle": "./src/tag/tag-toggle.tsx",
     "./tag/tag-store": "./src/tag/tag-store.ts",
     "./tag/tag-remove": "./src/tag/tag-remove.tsx",
     "./tag/tag-provider": "./src/tag/tag-provider.tsx",

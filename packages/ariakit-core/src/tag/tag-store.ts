@@ -18,6 +18,11 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
 
   const composite = createCompositeStore({
     ...props,
+    // orientation: defaultValue(
+    //   props.orientation,
+    //   syncState?.orientation,
+    //   "horizontal" as const,
+    // ),
   });
 
   const initialState: TagStoreState = {

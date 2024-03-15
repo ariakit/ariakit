@@ -1,25 +1,40 @@
 import "./style.css";
-import { useDeferredValue, useMemo, useState } from "react";
+import { startTransition, useMemo, useState } from "react";
+import type { ChangeEvent, MouseEvent } from "react";
 import * as Ariakit from "@ariakit/react";
 import { Tag } from "@ariakit/react-core/tag/tag";
 import { TagInput } from "@ariakit/react-core/tag/tag-input";
 import { TagList } from "@ariakit/react-core/tag/tag-list";
 import { TagProvider } from "@ariakit/react-core/tag/tag-provider";
 import { TagRemove } from "@ariakit/react-core/tag/tag-remove";
-import { TagToggle } from "@ariakit/react-core/tag/tag-toggle";
+import { faker } from "@faker-js/faker";
 import { matchSorter } from "match-sorter";
-import defaultList from "./list.js";
+import defaultUsers from "./users.js";
+
+const firstUser = defaultUsers.at(0);
+const defaultValues = firstUser ? [firstUser.email] : [];
+
+function getUserByEmail(email: string, users = defaultUsers) {
+  const user = users.find((user) => user.email === email);
+  if (!user) {
+    throw new Error(`User not found with email: ${email}`);
+  }
+  return user;
+}
 
 export default function Example() {
-  const [list, _setList] = useState(defaultList);
-  const [values, setValues] = useState(["Paragraph", "Table"]);
+  const [users, setUsers] = useState(defaultUsers);
+  const [values, setValues] = useState(defaultValues);
   const [value, setValue] = useState("");
-  const searchTerm = useDeferredValue(value);
+  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const matches = useMemo(
-    () => matchSorter(list, searchTerm),
-    [list, searchTerm],
-  );
+  const matches = useMemo(() => {
+    const objects = matchSorter(users, searchTerm, {
+      keys: ["name", "email"],
+    }).slice(0, 10);
+    return objects.map((object) => object.email);
+  }, [users, searchTerm]);
 
   return (
     <TagProvider
@@ -29,34 +44,106 @@ export default function Example() {
       setValue={setValue}
     >
       <TagList className="tag-list">
-        {values.map((value) => (
-          <Tag key={value} value={value} className="tag">
-            {value}
-            <TagRemove className="tag-remove" />
-          </Tag>
-        ))}
+        {values.map((value) => {
+          const user = getUserByEmail(value, users);
+          return (
+            <Tag key={user.email} value={user.email} className="tag">
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="avatar"
+                width={16}
+              />
+              <span className="name">{user.name}</span>
+              <TagRemove className="tag-remove" />
+            </Tag>
+          );
+        })}
         <Ariakit.ComboboxProvider
           value={value}
-          setValue={setValue}
+          setValue={(value) => {
+            setValue(value);
+            startTransition(() => {
+              setSearchTerm(value);
+            });
+          }}
           selectedValue={values}
           setSelectedValue={setValues}
+          resetValueOnHide={false}
+          open={open}
+          setOpen={setOpen}
         >
           <TagInput
             className="tag-input"
-            render={<Ariakit.Combobox autoSelect />}
+            delimiter={null}
+            render={
+              <Ariakit.Combobox
+                autoSelect
+                showOnChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  !!event.target.value.length
+                }
+                showOnClick={(event: MouseEvent<HTMLInputElement>) =>
+                  !!event.currentTarget.value.length
+                }
+                onChange={(event) => {
+                  if (event.target.value === "") {
+                    setOpen(false);
+                  }
+                }}
+              />
+            }
           />
-          <Ariakit.ComboboxPopover className="popover">
-            {matches.map((value) => (
-              <TagToggle
-                key={value}
+          <Ariakit.ComboboxPopover
+            className="popover popup elevation-1"
+            gutter={12}
+            flip={false}
+            shift={-4}
+          >
+            {value.includes("@", 1) && (
+              <Ariakit.ComboboxItem
                 value={value}
+                hideOnClick
+                focusOnHover
+                blurOnHoverEnd={false}
                 className="combobox-item"
-                render={<Ariakit.ComboboxItem hideOnClick value={value} />}
+                selectValueOnClick={() => {
+                  setUsers((users) => {
+                    const user = {
+                      name: value,
+                      email: value,
+                      avatar: faker.image.avatarGitHub(),
+                    };
+                    return [user, ...users];
+                  });
+                  return true;
+                }}
               >
-                <Ariakit.ComboboxItemCheck />
-                {value}
-              </TagToggle>
-            ))}
+                Add &quot;{value}&quot;
+              </Ariakit.ComboboxItem>
+            )}
+            {matches.map((value) => {
+              const user = getUserByEmail(value, users);
+              return (
+                <Ariakit.ComboboxItem
+                  key={user.email}
+                  value={user.email}
+                  hideOnClick
+                  focusOnHover
+                  blurOnHoverEnd={false}
+                  className="combobox-item"
+                >
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    className="avatar"
+                    width={16}
+                  />
+                  <span className="name">{user.name}</span>
+                  <span className="email">{user.email}</span>
+                  <Ariakit.ComboboxItemCheck />
+                </Ariakit.ComboboxItem>
+              );
+            })}
           </Ariakit.ComboboxPopover>
         </Ariakit.ComboboxProvider>
       </TagList>

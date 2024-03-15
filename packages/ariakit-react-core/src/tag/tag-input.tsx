@@ -6,8 +6,6 @@ import {
 import { focusIntoView } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { useCompositeInput } from "../composite/composite-input.js";
-import type { CompositeInputOptions } from "../composite/composite-input.js";
 import { useCompositeItem } from "../composite/composite-item.js";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
@@ -40,6 +38,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
     store,
     setValueOnChange = true,
     tabbable = true,
+    delimiter = " ",
     ...props
   }) {
     const context = useTagContext();
@@ -63,8 +62,8 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const currentTarget = event.currentTarget;
       const { value } = currentTarget;
       const { start, end } = getTextboxSelection(currentTarget);
-      if (value.endsWith(" ") && start === value.length) {
-        const tagValue = value.slice(0, -1).trim();
+      if (start === value.length && delimiter && value.endsWith(delimiter)) {
+        const tagValue = value.slice(0, -delimiter.length).trim();
         if (tagValue) {
           store.addValue(tagValue);
           store.setValue("");
@@ -107,7 +106,6 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       onChange,
     };
 
-    props = useCompositeInput({ store, ...props });
     props = useCompositeItem<TagName>({ store, tabbable, ...props });
 
     return props;
@@ -136,8 +134,7 @@ export const TagInput = forwardRef(function TagInput(props: TagInputProps) {
 });
 
 export interface TagInputOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T>,
-    CompositeInputOptions<T> {
+  extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
@@ -156,6 +153,10 @@ export interface TagInputOptions<T extends ElementType = TagName>
    * @default true
    */
   setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
+  /**
+   * TODO: Docs
+   */
+  delimiter?: string | null;
   /**
    * @default true
    */

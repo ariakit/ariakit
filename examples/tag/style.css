@@ -1,4 +1,4 @@
-@import url("../combobox/style.css");
+@import url("../style.css");
 
 .tag-list {
   @apply
@@ -9,8 +9,8 @@
     items-center
     gap-1
     p-[5px]
-    max-w-[560px]
-    w-[420px]
+    w-[720px]
+    max-w-full
     overflow-auto
     rounded-lg
     bg-white
@@ -29,17 +29,21 @@
 
 .tag {
   @apply
+    relative
+    z-[1]
     inline-flex
-    gap-1
+    gap-2
     items-center
     px-2
     cursor-default
     rounded
     whitespace-nowrap
-    bg-black/5
-    dark:bg-white/5
-    data-[active-item]:focus:bg-blue-600
+    bg-black/[7%]
+    dark:bg-white/[7%]
+    [:focus-within>&]:data-[active-item]:bg-blue-600
+    [:focus-within>&]:data-[active-item]:text-white
     [outline:none]
+    has-[+input[value=""]]:[margin-inline-end:-0.5rem]
   ;
 }
 
@@ -50,8 +54,9 @@
     flex-none
     text-lg
     size-8
-    -mr-2
-    rounded-r-[inherit]
+    [margin-inline:-0.5rem]
+    [border-start-end-radius:inherit]
+    [border-end-end-radius:inherit]
     opacity-60
     hover:opacity-100
     hover:bg-black/10
@@ -67,8 +72,70 @@
     h-8
     bg-transparent
     min-w-[200px]
+    [&[value=""]]:min-w-[1ch]
     px-2
     ![outline:none]
-    [&[value=""]]:pl-0
+  ;
+}
+
+.avatar {
+  @apply
+    flex-none
+    size-4
+    rounded-full
+    bg-gray-200
+    dark:bg-gray-700
+  ;
+}
+
+.name {
+  @apply
+    flex-1
+    truncate
+  ;
+}
+
+.email {
+  @apply
+    text-sm
+    opacity-80
+    truncate
+    [[data-active-item]_&]:opacity-100
+  ;
+}
+
+.popover {
+  @apply
+    max-h-[min(var(--popover-available-height,300px),300px)]
+    min-w-[min(var(--popover-available-width,280px),280px)]
+    max-w-[min(var(--popover-available-width,420px),420px)]
+    relative
+    empty:hidden
+    flex
+    flex-col
+    z-50
+    overscroll-contain
+    overflow-y-auto
+    overflow-x-clip
+    outline-none
+    rounded-xl
+    p-1
+  ;
+}
+
+.combobox-item {
+  @apply
+    ![outline:none]
+    flex
+    gap-2
+    p-2
+    active:pt-[9px]
+    active:pb-[7px]
+    scroll-m-1
+    cursor-default
+    items-center
+    rounded-lg
+    data-[active-item]:bg-blue-600
+    data-[active-item]:text-white
   ;
 }
