@@ -227,7 +227,7 @@ for (const plan of ["month", "year"] as const) {
 
     const stripe = getStripeClient();
     // Wait for stripe
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(10000);
     const subs = await stripe.subscriptions.list({ customer: customer.id });
     expect(subs.data.length).toBe(0);
 
