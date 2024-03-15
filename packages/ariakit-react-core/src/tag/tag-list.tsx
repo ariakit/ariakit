@@ -66,34 +66,46 @@ export const useTagList = createHook<TagName, TagListOptions>(
       [store],
     );
 
+    props = {
+      ...props,
+      onMouseDown,
+    };
+
+    props = useComposite({ store, ...props });
+
     const orientation = store.useState((state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
-
     const items = store.useState((state) => state.renderedItems);
     const itemIds = items.filter((item) => !!item.value).map((item) => item.id);
+    const labelId = store.useState((state) => state.labelElement?.id);
 
+    const listboxProps: typeof props = {};
+
+    for (const key in props) {
+      if (key === "role" || key.startsWith("aria-")) {
+        const prop = key as keyof typeof props;
+        listboxProps[prop] = props[prop];
+        delete props[prop];
+      }
+    }
+
+    // TODO: Comment
     const children = (
       <>
         <div
           role="listbox"
+          aria-labelledby={labelId}
           aria-orientation={orientation}
           aria-owns={itemIds.join(" ")}
+          {...listboxProps}
           style={{ position: "fixed" }}
         />
         {props.children}
       </>
     );
 
-    props = {
-      ...props,
-      children,
-      onMouseDown,
-    };
-
-    props = useComposite({ store, ...props });
-
-    return props;
+    return { ...props, children };
   },
 );
 

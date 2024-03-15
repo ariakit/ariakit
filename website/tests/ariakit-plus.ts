@@ -226,6 +226,8 @@ for (const plan of ["month", "year"] as const) {
     await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
     const stripe = getStripeClient();
+    // Wait for stripe cache
+    await page.waitForTimeout(1000);
     const subs = await stripe.subscriptions.list({ customer: customer.id });
     expect(subs.data.length).toBe(0);
 

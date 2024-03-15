@@ -1,10 +1,10 @@
 import "./style.css";
 import { startTransition, useMemo, useState } from "react";
-import type { ChangeEvent, MouseEvent } from "react";
 import * as Ariakit from "@ariakit/react";
 import { Tag } from "@ariakit/react-core/tag/tag";
 import { TagInput } from "@ariakit/react-core/tag/tag-input";
 import { TagList } from "@ariakit/react-core/tag/tag-list";
+import { TagListLabel } from "@ariakit/react-core/tag/tag-list-label";
 import { TagProvider } from "@ariakit/react-core/tag/tag-provider";
 import { TagRemove } from "@ariakit/react-core/tag/tag-remove";
 import { faker } from "@faker-js/faker";
@@ -41,50 +41,33 @@ export default function Example() {
       values={values}
       setValues={setValues}
       value={value}
-      setValue={setValue}
+      setValue={(value) => {
+        setValue(value);
+        startTransition(() => {
+          setSearchTerm(value);
+        });
+      }}
     >
+      <TagListLabel>Invitees</TagListLabel>
       <TagList className="tag-list">
         {values.map((value) => {
           const user = getUserByEmail(value, users);
           return (
             <Tag key={user.email} value={user.email} className="tag">
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="avatar"
-                width={16}
-              />
+              <img src={user.avatar} alt={user.name} className="avatar" />
               <span className="name">{user.name}</span>
               <TagRemove className="tag-remove" />
             </Tag>
           );
         })}
-        <Ariakit.ComboboxProvider
-          value={value}
-          setValue={(value) => {
-            setValue(value);
-            startTransition(() => {
-              setSearchTerm(value);
-            });
-          }}
-          selectedValue={values}
-          setSelectedValue={setValues}
-          resetValueOnHide={false}
-          open={open}
-          setOpen={setOpen}
-        >
+        <Ariakit.ComboboxProvider open={open} setOpen={setOpen}>
           <TagInput
             className="tag-input"
             delimiter={null}
             render={
               <Ariakit.Combobox
                 autoSelect
-                showOnChange={(event: ChangeEvent<HTMLInputElement>) =>
-                  !!event.target.value.length
-                }
-                showOnClick={(event: MouseEvent<HTMLInputElement>) =>
-                  !!event.currentTarget.value.length
-                }
+                showOnKeyPress
                 onChange={(event) => {
                   if (event.target.value === "") {
                     setOpen(false);
@@ -132,12 +115,7 @@ export default function Example() {
                   blurOnHoverEnd={false}
                   className="combobox-item"
                 >
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="avatar"
-                    width={16}
-                  />
+                  <img src={user.avatar} alt={user.name} className="avatar" />
                   <span className="name">{user.name}</span>
                   <span className="email">{user.email}</span>
                   <Ariakit.ComboboxItemCheck />

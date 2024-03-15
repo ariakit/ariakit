@@ -4,19 +4,9 @@
     [--border-color:rgb(0_0_0/0.1)]
     [--shadow-color:rgb(0_0_0/0.25)]
     [--shadow-size:0_4px_8px_-4px]
-
     dark:[--border-color:rgb(255_255_255/0.2)]
     dark:[--shadow-color:rgb(0_0_0/0.35)]
     dark:[--shadow-size:0_6px_12px_-4px]
-}
-
-.popup {
-  @apply
-    bg-white
-    text-black
-    dark:bg-gray-700
-    dark:text-white
-    [box-shadow:0_0_0_1px_var(--border-color),var(--shadow-size)_var(--shadow-color)]
 }
 
 .elevation-1 {
@@ -31,4 +21,13 @@
     [--shadow-color:rgb(0_0_0/0.15)]
     [--shadow-size:0_16px_32px_-6px]
     dark:[--shadow-size:0_18px_36px_-8px]
+}
+
+.popup {
+  @apply
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    [box-shadow:0_0_0_1px_var(--border-color),var(--shadow-size)_var(--shadow-color)]
 }

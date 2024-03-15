@@ -15,19 +15,12 @@ import type { SetState } from "../utils/types.js";
  */
 export function createTagStore(props: TagStoreProps = {}): TagStore {
   const syncState = props.store?.getState();
-
-  const composite = createCompositeStore({
-    ...props,
-    // orientation: defaultValue(
-    //   props.orientation,
-    //   syncState?.orientation,
-    //   "horizontal" as const,
-    // ),
-  });
+  const composite = createCompositeStore(props);
 
   const initialState: TagStoreState = {
     ...composite.getState(),
     inputElement: defaultValue(syncState?.inputElement, null),
+    labelElement: defaultValue(syncState?.labelElement, null),
     value: defaultValue(props.value, syncState?.value, ""),
     values: defaultValue(props.values, syncState?.values, []),
   };
@@ -49,6 +42,9 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
     ...tag,
     setInputElement: (inputElement) =>
       tag.setState("inputElement", inputElement),
+
+    setLabelElement: (labelElement) =>
+      tag.setState("labelElement", labelElement),
 
     setValue: (value) => tag.setState("value", value),
     setValues: (values) => tag.setState("values", values),
@@ -82,6 +78,10 @@ export interface TagStoreState extends CompositeStoreState<TagStoreItem> {
    */
   inputElement: HTMLElement | null;
   /**
+   * The label element.
+   */
+  labelElement: HTMLElement | null;
+  /**
    * The value of the tag input.
    */
   value: string;
@@ -97,6 +97,10 @@ export interface TagStoreFunctions
    * Sets the `inputElement` state.
    */
   setInputElement: SetState<TagStoreState["inputElement"]>;
+  /**
+   * Sets the `labelElement` state.
+   */
+  setLabelElement: SetState<TagStoreState["labelElement"]>;
   /**
    * Sets the `value` state.
    */

@@ -117,14 +117,15 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     focusable = true,
     autoSelect: autoSelectProp = false,
     getAutoSelectId,
-    showOnChange = true,
     setValueOnChange = true,
-    showOnMouseDown = true,
+    showMinLength,
+    showOnChange,
+    showOnMouseDown,
     showOnClick = showOnMouseDown,
+    showOnKeyDown,
+    showOnKeyPress = showOnKeyDown,
     blurActiveItemOnClick,
     setValueOnClick = true,
-    showOnKeyDown = true,
-    showOnKeyPress = showOnKeyDown,
     moveOnKeyPress = true,
     autoComplete = "list",
     ...props
@@ -195,6 +196,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       }
       return activeValue || storeValue;
     }, [inline, canInline, items, activeValue, autoSelect, storeValue]);
+
+    showMinLength = showMinLength ?? (store.tag ? 1 : 0);
+    const canShow = value.length >= showMinLength;
 
     // Listen to the combobox-item-move event that's dispacthed the ComboboxItem
     // component so we can enable the inline autocomplete when the user moves
@@ -366,7 +370,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     }, [inline, contentElement, store, value]);
 
     const onChangeProp = props.onChange;
-    const showOnChangeProp = useBooleanEvent(showOnChange);
+    const showOnChangeProp = useBooleanEvent(showOnChange ?? canShow);
     const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
 
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
@@ -443,7 +447,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       blurActiveItemOnClick ?? (() => !!store?.getState().includesBaseElement),
     );
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
-    const showOnClickProp = useBooleanEvent(showOnClick);
+    const showOnClickProp = useBooleanEvent(showOnClick ?? canShow);
 
     const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
       onMouseDownProp?.(event);
@@ -463,7 +467,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     });
 
     const onKeyDownProp = props.onKeyDown;
-    const showOnKeyPressProp = useBooleanEvent(showOnKeyPress);
+    const showOnKeyPressProp = useBooleanEvent(showOnKeyPress ?? canShow);
 
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
@@ -677,6 +681,10 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * value.
    */
   blurActiveItemOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * TODO: Docs
+   */
+  showMinLength?: number;
   /**
    * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
    * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
