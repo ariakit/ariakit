@@ -56,7 +56,6 @@ export const useCheckboxCheck = createHook<TagName, CheckboxCheckOptions>(
       ...props,
       children,
       style: {
-        // fontSize: "40px",
         width: "1em",
         height: "1em",
         pointerEvents: "none",
