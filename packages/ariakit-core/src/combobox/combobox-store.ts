@@ -13,7 +13,7 @@ import type {
 import { createPopoverStore } from "../popover/popover-store.js";
 import { canUseDOM } from "../utils/dom.js";
 import { defaultValue } from "../utils/misc.js";
-import { isSafari, isTouchDevice } from "../utils/platform.js";
+import { isSafari } from "../utils/platform.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import {
   batch,
