@@ -27,8 +27,7 @@ type MutableValue<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 > = T extends string ? string : T;
 
-const isSafariOnMobile =
-  isSafari() && !matchMedia("(hover: any-hover)").matches;
+const isSafariOnMobile = isSafari() && matchMedia("(hover:none)").matches;
 
 /**
  * Creates a combobox store.
