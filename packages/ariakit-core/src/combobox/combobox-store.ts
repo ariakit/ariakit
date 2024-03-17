@@ -13,7 +13,7 @@ import type {
 import { createPopoverStore } from "../popover/popover-store.js";
 import type { TagStore } from "../tag/tag-store.js";
 import { chain, defaultValue } from "../utils/misc.js";
-import { isSafari, isTouchDevice } from "../utils/platform.js";
+import { isSafari } from "../utils/platform.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import {
   batch,
@@ -30,7 +30,7 @@ type MutableValue<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 > = T extends string ? string : T;
 
-const isSafariOnMobile = isSafari() && isTouchDevice();
+const isSafariOnMobile = isSafari() && matchMedia("(hover:none)").matches;
 
 /**
  * Creates a combobox store.

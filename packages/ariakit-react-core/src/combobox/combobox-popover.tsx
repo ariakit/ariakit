@@ -1,6 +1,7 @@
+import { useRef } from "react";
 import type { ElementType } from "react";
 import { getDocument, matches } from "@ariakit/core/utils/dom";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
@@ -49,6 +50,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     modal,
     tabIndex,
     alwaysVisible,
+    autoFocusOnHide = true,
     hideOnInteractOutside = true,
     ...props
   }) {
@@ -62,6 +64,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     );
 
     const baseElement = store.useState("baseElement");
+    const hiddenByClickOutsideRef = useRef(false);
 
     props = useComboboxList({ store, alwaysVisible, ...props });
 
@@ -71,7 +74,6 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       alwaysVisible,
       backdrop: false,
       autoFocusOnShow: false,
-      autoFocusOnHide: false,
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
       ...props,
@@ -98,6 +100,17 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         const controlElements = doc.querySelectorAll<HTMLElement>(selector);
         return [...elements, ...controlElements];
       },
+      // The combobox popover should focus on the combobox input when it hides,
+      // unless the event was triggered by a click outside the popover, in which
+      // case the input shouldn't be re-focused.
+      autoFocusOnHide(element) {
+        if (isFalsyBooleanCallback(autoFocusOnHide, element)) return false;
+        if (hiddenByClickOutsideRef.current) {
+          hiddenByClickOutsideRef.current = false;
+          return false;
+        }
+        return true;
+      },
       // Make sure we don't hide the popover when the user interacts with the
       // combobox cancel or the combobox disclosure buttons. They will have the
       // aria-controls attribute pointing to either the combobox input or the
@@ -111,6 +124,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
           typeof hideOnInteractOutside === "function"
             ? hideOnInteractOutside(event)
             : hideOnInteractOutside;
+        if (result) {
+          hiddenByClickOutsideRef.current = event.type === "click";
+        }
         return result;
       },
     });

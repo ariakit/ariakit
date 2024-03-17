@@ -403,12 +403,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     [store, finalFocus, autoFocusOnHideProp],
   );
 
+  const focusedOnHideRef = useRef(false);
+
   // Auto focus on hide with an always rendered dialog.
   useSafeLayoutEffect(() => {
     if (open) return;
     if (!hasOpened) return;
     if (!mayAutoFocusOnHide) return;
     const dialog = ref.current;
+    // We don't want to focus on hide twice if the dialog is not unmounted, so
+    // we set this flag here that will be checked in the cleanup effect below.
+    focusedOnHideRef.current = true;
     focusOnHide(dialog);
   }, [open, hasOpened, domReady, mayAutoFocusOnHide, focusOnHide]);
 
@@ -417,7 +422,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!hasOpened) return;
     if (!mayAutoFocusOnHide) return;
     const dialog = ref.current;
-    return () => focusOnHide(dialog);
+    return () => {
+      if (focusedOnHideRef.current) {
+        focusedOnHideRef.current = false;
+        return;
+      }
+      focusOnHide(dialog);
+    };
   }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
 
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
