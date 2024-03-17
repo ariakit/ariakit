@@ -11,7 +11,6 @@ import type {
   PopoverStoreState,
 } from "../popover/popover-store.js";
 import { createPopoverStore } from "../popover/popover-store.js";
-import { canUseDOM } from "../utils/dom.js";
 import { defaultValue } from "../utils/misc.js";
 import { isSafari } from "../utils/platform.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
@@ -29,7 +28,7 @@ type MutableValue<
 > = T extends string ? string : T;
 
 const isSafariOnMobile =
-  canUseDOM && isSafari() && !matchMedia("(hover: any-hover)").matches;
+  isSafari() && !matchMedia("(hover: any-hover)").matches;
 
 /**
  * Creates a combobox store.
