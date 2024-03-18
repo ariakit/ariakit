@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { ElementType, FocusEvent, KeyboardEvent } from "react";
 import {
   getDocument,
@@ -36,6 +37,7 @@ function getValueLength(element: HTMLElement) {
  * conjunction with the `CompositeItem` component, the `useCompositeItem` hook,
  * or any other component/hook that uses `CompositeItem` underneath.
  * @see https://ariakit.org/components/composite
+ * @deprecated Use `useCompositeItem` instead.
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -49,17 +51,35 @@ export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
   function useCompositeInput({ store, ...props }) {
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
+    if (process.env.NODE_ENV !== "production") {
+      useEffect(() => {
+        console.warn(
+          "CompositeInput is deprecated. Use `<CompositeItem render={<input />}>` instead.",
+        );
+      }, []);
+    }
+
     const onKeyDownCapture = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownCaptureProp?.(event);
       if (event.defaultPrevented) return;
       const element = event.currentTarget;
       if (!element.isContentEditable && !isTextField(element)) return;
       const selection = getTextboxSelection(element);
-      if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+
+      const { orientation } = store?.getState() || {};
+      const isHorizontal = orientation !== "vertical";
+      const isVertical = orientation !== "horizontal";
+
+      const isLeft = isHorizontal && event.key === "ArrowLeft";
+      const isRight = isHorizontal && event.key === "ArrowRight";
+      const isUp = isVertical && event.key === "ArrowUp";
+      const isDown = isVertical && event.key === "ArrowDown";
+
+      if (isRight || isDown) {
         if (selection.end !== getValueLength(element)) {
           event.stopPropagation();
         }
-      } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      } else if (isLeft || isUp) {
         if (selection.start !== 0) {
           event.stopPropagation();
         }
@@ -90,6 +110,7 @@ export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
  * or a component that uses
  * [`CompositeItem`](https://ariakit.org/reference/composite-item) underneath.
  * @see https://ariakit.org/components/composite
+ * @deprecated Use `<CompositeItem render={<input />}>` instead.
  * @example
  * ```jsx {3}
  * <CompositeProvider>

@@ -1,6 +1,4 @@
 import type { ElementType } from "react";
-import type { CompositeInputOptions } from "../composite/composite-input.js";
-import { useCompositeInput } from "../composite/composite-input.js";
 import {
   createElement,
   createHook,
@@ -18,6 +16,7 @@ type TagName = typeof TagName;
 /**
  * Returns props to create a `ToolbarInput` component.
  * @see https://ariakit.org/components/toolbar
+ * @deprecated Use `useToolbarItem` instead.
  * @example
  * ```jsx
  * const store = useToolbarStore();
@@ -31,7 +30,6 @@ export const useToolbarInput = createHook<TagName, ToolbarInputOptions>(
   function useToolbarInput({ store, ...props }) {
     const context = useToolbarContext();
     store = store || context;
-    props = useCompositeInput({ store, ...props });
     props = useToolbarItem<TagName>({ store, ...props });
     return props;
   },
@@ -41,6 +39,7 @@ export const useToolbarInput = createHook<TagName, ToolbarInputOptions>(
  * Renders a text input as a toolbar item, maintaining arrow key navigation on
  * the toolbar.
  * @see https://ariakit.org/components/toolbar
+ * @deprecated Use `<ToolbarItem render={<input />}>` instead.
  * @example
  * ```jsx {2}
  * <Toolbar>
@@ -56,8 +55,7 @@ export const ToolbarInput = memo(
 );
 
 export interface ToolbarInputOptions<T extends ElementType = TagName>
-  extends ToolbarItemOptions<T>,
-    Omit<CompositeInputOptions<T>, "store"> {}
+  extends ToolbarItemOptions<T> {}
 
 export type ToolbarInputProps<T extends ElementType = TagName> = Props<
   T,
