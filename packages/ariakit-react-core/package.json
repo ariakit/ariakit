@@ -217,7 +217,7 @@
     "./composite/composite-context": "./src/composite/composite-context.tsx",
     "./composite/composite-container": "./src/composite/composite-container.ts",
     "./command/command": "./src/command/command.ts",
-    "./combobox/combobox": "./src/combobox/combobox.ts",
+    "./combobox/combobox": "./src/combobox/combobox.tsx",
     "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
     "./combobox/combobox-separator": "./src/combobox/combobox-separator.ts",
     "./combobox/combobox-row": "./src/combobox/combobox-row.ts",

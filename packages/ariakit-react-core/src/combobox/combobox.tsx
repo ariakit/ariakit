@@ -117,14 +117,15 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     focusable = true,
     autoSelect: autoSelectProp = false,
     getAutoSelectId,
-    showOnChange = true,
     setValueOnChange = true,
-    showOnMouseDown = true,
+    showMinLength = 0,
+    showOnChange,
+    showOnMouseDown,
     showOnClick = showOnMouseDown,
+    showOnKeyDown,
+    showOnKeyPress = showOnKeyDown,
     blurActiveItemOnClick,
     setValueOnClick = true,
-    showOnKeyDown = true,
-    showOnKeyPress = showOnKeyDown,
     moveOnKeyPress = true,
     autoComplete = "list",
     ...props
@@ -365,8 +366,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       };
     }, [inline, contentElement, store, value]);
 
+    const canShow = value.length >= showMinLength;
+
     const onChangeProp = props.onChange;
-    const showOnChangeProp = useBooleanEvent(showOnChange);
+    const showOnChangeProp = useBooleanEvent(showOnChange ?? canShow);
     const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
 
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
@@ -443,7 +446,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       blurActiveItemOnClick ?? (() => !!store?.getState().includesBaseElement),
     );
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
-    const showOnClickProp = useBooleanEvent(showOnClick);
+    const showOnClickProp = useBooleanEvent(showOnClick ?? canShow);
 
     const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
       onMouseDownProp?.(event);
@@ -463,7 +466,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     });
 
     const onKeyDownProp = props.onKeyDown;
-    const showOnKeyPressProp = useBooleanEvent(showOnKeyPress);
+    const showOnKeyPressProp = useBooleanEvent(showOnKeyPress ?? canShow);
 
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
@@ -677,6 +680,26 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * value.
    */
   blurActiveItemOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
+  /**
+   * Specifies the minimum character count the input value should have before
+   * the [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components are displayed.
+   *
+   * The [`showOnChange`](https://ariakit.org/reference/combobox#showonchange),
+   * [`showOnClick`](https://ariakit.org/reference/combobox#showonclick), and
+   * [`showOnKeyPress`](https://ariakit.org/reference/combobox#showonkeypress)
+   * props allow you to tailor the behavior for each unique event.
+   * @default 0
+   * @example
+   * In the following example, the combobox list will be shown when the input
+   * value has at least one character. However, if the user presses the arrow
+   * keys, the list will be shown regardless of the input value length.
+   * ```jsx
+   * <Combobox showMinLength={1} showOnKeyPress />
+   * ```
+   */
+  showMinLength?: number;
   /**
    * Whether the [`ComboboxList`](https://ariakit.org/reference/combobox-list)
    * or [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
