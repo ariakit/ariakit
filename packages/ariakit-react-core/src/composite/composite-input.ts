@@ -37,7 +37,7 @@ function getValueLength(element: HTMLElement) {
  * conjunction with the `CompositeItem` component, the `useCompositeItem` hook,
  * or any other component/hook that uses `CompositeItem` underneath.
  * @see https://ariakit.org/components/composite
- * @deprecated Use `<CompositeItem render={<input />}>` instead.
+ * @deprecated Use `useCompositeItem` instead.
  * @example
  * ```jsx
  * const store = useCompositeStore();
