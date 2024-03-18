@@ -118,7 +118,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     autoSelect: autoSelectProp = false,
     getAutoSelectId,
     setValueOnChange = true,
-    showMinLength,
+    showMinLength = 0,
     showOnChange,
     showOnMouseDown,
     showOnClick = showOnMouseDown,
@@ -196,9 +196,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       }
       return activeValue || storeValue;
     }, [inline, canInline, items, activeValue, autoSelect, storeValue]);
-
-    showMinLength = showMinLength ?? (store.tag ? 1 : 0);
-    const canShow = value.length >= showMinLength;
 
     // Listen to the combobox-item-move event that's dispacthed the ComboboxItem
     // component so we can enable the inline autocomplete when the user moves
@@ -368,6 +365,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         elements.forEach((el) => el.removeEventListener("focusout", onBlur));
       };
     }, [inline, contentElement, store, value]);
+
+    const canShow = value.length >= showMinLength;
 
     const onChangeProp = props.onChange;
     const showOnChangeProp = useBooleanEvent(showOnChange ?? canShow);
@@ -682,7 +681,23 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    */
   blurActiveItemOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * TODO: Docs
+   * Specifies the minimum character count the input value should have before
+   * the [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * components are displayed.
+   *
+   * The [`showOnChange`](https://ariakit.org/reference/combobox#showonchange),
+   * [`showOnClick`](https://ariakit.org/reference/combobox#showonclick), and
+   * [`showOnKeyPress`](https://ariakit.org/reference/combobox#showonkeypress)
+   * props allow you to tailor the behavior for each unique event.
+   * @default 0
+   * @example
+   * In the following example, the combobox list will be shown when the input
+   * value has at least one character. However, if the user presses the arrow
+   * keys, the list will be shown regardless of the input value length.
+   * ```jsx
+   * <Combobox showMinLength={1} showOnKeyPress />
+   * ```
    */
   showMinLength?: number;
   /**

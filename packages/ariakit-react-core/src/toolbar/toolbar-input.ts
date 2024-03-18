@@ -16,6 +16,7 @@ type TagName = typeof TagName;
 /**
  * Returns props to create a `ToolbarInput` component.
  * @see https://ariakit.org/components/toolbar
+ * @deprecated Use `useToolbarItem` instead.
  * @example
  * ```jsx
  * const store = useToolbarStore();
@@ -38,6 +39,7 @@ export const useToolbarInput = createHook<TagName, ToolbarInputOptions>(
  * Renders a text input as a toolbar item, maintaining arrow key navigation on
  * the toolbar.
  * @see https://ariakit.org/components/toolbar
+ * @deprecated Use `<ToolbarItem render={<input />}>` instead.
  * @example
  * ```jsx {2}
  * <Toolbar>

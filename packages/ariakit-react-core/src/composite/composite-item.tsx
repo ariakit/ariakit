@@ -250,7 +250,10 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (targetIsAnotherItem(event, store)) return;
       const { virtualFocus, baseElement } = store.getState();
       store.setActiveId(id);
-      // TODO: Comment
+      // If the composite item is a text field, we'll select its content when
+      // focused. This guarantees that pressing arrow keys will move to the
+      // previous/next composite items instead of moving the cursor inside the
+      // text field.
       if (isTextbox(event.currentTarget)) {
         selectTextField(event.currentTarget);
       }
@@ -356,7 +359,10 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       };
       const action = keyMap[event.key as keyof typeof keyMap];
       if (action) {
-        // TODO: Comment
+        // If the composite item is a textbox, we'll only move focus to the
+        // previous/next composite items when the cursor is at the beginning or
+        // end of the text. This is to avoid moving focus when the user is
+        // navigating through the text.
         if (isTextbox(currentTarget)) {
           const selection = getTextboxSelection(currentTarget);
           const isLeft = isHorizontal && event.key === "ArrowLeft";

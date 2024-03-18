@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import type { ElementType, FocusEvent, KeyboardEvent } from "react";
 import {
   getDocument,
@@ -36,6 +37,7 @@ function getValueLength(element: HTMLElement) {
  * conjunction with the `CompositeItem` component, the `useCompositeItem` hook,
  * or any other component/hook that uses `CompositeItem` underneath.
  * @see https://ariakit.org/components/composite
+ * @deprecated Use `useCompositeItem` instead.
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -49,7 +51,13 @@ export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
   function useCompositeInput({ store, ...props }) {
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
-    // TODO: Deprecate
+    if (process.env.NODE_ENV !== "production") {
+      useEffect(() => {
+        console.warn(
+          "CompositeInput is deprecated. Use `<CompositeItem render={<input />}>` instead.",
+        );
+      }, []);
+    }
 
     const onKeyDownCapture = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownCaptureProp?.(event);
@@ -102,6 +110,7 @@ export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
  * or a component that uses
  * [`CompositeItem`](https://ariakit.org/reference/composite-item) underneath.
  * @see https://ariakit.org/components/composite
+ * @deprecated Use `<CompositeItem render={<input />}>` instead.
  * @example
  * ```jsx {3}
  * <CompositeProvider>
