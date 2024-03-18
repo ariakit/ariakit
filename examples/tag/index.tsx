@@ -67,6 +67,7 @@ export default function Example() {
             render={
               <Ariakit.Combobox
                 autoSelect
+                showMinLength={1}
                 showOnKeyPress
                 onChange={(event) => {
                   if (event.target.value === "") {
