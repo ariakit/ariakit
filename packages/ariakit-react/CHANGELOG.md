@@ -1,5 +1,47 @@
 # @ariakit/react
 
+## 0.4.4
+
+### Combobox `autoFocusOnHide` behavior
+
+Previously, the [`autoFocusOnHide`](https://ariakit.org/reference/combobox-popover#autofocusonhide) feature on [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) was turned off by default. Most of the time, this didn't have any practical impact because the combobox input element was already focused when the popover was hidden.
+
+Now, this feature is enabled by default and should work consistently even when [`virtualFocus`](https://ariakit.org/reference/combobox-provider#virtualfocus) is set to `false`.
+
+### Better SVG strokes
+
+The `strokeWidth` property on SVG elements rendered by [`CheckboxCheck`](https://ariakit.org/reference/checkbox-check), [`ComboboxCancel`](https://ariakit.org/reference/combobox-cancel), [`ComboboxDisclosure`](https://ariakit.org/reference/combobox-disclosure), [`DialogDismiss`](https://ariakit.org/reference/dialog-dismiss), [`HovercardDisclosure`](https://ariakit.org/reference/hovercard-disclosure), [`PopoverDisclosureArrow`](https://ariakit.org/reference/popover-disclosure-arrow), and all components that use any of these now defaults to `1.5px` instead of `1.5pt`. This should make the strokes slightly thinner.
+
+Remember, you can always override the SVG element rendered by these components by rendering custom `children`.
+
+### Minimum value length to show combobox options
+
+A new [`showMinLength`](https://ariakit.org/reference/combobox#showminlength) prop has been added to the [`Combobox`](https://ariakit.org/reference/combobox) component. This prop lets you set the minimum length of the value before the combobox options appear. The default value is `0`.
+
+```jsx
+<Combobox showMinLength={2} />
+```
+
+Previously, achieving this behavior required combining three separate props: [`showOnChange`](https://ariakit.org/reference/combobox#showonchange), [`showOnClick`](https://ariakit.org/reference/combobox#showonclick), and [`showOnKeyPress`](https://ariakit.org/reference/combobox#showonkeypress). We've added this prop to simplify this common task.
+
+These props continue to work as expected as they can be used to customize the behavior for each distinct event.
+
+### Rendering composite items as input elements
+
+We've added the ability to render [`CompositeItem`](https://ariakit.org/reference/composite-item) as an input element using the [`render`](https://ariakit.org/reference/composite-item#render) prop:
+
+```jsx
+<CompositeItem render={<input />} />
+```
+
+Before, you could only do this with the experimental `CompositeInput` component. Now, this functionality is integrated directly into the [`CompositeItem`](https://ariakit.org/reference/composite-item) component.
+
+### Other updates
+
+- Fixed [`Dialog`](https://ariakit.org/reference/dialog) calling [`autoFocusOnHide`](https://ariakit.org/reference/dialog#autofocusonhide) twice.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.4`
+
 ## 0.4.3
 
 - Fixed TypeScript types for `ref`.
