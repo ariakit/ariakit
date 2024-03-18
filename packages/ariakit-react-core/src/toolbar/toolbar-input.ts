@@ -1,6 +1,4 @@
 import type { ElementType } from "react";
-import type { CompositeInputOptions } from "../composite/composite-input.js";
-import { useCompositeInput } from "../composite/composite-input.js";
 import {
   createElement,
   createHook,
@@ -31,7 +29,6 @@ export const useToolbarInput = createHook<TagName, ToolbarInputOptions>(
   function useToolbarInput({ store, ...props }) {
     const context = useToolbarContext();
     store = store || context;
-    props = useCompositeInput({ store, ...props });
     props = useToolbarItem<TagName>({ store, ...props });
     return props;
   },
@@ -56,8 +53,7 @@ export const ToolbarInput = memo(
 );
 
 export interface ToolbarInputOptions<T extends ElementType = TagName>
-  extends ToolbarItemOptions<T>,
-    Omit<CompositeInputOptions<T>, "store"> {}
+  extends ToolbarItemOptions<T> {}
 
 export type ToolbarInputProps<T extends ElementType = TagName> = Props<
   T,
