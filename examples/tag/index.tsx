@@ -38,99 +38,121 @@ export default function Example() {
   }, [users, searchTerm]);
 
   return (
-    <TagProvider
-      values={values}
-      setValues={setValues}
-      value={value}
-      setValue={(value) => {
-        setValue(value);
-        startTransition(() => {
-          setSearchTerm(value);
-        });
-      }}
-    >
-      <TagListLabel>Invitees</TagListLabel>
-      <TagList className="tag-list">
-        <TagValues>
-          {(values) =>
-            values.map((value) => {
-              const user = getUserByEmail(value, users);
-              return (
-                <Tag key={user.email} value={user.email} className="tag">
-                  <img src={user.avatar} alt={user.name} className="avatar" />
-                  <span className="name">{user.name}</span>
+    <div>
+      <TagProvider>
+        <TagListLabel
+          style={{ display: "block", marginLeft: "12px", marginBottom: "4px" }}
+        >
+          Fruits
+        </TagListLabel>
+        <TagList className="tag-list">
+          <TagValues>
+            {(values) =>
+              values.map((value) => (
+                <Tag key={value} value={value} className="tag">
+                  {value}
                   <TagRemove className="tag-remove" />
                 </Tag>
-              );
-            })
-          }
-        </TagValues>
-        <Ariakit.ComboboxProvider open={open} setOpen={setOpen}>
-          <TagInput
-            className="tag-input"
-            delimiter={null}
-            render={
-              <Ariakit.Combobox
-                autoSelect
-                showMinLength={1}
-                showOnKeyPress
-                onChange={(event) => {
-                  if (event.target.value === "") {
-                    setOpen(false);
-                  }
-                }}
-              />
+              ))
             }
-          />
-          <Ariakit.ComboboxPopover
-            className="popover popup elevation-1"
-            gutter={12}
-            flip={false}
-            shift={-4}
-          >
-            {value.includes("@", 1) && (
-              <Ariakit.ComboboxItem
-                value={value}
-                hideOnClick
-                focusOnHover
-                blurOnHoverEnd={false}
-                className="combobox-item"
-                selectValueOnClick={() => {
-                  setUsers((users) => {
-                    const user = {
-                      name: value,
-                      email: value,
-                      avatar: faker.image.avatarGitHub(),
-                    };
-                    return [user, ...users];
-                  });
-                  return true;
-                }}
-              >
-                Add &quot;{value}&quot;
-              </Ariakit.ComboboxItem>
-            )}
-            {matches.map((value) => {
-              const user = getUserByEmail(value, users);
-              return (
+          </TagValues>
+          <TagInput className="tag-input" />
+        </TagList>
+      </TagProvider>
+      <TagProvider
+        values={values}
+        setValues={setValues}
+        value={value}
+        setValue={(value) => {
+          setValue(value);
+          startTransition(() => {
+            setSearchTerm(value);
+          });
+        }}
+      >
+        <TagListLabel>Invitees</TagListLabel>
+        <TagList className="tag-list">
+          <TagValues>
+            {(values) =>
+              values.map((value) => {
+                const user = getUserByEmail(value, users);
+                return (
+                  <Tag key={user.email} value={user.email} className="tag">
+                    <img src={user.avatar} alt={user.name} className="avatar" />
+                    <span className="name">{user.name}</span>
+                    <TagRemove className="tag-remove" />
+                  </Tag>
+                );
+              })
+            }
+          </TagValues>
+          <Ariakit.ComboboxProvider open={open} setOpen={setOpen}>
+            <TagInput
+              className="tag-input"
+              // delimiter={null}
+              render={
+                <Ariakit.Combobox
+                  autoSelect
+                  showMinLength={1}
+                  showOnKeyPress
+                  onChange={(event) => {
+                    if (event.target.value === "") {
+                      setOpen(false);
+                    }
+                  }}
+                />
+              }
+            />
+            <Ariakit.ComboboxPopover
+              className="popover popup elevation-1"
+              gutter={12}
+              flip={false}
+              shift={-4}
+            >
+              {value.includes("@", 1) && (
                 <Ariakit.ComboboxItem
-                  key={user.email}
-                  value={user.email}
+                  value={value}
                   hideOnClick
                   focusOnHover
                   blurOnHoverEnd={false}
                   className="combobox-item"
+                  selectValueOnClick={() => {
+                    setUsers((users) => {
+                      const user = {
+                        name: value,
+                        email: value,
+                        avatar: faker.image.avatarGitHub(),
+                      };
+                      return [user, ...users];
+                    });
+                    return true;
+                  }}
                 >
-                  <img src={user.avatar} alt={user.name} className="avatar" />
-                  <span className="name">{user.name}</span>
-                  <span className="email">{user.email}</span>
-                  <Ariakit.ComboboxItemCheck />
+                  Add &quot;{value}&quot;
                 </Ariakit.ComboboxItem>
-              );
-            })}
-          </Ariakit.ComboboxPopover>
-        </Ariakit.ComboboxProvider>
-      </TagList>
-    </TagProvider>
+              )}
+              {matches.map((value) => {
+                const user = getUserByEmail(value, users);
+                return (
+                  <Ariakit.ComboboxItem
+                    key={user.email}
+                    value={user.email}
+                    hideOnClick
+                    focusOnHover
+                    blurOnHoverEnd={false}
+                    className="combobox-item"
+                  >
+                    <img src={user.avatar} alt={user.name} className="avatar" />
+                    <span className="name">{user.name}</span>
+                    <span className="email">{user.email}</span>
+                    <Ariakit.ComboboxItemCheck />
+                  </Ariakit.ComboboxItem>
+                );
+              })}
+            </Ariakit.ComboboxPopover>
+          </Ariakit.ComboboxProvider>
+        </TagList>
+      </TagProvider>
+    </div>
   );
 }
