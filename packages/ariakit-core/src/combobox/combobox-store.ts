@@ -132,12 +132,13 @@ export function createComboboxStore({
 
   const combobox = createStore(initialState, composite, popover, store);
 
+  // Sync tag values with the combobox selectedValue state.
   setup(combobox, () => {
     if (!tag) return;
     return chain(
       sync(combobox, ["selectedValue"], (state) => {
         if (!Array.isArray(state.selectedValue)) return;
-        tag?.setValues(state.selectedValue);
+        tag.setValues(state.selectedValue);
       }),
       sync(tag, ["values"], (state) => {
         combobox.setState("selectedValue", state.values);

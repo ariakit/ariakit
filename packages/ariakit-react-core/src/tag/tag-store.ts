@@ -24,13 +24,18 @@ export function useTagStoreProps<T extends Core.TagStore>(
  * @see https://ariakit.org/components/tag
  * @example
  * ```jsx
- * const tag = useTagStore({ placement: "top" });
+ * const tag = useTagStore({ defaultValues: ["Apple", "Banana"]});
+ * const values = tag.useState("values");
  *
- * <TagButton store={tag}>Edit</TagButton>
- * <Tag store={tag}>
- *   <TagItem>Undo</TagItem>
- *   <TagItem>Redo</TagItem>
- * </Tag>
+ * <TagList store={tag}>
+ *   {values.map((value) => (
+ *     <Tag key={value} value={value}>
+ *       {value}
+ *       <TagRemove />
+ *     </Tag>
+ *   ))}
+ *   <TagInput />
+ * </TagList>
  * ```
  */
 export function useTagStore(props: TagStoreProps = {}): TagStore {

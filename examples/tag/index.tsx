@@ -7,6 +7,7 @@ import { TagList } from "@ariakit/react-core/tag/tag-list";
 import { TagListLabel } from "@ariakit/react-core/tag/tag-list-label";
 import { TagProvider } from "@ariakit/react-core/tag/tag-provider";
 import { TagRemove } from "@ariakit/react-core/tag/tag-remove";
+import { TagValues } from "@ariakit/react-core/tag/tag-values";
 import { faker } from "@faker-js/faker";
 import { matchSorter } from "match-sorter";
 import defaultUsers from "./users.js";
@@ -50,16 +51,20 @@ export default function Example() {
     >
       <TagListLabel>Invitees</TagListLabel>
       <TagList className="tag-list">
-        {values.map((value) => {
-          const user = getUserByEmail(value, users);
-          return (
-            <Tag key={user.email} value={user.email} className="tag">
-              <img src={user.avatar} alt={user.name} className="avatar" />
-              <span className="name">{user.name}</span>
-              <TagRemove className="tag-remove" />
-            </Tag>
-          );
-        })}
+        <TagValues>
+          {(values) =>
+            values.map((value) => {
+              const user = getUserByEmail(value, users);
+              return (
+                <Tag key={user.email} value={user.email} className="tag">
+                  <img src={user.avatar} alt={user.name} className="avatar" />
+                  <span className="name">{user.name}</span>
+                  <TagRemove className="tag-remove" />
+                </Tag>
+              );
+            })
+          }
+        </TagValues>
         <Ariakit.ComboboxProvider open={open} setOpen={setOpen}>
           <TagInput
             className="tag-input"

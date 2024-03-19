@@ -83,10 +83,12 @@ export interface TagStoreState extends CompositeStoreState<TagStoreItem> {
   labelElement: HTMLElement | null;
   /**
    * The value of the tag input.
+   * @default ""
    */
   value: string;
   /**
    * The values of the selected tags.
+   * @default []
    */
   values: string[];
 }
@@ -102,23 +104,27 @@ export interface TagStoreFunctions
    */
   setLabelElement: SetState<TagStoreState["labelElement"]>;
   /**
-   * Sets the `value` state.
+   * Sets the [`value`](https://ariakit.org/reference/tag-provider#value) state.
    */
   setValue: SetState<TagStoreState["value"]>;
   /**
-   * Sets the `values` state.
+   * Sets the [`values`](https://ariakit.org/reference/tag-provider#values) state.
    */
   setValues: SetState<TagStoreState["values"]>;
   /**
-   * TODO: Docs
+   * Add a new value to the
+   * [`values`](https://ariakit.org/reference/tag-provider#values) state if it
+   * doesn't already exist.
    */
   addValue: (value: string) => void;
   /**
-   * TODO: Docs
+   * Remove a value from the
+   * [`values`](https://ariakit.org/reference/tag-provider#values) state.
    */
   removeValue: (value: string) => void;
   /**
-   * TODO: Docs
+   * Add or remove a value from the
+   * [`values`](https://ariakit.org/reference/tag-provider#values) state.
    */
   toggleValue: (value: string) => void;
 }
@@ -132,7 +138,7 @@ export interface TagStoreOptions
    */
   defaultValue?: TagStoreState["value"];
   /**
-   * The initial values.
+   * The initial selected tag values.
    * @default []
    */
   defaultValues?: TagStoreState["values"];
