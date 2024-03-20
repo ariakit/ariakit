@@ -32,7 +32,7 @@ const DEFAULT_DELIMITER = ["\n", /[;,]?\s/];
 
 function getDelimiters(
   delimiter: TagInputOptions["delimiter"],
-  defaultDelimiter = DEFAULT_DELIMITER,
+  defaultDelimiter: TagInputOptions["delimiter"] = DEFAULT_DELIMITER,
 ) {
   const finalDelimiter = delimiter === undefined ? defaultDelimiter : delimiter;
   if (!finalDelimiter) return [];
@@ -97,10 +97,12 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const values = splitValueByDelimiter(text, delimiters)
         .map((value) => value.trim())
         .filter((value) => value !== "");
+      // Create a new event with the values extracted from the clipboard text so
+      // that the user can use the values in the event handler.
       const eventWithValues = Object.assign(event, { values });
       if (!addValueOnPasteProp(eventWithValues)) return;
       if (!values.length) return;
-      // TODO: Comment
+      // Prevent pasting the text into the input
       event.preventDefault();
       for (const tagValue of values) {
         store.addValue(tagValue);
@@ -118,6 +120,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const currentTarget = event.currentTarget;
       const { start, end } = getTextboxSelection(currentTarget);
       const { value } = currentTarget;
+      // Set the value in the store if the value changes
       if (setValueOnChangeProp(event)) {
         store.setValue(value);
         // See combobox onChange for explanation
@@ -125,9 +128,11 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           setSelectionRange(currentTarget, start, end);
         });
       }
+      // Add values to the store if the input value ends with a delimiter
       const isTrailingCaret = start === end && start === value.length;
       if (isTrailingCaret) {
         const delimiters = getDelimiters(delimiter);
+        // Split values and get the trailing value that will remain in the input
         let values = splitValueByDelimiter(value, delimiters);
         const trailingvalue = values.pop() || "";
         values = values
@@ -135,7 +140,11 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           .filter((value) => value !== "");
         const eventWithValues = Object.assign(event, { values });
         if (values.length && addValueOnChangeProp(eventWithValues)) {
-          // TODO: Comment about <TagInput render={<Combobox />} />
+          // We need to prevent the default behavior here in case the tag input
+          // component is combined with another component that also listens to
+          // the change event and updates the store value, such as Combobox. In
+          // this case, the tag input logic should take precedence even if this
+          // event handler is called first.
           event.preventDefault();
           for (const tagValue of values) {
             store.addValue(tagValue);
@@ -178,18 +187,33 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
 );
 
 /**
- * Renders a composite tag list wrapper for
- * [`Tag`](https://ariakit.org/reference/tag) elements.
+ * Renders an input element within a
+ * [`TagList`](https://ariakit.org/reference/tag-list) component. This component
+ * lets users input tag values that are added to the store when the input value
+ * changes or when the user pastes text into the input element, based on the
+ * [`delimiter`](https://ariakit.org/reference/tag-input#delimiter) prop.
+ *
+ * This component can be combined with a
+ * [`Combobox`](https://ariakit.org/reference/combobox) component using the
+ * [`render`](https://ariakit.org/reference/tag-input#render) prop to create a
+ * tag input with suggestions.
  * @see https://ariakit.org/components/tag
  * @example
- * ```jsx {2-5}
+ * ```jsx {13}
  * <TagProvider>
- *   <TagInput>
- *     <Tag>Tag 1</Tag>
- *     <Tag>Tag 2</Tag>
- *   </TagInput>
- *   <TagPanel>Panel 1</TagPanel>
- *   <TagPanel>Panel 2</TagPanel>
+ *   <TagList>
+ *     <TagValues>
+ *       {(values) =>
+ *         values.map((value) => (
+ *           <Tag key={value} value={value}>
+ *             {value}
+ *             <TagRemove />
+ *           </Tag>
+ *         ))
+ *       }
+ *     </TagValues>
+ *     <TagInput />
+ *   </TagList>
  * </TagProvider>
  * ```
  */
@@ -209,19 +233,35 @@ export interface TagInputOptions<T extends ElementType = TagName>
    */
   store?: TagStore;
   /**
-   * TODO: Docs
+   * The string or pattern employed to break the input value into multiple tags.
+   * This could be a string, a regular expression, an array of strings and
+   * regular expressions, or `null` to prevent splitting on input. The first
+   * delimiter matching the input value is used to divide the value.
    * @default
    * ["\n", /[;,]?\s/]
    */
   delimiter?: string | RegExp | null | (string | RegExp)[];
   /**
-   * TODO: Docs
+   * Determines if tag values should be added to the store when the input value
+   * is pasted. The values are extracted from the clipboard text and
+   * automatically processed with the
+   * [`delimiter`](https://ariakit.org/reference/tag-input#delimiter) prop.
+   *
+   * This can be either a boolean or a callback that receives an event with an
+   * extra `values` property and should return a boolean.
+   * @default true
    */
   addValueOnPaste?: BooleanOrCallback<
     EventWithValues<ClipboardEvent<HTMLElement>>
   >;
   /**
-   * TODO: Docs
+   * Determines if the tag value should be added to the store when the input
+   * value changes. The tag value is automatically processed with the
+   * [`delimiter`](https://ariakit.org/reference/tag-input#delimiter) prop.
+   *
+   * This can be either a boolean or a callback that receives an event with an
+   * extra `values` property and should return a boolean.
+   * @default true
    */
   addValueOnChange?: BooleanOrCallback<
     EventWithValues<ChangeEvent<HTMLElement>>
@@ -237,7 +277,10 @@ export interface TagInputOptions<T extends ElementType = TagName>
    */
   setValueOnChange?: BooleanOrCallback<ChangeEvent<HTMLElement>>;
   /**
-   * TODO: Docs
+   * Determines whether the last tag value should be removed from the store when
+   * the `Backspace` key is pressed and the cursor is at the start of the input
+   * value.
+   * @default true
    */
   removeOnBackspace?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
