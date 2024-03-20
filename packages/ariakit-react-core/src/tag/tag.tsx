@@ -24,19 +24,15 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * @see https://ariakit.org/components/tag
  * @example
  * ```jsx
- * const store = useTagStore();
- * const props = useTag({ store });
- * <TagList store={store}>
- *   <Role {...props}>Tag 1</Role>
- * </TagList>
- * <TagPanel store={store}>Panel 1</TagPanel>
+ * const props = useTag();
+ * <Role.div {...props} />
  * ```
  */
 export const useTag = createHook<TagName, TagOptions>(function useTag({
   store,
   value,
-  removeOnKeyPress = true,
   getItem: getItemProp,
+  removeOnKeyPress = true,
   ...props
 }) {
   const context = useTagContext();
@@ -116,16 +112,32 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
 /**
  * Renders a tag element inside a
  * [`TagList`](https://ariakit.org/reference/tag-list) wrapper.
+ *
+ * The user can remove the tag by pressing `Backspace` or `Delete` keys when the
+ * tag is focused. The
+ * [`removeOnKeyPress`](https://ariakit.org/reference/tag#removeonkeypress) prop
+ * can be used to disable this behavior.
+ *
+ * When a printable key is pressed, the focus is automatically moved to the
+ * input element.
  * @see https://ariakit.org/components/tag
  * @example
- * ```jsx {3,4}
+ * ```jsx {7-10}
  * <TagProvider>
+ *   <TagListLabel>Invitees</TagListLabel>
  *   <TagList>
- *     <Tag>Tag 1</Tag>
- *     <Tag>Tag 2</Tag>
+ *     <TagValues>
+ *       {(values) =>
+ *         values.map((value) => (
+ *           <Tag key={value} value={value}>
+ *             {value}
+ *             <TagRemove />
+ *           </Tag>
+ *         ))
+ *       }
+ *     </TagValues>
+ *     <TagInput />
  *   </TagList>
- *   <TagPanel>Panel 1</TagPanel>
- *   <TagPanel>Panel 2</TagPanel>
  * </TagProvider>
  * ```
  */
@@ -146,11 +158,15 @@ export interface TagOptions<T extends ElementType = TagName>
    */
   store?: TagStore;
   /**
-   * TODO: Docs
+   * The unique value of the tag. This is automatically rendered as the tag's
+   * content if no children are provided.
    */
   value: string;
   /**
-   * TODO: Docs
+   * Defines the behavior of the `Backspace` and `Delete` keys when the tag is
+   * focused. If `true`, the tag is removed. If it's a function, it's invoked
+   * with the key event and should return a boolean.
+   * @default true
    */
   removeOnKeyPress?: BooleanOrCallback<KeyboardEvent<HTMLType>>;
 }

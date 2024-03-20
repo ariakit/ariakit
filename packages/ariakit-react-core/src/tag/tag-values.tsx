@@ -7,32 +7,34 @@ const defaultValues: string[] = [];
 
 /**
  * Renders the current
- * [`value`](https://ariakit.org/reference/use-tag-store#value) state in the
+ * [`values`](https://ariakit.org/reference/use-tag-store#values) state in the
  * [tag store](https://ariakit.org/reference/use-tag-store).
  *
- * As a headless value component, it doesn't render any DOM elements and
- * therefore doesn't accept HTML props. It can optionally accept a
- * [`fallback`](https://ariakit.org/reference/tag-value#fallback) prop to use
- * as a default value if the store's
- * [`value`](https://ariakit.org/reference/use-tag-store#value) is
- * `undefined`.
+ * As a value component, it doesn't render any DOM elements and therefore
+ * doesn't accept HTML props.
  *
- * Additionally, it takes a `children` function that gets called with the
- * current value as an argument. This feature is handy for renderind the value
- * in a custom way.
+ * It takes a [`children`](https://ariakit.org/reference/tag-values#children)
+ * function that gets called with the current values as an argument. This can be
+ * used as an uncontrolled API to render
+ * [`Tag`](https://ariakit.org/reference/tag) components.
  * @see https://ariakit.org/components/tag
  * @example
- * ```jsx {3}
+ * ```jsx {4-13}
  * <TagProvider>
- *   <Tag>
- *     <TagValues fallback="Tag a value" />
- *     <TagArrow />
- *   </Tag>
- *   <TagPopover>
- *     <TagItem value="Apple" />
- *     <TagItem value="Banana" />
- *     <TagItem value="Orange" />
- *   </TagPopover>
+ *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagList>
+ *     <TagValues>
+ *       {(values) =>
+ *         values.map((value) => (
+ *           <Tag key={value} value={value}>
+ *             {value}
+ *             <TagRemove />
+ *           </Tag>
+ *         ))
+ *       }
+ *     </TagValues>
+ *     <TagInput />
+ *   </TagList>
  * </TagProvider>
  * ```
  */
@@ -56,14 +58,15 @@ export interface TagValuesProps {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
-   * provided, the parent [`TagList`](https://ariakit.org/reference/tag-list) or
-   * [`TagPopover`](https://ariakit.org/reference/tag-popover) components'
+   * provided, the closest
+   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
    * context will be used.
    */
   store?: TagStore;
   /**
-   * A function that gets called with the current value as an argument. This
-   * feature is handy for renderind the value in a custom way.
+   * A function that gets called with the current values as an argument. This
+   * can be used as an uncontrolled API to render
+   * [`Tag`](https://ariakit.org/reference/tag) components.
    */
   children?: (values: TagStoreState["values"]) => ReactNode;
 }

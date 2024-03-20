@@ -125,7 +125,7 @@ export const useTagList = createHook<TagName, TagListOptions>(
  * the tags.
  * @see https://ariakit.org/components/tag
  * @example
- * ```jsx {3-13}
+ * ```jsx {3-15}
  * <TagProvider>
  *   <TagListLabel>Invitees</TagListLabel>
  *   <TagList>
