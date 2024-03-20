@@ -16,11 +16,7 @@ const firstUser = defaultUsers.at(0);
 const defaultValues = firstUser ? [firstUser.email] : [];
 
 function getUserByEmail(email: string, users = defaultUsers) {
-  const user = users.find((user) => user.email === email);
-  if (!user) {
-    throw new Error(`User not found with email: ${email}`);
-  }
-  return user;
+  return users.find((user) => user.email === email);
 }
 
 export default function Example() {
@@ -90,6 +86,7 @@ export default function Example() {
             {(values) =>
               values.map((value) => {
                 const user = getUserByEmail(value, users);
+                if (!user) return null;
                 return (
                   <Tag key={user.email} value={user.email} className="tag">
                     <img src={user.avatar} alt={user.name} className="avatar" />
@@ -100,22 +97,29 @@ export default function Example() {
               })
             }
           </TagValues>
-          <Ariakit.ComboboxProvider open={open} setOpen={setOpen}>
-            <TagInput
+          <Ariakit.ComboboxProvider
+            open={open}
+            setOpen={setOpen}
+            resetValueOnSelect={false}
+          >
+            <Ariakit.Combobox
+              autoSelect
+              showMinLength={1}
+              showOnKeyPress
               className="tag-input"
-              // delimiter={null}
               render={
-                <Ariakit.Combobox
-                  autoSelect
-                  showMinLength={1}
-                  showOnKeyPress
-                  // onChange={(event) => {
-                  //   if (event.target.value === "") {
-                  //     setOpen(false);
-                  //   }
-                  // }}
+                <TagInput
+                  addValueOnChange={(event) => {
+                    console.log(event.values);
+                    return true;
+                  }}
                 />
               }
+              // onChange={(event) => {
+              //   if (event.target.value === "") {
+              //     setOpen(false);
+              //   }
+              // }}
             />
             <Ariakit.ComboboxPopover
               className="popover popup elevation-1"
@@ -129,6 +133,10 @@ export default function Example() {
                   hideOnClick
                   focusOnHover
                   blurOnHoverEnd={false}
+                  selectValueOnClick={() => {
+                    setValue("");
+                    return true;
+                  }}
                   className="combobox-item"
                 >
                   Add &quot;{value}&quot;
@@ -136,6 +144,7 @@ export default function Example() {
               )}
               {matches.map((value) => {
                 const user = getUserByEmail(value, users);
+                if (!user) return null;
                 return (
                   <Ariakit.ComboboxItem
                     key={user.email}
@@ -143,6 +152,10 @@ export default function Example() {
                     hideOnClick={!values.includes(user.email)}
                     focusOnHover
                     blurOnHoverEnd={false}
+                    selectValueOnClick={() => {
+                      setValue("");
+                      return true;
+                    }}
                     className="combobox-item"
                   >
                     <img src={user.avatar} alt={user.name} className="avatar" />

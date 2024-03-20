@@ -1,9 +1,9 @@
-import { useRef } from "react";
 import type {
   ChangeEvent,
   ClipboardEvent,
   ElementType,
   KeyboardEvent,
+  SyntheticEvent,
 } from "react";
 import { toArray } from "@ariakit/core/utils/array";
 import {
@@ -23,6 +23,10 @@ import type { TagStore } from "./tag-store.js";
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+type EventWithValues<T extends SyntheticEvent> = T & {
+  values: string[];
+};
 
 const DEFAULT_DELIMITER = ["\n", /[;,]?\s/];
 
@@ -64,9 +68,11 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
   function useTagInput({
     store,
     tabbable = true,
+    delimiter,
+    addValueOnPaste = true,
+    addValueOnChange = true,
     setValueOnChange = true,
     removeOnBackspace = true,
-    delimiter,
     ...props
   }) {
     const context = useTagContext();
@@ -79,32 +85,33 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
     );
 
     const value = store.useState("value");
-    const pastedTextRef = useRef("");
 
     const onPasteProp = props.onPaste;
+    const addValueOnPasteProp = useBooleanEvent(addValueOnPaste);
 
     const onPaste = useEvent((event: ClipboardEvent<HTMLType>) => {
       onPasteProp?.(event);
       if (event.defaultPrevented) return;
-      const currentTarget = event.currentTarget;
-      const { start, end } = getTextboxSelection(currentTarget);
-      const { value } = currentTarget;
       const text = event.clipboardData.getData("text");
-      // Append the pasted text to the current value based on the current
-      // selection
-      const newText = value.slice(0, start) + text + value.slice(end);
-      pastedTextRef.current = newText;
-      // TODO: We probably need to prevent default here and handle the value
-      // separately without appending the text. We should also have a function
-      // or reuse the same function that's used on the onChange event.
+      const delimiters = getDelimiters(delimiter);
+      const values = splitValueByDelimiter(text, delimiters)
+        .map((value) => value.trim())
+        .filter((value) => value !== "");
+      const eventWithValues = Object.assign(event, { values });
+      if (!addValueOnPasteProp(eventWithValues)) return;
+      if (!values.length) return;
+      // TODO: Comment
+      event.preventDefault();
+      for (const tagValue of values) {
+        store.addValue(tagValue);
+      }
     });
 
     const onChangeProp = props.onChange;
     const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
+    const addValueOnChangeProp = useBooleanEvent(addValueOnChange);
 
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
-      const pastedText = pastedTextRef.current;
-      pastedTextRef.current = "";
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -121,21 +128,19 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const isTrailingCaret = start === end && start === value.length;
       if (isTrailingCaret) {
         const delimiters = getDelimiters(delimiter);
-        const text = pastedText || value;
-        let values = splitValueByDelimiter(text, delimiters);
-        const trailingvalue = pastedText ? "" : values.pop() || "";
+        let values = splitValueByDelimiter(value, delimiters);
+        const trailingvalue = values.pop() || "";
         values = values
           .map((value) => value.trim())
           .filter((value) => value !== "");
-        // TODO: We need a function with these values, returning a boolean.
-        // Consider, for example, that we need to run something before adding
-        // values (like creating objects).
-        if (values.length) {
+        const eventWithValues = Object.assign(event, { values });
+        if (values.length && addValueOnChangeProp(eventWithValues)) {
+          // TODO: Comment about <TagInput render={<Combobox />} />
+          event.preventDefault();
           for (const tagValue of values) {
             store.addValue(tagValue);
           }
           store.setValue(trailingvalue);
-          event.preventDefault();
         }
       }
     });
@@ -204,6 +209,24 @@ export interface TagInputOptions<T extends ElementType = TagName>
    */
   store?: TagStore;
   /**
+   * TODO: Docs
+   * @default
+   * ["\n", /[;,]?\s/]
+   */
+  delimiter?: string | RegExp | null | (string | RegExp)[];
+  /**
+   * TODO: Docs
+   */
+  addValueOnPaste?: BooleanOrCallback<
+    EventWithValues<ClipboardEvent<HTMLElement>>
+  >;
+  /**
+   * TODO: Docs
+   */
+  addValueOnChange?: BooleanOrCallback<
+    EventWithValues<ChangeEvent<HTMLElement>>
+  >;
+  /**
    * Whether the tag
    * [`value`](https://ariakit.org/reference/tag-provider#value) state
    * should be updated when the input value changes. This is useful if you want
@@ -217,10 +240,6 @@ export interface TagInputOptions<T extends ElementType = TagName>
    * TODO: Docs
    */
   removeOnBackspace?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-  /**
-   * TODO: Docs
-   */
-  delimiter?: string | RegExp | null | (string | RegExp)[];
   /**
    * @default true
    */
