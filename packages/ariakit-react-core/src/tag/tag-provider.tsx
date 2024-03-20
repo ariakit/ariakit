@@ -9,12 +9,20 @@ import type { TagStoreProps } from "./tag-store.js";
  * @example
  * ```jsx
  * <TagProvider>
+ *   <TagListLabel>Invitees</TagListLabel>
  *   <TagList>
- *     <Tag>For You</Tag>
- *     <Tag>Following</Tag>
+ *     <TagValues>
+ *       {(values) =>
+ *         values.map((value) => (
+ *           <Tag key={value} value={value}>
+ *             {value}
+ *             <TagRemove />
+ *           </Tag>
+ *         ))
+ *       }
+ *     </TagValues>
+ *     <TagInput />
  *   </TagList>
- *   <TagPanel>For You</TagPanel>
- *   <TagPanel>Following</TagPanel>
  * </TagProvider>
  * ```
  */

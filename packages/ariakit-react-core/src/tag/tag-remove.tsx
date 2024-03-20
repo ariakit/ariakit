@@ -18,14 +18,8 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * @see https://ariakit.org/components/tag
  * @example
  * ```jsx
- * const store = useTagStore();
- * const props = useTagRemove({ store });
- * <Role {...props}>
- *   <Tag>Tag 1</Tag>
- *   <Tag>Tag 2</Tag>
- * </Role>
- * <TagPanel store={store}>Panel 1</TagPanel>
- * <TagPanel store={store}>Panel 2</TagPanel>
+ * const props = useTagRemove();
+ * <Role.button {...props} />
  * ```
  */
 export const useTagRemove = createHook<TagName, TagRemoveOptions>(

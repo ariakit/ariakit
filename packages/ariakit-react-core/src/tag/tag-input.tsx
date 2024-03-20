@@ -58,9 +58,7 @@ function splitValueByDelimiter(value: string, delimiters: (string | RegExp)[]) {
  * @see https://ariakit.org/components/tag
  * @example
  * ```jsx
- * const store = useTagContext();
- * const props = useTagInput({ store });
- *
+ * const props = useTagInput();
  * <Role.input {...props} />
  * ```
  */
@@ -199,8 +197,9 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
  * tag input with suggestions.
  * @see https://ariakit.org/components/tag
  * @example
- * ```jsx {13}
+ * ```jsx {14}
  * <TagProvider>
+ *   <TagListLabel>Invitees</TagListLabel>
  *   <TagList>
  *     <TagValues>
  *       {(values) =>
@@ -237,8 +236,7 @@ export interface TagInputOptions<T extends ElementType = TagName>
    * This could be a string, a regular expression, an array of strings and
    * regular expressions, or `null` to prevent splitting on input. The first
    * delimiter matching the input value is used to divide the value.
-   * @default
-   * ["\n", /[;,]?\s/]
+   * @default ["\n", /[;,]?\s/]
    */
   delimiter?: string | RegExp | null | (string | RegExp)[];
   /**

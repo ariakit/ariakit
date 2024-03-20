@@ -22,14 +22,8 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * @see https://ariakit.org/components/tag
  * @example
  * ```jsx
- * const store = useTagStore();
- * const props = useTagList({ store });
- * <Role {...props}>
- *   <Tag>Tag 1</Tag>
- *   <Tag>Tag 2</Tag>
- * </Role>
- * <TagPanel store={store}>Panel 1</TagPanel>
- * <TagPanel store={store}>Panel 2</TagPanel>
+ * const props = useTagList();
+ * <Role.div {...props} />
  * ```
  */
 export const useTagList = createHook<TagName, TagListOptions>(
@@ -45,6 +39,7 @@ export const useTagList = createHook<TagName, TagListOptions>(
 
     const onMouseDownProp = props.onMouseDown;
 
+    // Focus on the input element when clicking on the tag list.
     const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
@@ -52,13 +47,15 @@ export const useTagList = createHook<TagName, TagListOptions>(
       const currentTarget = event.currentTarget;
       const focusableTarget = getClosestFocusable(target);
       const isSelfFocusable = focusableTarget === currentTarget;
-      // TODO: Comment
+      // If the user clicked on an element that's already focusable, don't focus
+      // the input element.
       if (!isSelfFocusable && currentTarget.contains(focusableTarget)) return;
       const { inputElement } = store.getState();
-      // TODO: Comment
-      queueBeforeEvent(event.currentTarget, "mouseup", () =>
-        inputElement?.focus(),
-      );
+      // We can't immediately focus on mousedown, otherwise the input element
+      // will lose focus to the body as an effect of the mousedown event.
+      queueBeforeEvent(event.currentTarget, "mouseup", () => {
+        inputElement?.focus();
+      });
     });
 
     props = useWrapElement(
@@ -85,8 +82,9 @@ export const useTagList = createHook<TagName, TagListOptions>(
     const itemIds = items.filter((item) => !!item.value).map((item) => item.id);
     const labelId = store.useState((state) => state.labelElement?.id);
 
+    // Remove aria attributes from tha TagList element and add them to a
+    // separate div that will serve as the accessible listbox element.
     const listboxProps: typeof props = {};
-
     for (const key in props) {
       if (key === "role" || key.startsWith("aria-")) {
         const prop = key as keyof typeof props;
@@ -95,7 +93,10 @@ export const useTagList = createHook<TagName, TagListOptions>(
       }
     }
 
-    // TODO: Comment
+    // We can't render TagList as a listbox because it may include an input
+    // (textbox) for styling purposes (it must be a sibling of the tags). The
+    // listbox role accepts only options as children, so we render a separate
+    // listbox element using aria-owns to reference the options.
     const children = (
       <>
         <div
@@ -115,18 +116,31 @@ export const useTagList = createHook<TagName, TagListOptions>(
 );
 
 /**
- * Renders a composite tag list wrapper for
- * [`Tag`](https://ariakit.org/reference/tag) elements.
+ * Renders a wrapper for [`Tag`](https://ariakit.org/reference/tag) and
+ * [`TagInput`](https://ariakit.org/reference/tag-input) components. This
+ * component is typically styled as an input field.
+ *
+ * The [`TagListLabel`](https://ariakit.org/reference/tag-list-label) component
+ * can be used to provide an accessible name for the listbox element that owns
+ * the tags.
  * @see https://ariakit.org/components/tag
  * @example
- * ```jsx {2-5}
+ * ```jsx {3-13}
  * <TagProvider>
+ *   <TagListLabel>Invitees</TagListLabel>
  *   <TagList>
- *     <Tag>Tag 1</Tag>
- *     <Tag>Tag 2</Tag>
+ *     <TagValues>
+ *       {(values) =>
+ *         values.map((value) => (
+ *           <Tag key={value} value={value}>
+ *             {value}
+ *             <TagRemove />
+ *           </Tag>
+ *         ))
+ *       }
+ *     </TagValues>
+ *     <TagInput />
  *   </TagList>
- *   <TagPanel>Panel 1</TagPanel>
- *   <TagPanel>Panel 2</TagPanel>
  * </TagProvider>
  * ```
  */

@@ -15,14 +15,8 @@ type TagName = typeof TagName;
  * @see https://ariakit.org/components/tag
  * @example
  * ```jsx
- * const store = useTagStore();
- * const props = useTagListLabel({ store });
- * <Role {...props}>
- *   <Tag>Tag 1</Tag>
- *   <Tag>Tag 2</Tag>
- * </Role>
- * <TagPanel store={store}>Panel 1</TagPanel>
- * <TagPanel store={store}>Panel 2</TagPanel>
+ * const props = useTagListLabel();
+ * <Role.label {...props} />
  * ```
  */
 export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
@@ -51,18 +45,28 @@ export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
 );
 
 /**
- * Renders a composite tag list wrapper for
- * [`Tag`](https://ariakit.org/reference/tag) elements.
+ * Renders a label element for the
+ * [`TagInput`](https://ariakit.org/reference/tag-input) and also acts as the
+ * accessible name for the listbox element rendered by
+ * [`TagList`](https://ariakit.org/reference/tag-list).
  * @see https://ariakit.org/components/tag
  * @example
- * ```jsx {2-5}
+ * ```jsx {2}
  * <TagProvider>
- *   <TagListLabel>
- *     <Tag>Tag 1</Tag>
- *     <Tag>Tag 2</Tag>
- *   </TagListLabel>
- *   <TagPanel>Panel 1</TagPanel>
- *   <TagPanel>Panel 2</TagPanel>
+ *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagList>
+ *     <TagValues>
+ *       {(values) =>
+ *         values.map((value) => (
+ *           <Tag key={value} value={value}>
+ *             {value}
+ *             <TagRemove />
+ *           </Tag>
+ *         ))
+ *       }
+ *     </TagValues>
+ *     <TagInput />
+ *   </TagList>
  * </TagProvider>
  * ```
  */
