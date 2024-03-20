@@ -9,7 +9,7 @@
 .menu:not(:focus) .menu-item:not(:focus)[aria-expanded="true"] {
   @apply
     text-current
-    bg-black/10
+    bg-black/[7.5%]
     dark:bg-white/10
   ;
 }

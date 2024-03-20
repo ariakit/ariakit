@@ -57,8 +57,10 @@ You can learn more about these `data-*` attributes on the [Styling](/guide/styli
 
 <div data-cards="examples">
 
+- [](/examples/disclosure-animated)
 - [](/examples/combobox-animated)
 - [](/examples/select-animated)
+- [](/examples/tab-panel-animated)
 - [](/examples/dialog-combobox-command-menu)
 - [](/examples/menubar-navigation)
 

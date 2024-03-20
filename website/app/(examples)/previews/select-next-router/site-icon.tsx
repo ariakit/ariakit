@@ -24,7 +24,7 @@ export default function Icon() {
           </div>
           <div className="-ml-8 flex w-32 flex-col overflow-hidden rounded-lg border border-black/30 bg-white shadow dark:border-white/[15%] dark:bg-gray-700 dark:shadow-dark">
             <div className="flex flex-col gap-1.5 p-1.5">
-              <div className="h-7 rounded bg-black/30 dark:bg-white/30" />
+              <div className="h-7 rounded bg-black/25 dark:bg-white/30" />
               <div className="flex h-7 items-center justify-end rounded bg-blue-600 px-1 text-white">
                 <svg
                   viewBox="0 0 24 24"
@@ -38,7 +38,6 @@ export default function Icon() {
                   />
                 </svg>
               </div>
-              <div className="h-7 rounded bg-black/30 dark:bg-white/30" />
             </div>
           </div>
         </div>

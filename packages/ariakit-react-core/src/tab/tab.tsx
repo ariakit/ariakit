@@ -1,17 +1,20 @@
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import type { CompositeItemOptions } from "../composite/composite-item.js";
-import { useCompositeItem } from "../composite/composite-item.js";
-import { useEvent, useId } from "../utils/hooks.js";
+import type { CompositeItemOptions } from "../composite/composite-item.jsx";
+import {
+  CompositeItem,
+  useCompositeItem,
+} from "../composite/composite-item.jsx";
+import { useEvent, useId, useWrapElement } from "../utils/hooks.js";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
+} from "../utils/system.jsx";
 import type { Props } from "../utils/types.js";
-import { useTabScopedContext } from "./tab-context.js";
+import { useTabScopedContext } from "./tab-context.jsx";
 import type { TabStore } from "./tab-store.js";
 
 const TagName = "button" satisfies ElementType;
@@ -76,6 +79,39 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     (state) => state.items.find((item) => item.tabId === id)?.id,
   );
   const selected = store.useState((state) => !!id && state.selectedId === id);
+  const shouldRegisterItem = !!defaultId ? props.shouldRegisterItem : false;
+
+  props = useWrapElement(
+    props,
+    (element) => {
+      if (!store?.composite) return element;
+      const defaultProps = {
+        id,
+        store: store.composite,
+        shouldRegisterItem: selected && shouldRegisterItem,
+        render: element,
+      } satisfies CompositeItemOptions;
+      // If the tab is rendered as part of another composite widget such as
+      // combobox, we need to render it as a composite item. This ensures it's
+      // recognized in the composite store and lets us manage arrow key
+      // navigation to move focus to other composite items that might be
+      // rendered in a tab panel. We only register the selected tab to maintain
+      // a vertical list orientation.
+      return (
+        <CompositeItem
+          {...defaultProps}
+          render={
+            store.combobox && store.composite !== store.combobox ? (
+              <CompositeItem {...defaultProps} store={store.combobox} />
+            ) : (
+              element
+            )
+          }
+        />
+      );
+    },
+    [store, id, selected, shouldRegisterItem],
+  );
 
   props = {
     id,
@@ -91,7 +127,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     ...props,
     accessibleWhenDisabled,
     getItem,
-    shouldRegisterItem: !!defaultId ? props.shouldRegisterItem : false,
+    shouldRegisterItem,
   });
 
   return props;

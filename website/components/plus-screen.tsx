@@ -163,7 +163,7 @@ export function PlusScreen() {
                   <div className="flex cursor-default flex-col items-center gap-6 overflow-hidden rounded-lg bg-black/5 p-6 dark:bg-gray-850">
                     <div className="h-20 w-[200px] rounded-md border-2 border-dashed border-black/20 dark:border-gray-600" />
                     <div className="flex gap-2 text-sm">
-                      <div className="relative flex h-8 items-center gap-2 rounded-md bg-black/[15%] pl-2 pr-3 dark:bg-gray-600">
+                      <div className="relative flex h-8 items-center gap-2 rounded-md bg-black/15 pl-2 pr-3 dark:bg-gray-600">
                         <Vite className="h-4 w-4" />
                         Vite
                         <div className="absolute -bottom-4 left-8">
@@ -199,8 +199,8 @@ export function PlusScreen() {
                     <div className="flex w-[200px] flex-col gap-3 rounded-lg border border-gray-250 bg-white p-3 text-black outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                       <div className="text-lg font-semibold">Component</div>
                       <div className="flex flex-col gap-3">
-                        <div className="h-3 w-full rounded-sm bg-black/40 dark:bg-white/40" />
-                        <div className="h-3 w-1/3 rounded-sm bg-black/40 dark:bg-white/40" />
+                        <div className="h-3 w-full rounded-sm bg-black/30 dark:bg-white/40" />
+                        <div className="h-3 w-1/3 rounded-sm bg-black/30 dark:bg-white/40" />
                       </div>
                     </div>
                     <p className="w-[120%] self-start">

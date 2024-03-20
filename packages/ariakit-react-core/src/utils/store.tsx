@@ -142,7 +142,7 @@ export function useStoreProps<
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
     if (value === undefined) return;
-    setProp(store, key, value);
+    setProp(store, key, value!);
   }, [store, key, value]);
 }
 

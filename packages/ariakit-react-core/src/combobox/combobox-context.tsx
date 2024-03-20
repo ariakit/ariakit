@@ -10,6 +10,10 @@ import {
 import { createStoreContext } from "../utils/system.js";
 import type { ComboboxStore } from "./combobox-store.js";
 
+export const ComboboxListRoleContext = createContext<string | undefined>(
+  undefined,
+);
+
 const ctx = createStoreContext<ComboboxStore>(
   [PopoverContextProvider, CompositeContextProvider],
   [PopoverScopedContextProvider, CompositeScopedContextProvider],

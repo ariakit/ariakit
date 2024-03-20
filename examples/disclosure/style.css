@@ -1,13 +1,13 @@
 .wrapper {
   @apply
-    w-[500px]
-    max-w-full
-    my-7
+    w-[min(500px,100%)]
+    my-[70px]
+    md:my-12
     rounded-lg
     bg-white
     dark:bg-gray-700
-    shadow
-    dark:shadow-dark
+    [box-shadow:0_1px_3px_0_rgb(0_0_0/0.1),0_1px_2px_-1px_rgb(0_0_0/0.1)]
+    dark:[box-shadow:0_1px_3px_0_rgb(0_0_0/0.25),0_1px_2px_-1px_rgb(0_0_0_/0.1)]
   ;
 }
 
@@ -25,7 +25,10 @@
     rounded-lg
     underline-offset-2
     hover:underline
-    focus-visible:ariakit-outline-input
+    data-[focus-visible]:outline
+    outline-2
+    -outline-offset-2
+    outline-blue-600
   ;
 }
 

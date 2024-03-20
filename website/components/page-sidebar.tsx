@@ -69,7 +69,7 @@ export function PageSidebar({ tableOfContents, children }: PageSidebarProps) {
     });
 
   const navList = (
-    <ul className="flex flex-col p-2 text-black/90 dark:text-white/80 md:p-0 md:text-sm md:text-black/80 md:dark:text-white/70">
+    <ul className="flex flex-col p-2 text-black/90 dark:text-white/80 md:p-0 md:text-sm">
       {renderTableOfContents(tableOfContents)}
     </ul>
   );

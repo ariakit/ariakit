@@ -9,7 +9,7 @@ export function ChevronRight(props: SVGAttributes<SVGSVGElement>) {
       strokeWidth={2}
       stroke="currentColor"
       {...props}
-      className={twMerge("h-6 w-6", props.className)}
+      className={twMerge("size-6", props.className)}
     >
       <path
         strokeLinecap="round"

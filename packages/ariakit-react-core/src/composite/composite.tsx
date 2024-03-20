@@ -543,6 +543,10 @@ export interface CompositeOptions<T extends ElementType = TagName>
    * @default true
    */
   focusOnMove?: boolean;
+  /**
+   * @see https://ariakit.org/reference/focusable
+   */
+  focusable?: FocusableOptions<T>["focusable"];
 }
 
 export type CompositeProps<T extends ElementType = TagName> = Props<

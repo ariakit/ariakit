@@ -3,7 +3,9 @@ import type {
   CollectionStoreItem,
 } from "../collection/collection-store.js";
 import { createCollectionStore } from "../collection/collection-store.js";
+import type { ComboboxStore } from "../combobox/combobox-store.js";
 import type {
+  CompositeStore,
   CompositeStoreFunctions,
   CompositeStoreItem,
   CompositeStoreOptions,
@@ -12,11 +14,38 @@ import type {
 import { createCompositeStore } from "../composite/composite-store.js";
 import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { batch, createStore, setup, sync } from "../utils/store.js";
+import {
+  batch,
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+} from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
 
-export function createTabStore(props: TabStoreProps = {}): TabStore {
-  const syncState = props.store?.getState();
+export function createTabStore({
+  composite: parentComposite,
+  combobox,
+  ...props
+}: TabStoreProps = {}): TabStore {
+  const independentKeys = [
+    "items",
+    "renderedItems",
+    "moves",
+    "orientation",
+    "baseElement",
+    "focusLoop",
+    "focusShift",
+    "focusWrap",
+  ] as const;
+
+  const store = mergeStore(
+    props.store,
+    omit(parentComposite, independentKeys),
+    omit(combobox, independentKeys),
+  );
+  const syncState = store?.getState();
 
   const composite = createCompositeStore({
     ...props,
@@ -44,7 +73,7 @@ export function createTabStore(props: TabStoreProps = {}): TabStore {
       true,
     ),
   };
-  const tab = createStore(initialState, composite, props.store);
+  const tab = createStore(initialState, composite, store);
 
   // Selects the active tab when selectOnMove is true. Since we're listening to
   // the moves state, but not the activeId state, this callback will run only
@@ -177,6 +206,9 @@ export interface TabStoreFunctions
   setSelectedId: SetState<TabStoreState["selectedId"]>;
   /**
    * A collection store containing the tab panels.
+   *
+   * Live examples:
+   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    */
   panels: CollectionStore<TabStorePanel>;
   /**
@@ -185,9 +217,6 @@ export interface TabStoreFunctions
    * state without moving focus, use the
    * [`setSelectedId`](https://ariakit.org/reference/use-tab-store#setselectedid-1)
    * function instead.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @example
    * // Selects the tab with id "tab-1"
    * store.select("tab-1");
@@ -206,11 +235,28 @@ export interface TabStoreOptions
     >,
     CompositeStoreOptions<TabStoreItem> {
   /**
+   * A reference to another [composite
+   * store](https://ariakit.org/reference/use-composite-store). This is used when
+   * rendering tabs as part of another composite widget such as
+   * [Combobox](https://ariakit.org/components/combobox) or
+   * [Select](https://ariakit.org/components/select). The stores will share the
+   * same state.
+   */
+  composite?: CompositeStore | null;
+  /**
+   * A reference to a [combobox
+   * store](https://ariakit.org/reference/use-combobox-store). This is used when
+   * rendering tabs inside a
+   * [Combobox](https://ariakit.org/components/combobox).
+   */
+  combobox?: ComboboxStore | null;
+  /**
    * The id of the tab whose panel is currently visible. If it's `undefined`, it
    * will be automatically set to the first enabled tab.
    *
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    */
   defaultSelectedId?: TabStoreState["selectedId"];
 }

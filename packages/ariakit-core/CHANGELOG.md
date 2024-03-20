@@ -1,5 +1,30 @@
 # @ariakit/core
 
+## 0.4.4
+
+### Combobox `autoFocusOnHide` behavior
+
+Previously, the [`autoFocusOnHide`](https://ariakit.org/reference/combobox-popover#autofocusonhide) feature on [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) was turned off by default. Most of the time, this didn't have any practical impact because the combobox input element was already focused when the popover was hidden.
+
+Now, this feature is enabled by default and should work consistently even when [`virtualFocus`](https://ariakit.org/reference/combobox-provider#virtualfocus) is set to `false`.
+
+### Other updates
+
+- Improved JSDocs.
+
+## 0.4.3
+
+- Fixed regression in `v0.4.2` that caused nested tabs to stop working.
+- Added new [`combobox`](https://ariakit.org/reference/tab-provider#combobox) property to tab store.
+- Improved JSDocs.
+- Fixed TypeScript error on `defaultValue`.
+
+## 0.4.2
+
+- Fixed [`Focusable`](https://ariakit.org/reference/focusable) to identify `summary` as a native tabbable element.
+- Added new [`composite`](https://ariakit.org/reference/tab-provider#composite) property to tab store.
+- Improved JSDocs.
+
 ## 0.4.1
 
 - Added [`disclosure`](https://ariakit.org/reference/use-disclosure-store#disclosure-1) property to disclosure stores.

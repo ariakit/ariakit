@@ -18,14 +18,13 @@ export default function Icon() {
                 </svg>
               </div>
               <div className="flex w-32 flex-col overflow-hidden rounded-lg border border-black/30 bg-white shadow dark:border-white/[15%] dark:bg-white/10 dark:shadow-dark">
-                <div className="flex h-7 w-full items-center gap-0.5 border-b border-black/40 px-2.5 py-1.5 dark:border-0 dark:bg-black/80">
-                  <div className="h-2 w-12 bg-black/50 dark:bg-white/50" />
+                <div className="flex h-7 w-full items-center gap-0.5 border-b border-black/40 px-2.5 py-1.5 dark:border-0 dark:bg-gray-900">
+                  <div className="h-2 w-12 rounded-[1px] bg-black/45 dark:bg-white/50" />
                   <div className="h-full w-px bg-black dark:bg-white" />
                 </div>
                 <div className="flex flex-col gap-1.5 p-1.5">
                   <div className="h-6 rounded-[3px] bg-blue-600 dark:bg-blue-500" />
-                  <div className="h-6 rounded-[3px] bg-black/30 dark:bg-white/30" />
-                  <div className="h-6 rounded-[3px] bg-black/30 dark:bg-white/30" />
+                  <div className="h-6 rounded-[3px] bg-black/25 dark:bg-white/30" />
                 </div>
               </div>
             </div>

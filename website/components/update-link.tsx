@@ -110,7 +110,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
             "bg-gray-150",
             !plus && "group-hover:bg-black/[7.5%] group-active:bg-black/[7.5%]",
             !plus &&
-              "dark:group-hover:bg-black/70 dark:group-active:bg-black/70",
+              "dark:group-hover:bg-black/45 dark:group-active:bg-black/45",
             layer === "page" ? "dark:bg-gray-850" : "dark:bg-gray-800",
           )}
         >

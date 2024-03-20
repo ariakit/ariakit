@@ -7,7 +7,9 @@ import type {
 } from "react";
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import {
+  getDocument,
   getScrollingElement,
+  getTextboxSelection,
   isButton,
   isTextField,
 } from "@ariakit/core/utils/dom";
@@ -43,16 +45,36 @@ import {
   useCompositeContext,
 } from "./composite-context.js";
 import type { CompositeStore } from "./composite-store.js";
-import { focusSilently, getEnabledItem, isItem } from "./utils.js";
+import {
+  focusSilently,
+  getEnabledItem,
+  isItem,
+  selectTextField,
+} from "./utils.js";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+function isTextbox(element: HTMLElement) {
+  return element.isContentEditable || isTextField(element);
+}
+
 function isEditableElement(element: HTMLElement) {
   if (element.isContentEditable) return true;
   if (isTextField(element)) return true;
   return element.tagName === "INPUT" && !isButton(element);
+}
+
+function getValueLength(element: HTMLElement) {
+  if (isTextField(element)) {
+    return element.value.length;
+  } else if (element.isContentEditable) {
+    const range = getDocument(element).createRange();
+    range.selectNodeContents(element);
+    return range.toString().length;
+  }
+  return 0;
 }
 
 function getNextPageOffset(scrollingElement: Element, pageUp = false) {
@@ -221,14 +243,19 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (isPortalEvent(event)) return;
       if (!id) return;
       if (!store) return;
-      const { activeId, virtualFocus, baseElement } = store.getState();
       // If the target is another item, this probably means that composite items
       // are nested. This is okay when building, for example, tree or treegrid
       // elements. In this case, we just ignore the focus event on this parent
       // item.
       if (targetIsAnotherItem(event, store)) return;
-      if (activeId !== id) {
-        store.setActiveId(id);
+      const { virtualFocus, baseElement } = store.getState();
+      store.setActiveId(id);
+      // If the composite item is a text field, we'll select its content when
+      // focused. This guarantees that pressing arrow keys will move to the
+      // previous/next composite items instead of moving the cursor inside the
+      // text field.
+      if (isTextbox(event.currentTarget)) {
+        selectTextField(event.currentTarget);
       }
       // When using aria-activedescendant, we want to make sure that the
       // composite container receives focus, not the composite item.
@@ -332,6 +359,26 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       };
       const action = keyMap[event.key as keyof typeof keyMap];
       if (action) {
+        // If the composite item is a textbox, we'll only move focus to the
+        // previous/next composite items when the cursor is at the beginning or
+        // end of the text. This is to avoid moving focus when the user is
+        // navigating through the text.
+        if (isTextbox(currentTarget)) {
+          const selection = getTextboxSelection(currentTarget);
+          const isLeft = isHorizontal && event.key === "ArrowLeft";
+          const isRight = isHorizontal && event.key === "ArrowRight";
+          const isUp = isVertical && event.key === "ArrowUp";
+          const isDown = isVertical && event.key === "ArrowDown";
+          if (isRight || isDown) {
+            if (selection.end !== getValueLength(currentTarget)) {
+              return;
+            }
+          } else if (isLeft || isUp) {
+            if (selection.start !== 0) {
+              return;
+            }
+          }
+        }
         const nextId = action();
         if (preventScrollOnKeyDownProp(event) || nextId !== undefined) {
           if (!moveOnKeyPressProp(event)) return;
@@ -483,9 +530,6 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
   /**
    * Determines if the item should be registered as part of the collection. If
    * this is set to `false`, the item won't be accessible via arrow keys.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   shouldRegisterItem?: CollectionItemOptions<T>["shouldRegisterItem"];
   /**

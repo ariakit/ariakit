@@ -2,7 +2,7 @@ import type {
   HTMLAttributes,
   MutableRefObject,
   ReactElement,
-  RefAttributes,
+  Ref,
   RefCallback,
 } from "react";
 import { isValidElement } from "react";
@@ -27,7 +27,7 @@ export function setRef<T>(
  */
 export function isValidElementWithRef<P>(
   element: unknown,
-): element is ReactElement<P> & RefAttributes<any> {
+): element is ReactElement<P> & { ref?: Ref<any> } {
   if (!element) return false;
   if (!isValidElement(element)) return false;
   if (!("ref" in element)) return false;

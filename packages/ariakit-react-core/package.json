@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-core",
-  "version": "0.4.1",
+  "version": "0.4.4",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
@@ -30,7 +30,7 @@
     "core"
   ],
   "dependencies": {
-    "@ariakit/core": "0.4.1",
+    "@ariakit/core": "0.4.4",
     "@floating-ui/dom": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
@@ -60,7 +60,7 @@
     "./toolbar/toolbar-input": "./src/toolbar/toolbar-input.ts",
     "./toolbar/toolbar-context": "./src/toolbar/toolbar-context.tsx",
     "./toolbar/toolbar-container": "./src/toolbar/toolbar-container.ts",
-    "./tab/tab": "./src/tab/tab.ts",
+    "./tab/tab": "./src/tab/tab.tsx",
     "./tab/tab-store": "./src/tab/tab-store.ts",
     "./tab/tab-provider": "./src/tab/tab-provider.tsx",
     "./tab/tab-panel": "./src/tab/tab-panel.tsx",
@@ -217,7 +217,7 @@
     "./composite/composite-context": "./src/composite/composite-context.tsx",
     "./composite/composite-container": "./src/composite/composite-container.ts",
     "./command/command": "./src/command/command.ts",
-    "./combobox/combobox": "./src/combobox/combobox.ts",
+    "./combobox/combobox": "./src/combobox/combobox.tsx",
     "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
     "./combobox/combobox-separator": "./src/combobox/combobox-separator.ts",
     "./combobox/combobox-row": "./src/combobox/combobox-row.ts",

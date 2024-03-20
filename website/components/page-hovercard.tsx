@@ -130,6 +130,7 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
             </p>
             <Command
               variant="plus"
+              className="focus-visible:!ariakit-outline"
               render={<Link href="/plus?feature=preview-docs" scroll={false} />}
             >
               <span>

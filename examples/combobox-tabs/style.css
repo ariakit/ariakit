@@ -145,7 +145,7 @@
     aria-selected:text-black
     aria-selected:dark:text-white
     aria-selected:bg-gray-200
-    aria-selected:dark:bg-gray-500
+    aria-selected:dark:bg-gray-550
 
     data-[active-item]:text-white
     data-[active-item]:bg-blue-600
@@ -167,7 +167,7 @@
     dark:bg-white/10
     [[aria-selected=true]_&]:bg-black/10
     [[aria-selected=true]_&]:dark:bg-black/20
-    [[aria-selected=true][data-active-item]_&]:bg-black/20
+    [[data-active-item]_&]:bg-black/20
   ;
 }
 

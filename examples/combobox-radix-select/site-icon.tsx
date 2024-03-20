@@ -17,7 +17,7 @@ export default function Icon() {
               </svg>
             </div>
             <div className="flex w-36 flex-col overflow-hidden rounded-xl border border-violet-400 bg-white shadow dark:border-white/20 dark:bg-white/[15%] dark:shadow-dark">
-              <div className="flex h-8 w-full items-center gap-0.5 border-b border-black/40 px-3 py-1.5 dark:border-white/50 dark:bg-black/60">
+              <div className="flex h-8 w-full items-center gap-0.5 border-b border-black/40 px-3 py-1.5 dark:border-white/50 dark:bg-black/[55%]">
                 <div className="h-2 w-12 rounded-sm bg-blue-600 dark:bg-blue-400" />
                 <div className="h-full w-px bg-black dark:bg-white" />
               </div>

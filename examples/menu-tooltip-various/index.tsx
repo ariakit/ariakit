@@ -13,10 +13,20 @@ import {
 export default function Example() {
   const [unmountPortal, setUnmountPortal] = useState(false);
   const [unmountModal, setUnmountModal] = useState(false);
+  const [timeout, setTimeout] = useState(0);
   return (
     <>
+      <label>
+        Timeout
+        <br />
+        <input
+          type="text"
+          value={timeout}
+          onChange={(e) => setTimeout(parseInt(e.target.value) || 0)}
+        />
+      </label>
       <MenuProvider>
-        <TooltipProvider timeout={0}>
+        <TooltipProvider timeout={timeout}>
           <TooltipAnchor className="button" render={<MenuButton />}>
             default
           </TooltipAnchor>
@@ -28,7 +38,7 @@ export default function Example() {
       </MenuProvider>
 
       <MenuProvider>
-        <TooltipProvider timeout={0}>
+        <TooltipProvider timeout={timeout}>
           <TooltipAnchor className="button" render={<MenuButton />}>
             portal
           </TooltipAnchor>
@@ -40,7 +50,7 @@ export default function Example() {
       </MenuProvider>
 
       <MenuProvider>
-        <TooltipProvider timeout={0}>
+        <TooltipProvider timeout={timeout}>
           <TooltipAnchor className="button" render={<MenuButton />}>
             modal
           </TooltipAnchor>
@@ -52,7 +62,7 @@ export default function Example() {
       </MenuProvider>
 
       <MenuProvider open={unmountPortal} setOpen={setUnmountPortal}>
-        <TooltipProvider timeout={0}>
+        <TooltipProvider timeout={timeout}>
           <TooltipAnchor className="button" render={<MenuButton />}>
             unmount portal
           </TooltipAnchor>
@@ -64,7 +74,7 @@ export default function Example() {
       </MenuProvider>
 
       <MenuProvider open={unmountModal} setOpen={setUnmountModal}>
-        <TooltipProvider timeout={0}>
+        <TooltipProvider timeout={timeout}>
           <TooltipAnchor className="button" render={<MenuButton />}>
             unmount modal
           </TooltipAnchor>

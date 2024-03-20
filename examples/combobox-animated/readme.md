@@ -48,11 +48,11 @@ For more information, refer to the [Styling](/guide/styling) guide.
 
 <div data-cards="examples">
 
+- [](/examples/combobox-filtering)
 - [](/examples/dialog-combobox-command-menu)
-- [](/examples/menubar-navigation)
 - [](/examples/dialog-animated)
-- [](/examples/dialog-framer-motion)
-- [](/examples/menu-framer-motion)
-- [](/examples/tooltip-framer-motion)
+- [](/examples/disclosure-animated)
+- [](/examples/select-animated)
+- [](/examples/tab-panel-animated)
 
 </div>

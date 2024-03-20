@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ElementType } from "react";
+import type { ElementType, KeyboardEvent } from "react";
+import { createTabStore } from "@ariakit/core/tab/tab-store";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { CollectionItemOptions } from "../collection/collection-item.js";
@@ -9,7 +10,12 @@ import { useDisclosureContent } from "../disclosure/disclosure-content.jsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.js";
 import type { FocusableOptions } from "../focusable/focusable.js";
 import { useFocusable } from "../focusable/focusable.js";
-import { useId, useMergeRefs, useWrapElement } from "../utils/hooks.js";
+import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "../utils/hooks.js";
 import { createElement, createHook, forwardRef } from "../utils/system.jsx";
 import type { Props } from "../utils/types.js";
 import {
@@ -38,6 +44,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useTabPanel = createHook<TagName, TabPanelOptions>(
   function useTabPanel({
     store,
+    unmountOnHide,
     tabId: tabIdProp,
     getItem: getItemProp,
     ...props
@@ -74,6 +81,34 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       [id, tabIdProp, getItemProp],
     );
 
+    const onKeyDownProp = props.onKeyDown;
+
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!store?.composite) return;
+      // If the tab panel is part of another composite widget like a combobox,
+      // keyboard navigation is managed here. We need to recreate a tab store
+      // and provide the selected id as the active id. This is necessary because
+      // the original tab store may have the same active id as the external
+      // composite store, which might not be a valid tab id.
+      const { items, renderedItems, selectedId } = store.getState();
+      const tab = createTabStore({ items, activeId: selectedId });
+      tab.setState("renderedItems", renderedItems);
+      const keyMap = {
+        ArrowLeft: tab.previous,
+        ArrowRight: tab.next,
+        Home: tab.first,
+        End: tab.last,
+      };
+      const action = keyMap[event.key as keyof typeof keyMap];
+      if (!action) return;
+      const nextId = action();
+      if (!nextId) return;
+      event.preventDefault();
+      store.select(nextId);
+    });
+
     props = useWrapElement(
       props,
       (element) => (
@@ -91,17 +126,25 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       (state) => !!tabId && state.selectedId === tabId,
     );
 
+    const disclosure = useDisclosureStore({ open });
+    const mounted = disclosure.useState("mounted");
+
     props = {
       id,
       role: "tabpanel",
       "aria-labelledby": tabId || undefined,
       ...props,
+      children: unmountOnHide && !mounted ? null : props.children,
       ref: useMergeRefs(ref, props.ref),
+      onKeyDown,
     };
 
-    const disclosure = useDisclosureStore({ open });
-
-    props = useFocusable({ focusable: !hasTabbableChildren, ...props });
+    props = useFocusable({
+      // If the tab panel is rendered as part of another composite widget such
+      // as combobox, it should not be focusable.
+      focusable: !store.composite && !hasTabbableChildren,
+      ...props,
+    });
     props = useDisclosureContent({ store: disclosure, ...props });
     props = useCollectionItem({ store: store.panels, ...props, getItem });
 
@@ -140,7 +183,7 @@ export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
 export interface TabPanelOptions<T extends ElementType = TagName>
   extends FocusableOptions<T>,
     CollectionItemOptions<T>,
-    Omit<DisclosureContentOptions<T>, "store" | "unmountOnHide"> {
+    Omit<DisclosureContentOptions<T>, "store"> {
   /**
    * Object returned by the
    * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
@@ -164,6 +207,7 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
+   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    */
   tabId?: string | null;
 }

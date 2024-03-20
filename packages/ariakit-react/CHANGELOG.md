@@ -1,5 +1,101 @@
 # @ariakit/react
 
+## 0.4.4
+
+### Combobox `autoFocusOnHide` behavior
+
+Previously, the [`autoFocusOnHide`](https://ariakit.org/reference/combobox-popover#autofocusonhide) feature on [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) was turned off by default. Most of the time, this didn't have any practical impact because the combobox input element was already focused when the popover was hidden.
+
+Now, this feature is enabled by default and should work consistently even when [`virtualFocus`](https://ariakit.org/reference/combobox-provider#virtualfocus) is set to `false`.
+
+### Better SVG strokes
+
+The `strokeWidth` property on SVG elements rendered by [`CheckboxCheck`](https://ariakit.org/reference/checkbox-check), [`ComboboxCancel`](https://ariakit.org/reference/combobox-cancel), [`ComboboxDisclosure`](https://ariakit.org/reference/combobox-disclosure), [`DialogDismiss`](https://ariakit.org/reference/dialog-dismiss), [`HovercardDisclosure`](https://ariakit.org/reference/hovercard-disclosure), [`PopoverDisclosureArrow`](https://ariakit.org/reference/popover-disclosure-arrow), and all components that use any of these now defaults to `1.5px` instead of `1.5pt`. This should make the strokes slightly thinner.
+
+Remember, you can always override the SVG element rendered by these components by rendering custom `children`.
+
+### Minimum value length to show combobox options
+
+A new [`showMinLength`](https://ariakit.org/reference/combobox#showminlength) prop has been added to the [`Combobox`](https://ariakit.org/reference/combobox) component. This prop lets you set the minimum length of the value before the combobox options appear. The default value is `0`.
+
+```jsx
+<Combobox showMinLength={2} />
+```
+
+Previously, achieving this behavior required combining three separate props: [`showOnChange`](https://ariakit.org/reference/combobox#showonchange), [`showOnClick`](https://ariakit.org/reference/combobox#showonclick), and [`showOnKeyPress`](https://ariakit.org/reference/combobox#showonkeypress). We've added this prop to simplify this common task.
+
+These props continue to work as expected as they can be used to customize the behavior for each distinct event.
+
+### Rendering composite items as input elements
+
+We've added the ability to render [`CompositeItem`](https://ariakit.org/reference/composite-item) as an input element using the [`render`](https://ariakit.org/reference/composite-item#render) prop:
+
+```jsx
+<CompositeItem render={<input />} />
+```
+
+Before, you could only do this with the experimental `CompositeInput` component. Now, this functionality is integrated directly into the [`CompositeItem`](https://ariakit.org/reference/composite-item) component.
+
+### Other updates
+
+- Fixed [`Dialog`](https://ariakit.org/reference/dialog) calling [`autoFocusOnHide`](https://ariakit.org/reference/dialog#autofocusonhide) twice.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.4`
+
+## 0.4.3
+
+- Fixed TypeScript types for `ref`.
+- Fixed [`CompositeItem`](https://ariakit.org/reference/composite-item) occasionally failing to set the [`activeId`](https://ariakit.org/reference/use-composite-store#activeid) state on focus.
+- Fixed [`unmountOnHide`](https://ariakit.org/reference/tab-panel#unmountonhide) prop not working on [`TabPanel`](https://ariakit.org/reference/tab-panel) without [`tabId`](https://ariakit.org/reference/tab-panel#tabid).
+- Fixed regression in `v0.4.2` that caused nested tabs to stop working.
+- Added new [`combobox`](https://ariakit.org/reference/tab-provider#combobox) property to tab store.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.3`
+
+## 0.4.2
+
+### Tooltip behavior improvements
+
+When using [Tooltip](https://ariakit.org/components/tooltip) components alongside elements that move focus upon clicking (like [`MenuButton`](https://ariakit.org/reference/menu-button), which moves focus to its [`Menu`](https://ariakit.org/reference/menu) when clicked), the tooltip will now stop from appearing after the user clicks the anchor element. It will only show when the mouse leaves and re-enters the anchor element.
+
+This was already the case when tooltips had no [`timeout`](https://ariakit.org/reference/tooltip-provider#timeout). Now, the behavior is consistent regardless of the timeout value.
+
+### Combobox with tabs
+
+[Tab](https://ariakit.org/components/tab) components can now be rendered as part of other composite widgets, like [Combobox](https://ariakit.org/components/combobox). The following structure should work seamlessly:
+
+```jsx "TabProvider" "TabList" "Tab" "TabPanel"
+<ComboboxProvider>
+  <Combobox />
+  <ComboboxPopover>
+    <TabProvider>
+      <TabList>
+        <Tab />
+      </TabList>
+      <TabPanel unmountOnHide>
+        <ComboboxList>
+          <ComboboxItem />
+        </ComboboxList>
+      </TabPanel>
+    </TabProvider>
+  </ComboboxPopover>
+</ComboboxProvider>
+```
+
+### Other updates
+
+- Fixed `inert` behavior on older browsers.
+- Fixed [Portal](https://ariakit.org/components/portal) rendering extra `span` even when the [`portal`](https://ariakit.org/reference/portal#portal-1) prop is `false`.
+- Fixed [`Focusable`](https://ariakit.org/reference/focusable) to identify `summary` as a native tabbable element.
+- Added [`Role.summary`](https://ariakit.org/reference/role) component.
+- Improved typeahead functionality on unmounted composite items.
+- Added new [`composite`](https://ariakit.org/reference/tab-provider#composite) property to tab store.
+- Added new [`hideWhenEmpty`](https://ariakit.org/reference/combobox-cancel#hidewhenempty) prop to [`ComboboxCancel`](https://ariakit.org/reference/combobox-cancel).
+- Added support for nested [`ComboboxList`](https://ariakit.org/reference/combobox-list).
+- Added [`unmountOnHide`](https://ariakit.org/reference/tab-panel#unmountonhide) prop to [`TabPanel`](https://ariakit.org/reference/tab-panel).
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.2`
+
 ## 0.4.1
 
 ### New `autoSelect` mode

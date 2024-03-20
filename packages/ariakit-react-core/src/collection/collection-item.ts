@@ -102,13 +102,11 @@ export interface CollectionItemOptions<_T extends ElementType = TagName>
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
+   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    */
   id?: string;
   /**
    * Whether the item should be registered as part of the collection.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @default true
    */
   shouldRegisterItem?: boolean;

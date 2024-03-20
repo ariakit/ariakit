@@ -15,7 +15,8 @@ function query(locator: Pick<Page, "getByRole" | "getByText">) {
       locator.getByRole("combobox", { name }),
     button: (name: string | RegExp) => locator.getByRole("button", { name }),
     link: (name: string | RegExp) => locator.getByRole("link", { name }),
-    textbox: (name: string | RegExp) => locator.getByRole("textbox", { name }),
+    textbox: (name: string | RegExp, exact = false) =>
+      locator.getByRole("textbox", { name, exact }),
     menuitem: (name: string | RegExp) =>
       locator.getByRole("menuitem", { name }),
   };
@@ -54,7 +55,9 @@ interface AuthOptions {
 
 async function fillAuth(page: Page, options: AuthOptions = {}) {
   const q = query(page);
-  await q.textbox("Email address").fill(options.email || generateUserEmail());
+  await q
+    .textbox("Email address", true)
+    .fill(options.email || generateUserEmail());
   await q.textbox("Password").fill(options.password || DEFAULT_PASSWORD);
   await page.keyboard.press("Enter");
 }
@@ -203,7 +206,7 @@ for (const plan of ["month", "year"] as const) {
     const price = await getDisplayedPrice(page);
 
     await q.link("Buy now").click();
-    await q.textbox("Email address").click();
+    await q.textbox("Email address", true).click();
     await q.link("Sign in").first().click();
 
     const email = generateUserEmail();
@@ -223,8 +226,12 @@ for (const plan of ["month", "year"] as const) {
     await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
     const stripe = getStripeClient();
-    const subs = await stripe.subscriptions.list({ customer: customer.id });
-    expect(subs.data.length).toBe(0);
+    // Wait for stripe
+    await page.waitForTimeout(1000);
+    await expect(async () => {
+      const subs = await stripe.subscriptions.list({ customer: customer.id });
+      expect(subs.data.length).toBe(0);
+    }).toPass({ intervals: [2000, 5000, 10000] });
 
     await q.button("Back to page").click();
     await page.waitForURL("/components");
@@ -234,13 +241,13 @@ for (const plan of ["month", "year"] as const) {
   });
 }
 
-test("puschase Plus from /plus, sign out, sign in again, and access the billing page", async ({
+test("purchase Plus from /plus, sign out, sign in again, and access the billing page", async ({
   page,
 }) => {
   test.setTimeout(80_000);
 
   const q = query(page);
-  await page.goto("/plus", { waitUntil: "networkidle" });
+  await page.goto("/plus");
 
   await q.link("Buy now").click();
   const email = generateUserEmail();
@@ -280,7 +287,7 @@ test("puschase Plus from /plus, sign out, sign in again, and access the billing 
   await expect(nq.text("Ariakit Plus")).toBeVisible();
 });
 
-test("puschase Plus from /components, sign out, sign in again, and access the billing page", async ({
+test("purchase Plus from /components, sign out, sign in again, and access the billing page", async ({
   page,
 }) => {
   test.setTimeout(80_000);

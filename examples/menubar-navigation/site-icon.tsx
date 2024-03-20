@@ -21,11 +21,11 @@ export default function Icon() {
                 <div className="h-2 w-full rounded-sm bg-blue-600 dark:bg-blue-500" />
                 <div className="h-0.5 w-full bg-blue-600 dark:bg-blue-500" />
               </div>
-              <div className="h-2 w-16 rounded-sm bg-black/40 dark:bg-white/40" />
+              <div className="h-2 w-16 rounded-sm bg-black/35 dark:bg-white/40" />
             </div>
             <div className="flex flex-col gap-1">
-              <div className="h-2 w-14 rounded-sm bg-black/70 dark:bg-white/70" />
-              <div className="h-2 w-20 rounded-sm bg-black/40 dark:bg-white/40" />
+              <div className="h-2 w-14 rounded-sm bg-black/60 dark:bg-white/70" />
+              <div className="h-2 w-20 rounded-sm bg-black/35 dark:bg-white/40" />
             </div>
           </div>
         </div>

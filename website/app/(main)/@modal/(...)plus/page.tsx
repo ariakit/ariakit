@@ -69,7 +69,7 @@ export default function Page() {
                 <Command
                   flat
                   variant="secondary"
-                  className="border border-solid border-black/60 px-3 font-medium dark:border-white/60 sm:h-9"
+                  className="border border-solid border-black/60 px-3 font-medium focus-visible:!ariakit-outline dark:border-white/60 sm:h-9"
                   render={<SignInLink />}
                 >
                   Sign in

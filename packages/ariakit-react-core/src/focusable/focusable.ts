@@ -90,6 +90,7 @@ function isNativeTabbable(tagName?: string) {
   if (!tagName) return true;
   return (
     tagName === "button" ||
+    tagName === "summary" ||
     tagName === "input" ||
     tagName === "select" ||
     tagName === "textarea" ||
@@ -472,6 +473,10 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled)
    * prop to make disabled elements still accessible via keyboard.
    *
+   * **Note**: For this prop to work, the
+   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * set to `true`, if it's not set by default.
+   *
    * Live examples:
    * - [Submenu](https://ariakit.org/examples/menu-nested)
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
@@ -489,6 +494,10 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * [Focusable](https://ariakit.org/components/focusable) elements within a
    * [Dialog](https://ariakit.org/components/dialog) component, establishing the
    * initial focus as the dialog opens.
+   *
+   * **Note**: For this prop to work, the
+   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * set to `true`, if it's not set by default.
    *
    * Live examples:
    * - [Warning on Dialog
@@ -512,9 +521,6 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled),
    * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible),
    * etc.
-   *
-   * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    * @default true
    */
   focusable?: boolean;
@@ -543,6 +549,10 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * the programmatic equivalent of the
    * [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible)
    * attribute.
+   *
+   * **Note**: For this prop to work, the
+   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * set to `true`, if it's not set by default.
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)

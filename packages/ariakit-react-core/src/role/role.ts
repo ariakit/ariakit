@@ -29,6 +29,7 @@ const elements = [
   "section",
   "select",
   "span",
+  "summary",
   "textarea",
   "ul",
   "svg",
