@@ -61,7 +61,21 @@ export default function Example() {
       </TagProvider>
       <TagProvider
         values={values}
-        setValues={setValues}
+        setValues={(values) => {
+          setValues(values);
+          setUsers((users) => {
+            for (const value of values) {
+              if (users.some((user) => user.email === value)) continue;
+              const user = {
+                name: value,
+                email: value,
+                avatar: faker.image.avatarGitHub(),
+              };
+              users = [user, ...users];
+            }
+            return users;
+          });
+        }}
         value={value}
         setValue={(value) => {
           setValue(value);
@@ -95,11 +109,11 @@ export default function Example() {
                   autoSelect
                   showMinLength={1}
                   showOnKeyPress
-                  onChange={(event) => {
-                    if (event.target.value === "") {
-                      setOpen(false);
-                    }
-                  }}
+                  // onChange={(event) => {
+                  //   if (event.target.value === "") {
+                  //     setOpen(false);
+                  //   }
+                  // }}
                 />
               }
             />
@@ -116,17 +130,6 @@ export default function Example() {
                   focusOnHover
                   blurOnHoverEnd={false}
                   className="combobox-item"
-                  selectValueOnClick={() => {
-                    setUsers((users) => {
-                      const user = {
-                        name: value,
-                        email: value,
-                        avatar: faker.image.avatarGitHub(),
-                      };
-                      return [user, ...users];
-                    });
-                    return true;
-                  }}
                 >
                   Add &quot;{value}&quot;
                 </Ariakit.ComboboxItem>
@@ -137,7 +140,7 @@ export default function Example() {
                   <Ariakit.ComboboxItem
                     key={user.email}
                     value={user.email}
-                    hideOnClick
+                    hideOnClick={!values.includes(user.email)}
                     focusOnHover
                     blurOnHoverEnd={false}
                     className="combobox-item"

@@ -135,6 +135,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
             store.addValue(tagValue);
           }
           store.setValue(trailingvalue);
+          event.preventDefault();
         }
       }
     });
