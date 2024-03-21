@@ -13,6 +13,15 @@ const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+const icon = (
+  <span
+    aria-hidden
+    style={{ fontFamily: "system-ui, sans-serif", userSelect: "none" }}
+  >
+    ⌫
+  </span>
+);
+
 /**
  * Returns props to create a `TagRemove` component.
  * @see https://ariakit.org/components/tag
@@ -56,15 +65,8 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
       inputElement?.focus();
     });
 
-    const children = (
-      <span style={{ fontFamily: "system-ui, sans-serif", userSelect: "none" }}>
-        ⌫
-      </span>
-    );
-
     props = {
-      children,
-      "aria-label": withinTag ? "Backspace" : `Remove ${value}`,
+      children: icon,
       ...props,
       render: withinTag ? <Role.span render={props.render} /> : props.render,
       onClick,
@@ -75,18 +77,27 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
 );
 
 /**
- * Renders a composite tag list wrapper for
- * [`Tag`](https://ariakit.org/reference/tag) elements.
+ * Renders a `Backspace` icon inside a
+ * [`Tag`](https://ariakit.org/reference/tag) component that removes the tag
+ * when clicked with a mouse.
  * @see https://ariakit.org/components/tag
  * @example
- * ```jsx {2-5}
+ * ```jsx {9}
  * <TagProvider>
- *   <TagRemove>
- *     <Tag>Tag 1</Tag>
- *     <Tag>Tag 2</Tag>
- *   </TagRemove>
- *   <TagPanel>Panel 1</TagPanel>
- *   <TagPanel>Panel 2</TagPanel>
+ *   <TagListLabel>Invitees</TagListLabel>
+ *   <TagList>
+ *     <TagValues>
+ *       {(values) =>
+ *         values.map((value) => (
+ *           <Tag key={value} value={value}>
+ *             {value}
+ *             <TagRemove />
+ *           </Tag>
+ *         ))
+ *       }
+ *     </TagValues>
+ *     <TagInput />
+ *   </TagList>
  * </TagProvider>
  * ```
  */
@@ -106,11 +117,15 @@ export interface TagRemoveOptions<_T extends ElementType = TagName>
    */
   store?: TagStore;
   /**
-   * TODO: Docs
+   * The value of the tag to remove. If not provided, the value will be inferred
+   * from the parent [`Tag`](https://ariakit.org/reference/tag) component.
    */
   value?: string;
   /**
-   * TODO: Docs
+   * Determines if the tag should be removed when clicked with a mouse. If a
+   * function is provided, it will be called with the click event and should
+   * return a boolean.
+   * @default true
    */
   removeOnClick?: BooleanOrCallback<MouseEvent<HTMLType>>;
 }

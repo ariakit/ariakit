@@ -88,7 +88,17 @@ export default function Example() {
                 const user = getUserByEmail(value, users);
                 if (!user) return null;
                 return (
-                  <Tag key={user.email} value={user.email} className="tag">
+                  <Tag
+                    key={user.email}
+                    value={user.email}
+                    className="tag"
+                    onClick={() => {
+                      setValues((values) =>
+                        values.filter((value) => value !== user.email),
+                      );
+                      setValue(value);
+                    }}
+                  >
                     <img src={user.avatar} alt={user.name} className="avatar" />
                     <span className="name">{user.name}</span>
                     <TagRemove className="tag-remove" />
@@ -107,14 +117,7 @@ export default function Example() {
               showMinLength={1}
               showOnKeyPress
               className="tag-input"
-              render={
-                <TagInput
-                  addValueOnChange={(event) => {
-                    console.log(event.values);
-                    return true;
-                  }}
-                />
-              }
+              render={<TagInput />}
               // onChange={(event) => {
               //   if (event.target.value === "") {
               //     setOpen(false);

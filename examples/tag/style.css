@@ -42,8 +42,9 @@
     dark:bg-white/[7%]
     [:focus-within>&]:data-[active-item]:bg-blue-600
     [:focus-within>&]:data-[active-item]:text-white
+    [:focus-within>&]:data-[active-item]:[--tag-remove-opacity:1]
     [outline:none]
-    has-[+input[value=""]]:[margin-inline-end:-0.5rem]
+    [:nth-last-child(1_of_&)]:has-[~input[value=""]]:-me-2
   ;
 }
 
@@ -57,12 +58,10 @@
     [margin-inline:-0.5rem]
     [border-start-end-radius:inherit]
     [border-end-end-radius:inherit]
-    opacity-60
+    [opacity:var(--tag-remove-opacity,0.6)]
     hover:opacity-100
     hover:bg-black/10
     hover:dark:bg-white/10
-    [[data-active-item]>&]:opacity-100
-    [:has(+input:focus[value=""])>&]:opacity-100
   ;
 }
 

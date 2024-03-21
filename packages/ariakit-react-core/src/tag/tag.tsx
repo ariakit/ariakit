@@ -4,7 +4,12 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
-import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
+import {
+  useBooleanEvent,
+  useEvent,
+  useId,
+  useWrapElement,
+} from "../utils/hooks.js";
 import {
   createElement,
   createHook,
@@ -12,6 +17,8 @@ import {
   memo,
 } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
+import { VisuallyHidden } from "../visually-hidden/visually-hidden.js";
+import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.js";
 import { TagValueContext, useTagContext } from "./tag-context.jsx";
 import type { TagStore } from "./tag-store.js";
 
@@ -33,6 +40,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
   value,
   getItem: getItemProp,
   removeOnKeyPress = true,
+  hiddenRemove = true,
   ...props
 }) {
   const context = useTagContext();
@@ -43,6 +51,8 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
     process.env.NODE_ENV !== "production" &&
       "Tag must be wrapped in a TagList component.",
   );
+
+  const id = useId(props.id);
 
   const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
     (item) => {
@@ -58,6 +68,14 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
   const onKeyDownProp = props.onKeyDown;
   const removeOnKeyPressProp = useBooleanEvent(removeOnKeyPress);
 
+  const removeValue = useEvent((moveToPrevious = false) => {
+    store.removeValue(value);
+    const nextId = moveToPrevious
+      ? store.previous() || store.next()
+      : store.next();
+    store.move(nextId);
+  });
+
   const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
     onKeyDownProp?.(event);
     if (event.defaultPrevented) return;
@@ -68,11 +86,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
 
     if (isRemoveKey && removeOnKeyPressProp(event)) {
       event.preventDefault();
-      store.removeValue(value);
-      const nextId = isBackspace
-        ? store.previous() || store.next()
-        : store.next();
-      store.move(nextId);
+      removeValue(isBackspace);
     }
 
     const isPrintableKey =
@@ -93,7 +107,39 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
     [value],
   );
 
+  const removeId = useId();
+
+  // Screen readers don't focus on elements within an option role, and mobile
+  // screen reader users can't hit Backspace while focused on the option. Thus,
+  // we include a visually hidden button with a button role adjacent to the
+  // option. Even if it's not focusable, the button role enables screen readers
+  // to move the virtual cursor and interact with it.
+  props = useWrapElement(
+    props,
+    (element) => {
+      if (!hiddenRemove) return element;
+      const render =
+        typeof hiddenRemove !== "boolean" ? hiddenRemove : <button />;
+      return (
+        <>
+          {element}
+          <VisuallyHidden
+            id={removeId}
+            tabIndex={-1}
+            aria-labelledby={`${removeId} ${id}`}
+            render={render}
+            onClick={() => removeValue()}
+          >
+            Remove
+          </VisuallyHidden>
+        </>
+      );
+    },
+    [removeId, hiddenRemove, removeValue],
+  );
+
   props = {
+    id,
     role: "option",
     children: value,
     ...props,
@@ -169,6 +215,33 @@ export interface TagOptions<T extends ElementType = TagName>
    * @default true
    */
   removeOnKeyPress?: BooleanOrCallback<KeyboardEvent<HTMLType>>;
+  /**
+   * By default, a visually hidden remove button is rendered next to the tag
+   * for mobile screen reader accessibility, where users can't press `Backspace`
+   * while focusing on tags. If set to `false`, this element won't be rendered.
+   *
+   * The accessible label of the remove element is a combination of its own
+   * content, which defaults to the English word "Remove", and the tag's
+   * content. You can customize this by passing an element with a different
+   * content or `aria-label` attribute. When using `aria-label`, you should
+   * manually include the tag's content for context.
+   * @default true
+   * @example
+   * You can pass an element with a different content to customize the "Remove"
+   * label:
+   * ```jsx
+   * // Delete element's label: "Eliminar Manzana"
+   * <Tag value="Manzana" hiddenRemove={<button>Eliminar</button>} />
+   * ```
+   * @example
+   * You can pass a custom `aria-label` attribute to override the entire label.
+   * For example, for languages where the verb doesn't come before the noun:
+   * ```jsx
+   * // Delete element's label: "사과 삭제"
+   * <Tag value="사과" hiddenRemove={<button aria-label="사과 삭제" />} />
+   * ```
+   */
+  hiddenRemove?: boolean | VisuallyHiddenOptions["render"];
 }
 
 export type TagProps<T extends ElementType = TagName> = Props<T, TagOptions<T>>;

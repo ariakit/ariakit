@@ -28,7 +28,7 @@ type EventWithValues<T extends SyntheticEvent> = T & {
   values: string[];
 };
 
-const DEFAULT_DELIMITER = ["\n", /[;,]?\s/];
+const DEFAULT_DELIMITER = ["\n", ";", ",", /\s/];
 
 function getDelimiters(
   delimiter: TagInputOptions["delimiter"],
@@ -234,9 +234,16 @@ export interface TagInputOptions<T extends ElementType = TagName>
   /**
    * The string or pattern employed to break the input value into multiple tags.
    * This could be a string, a regular expression, an array of strings and
-   * regular expressions, or `null` to prevent splitting on input. The first
-   * delimiter matching the input value is used to divide the value.
-   * @default ["\n", /[;,]?\s/]
+   * regular expressions, or `null` to prevent splitting on input.
+   *
+   * When an array is given, the input value is split by the first matching
+   * delimiter. All other delimiters are disregarded for the same input event.
+   * For example, if the delimiters are `["\n", ","]` and the user pastes text
+   * containing commas and newlines, the text will be split solely by newlines.
+   * The commas will be preserved in the tag values. If you want to split by
+   * both commas and newlines, you should use a regular expression that matches
+   * both characters (e.g., `/[\n,]/`).
+   * @default ["\n", ";", ",", /\s/]
    */
   delimiter?: string | RegExp | null | (string | RegExp)[];
   /**
