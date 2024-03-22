@@ -8,6 +8,7 @@ import { createElement, createHook, forwardRef } from "../utils/system.jsx";
 import type { Options, Props } from "../utils/types.js";
 import { TagValueContext, useTagContext } from "./tag-context.jsx";
 import type { TagStore } from "./tag-store.js";
+import { useTouchDevice } from "./utils.js";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -74,11 +75,15 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
       </svg>
     );
 
+    const touchDevice = useTouchDevice() && withinTag;
+
     props = {
       children,
+      role: touchDevice ? "button" : undefined,
+      "aria-label": touchDevice ? `Remove ${value}` : undefined,
       ...props,
-      render: withinTag ? <Role.span render={props.render} /> : props.render,
       onClick,
+      render: withinTag ? <Role.span render={props.render} /> : props.render,
     };
 
     return props;

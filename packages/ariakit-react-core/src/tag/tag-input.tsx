@@ -6,10 +6,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { toArray } from "@ariakit/core/utils/array";
-import {
-  getTextboxSelection,
-  setSelectionRange,
-} from "@ariakit/core/utils/dom";
+import { getTextboxSelection } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import { useCompositeItem } from "../composite/composite-item.js";
@@ -121,10 +118,6 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       // Set the value in the store if the value changes
       if (setValueOnChangeProp(event)) {
         store.setValue(value);
-        // See combobox onChange for explanation
-        queueMicrotask(() => {
-          setSelectionRange(currentTarget, start, end);
-        });
       }
       // Add values to the store if the input value ends with a delimiter
       const isTrailingCaret = start === end && start === value.length;

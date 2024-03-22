@@ -60,6 +60,7 @@
     "./toolbar/toolbar-input": "./src/toolbar/toolbar-input.ts",
     "./toolbar/toolbar-context": "./src/toolbar/toolbar-context.tsx",
     "./toolbar/toolbar-container": "./src/toolbar/toolbar-container.ts",
+    "./tag/utils": "./src/tag/utils.ts",
     "./tag/tag": "./src/tag/tag.tsx",
     "./tag/tag-values": "./src/tag/tag-values.tsx",
     "./tag/tag-store": "./src/tag/tag-store.ts",

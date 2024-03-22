@@ -12,6 +12,7 @@ import {
   useTagProviderContext,
 } from "./tag-context.js";
 import type { TagStore } from "./tag-store.js";
+import { useTouchDevice } from "./utils.js";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -93,6 +94,8 @@ export const useTagList = createHook<TagName, TagListOptions>(
       }
     }
 
+    const touchDevice = useTouchDevice();
+
     // We can't render TagList as a listbox because it may include an input
     // (textbox) for styling purposes (it must be a sibling of the tags). The
     // listbox role accepts only options as children, so we render a separate
@@ -100,7 +103,7 @@ export const useTagList = createHook<TagName, TagListOptions>(
     const children = (
       <>
         <div
-          role="listbox"
+          role={touchDevice ? "list" : "listbox"}
           aria-labelledby={labelId}
           aria-orientation={orientation}
           aria-owns={itemIds.join(" ")}
@@ -111,7 +114,12 @@ export const useTagList = createHook<TagName, TagListOptions>(
       </>
     );
 
-    return { ...props, children };
+    props = {
+      ...props,
+      children,
+    };
+
+    return props;
   },
 );
 

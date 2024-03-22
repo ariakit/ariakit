@@ -1,5 +1,19 @@
 @import url("../style.css");
 
+.wrapper {
+  @apply
+    flex
+    flex-col
+    gap-2
+    w-[calc(100%-2rem)]
+    max-w-[720px]
+}
+
+.tag-list-label {
+  @apply
+    ms-3
+}
+
 .tag-list {
   @apply
     flex
@@ -9,42 +23,27 @@
     items-center
     gap-1
     p-[5px]
-    max-w-full
+    w-full
     overflow-auto
     rounded-lg
-    bg-white
-    hover:bg-gray-50
-    dark:bg-gray-900
-    dark:hover:bg-gray-950
-    outline-2
-    outline-offset-[-1px]
-    focus-within:outline
-    cursor-text
-    outline-blue-600
-    [box-shadow:inset_0_0_0_1px_rgba(0_0_0/0.15),inset_0_2px_5px_0_rgba(0_0_0/0.08)]
-    dark:[box-shadow:inset_0_0_0_1px_rgba(255_255_255/0.15),inset_0_-1px_0_0_rgba(255_255_255/0.05),inset_0_2px_5px_0_rgba(0_0_0/0.15)]
-  ;
 }
 
 .tag {
   @apply
-    relative
-    z-[1]
     inline-flex
-    gap-2
     items-center
+    gap-2
     px-2
-    cursor-default
     rounded
+    cursor-default
     whitespace-nowrap
+    [outline:none]
     bg-black/[7%]
     dark:bg-white/[7%]
     [:focus-within>&]:data-[active-item]:bg-blue-600
     [:focus-within>&]:data-[active-item]:text-white
     [:focus-within>&]:data-[active-item]:[--tag-remove-opacity:1]
-    [outline:none]
     [:nth-last-child(1_of_&)]:has-[~input[value=""]]:-me-2
-  ;
 }
 
 .tag-remove {
@@ -54,52 +53,23 @@
     flex-none
     text-lg
     size-8
-    [margin-inline:-0.5rem]
-    [border-start-end-radius:inherit]
-    [border-end-end-radius:inherit]
-    [opacity:var(--tag-remove-opacity,0.6)]
+    -mx-2
+    rounded-e-[inherit]
+    opacity-[var(--tag-remove-opacity,0.6)]
     hover:opacity-100
     hover:bg-black/10
     hover:dark:bg-white/10
-  ;
 }
 
 .tag-input {
   @apply
     flex-1
     h-8
+    px-2
     bg-transparent
     min-w-[200px]
-    [&[value=""]]:min-w-[1ch]
-    px-2
     ![outline:none]
-  ;
-}
-
-.avatar {
-  @apply
-    flex-none
-    size-4
-    rounded-full
-    bg-gray-200
-    dark:bg-gray-700
-  ;
-}
-
-.name {
-  @apply
-    flex-1
-    truncate
-  ;
-}
-
-.email {
-  @apply
-    text-sm
-    opacity-80
-    truncate
-    [[data-active-item]_&]:opacity-100
-  ;
+    [&[value=""]]:min-w-[16ch]
 }
 
 .popover {
@@ -117,7 +87,6 @@
     outline-none
     rounded-xl
     p-1
-  ;
 }
 
 .combobox-item {
@@ -134,5 +103,4 @@
     rounded-lg
     data-[active-item]:bg-blue-600
     data-[active-item]:text-white
-  ;
 }
