@@ -74,6 +74,7 @@ export default function Example() {
         }}
         value={value}
         setValue={(value) => {
+          console.log("setValue", value);
           setValue(value);
           startTransition(() => {
             setSearchTerm(value);
