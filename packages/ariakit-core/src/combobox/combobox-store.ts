@@ -120,7 +120,7 @@ export function createComboboxStore({
     resetValueOnSelect: defaultValue(
       props.resetValueOnSelect,
       syncState?.resetValueOnSelect,
-      multiSelectable,
+      multiSelectable && !tag,
     ),
     resetValueOnHide: defaultValue(
       props.resetValueOnHide,

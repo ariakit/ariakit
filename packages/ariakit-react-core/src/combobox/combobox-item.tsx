@@ -94,6 +94,10 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       Array.isArray(state.selectedValue),
     );
 
+    const selected = store.useState((state) =>
+      isSelected(state.selectedValue, value),
+    );
+
     setValueOnClick = setValueOnClick ?? !multiSelectable;
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
 
@@ -109,6 +113,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       if (isOpeningInNewTab(event)) return;
       if (value != null) {
         if (selectValueOnClickProp(event)) {
+          if (!selected) {
+            store.tag?.resetValue();
+          }
           store?.setSelectedValue((prevValue) => {
             if (!Array.isArray(prevValue)) return value;
             if (prevValue.includes(value)) {
@@ -151,10 +158,6 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         }
       }
     });
-
-    const selected = store.useState((state) =>
-      isSelected(state.selectedValue, value),
-    );
 
     if (multiSelectable && selected != null) {
       props = {

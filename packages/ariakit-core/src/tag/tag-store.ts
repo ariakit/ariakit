@@ -22,8 +22,13 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
     ...composite.getState(),
     inputElement: defaultValue(syncState?.inputElement, null),
     labelElement: defaultValue(syncState?.labelElement, null),
-    value: defaultValue(props.value, syncState?.value, ""),
-    values: defaultValue(props.values, syncState?.values, []),
+    value: defaultValue(props.value, syncState?.value, props.defaultValue, ""),
+    values: defaultValue(
+      props.values,
+      syncState?.values,
+      props.defaultValues,
+      [],
+    ),
   };
 
   const tag = createStore(initialState, composite, props.store);
@@ -59,6 +64,8 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
       tag.setState("labelElement", labelElement),
 
     setValue: (value) => tag.setState("value", value),
+
+    resetValue: () => tag.setState("value", initialState.value),
 
     setValues,
 
@@ -113,6 +120,11 @@ export interface TagStoreFunctions
    * Sets the [`value`](https://ariakit.org/reference/tag-provider#value) state.
    */
   setValue: SetState<TagStoreState["value"]>;
+  /**
+   * Resets the [`value`](https://ariakit.org/reference/tag-provider#value)
+   * state to its initial value.
+   */
+  resetValue: () => void;
   /**
    * Sets the [`values`](https://ariakit.org/reference/tag-provider#values) state.
    */
