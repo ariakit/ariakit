@@ -1,7 +1,9 @@
-import type { ElementType, MouseEvent } from "react";
+import type { ElementType, KeyboardEvent, MouseEvent } from "react";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
 import { getClosestFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
+import { isApple } from "@ariakit/core/utils/platform";
+import { UndoManager } from "@ariakit/core/utils/undo";
 import type { CompositeOptions } from "../composite/composite.js";
 import { useComposite } from "../composite/composite.js";
 import { useEvent, useWrapElement } from "../utils/hooks.js";
@@ -59,6 +61,27 @@ export const useTagList = createHook<TagName, TagListOptions>(
       });
     });
 
+    const onKeyDownProp = props.onKeyDown;
+
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      const pc = !isApple();
+      const z = event.key === "z" || event.key === "Z";
+      const mod = pc ? event.ctrlKey : event.metaKey;
+      const shiftZ = (event.shiftKey && z) || (pc && event.key === "y");
+      if (mod && shiftZ) {
+        event.preventDefault();
+        UndoManager.redo();
+        return;
+      }
+      if (mod && z) {
+        event.preventDefault();
+        UndoManager.undo();
+        return;
+      }
+    });
+
     props = useWrapElement(
       props,
       (element) => (
@@ -72,6 +95,7 @@ export const useTagList = createHook<TagName, TagListOptions>(
     props = {
       ...props,
       onMouseDown,
+      onKeyDown,
     };
 
     props = useComposite({ store, ...props });

@@ -80,7 +80,11 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
     props = {
       children,
       role: touchDevice ? "button" : undefined,
-      "aria-label": touchDevice ? `Remove ${value}` : undefined,
+      "aria-label": touchDevice
+        ? `Remove ${value}`
+        : withinTag
+          ? "— press Delete or Backspace to remove"
+          : undefined,
       ...props,
       onClick,
       render: withinTag ? <Role.span render={props.render} /> : props.render,

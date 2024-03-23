@@ -155,6 +155,17 @@ export function isFocusEventOutside(
 }
 
 /**
+ * Returns the `inputType` property of the event, if available.
+ */
+export function getInputType(event: Event | { nativeEvent: Event }) {
+  const nativeEvent = "nativeEvent" in event ? event.nativeEvent : event;
+  if (!nativeEvent) return;
+  if (!("inputType" in nativeEvent)) return;
+  if (typeof nativeEvent.inputType !== "string") return;
+  return nativeEvent.inputType;
+}
+
+/**
  * Runs a callback on the next animation frame, but before a certain event.
  */
 export function queueBeforeEvent(

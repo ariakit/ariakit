@@ -7,8 +7,10 @@ import type {
 } from "react";
 import { toArray } from "@ariakit/core/utils/array";
 import { getTextboxSelection } from "@ariakit/core/utils/dom";
+import { getInputType } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import { UndoManager } from "@ariakit/core/utils/undo";
 import { useCompositeItem } from "../composite/composite-item.js";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.js";
@@ -112,12 +114,17 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
+      const { value: prevValue } = store.getState();
+      const inputType = getInputType(event);
       const currentTarget = event.currentTarget;
       const { start, end } = getTextboxSelection(currentTarget);
       const { value } = currentTarget;
       // Set the value in the store if the value changes
       if (setValueOnChangeProp(event)) {
-        store.setValue(value);
+        UndoManager.execute(() => {
+          store.setValue(value);
+          return () => store.setValue(prevValue);
+        }, inputType);
       }
       // Add values to the store if the input value ends with a delimiter
       const isTrailingCaret = start === end && start === value.length;
@@ -140,7 +147,10 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           for (const tagValue of values) {
             store.addValue(tagValue);
           }
-          store.setValue(trailingvalue);
+          UndoManager.execute(() => {
+            store.setValue(trailingvalue);
+            return () => store.setValue(prevValue);
+          }, inputType);
         }
       }
     });

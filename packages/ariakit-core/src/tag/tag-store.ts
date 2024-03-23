@@ -9,6 +9,7 @@ import { defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import { createStore, setup, sync } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
+import { UndoManager } from "../utils/undo.js";
 
 /**
  * Creates a tag store.
@@ -37,6 +38,17 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
     }),
   );
 
+  const setValues: TagStore["setValues"] = (values) => {
+    const { values: previousValues } = tag.getState();
+    UndoManager.execute(() => {
+      tag.setState("values", values);
+      return () => {
+        tag.setState("values", previousValues);
+        composite.move(tag.getState().inputElement?.id);
+      };
+    });
+  };
+
   return {
     ...composite,
     ...tag,
@@ -47,24 +59,18 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
       tag.setState("labelElement", labelElement),
 
     setValue: (value) => tag.setState("value", value),
-    setValues: (values) => tag.setState("values", values),
+
+    setValues,
 
     addValue: (value) => {
-      tag.setState("values", (values) => {
+      setValues((values) => {
         if (values.includes(value)) return values;
         return [...values, value];
       });
     },
 
     removeValue: (value) =>
-      tag.setState("values", (values) => values.filter((v) => v !== value)),
-
-    toggleValue: (value) =>
-      tag.setState("values", (values) =>
-        values.includes(value)
-          ? values.filter((v) => v !== value)
-          : [...values, value],
-      ),
+      setValues((values) => values.filter((v) => v !== value)),
   };
 }
 
@@ -122,11 +128,6 @@ export interface TagStoreFunctions
    * [`values`](https://ariakit.org/reference/tag-provider#values) state.
    */
   removeValue: (value: string) => void;
-  /**
-   * Add or remove a value from the
-   * [`values`](https://ariakit.org/reference/tag-provider#values) state.
-   */
-  toggleValue: (value: string) => void;
 }
 
 export interface TagStoreOptions

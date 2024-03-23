@@ -30,6 +30,7 @@
   ],
   "exports": {
     ".": "./src/index.ts",
+    "./utils/undo": "./src/utils/undo.ts",
     "./utils/types": "./src/utils/types.ts",
     "./utils/store": "./src/utils/store.ts",
     "./utils/platform": "./src/utils/platform.ts",

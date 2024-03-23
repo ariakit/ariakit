@@ -7,6 +7,7 @@
     gap-2
     w-[calc(100%-2rem)]
     max-w-[720px]
+    mx-auto
 }
 
 .tag-list-label {
@@ -43,7 +44,7 @@
     [:focus-within>&]:data-[active-item]:bg-blue-600
     [:focus-within>&]:data-[active-item]:text-white
     [:focus-within>&]:data-[active-item]:[--tag-remove-opacity:1]
-    [:nth-last-child(1_of_&)]:has-[~input[value=""]]:-me-2
+    has-[~input[value=""]]:[:nth-last-child(1_of_&)]:-me-2
 }
 
 .tag-remove {

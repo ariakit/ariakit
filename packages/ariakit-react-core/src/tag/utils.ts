@@ -8,5 +8,5 @@ export function useTouchDevice() {
     setTouchDevice(isTouchDevice());
   }, []);
 
-  return touchDevice || true;
+  return touchDevice;
 }
