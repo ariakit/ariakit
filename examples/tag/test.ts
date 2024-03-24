@@ -77,6 +77,29 @@ test("add tags by typing", async () => {
   expect(q.textbox("Tags")).toHaveFocus();
 });
 
+test("add tags after typing delimiters", async () => {
+  await press.Tab();
+  await type(", ghi");
+  await press.ArrowLeft();
+  await press.ArrowLeft();
+  await press.ArrowLeft();
+  await press.ArrowLeft();
+  await press.ArrowLeft();
+  await type("abc def");
+  await press.ArrowRight();
+  await press.ArrowRight();
+  await press.ArrowRight();
+  await press.ArrowRight();
+  await press.ArrowRight();
+  await type(",");
+  expect(q.option.all().map((el) => el.textContent)).toEqual([
+    "JavaScript",
+    "React",
+    "abc def",
+    "ghi",
+  ]);
+});
+
 test("move focus between tag list elements", async () => {
   await press.Tab();
   expect(q.textbox("Tags")).toHaveFocus();
