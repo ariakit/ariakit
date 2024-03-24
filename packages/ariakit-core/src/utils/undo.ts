@@ -55,6 +55,8 @@ export function createUndoManager({
       : undoStack.length;
 
     const undoCallback = await callback();
+    if (!undoCallback) return;
+
     const currentUndo = undoStack[nextIndex];
 
     undoStack[nextIndex] = createUndoCallback(async () => {

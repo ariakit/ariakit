@@ -5,7 +5,7 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.js";
 import { createCompositeStore } from "../composite/composite-store.js";
-import { defaultValue } from "../utils/misc.js";
+import { applyState, defaultValue } from "../utils/misc.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import { createStore, setup, sync } from "../utils/store.js";
 import type { SetState } from "../utils/types.js";
@@ -46,7 +46,15 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
   const setValues: TagStore["setValues"] = (values) => {
     const { values: previousValues } = tag.getState();
     UndoManager.execute(() => {
-      tag.setState("values", values);
+      let changed = true;
+      tag.setState("values", (prev) => {
+        const next = applyState(values, prev);
+        if (next === prev) {
+          changed = false;
+        }
+        return next;
+      });
+      if (!changed) return;
       return () => {
         tag.setState("values", previousValues);
         composite.move(tag.getState().inputElement?.id);
