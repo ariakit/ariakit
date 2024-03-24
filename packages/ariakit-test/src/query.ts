@@ -1,3 +1,4 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import { queries as baseQueries } from "@testing-library/dom";
 import type {
   ByRoleMatcher,
@@ -12,11 +13,15 @@ type ElementQueries = ReturnType<
   typeof getQueriesForElement<typeof baseQueries>
 >;
 
-const queries = Object.entries(baseQueries).reduce((queries, [key, query]) => {
-  // @ts-expect-error
-  queries[key] = (...args) => query(document.body, ...args);
-  return queries;
-}, {} as ElementQueries);
+function createQueries(container: HTMLElement = document.body) {
+  return Object.entries(baseQueries).reduce((queries, [key, query]) => {
+    // @ts-expect-error
+    queries[key] = (...args) => query(container, ...args);
+    return queries;
+  }, {} as ElementQueries);
+}
+
+const documentQueries = createQueries();
 
 function matchName(name: string | RegExp, accessibleName: string | null) {
   if (accessibleName == null) return false;
@@ -46,7 +51,7 @@ function getNameOption(name?: string | RegExp, includesHidden?: boolean) {
   };
 }
 
-function createRoleQuery(role: AriaRole) {
+function createRoleQuery(role: AriaRole, queries = documentQueries) {
   type GenericQuery = (role: ByRoleMatcher, options?: ByRoleOptions) => any;
 
   const createQuery = <T extends GenericQuery>(query: T) => {
@@ -102,7 +107,14 @@ function createRoleQuery(role: AriaRole) {
   });
 }
 
-function createTextQuery() {
+function createRoleQueries(queries = documentQueries) {
+  return roles.reduce((acc, role) => {
+    acc[role] = createRoleQuery(role, queries);
+    return acc;
+  }, {} as RoleQueries);
+}
+
+function createTextQuery(queries = documentQueries) {
   const all = Object.assign(queries.queryAllByText, {
     wait: queries.findAllByText,
     ensure: queries.getAllByText,
@@ -119,7 +131,7 @@ function createTextQuery() {
   return Object.assign(queries.queryByText, { all, wait, ensure });
 }
 
-function createLabeledQuery() {
+function createLabeledQuery(queries = documentQueries) {
   const all = Object.assign(queries.queryAllByLabelText, {
     wait: queries.findAllByLabelText,
     ensure: queries.getAllByLabelText,
@@ -136,15 +148,18 @@ function createLabeledQuery() {
   return Object.assign(queries.queryByLabelText, { all, wait, ensure });
 }
 
-const roleQueries = roles.reduce((acc, role) => {
-  acc[role] = createRoleQuery(role);
-  return acc;
-}, {} as RoleQueries);
+function createQueryObject(queries = documentQueries) {
+  return {
+    ...createRoleQueries(queries),
+    text: createTextQuery(queries),
+    labeled: createLabeledQuery(queries),
+    within: (element?: HTMLElement | null) => {
+      invariant(element, "Unable to create queries for null element");
+      return createQueryObject(createQueries(element));
+    },
+  };
+}
 
-export const query = {
-  ...roleQueries,
-  text: createTextQuery(),
-  labeled: createLabeledQuery(),
-};
+export const query = createQueryObject();
 
 export const q = query;
