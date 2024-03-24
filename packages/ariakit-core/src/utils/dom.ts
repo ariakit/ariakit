@@ -325,7 +325,7 @@ export function isPartiallyHidden(element: Element) {
  * https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange
  */
 export function setSelectionRange(
-  element: HTMLInputElement,
+  element: HTMLInputElement | HTMLTextAreaElement,
   ...args: Parameters<typeof HTMLInputElement.prototype.setSelectionRange>
 ) {
   if (/text|search|password|tel|url/i.test(element.type)) {
