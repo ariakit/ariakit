@@ -204,11 +204,12 @@ function getProps(node) {
     const decl = prop.getDeclarations().at(0);
     if (!decl) continue;
     if (isPrivate(decl)) continue;
-    if (prop.getEscapedName() === "wrapElement") continue;
+    const description = getDescription(decl);
+    if (!description) continue;
     props.push({
       name: prop.getEscapedName(),
       type: getType(decl),
-      description: getDescription(decl),
+      description,
       optional: prop.isOptional(),
       defaultValue: getDefaultValue(decl),
       deprecated: getDeprecated(decl),
