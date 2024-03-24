@@ -7,11 +7,12 @@ import type {
 } from "react";
 import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import {
-  getDocument,
   getScrollingElement,
   getTextboxSelection,
+  getTextboxValue,
   isButton,
   isTextField,
+  isTextbox,
 } from "@ariakit/core/utils/dom";
 import { isPortalEvent, isSelfTarget } from "@ariakit/core/utils/events";
 import {
@@ -56,25 +57,9 @@ const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-function isTextbox(element: HTMLElement) {
-  return element.isContentEditable || isTextField(element);
-}
-
 function isEditableElement(element: HTMLElement) {
-  if (element.isContentEditable) return true;
-  if (isTextField(element)) return true;
+  if (isTextbox(element)) return true;
   return element.tagName === "INPUT" && !isButton(element);
-}
-
-function getValueLength(element: HTMLElement) {
-  if (isTextField(element)) {
-    return element.value.length;
-  } else if (element.isContentEditable) {
-    const range = getDocument(element).createRange();
-    range.selectNodeContents(element);
-    return range.toString().length;
-  }
-  return 0;
 }
 
 function getNextPageOffset(scrollingElement: Element, pageUp = false) {
@@ -370,14 +355,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           const isUp = isVertical && event.key === "ArrowUp";
           const isDown = isVertical && event.key === "ArrowDown";
           if (isRight || isDown) {
-            if (selection.end !== getValueLength(currentTarget)) {
-              return;
-            }
-          } else if (isLeft || isUp) {
-            if (selection.start !== 0) {
-              return;
-            }
-          }
+            const { length: valueLength } = getTextboxValue(currentTarget);
+            if (selection.end !== valueLength) return;
+          } else if ((isLeft || isUp) && selection.start !== 0) return;
         }
         const nextId = action();
         if (preventScrollOnKeyDownProp(event) || nextId !== undefined) {
