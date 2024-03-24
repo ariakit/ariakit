@@ -10,6 +10,18 @@ function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
   return selectionValue;
 }
 
+function undo() {
+  return press("z", null, { ctrlKey: true });
+}
+
+function redo() {
+  return press("y", null, { ctrlKey: true });
+}
+
+function options() {
+  return q.option.all().map((el) => el.textContent);
+}
+
 test("initial state", async () => {
   expect(q.listbox("Tags")).toBeVisible();
   expect(q.option.all()).toHaveLength(2);
@@ -92,12 +104,7 @@ test("add tags after typing delimiters", async () => {
   await press.ArrowRight();
   await press.ArrowRight();
   await type(",");
-  expect(q.option.all().map((el) => el.textContent)).toEqual([
-    "JavaScript",
-    "React",
-    "abc def",
-    "ghi",
-  ]);
+  expect(options()).toEqual(["JavaScript", "React", "abc def", "ghi"]);
 });
 
 test("move focus between tag list elements", async () => {
@@ -125,4 +132,65 @@ test("move focus between tag list elements", async () => {
   // Do not loop
   await press.ArrowLeft();
   expect(q.option("JavaScript")).toHaveFocus();
+});
+
+test("undo/redo removing tags", async () => {
+  const tagq = q.within(q.option("React"));
+  await click(tagq.generic("— press Delete or Backspace to remove"));
+  expect(options()).toEqual(["JavaScript"]);
+  expect(q.textbox("Tags")).toHaveFocus();
+  await undo();
+  expect(options()).toEqual(["JavaScript", "React"]);
+  expect(q.textbox("Tags")).toHaveFocus();
+  await press.Home();
+  await press.Delete();
+  expect(options()).toEqual(["React"]);
+  await undo();
+  expect(options()).toEqual(["JavaScript", "React"]);
+  expect(q.textbox("Tags")).toHaveFocus();
+  await redo();
+  expect(options()).toEqual(["React"]);
+  expect(q.textbox("Tags")).toHaveFocus();
+});
+
+test("undo/redo typing", async () => {
+  await press.Tab();
+  await type("abc def ghi ");
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def", "ghi"]);
+  await press.Backspace();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def"]);
+  await press.Backspace();
+  expect(options()).toEqual(["JavaScript", "React", "abc"]);
+  await undo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def"]);
+  await undo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def", "ghi"]);
+  await undo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def"]);
+  expect(q.textbox("Tags")).toHaveFocus();
+  expect(q.textbox("Tags")).toHaveValue("ghi");
+  await type("jkl ");
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def", "ghijkl"]);
+  // Redo does nothing since we changed the state after undo
+  await redo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def", "ghijkl"]);
+  expect(q.textbox()).toHaveValue("");
+  await undo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def"]);
+  expect(q.textbox()).toHaveValue("ghijkl");
+  await undo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def"]);
+  expect(q.textbox()).toHaveValue("ghi");
+  await undo();
+  expect(options()).toEqual(["JavaScript", "React", "abc"]);
+  expect(q.textbox()).toHaveValue("def");
+  await redo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def"]);
+  expect(q.textbox()).toHaveValue("ghi ");
+  await redo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def"]);
+  expect(q.textbox()).toHaveValue("ghijkl ");
+  await redo();
+  expect(options()).toEqual(["JavaScript", "React", "abc", "def", "ghijkl"]);
+  expect(q.textbox()).toHaveValue("");
 });

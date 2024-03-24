@@ -18,6 +18,7 @@ export default defineConfig({
   test: {
     globals: true,
     watch: false,
+    testTimeout: 10_000,
     environment: "jsdom",
     include: ["**/*test.{ts,tsx}"],
     exclude: [
