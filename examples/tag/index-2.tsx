@@ -8,9 +8,15 @@ import { TagListLabel } from "@ariakit/react-core/tag/tag-list-label";
 import { TagProvider } from "@ariakit/react-core/tag/tag-provider";
 import { TagRemove } from "@ariakit/react-core/tag/tag-remove";
 import { TagValues } from "@ariakit/react-core/tag/tag-values";
-import { faker } from "@faker-js/faker";
 import { matchSorter } from "match-sorter";
-import defaultUsers from "./users.js";
+
+const defaultUsers = [
+  {
+    name: "Alice",
+    email: "alice@examples.com",
+    avatar: "",
+  },
+];
 
 const firstUser = defaultUsers.at(0);
 const defaultValues = firstUser ? [firstUser.email] : [];
@@ -72,7 +78,7 @@ export default function Example() {
               const user = {
                 name: value,
                 email: value,
-                avatar: faker.image.avatarGitHub(),
+                avatar: "",
               };
               users = [user, ...users];
             }

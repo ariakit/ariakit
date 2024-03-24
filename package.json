@@ -82,7 +82,6 @@
     "@clerk/clerk-react": "4.30.7",
     "@clerk/nextjs": "4.29.9",
     "@clerk/types": "3.62.1",
-    "@faker-js/faker": "8.4.1",
     "@guidepup/guidepup": "0.22.3",
     "@guidepup/playwright": "0.13.2",
     "@playwright/test": "1.42.1",
