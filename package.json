@@ -102,7 +102,7 @@
     "@types/marked": "5.0.2",
     "@types/node": "18.19.26",
     "@types/postcss-import": "14.0.3",
-    "@types/prettier": "2.7.3",
+    "@types/prettier": "3.0.0",
     "@types/react": "18.2.69",
     "@types/react-dom": "18.2.22",
     "@types/stylis": "4.2.5",
