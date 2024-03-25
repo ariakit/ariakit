@@ -11,16 +11,17 @@ type Value = SelectStoreValue;
  * [`value`](https://ariakit.org/reference/use-select-store#value) state in the
  * [select store](https://ariakit.org/reference/use-select-store).
  *
- * As a headless value component, it doesn't render any DOM elements and
- * therefore doesn't accept HTML props. It can optionally accept a
+ * As a value component, it doesn't render any DOM elements and therefore
+ * doesn't accept HTML props. It can optionally accept a
  * [`fallback`](https://ariakit.org/reference/select-value#fallback) prop to use
  * as a default value if the store's
  * [`value`](https://ariakit.org/reference/use-select-store#value) is
  * `undefined`.
  *
- * Additionally, it takes a `children` function that gets called with the
- * current value as an argument. This feature is handy for renderind the value
- * in a custom way.
+ * Additionally, it takes a
+ * [`children`](https://ariakit.org/reference/select-value#children) function
+ * that gets called with the current value as an argument. This is handy for
+ * rendering the value in a custom way.
  * @see https://ariakit.org/components/select
  * @example
  * ```jsx {3}
@@ -97,8 +98,8 @@ export interface SelectValueProps<T extends Value = Value> {
    */
   fallback?: T;
   /**
-   * A function that gets called with the current value as an argument. This
-   * feature is handy for renderind the value in a custom way.
+   * A function that gets called with the current value as an argument. This is
+   * handy for rendering the value in a custom way.
    */
   children?: (value: ToPrimitive<T>) => ReactNode;
 }

@@ -190,36 +190,26 @@ export function isTextField(
 }
 
 /**
- * Returns the element's role attribute, if it has one.
+ * Check whether the given element is a text field or a content editable
+ * element.
  */
-export function getPopupRole(
-  element?: Element | null,
-  fallback?: AriaHasPopup,
-) {
-  const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
-  const role = element?.getAttribute("role");
-  if (role && allowedPopupRoles.indexOf(role) !== -1) {
-    return role as "dialog" | "menu" | "listbox" | "tree" | "grid";
-  }
-  return fallback;
+export function isTextbox(element: HTMLElement) {
+  return element.isContentEditable || isTextField(element);
 }
 
 /**
- * Returns the item role attribute based on the popup's role.
+ * Returns the value of the text field or content editable element as a string.
  */
-export function getPopupItemRole(
-  element?: Element | null,
-  fallback?: AriaRole,
-) {
-  const itemRoleByPopupRole = {
-    menu: "menuitem",
-    listbox: "option",
-    tree: "treeitem",
-  };
-  const popupRole = getPopupRole(element);
-  if (!popupRole) return fallback;
-  const key = popupRole as keyof typeof itemRoleByPopupRole;
-  return itemRoleByPopupRole[key] ?? fallback;
+export function getTextboxValue(element: HTMLElement) {
+  if (isTextField(element)) {
+    return element.value;
+  }
+  if (element.isContentEditable) {
+    const range = getDocument(element).createRange();
+    range.selectNodeContents(element);
+    return range.toString();
+  }
+  return "";
 }
 
 /**
@@ -250,6 +240,39 @@ export function getTextboxSelection(element: HTMLElement) {
     }
   }
   return { start, end };
+}
+
+/**
+ * Returns the element's role attribute, if it has one.
+ */
+export function getPopupRole(
+  element?: Element | null,
+  fallback?: AriaHasPopup,
+) {
+  const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
+  const role = element?.getAttribute("role");
+  if (role && allowedPopupRoles.indexOf(role) !== -1) {
+    return role as "dialog" | "menu" | "listbox" | "tree" | "grid";
+  }
+  return fallback;
+}
+
+/**
+ * Returns the item role attribute based on the popup's role.
+ */
+export function getPopupItemRole(
+  element?: Element | null,
+  fallback?: AriaRole,
+) {
+  const itemRoleByPopupRole = {
+    menu: "menuitem",
+    listbox: "option",
+    tree: "treeitem",
+  };
+  const popupRole = getPopupRole(element);
+  if (!popupRole) return fallback;
+  const key = popupRole as keyof typeof itemRoleByPopupRole;
+  return itemRoleByPopupRole[key] ?? fallback;
 }
 
 /**
@@ -325,7 +348,7 @@ export function isPartiallyHidden(element: Element) {
  * https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange
  */
 export function setSelectionRange(
-  element: HTMLInputElement,
+  element: HTMLInputElement | HTMLTextAreaElement,
   ...args: Parameters<typeof HTMLInputElement.prototype.setSelectionRange>
 ) {
   if (/text|search|password|tel|url/i.test(element.type)) {
