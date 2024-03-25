@@ -73,12 +73,9 @@ export const useTagList = createHook<TagName, TagListOptions>(
       if (mod && shiftZ) {
         event.preventDefault();
         UndoManager.redo();
-        return;
-      }
-      if (mod && z) {
+      } else if (mod && z) {
         event.preventDefault();
         UndoManager.undo();
-        return;
       }
     });
 
@@ -128,6 +125,9 @@ export const useTagList = createHook<TagName, TagListOptions>(
       <>
         <div
           role={touchDevice ? "list" : "listbox"}
+          aria-live="polite"
+          aria-relevant="all"
+          aria-atomic
           aria-labelledby={labelId}
           aria-orientation={orientation}
           aria-owns={itemIds.join(" ")}

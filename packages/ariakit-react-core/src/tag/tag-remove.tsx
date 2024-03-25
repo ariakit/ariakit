@@ -1,12 +1,16 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import { Role } from "../role/role.js";
-import { useBooleanEvent, useEvent } from "../utils/hooks.js";
+import { useBooleanEvent, useEvent, useId } from "../utils/hooks.js";
 import { createElement, createHook, forwardRef } from "../utils/system.jsx";
 import type { Options, Props } from "../utils/types.js";
-import { TagValueContext, useTagContext } from "./tag-context.jsx";
+import {
+  TagRemoveIdContext,
+  TagValueContext,
+  useTagContext,
+} from "./tag-context.jsx";
 import type { TagStore } from "./tag-store.js";
 import { useTouchDevice } from "./utils.js";
 
@@ -39,9 +43,16 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
         "TagRemove must receive a `store` prop or be wrapped in a TagProvider component.",
     );
 
+    const id = useId(props.id);
+    const setRemoveId = useContext(TagRemoveIdContext);
     const valueFromContext = useContext(TagValueContext);
     const withinTag = valueFromContext !== null;
     const value = valueProp ?? valueFromContext;
+
+    useEffect(() => {
+      setRemoveId?.(id);
+      return () => setRemoveId?.();
+    }, [id, setRemoveId]);
 
     const onClickProp = props.onClick;
     const removeOnClickProp = useBooleanEvent(removeOnClick);
@@ -78,12 +89,14 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
     const touchDevice = useTouchDevice() && withinTag;
 
     props = {
+      id,
       children,
       role: touchDevice ? "button" : undefined,
+      "aria-hidden": !touchDevice,
       "aria-label": touchDevice
         ? `Remove ${value}`
         : withinTag
-          ? "— press Delete or Backspace to remove"
+          ? "Press Delete or Backspace to remove"
           : undefined,
       ...props,
       onClick,

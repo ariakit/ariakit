@@ -36,8 +36,8 @@ test("click on tag", async () => {
 });
 
 test("remove tag by clicking on remove button", async () => {
-  const tagq = q.within(q.option("JavaScript"));
-  await click(tagq.generic("— press Delete or Backspace to remove"));
+  const tag = q.option.ensure("JavaScript");
+  await click(tag.querySelector("[aria-label^=Press]"));
   expect(q.textbox()).toHaveFocus();
   expect(q.option("JavaScript")).not.toBeInTheDocument();
 });
@@ -135,8 +135,8 @@ test("move focus between tag list elements", async () => {
 });
 
 test("undo/redo removing tags", async () => {
-  const tagq = q.within(q.option("React"));
-  await click(tagq.generic("— press Delete or Backspace to remove"));
+  const tag = q.option.ensure("React");
+  await click(tag.querySelector("[aria-label^=Press]"));
   expect(options()).toEqual(["JavaScript"]);
   expect(q.textbox("Tags")).toHaveFocus();
   await undo();

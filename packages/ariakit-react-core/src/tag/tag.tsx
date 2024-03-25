@@ -1,5 +1,5 @@
 import type { ElementType, KeyboardEvent } from "react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
@@ -17,7 +17,11 @@ import {
   memo,
 } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
-import { TagValueContext, useTagContext } from "./tag-context.jsx";
+import {
+  TagRemoveIdContext,
+  TagValueContext,
+  useTagContext,
+} from "./tag-context.jsx";
 import type { TagStore } from "./tag-store.js";
 import { useTouchDevice } from "./utils.js";
 
@@ -92,11 +96,15 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
     }
   });
 
+  const [removeId, setRemoveId] = useState<string>();
+
   props = useWrapElement(
     props,
     (element) => (
       <TagValueContext.Provider value={value}>
-        {element}
+        <TagRemoveIdContext.Provider value={setRemoveId}>
+          {element}
+        </TagRemoveIdContext.Provider>
       </TagValueContext.Provider>
     ),
     [value],
@@ -106,6 +114,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
     id,
     role: !touchDevice ? "option" : "listitem",
     children: value,
+    "aria-describedby": removeId,
     ...props,
     onKeyDown,
   };

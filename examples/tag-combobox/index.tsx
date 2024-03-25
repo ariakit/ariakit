@@ -11,7 +11,8 @@ export default function Example() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const matches = useMemo(() => {
-    return matchSorter(users, searchTerm, { keys: ["name", "email"] });
+    const results = matchSorter(users, searchTerm, { keys: ["name", "email"] });
+    return results.slice(0, 10);
   }, [users, searchTerm]);
 
   return (

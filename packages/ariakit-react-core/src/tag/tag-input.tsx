@@ -131,6 +131,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           queueMicrotask(() => {
             setSelectionRange(currentTarget, start, end);
           });
+          if (value === prevValue) return;
           return () => store.setValue(prevValue);
         }, inputType);
       }
@@ -147,16 +148,17 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
         const eventWithValues = Object.assign(event, { values });
         if (values.length && addValueOnChangeProp(eventWithValues)) {
           // We need to prevent the default behavior here in case the tag input
-          // component is combined with another component that also listens to
-          // the change event and updates the store value, such as Combobox. In
-          // this case, the tag input logic should take precedence even if this
-          // event handler is called first.
+          // component is combined with another component that also listens to the
+          // change event and updates the store value, such as Combobox. In this
+          // case, the tag input logic should take precedence even if this event
+          // handler is called first.
           event.preventDefault();
           for (const tagValue of values) {
             store.addValue(tagValue);
           }
           UndoManager.execute(() => {
             store.setValue(trailingvalue);
+            if (trailingvalue === prevValue) return;
             return () => store.setValue(prevValue);
           }, inputType);
         }

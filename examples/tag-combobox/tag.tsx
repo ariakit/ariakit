@@ -89,6 +89,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           gutter={12}
           shift={-4}
           render={popover}
+          unmountOnHide
         >
           {children}
         </Ariakit.ComboboxPopover>

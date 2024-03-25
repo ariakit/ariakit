@@ -7,6 +7,9 @@ import { createStoreContext } from "../utils/system.jsx";
 import type { TagStore } from "./tag-store.js";
 
 export const TagValueContext = createContext<string | null>(null);
+export const TagRemoveIdContext = createContext<((id?: string) => void) | null>(
+  null,
+);
 
 const ctx = createStoreContext<TagStore>(
   [CompositeContextProvider],

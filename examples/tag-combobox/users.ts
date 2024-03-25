@@ -1,6 +1,6 @@
 export function getAvatar(name: string) {
   const url = new URL("https://avatar.iran.liara.run/public");
-  url.searchParams.set("name", name);
+  url.searchParams.set("username", name);
   return url.toString();
 }
 
