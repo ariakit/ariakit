@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
-import { useStoreState } from "../utils/store.js";
+import { invariant } from "@ariakit/core/utils/misc";
 import { useTagContext } from "./tag-context.js";
 import type { TagStore, TagStoreState } from "./tag-store.js";
-
-const defaultValues: string[] = [];
 
 /**
  * Renders the current
@@ -42,10 +40,13 @@ export function TagValues({ store, children }: TagValuesProps = {}) {
   const context = useTagContext();
   store = store || context;
 
-  const values = useStoreState(
+  invariant(
     store,
-    (state) => state?.values || defaultValues,
+    process.env.NODE_ENV !== "production" &&
+      "TagValues must receive a `store` prop or be wrapped in a TagProvider component.",
   );
+
+  const values = store.useState("values");
 
   if (children) {
     return children(values);
