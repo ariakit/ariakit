@@ -6,7 +6,10 @@ import type {
   SyntheticEvent,
 } from "react";
 import { toArray } from "@ariakit/core/utils/array";
-import { getTextboxSelection } from "@ariakit/core/utils/dom";
+import {
+  getTextboxSelection,
+  setSelectionRange,
+} from "@ariakit/core/utils/dom";
 import { getInputType } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
@@ -123,6 +126,11 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       if (setValueOnChangeProp(event)) {
         UndoManager.execute(() => {
           store.setValue(value);
+          // When the value is not set synchronously, the selection range may be
+          // lost.
+          queueMicrotask(() => {
+            setSelectionRange(currentTarget, start, end);
+          });
           return () => store.setValue(prevValue);
         }, inputType);
       }
