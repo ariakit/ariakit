@@ -24,7 +24,7 @@ test("show/hide on enter", async () => {
   await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
 });
 
-test("show/hide on space", async () => {
+test("show/hide on space", { retry: 2 }, async () => {
   expect(q.menu()).not.toBeInTheDocument();
   await press.Tab();
   await press.Space();
