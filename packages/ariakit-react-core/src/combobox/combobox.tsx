@@ -379,7 +379,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
-      const { value, selectionStart } = event.currentTarget;
+      const currentTarget = event.currentTarget;
+      const { value, selectionStart, selectionEnd } = currentTarget;
       const nativeEvent = event.nativeEvent;
       canAutoSelectRef.current = true;
       if (isInputEvent(nativeEvent)) {
@@ -398,6 +399,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (setValueOnChangeProp(event)) {
         const isSameValue = value === store.getState().value;
         store.setValue(value);
+        // When the value is not set synchronously, the selection range may be
+        // lost. See combobox-group "keep caret position when typing" test.
+        queueMicrotask(() => {
+          setSelectionRange(currentTarget, selectionStart, selectionEnd);
+        });
         if (inline && autoSelect && isSameValue) {
           // The store.setValue(event.target.value) above may not trigger a
           // state update. For example, say the first item starts with "t". The
