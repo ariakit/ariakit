@@ -13,14 +13,14 @@ export default function Example() {
   const addEmails = (emails: typeof invitees) => {
     setUsers((users) => {
       const currentEmails = new Set(users.map((user) => user.email));
-      const nextUsers = emails
+      const newUsers = emails
         .filter((email) => !currentEmails.has(email))
         .map((email) => ({ name: email, email }));
       // If no new users, do not mutate the state
-      if (!nextUsers.length) {
+      if (!newUsers.length) {
         return users;
       }
-      return [...nextUsers, ...users];
+      return [...newUsers, ...users];
     });
   };
 
