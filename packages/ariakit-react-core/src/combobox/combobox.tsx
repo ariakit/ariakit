@@ -117,7 +117,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     focusable = true,
     autoSelect: autoSelectProp = false,
     getAutoSelectId,
-    setValueOnChange = true,
+    setValueOnChange,
     showMinLength = 0,
     showOnChange,
     showOnMouseDown,
@@ -164,9 +164,19 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     }, [inline]);
 
     const storeValue = store.useState("value");
-    const activeValue = store.useState((state) =>
-      inline && canInline ? state.activeValue : undefined,
-    );
+
+    const inlineActiveValue = store.useState((state) => {
+      if (!inline) return;
+      if (!canInline) return;
+      // It doesn't make sense to inline the active value if it's already
+      // selected. Inlining the value typically implies an addition, but if the
+      // value is already selected, the action actually becomes a deletion.
+      if (state.activeValue && Array.isArray(state.selectedValue)) {
+        if (state.selectedValue.includes(state.activeValue)) return;
+      }
+      return state.activeValue;
+    });
+
     const items = store.useState("renderedItems");
     const open = store.useState("open");
     const contentElement = store.useState("contentElement");
@@ -181,21 +191,21 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!canInline) return storeValue;
       const firstItemAutoSelected = isFirstItemAutoSelected(
         items,
-        activeValue,
+        inlineActiveValue,
         autoSelect,
       );
       if (firstItemAutoSelected) {
         // If the first item is auto selected, we should append the completion
         // string to the end of the value. This will be highlited in the effect
         // below.
-        if (hasCompletionString(storeValue, activeValue)) {
-          const slice = activeValue?.slice(storeValue.length) || "";
+        if (hasCompletionString(storeValue, inlineActiveValue)) {
+          const slice = inlineActiveValue?.slice(storeValue.length) || "";
           return storeValue + slice;
         }
         return storeValue;
       }
-      return activeValue || storeValue;
-    }, [inline, canInline, items, activeValue, autoSelect, storeValue]);
+      return inlineActiveValue || storeValue;
+    }, [inline, canInline, items, inlineActiveValue, autoSelect, storeValue]);
 
     // Listen to the combobox-item-move event that's dispacthed the ComboboxItem
     // component so we can enable the inline autocomplete when the user moves
@@ -214,14 +224,14 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     useEffect(() => {
       if (!inline) return;
       if (!canInline) return;
-      if (!activeValue) return;
+      if (!inlineActiveValue) return;
       const firstItemAutoSelected = isFirstItemAutoSelected(
         items,
-        activeValue,
+        inlineActiveValue,
         autoSelect,
       );
       if (!firstItemAutoSelected) return;
-      if (!hasCompletionString(storeValue, activeValue)) return;
+      if (!hasCompletionString(storeValue, inlineActiveValue)) return;
       // For some reason, this setSelectionRange may run before the value is
       // updated in the DOM. We're using a microtask to make sure it runs after
       // the value is updated so we don't lose the selection. See combobox-group
@@ -229,13 +239,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       queueMicrotask(() => {
         const element = ref.current;
         if (!element) return;
-        setSelectionRange(element, storeValue.length, activeValue.length);
+        setSelectionRange(element, storeValue.length, inlineActiveValue.length);
       });
     }, [
       valueUpdated,
       inline,
       canInline,
-      activeValue,
+      inlineActiveValue,
       items,
       autoSelect,
       storeValue,
@@ -373,7 +383,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const onChangeProp = props.onChange;
     const showOnChangeProp = useBooleanEvent(showOnChange ?? canShow);
-    const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
+    const setValueOnChangeProp = useBooleanEvent(
+      // If the combobox is combined with tags, the value will be set by the tag
+      // input component.
+      setValueOnChange ?? !store.tag,
+    );
 
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       onChangeProp?.(event);

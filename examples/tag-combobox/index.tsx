@@ -1,14 +1,38 @@
 import "./style.css";
-import { startTransition, useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
-import { ComboboxValue } from "./experimental-ariakit.js";
-import { Combobox, ComboboxItem, Tag, TagInput, TagList } from "./tag.jsx";
+import { Tag, TagInput, TagList, TagOption } from "./tag.jsx";
 import { users as defaultUsers, getAvatar } from "./users.js";
 
 export default function Example() {
   const [users, setUsers] = useState(defaultUsers);
   const [invitees, setInvitees] = useState([users[0]!.email]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [value, setValue] = useState("");
+  const searchTerm = useDeferredValue(value);
+
+  const addEmails = (emails: typeof invitees) => {
+    setUsers((users) => {
+      const currentEmails = new Set(users.map((user) => user.email));
+      const nextUsers = emails
+        .filter((email) => !currentEmails.has(email))
+        .map((email) => ({ name: email, email }));
+      // If no new users, do not mutate the state
+      if (!nextUsers.length) {
+        return users;
+      }
+      return [...nextUsers, ...users];
+    });
+  };
+
+  const isCustomEmail = (email: string) => {
+    if (users.some((user) => user.email === email)) return false;
+    return email.match(/\S+@\S+/);
+  };
+
+  const getUserName = (email: string) => {
+    const user = users.find((user) => user.email === email);
+    return user?.name ?? email;
+  };
 
   const matches = useMemo(() => {
     const results = matchSorter(users, searchTerm, { keys: ["name", "email"] });
@@ -19,60 +43,35 @@ export default function Example() {
     <div className="wrapper">
       <TagList
         label="Invitees"
+        value={value}
+        setValue={setValue}
         values={invitees}
         setValues={(values) => {
           setInvitees(values);
-          setUsers((users) => {
-            for (const value of values) {
-              if (users.some((user) => user.email === value)) continue;
-              const user = { name: value, email: value };
-              users = [user, ...users];
-            }
-            return users;
-          });
-        }}
-        setValue={(value) => {
-          startTransition(() => {
-            setSearchTerm(value);
-          });
+          addEmails(values);
         }}
       >
-        {invitees.map((email) => {
-          const user = users.find((u) => u.email === email);
-          const name = user?.name ?? email;
-          return (
-            <Tag key={email} value={email}>
-              <img alt="" src={getAvatar(email)} className="tag-avatar" />
-              <span className="tag-name">{name}</span>
-            </Tag>
-          );
-        })}
-        <Combobox render={<TagInput />}>
-          <ComboboxValue>
-            {(value) => {
-              if (!value.includes("@", 1)) return null;
-              return (
-                <ComboboxItem value={value}>
-                  <img alt="" src={getAvatar(value)} className="tag-avatar" />
-                  <span className="tag-name">Add &quot;{value}&quot;</span>
-                </ComboboxItem>
-              );
-            }}
-          </ComboboxValue>
-          {matches.map((user) => {
-            return (
-              <ComboboxItem key={user.email} value={user.email}>
-                <img
-                  alt=""
-                  src={getAvatar(user.email)}
-                  className="tag-avatar"
-                />
-                <span className="tag-name">{user.name}</span>
-                <span className="tag-email">{user.email}</span>
-              </ComboboxItem>
-            );
-          })}
-        </Combobox>
+        {invitees.map((email) => (
+          <Tag key={email} value={email}>
+            <img src={getAvatar(email)} alt="" className="tag-avatar" />
+            <span className="tag-name">{getUserName(email)}</span>
+          </Tag>
+        ))}
+        <TagInput delimiter={null}>
+          {isCustomEmail(value) && (
+            <TagOption value={value}>
+              <img src={getAvatar(value)} alt="" className="tag-avatar" />
+              <span className="tag-name">Add &quot;{value}&quot;</span>
+            </TagOption>
+          )}
+          {matches.map((user) => (
+            <TagOption key={user.email} value={user.email}>
+              <img src={getAvatar(user.email)} alt="" className="tag-avatar" />
+              <span className="tag-name">{user.name}</span>
+              <span className="tag-email">{user.email}</span>
+            </TagOption>
+          ))}
+        </TagInput>
       </TagList>
     </div>
   );

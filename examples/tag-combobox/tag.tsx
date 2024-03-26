@@ -1,6 +1,6 @@
 import * as React from "react";
 import clsx from "clsx";
-import * as Ariakit from "./experimental-ariakit.js";
+import * as Ariakit from "./ariakit-experimental.js";
 
 export interface TagListProps extends Ariakit.TagListProps {
   label?: React.ReactNode;
@@ -54,26 +54,22 @@ export const Tag = React.forwardRef<HTMLDivElement, TagProps>(
   },
 );
 
-export interface TagInputProps extends Ariakit.TagInputProps {}
+export interface TagInputProps extends Ariakit.TagInputProps {
+  children?: React.ReactNode;
+}
 
 export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
-  function TagInput(props, ref) {
-    return (
+  function TagInput({ children, ...props }, ref) {
+    const tagInput = (
       <Ariakit.TagInput
         ref={ref}
         {...props}
         className={clsx("tag-input", props.className)}
       />
     );
-  },
-);
 
-export interface ComboboxProps extends Ariakit.ComboboxProps {
-  popover?: Ariakit.ComboboxPopoverProps["render"];
-}
+    if (!children) return tagInput;
 
-export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
-  function Combobox({ children, popover, ...props }, ref) {
     return (
       <Ariakit.ComboboxProvider>
         <Ariakit.Combobox
@@ -81,14 +77,14 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           autoSelect
           showMinLength={1}
           showOnKeyPress
-          {...props}
+          autoComplete="both"
+          render={tagInput}
         />
         <Ariakit.ComboboxPopover
           className="popover popup elevation-1"
           flip={false}
           gutter={12}
           shift={-4}
-          render={popover}
           unmountOnHide
         >
           {children}
@@ -98,12 +94,12 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   },
 );
 
-export interface ComboboxItemProps extends Ariakit.ComboboxItemProps {
+export interface TagOptionProps extends Ariakit.ComboboxItemProps {
   value: string;
 }
 
-export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
-  function ComboboxItem(props, ref) {
+export const TagOption = React.forwardRef<HTMLDivElement, TagOptionProps>(
+  function TagOption(props, ref) {
     const combobox = Ariakit.useComboboxContext()!;
     return (
       <Ariakit.ComboboxItem

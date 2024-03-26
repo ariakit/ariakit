@@ -63,6 +63,7 @@
     "./tag/utils": "./src/tag/utils.ts",
     "./tag/tag": "./src/tag/tag.tsx",
     "./tag/tag-values": "./src/tag/tag-values.tsx",
+    "./tag/tag-value": "./src/tag/tag-value.tsx",
     "./tag/tag-store": "./src/tag/tag-store.ts",
     "./tag/tag-remove": "./src/tag/tag-remove.tsx",
     "./tag/tag-provider": "./src/tag/tag-provider.tsx",

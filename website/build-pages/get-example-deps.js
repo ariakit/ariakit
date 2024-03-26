@@ -109,51 +109,58 @@ export function getExampleDeps(
   if (deps[filename]) return deps;
   deps[filename] = {};
 
-  const content = readFileSync(filename, "utf8");
-  const parsed = parseSync(content, {
-    filename,
-    presets: [
-      presetEnv.default,
-      presetTypescript.default,
-      [presetReact.default, { runtime: "automatic" }],
-    ],
-  });
-
-  assignExternal(deps, "react", filename);
-  assignExternal(deps, "react-dom", filename);
-
-  const isAppDir = /\/app\/.*\/(page|layout)\.[mc]?[tj]sx?$/.test(filename);
-
-  if (isAppDir) {
-    const dir = dirname(filename);
-    const files = globSync("**/{page,default,layout,loading}.{js,jsx,ts,tsx}", {
-      cwd: dir,
-      dotRelative: true,
-      ignore: Object.keys(deps),
+  try {
+    const content = readFileSync(filename, "utf8");
+    const parsed = parseSync(content, {
+      filename,
+      presets: [
+        presetEnv.default,
+        presetTypescript.default,
+        [presetReact.default, { runtime: "automatic" }],
+      ],
     });
 
-    files.forEach((file) => {
-      getExampleDeps(join(dir, file), deps);
+    assignExternal(deps, "react", filename);
+    assignExternal(deps, "react-dom", filename);
+
+    const isAppDir = /\/app\/.*\/(page|layout)\.[mc]?[tj]sx?$/.test(filename);
+
+    if (isAppDir) {
+      const dir = dirname(filename);
+      const files = globSync(
+        "**/{page,default,layout,loading}.{js,jsx,ts,tsx}",
+        {
+          cwd: dir,
+          dotRelative: true,
+          ignore: Object.keys(deps),
+        },
+      );
+
+      files.forEach((file) => {
+        getExampleDeps(join(dir, file), deps);
+      });
+    }
+
+    traverse(parsed, {
+      enter(nodePath) {
+        const source = getSourceValue(nodePath);
+
+        if (!source) return;
+
+        const resolved = assignExternal(deps, source, filename);
+        const { resolvedSource, external } = resolved;
+
+        if (external) return;
+
+        if (!deps[filename]?.[source]) {
+          deps[filename] = { ...deps[filename], [source]: resolvedSource };
+          getExampleDeps(resolvedSource, deps);
+        }
+      },
     });
+  } catch (error) {
+    console.error("Error getting example dependencies", error);
   }
-
-  traverse(parsed, {
-    enter(nodePath) {
-      const source = getSourceValue(nodePath);
-
-      if (!source) return;
-
-      const resolved = assignExternal(deps, source, filename);
-      const { resolvedSource, external } = resolved;
-
-      if (external) return;
-
-      if (!deps[filename]?.[source]) {
-        deps[filename] = { ...deps[filename], [source]: resolvedSource };
-        getExampleDeps(resolvedSource, deps);
-      }
-    },
-  });
 
   return deps;
 }
