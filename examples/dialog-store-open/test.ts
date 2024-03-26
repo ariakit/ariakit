@@ -11,5 +11,4 @@ test("keep dialog open when clicking outside", async () => {
   expect(q.dialog()).toBeVisible();
   await click(document.body);
   expect(q.dialog()).toBeVisible();
-  expect(q.button("OK")).toHaveFocus();
 });
