@@ -254,6 +254,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           // range if it hasn't changed. See tag-combobox test: "deselecting a
           // tag should not highlight the input text if it is not the first
           // combobox item"
+          if (!hasFocus(element)) return;
           const { start, end } = getTextboxSelection(element);
           if (start !== nextStart) return;
           if (end !== nextEnd) return;
