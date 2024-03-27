@@ -76,6 +76,14 @@ test("deselecting a tag should not highlight the input text if it is not the fir
   expect(q.option(/Aiden Freeman /)).toHaveAttribute("aria-selected", "true");
   await press.Enter();
   expect(tags()).toEqual(["Abigail Patterson"]);
+  expect(q.combobox()).toHaveValue("");
+  expect(q.option(/Aiden Freeman /)).toHaveAttribute("data-active-item");
+  expect(q.option(/Aiden Freeman /)).toHaveAttribute("aria-selected", "false");
+  await press.ArrowUp();
+  expect(q.combobox()).toHaveValue("abigailrivera35@email.com");
+  expect(q.option(/Abigail Rivera /)).toHaveAttribute("data-active-item");
+  expect(q.option(/Abigail Rivera /)).toHaveAttribute("aria-selected", "false");
+  await press.ArrowDown();
   expect(q.combobox()).toHaveValue("aidenfreeman91@email.com");
   expect(getSelectionText(q.combobox())).toBe("");
   expect(q.option(/Aiden Freeman /)).toHaveAttribute("data-active-item");

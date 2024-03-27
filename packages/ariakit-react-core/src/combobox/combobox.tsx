@@ -26,6 +26,7 @@ import {
   noop,
   normalizeString,
 } from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import type {
   BooleanOrCallback,
   StringWithValue,
@@ -47,7 +48,11 @@ import {
 import { createElement, createHook, forwardRef } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
-import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
+import type {
+  ComboboxStore,
+  ComboboxStoreSelectedValue,
+  ComboboxStoreState,
+} from "./combobox-store.js";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -167,6 +172,14 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const storeValue = store.useState("value");
 
+    // TODO: Comment
+    const prevSelectedValueRef = useRef<ComboboxStoreSelectedValue>();
+    useEffect(() => {
+      return sync(store, ["selectedValue", "activeId"], (_, prev) => {
+        prevSelectedValueRef.current = prev.selectedValue;
+      });
+    }, []);
+
     const inlineActiveValue = store.useState((state) => {
       if (!inline) return;
       if (!canInline) return;
@@ -175,6 +188,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       // value is already selected, the action actually becomes a deletion.
       if (state.activeValue && Array.isArray(state.selectedValue)) {
         if (state.selectedValue.includes(state.activeValue)) return;
+        // TODO: Comment
+        if (prevSelectedValueRef.current?.includes(state.activeValue)) return;
       }
       return state.activeValue;
     });
