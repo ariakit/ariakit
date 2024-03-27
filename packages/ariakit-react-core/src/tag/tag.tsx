@@ -1,6 +1,7 @@
 import type { ElementType, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
+import { isApple } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeItemOptions } from "../composite/composite-item.js";
 import { useCompositeItem } from "../composite/composite-item.js";
@@ -91,7 +92,14 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
     const isPrintableKey =
       !event.ctrlKey && !event.metaKey && event.key.length === 1;
 
-    if (isPrintableKey) {
+    // If it's cmd/ctrl+v, focus on the input element so the value is pasted
+    // there.
+    const pc = !isApple();
+    const v = event.key === "v" || event.key === "V";
+    const mod = pc ? event.ctrlKey : event.metaKey;
+    const isPaste = mod && v;
+
+    if (isPrintableKey || isPaste) {
       inputElement?.focus();
     }
   });
