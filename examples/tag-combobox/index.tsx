@@ -26,7 +26,7 @@ export default function Example() {
 
   const isCustomEmail = (email: string) => {
     if (users.some((user) => user.email === email)) return false;
-    return email.match(/\S+@\S+/);
+    return email.match(/^\S+@\S+$/);
   };
 
   const getUserName = (email: string) => {

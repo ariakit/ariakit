@@ -12,6 +12,7 @@ import type {
 import {
   getPopupRole,
   getScrollingElement,
+  getTextboxSelection,
   setSelectionRange,
 } from "@ariakit/core/utils/dom";
 import {
@@ -22,6 +23,7 @@ import { hasFocus } from "@ariakit/core/utils/focus";
 import {
   invariant,
   isFalsyBooleanCallback,
+  noop,
   normalizeString,
 } from "@ariakit/core/utils/misc";
 import type {
@@ -232,6 +234,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       );
       if (!firstItemAutoSelected) return;
       if (!hasCompletionString(storeValue, inlineActiveValue)) return;
+      let cleanup = noop;
       // For some reason, this setSelectionRange may run before the value is
       // updated in the DOM. We're using a microtask to make sure it runs after
       // the value is updated so we don't lose the selection. See combobox-group
@@ -239,8 +242,25 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       queueMicrotask(() => {
         const element = ref.current;
         if (!element) return;
-        setSelectionRange(element, storeValue.length, inlineActiveValue.length);
+        const { start: prevStart, end: prevEnd } = getTextboxSelection(element);
+        const nextStart = storeValue.length;
+        const nextEnd = inlineActiveValue.length;
+        setSelectionRange(element, nextStart, nextEnd);
+        cleanup = () => {
+          // This effect may run after the value is updated and the completion
+          // string is highlighted, for example, when the items are updated
+          // asynchronously or in a React transition in a multi-selectable
+          // combobox. In this case, we must restore the previous selection
+          // range if it hasn't changed. See tag-combobox test: "deselecting a
+          // tag should not highlight the input text if it is not the first
+          // combobox item"
+          const { start, end } = getTextboxSelection(element);
+          if (start !== nextStart) return;
+          if (end !== nextEnd) return;
+          setSelectionRange(element, prevStart, prevEnd);
+        };
       });
+      return () => cleanup();
     }, [
       valueUpdated,
       inline,

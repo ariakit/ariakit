@@ -106,8 +106,9 @@ export const TagOption = React.forwardRef<HTMLDivElement, TagOptionProps>(
         ref={ref}
         focusOnHover
         blurOnHoverEnd={false}
-        // Hide only upon selecting a value, so the user can continue to
-        // deselect values by clicking on them without the popover closing.
+        // Hides the combobox popover only upon selecting a value, so the user
+        // can continue to deselect values by clicking on them without the
+        // popover closing.
         selectValueOnClick={() => {
           const { selectedValue } = combobox.getState();
           if (!selectedValue.includes(props.value)) {
