@@ -122,25 +122,6 @@ const Component = Ariakit.Combobox;
 
 </aside>
 
-## Import `.jsx` extension
-
-The code examples are written using the [ECMAScript modules](https://nodejs.org/api/esm.html) syntax, which is the official standard format for JavaScript modules supported by modern browsers.
-
-One difference between ESM and CommonJS is that ESM requires the file extension to be specified in the import statement. For TypeScript React files, you can use either `.js` or `.jsx` extensions.
-
-When importing `.tsx` files, we use the `.jsx` extension for consistency and better compatibility with build tools like [Vite](https://vitejs.dev).
-
-```js
-// ❌ Bad, non-standard
-import "./component";
-
-// ❌ Bad
-import "./component.ts";
-
-// ✅ Good
-import "./component.tsx";
-```
-
 ## Import style first
 
 In our code examples, we place the import statement for styles at the top of the file. This ensures that when we edit the example, the autoimport feature will add import statements at the end of the import list. This prevents the style import from being inserted in the middle of the list.

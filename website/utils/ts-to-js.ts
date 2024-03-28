@@ -27,7 +27,13 @@ export async function tsToJs(code: string) {
     cloneInputAst: false,
     code: false,
     ast: true,
-    plugins: ["@babel/plugin-transform-typescript"],
+    plugins: [
+      "@babel/plugin-transform-typescript",
+      [
+        "babel-plugin-replace-import-extension",
+        { extMapping: { ".ts": ".js", ".tsx": ".jsx" } },
+      ],
+    ],
     configFile: false,
   } satisfies TransformOptions;
 
