@@ -1,0 +1,47 @@
+.popup {
+  @apply
+    [--border-color:rgb(0_0_0/0.1)]
+    [--shadow-color:rgb(0_0_0/0.25)]
+    [--shadow-size:0_4px_8px_-4px]
+    dark:[--border-color:rgb(255_255_255/0.2)]
+    dark:[--shadow-color:rgb(0_0_0/0.35)]
+    dark:[--shadow-size:0_6px_12px_-4px]
+}
+
+.elevation-1 {
+  @apply
+    [--shadow-color:rgb(0_0_0/0.2)]
+    [--shadow-size:0_8px_16px_-6px]
+    dark:[--shadow-size:0_12px_24px_-6px]
+}
+
+.elevation-2 {
+  @apply
+    [--shadow-color:rgb(0_0_0/0.15)]
+    [--shadow-size:0_16px_32px_-6px]
+    dark:[--shadow-size:0_18px_36px_-8px]
+}
+
+.popup {
+  @apply
+    bg-white
+    text-black
+    dark:bg-gray-700
+    dark:text-white
+    [box-shadow:0_0_0_1px_var(--border-color),var(--shadow-size)_var(--shadow-color)]
+}
+
+.input {
+  @apply
+    bg-white
+    hover:bg-gray-50
+    dark:bg-gray-900
+    dark:hover:bg-gray-950
+    outline-2
+    outline-offset-[-1px]
+    outline-blue-600
+    focus-within:outline
+    cursor-text
+    [box-shadow:inset_0_0_0_1px_rgba(0_0_0/0.15),inset_0_2px_5px_0_rgba(0_0_0/0.08)]
+    dark:[box-shadow:inset_0_0_0_1px_rgba(255_255_255/0.15),inset_0_-1px_0_0_rgba(255_255_255/0.05),inset_0_2px_5px_0_rgba(0_0_0/0.15)]
+}

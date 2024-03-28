@@ -11,12 +11,15 @@ import type {
   PopoverStoreState,
 } from "../popover/popover-store.js";
 import { createPopoverStore } from "../popover/popover-store.js";
-import { defaultValue } from "../utils/misc.js";
+import type { TagStore } from "../tag/tag-store.js";
+import { chain, defaultValue } from "../utils/misc.js";
 import { isSafari } from "../utils/platform.js";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
 import {
   batch,
   createStore,
+  mergeStore,
+  pick,
   setup,
   sync,
   throwOnConflictingProps,
@@ -43,12 +46,16 @@ export function createComboboxStore<
 
 export function createComboboxStore(props?: ComboboxStoreProps): ComboboxStore;
 
-export function createComboboxStore(
-  props: ComboboxStoreProps = {},
-): ComboboxStore {
-  throwOnConflictingProps(props, props.store);
+export function createComboboxStore({
+  tag,
+  ...props
+}: ComboboxStoreProps = {}): ComboboxStore {
+  const store = mergeStore(props.store, pick(tag, ["value", "rtl"]));
 
-  const syncState = props.store?.getState();
+  throwOnConflictingProps(props, store);
+
+  const tagState = tag?.getState();
+  const syncState = store?.getState();
 
   const activeId = defaultValue(
     props.activeId,
@@ -98,6 +105,7 @@ export function createComboboxStore(
   const selectedValue = defaultValue(
     props.selectedValue,
     syncState?.selectedValue,
+    tagState?.values,
     props.defaultSelectedValue,
     "",
   );
@@ -117,12 +125,26 @@ export function createComboboxStore(
     resetValueOnHide: defaultValue(
       props.resetValueOnHide,
       syncState?.resetValueOnHide,
-      multiSelectable,
+      multiSelectable && !tag,
     ),
     activeValue: syncState?.activeValue,
   };
 
-  const combobox = createStore(initialState, composite, popover, props.store);
+  const combobox = createStore(initialState, composite, popover, store);
+
+  // Sync tag values with the combobox selectedValue state.
+  setup(combobox, () => {
+    if (!tag) return;
+    return chain(
+      sync(combobox, ["selectedValue"], (state) => {
+        if (!Array.isArray(state.selectedValue)) return;
+        tag.setValues(state.selectedValue);
+      }),
+      sync(tag, ["values"], (state) => {
+        combobox.setState("selectedValue", state.values);
+      }),
+    );
+  });
 
   setup(combobox, () =>
     sync(combobox, ["resetValueOnHide", "mounted"], (state) => {
@@ -166,6 +188,7 @@ export function createComboboxStore(
     ...popover,
     ...composite,
     ...combobox,
+    tag,
     setValue: (value) => combobox.setState("value", value),
     resetValue: () => combobox.setState("value", initialState.value),
     setSelectedValue: (selectedValue) =>
@@ -260,7 +283,8 @@ export interface ComboboxStoreState<
 
 export interface ComboboxStoreFunctions<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends CompositeStoreFunctions<ComboboxStoreItem>,
+> extends Pick<ComboboxStoreOptions<T>, "tag">,
+    CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {
   /**
    * Sets the [`value`](https://ariakit.org/reference/combobox-provider#value)
@@ -319,6 +343,11 @@ export interface ComboboxStoreOptions<
    * @default ""
    */
   defaultSelectedValue?: ComboboxStoreState<T>["selectedValue"];
+  /**
+   * A reference to a tag store. This is used when rendering a combobox within a
+   * tag list. The stores will share the same state.
+   */
+  tag?: TagStore | null;
 }
 
 export interface ComboboxStoreProps<

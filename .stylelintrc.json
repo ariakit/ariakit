@@ -3,6 +3,7 @@
   "rules": {
     "no-duplicate-at-import-rules": null,
     "no-descending-specificity": null,
+    "no-duplicate-selectors": null,
     "selector-class-pattern": null,
     "length-zero-no-unit": null,
     "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
