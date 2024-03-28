@@ -1,5 +1,13 @@
 # @ariakit/react-core
 
+## 0.4.5
+
+- Updated [`Combobox`](https://ariakit.org/reference/combobox) to no longer use `ReactDOM.flushSync` when updating the value.
+- Added new [`resetValueOnSelect`](https://ariakit.org/reference/combobox-item#resetvalueonselect) prop to [`ComboboxItem`](https://ariakit.org/reference/combobox-item).
+- Added new [`resetValue`](https://ariakit.org/reference/use-combobox-store#resetvalue) method to combobox store.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.5`
+
 ## 0.4.4
 
 ### Combobox `autoFocusOnHide` behavior

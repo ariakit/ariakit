@@ -1,5 +1,12 @@
 # @ariakit/core
 
+## 0.4.5
+
+- Added DOM utils: `isTextbox`, `getTextboxValue`.
+- Added event function: `getInputType`.
+- Added new [`resetValue`](https://ariakit.org/reference/use-combobox-store#resetvalue) method to combobox store.
+- Improved JSDocs.
+
 ## 0.4.4
 
 ### Combobox `autoFocusOnHide` behavior
