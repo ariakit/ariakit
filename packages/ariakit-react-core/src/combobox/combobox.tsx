@@ -12,6 +12,7 @@ import type {
 import {
   getPopupRole,
   getScrollingElement,
+  getTextboxSelection,
   setSelectionRange,
 } from "@ariakit/core/utils/dom";
 import {
@@ -22,8 +23,10 @@ import { hasFocus } from "@ariakit/core/utils/focus";
 import {
   invariant,
   isFalsyBooleanCallback,
+  noop,
   normalizeString,
 } from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import type {
   BooleanOrCallback,
   StringWithValue,
@@ -45,7 +48,11 @@ import {
 import { createElement, createHook, forwardRef } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
-import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
+import type {
+  ComboboxStore,
+  ComboboxStoreSelectedValue,
+  ComboboxStoreState,
+} from "./combobox-store.js";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -164,9 +171,37 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     }, [inline]);
 
     const storeValue = store.useState("value");
-    const activeValue = store.useState((state) =>
-      inline && canInline ? state.activeValue : undefined,
-    );
+
+    // Keep track of the previous selected values so we can set the
+    // inlineActiveValue below only when the current activeValue isn't already
+    // selected and isn't one of the previously selected values. See
+    // tag-combobox test named "deselecting a tag should not highlight the input
+    // text if it is not the first combobox item".
+    const prevSelectedValueRef = useRef<ComboboxStoreSelectedValue>();
+    useEffect(() => {
+      return sync(store, ["selectedValue", "activeId"], (_, prev) => {
+        prevSelectedValueRef.current = prev.selectedValue;
+      });
+    }, []);
+
+    const inlineActiveValue = store.useState((state) => {
+      if (!inline) return;
+      if (!canInline) return;
+      // It doesn't make sense to inline the active value if it's already
+      // selected or just got deselected. Inlining the value typically implies
+      // an addition, but if the value is already selected, the action actually
+      // becomes a deletion. If the value was just deselected, pressing Enter
+      // again would reselect it, but it's not the usual path, so we also take
+      // into account the previously selected values. See tag-combobox test
+      // named "deselecting a tag should not highlight the input text if it is
+      // not the first combobox item".
+      if (state.activeValue && Array.isArray(state.selectedValue)) {
+        if (state.selectedValue.includes(state.activeValue)) return;
+        if (prevSelectedValueRef.current?.includes(state.activeValue)) return;
+      }
+      return state.activeValue;
+    });
+
     const items = store.useState("renderedItems");
     const open = store.useState("open");
     const contentElement = store.useState("contentElement");
@@ -181,21 +216,21 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!canInline) return storeValue;
       const firstItemAutoSelected = isFirstItemAutoSelected(
         items,
-        activeValue,
+        inlineActiveValue,
         autoSelect,
       );
       if (firstItemAutoSelected) {
         // If the first item is auto selected, we should append the completion
         // string to the end of the value. This will be highlited in the effect
         // below.
-        if (hasCompletionString(storeValue, activeValue)) {
-          const slice = activeValue?.slice(storeValue.length) || "";
+        if (hasCompletionString(storeValue, inlineActiveValue)) {
+          const slice = inlineActiveValue?.slice(storeValue.length) || "";
           return storeValue + slice;
         }
         return storeValue;
       }
-      return activeValue || storeValue;
-    }, [inline, canInline, items, activeValue, autoSelect, storeValue]);
+      return inlineActiveValue || storeValue;
+    }, [inline, canInline, items, inlineActiveValue, autoSelect, storeValue]);
 
     // Listen to the combobox-item-move event that's dispacthed the ComboboxItem
     // component so we can enable the inline autocomplete when the user moves
@@ -214,14 +249,15 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     useEffect(() => {
       if (!inline) return;
       if (!canInline) return;
-      if (!activeValue) return;
+      if (!inlineActiveValue) return;
       const firstItemAutoSelected = isFirstItemAutoSelected(
         items,
-        activeValue,
+        inlineActiveValue,
         autoSelect,
       );
       if (!firstItemAutoSelected) return;
-      if (!hasCompletionString(storeValue, activeValue)) return;
+      if (!hasCompletionString(storeValue, inlineActiveValue)) return;
+      let cleanup = noop;
       // For some reason, this setSelectionRange may run before the value is
       // updated in the DOM. We're using a microtask to make sure it runs after
       // the value is updated so we don't lose the selection. See combobox-group
@@ -229,13 +265,29 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       queueMicrotask(() => {
         const element = ref.current;
         if (!element) return;
-        setSelectionRange(element, storeValue.length, activeValue.length);
+        const { start: prevStart, end: prevEnd } = getTextboxSelection(element);
+        const nextStart = storeValue.length;
+        const nextEnd = inlineActiveValue.length;
+        setSelectionRange(element, nextStart, nextEnd);
+        cleanup = () => {
+          // This effect may run after the value is updated and the completion
+          // string is highlighted, for example, when the items are updated
+          // asynchronously or in a React transition in a multi-selectable
+          // combobox. In this case, we must restore the previous selection
+          // range if it hasn't changed. TODO: Test this.
+          if (!hasFocus(element)) return;
+          const { start, end } = getTextboxSelection(element);
+          if (start !== nextStart) return;
+          if (end !== nextEnd) return;
+          setSelectionRange(element, prevStart, prevEnd);
+        };
       });
+      return () => cleanup();
     }, [
       valueUpdated,
       inline,
       canInline,
-      activeValue,
+      inlineActiveValue,
       items,
       autoSelect,
       storeValue,
