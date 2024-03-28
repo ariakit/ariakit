@@ -1,6 +1,6 @@
 import { Children, cloneElement, isValidElement, useId } from "react";
 import type { ComponentPropsWithoutRef } from "react";
-import pageLinks from "build-pages/links.js";
+import pageLinks from "build-pages/links.ts";
 import type { PageIndexDetail, TableOfContents } from "build-pages/types.ts";
 import type { Element, ElementContent } from "hast";
 import { ArrowRight } from "icons/arrow-right.tsx";

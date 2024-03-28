@@ -1,5 +1,5 @@
 import { hasOwnProperty } from "@ariakit/core/utils/misc";
-import pageLinks from "build-pages/links.js";
+import pageLinks from "build-pages/links.ts";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
 import { FontStyle, bundledLanguages, codeToTokensBase } from "shiki";
