@@ -1,28 +1,25 @@
 import "./style.css";
 import { useState } from "react";
-import { Tag } from "@ariakit/react-core/tag/tag";
-import { TagInput } from "@ariakit/react-core/tag/tag-input";
-import { TagList } from "@ariakit/react-core/tag/tag-list";
-import { TagListLabel } from "@ariakit/react-core/tag/tag-list-label";
-import { TagProvider } from "@ariakit/react-core/tag/tag-provider";
-import { TagRemove } from "@ariakit/react-core/tag/tag-remove";
+import * as Ariakit from "./ariakit-experimental.js";
 
 export default function Example() {
   const [values, setValues] = useState(["JavaScript", "React"]);
   return (
     <div className="wrapper">
-      <TagProvider values={values} setValues={setValues}>
-        <TagListLabel className="tag-list-label">Tags</TagListLabel>
-        <TagList className="tag-list input">
+      <Ariakit.TagProvider values={values} setValues={setValues}>
+        <Ariakit.TagListLabel className="tag-list-label">
+          Tags
+        </Ariakit.TagListLabel>
+        <Ariakit.TagList className="tag-list input">
           {values.map((value) => (
-            <Tag key={value} value={value} className="tag">
+            <Ariakit.Tag key={value} value={value} className="tag">
               {value}
-              <TagRemove className="tag-remove" />
-            </Tag>
+              <Ariakit.TagRemove className="tag-remove" />
+            </Ariakit.Tag>
           ))}
-          <TagInput className="tag-input" />
-        </TagList>
-      </TagProvider>
+          <Ariakit.TagInput className="tag-input" />
+        </Ariakit.TagList>
+      </Ariakit.TagProvider>
     </div>
   );
 }

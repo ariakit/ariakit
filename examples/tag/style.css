@@ -44,7 +44,6 @@
     [:focus-within>&]:data-[active-item]:bg-blue-600
     [:focus-within>&]:data-[active-item]:text-white
     [:focus-within>&]:data-[active-item]:[--tag-remove-opacity:1]
-    has-[~input[value=""]:not([role])]:[:nth-last-child(1_of_&)]:-me-2
 }
 
 .tag-remove {
