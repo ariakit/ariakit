@@ -132,13 +132,6 @@ export function createComboboxStore(
     }),
   );
 
-  setup(combobox, () =>
-    sync(combobox, ["resetValueOnSelect", "selectedValue"], (state) => {
-      if (!state.resetValueOnSelect) return;
-      combobox.setState("value", value);
-    }),
-  );
-
   // Resets the state when the combobox popover is hidden.
   setup(combobox, () =>
     batch(combobox, ["mounted"], (state) => {
@@ -174,6 +167,7 @@ export function createComboboxStore(
     ...composite,
     ...combobox,
     setValue: (value) => combobox.setState("value", value),
+    resetValue: () => combobox.setState("value", initialState.value),
     setSelectedValue: (selectedValue) =>
       combobox.setState("selectedValue", selectedValue),
   };
@@ -256,10 +250,10 @@ export interface ComboboxStoreState<
    * or
    * [`defaultSelectedValue`](https://ariakit.org/reference/combobox-provider#defaultselectedvalue)
    * props are arrays.
-   *
-   * Live examples:
-   * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   * @deprecated Use the
+   * [`resetValueOnSelect`](https://ariakit.org/reference/combobox-item#resetvalueonselect)
+   * prop on [`ComboboxItem`](https://ariakit.org/reference/combobox-item)
+   * instead.
    */
   resetValueOnSelect: boolean;
 }
@@ -280,6 +274,11 @@ export interface ComboboxStoreFunctions<
    * store.setValue((value) => value + "!");
    */
   setValue: SetState<ComboboxStoreState<T>["value"]>;
+  /**
+   * Resets the [`value`](https://ariakit.org/reference/combobox-provider#value)
+   * state to its initial value.
+   */
+  resetValue: () => void;
   /**
    * Sets the
    * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
