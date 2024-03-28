@@ -241,12 +241,6 @@ function getNextProject(props: StackblitzProps) {
 
   const nextConfig = `/** @type {import("next").NextConfig} */
 const nextConfig = {
-  experimental: {
-    extensionAlias: {
-      ".js": [".js", ".ts", ".tsx"],
-      ".jsx": [".jsx", ".tsx"],
-    },
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },

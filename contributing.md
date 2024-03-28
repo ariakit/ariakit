@@ -111,7 +111,7 @@ Now open http://localhost:3000 in your browser to see the project's site.
 
 To make a new component, create a file with the following contents:
 
-`packages/ariakit-react-core/src/my-component/my-component.ts`
+`packages/ariakit-react-core/src/my-component/my-component.tsx`
 
 ````tsx
 import type { ElementType } from "react";
@@ -316,7 +316,7 @@ So far, we've been working with the `@ariakit/react-core` package. This is where
 
 To promote our component to the `@ariakit/react` package, we need to create a file and re-export the component from the `@ariakit/react-core` package:
 
-`packages/ariakit-react/src/my-component.ts`
+`packages/ariakit-react/src/my-component.tsx`
 
 ```ts
 export { MyComponent } from "@ariakit/react-core/my-component/my-component";
@@ -333,7 +333,7 @@ Finally, we must update the `index.ts` file to export the component:
 
 ```ts
 // ...
-export * from "./my-component.ts";
+export * from "./my-component.tsx";
 // ...
 ```
 

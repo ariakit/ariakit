@@ -4,9 +4,9 @@ import { PageItem } from "components/page-item.tsx";
 import { groupBy } from "lodash-es";
 import { notFound } from "next/navigation.js";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
-import { getPageIcon } from "utils/get-page-icon.ts";
+import { getPageIcon } from "utils/get-page-icon.tsx";
 import { PageSection } from "../page-section.tsx";
-import { ListPage } from "./list-page.ts";
+import { ListPage } from "./list-page.tsx";
 
 interface Props {
   params: { category: string };

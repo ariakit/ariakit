@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { blur } from "../blur.ts";
-import { q, render } from "../react.ts";
+import { q, render } from "../react.tsx";
 import { useAllEvents } from "./use-all-events.ts";
 
 test("blur", async () => {
