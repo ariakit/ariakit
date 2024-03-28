@@ -172,7 +172,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const storeValue = store.useState("value");
 
-    // TODO: Comment
+    // Keep track of the previous selected values so we can set the
+    // inlineActiveValue below only when the current activeValue isn't already
+    // selected and isn't one of the previously selected values. See
+    // tag-combobox test named "deselecting a tag should not highlight the input
+    // text if it is not the first combobox item".
     const prevSelectedValueRef = useRef<ComboboxStoreSelectedValue>();
     useEffect(() => {
       return sync(store, ["selectedValue", "activeId"], (_, prev) => {
@@ -184,11 +188,15 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!inline) return;
       if (!canInline) return;
       // It doesn't make sense to inline the active value if it's already
-      // selected. Inlining the value typically implies an addition, but if the
-      // value is already selected, the action actually becomes a deletion.
+      // selected or just got deselected. Inlining the value typically implies
+      // an addition, but if the value is already selected, the action actually
+      // becomes a deletion. If the value was just deselected, pressing Enter
+      // again would reselect it, but it's not the usual path, so we also take
+      // into account the previously selected values. See tag-combobox test
+      // named "deselecting a tag should not highlight the input text if it is
+      // not the first combobox item".
       if (state.activeValue && Array.isArray(state.selectedValue)) {
         if (state.selectedValue.includes(state.activeValue)) return;
-        // TODO: Comment
         if (prevSelectedValueRef.current?.includes(state.activeValue)) return;
       }
       return state.activeValue;
@@ -266,9 +274,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           // string is highlighted, for example, when the items are updated
           // asynchronously or in a React transition in a multi-selectable
           // combobox. In this case, we must restore the previous selection
-          // range if it hasn't changed. See tag-combobox test: "deselecting a
-          // tag should not highlight the input text if it is not the first
-          // combobox item"
+          // range if it hasn't changed. TODO: Test this.
           if (!hasFocus(element)) return;
           const { start, end } = getTextboxSelection(element);
           if (start !== nextStart) return;
