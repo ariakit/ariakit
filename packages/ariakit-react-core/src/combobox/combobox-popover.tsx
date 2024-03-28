@@ -5,6 +5,7 @@ import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.js";
 import type { PopoverOptions } from "../popover/popover.js";
 import { usePopover } from "../popover/popover.js";
+import { useStoreState } from "../utils/store.js";
 import { createElement, createHook, forwardRef } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
 import { useComboboxProviderContext } from "./combobox-context.js";
@@ -66,6 +67,15 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     const baseElement = store.useState("baseElement");
     const hiddenByClickOutsideRef = useRef(false);
 
+    // When new tags are rendered while the combobox popover is open, they will
+    // be considered nested popups, and therefore the popover won't hide when
+    // interacting with them. We use the treeSnapshotKey to force the popover to
+    // take a new snapshot of the tree when new items are rendered.
+    const treeSnapshotKey = useStoreState(
+      store.tag,
+      (state) => state?.renderedItems.length,
+    );
+
     props = useComboboxList({ store, alwaysVisible, ...props });
 
     props = usePopover({
@@ -76,6 +86,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       autoFocusOnShow: false,
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
+      unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
       // When the combobox popover is modal, we make sure to include the
       // combobox input and all the combobox controls (cancel, disclosure) in

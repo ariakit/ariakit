@@ -124,7 +124,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     focusable = true,
     autoSelect: autoSelectProp = false,
     getAutoSelectId,
-    setValueOnChange = true,
+    setValueOnChange,
     showMinLength = 0,
     showOnChange,
     showOnMouseDown,
@@ -425,7 +425,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const onChangeProp = props.onChange;
     const showOnChangeProp = useBooleanEvent(showOnChange ?? canShow);
-    const setValueOnChangeProp = useBooleanEvent(setValueOnChange);
+    const setValueOnChangeProp = useBooleanEvent(
+      // If the combobox is combined with tags, the value will be set by the tag
+      // input component.
+      setValueOnChange ?? !store.tag,
+    );
 
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       onChangeProp?.(event);

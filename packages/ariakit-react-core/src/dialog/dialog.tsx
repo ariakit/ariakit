@@ -120,6 +120,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   initialFocus,
   finalFocus,
   unmountOnHide,
+  unstable_treeSnapshotKey,
   ...props
 }) {
   const context = useDialogProviderContext();
@@ -251,7 +252,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // dialogs. Hence, we take the snapshot here, independent of any nested
     // dialogs.
     return createWalkTreeSnapshot(id, [dialog]);
-  }, [id, canTakeTreeSnapshot]);
+  }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
@@ -281,6 +282,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     getPersistentElementsProp,
     nestedDialogs,
     modal,
+    unstable_treeSnapshotKey,
   ]);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;
@@ -803,6 +805,10 @@ export interface DialogOptions<T extends ElementType = TagName>
    *   will be focused again.
    */
   finalFocus?: HTMLElement | RefObject<HTMLElement> | null;
+  /**
+   * @private
+   */
+  unstable_treeSnapshotKey?: string | number | boolean | null;
 }
 
 export type DialogProps<T extends ElementType = TagName> = Props<
