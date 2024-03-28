@@ -1,4 +1,4 @@
-import { getChangelogFile } from "build-pages/changelog.js";
+import { getChangelogFile } from "build-pages/changelog.ts";
 import { getPageContent } from "build-pages/get-page-content.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
 import type { TableOfContents } from "build-pages/types.ts";
