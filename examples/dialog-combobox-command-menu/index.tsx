@@ -8,9 +8,9 @@ import {
   CommandMenuInput,
   CommandMenuItem,
   CommandMenuList,
-} from "./command-menu.jsx";
-import type { Command } from "./commands.jsx";
-import { allItems, applications, commands, suggestions } from "./commands.jsx";
+} from "./command-menu.tsx";
+import type { Command } from "./commands.tsx";
+import { allItems, applications, commands, suggestions } from "./commands.tsx";
 
 function search(value: string): Record<string, Command[]> {
   if (!value) {

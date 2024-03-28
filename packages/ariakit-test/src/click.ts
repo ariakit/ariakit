@@ -1,13 +1,13 @@
 import { closest, isVisible } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import { wrapAsync } from "./__utils.js";
-import { dispatch } from "./dispatch.js";
-import { focus } from "./focus.js";
-import { hover } from "./hover.js";
-import { mouseDown } from "./mouse-down.js";
-import { mouseUp } from "./mouse-up.js";
-import { sleep } from "./sleep.js";
+import { wrapAsync } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
+import { focus } from "./focus.ts";
+import { hover } from "./hover.ts";
+import { mouseDown } from "./mouse-down.ts";
+import { mouseUp } from "./mouse-up.ts";
+import { sleep } from "./sleep.ts";
 
 function getClosestLabel(element: Element) {
   if (!isFocusable(element)) {

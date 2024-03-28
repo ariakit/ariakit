@@ -1,14 +1,14 @@
-import { getDocument } from "../utils/dom.js";
-import { chain, defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+import { getDocument } from "../utils/dom.ts";
+import { chain, defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
   createStore,
   init,
   setup,
   throwOnConflictingProps,
-} from "../utils/store.js";
-import type { BivariantCallback } from "../utils/types.js";
+} from "../utils/store.ts";
+import type { BivariantCallback } from "../utils/types.ts";
 
 function isElementPreceding(a: Element, b: Element) {
   return Boolean(

@@ -1,11 +1,11 @@
 import { isValidElement, useRef } from "react";
-import { useDisclosureContent } from "../disclosure/disclosure-content.js";
-import { useDisclosureStore } from "../disclosure/disclosure-store.js";
-import { Role } from "../role/role.js";
-import { useSafeLayoutEffect } from "../utils/hooks.js";
-import type { DialogStore } from "./dialog-store.js";
-import type { DialogProps } from "./dialog.js";
-import { markAncestor } from "./utils/mark-tree-outside.js";
+import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
+import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
+import { Role } from "../role/role.ts";
+import { useSafeLayoutEffect } from "../utils/hooks.ts";
+import type { DialogStore } from "./dialog-store.ts";
+import type { DialogProps } from "./dialog.ts";
+import { markAncestor } from "./utils/mark-tree-outside.ts";
 
 interface DialogBackdropProps
   extends Pick<DialogProps, "backdrop" | "alwaysVisible" | "hidden"> {

@@ -1,7 +1,7 @@
 import "./style.css";
 import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
-import Square from "./square.jsx";
+import Square from "./square.tsx";
 
 export default function Example() {
   const [value, setValue] = useState("Center");

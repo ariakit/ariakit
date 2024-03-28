@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { GroupLabelContext } from "./group-label-context.js";
+import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { GroupLabelContext } from "./group-label-context.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

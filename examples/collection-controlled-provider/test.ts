@@ -1,1 +1,1 @@
-import "../collection-controlled/test.js";
+import "../collection-controlled/test.ts";

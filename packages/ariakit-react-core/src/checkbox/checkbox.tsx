@@ -9,21 +9,21 @@ import {
   disabledFromProps,
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
-import type { CommandOptions } from "../command/command.js";
-import { useCommand } from "../command/command.js";
+import type { CommandOptions } from "../command/command.ts";
+import { useCommand } from "../command/command.ts";
 import {
   useEvent,
   useForceUpdate,
   useMergeRefs,
   useTagName,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
-import { useCheckboxContext } from "./checkbox-context.js";
-import type { CheckboxStore } from "./checkbox-store.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { CheckboxCheckedContext } from "./checkbox-checked-context.ts";
+import { useCheckboxContext } from "./checkbox-context.tsx";
+import type { CheckboxStore } from "./checkbox-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

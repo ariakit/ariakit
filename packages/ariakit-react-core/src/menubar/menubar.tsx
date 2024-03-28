@@ -1,15 +1,15 @@
 import type { ElementType } from "react";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   MenubarScopedContextProvider,
   useMenubarProviderContext,
-} from "./menubar-context.js";
-import { useMenubarStore } from "./menubar-store.js";
-import type { MenubarStore, MenubarStoreProps } from "./menubar-store.js";
+} from "./menubar-context.ts";
+import { useMenubarStore } from "./menubar-store.ts";
+import type { MenubarStore, MenubarStoreProps } from "./menubar-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

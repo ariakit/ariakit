@@ -6,16 +6,16 @@ import {
   isTextField,
 } from "@ariakit/core/utils/dom";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useEvent } from "../utils/hooks.js";
+import { useEvent } from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import type { CompositeStore } from "./composite-store.js";
-import { selectTextField } from "./utils.js";
+} from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import type { CompositeStore } from "./composite-store.ts";
+import { selectTextField } from "./utils.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

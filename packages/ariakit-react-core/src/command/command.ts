@@ -8,16 +8,16 @@ import {
 } from "@ariakit/core/utils/events";
 import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isFirefox } from "@ariakit/core/utils/platform";
-import type { FocusableOptions } from "../focusable/focusable.js";
-import { useFocusable } from "../focusable/focusable.js";
+import type { FocusableOptions } from "../focusable/focusable.ts";
+import { useFocusable } from "../focusable/focusable.ts";
 import {
   useEvent,
   useMergeRefs,
   useMetadataProps,
   useTagName,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

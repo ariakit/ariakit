@@ -10,24 +10,24 @@ import { getPopupRole } from "@ariakit/core/utils/dom";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
-import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
-import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.ts";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.ts";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import {
   useBooleanEvent,
   useEvent,
   useMergeRefs,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { SelectArrow } from "./select-arrow.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { SelectArrow } from "./select-arrow.ts";
 import {
   SelectScopedContextProvider,
   useSelectProviderContext,
-} from "./select-context.js";
-import type { SelectStore } from "./select-store.js";
+} from "./select-context.tsx";
+import type { SelectStore } from "./select-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

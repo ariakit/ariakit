@@ -3,9 +3,9 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
-import { useUpdateEffect } from "../utils/hooks.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+import { useUpdateEffect } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useCollectionStoreProps<T extends Core.CollectionStore>(
   store: T,

@@ -5,19 +5,19 @@ import {
   getCompositeRendererItem,
   getCompositeRendererItemId,
   useCompositeRenderer,
-} from "../composite/composite-renderer.js";
+} from "../composite/composite-renderer.tsx";
 import type {
   CompositeRendererBaseItemProps,
   CompositeRendererItem,
   CompositeRendererItemObject,
   CompositeRendererItemProps,
   CompositeRendererOptions,
-} from "../composite/composite-renderer.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useSelectContext } from "./select-context.js";
-import type { SelectStore, SelectStoreValue } from "./select-store.js";
+} from "../composite/composite-renderer.tsx";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useSelectContext } from "./select-context.tsx";
+import type { SelectStore, SelectStoreValue } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

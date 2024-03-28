@@ -1,4 +1,4 @@
-import type { AriaHasPopup, AriaRole } from "./types.js";
+import type { AriaHasPopup, AriaRole } from "./types.ts";
 
 /**
  * It's `true` if it is running in a browser environment or `false` if it is not

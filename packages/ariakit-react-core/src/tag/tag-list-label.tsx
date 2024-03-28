@@ -1,11 +1,11 @@
 import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CompositeOptions } from "../composite/composite.jsx";
-import { useId, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.jsx";
-import type { Props } from "../utils/types.js";
-import { useTagContext } from "./tag-context.jsx";
-import type { TagStore } from "./tag-store.js";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useId, useMergeRefs } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useTagContext } from "./tag-context.tsx";
+import type { TagStore } from "./tag-store.ts";
 
 const TagName = "label" satisfies ElementType;
 type TagName = typeof TagName;

@@ -1,5 +1,5 @@
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   createStore,
   mergeStore,
@@ -8,8 +8,8 @@ import {
   subscribe,
   sync,
   throwOnConflictingProps,
-} from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+} from "../utils/store.ts";
+import type { SetState } from "../utils/types.ts";
 
 /**
  * Creates a disclosure store.

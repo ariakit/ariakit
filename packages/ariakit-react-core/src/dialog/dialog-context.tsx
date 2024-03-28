@@ -3,9 +3,9 @@ import type { SetState } from "@ariakit/core/utils/types";
 import {
   DisclosureContextProvider,
   DisclosureScopedContextProvider,
-} from "../disclosure/disclosure-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { DialogStore } from "./dialog-store.js";
+} from "../disclosure/disclosure-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { DialogStore } from "./dialog-store.ts";
 
 const ctx = createStoreContext<DialogStore>(
   [DisclosureContextProvider],

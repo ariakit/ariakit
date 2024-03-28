@@ -3,14 +3,14 @@ import type * as Core from "@ariakit/core/menu/menu-bar-store";
 import {
   useMenubarStore,
   useMenubarStoreProps,
-} from "../menubar/menubar-store.js";
+} from "../menubar/menubar-store.ts";
 import type {
   MenubarStore,
   MenubarStoreFunctions,
   MenubarStoreOptions,
   MenubarStoreProps,
   MenubarStoreState,
-} from "../menubar/menubar-store.js";
+} from "../menubar/menubar-store.ts";
 
 export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
   store: T,

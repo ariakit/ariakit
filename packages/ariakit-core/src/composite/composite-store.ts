@@ -3,13 +3,13 @@ import type {
   CollectionStoreItem,
   CollectionStoreOptions,
   CollectionStoreState,
-} from "../collection/collection-store.js";
-import { createCollectionStore } from "../collection/collection-store.js";
-import { flatten2DArray, reverseArray } from "../utils/array.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, setup, sync } from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+} from "../collection/collection-store.ts";
+import { createCollectionStore } from "../collection/collection-store.ts";
+import { flatten2DArray, reverseArray } from "../utils/array.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import { createStore, setup, sync } from "../utils/store.ts";
+import type { SetState } from "../utils/types.ts";
 
 type Orientation = "horizontal" | "vertical" | "both";
 

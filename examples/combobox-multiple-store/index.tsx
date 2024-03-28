@@ -1,8 +1,8 @@
 import "./style.css";
 import { useDeferredValue, useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
-import list from "../combobox-multiple/list.js";
-import { Combobox, ComboboxItem } from "./combobox-multiple.jsx";
+import list from "../combobox-multiple/list.ts";
+import { Combobox, ComboboxItem } from "./combobox-multiple.tsx";
 
 export default function Example() {
   const [value, setValue] = useState("");

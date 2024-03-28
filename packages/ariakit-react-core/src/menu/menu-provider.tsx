@@ -1,8 +1,8 @@
 import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { MenuContextProvider } from "./menu-context.js";
-import { useMenuStore } from "./menu-store.js";
-import type { MenuStoreProps, MenuStoreValues } from "./menu-store.js";
+import { MenuContextProvider } from "./menu-context.ts";
+import { useMenuStore } from "./menu-store.ts";
+import type { MenuStoreProps, MenuStoreValues } from "./menu-store.ts";
 
 type Values = MenuStoreValues;
 

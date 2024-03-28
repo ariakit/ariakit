@@ -1,14 +1,14 @@
 import type { ElementType, FocusEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { sync } from "@ariakit/core/utils/store";
-import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
-import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
-import { useEvent, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { CompositeItemOptions } from "./composite-item.js";
-import { useCompositeItem } from "./composite-item.js";
-import type { CompositeOverflowStore } from "./composite-overflow-store.js";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
+import { useEvent, useMergeRefs } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { CompositeItemOptions } from "./composite-item.ts";
+import { useCompositeItem } from "./composite-item.tsx";
+import type { CompositeOverflowStore } from "./composite-overflow-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

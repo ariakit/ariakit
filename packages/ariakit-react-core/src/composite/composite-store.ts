@@ -4,10 +4,10 @@ import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,
   CollectionStoreState,
-} from "../collection/collection-store.js";
-import { useCollectionStoreProps } from "../collection/collection-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../collection/collection-store.ts";
+import { useCollectionStoreProps } from "../collection/collection-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useCompositeStoreProps<T extends Core.CompositeStore>(
   store: T,

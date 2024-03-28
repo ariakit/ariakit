@@ -2,24 +2,24 @@ import pagesConfig from "build-pages/config.js";
 import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
-import pageIndex from "build-pages/index.js";
+import pageIndex from "build-pages/index.ts";
 import { getReferences } from "build-pages/reference-utils.js";
 import type {
   Page,
   TableOfContents as TableOfContentsData,
-} from "build-pages/types.js";
+} from "build-pages/types.ts";
 import {
   PageMarkdown,
   getContent,
   getFile,
-} from "components/page-markdown.jsx";
-import { PageSidebar } from "components/page-sidebar.jsx";
-import { PlusBordered } from "components/plus-bordered.jsx";
+} from "components/page-markdown.tsx";
+import { PageSidebar } from "components/page-sidebar.tsx";
+import { PlusBordered } from "components/plus-bordered.tsx";
 import Link from "next/link.js";
 import { notFound } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
-import { getPageIcon } from "utils/get-page-icon.jsx";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
+import { getPageIcon } from "utils/get-page-icon.tsx";
 
 const { pages } = pagesConfig;
 

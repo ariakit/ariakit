@@ -1,8 +1,8 @@
 import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { SelectContextProvider } from "./select-context.js";
-import { useSelectStore } from "./select-store.js";
-import type { SelectStoreProps, SelectStoreValue } from "./select-store.js";
+import { SelectContextProvider } from "./select-context.tsx";
+import { useSelectStore } from "./select-store.ts";
+import type { SelectStoreProps, SelectStoreValue } from "./select-store.ts";
 
 type Value = SelectStoreValue;
 

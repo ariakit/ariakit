@@ -1,11 +1,11 @@
 import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
-import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useTooltipContext } from "./tooltip-context.js";
-import type { TooltipStore } from "./tooltip-store.js";
+import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
+import { usePopoverArrow } from "../popover/popover-arrow.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useTooltipContext } from "./tooltip-context.tsx";
+import type { TooltipStore } from "./tooltip-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

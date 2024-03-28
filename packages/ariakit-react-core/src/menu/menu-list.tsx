@@ -1,26 +1,26 @@
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { isHidden } from "../disclosure/disclosure-content.js";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.ts";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.ts";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
   useEvent,
   useId,
   useMergeRefs,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   MenuScopedContextProvider,
   useMenuProviderContext,
-} from "./menu-context.js";
-import type { MenuStore } from "./menu-store.js";
+} from "./menu-context.ts";
+import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

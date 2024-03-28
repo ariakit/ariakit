@@ -1,15 +1,15 @@
 import "./style.css";
 import { useMemo, useState } from "react";
-import { allFilters } from "../select-menu-default-open/all-filters.js";
+import { allFilters } from "../select-menu-default-open/all-filters.ts";
 import {
   FilterMenu,
   FilterMenuItem,
   FilterMenuSeparator,
-} from "../select-menu-default-open/filter-menu.jsx";
+} from "../select-menu-default-open/filter-menu.tsx";
 import {
   FilterSelect,
   FilterSelectItem,
-} from "../select-menu-default-open/filter-select.jsx";
+} from "../select-menu-default-open/filter-select.tsx";
 
 type Filters = Record<string, string | undefined>;
 

@@ -32,21 +32,21 @@ import {
   EmbeddedCheckout,
   EmbeddedCheckoutProvider,
 } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js/pure.js";
+import { loadStripe } from "@stripe/stripe-js/pure.ts";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { CheckCircle } from "icons/check-circle.jsx";
-import { Check } from "icons/check.jsx";
-import { ChevronRight } from "icons/chevron-right.jsx";
-import { Heart } from "icons/heart.jsx";
+import { CheckCircle } from "icons/check-circle.tsx";
+import { Check } from "icons/check.tsx";
+import { ChevronRight } from "icons/chevron-right.tsx";
+import { Heart } from "icons/heart.tsx";
 import Link from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
 import { twJoin, twMerge } from "tailwind-merge";
-import type { PlusPrice } from "utils/stripe.js";
-import { useMedia } from "utils/use-media.js";
-import { useSubscription } from "utils/use-subscription.js";
-import { Command } from "./command.jsx";
-import { useRootPathname } from "./root-pathname.jsx";
+import type { PlusPrice } from "utils/stripe.ts";
+import { useMedia } from "utils/use-media.ts";
+import { useSubscription } from "utils/use-subscription.ts";
+import { Command } from "./command.tsx";
+import { useRootPathname } from "./root-pathname.tsx";
 
 let stripePromise: ReturnType<typeof loadStripe> | null = null;
 

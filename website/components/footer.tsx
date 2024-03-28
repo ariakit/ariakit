@@ -1,10 +1,10 @@
 import { useId } from "react";
 import { cx } from "@ariakit/core/utils/misc";
 import { getPageTitle } from "build-pages/get-page-title.js";
-import { NewWindow } from "icons/new-window.js";
+import { NewWindow } from "icons/new-window.tsx";
 import Link from "next/link.js";
-import { tw } from "utils/tw.js";
-import { Logo } from "./logo.js";
+import { tw } from "utils/tw.ts";
+import { Logo } from "./logo.tsx";
 
 const style = {
   link: tw`

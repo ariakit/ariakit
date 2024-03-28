@@ -1,16 +1,16 @@
 import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
-import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
-import { useEvent, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { PopoverAnchorOptions } from "./popover-anchor.js";
-import { usePopoverAnchor } from "./popover-anchor.js";
+import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.ts";
+import { useDialogDisclosure } from "../dialog/dialog-disclosure.ts";
+import { useEvent, useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { PopoverAnchorOptions } from "./popover-anchor.ts";
+import { usePopoverAnchor } from "./popover-anchor.ts";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
-} from "./popover-context.js";
+} from "./popover-context.tsx";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

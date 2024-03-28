@@ -1,13 +1,13 @@
 import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
 import {
   CollectionScopedContextProvider,
   useCollectionProviderContext,
-} from "./collection-context.js";
-import type { CollectionStore } from "./collection-store.js";
+} from "./collection-context.tsx";
+import type { CollectionStore } from "./collection-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

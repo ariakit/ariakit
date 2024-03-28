@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { CheckboxCheckedContext } from "./checkbox-checked-context.js";
-import type { CheckboxStore } from "./checkbox-store.js";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { CheckboxCheckedContext } from "./checkbox-checked-context.ts";
+import type { CheckboxStore } from "./checkbox-store.ts";
 
 const TagName = "span" satisfies ElementType;
 type TagName = typeof TagName;

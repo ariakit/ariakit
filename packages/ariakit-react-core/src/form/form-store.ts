@@ -6,11 +6,11 @@ import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,
   CollectionStoreState,
-} from "../collection/collection-store.js";
-import { useCollectionStoreProps } from "../collection/collection-store.js";
-import { useEvent } from "../utils/hooks.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../collection/collection-store.ts";
+import { useCollectionStoreProps } from "../collection/collection-store.ts";
+import { useEvent } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useFormStoreProps<
   T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">,

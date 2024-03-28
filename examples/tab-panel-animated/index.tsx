@@ -1,6 +1,6 @@
 import "./style.css";
 import { useId } from "react";
-import { Tab, TabList, TabPanel, TabProvider } from "./animated-tabs.jsx";
+import { Tab, TabList, TabPanel, TabProvider } from "./animated-tabs.tsx";
 
 export default function Example() {
   const defaultSelectedId = useId();

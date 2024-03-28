@@ -1,12 +1,12 @@
 import type { ElementType } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { DisclosureOptions } from "../disclosure/disclosure.js";
-import { useDisclosure } from "../disclosure/disclosure.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useDialogProviderContext } from "./dialog-context.js";
-import type { DialogStore } from "./dialog-store.js";
+import type { DisclosureOptions } from "../disclosure/disclosure.ts";
+import { useDisclosure } from "../disclosure/disclosure.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useDialogProviderContext } from "./dialog-context.tsx";
+import type { DialogStore } from "./dialog-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

@@ -1,6 +1,6 @@
 import type { PageLink } from "build-pages/links.js";
 import invariant from "tiny-invariant";
-import { getTagSlug, getTags } from "./tag.js";
+import { getTagSlug, getTags } from "./tag.ts";
 
 const cache = new WeakMap<PageLink[], Map<string, boolean>>();
 const tags = getTags().map(getTagSlug);

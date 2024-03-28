@@ -1,1 +1,1 @@
-import "../select/test.js";
+import "../select/test.ts";

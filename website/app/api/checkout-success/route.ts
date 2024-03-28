@@ -1,12 +1,12 @@
 import { currentUser } from "@clerk/nextjs";
-import type { NextRequest } from "next/server.js";
-import { getStripeId } from "utils/clerk.js";
+import type { NextRequest } from "next/server.ts";
+import { getStripeId } from "utils/clerk.ts";
 import {
   cancelSubscription,
   filterPlusSubscriptions,
   getCheckout,
   listActiveSubscriptions,
-} from "utils/stripe.js";
+} from "utils/stripe.ts";
 import { z } from "zod";
 
 const paramsSchema = z

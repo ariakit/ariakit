@@ -1,16 +1,16 @@
 import { contains } from "@ariakit/core/utils/dom";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { chain, noop } from "@ariakit/core/utils/misc";
-import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.js";
-import { isBackdrop } from "./is-backdrop.js";
+import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.ts";
+import { isBackdrop } from "./is-backdrop.ts";
 import {
   assignStyle,
   orchestrate,
   setAttribute,
   setProperty,
-} from "./orchestrate.js";
-import { supportsInert } from "./supports-inert.js";
-import { walkTreeOutside } from "./walk-tree-outside.js";
+} from "./orchestrate.ts";
+import { supportsInert } from "./supports-inert.ts";
+import { walkTreeOutside } from "./walk-tree-outside.ts";
 
 type Elements = Array<Element | null>;
 

@@ -1,19 +1,19 @@
 import type {
   CollectionStore,
   CollectionStoreItem,
-} from "../collection/collection-store.js";
-import { createCollectionStore } from "../collection/collection-store.js";
-import type { ComboboxStore } from "../combobox/combobox-store.js";
+} from "../collection/collection-store.ts";
+import { createCollectionStore } from "../collection/collection-store.ts";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStore,
   CompositeStoreFunctions,
   CompositeStoreItem,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
   createStore,
@@ -21,8 +21,8 @@ import {
   omit,
   setup,
   sync,
-} from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+} from "../utils/store.ts";
+import type { SetState } from "../utils/types.ts";
 
 export function createTabStore({
   composite: parentComposite,

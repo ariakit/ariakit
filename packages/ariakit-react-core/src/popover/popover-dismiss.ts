@@ -1,10 +1,10 @@
 import type { ElementType } from "react";
-import type { DialogDismissOptions } from "../dialog/dialog-dismiss.js";
-import { useDialogDismiss } from "../dialog/dialog-dismiss.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { usePopoverScopedContext } from "./popover-context.js";
-import type { PopoverStore } from "./popover-store.js";
+import type { DialogDismissOptions } from "../dialog/dialog-dismiss.tsx";
+import { useDialogDismiss } from "../dialog/dialog-dismiss.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { usePopoverScopedContext } from "./popover-context.tsx";
+import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

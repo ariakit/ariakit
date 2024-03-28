@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import Square from "../select-grid/square.jsx";
+import Square from "../select-grid/square.tsx";
 import "./style.css";
 
 export default function Example() {

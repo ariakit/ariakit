@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import { getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { chain } from "@ariakit/core/utils/misc";
 import { isApple, isMac } from "@ariakit/core/utils/platform";
-import { assignStyle, setCSSProperty } from "./orchestrate.js";
-import { useRootDialog } from "./use-root-dialog.js";
+import { assignStyle, setCSSProperty } from "./orchestrate.ts";
+import { useRootDialog } from "./use-root-dialog.ts";
 
 function getPaddingProperty(documentElement: HTMLElement) {
   // RTL <body> scrollbar

@@ -1,4 +1,4 @@
-import { isBrowser, nextFrame, wrapAsync } from "./__utils.js";
+import { isBrowser, nextFrame, wrapAsync } from "./__utils.ts";
 
 const defaultMs = isBrowser ? 150 : 10;
 

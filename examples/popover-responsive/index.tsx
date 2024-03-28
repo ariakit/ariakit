@@ -1,6 +1,6 @@
 import "./style.css";
 import * as Ariakit from "@ariakit/react";
-import useMedia from "./use-media.js";
+import useMedia from "./use-media.ts";
 
 export default function Example() {
   const isLarge = useMedia("(min-width: 640px)", true);

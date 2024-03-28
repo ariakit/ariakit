@@ -1,13 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft } from "icons/arrow-left.jsx";
-import { ArrowRight } from "icons/arrow-right.jsx";
-import { NewWindow } from "icons/new-window.jsx";
-import { Refresh } from "icons/refresh.jsx";
+import { ArrowLeft } from "icons/arrow-left.tsx";
+import { ArrowRight } from "icons/arrow-right.tsx";
+import { NewWindow } from "icons/new-window.tsx";
+import { Refresh } from "icons/refresh.tsx";
 import Link from "next/link.js";
 import { flushSync } from "react-dom";
-import { tw } from "utils/tw.js";
-import { TooltipButton } from "./tooltip-button.jsx";
+import { tw } from "utils/tw.ts";
+import { TooltipButton } from "./tooltip-button.tsx";
 
 export interface PlaygroundBrowserProps {
   previewLink: string;

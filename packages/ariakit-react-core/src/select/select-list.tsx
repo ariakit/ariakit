@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { isHidden } from "../disclosure/disclosure-content.js";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.ts";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.ts";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   useAttribute,
   useBooleanEvent,
@@ -16,14 +16,14 @@ import {
   useId,
   useMergeRefs,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   SelectScopedContextProvider,
   useSelectProviderContext,
-} from "./select-context.js";
-import type { SelectStore } from "./select-store.js";
+} from "./select-context.tsx";
+import type { SelectStore } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

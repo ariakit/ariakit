@@ -1,8 +1,8 @@
-import { Mail } from "icons/mail.jsx";
-import { NewWindow } from "icons/new-window.jsx";
-import { Command } from "./command.jsx";
-import { InlineLink } from "./inline-link.jsx";
-import { NewsletterForm } from "./newsletter-form.jsx";
+import { Mail } from "icons/mail.tsx";
+import { NewWindow } from "icons/new-window.tsx";
+import { Command } from "./command.tsx";
+import { InlineLink } from "./inline-link.tsx";
+import { NewsletterForm } from "./newsletter-form.tsx";
 
 export function NewsletterSection() {
   return (

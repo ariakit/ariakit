@@ -4,17 +4,17 @@ import { getClosestFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { UndoManager } from "@ariakit/core/utils/undo";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { useEvent, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import { useEvent, useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   TagScopedContextProvider,
   useTagProviderContext,
-} from "./tag-context.js";
-import type { TagStore } from "./tag-store.js";
-import { useTouchDevice } from "./utils.js";
+} from "./tag-context.tsx";
+import type { TagStore } from "./tag-store.ts";
+import { useTouchDevice } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

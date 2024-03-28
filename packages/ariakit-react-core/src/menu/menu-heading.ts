@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
-import type { HovercardHeadingOptions } from "../hovercard/hovercard-heading.js";
-import { useHovercardHeading } from "../hovercard/hovercard-heading.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { MenuStore } from "./menu-store.js";
+import type { HovercardHeadingOptions } from "../hovercard/hovercard-heading.ts";
+import { useHovercardHeading } from "../hovercard/hovercard-heading.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "h1" satisfies ElementType;
 type TagName = typeof TagName;

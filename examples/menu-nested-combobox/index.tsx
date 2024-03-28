@@ -1,9 +1,9 @@
 import "./style.css";
 import { Fragment, startTransition, useMemo, useState } from "react";
-import { actions, defaultValues } from "./actions.js";
-import type { Action } from "./actions.js";
-import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.jsx";
-import { filterActions } from "./utils.js";
+import { actions, defaultValues } from "./actions.ts";
+import type { Action } from "./actions.ts";
+import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.tsx";
+import { filterActions } from "./utils.ts";
 
 function renderItems(items: Action[], group?: string) {
   return items.map((item, index) => {

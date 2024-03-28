@@ -1,18 +1,18 @@
 import type { ChangeEvent, ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { FocusableOptions } from "../focusable/focusable.js";
-import { useFocusable } from "../focusable/focusable.js";
-import { useEvent } from "../utils/hooks.js";
+import type { FocusableOptions } from "../focusable/focusable.ts";
+import { useFocusable } from "../focusable/focusable.ts";
+import { useEvent } from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useFormContext } from "./form-context.js";
-import type { FormControlOptions } from "./form-control.js";
-import { useFormControl } from "./form-control.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useFormContext } from "./form-context.tsx";
+import type { FormControlOptions } from "./form-control.ts";
+import { useFormControl } from "./form-control.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

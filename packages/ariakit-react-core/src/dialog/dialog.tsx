@@ -27,17 +27,17 @@ import {
 import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,
   useDisclosureContent,
-} from "../disclosure/disclosure-content.js";
-import { useFocusableContainer } from "../focusable/focusable-container.js";
-import type { FocusableOptions } from "../focusable/focusable.js";
-import { useFocusable } from "../focusable/focusable.js";
-import { HeadingLevel } from "../heading/heading-level.js";
-import type { PortalOptions } from "../portal/portal.js";
-import { usePortal } from "../portal/portal.js";
+} from "../disclosure/disclosure-content.tsx";
+import { useFocusableContainer } from "../focusable/focusable-container.tsx";
+import type { FocusableOptions } from "../focusable/focusable.ts";
+import { useFocusable } from "../focusable/focusable.ts";
+import { HeadingLevel } from "../heading/heading-level.tsx";
+import type { PortalOptions } from "../portal/portal.tsx";
+import { usePortal } from "../portal/portal.tsx";
 import {
   useBooleanEvent,
   useEvent,
@@ -46,27 +46,27 @@ import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { DialogBackdrop } from "./dialog-backdrop.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { DialogBackdrop } from "./dialog-backdrop.tsx";
 import {
   DialogDescriptionContext,
   DialogHeadingContext,
   DialogScopedContextProvider,
   useDialogProviderContext,
-} from "./dialog-context.js";
-import { useDialogStore } from "./dialog-store.js";
-import type { DialogStore } from "./dialog-store.js";
-import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
-import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
-import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
-import { supportsInert } from "./utils/supports-inert.js";
-import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
-import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
-import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
-import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.js";
+} from "./dialog-context.tsx";
+import { useDialogStore } from "./dialog-store.ts";
+import type { DialogStore } from "./dialog-store.ts";
+import { disableTree, disableTreeOutside } from "./utils/disable-tree.ts";
+import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
+import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
+import { supportsInert } from "./utils/supports-inert.ts";
+import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
+import { useNestedDialogs } from "./utils/use-nested-dialogs.tsx";
+import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.ts";
+import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

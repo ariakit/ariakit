@@ -1,12 +1,12 @@
 import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
-import type { ButtonOptions } from "../button/button.js";
-import { useButton } from "../button/button.js";
-import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useDialogScopedContext } from "./dialog-context.js";
-import type { DialogStore } from "./dialog-store.js";
+import type { ButtonOptions } from "../button/button.ts";
+import { useButton } from "../button/button.ts";
+import { useEvent } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useDialogScopedContext } from "./dialog-context.tsx";
+import type { DialogStore } from "./dialog-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

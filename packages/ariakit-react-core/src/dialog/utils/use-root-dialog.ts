@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { flushSync } from "react-dom";
-import { useForceUpdate } from "../../utils/hooks.js";
+import { useForceUpdate } from "../../utils/hooks.ts";
 
 interface Props {
   attribute: string;

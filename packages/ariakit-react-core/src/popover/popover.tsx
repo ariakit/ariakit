@@ -11,21 +11,21 @@ import {
   shift,
   size,
 } from "@floating-ui/dom";
-import type { DialogOptions } from "../dialog/dialog.js";
-import { createDialogComponent, useDialog } from "../dialog/dialog.js";
+import type { DialogOptions } from "../dialog/dialog.tsx";
+import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
 import {
   useEvent,
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
-} from "./popover-context.js";
-import type { PopoverStore } from "./popover-store.js";
+} from "./popover-context.tsx";
+import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

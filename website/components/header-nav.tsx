@@ -18,21 +18,21 @@ import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
 import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { track } from "@vercel/analytics";
-import type { PageContent } from "build-pages/contents.js";
+import type { PageContent } from "build-pages/contents.ts";
 import { getPageTitle, getSearchTitle } from "build-pages/get-page-title.js";
-import type { PageIndexDetail } from "build-pages/index.js";
-import pageIndex from "build-pages/index.js";
+import type { PageIndexDetail } from "build-pages/index.ts";
+import pageIndex from "build-pages/index.ts";
 import { groupBy } from "lodash-es";
 import { useSelectedLayoutSegments } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
-import { getPageIcon } from "utils/get-page-icon.jsx";
+import { getPageIcon } from "utils/get-page-icon.tsx";
 import {
   HeaderMenu,
   HeaderMenuGroup,
   HeaderMenuItem,
   HeaderMenuSeparator,
-} from "./header-menu.js";
-import type { HeaderMenuItemProps } from "./header-menu.js";
+} from "./header-menu.tsx";
+import type { HeaderMenuItemProps } from "./header-menu.tsx";
 
 type Data = Array<
   PageContent & {

@@ -5,25 +5,25 @@ import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { hasFocus } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeHoverOptions } from "../composite/composite-hover.js";
-import { useCompositeHover } from "../composite/composite-hover.js";
-import type { CompositeItemOptions } from "../composite/composite-item.js";
-import { useCompositeItem } from "../composite/composite-item.js";
-import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.js";
+import type { CompositeHoverOptions } from "../composite/composite-hover.ts";
+import { useCompositeHover } from "../composite/composite-hover.ts";
+import type { CompositeItemOptions } from "../composite/composite-item.tsx";
+import { useCompositeItem } from "../composite/composite-item.tsx";
+import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
   ComboboxListRoleContext,
   useComboboxScopedContext,
-} from "./combobox-context.js";
-import type { ComboboxStore } from "./combobox-store.js";
+} from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

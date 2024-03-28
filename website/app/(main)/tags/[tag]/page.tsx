@@ -1,13 +1,13 @@
-import { PageContainer } from "app/(main)/page-container.jsx";
-import { PageSection } from "app/(main)/page-section.jsx";
+import { PageContainer } from "app/(main)/page-container.tsx";
+import { PageSection } from "app/(main)/page-section.tsx";
 import { getPageTitle } from "build-pages/get-page-title.js";
-import { PageItem } from "components/page-item.jsx";
+import { PageItem } from "components/page-item.tsx";
 import { groupBy } from "lodash-es";
 import { notFound } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
-import { getPageIcon } from "utils/get-page-icon.jsx";
-import { getPagesByTag, getTagSlug, getTagTitle, getTags } from "utils/tag.js";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
+import { getPageIcon } from "utils/get-page-icon.tsx";
+import { getPagesByTag, getTagSlug, getTagTitle, getTags } from "utils/tag.ts";
 
 const tags = getTags();
 

@@ -1,24 +1,24 @@
 import { Children, cloneElement, isValidElement, useId } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import pageLinks from "build-pages/links.js";
-import type { PageIndexDetail, TableOfContents } from "build-pages/types.js";
+import type { PageIndexDetail, TableOfContents } from "build-pages/types.ts";
 import type { Element, ElementContent } from "hast";
-import { ArrowRight } from "icons/arrow-right.jsx";
-import { Hashtag } from "icons/hashtag.jsx";
-import { NewWindow } from "icons/new-window.jsx";
+import { ArrowRight } from "icons/arrow-right.tsx";
+import { Hashtag } from "icons/hashtag.tsx";
+import { NewWindow } from "icons/new-window.tsx";
 import Image from "next/image.js";
 import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
-import { isValidHref } from "utils/is-valid-href.js";
-import { AuthEnabled, NotSubscribed, Subscribed } from "./auth.jsx";
-import { Command } from "./command.jsx";
-import { InlineLink } from "./inline-link.jsx";
-import { PageCards } from "./page-cards.jsx";
-import { PageExample } from "./page-example.jsx";
-import { PageHovercardAnchor } from "./page-hovercard.jsx";
-import { PageTag, PageTagList } from "./page-tag.jsx";
-import { PageVideo } from "./page-video.jsx";
+import { isValidHref } from "utils/is-valid-href.ts";
+import { AuthEnabled, NotSubscribed, Subscribed } from "./auth.tsx";
+import { Command } from "./command.tsx";
+import { InlineLink } from "./inline-link.tsx";
+import { PageCards } from "./page-cards.tsx";
+import { PageExample } from "./page-example.tsx";
+import { PageHovercardAnchor } from "./page-hovercard.tsx";
+import { PageTag, PageTagList } from "./page-tag.tsx";
+import { PageVideo } from "./page-video.tsx";
 
 export interface PageHeadingProps extends ComponentPropsWithoutRef<"h1"> {
   node?: Element;

@@ -1,6 +1,6 @@
 import "./style.css";
 import { useState } from "react";
-import { Menu, MenuItemCheckbox } from "./menu.jsx";
+import { Menu, MenuItemCheckbox } from "./menu.tsx";
 
 export default function Example() {
   const [values, setValues] = useState({ watching: ["issues"] });

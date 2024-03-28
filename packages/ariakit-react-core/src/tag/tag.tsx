@@ -3,28 +3,28 @@ import { useCallback, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeItemOptions } from "../composite/composite-item.js";
-import { useCompositeItem } from "../composite/composite-item.js";
+import type { CompositeItemOptions } from "../composite/composite-item.tsx";
+import { useCompositeItem } from "../composite/composite-item.tsx";
 import {
   useBooleanEvent,
   useEvent,
   useId,
   useWrapElement,
-} from "../utils/hooks.js";
+} from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   TagRemoveIdContext,
   TagValueContext,
   useTagContext,
-} from "./tag-context.jsx";
-import type { TagStore } from "./tag-store.js";
-import { useTouchDevice } from "./utils.js";
+} from "./tag-context.tsx";
+import type { TagStore } from "./tag-store.ts";
+import { useTouchDevice } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

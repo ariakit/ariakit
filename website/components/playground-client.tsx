@@ -4,27 +4,27 @@ import type { ReactNode } from "react";
 import { cx, invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
-import { ChevronDown } from "icons/chevron-down.jsx";
-import { ChevronUp } from "icons/chevron-up.jsx";
-import { NewWindow } from "icons/new-window.jsx";
+import { ChevronDown } from "icons/chevron-down.tsx";
+import { ChevronUp } from "icons/chevron-up.tsx";
+import { NewWindow } from "icons/new-window.tsx";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
-import { tsToJsFilename } from "utils/ts-to-js-filename.js";
+import { tsToJsFilename } from "utils/ts-to-js-filename.ts";
 import {
   AuthEnabled,
   AuthLoading,
   NotSubscribed,
   Subscribed,
-} from "./auth.jsx";
-import { CodePlaceholder } from "./code-placeholder.jsx";
-import { Command } from "./command.jsx";
-import type { EditorProps } from "./editor.js";
-// import { Editor } from "./editor.js";
-import { PlaygroundBrowser } from "./playground-browser.jsx";
-import { PlaygroundToolbar } from "./playground-toolbar.jsx";
-import { PreviewToolbar } from "./preview-toolbar.jsx";
-import { TooltipButton } from "./tooltip-button.jsx";
+} from "./auth.tsx";
+import { CodePlaceholder } from "./code-placeholder.tsx";
+import { Command } from "./command.tsx";
+import type { EditorProps } from "./editor.ts";
+// import { Editor } from "./editor.ts";
+import { PlaygroundBrowser } from "./playground-browser.tsx";
+import { PlaygroundToolbar } from "./playground-toolbar.tsx";
+import { PreviewToolbar } from "./preview-toolbar.tsx";
+import { TooltipButton } from "./tooltip-button.tsx";
 
 export interface PlaygroundClientProps extends EditorProps {
   id: string;

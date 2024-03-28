@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
-import { useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { usePopoverProviderContext } from "./popover-context.js";
-import type { PopoverStore } from "./popover-store.js";
+import { useMergeRefs } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { usePopoverProviderContext } from "./popover-context.tsx";
+import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

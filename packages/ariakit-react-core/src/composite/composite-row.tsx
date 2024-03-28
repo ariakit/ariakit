@@ -1,14 +1,14 @@
 import { useMemo } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useId, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
+import { useId, useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
 import {
   CompositeRowContext,
   useCompositeContext,
-} from "./composite-context.js";
-import type { CompositeStore } from "./composite-store.js";
+} from "./composite-context.tsx";
+import type { CompositeStore } from "./composite-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

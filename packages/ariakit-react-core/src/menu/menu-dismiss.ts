@@ -1,10 +1,10 @@
 import type { ElementType } from "react";
-import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.js";
-import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useMenuScopedContext } from "./menu-context.js";
-import type { MenuStore } from "./menu-store.js";
+import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.ts";
+import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useMenuScopedContext } from "./menu-context.ts";
+import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

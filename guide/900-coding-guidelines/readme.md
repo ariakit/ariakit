@@ -56,7 +56,6 @@ JSDoc is also better merged with `interface`. For example, tags such as `@defaul
 
 In summary, according to the [TypeScript documentation](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces:~:text=If%20you%20would%20like%20a%20heuristic%2C%20use%20interface%20until%20you%20need%20to%20use%20features%20from%20type), it is recommended that you use `interface` until you need to use features from `type`.
 
-
 ## Name functions inside `forwardRef`
 
 When wrapping components with `React.forwardRef`, we pass a named function as an argument instead of an anonymous arrow function. This is because React DevTools uses the function name to determine the component's name, eliminating the need to set `displayName`:
@@ -136,10 +135,10 @@ When importing `.tsx` files, we use the `.jsx` extension for consistency and bet
 import "./component";
 
 // ❌ Bad
-import "./component.js";
+import "./component.ts";
 
 // ✅ Good
-import "./component.jsx";
+import "./component.tsx";
 ```
 
 ## Import style first

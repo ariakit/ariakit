@@ -29,15 +29,15 @@ import {
   useId,
   useMergeRefs,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
-import { createElement, forwardRef } from "../utils/system.jsx";
-import type { Options, Props } from "../utils/types.js";
-import { useCollectionContext } from "./collection-context.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useCollectionContext } from "./collection-context.tsx";
 import type {
   CollectionStore,
   CollectionStoreItem,
-} from "./collection-store.js";
+} from "./collection-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

@@ -5,8 +5,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import { Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import type * as monaco from "monaco-editor";
 import { bundledLanguages } from "shiki";
-import { tw } from "utils/tw.js";
-import { useMedia } from "utils/use-media.js";
+import { tw } from "utils/tw.ts";
+import { useMedia } from "utils/use-media.ts";
 
 export interface EditorProps {
   files: Record<string, string>;

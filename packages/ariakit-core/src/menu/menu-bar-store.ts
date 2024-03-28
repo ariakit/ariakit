@@ -2,9 +2,9 @@ import type {
   MenubarStoreFunctions,
   MenubarStoreOptions,
   MenubarStoreState,
-} from "../menubar/menubar-store.js";
-import { createMenubarStore } from "../menubar/menubar-store.js";
-import type { Store, StoreProps } from "../utils/store.js";
+} from "../menubar/menubar-store.ts";
+import { createMenubarStore } from "../menubar/menubar-store.ts";
+import type { Store, StoreProps } from "../utils/store.ts";
 
 /**
  * Creates a menu bar store.

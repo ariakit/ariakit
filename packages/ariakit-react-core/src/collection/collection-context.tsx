@@ -1,5 +1,5 @@
-import { createStoreContext } from "../utils/system.js";
-import type { CollectionStore } from "./collection-store.js";
+import { createStoreContext } from "../utils/system.tsx";
+import type { CollectionStore } from "./collection-store.ts";
 
 const ctx = createStoreContext<CollectionStore>();
 

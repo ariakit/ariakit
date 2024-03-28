@@ -2,24 +2,24 @@ import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
-import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
-import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
-import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
-import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
-import { Role } from "../role/role.js";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.ts";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.ts";
+import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.ts";
+import { useHovercardAnchor } from "../hovercard/hovercard-anchor.ts";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
+import { Role } from "../role/role.ts";
 import {
   useEvent,
   useId,
   useMergeRefs,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
-import type { MenuStore, MenuStoreState } from "./menu-store.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { MenuContextProvider, useMenuProviderContext } from "./menu-context.ts";
+import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName | "div";

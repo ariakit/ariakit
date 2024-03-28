@@ -1,4 +1,4 @@
-import { Nextjs } from "icons/nextjs.jsx";
+import { Nextjs } from "icons/nextjs.tsx";
 
 export default function Icon() {
   return (

@@ -1,11 +1,11 @@
 import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { SeparatorOptions } from "../separator/separator.js";
-import { useSeparator } from "../separator/separator.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useCompositeContext } from "./composite-context.js";
-import type { CompositeStore } from "./composite-store.js";
+import type { SeparatorOptions } from "../separator/separator.ts";
+import { useSeparator } from "../separator/separator.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useCompositeContext } from "./composite-context.tsx";
+import type { CompositeStore } from "./composite-store.ts";
 
 const TagName = "hr" satisfies ElementType;
 type TagName = typeof TagName;

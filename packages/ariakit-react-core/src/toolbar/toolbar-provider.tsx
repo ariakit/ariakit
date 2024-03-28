@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { ToolbarContextProvider } from "./toolbar-context.js";
-import { useToolbarStore } from "./toolbar-store.js";
-import type { ToolbarStoreProps } from "./toolbar-store.js";
+import { ToolbarContextProvider } from "./toolbar-context.tsx";
+import { useToolbarStore } from "./toolbar-store.ts";
+import type { ToolbarStoreProps } from "./toolbar-store.ts";
 
 /**
  * Provides a toolbar store to [Toolbar](https://ariakit.org/components/toolbar)

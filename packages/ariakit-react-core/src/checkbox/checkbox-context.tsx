@@ -1,5 +1,5 @@
-import { createStoreContext } from "../utils/system.js";
-import type { CheckboxStore } from "./checkbox-store.js";
+import { createStoreContext } from "../utils/system.tsx";
+import type { CheckboxStore } from "./checkbox-store.ts";
 
 const ctx = createStoreContext<CheckboxStore>();
 

@@ -2,7 +2,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import _sdk from "@stackblitz/sdk";
 import type { ProjectFiles } from "@stackblitz/sdk";
 import { pick } from "lodash-es";
-import { tsToJsFilename } from "./ts-to-js-filename.js";
+import { tsToJsFilename } from "./ts-to-js-filename.ts";
 
 const sdk = _sdk as unknown as (typeof _sdk)["default"];
 

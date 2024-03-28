@@ -7,12 +7,12 @@ import {
   normalizeString,
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
-import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { useCompositeContext } from "./composite-context.js";
-import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
-import { flipItems } from "./utils.js";
+import { useEvent } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useCompositeContext } from "./composite-context.tsx";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
+import { flipItems } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

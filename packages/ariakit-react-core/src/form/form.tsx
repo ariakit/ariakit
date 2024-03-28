@@ -9,11 +9,11 @@ import {
   useTagName,
   useUpdateEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { FormScopedContextProvider, useFormContext } from "./form-context.js";
-import type { FormStore, FormStoreState } from "./form-store.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { FormScopedContextProvider, useFormContext } from "./form-context.tsx";
+import type { FormStore, FormStoreState } from "./form-store.ts";
 
 const TagName = "form" satisfies ElementType;
 type TagName = typeof TagName;

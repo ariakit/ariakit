@@ -3,18 +3,18 @@ import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CollectionItemOptions } from "../collection/collection-item.js";
-import { useCollectionItem } from "../collection/collection-item.js";
-import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.js";
+import type { CollectionItemOptions } from "../collection/collection-item.ts";
+import { useCollectionItem } from "../collection/collection-item.ts";
+import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useFormContext } from "./form-context.js";
-import type { FormStore } from "./form-store.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useFormContext } from "./form-context.tsx";
+import type { FormStore } from "./form-store.ts";
 
 const TagName = "label" satisfies ElementType;
 type TagName = typeof TagName;

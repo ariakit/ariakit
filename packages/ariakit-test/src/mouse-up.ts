@@ -1,7 +1,7 @@
 import { isVisible } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import { wrapAsync } from "./__utils.js";
-import { dispatch } from "./dispatch.js";
+import { wrapAsync } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
 
 export function mouseUp(element: Element | null, options?: MouseEventInit) {
   return wrapAsync(async () => {

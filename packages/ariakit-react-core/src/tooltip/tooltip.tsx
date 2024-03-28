@@ -1,17 +1,17 @@
 import type { ElementType } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
-import { createDialogComponent } from "../dialog/dialog.js";
-import { useHovercard } from "../hovercard/hovercard.js";
-import type { HovercardOptions } from "../hovercard/hovercard.js";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import { createDialogComponent } from "../dialog/dialog.tsx";
+import { useHovercard } from "../hovercard/hovercard.tsx";
+import type { HovercardOptions } from "../hovercard/hovercard.tsx";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   TooltipScopedContextProvider,
   useTooltipProviderContext,
-} from "./tooltip-context.js";
-import type { TooltipStore } from "./tooltip-store.js";
+} from "./tooltip-context.tsx";
+import type { TooltipStore } from "./tooltip-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

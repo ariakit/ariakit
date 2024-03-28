@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { HovercardContextProvider } from "./hovercard-context.js";
-import { useHovercardStore } from "./hovercard-store.js";
-import type { HovercardStoreProps } from "./hovercard-store.js";
+import { HovercardContextProvider } from "./hovercard-context.tsx";
+import { useHovercardStore } from "./hovercard-store.ts";
+import type { HovercardStoreProps } from "./hovercard-store.ts";
 
 /**
  * Provides a hovercard store to

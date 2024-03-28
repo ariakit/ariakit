@@ -1,11 +1,11 @@
 import type { PropsWithChildren, ReactNode } from "react";
-import { AuthProvider } from "components/auth.jsx";
-import { Footer } from "components/footer.js";
-import { Header } from "components/header.js";
-import { NewsletterSection } from "components/newsletter-section.jsx";
-import { QueryProvider } from "components/query-provider.jsx";
-import { RootPathnameProvider } from "components/root-pathname.jsx";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+import { AuthProvider } from "components/auth.tsx";
+import { Footer } from "components/footer.tsx";
+import { Header } from "components/header.tsx";
+import { NewsletterSection } from "components/newsletter-section.tsx";
+import { QueryProvider } from "components/query-provider.tsx";
+import { RootPathnameProvider } from "components/root-pathname.tsx";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
 
 export function generateMetadata() {
   return getNextPageMetadata();

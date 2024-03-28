@@ -1,10 +1,10 @@
 import type { ElementType } from "react";
-import type { PopoverArrowOptions } from "../popover/popover-arrow.js";
-import { usePopoverArrow } from "../popover/popover-arrow.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useHovercardContext } from "./hovercard-context.js";
-import type { HovercardStore } from "./hovercard-store.js";
+import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
+import { usePopoverArrow } from "../popover/popover-arrow.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useHovercardContext } from "./hovercard-context.tsx";
+import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

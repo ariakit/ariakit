@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
-import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.js";
-import { useCompositeGroupLabel } from "../composite/composite-group-label.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { ComboboxStore } from "./combobox-store.js";
+import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.ts";
+import { useCompositeGroupLabel } from "../composite/composite-group-label.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

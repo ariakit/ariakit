@@ -5,9 +5,9 @@ import Link from "next/link.js";
 import { FontStyle, bundledLanguages, codeToTokensBase } from "shiki";
 import type { BundledLanguage, SpecialLanguage, ThemedToken } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
-import { isValidHref } from "utils/is-valid-href.js";
-import { CopyToClipboard } from "./copy-to-clipboard.js";
-import { PageHovercardAnchor } from "./page-hovercard.jsx";
+import { isValidHref } from "utils/is-valid-href.ts";
+import { CopyToClipboard } from "./copy-to-clipboard.tsx";
+import { PageHovercardAnchor } from "./page-hovercard.tsx";
 
 interface Props {
   code: string;

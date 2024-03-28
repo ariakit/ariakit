@@ -1,7 +1,7 @@
 import { chain } from "@ariakit/core/utils/misc";
-import { isBackdrop } from "./is-backdrop.js";
-import { setProperty } from "./orchestrate.js";
-import { walkTreeOutside } from "./walk-tree-outside.js";
+import { isBackdrop } from "./is-backdrop.ts";
+import { setProperty } from "./orchestrate.ts";
+import { walkTreeOutside } from "./walk-tree-outside.ts";
 
 type Elements = Array<Element | null>;
 

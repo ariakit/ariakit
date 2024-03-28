@@ -7,8 +7,8 @@ import {
   ComboboxGroup,
   ComboboxItem,
   ComboboxSeparator,
-} from "./combobox.jsx";
-import food from "./food.js";
+} from "./combobox.tsx";
+import food from "./food.ts";
 
 export default function Example() {
   const [value, setValue] = React.useState("");

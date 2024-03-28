@@ -1,6 +1,6 @@
 // @ts-ignore
 import contents from "../.pages/contents.json";
-import type { PageContent, PageContents } from "./types.js";
+import type { PageContent, PageContents } from "./types.ts";
 
 export type { PageContent, PageContents };
 

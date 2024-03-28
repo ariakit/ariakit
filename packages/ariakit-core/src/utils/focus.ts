@@ -5,7 +5,7 @@ import {
   isFrame,
   isVisible,
   matches,
-} from "./dom.js";
+} from "./dom.ts";
 
 const selector =
   "input:not([type='hidden']):not([disabled]), select:not([disabled]), " +

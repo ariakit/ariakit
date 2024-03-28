@@ -4,12 +4,12 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import { wrapAsync } from "./__utils.js";
-import { blur } from "./blur.js";
-import { dispatch } from "./dispatch.js";
-import { focus } from "./focus.js";
-import { sleep } from "./sleep.js";
-import { type } from "./type.js";
+import { wrapAsync } from "./__utils.ts";
+import { blur } from "./blur.ts";
+import { dispatch } from "./dispatch.ts";
+import { focus } from "./focus.ts";
+import { sleep } from "./sleep.ts";
+import { type } from "./type.ts";
 
 type KeyActionMap = Record<
   string,

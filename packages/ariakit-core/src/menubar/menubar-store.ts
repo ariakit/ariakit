@@ -2,11 +2,11 @@ import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
-import { defaultValue } from "../utils/misc.js";
-import { createStore } from "../utils/store.js";
-import type { Store, StoreProps } from "../utils/store.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
+import { defaultValue } from "../utils/misc.ts";
+import { createStore } from "../utils/store.ts";
+import type { Store, StoreProps } from "../utils/store.ts";
 
 /**
  * Creates a menubar store.

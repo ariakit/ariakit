@@ -1,15 +1,15 @@
 import type { ElementType } from "react";
-import type { CompositeItemOptions } from "../composite/composite-item.js";
-import { useCompositeItem } from "../composite/composite-item.js";
+import type { CompositeItemOptions } from "../composite/composite-item.tsx";
+import { useCompositeItem } from "../composite/composite-item.tsx";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useToolbarContext } from "./toolbar-context.js";
-import type { ToolbarStore } from "./toolbar-store.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useToolbarContext } from "./toolbar-context.tsx";
+import type { ToolbarStore } from "./toolbar-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

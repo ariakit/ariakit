@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
-import type { PopoverHeadingOptions } from "../popover/popover-heading.js";
-import { usePopoverHeading } from "../popover/popover-heading.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { HovercardStore } from "./hovercard-store.js";
+import type { PopoverHeadingOptions } from "../popover/popover-heading.ts";
+import { usePopoverHeading } from "../popover/popover-heading.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "h1" satisfies ElementType;
 type TagName = typeof TagName;

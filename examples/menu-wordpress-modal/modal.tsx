@@ -2,7 +2,7 @@ import { createContext, forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { Modal as WPModal } from "@wordpress/components";
 import clsx from "clsx";
-import { MenuContext } from "./menu.jsx";
+import { MenuContext } from "./menu.tsx";
 
 export const ModalContext = createContext(false);
 

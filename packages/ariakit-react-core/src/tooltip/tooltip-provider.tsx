@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { TooltipContextProvider } from "./tooltip-context.js";
-import { useTooltipStore } from "./tooltip-store.js";
-import type { TooltipStoreProps } from "./tooltip-store.js";
+import { TooltipContextProvider } from "./tooltip-context.tsx";
+import { useTooltipStore } from "./tooltip-store.ts";
+import type { TooltipStoreProps } from "./tooltip-store.ts";
 
 /**
  * Provides a tooltip store to [Tooltip](https://ariakit.org/components/tooltip)

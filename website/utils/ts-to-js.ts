@@ -3,9 +3,9 @@ import { transformFromAstSync } from "@babel/core";
 import type { TransformOptions } from "@babel/core";
 import { format } from "prettier";
 import { parse, print } from "recast";
-import _getBabelOptions from "recast/parsers/_babel_options.js";
-import type { Overrides } from "recast/parsers/_babel_options.js";
-import { parser as babelParser } from "recast/parsers/babel.js";
+import _getBabelOptions from "recast/parsers/_babel_options.ts";
+import type { Overrides } from "recast/parsers/_babel_options.ts";
+import { parser as babelParser } from "recast/parsers/babel.ts";
 
 const getBabelOptions =
   _getBabelOptions as unknown as (typeof _getBabelOptions)["default"];

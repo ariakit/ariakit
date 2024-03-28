@@ -22,7 +22,8 @@ function getBuildDir(buildDir) {
 
 /** @param {string} path */
 function pathToImport(path) {
-  return path.replace(/\.ts(x?)$/, ".js$1");
+  return path;
+  // return path.replace(/\.ts(x?)$/, ".js$1");
 }
 
 /**

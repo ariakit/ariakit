@@ -9,16 +9,16 @@ import {
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
 import { createPortal } from "react-dom";
-import { FocusTrap } from "../focus-trap/focus-trap.js";
+import { FocusTrap } from "../focus-trap/focus-trap.ts";
 import {
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { setRef } from "../utils/misc.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { PortalContext } from "./portal-context.js";
+} from "../utils/hooks.ts";
+import { setRef } from "../utils/misc.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { PortalContext } from "./portal-context.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

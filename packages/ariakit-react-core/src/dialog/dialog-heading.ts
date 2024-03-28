@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import type { ElementType } from "react";
-import type { HeadingOptions } from "../heading/heading.js";
-import { useHeading } from "../heading/heading.js";
-import { useId, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { DialogHeadingContext } from "./dialog-context.js";
-import type { DialogStore } from "./dialog-store.js";
+import type { HeadingOptions } from "../heading/heading.tsx";
+import { useHeading } from "../heading/heading.tsx";
+import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { DialogHeadingContext } from "./dialog-context.tsx";
+import type { DialogStore } from "./dialog-store.ts";
 
 const TagName = "h1" satisfies ElementType;
 type TagName = typeof TagName;

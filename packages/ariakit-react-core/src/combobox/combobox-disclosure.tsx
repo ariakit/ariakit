@@ -1,12 +1,12 @@
 import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
-import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
-import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useComboboxProviderContext } from "./combobox-context.js";
-import type { ComboboxStore } from "./combobox-store.js";
+import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.ts";
+import { useDialogDisclosure } from "../dialog/dialog-disclosure.ts";
+import { useEvent } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
