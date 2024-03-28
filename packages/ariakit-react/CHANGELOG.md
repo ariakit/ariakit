@@ -1,5 +1,19 @@
 # @ariakit/react
 
+## 0.4.5
+
+### Multi-selectable Combobox with inline autocomplete
+
+When rendering a [Multi-selectable Combobox](https://ariakit.org/examples/combobox-multiple) with the [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete) prop set to `"inline"` or `"both"`, the completion string will no longer be inserted into the input upon deselecting an item. This is because the completion string generally represents an addition action, whereas deselecting an item is a removal action.
+
+### Other updates
+
+- Updated [`Combobox`](https://ariakit.org/reference/combobox) to no longer use `ReactDOM.flushSync` when updating the value.
+- Added new [`resetValueOnSelect`](https://ariakit.org/reference/combobox-item#resetvalueonselect) prop to [`ComboboxItem`](https://ariakit.org/reference/combobox-item).
+- Added new [`resetValue`](https://ariakit.org/reference/use-combobox-store#resetvalue) method to combobox store.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.5`
+
 ## 0.4.4
 
 ### Combobox `autoFocusOnHide` behavior
