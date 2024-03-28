@@ -179,7 +179,7 @@
     "rimraf": "5.0.5",
     "sharp": "0.33.3",
     "shiki": "1.2.0",
-    "stripe": "14.22.0",
+    "stripe": "14.23.0",
     "stylelint": "16.3.1",
     "stylelint-config-standard": "36.0.0",
     "stylis": "4.3.1",
