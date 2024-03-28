@@ -103,7 +103,7 @@
     "@types/node": "20.11.30",
     "@types/postcss-import": "14.0.3",
     "@types/react": "18.2.73",
-    "@types/react-dom": "18.2.22",
+    "@types/react-dom": "18.2.23",
     "@types/stylis": "4.2.5",
     "@types/textarea-caret": "3.0.3",
     "@types/use-sync-external-store": "0.0.6",
