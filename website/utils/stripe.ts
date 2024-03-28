@@ -231,7 +231,7 @@ export async function getActivePlusPrice(customer?: string) {
     if (!priceId) continue;
     const priceProduct = charge.payment_intent.metadata.product;
     if (priceProduct !== product.id) continue;
-    const price = plusPrices.find((price) => price.id === priceId);
+    const price = await stripe.prices.retrieve(priceId);
     if (!price) continue;
     return Object.assign(price, { product });
   }

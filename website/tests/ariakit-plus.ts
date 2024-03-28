@@ -77,6 +77,56 @@ async function fillSignUp(page: Page, options: AuthOptions = {}) {
   return addCurrentUser(page);
 }
 
+async function createCustomerWithOneTimePurchase(
+  lookupKey: string,
+  options: AuthOptions = {},
+) {
+  const stripe = getStripeClient();
+  const clerk = getClerkClient();
+
+  const email = options.email || generateUserEmail();
+  const password = options.password || DEFAULT_PASSWORD;
+
+  const customer = await stripe.customers.create(
+    { email },
+    { idempotencyKey: email },
+  );
+
+  await clerk.users.createUser({
+    emailAddress: [email],
+    password,
+    publicMetadata: { stripeId: customer.id },
+  });
+
+  const prices = await stripe.prices.list({ lookup_keys: [lookupKey] });
+  const price = prices.data[0];
+  if (!price) {
+    throw new Error(`No price found for lookup key ${lookupKey}`);
+  }
+
+  const coupon = await stripe.coupons.create({
+    percent_off: 100,
+    duration: "forever",
+    max_redemptions: 1,
+  });
+
+  await stripe.invoiceItems.create({
+    customer: customer.id,
+    price: price.id,
+    quantity: 1,
+    discounts: [{ coupon: coupon.id }],
+  });
+
+  const invoice = await stripe.invoices.create({
+    customer: customer.id,
+    pending_invoice_items_behavior: "include",
+  });
+  await stripe.invoices.pay(invoice.id);
+  await stripe.coupons.del(coupon.id);
+
+  return customer;
+}
+
 async function createCustomerWithSubscription(
   interval: "month" | "year",
   options: AuthOptions = {},
@@ -240,6 +290,23 @@ for (const plan of ["month", "year"] as const) {
     await expect(q.menuitem("Billing")).toBeVisible();
   });
 }
+
+test("old one-time purchaser still has access to Plus", async ({ page }) => {
+  test.setTimeout(60_000);
+
+  const q = query(page);
+  await page.goto("/sign-in", { waitUntil: "networkidle" });
+
+  const email = generateUserEmail();
+  await createCustomerWithOneTimePurchase("ariakit-plus-one-time-240", {
+    email,
+  });
+  await fillSignIn(page, { email, redirectUrl: "/" });
+
+  await q.button("Plus").click();
+  await q.menuitem("Benefits").click();
+  await expect(q.text("Purchased")).toBeVisible();
+});
 
 test("purchase Plus from /plus, sign out, sign in again, and access the billing page", async ({
   page,
