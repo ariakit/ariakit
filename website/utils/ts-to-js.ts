@@ -30,8 +30,11 @@ export async function tsToJs(code: string) {
     plugins: [
       "@babel/plugin-transform-typescript",
       [
-        "babel-plugin-replace-import-extension",
-        { extMapping: { ".ts": ".js", ".tsx": ".jsx" } },
+        "babel-plugin-transform-rewrite-imports",
+        {
+          silent: true,
+          replaceExtensions: { ".ts": ".js", ".tsx": ".jsx" },
+        },
       ],
     ],
     configFile: false,
