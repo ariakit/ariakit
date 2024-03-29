@@ -167,7 +167,7 @@ export function PlaygroundClient({
   }, [collapsed, selectedId]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 md:gap-6">
+    <div className="flex flex-col items-center justify-center gap-4 md:gap-6 [[data-level='1']_&]:md:mt-12">
       {preview && (
         <div
           className={twJoin(
@@ -202,7 +202,10 @@ export function PlaygroundClient({
             className={twJoin(
               "flex h-full w-full flex-1 flex-col items-center justify-center overflow-x-auto",
               type === "wide"
-                ? ["min-h-[240px] p-6 md:p-12", previewLink && "md:pt-10"]
+                ? [
+                    "min-h-[240px] p-6 md:p-12 [[data-level='1']_&]:md:min-h-[320px]",
+                    previewLink && "md:pt-10",
+                  ]
                 : "p-4 md:p-6",
             )}
           >
@@ -247,7 +250,7 @@ export function PlaygroundClient({
           </AuthEnabled>
         </div>
       )}
-      <div className="w-full max-w-[832px] rounded-lg border-none border-black/[15%] dark:border-gray-650 md:rounded-xl">
+      <div className="w-full max-w-[832px] rounded-lg border-none border-black/[15%] dark:border-gray-650 md:rounded-xl [[data-level='1']_&]:max-w-[1040px]">
         <div className="relative z-[12] flex gap-2 rounded-t-[inherit] border border-[inherit] bg-gray-100 dark:bg-gray-750">
           <TabList
             store={tab}
@@ -280,14 +283,14 @@ export function PlaygroundClient({
               "relative overflow-hidden rounded-b-[inherit] border border-t-0",
               "border-[inherit] focus-visible:z-[13] focus-visible:ariakit-outline-input",
               collapsed
-                ? "max-h-64 [&_pre]:!overflow-hidden"
+                ? "max-h-64 [&_pre]:!overflow-hidden [[data-level='1']_&]:md:max-h-80"
                 : "max-h-[min(max(calc(100vh-640px),480px),800px)]",
             )}
           >
             {subscriptionOnly ? (
               <AuthEnabled>
                 <AuthLoading>
-                  <div className="relative h-64 bg-white dark:bg-gray-850">
+                  <div className="relative h-64 bg-white dark:bg-gray-850 [[data-level='1']_&]:md:h-80">
                     <div className="absolute left-0 top-0 p-4">
                       <CodePlaceholder />
                     </div>
@@ -295,7 +298,7 @@ export function PlaygroundClient({
                 </AuthLoading>
                 <Subscribed>{codeBlockElement}</Subscribed>
                 <NotSubscribed>
-                  <div className="relative z-[1] flex h-64 flex-col items-center justify-center bg-white p-4 dark:bg-gray-850">
+                  <div className="relative z-[1] flex h-64 flex-col items-center justify-center bg-white p-4 dark:bg-gray-850 [[data-level='1']_&]:md:h-80">
                     <div className="absolute left-0 top-0 p-4">
                       <CodePlaceholder />
                     </div>

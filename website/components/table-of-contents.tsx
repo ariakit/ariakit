@@ -60,7 +60,7 @@ export function TableOfContents({
   return (
     <>
       {isLarge && children}
-      <div className="sticky top-14 z-30 mt-8 flex h-0 w-full justify-end px-3 md:hidden">
+      <div className="sticky top-14 z-30 mt-8 flex h-0 w-full justify-end px-3 md:hidden [&+*]:-mt-6">
         <Ariakit.PopoverDisclosure
           store={popover}
           className="flex h-10 w-10 items-center justify-center rounded-lg bg-transparent hover:bg-black/5 aria-expanded:bg-black/10 dark:hover:bg-white/5 dark:aria-expanded:bg-white/10 [&:focus-visible]:ariakit-outline-input"

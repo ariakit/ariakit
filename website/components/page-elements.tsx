@@ -17,6 +17,7 @@ import { InlineLink } from "./inline-link.tsx";
 import { PageCards } from "./page-cards.tsx";
 import { PageExample } from "./page-example.tsx";
 import { PageHovercardAnchor } from "./page-hovercard.tsx";
+import { PageSidebar } from "./page-sidebar.tsx";
 import { PageTag, PageTagList } from "./page-tag.tsx";
 import { PageVideo } from "./page-video.tsx";
 
@@ -28,7 +29,7 @@ export interface PageHeadingProps extends ComponentPropsWithoutRef<"h1"> {
 export function PageHeading({ node, level, ...props }: PageHeadingProps) {
   const className = twJoin(
     // base styles
-    "text-black dark:text-white tracking-[-0.035em] dark:tracking-[-0.015em]",
+    "text-black text-pretty dark:text-white tracking-[-0.035em] dark:tracking-[-0.015em]",
     "[&_code]:font-monospace [&_code]:rounded [&_code]:px-[0.2em] [&_code]:py-[0.15em]",
     "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%]",
     // sticky styles
@@ -45,7 +46,11 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
   );
 
   if (level === 1) {
-    return <h1 {...props} className={className} />;
+    return (
+      <h1 {...props} className={className}>
+        <span className="max-w-3xl">{props.children}</span>
+      </h1>
+    );
   }
 
   if (level === 4) {
@@ -69,7 +74,7 @@ export interface PageParagraphProps extends ComponentPropsWithoutRef<"p"> {
 export function PageParagraph({ node, ...props }: PageParagraphProps) {
   const className = twJoin(
     "dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]",
-    "[p&_code]:rounded [p&_code]:text-[0.9375em]",
+    "[p&_code]:rounded [p&_code]:text-[0.9375em] text-pretty",
     "[p&_code]:px-[0.25em] [p&_code]:py-[0.2em]",
     "[p&_code]:bg-black/[7.5%] dark:[p&_code]:bg-white/[7.5%]",
     "[p&_code]:font-monospace",
@@ -102,7 +107,8 @@ export function PageAside({ node, title, ...props }: PageAsideProps) {
   const className = twJoin(
     "flex flex-col items-center justify-center w-full gap-4 p-4 pl-5 sm:p-8",
     "rounded-lg sm:rounded-xl !rounded-l relative overflow-hidden",
-    "!max-w-[832px] [&>*]:max-w-3xl [&>*]:w-full",
+    "!max-w-[832px] *:max-w-3xl *:w-full",
+    "[[data-level='1']_&]:!max-w-6xl [[data-level='1']_&]:*:max-w-[1040px]",
     "before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1",
 
     "data-[type=danger]:bg-red-100/70",
@@ -152,6 +158,9 @@ export function PageDescription({
 
   return cloneElement(paragraph, {
     ...props,
+    children: (
+      <span className="block max-w-3xl">{paragraph.props.children}</span>
+    ),
     className: twJoin(
       "-translate-y-2 text-lg sm:text-xl sm:leading-8 !text-black/70 dark:!text-white/60",
       paragraph.props.className,
@@ -292,10 +301,11 @@ export function PageSection({
       {...props}
       className={twJoin(
         "flex w-full flex-col items-center justify-center gap-8 [[data-dialog]_&]:gap-5",
-        "scroll-mt-16 md:scroll-mt-24 [&>*]:w-full [&>*]:max-w-3xl",
+        "scroll-mt-16 *:w-full md:scroll-mt-24",
         `data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2`,
         "[[data-dialog]_&]:first-of-type:mt-0 [[data-dialog]_&]:data-[level='2']:mt-2",
         "[[data-dialog]_&]:bg-inherit",
+        level === 1 ? "*:max-w-[1040px]" : "*:max-w-3xl",
         props.className,
       )}
     />
@@ -419,6 +429,22 @@ export function PageDiv({
         plus={tags.includes("Plus")}
         tableOfContents={tableOfContents}
       />
+    );
+  }
+  if (node?.properties?.dataSections != null) {
+    return (
+      <div
+        {...props}
+        className={twJoin(
+          "flex w-screen flex-col items-start justify-center md:mt-12 md:flex-row-reverse",
+          props.className,
+        )}
+      >
+        {tableOfContents && <PageSidebar tableOfContents={tableOfContents} />}
+        <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 px-3 md:px-4 lg:px-8">
+          {props.children}
+        </div>
+      </div>
     );
   }
   if (node?.properties?.dataDescription != null) {

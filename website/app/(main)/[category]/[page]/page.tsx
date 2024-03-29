@@ -93,17 +93,17 @@ export default async function Page({ params }: PageProps) {
 
   const tableOfContentsData = tree.data?.tableOfContents as TableOfContentsData;
   const tableOfContents: TableOfContentsData = [
-    {
-      id: "",
-      href: `/${category}`,
-      text: categoryDetail.title,
-    },
+    // {
+    //   id: "",
+    //   href: `/${category}`,
+    //   text: categoryDetail.title,
+    // },
     {
       id: "",
       href: "#",
       text: pageDetail?.title ?? page,
-      children: tableOfContentsData,
     },
+    ...tableOfContentsData,
   ];
 
   const sortedIndex = Object.values(pageIndex).flatMap((item) =>
@@ -150,12 +150,14 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <div className="flex flex-col items-start justify-center md:flex-row-reverse">
-      <PageSidebar tableOfContents={tableOfContents}>
+      {/* <PageSidebar tableOfContents={tableOfContents}>
         {nextPageLink}
-      </PageSidebar>
-      <main className="relative flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8">
+      </PageSidebar> */}
+      {/* <main className="relative flex w-full min-w-[1px] max-w-7xl flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8"> */}
+      <main className="relative mt-12 flex w-full min-w-[1px] max-w-7xl flex-col items-center gap-8 px-3 md:mt-16 md:px-4 lg:px-8">
+        {/* <PageSidebar tableOfContents={tableOfContents} /> */}
         <PageMarkdown
-          tableOfContents={tableOfContentsData}
+          tableOfContents={tableOfContents}
           category={category}
           page={page}
         />

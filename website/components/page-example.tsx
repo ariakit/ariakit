@@ -92,7 +92,7 @@ export async function PageExample({
       className={cx(
         type === "code" && "!max-w-[832px]",
         type === "compact" && "!max-w-[832px]",
-        type === "wide" && "!max-w-5xl",
+        type === "wide" && "!max-w-5xl [[data-level='1']_&]:!max-w-6xl",
       )}
     >
       <Playground
