@@ -231,7 +231,7 @@ export function PlaygroundClient({
             className={twJoin(
               "w-full overflow-hidden rounded-lg border border-gray-300 bg-gray-150 dark:border-gray-650 dark:bg-gray-850",
               type === "wide"
-                ? "h-[480px] md:rounded-2xl"
+                ? "h-[560px] md:rounded-2xl"
                 : "h-[320px] md:rounded-xl",
             )}
           >
