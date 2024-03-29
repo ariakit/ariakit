@@ -25,7 +25,6 @@ import { PageExample } from "./page-example.tsx";
 import { PageHovercardAnchor } from "./page-hovercard.tsx";
 import { PageSidebar } from "./page-sidebar.tsx";
 import { PageTag, PageTagList } from "./page-tag.tsx";
-import { PageVideo } from "./page-video.tsx";
 
 export interface PageHeadingProps extends ComponentPropsWithoutRef<"h1"> {
   node?: Element;
@@ -355,72 +354,63 @@ export function PageSection({
           {!!tableOfContents?.length && (
             <AuthEnabled>
               <NotSubscribed>
-                <PageSection
-                  level={2}
-                  id="learn-more-about-this-example"
-                  className="!mt-12 [--size-lg:1104px] [--size-md:1040px] [--size-xl:1232px]"
-                >
-                  <PageHeading level={2} id="learn-more-about-this-example">
-                    Learn more about this example
-                  </PageHeading>
-                  <PageParagraph>
-                    This is a new example exclusive to Ariakit Plus subscribers.
-                    In addition to gaining access to the complete source code
-                    above, you will also have the opportunity to delve deeper
-                    into this example through the following topics:
-                  </PageParagraph>
-                  <PageList ordered={false}>
-                    {tableOfContents.map((item, index) => (
-                      <PageListItem key={item.id} index={index} ordered={false}>
-                        <PageStrong>{item.text}</PageStrong>
-                      </PageListItem>
-                    ))}
-                  </PageList>
-                  <div className="max-w-[--size-md]">
-                    <div className="max-w-[--size-content]">
-                      {!!media?.length && (
-                        <div
-                          className={twJoin(
-                            "relative grid max-h-[200px] gap-1 overflow-hidden rounded-t-xl after:absolute after:inset-0 after:bg-gradient-to-t after:from-gray-50 after:from-10% after:to-transparent dark:after:from-gray-800 dark:after:via-80% sm:max-h-[240px] md:max-h-[280px]",
-                            media.length === 1 && "grid-cols-1",
-                            media.length === 2 && "grid-cols-2",
-                            media.length >= 3 && "grid-cols-3",
-                          )}
-                        >
-                          {media.slice(0, 3).map((item) => {
-                            if (item.type === "video") {
-                              return (
-                                <PageVideo
-                                  key={item.src}
-                                  {...item}
-                                  className="!rounded-none"
-                                />
-                              );
-                            } else if (item.type === "image") {
-                              return (
-                                <PageImage
-                                  key={item.src}
-                                  {...item}
-                                  className="!h-full !rounded-none object-cover"
-                                />
-                              );
+                <div className="mt-12 flex w-full flex-col items-start justify-center md:flex-row">
+                  <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-4 lg:px-8">
+                    <PageSection level={2} id="learn-more-about-this-example">
+                      <PageHeading level={2} id="learn-more-about-this-example">
+                        Learn more about this example
+                      </PageHeading>
+                      <PageParagraph>
+                        This is a new example exclusive to Ariakit Plus
+                        subscribers. In addition to gaining access to the
+                        complete source code above, you will also have the
+                        opportunity to delve deeper into this example through
+                        the following topics:
+                      </PageParagraph>
+                      <PageList ordered={false}>
+                        {tableOfContents.map((item, index) => (
+                          <PageListItem
+                            key={item.id}
+                            index={index}
+                            ordered={false}
+                          >
+                            <PageStrong>{item.text}</PageStrong>
+                          </PageListItem>
+                        ))}
+                      </PageList>
+                      <div className="max-w-[--size-md]">
+                        <div className="max-w-[--size-content]">
+                          <Command
+                            variant="plus"
+                            className="h-14 text-lg focus-visible:!ariakit-outline"
+                            render={
+                              <Link
+                                href="/plus?feature=examples"
+                                scroll={false}
+                              />
                             }
-                            return null;
-                          })}
+                          >
+                            Unlock Ariakit Plus
+                          </Command>
                         </div>
-                      )}
-                      <Command
-                        variant="plus"
-                        className="h-14 text-lg focus-visible:!ariakit-outline"
-                        render={
-                          <Link href="/plus?feature=examples" scroll={false} />
-                        }
-                      >
-                        Unlock Ariakit Plus
-                      </Command>
-                    </div>
+                      </div>
+                    </PageSection>
                   </div>
-                </PageSection>
+                  <div className="my-4 flex w-full gap-4 md:mx-4 md:w-60 md:flex-col">
+                    {media?.slice(0, 3).map((item) => {
+                      if (item.type === "image") {
+                        return (
+                          <PageImage
+                            key={item.src}
+                            {...item}
+                            className="aspect-square rounded-md object-cover"
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+                </div>
               </NotSubscribed>
             </AuthEnabled>
           )}
@@ -489,7 +479,6 @@ export function PageDiv({
         ) : (
           sidebar
         )}
-
         <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-4 lg:px-8 [[data-dialog]_&]:!px-0">
           {props.children}
         </div>
