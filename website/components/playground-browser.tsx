@@ -4,6 +4,7 @@ import { ArrowLeft } from "icons/arrow-left.tsx";
 import { ArrowRight } from "icons/arrow-right.tsx";
 import { NewWindow } from "icons/new-window.tsx";
 import { Refresh } from "icons/refresh.tsx";
+import { Spinner } from "icons/spinner.tsx";
 import Link from "next/link.js";
 import { flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
@@ -73,7 +74,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
           </TooltipButton>
         </div>
         <form
-          className="flex-auto"
+          className="relative flex-auto"
           onSubmit={(event) => {
             event.preventDefault();
             const data = new FormData(event.currentTarget);
@@ -82,11 +83,14 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
             ref.current?.contentWindow?.location.assign(url);
           }}
         >
+          {!loaded && (
+            <Spinner className="absolute left-2 top-2 size-4 animate-spin" />
+          )}
           <input
             type="url"
             name="url"
             aria-label="URL"
-            value={url}
+            value={loaded ? url : ""}
             onChange={(event) => setUrl(event.target.value)}
             className="h-8 w-full rounded-full border-none bg-gray-150 px-4 text-sm text-black/80 hover:bg-gray-200 focus-visible:ariakit-outline-input dark:bg-gray-850 dark:text-white/80 dark:shadow-input-dark dark:hover:bg-gray-900"
           />
