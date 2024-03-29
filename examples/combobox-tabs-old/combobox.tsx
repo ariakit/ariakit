@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
-import { ArrowIcon, ReturnIcon } from "../combobox-tabs/icons.jsx";
+import { ArrowIcon, ReturnIcon } from "../combobox-tabs/icons.tsx";
 
 export interface ComboboxProviderProps extends Ariakit.ComboboxProviderProps {
   tabId?: Ariakit.TabProviderProps["selectedId"];

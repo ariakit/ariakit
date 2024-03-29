@@ -4,23 +4,23 @@ import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeHoverOptions } from "../composite/composite-hover.js";
-import { useCompositeHover } from "../composite/composite-hover.js";
-import type { CompositeItemOptions } from "../composite/composite-item.js";
-import { useCompositeItem } from "../composite/composite-item.js";
-import { useMenubarScopedContext } from "../menubar/menubar-context.js";
-import type { MenubarStore } from "../menubar/menubar-store.js";
-import { useBooleanEvent, useEvent } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
+import type { CompositeHoverOptions } from "../composite/composite-hover.ts";
+import { useCompositeHover } from "../composite/composite-hover.ts";
+import type { CompositeItemOptions } from "../composite/composite-item.tsx";
+import { useCompositeItem } from "../composite/composite-item.tsx";
+import { useMenubarScopedContext } from "../menubar/menubar-context.ts";
+import type { MenubarStore } from "../menubar/menubar-store.ts";
+import { useBooleanEvent, useEvent } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useMenuScopedContext } from "./menu-context.js";
-import type { MenuStore, MenuStoreState } from "./menu-store.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useMenuScopedContext } from "./menu-context.ts";
+import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

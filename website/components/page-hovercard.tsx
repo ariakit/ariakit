@@ -23,9 +23,9 @@ import {
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
-import { useSubscription } from "utils/use-subscription.js";
-import { Command } from "./command.jsx";
-import { Popup } from "./popup.jsx";
+import { useSubscription } from "utils/use-subscription.ts";
+import { Command } from "./command.tsx";
+import { Popup } from "./popup.tsx";
 
 // Breadth-first search algorithm
 function findSection(node: ReactNode, id?: string | null): ReactNode {

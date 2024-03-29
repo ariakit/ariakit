@@ -1,11 +1,11 @@
 import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { ComboboxContextProvider } from "./combobox-context.js";
-import { useComboboxStore } from "./combobox-store.js";
+import { ComboboxContextProvider } from "./combobox-context.tsx";
+import { useComboboxStore } from "./combobox-store.ts";
 import type {
   ComboboxStoreProps,
   ComboboxStoreSelectedValue,
-} from "./combobox-store.js";
+} from "./combobox-store.ts";
 
 type Value = ComboboxStoreSelectedValue;
 

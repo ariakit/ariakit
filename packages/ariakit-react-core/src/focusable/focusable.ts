@@ -26,10 +26,10 @@ import {
 } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
-import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { FocusableContext } from "./focusable-context.js";
+import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { FocusableContext } from "./focusable-context.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

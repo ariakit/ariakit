@@ -4,18 +4,18 @@ import pagesConfig from "build-pages/config.js";
 import { getPageContent } from "build-pages/get-page-content.js";
 import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
 import { getPageName } from "build-pages/get-page-name.js";
-import pageIndex from "build-pages/index.js";
+import pageIndex from "build-pages/index.ts";
 import { getReferences } from "build-pages/reference-utils.js";
-import type { Page, TableOfContents } from "build-pages/types.js";
+import type { Page, TableOfContents } from "build-pages/types.ts";
 import matter from "gray-matter";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import invariant from "tiny-invariant";
-import { rehypeCodeMeta } from "utils/rehype-code-meta.js";
-import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.js";
-import { AuthEnabled } from "./auth.jsx";
+import { rehypeCodeMeta } from "utils/rehype-code-meta.ts";
+import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.ts";
+import { AuthEnabled } from "./auth.tsx";
 import {
   PageA,
   PageAside,
@@ -30,10 +30,10 @@ import {
   PageListItem,
   PageParagraph,
   PageStrong,
-} from "./page-elements.jsx";
-import { PageHovercard, PageHovercardProvider } from "./page-hovercard.jsx";
-import { PagePre } from "./page-pre.jsx";
-import { PageVideo } from "./page-video.jsx";
+} from "./page-elements.tsx";
+import { PageHovercard, PageHovercardProvider } from "./page-hovercard.tsx";
+import { PagePre } from "./page-pre.tsx";
+import { PageVideo } from "./page-video.tsx";
 
 export const getFile = cache((config: Page, page: string) => {
   const entryFiles = getPageEntryFilesCached(config);

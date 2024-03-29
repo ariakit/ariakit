@@ -2,12 +2,12 @@ import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { createPopoverStore } from "../popover/popover-store.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+} from "../popover/popover-store.ts";
+import { createPopoverStore } from "../popover/popover-store.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import { createStore } from "../utils/store.ts";
+import type { SetState } from "../utils/types.ts";
 
 /**
  * Creates a hovercard store.

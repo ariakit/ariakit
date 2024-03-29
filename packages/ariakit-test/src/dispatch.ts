@@ -2,7 +2,7 @@
 import { getKeys, invariant } from "@ariakit/core/utils/misc";
 import { createEvent, fireEvent } from "@testing-library/dom";
 import type { EventType } from "@testing-library/dom";
-import { flushMicrotasks, wrapAsync } from "./__utils.js";
+import { flushMicrotasks, wrapAsync } from "./__utils.ts";
 
 type SpecificEventInit<E extends Event> = E extends InputEvent
   ? InputEventInit

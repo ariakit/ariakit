@@ -1,10 +1,10 @@
 import "./style.css";
 import { lazy, useState, useTransition } from "react";
 import * as Ariakit from "@ariakit/react";
-import { Spinner } from "./spinner.jsx";
-import { usePerceptibleValue } from "./use-perceptible-value.js";
+import { Spinner } from "./spinner.tsx";
+import { usePerceptibleValue } from "./use-perceptible-value.ts";
 
-const Popover = lazy(() => import("./popover.js"));
+const Popover = lazy(() => import("./popover.ts"));
 
 export default function Example() {
   const [open, setOpen] = useState(false);

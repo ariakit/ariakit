@@ -1,5 +1,5 @@
-import { PageContainer } from "app/(main)/page-container.jsx";
-import { InlineLink } from "components/inline-link.jsx";
+import { PageContainer } from "app/(main)/page-container.tsx";
+import { InlineLink } from "components/inline-link.tsx";
 import {
   PageDivider,
   PageHeading,
@@ -7,9 +7,9 @@ import {
   PageListItem,
   PageParagraph,
   PageSection,
-} from "components/page-elements.jsx";
+} from "components/page-elements.tsx";
 import Link from "next/link.js";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
 
 export function generateMetadata() {
   return getNextPageMetadata({ title: "Ariakit Plus License Agreement" });

@@ -1,15 +1,15 @@
 import type { ElementType } from "react";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   ToolbarScopedContextProvider,
   useToolbarProviderContext,
-} from "./toolbar-context.js";
-import { useToolbarStore } from "./toolbar-store.js";
-import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
+} from "./toolbar-context.tsx";
+import { useToolbarStore } from "./toolbar-store.ts";
+import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

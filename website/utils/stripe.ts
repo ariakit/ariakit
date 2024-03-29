@@ -7,8 +7,8 @@ import {
   getPrimaryEmailAddress,
   getStripeId,
   updateUserWithStripeId,
-} from "./clerk.js";
-import type { User, UserResource } from "./clerk.js";
+} from "./clerk.ts";
+import type { User, UserResource } from "./clerk.ts";
 
 type Discount = Stripe.Coupon | Stripe.PromotionCode;
 

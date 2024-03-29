@@ -1,9 +1,9 @@
 import "./style.css";
 import { useState } from "react";
 import { SlotFillProvider } from "@wordpress/components";
-import { Menu, MenuItem, createMenuSlot } from "./menu.jsx";
-import { Modal } from "./modal.jsx";
-import { Tooltip } from "./tooltip.jsx";
+import { Menu, MenuItem, createMenuSlot } from "./menu.tsx";
+import { Modal } from "./modal.tsx";
+import { Tooltip } from "./tooltip.tsx";
 
 const OptionsMenu = createMenuSlot("OptionsMenu");
 const OptionsMenuBubblesVirtually = createMenuSlot(

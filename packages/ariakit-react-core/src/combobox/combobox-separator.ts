@@ -1,11 +1,11 @@
 import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
-import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useComboboxScopedContext } from "./combobox-context.js";
-import type { ComboboxStore } from "./combobox-store.js";
+import type { CompositeSeparatorOptions } from "../composite/composite-separator.ts";
+import { useCompositeSeparator } from "../composite/composite-separator.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useComboboxScopedContext } from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "hr" satisfies ElementType;
 type TagName = typeof TagName;

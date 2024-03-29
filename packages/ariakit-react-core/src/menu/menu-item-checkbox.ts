@@ -1,21 +1,21 @@
 import { useEffect } from "react";
 import type { ElementType } from "react";
 import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
-import { useCheckboxStore } from "../checkbox/checkbox-store.js";
-import type { CheckboxOptions } from "../checkbox/checkbox.js";
-import { useCheckbox } from "../checkbox/checkbox.js";
-import { useInitialValue } from "../utils/hooks.js";
+import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
+import type { CheckboxOptions } from "../checkbox/checkbox.ts";
+import { useCheckbox } from "../checkbox/checkbox.tsx";
+import { useInitialValue } from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useMenuScopedContext } from "./menu-context.js";
-import type { MenuItemOptions } from "./menu-item.js";
-import { useMenuItem } from "./menu-item.js";
-import type { MenuStore, MenuStoreValues } from "./menu-store.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useMenuScopedContext } from "./menu-context.ts";
+import type { MenuItemOptions } from "./menu-item.ts";
+import { useMenuItem } from "./menu-item.ts";
+import type { MenuStore, MenuStoreValues } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

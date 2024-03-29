@@ -1,12 +1,12 @@
 import { Children, isValidElement } from "react";
 import type { ComponentProps, ReactNode } from "react";
-import pageIndex from "build-pages/index.js";
+import pageIndex from "build-pages/index.ts";
 import type { Element } from "hast";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
-import { getPageIcon } from "utils/get-page-icon.jsx";
-import { InlineLink } from "./inline-link.jsx";
-import { PageItem } from "./page-item.jsx";
+import { getPageIcon } from "utils/get-page-icon.tsx";
+import { InlineLink } from "./inline-link.tsx";
+import { PageItem } from "./page-item.tsx";
 
 function findCardLinks(children: ReactNode): string[] {
   return Children.toArray(children).flatMap((child) =>

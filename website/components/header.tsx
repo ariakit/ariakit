@@ -1,13 +1,13 @@
 import Link from "next/link.js";
-import { getUpdates } from "utils/get-updates.js";
-import { getPagesByTag } from "utils/tag.js";
-import { AuthEnabled } from "./auth.jsx";
-import { HeaderAriakitPlus } from "./header-ariakit-plus.jsx";
-import { HeaderLogo } from "./header-logo.js";
-import { HeaderNav } from "./header-nav.js";
-import { HeaderThemeSwitch } from "./header-theme-switch.js";
-import { HeaderUpdates } from "./header-updates.jsx";
-import { HeaderVersionSelect } from "./header-version-select.js";
+import { getUpdates } from "utils/get-updates.ts";
+import { getPagesByTag } from "utils/tag.ts";
+import { AuthEnabled } from "./auth.tsx";
+import { HeaderAriakitPlus } from "./header-ariakit-plus.tsx";
+import { HeaderLogo } from "./header-logo.tsx";
+import { HeaderNav } from "./header-nav.tsx";
+import { HeaderThemeSwitch } from "./header-theme-switch.tsx";
+import { HeaderUpdates } from "./header-updates.tsx";
+import { HeaderVersionSelect } from "./header-version-select.tsx";
 
 let versionsCache: Record<string, Record<string, string>> | null = null;
 

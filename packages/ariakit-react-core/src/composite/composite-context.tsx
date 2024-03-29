@@ -2,9 +2,9 @@ import { createContext } from "react";
 import {
   CollectionContextProvider,
   CollectionScopedContextProvider,
-} from "../collection/collection-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { CompositeStore } from "./composite-store.js";
+} from "../collection/collection-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { CompositeStore } from "./composite-store.ts";
 
 const ctx = createStoreContext<CompositeStore>(
   [CollectionContextProvider],

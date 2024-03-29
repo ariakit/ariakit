@@ -1,12 +1,12 @@
 import type { ElementType } from "react";
-import { createDialogComponent } from "../dialog/dialog.js";
-import type { PopoverOptions } from "../popover/popover.js";
-import { usePopover } from "../popover/popover.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useSelectProviderContext } from "./select-context.js";
-import type { SelectListOptions } from "./select-list.js";
-import { useSelectList } from "./select-list.js";
+import { createDialogComponent } from "../dialog/dialog.tsx";
+import type { PopoverOptions } from "../popover/popover.tsx";
+import { usePopover } from "../popover/popover.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useSelectProviderContext } from "./select-context.tsx";
+import type { SelectListOptions } from "./select-list.ts";
+import { useSelectList } from "./select-list.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

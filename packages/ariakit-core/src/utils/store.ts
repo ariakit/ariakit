@@ -7,8 +7,8 @@ import {
   hasOwnProperty,
   invariant,
   noop,
-} from "./misc.js";
-import type { AnyObject, SetStateAction } from "./types.js";
+} from "./misc.ts";
+import type { AnyObject, SetStateAction } from "./types.ts";
 
 type Listener<S> = (state: S, prevState: S) => void | (() => void);
 

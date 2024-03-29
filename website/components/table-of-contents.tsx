@@ -7,9 +7,9 @@ import {
   scrollIntoViewIfNeeded,
 } from "@ariakit/core/utils/dom";
 import * as Ariakit from "@ariakit/react";
-import { Popup } from "components/popup.js";
-import { List } from "icons/list.js";
-import { useMedia } from "utils/use-media.js";
+import { Popup } from "components/popup.tsx";
+import { List } from "icons/list.tsx";
+import { useMedia } from "utils/use-media.ts";
 
 interface TableOfContentsProps {
   ids: string[];

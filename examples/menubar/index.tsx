@@ -6,7 +6,7 @@ import {
   MenuItem,
   MenuProvider,
   MenuSeparator,
-} from "./menu.jsx";
+} from "./menu.tsx";
 
 export default function Example() {
   return (

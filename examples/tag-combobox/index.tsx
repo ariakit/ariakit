@@ -1,8 +1,8 @@
 import "./style.css";
 import { useDeferredValue, useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
-import { Tag, TagInput, TagList, TagOption } from "./tag.jsx";
-import { users as defaultUsers, getAvatar } from "./users.js";
+import { Tag, TagInput, TagList, TagOption } from "./tag.tsx";
+import { users as defaultUsers, getAvatar } from "./users.ts";
 
 export default function Example() {
   const [users, setUsers] = useState(defaultUsers);

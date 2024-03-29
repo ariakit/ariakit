@@ -2,18 +2,18 @@ import type { ElementType, MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { ButtonOptions } from "../button/button.js";
-import { useButton } from "../button/button.js";
+import type { ButtonOptions } from "../button/button.ts";
+import { useButton } from "../button/button.ts";
 import {
   useBooleanEvent,
   useEvent,
   useMergeRefs,
   useMetadataProps,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useDisclosureProviderContext } from "./disclosure-context.js";
-import type { DisclosureStore } from "./disclosure-store.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useDisclosureProviderContext } from "./disclosure-context.tsx";
+import type { DisclosureStore } from "./disclosure-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

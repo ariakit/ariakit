@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { createSlotFill } from "@wordpress/components";
 import clsx from "clsx";
-import { ModalContext } from "./modal.js";
+import { ModalContext } from "./modal.tsx";
 
 export const MenuContext = React.createContext<
   Ariakit.MenuStore | null | undefined

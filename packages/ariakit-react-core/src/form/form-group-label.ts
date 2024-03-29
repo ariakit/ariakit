@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
-import type { GroupLabelOptions } from "../group/group-label.js";
-import { useGroupLabel } from "../group/group-label.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { FormStore } from "./form-store.js";
+import type { GroupLabelOptions } from "../group/group-label.ts";
+import { useGroupLabel } from "../group/group-label.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { FormStore } from "./form-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

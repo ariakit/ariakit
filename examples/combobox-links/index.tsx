@@ -2,7 +2,7 @@ import "./style.css";
 import { startTransition, useMemo, useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
-import { NewWindow } from "./icons.jsx";
+import { NewWindow } from "./icons.tsx";
 
 const links = [
   {

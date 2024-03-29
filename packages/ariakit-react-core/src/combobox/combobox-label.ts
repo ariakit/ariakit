@@ -5,10 +5,10 @@ import {
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.jsx";
-import type { Options, Props } from "../utils/types.js";
-import { useComboboxProviderContext } from "./combobox-context.js";
-import type { ComboboxStore } from "./combobox-store.js";
+} from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "label" satisfies ElementType;
 type TagName = typeof TagName;

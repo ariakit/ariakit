@@ -1,23 +1,23 @@
 import { useEffect } from "react";
 import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { RadioOptions } from "../radio/radio.js";
-import { useRadio } from "../radio/radio.js";
-import { useInitialValue, useWrapElement } from "../utils/hooks.js";
+import type { RadioOptions } from "../radio/radio.ts";
+import { useRadio } from "../radio/radio.ts";
+import { useInitialValue, useWrapElement } from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   MenuItemCheckedContext,
   useMenuScopedContext,
-} from "./menu-context.js";
-import type { MenuItemOptions } from "./menu-item.js";
-import { useMenuItem } from "./menu-item.js";
-import type { MenuStore } from "./menu-store.js";
+} from "./menu-context.ts";
+import type { MenuItemOptions } from "./menu-item.ts";
+import { useMenuItem } from "./menu-item.ts";
+import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

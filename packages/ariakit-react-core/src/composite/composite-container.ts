@@ -9,13 +9,13 @@ import {
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useEvent, useMergeRefs } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { useCompositeContext } from "./composite-context.js";
-import type { CompositeStore } from "./composite-store.js";
-import { selectTextField } from "./utils.js";
+import { useEvent, useMergeRefs } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useCompositeContext } from "./composite-context.tsx";
+import type { CompositeStore } from "./composite-store.ts";
+import { selectTextField } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

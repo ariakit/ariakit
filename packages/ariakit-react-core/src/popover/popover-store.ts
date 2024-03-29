@@ -3,11 +3,11 @@ import type {
   DialogStoreFunctions,
   DialogStoreOptions,
   DialogStoreState,
-} from "../dialog/dialog-store.js";
-import { useDialogStoreProps } from "../dialog/dialog-store.js";
-import { useUpdateEffect } from "../utils/hooks.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../dialog/dialog-store.ts";
+import { useDialogStoreProps } from "../dialog/dialog-store.ts";
+import { useUpdateEffect } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function usePopoverStoreProps<T extends Core.PopoverStore>(
   store: T,

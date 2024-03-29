@@ -1,6 +1,6 @@
 import "./style.css";
 import { useState } from "react";
-import * as Ariakit from "./ariakit-experimental.js";
+import * as Ariakit from "./ariakit-experimental.ts";
 
 export default function Example() {
   const [values, setValues] = useState(["JavaScript", "React"]);

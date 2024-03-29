@@ -1,7 +1,7 @@
 import "./style.css";
 import type { ReactNode } from "react";
 import Link from "next/link.js";
-import { Tab, TabList, TabPanel, Tabs } from "./tabs.jsx";
+import { Tab, TabList, TabPanel, Tabs } from "./tabs.tsx";
 
 export default function Layout(props: { tabs: ReactNode }) {
   return (

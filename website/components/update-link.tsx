@@ -1,17 +1,17 @@
 import { forwardRef, useId } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { getPageTitle } from "build-pages/get-page-title.js";
-import pageIndex from "build-pages/index.js";
-import { ChevronRight } from "icons/chevron-right.jsx";
-import { NewWindow } from "icons/new-window.jsx";
-import { Npm } from "icons/npm.jsx";
-import { Substack } from "icons/substack.jsx";
+import pageIndex from "build-pages/index.ts";
+import { ChevronRight } from "icons/chevron-right.tsx";
+import { NewWindow } from "icons/new-window.tsx";
+import { Npm } from "icons/npm.tsx";
+import { Substack } from "icons/substack.tsx";
 import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
-import type { UpdateItem } from "updates.js";
-import { getPageIcon } from "utils/get-page-icon.jsx";
-import { DateFromNow } from "./date-from-now.jsx";
-import { PlusBordered } from "./plus-bordered.jsx";
+import type { UpdateItem } from "updates.ts";
+import { getPageIcon } from "utils/get-page-icon.tsx";
+import { DateFromNow } from "./date-from-now.tsx";
+import { PlusBordered } from "./plus-bordered.tsx";
 
 export interface UpdateLinkProps
   extends UpdateItem,

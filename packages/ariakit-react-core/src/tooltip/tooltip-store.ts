@@ -3,10 +3,10 @@ import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
-} from "../hovercard/hovercard-store.js";
-import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../hovercard/hovercard-store.ts";
+import { useHovercardStoreProps } from "../hovercard/hovercard-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useTooltipStoreProps<T extends Core.TooltipStore>(
   store: T,

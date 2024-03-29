@@ -1,18 +1,18 @@
-import type { ComboboxStore } from "../combobox/combobox-store.js";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
-} from "../hovercard/hovercard-store.js";
-import { createHovercardStore } from "../hovercard/hovercard-store.js";
-import { applyState, defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../hovercard/hovercard-store.ts";
+import { createHovercardStore } from "../hovercard/hovercard-store.ts";
+import { applyState, defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   createStore,
   mergeStore,
@@ -21,14 +21,14 @@ import {
   setup,
   sync,
   throwOnConflictingProps,
-} from "../utils/store.js";
+} from "../utils/store.ts";
 import type {
   BivariantCallback,
   PickRequired,
   SetState,
   SetStateAction,
-} from "../utils/types.js";
-import type { MenuBarStore } from "./menu-bar-store.js";
+} from "../utils/types.ts";
+import type { MenuBarStore } from "./menu-bar-store.ts";
 
 export function createMenuStore<T extends MenuStoreValues = MenuStoreValues>(
   props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">,

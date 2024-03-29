@@ -2,9 +2,9 @@ import { createContext } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
-} from "../composite/composite-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { MenubarStore } from "./menubar-store.js";
+} from "../composite/composite-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { MenubarStore } from "./menubar-store.ts";
 
 const menubar = createStoreContext<MenubarStore>(
   [CompositeContextProvider],

@@ -56,7 +56,6 @@ JSDoc is also better merged with `interface`. For example, tags such as `@defaul
 
 In summary, according to the [TypeScript documentation](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces:~:text=If%20you%20would%20like%20a%20heuristic%2C%20use%20interface%20until%20you%20need%20to%20use%20features%20from%20type), it is recommended that you use `interface` until you need to use features from `type`.
 
-
 ## Name functions inside `forwardRef`
 
 When wrapping components with `React.forwardRef`, we pass a named function as an argument instead of an anonymous arrow function. This is because React DevTools uses the function name to determine the component's name, eliminating the need to set `displayName`:
@@ -122,25 +121,6 @@ const Component = Ariakit.Combobox;
 ```
 
 </aside>
-
-## Import `.jsx` extension
-
-The code examples are written using the [ECMAScript modules](https://nodejs.org/api/esm.html) syntax, which is the official standard format for JavaScript modules supported by modern browsers.
-
-One difference between ESM and CommonJS is that ESM requires the file extension to be specified in the import statement. For TypeScript React files, you can use either `.js` or `.jsx` extensions.
-
-When importing `.tsx` files, we use the `.jsx` extension for consistency and better compatibility with build tools like [Vite](https://vitejs.dev).
-
-```js
-// ❌ Bad, non-standard
-import "./component";
-
-// ❌ Bad
-import "./component.js";
-
-// ✅ Good
-import "./component.jsx";
-```
 
 ## Import style first
 

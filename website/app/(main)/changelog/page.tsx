@@ -1,10 +1,10 @@
-import { getChangelogFile } from "build-pages/changelog.js";
+import { getChangelogFile } from "build-pages/changelog.ts";
 import { getPageContent } from "build-pages/get-page-content.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
-import type { TableOfContents } from "build-pages/types.js";
-import { PageMarkdown } from "components/page-markdown.jsx";
-import { PageSidebar } from "components/page-sidebar.jsx";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+import type { TableOfContents } from "build-pages/types.ts";
+import { PageMarkdown } from "components/page-markdown.tsx";
+import { PageSidebar } from "components/page-sidebar.tsx";
+import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
 
 export function generateMetadata() {
   return getNextPageMetadata({ title: `Changelog - Ariakit` });

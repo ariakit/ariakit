@@ -2,10 +2,10 @@
 
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Focusable } from "./focusable.jsx";
-import { PlusBordered } from "./plus-bordered.jsx";
-import type { RoleProps } from "./role.jsx";
-import { Role } from "./role.jsx";
+import { Focusable } from "./focusable.tsx";
+import { PlusBordered } from "./plus-bordered.tsx";
+import type { RoleProps } from "./role.tsx";
+import { Role } from "./role.tsx";
 
 interface CommandProps extends RoleProps<"button"> {
   flat?: boolean;

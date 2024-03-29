@@ -1,4 +1,4 @@
-import type { AnyObject } from "../utils/types.js";
+import type { AnyObject } from "../utils/types.ts";
 
 /**
  * An object or primitive value that can be converted to a string.

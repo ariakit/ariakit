@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
-import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.js";
-import { useHovercardDescription } from "../hovercard/hovercard-description.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { MenuStore } from "./menu-store.js";
+import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.ts";
+import { useHovercardDescription } from "../hovercard/hovercard-description.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "p" satisfies ElementType;
 type TagName = typeof TagName;

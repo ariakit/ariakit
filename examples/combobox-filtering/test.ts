@@ -1,5 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
-import list from "./list.js";
+import list from "./list.ts";
 
 test("show entire list", async () => {
   await click(q.combobox());

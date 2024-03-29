@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
-import type { DialogHeadingOptions } from "../dialog/dialog-heading.js";
-import { useDialogHeading } from "../dialog/dialog-heading.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { PopoverStore } from "./popover-store.js";
+import type { DialogHeadingOptions } from "../dialog/dialog-heading.ts";
+import { useDialogHeading } from "../dialog/dialog-heading.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "h1" satisfies ElementType;
 type TagName = typeof TagName;

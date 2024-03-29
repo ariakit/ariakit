@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { usePopoverContext } from "./popover-context.js";
-import type { PopoverStore, PopoverStoreState } from "./popover-store.js";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { usePopoverContext } from "./popover-context.tsx";
+import type { PopoverStore, PopoverStoreState } from "./popover-store.ts";
 
 const TagName = "span" satisfies ElementType;
 type TagName = typeof TagName;

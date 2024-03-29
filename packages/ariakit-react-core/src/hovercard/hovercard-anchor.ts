@@ -3,18 +3,18 @@ import { useCallback, useEffect, useRef } from "react";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { FocusableOptions } from "../focusable/focusable.js";
-import { useFocusable } from "../focusable/focusable.js";
+import type { FocusableOptions } from "../focusable/focusable.ts";
+import { useFocusable } from "../focusable/focusable.ts";
 import {
   useBooleanEvent,
   useEvent,
   useIsMouseMoving,
   useMergeRefs,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useHovercardProviderContext } from "./hovercard-context.js";
-import type { HovercardStore } from "./hovercard-store.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useHovercardProviderContext } from "./hovercard-context.tsx";
+import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "a" satisfies ElementType;
 type TagName = typeof TagName;

@@ -4,21 +4,21 @@ import {
   getCollectionRendererItem,
   getCollectionRendererItemId,
   useCollectionRenderer,
-} from "../collection/collection-renderer.js";
+} from "../collection/collection-renderer.tsx";
 import type {
   CollectionRendererBaseItemProps,
   CollectionRendererItem,
   CollectionRendererItemObject,
   CollectionRendererItemProps,
   CollectionRendererOptions,
-} from "../collection/collection-renderer.js";
-import type { CollectionStoreItem } from "../collection/collection-store.js";
-import { useId } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
-import { createElement, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useCompositeContext } from "./composite-context.js";
-import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
+} from "../collection/collection-renderer.tsx";
+import type { CollectionStoreItem } from "../collection/collection-store.ts";
+import { useId } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useCompositeContext } from "./composite-context.tsx";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

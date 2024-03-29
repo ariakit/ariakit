@@ -1,15 +1,15 @@
 import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   RadioScopedContextProvider,
   useRadioProviderContext,
-} from "./radio-context.js";
-import type { RadioStore } from "./radio-store.js";
+} from "./radio-context.tsx";
+import type { RadioStore } from "./radio-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

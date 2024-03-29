@@ -23,17 +23,17 @@ import {
   useId,
   useSafeLayoutEffect,
 } from "@ariakit/react-core/utils/hooks";
-import { ChevronRight } from "icons/chevron-right.js";
-import { NewWindow } from "icons/new-window.js";
-import { Search } from "icons/search.js";
-import { Spinner } from "icons/spinner.js";
+import { ChevronRight } from "icons/chevron-right.tsx";
+import { NewWindow } from "icons/new-window.tsx";
+import { Search } from "icons/search.tsx";
+import { Spinner } from "icons/spinner.tsx";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
-import { useMedia } from "utils/use-media.js";
-import { whenIdle } from "utils/when-idle.js";
-import { Command } from "./command.jsx";
-import { PlusBordered } from "./plus-bordered.jsx";
-import { Popup } from "./popup.js";
+import { useMedia } from "utils/use-media.ts";
+import { whenIdle } from "utils/when-idle.ts";
+import { Command } from "./command.tsx";
+import { PlusBordered } from "./plus-bordered.tsx";
+import { Popup } from "./popup.tsx";
 
 const SelectContext = createContext(false);
 const ComboboxContext = createContext(false);

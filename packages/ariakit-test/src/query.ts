@@ -5,8 +5,8 @@ import type {
   ByRoleOptions,
   getQueriesForElement,
 } from "@testing-library/dom";
-import { roles } from "./__aria-role.js";
-import type { AriaRole } from "./__aria-role.js";
+import { roles } from "./__aria-role.ts";
+import type { AriaRole } from "./__aria-role.ts";
 
 type RoleQueries = Record<AriaRole, ReturnType<typeof createRoleQuery>>;
 type ElementQueries = ReturnType<

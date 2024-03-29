@@ -6,7 +6,7 @@ import {
   PopoverArrow,
   PopoverDescription,
   PopoverHeading,
-} from "./popover.jsx";
+} from "./popover.tsx";
 
 export default function Example() {
   const [open, setOpen] = useState(false);

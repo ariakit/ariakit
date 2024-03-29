@@ -1,11 +1,11 @@
 import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { CompositeContextProvider } from "./composite-context.js";
-import { useCompositeStore } from "./composite-store.js";
+import { CompositeContextProvider } from "./composite-context.tsx";
+import { useCompositeStore } from "./composite-store.ts";
 import type {
   CompositeStoreItem,
   CompositeStoreProps,
-} from "./composite-store.js";
+} from "./composite-store.ts";
 
 /**
  * Provides a composite store to

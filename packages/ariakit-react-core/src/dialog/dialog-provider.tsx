@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { DialogContextProvider } from "./dialog-context.js";
-import { useDialogStore } from "./dialog-store.js";
-import type { DialogStoreProps } from "./dialog-store.js";
+import { DialogContextProvider } from "./dialog-context.tsx";
+import { useDialogStore } from "./dialog-store.ts";
+import type { DialogStoreProps } from "./dialog-store.ts";
 
 /**
  * Provides a dialog store to [Dialog](https://ariakit.org/components/dialog)

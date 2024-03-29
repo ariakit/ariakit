@@ -1,4 +1,4 @@
-import { Combobox, ComboboxEmpty, ComboboxItem } from "./combobox.jsx";
+import { Combobox, ComboboxEmpty, ComboboxItem } from "./combobox.tsx";
 
 export default function Example() {
   return (

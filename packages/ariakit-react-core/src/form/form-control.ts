@@ -4,23 +4,23 @@ import type { StringLike } from "@ariakit/core/form/types";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { cx, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CollectionItemOptions } from "../collection/collection-item.js";
-import { useCollectionItem } from "../collection/collection-item.js";
+import type { CollectionItemOptions } from "../collection/collection-item.ts";
+import { useCollectionItem } from "../collection/collection-item.ts";
 import {
   useBooleanEvent,
   useEvent,
   useId,
   useMergeRefs,
-} from "../utils/hooks.js";
+} from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useFormContext } from "./form-context.js";
-import type { FormStore } from "./form-store.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useFormContext } from "./form-context.tsx";
+import type { FormStore } from "./form-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

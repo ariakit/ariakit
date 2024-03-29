@@ -8,8 +8,8 @@ import {
 } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
 import { matchSorter } from "match-sorter";
-import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "./icons.js";
-import { languages } from "./languages.js";
+import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "./icons.tsx";
+import { languages } from "./languages.ts";
 
 export default function Example() {
   const [open, setOpen] = useState(false);

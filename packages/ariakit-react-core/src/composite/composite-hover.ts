@@ -13,16 +13,16 @@ import {
   useEvent,
   useIsMouseMoving,
   useMergeRefs,
-} from "../utils/hooks.js";
+} from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { useCompositeContext } from "./composite-context.js";
-import type { CompositeStore } from "./composite-store.js";
+} from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useCompositeContext } from "./composite-context.tsx";
+import type { CompositeStore } from "./composite-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

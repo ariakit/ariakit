@@ -3,10 +3,10 @@ import type {
   DisclosureStoreFunctions,
   DisclosureStoreOptions,
   DisclosureStoreState,
-} from "../disclosure/disclosure-store.js";
-import { useDisclosureStoreProps } from "../disclosure/disclosure-store.js";
-import { useStore } from "../utils/store.js";
-import type { Store } from "../utils/store.js";
+} from "../disclosure/disclosure-store.ts";
+import { useDisclosureStoreProps } from "../disclosure/disclosure-store.ts";
+import { useStore } from "../utils/store.tsx";
+import type { Store } from "../utils/store.tsx";
 
 export function useDialogStoreProps<T extends Core.DialogStore>(
   store: T,

@@ -1,6 +1,6 @@
 import type { ElementType, FC } from "react";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

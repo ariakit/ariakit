@@ -2,10 +2,10 @@ import { useRef } from "react";
 import type { ElementType } from "react";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useMergeRefs, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { FocusTrap } from "./focus-trap.js";
+import { useMergeRefs, useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { FocusTrap } from "./focus-trap.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

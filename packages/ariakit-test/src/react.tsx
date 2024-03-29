@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { StrictMode } from "react";
 import * as ReactTestingLibrary from "@testing-library/react";
-import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.js";
+import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.ts";
 
-export * from "./index.js";
+export * from "./index.ts";
 
 export interface RenderOptions
   extends Omit<ReactTestingLibrary.RenderOptions, "queries"> {

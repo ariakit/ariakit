@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { UseQueryResult } from "@tanstack/react-query";
-import type { PlusPrice } from "./stripe.js";
+import type { PlusPrice } from "./stripe.ts";
 
 export function usePrice(): UseQueryResult<PlusPrice> {
   return useQuery<PlusPrice>({

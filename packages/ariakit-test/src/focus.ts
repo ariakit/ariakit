@@ -1,9 +1,9 @@
 import { getActiveElement } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import { flushMicrotasks, wrapAsync } from "./__utils.js";
-import type { DirtiableElement } from "./__utils.js";
-import { dispatch } from "./dispatch.js";
+import { flushMicrotasks, wrapAsync } from "./__utils.ts";
+import type { DirtiableElement } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
 
 export function focus(element: Element | null) {
   return wrapAsync(async () => {

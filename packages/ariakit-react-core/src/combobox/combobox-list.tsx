@@ -1,24 +1,24 @@
 import type { ElementType } from "react";
 import { useRef, useState } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { isHidden } from "../disclosure/disclosure-content.js";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   useAttribute,
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
 import {
   ComboboxListRoleContext,
   ComboboxScopedContextProvider,
   useComboboxContext,
   useComboboxScopedContext,
-} from "./combobox-context.js";
-import type { ComboboxStore } from "./combobox-store.js";
+} from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

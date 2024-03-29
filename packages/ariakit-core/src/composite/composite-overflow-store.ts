@@ -2,9 +2,9 @@ import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { createPopoverStore } from "../popover/popover-store.js";
-import type { Store, StoreProps } from "../utils/store.js";
+} from "../popover/popover-store.ts";
+import { createPopoverStore } from "../popover/popover-store.ts";
+import type { Store, StoreProps } from "../utils/store.ts";
 
 /**
  * Creates a compositeOverflow store.

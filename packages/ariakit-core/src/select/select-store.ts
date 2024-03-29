@@ -1,20 +1,20 @@
-import type { ComboboxStore } from "../combobox/combobox-store.js";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { createPopoverStore } from "../popover/popover-store.js";
-import { toArray } from "../utils/array.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../popover/popover-store.ts";
+import { createPopoverStore } from "../popover/popover-store.ts";
+import { toArray } from "../utils/array.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
   createStore,
@@ -23,8 +23,8 @@ import {
   setup,
   sync,
   throwOnConflictingProps,
-} from "../utils/store.js";
-import type { PickRequired, SetState } from "../utils/types.js";
+} from "../utils/store.ts";
+import type { PickRequired, SetState } from "../utils/types.ts";
 
 type MutableValue<T extends SelectStoreValue = SelectStoreValue> =
   T extends string ? string : T;

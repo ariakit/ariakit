@@ -1,11 +1,11 @@
 import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { ButtonOptions } from "../button/button.js";
-import { useButton } from "../button/button.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useFormContext } from "./form-context.js";
-import type { FormStore } from "./form-store.js";
+import type { ButtonOptions } from "../button/button.ts";
+import { useButton } from "../button/button.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useFormContext } from "./form-context.tsx";
+import type { FormStore } from "./form-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

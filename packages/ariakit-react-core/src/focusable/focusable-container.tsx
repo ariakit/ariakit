@@ -1,8 +1,8 @@
 import type { ElementType } from "react";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { FocusableContext } from "./focusable-context.js";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { FocusableContext } from "./focusable-context.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

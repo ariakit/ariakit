@@ -2,7 +2,7 @@ import "./style.css";
 import { useDeferredValue, useMemo } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
-import list from "../menu-combobox/list.js";
+import list from "../menu-combobox/list.ts";
 
 export default function Example() {
   const combobox = Ariakit.useComboboxStore({ resetValueOnHide: true });

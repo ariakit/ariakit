@@ -7,7 +7,7 @@ import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
 import { matchSorter } from "match-sorter";
-import { countries } from "./countries.js";
+import { countries } from "./countries.ts";
 
 function getItem(country: string) {
   return {

@@ -1,8 +1,8 @@
 import { isVisible } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import { wrapAsync } from "./__utils.js";
-import { dispatch } from "./dispatch.js";
-import { sleep } from "./sleep.js";
+import { wrapAsync } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
+import { sleep } from "./sleep.ts";
 
 type DocumentWithLastHovered = Document & {
   lastHovered?: Element | null;

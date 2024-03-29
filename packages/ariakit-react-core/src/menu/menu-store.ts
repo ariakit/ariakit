@@ -3,26 +3,26 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
-import { useComboboxProviderContext } from "../combobox/combobox-context.js";
-import type { ComboboxStore } from "../combobox/combobox-store.js";
+import { useComboboxProviderContext } from "../combobox/combobox-context.tsx";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
+} from "../composite/composite-store.ts";
+import { useCompositeStoreProps } from "../composite/composite-store.ts";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
-} from "../hovercard/hovercard-store.js";
-import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
-import { useMenubarContext } from "../menubar/menubar-context.js";
-import type { MenubarStore } from "../menubar/menubar-store.js";
-import { useUpdateEffect } from "../utils/hooks.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
-import { useMenuContext } from "./menu-context.js";
+} from "../hovercard/hovercard-store.ts";
+import { useHovercardStoreProps } from "../hovercard/hovercard-store.ts";
+import { useMenubarContext } from "../menubar/menubar-context.ts";
+import type { MenubarStore } from "../menubar/menubar-store.ts";
+import { useUpdateEffect } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
+import { useMenuContext } from "./menu-context.ts";
 
 export function useMenuStoreProps<T extends Core.MenuStore>(
   store: T,

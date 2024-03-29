@@ -6,13 +6,13 @@ import {
   isFalsyBooleanCallback,
 } from "@ariakit/core/utils/misc";
 import { createStore, sync } from "@ariakit/core/utils/store";
-import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
-import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
-import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useTooltipProviderContext } from "./tooltip-context.js";
-import type { TooltipStore } from "./tooltip-store.js";
+import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.ts";
+import { useHovercardAnchor } from "../hovercard/hovercard-anchor.ts";
+import { useEvent } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useTooltipProviderContext } from "./tooltip-context.tsx";
+import type { TooltipStore } from "./tooltip-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

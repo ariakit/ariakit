@@ -17,9 +17,9 @@ import {
 } from "@ariakit/core/utils/misc";
 import { sync } from "@ariakit/core/utils/store";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { createDialogComponent } from "../dialog/dialog.js";
-import type { PopoverOptions } from "../popover/popover.js";
-import { usePopover } from "../popover/popover.js";
+import { createDialogComponent } from "../dialog/dialog.tsx";
+import type { PopoverOptions } from "../popover/popover.tsx";
+import { usePopover } from "../popover/popover.tsx";
 import {
   useBooleanEvent,
   useEvent,
@@ -28,20 +28,20 @@ import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   HovercardScopedContextProvider,
   useHovercardProviderContext,
-} from "./hovercard-context.js";
-import type { HovercardStore } from "./hovercard-store.js";
-import type { Point } from "./utils/polygon.js";
+} from "./hovercard-context.tsx";
+import type { HovercardStore } from "./hovercard-store.ts";
+import type { Point } from "./utils/polygon.ts";
 import {
   getElementPolygon,
   getEventPoint,
   isPointInPolygon,
-} from "./utils/polygon.js";
+} from "./utils/polygon.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

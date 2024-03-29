@@ -3,26 +3,26 @@ import type { ElementType, KeyboardEvent } from "react";
 import { createTabStore } from "@ariakit/core/tab/tab-store";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CollectionItemOptions } from "../collection/collection-item.js";
-import { useCollectionItem } from "../collection/collection-item.js";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.jsx";
-import { useDisclosureContent } from "../disclosure/disclosure-content.jsx";
-import { useDisclosureStore } from "../disclosure/disclosure-store.js";
-import type { FocusableOptions } from "../focusable/focusable.js";
-import { useFocusable } from "../focusable/focusable.js";
+import type { CollectionItemOptions } from "../collection/collection-item.ts";
+import { useCollectionItem } from "../collection/collection-item.ts";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
+import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
+import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
+import type { FocusableOptions } from "../focusable/focusable.ts";
+import { useFocusable } from "../focusable/focusable.ts";
 import {
   useEvent,
   useId,
   useMergeRefs,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.jsx";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   TabScopedContextProvider,
   useTabProviderContext,
-} from "./tab-context.jsx";
-import type { TabStore } from "./tab-store.js";
+} from "./tab-context.tsx";
+import type { TabStore } from "./tab-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

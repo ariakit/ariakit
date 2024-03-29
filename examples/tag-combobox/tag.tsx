@@ -1,6 +1,6 @@
 import * as React from "react";
 import clsx from "clsx";
-import * as Ariakit from "./ariakit-experimental.js";
+import * as Ariakit from "./ariakit-experimental.ts";
 
 export interface TagListProps extends Ariakit.TagListProps {
   label?: React.ReactNode;

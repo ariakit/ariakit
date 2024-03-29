@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useContext } from "react";
-import { HeadingContext } from "./heading-context.js";
-import type { HeadingLevels } from "./utils.js";
+import { HeadingContext } from "./heading-context.ts";
+import type { HeadingLevels } from "./utils.ts";
 
 /**
  * A component that sets the heading level for its children. It doesn't render

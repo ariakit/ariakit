@@ -2,9 +2,9 @@
 
 import type { ButtonHTMLAttributes } from "react";
 import { forwardRef, useEffect, useState } from "react";
-import { Check } from "icons/check.js";
-import { Copy } from "icons/copy.js";
-import { TooltipButton } from "./tooltip-button.js";
+import { Check } from "icons/check.tsx";
+import { Copy } from "icons/copy.tsx";
+import { TooltipButton } from "./tooltip-button.tsx";
 
 interface CopyToClipboardProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;

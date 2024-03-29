@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import type { ElementType } from "react";
-import { useMenubar } from "../menubar/menubar.js";
-import type { MenubarOptions } from "../menubar/menubar.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import { useMenubar } from "../menubar/menubar.tsx";
+import type { MenubarOptions } from "../menubar/menubar.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

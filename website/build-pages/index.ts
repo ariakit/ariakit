@@ -1,6 +1,6 @@
 // @ts-ignore
 import index from "../.pages/index.json";
-import type { PageIndex, PageIndexDetail } from "./types.js";
+import type { PageIndex, PageIndexDetail } from "./types.ts";
 
 export type { PageIndexDetail, PageIndex };
 

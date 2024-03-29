@@ -3,13 +3,13 @@ import type {
   CompositeStoreItem,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
-import { applyState, defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, setup, sync } from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
-import { UndoManager } from "../utils/undo.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
+import { applyState, defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import { createStore, setup, sync } from "../utils/store.ts";
+import type { SetState } from "../utils/types.ts";
+import { UndoManager } from "../utils/undo.ts";
 
 /**
  * Creates a tag store.

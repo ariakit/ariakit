@@ -4,19 +4,19 @@ import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
+} from "../composite/composite-store.ts";
+import { useCompositeStoreProps } from "../composite/composite-store.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { usePopoverStoreProps } from "../popover/popover-store.js";
-import { useTagContext } from "../tag/tag-context.js";
-import type { TagStore } from "../tag/tag-store.js";
-import { useUpdateEffect } from "../utils/hooks.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../popover/popover-store.ts";
+import { usePopoverStoreProps } from "../popover/popover-store.ts";
+import { useTagContext } from "../tag/tag-context.tsx";
+import type { TagStore } from "../tag/tag-store.ts";
+import { useUpdateEffect } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   store: T,

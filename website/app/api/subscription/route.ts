@@ -1,11 +1,11 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { getStripeId } from "utils/clerk.js";
+import { getStripeId } from "utils/clerk.ts";
 import {
   findSubscriptionPlusPrice,
   getActivePlusPrice,
   getObjectId,
   listActiveSubscriptions,
-} from "utils/stripe.js";
+} from "utils/stripe.ts";
 
 export async function GET() {
   const stripeId = getStripeId(await currentUser());

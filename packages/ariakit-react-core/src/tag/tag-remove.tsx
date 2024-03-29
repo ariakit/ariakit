@@ -2,17 +2,17 @@ import { useContext, useEffect } from "react";
 import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { Role } from "../role/role.js";
-import { useBooleanEvent, useEvent, useId } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.jsx";
-import type { Options, Props } from "../utils/types.js";
+import { Role } from "../role/role.ts";
+import { useBooleanEvent, useEvent, useId } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
 import {
   TagRemoveIdContext,
   TagValueContext,
   useTagContext,
-} from "./tag-context.jsx";
-import type { TagStore } from "./tag-store.js";
-import { useTouchDevice } from "./utils.js";
+} from "./tag-context.tsx";
+import type { TagStore } from "./tag-store.ts";
+import { useTouchDevice } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

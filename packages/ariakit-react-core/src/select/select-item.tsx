@@ -4,28 +4,28 @@ import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeHoverOptions } from "../composite/composite-hover.js";
-import { useCompositeHover } from "../composite/composite-hover.js";
-import type { CompositeItemOptions } from "../composite/composite-item.js";
-import { useCompositeItem } from "../composite/composite-item.js";
+import type { CompositeHoverOptions } from "../composite/composite-hover.ts";
+import { useCompositeHover } from "../composite/composite-hover.ts";
+import type { CompositeItemOptions } from "../composite/composite-item.tsx";
+import { useCompositeItem } from "../composite/composite-item.tsx";
 import {
   useBooleanEvent,
   useEvent,
   useId,
   useWrapElement,
-} from "../utils/hooks.js";
+} from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   SelectItemCheckedContext,
   useSelectScopedContext,
-} from "./select-context.js";
-import type { SelectStore } from "./select-store.js";
+} from "./select-context.tsx";
+import type { SelectStore } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

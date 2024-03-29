@@ -1,11 +1,11 @@
 import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { CollectionContextProvider } from "./collection-context.js";
-import { useCollectionStore } from "./collection-store.js";
+import { CollectionContextProvider } from "./collection-context.tsx";
+import { useCollectionStore } from "./collection-store.ts";
 import type {
   CollectionStoreItem,
   CollectionStoreProps,
-} from "./collection-store.js";
+} from "./collection-store.ts";
 
 /**
  * Provides a collection store to

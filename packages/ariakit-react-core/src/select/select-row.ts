@@ -1,12 +1,12 @@
 import type { ElementType } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CompositeRowOptions } from "../composite/composite-row.js";
-import { useCompositeRow } from "../composite/composite-row.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useSelectContext } from "./select-context.js";
-import type { SelectStore } from "./select-store.js";
+import type { CompositeRowOptions } from "../composite/composite-row.tsx";
+import { useCompositeRow } from "../composite/composite-row.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useSelectContext } from "./select-context.tsx";
+import type { SelectStore } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

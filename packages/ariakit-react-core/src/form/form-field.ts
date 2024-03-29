@@ -4,10 +4,10 @@ import {
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useFormControl } from "./form-control.js";
-import type { FormControlOptions } from "./form-control.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useFormControl } from "./form-control.ts";
+import type { FormControlOptions } from "./form-control.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

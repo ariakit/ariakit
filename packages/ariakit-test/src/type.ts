@@ -1,10 +1,10 @@
 import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
-import type { DirtiableElement, TextField } from "./__utils.js";
-import { wrapAsync } from "./__utils.js";
-import { dispatch } from "./dispatch.js";
-import { focus } from "./focus.js";
-import { sleep } from "./sleep.js";
+import type { DirtiableElement, TextField } from "./__utils.ts";
+import { wrapAsync } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
+import { focus } from "./focus.ts";
+import { sleep } from "./sleep.ts";
 
 function getKeyFromChar(key: string) {
   if (key === "\x7f") return "Delete";

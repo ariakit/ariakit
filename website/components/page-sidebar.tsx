@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
-import type { TableOfContents as TableOfContentsData } from "build-pages/types.js";
-import { ChevronRight } from "icons/chevron-right.jsx";
-import { Document } from "icons/document.jsx";
-import { FolderOpen } from "icons/folder-open.jsx";
+import type { TableOfContents as TableOfContentsData } from "build-pages/types.ts";
+import { ChevronRight } from "icons/chevron-right.tsx";
+import { Document } from "icons/document.tsx";
+import { FolderOpen } from "icons/folder-open.tsx";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
-import { TableOfContents } from "./table-of-contents.jsx";
+import { TableOfContents } from "./table-of-contents.tsx";
 
 interface PageSidebarProps {
   tableOfContents: TableOfContentsData;

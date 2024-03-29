@@ -3,28 +3,28 @@ import type {
   CollectionStoreItem,
   CollectionStoreOptions,
   CollectionStoreState,
-} from "../collection/collection-store.js";
-import { createCollectionStore } from "../collection/collection-store.js";
+} from "../collection/collection-store.ts";
+import { createCollectionStore } from "../collection/collection-store.ts";
 import {
   applyState,
   defaultValue,
   isInteger,
   isObject,
-} from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   createStore,
   init,
   setup,
   throwOnConflictingProps,
-} from "../utils/store.js";
+} from "../utils/store.ts";
 import type {
   AnyObject,
   PickRequired,
   SetState,
   SetStateAction,
-} from "../utils/types.js";
-import type { DeepMap, DeepPartial, Names, StringLike } from "./types.js";
+} from "../utils/types.ts";
+import type { DeepMap, DeepPartial, Names, StringLike } from "./types.ts";
 
 type ErrorMessage = string | undefined | null;
 

@@ -1,7 +1,7 @@
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, throwOnConflictingProps } from "../utils/store.js";
-import type { PickRequired, SetState, ToPrimitive } from "../utils/types.js";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import { createStore, throwOnConflictingProps } from "../utils/store.ts";
+import type { PickRequired, SetState, ToPrimitive } from "../utils/types.ts";
 
 /**
  * Creates a checkbox store.

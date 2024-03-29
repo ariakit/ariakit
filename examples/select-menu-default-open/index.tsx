@@ -1,13 +1,13 @@
 import "./style.css";
 import { useMemo, useState } from "react";
-import { allFilters } from "./all-filters.js";
+import { allFilters } from "./all-filters.ts";
 import {
   FilterMenu,
   FilterMenuItem,
   FilterMenuItemCheckbox,
   FilterMenuSeparator,
-} from "./filter-menu.jsx";
-import { FilterSelect, FilterSelectItem } from "./filter-select.jsx";
+} from "./filter-menu.tsx";
+import { FilterSelect, FilterSelectItem } from "./filter-select.tsx";
 
 type Filters = Record<string, string | undefined>;
 

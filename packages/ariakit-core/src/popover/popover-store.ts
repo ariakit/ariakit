@@ -2,17 +2,17 @@ import type {
   DialogStoreFunctions,
   DialogStoreOptions,
   DialogStoreState,
-} from "../dialog/dialog-store.js";
-import { createDialogStore } from "../dialog/dialog-store.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../dialog/dialog-store.ts";
+import { createDialogStore } from "../dialog/dialog-store.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   createStore,
   mergeStore,
   omit,
   throwOnConflictingProps,
-} from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+} from "../utils/store.ts";
+import type { SetState } from "../utils/types.ts";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

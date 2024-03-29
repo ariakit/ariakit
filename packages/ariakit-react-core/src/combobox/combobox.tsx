@@ -31,10 +31,10 @@ import type {
   BooleanOrCallback,
   StringWithValue,
 } from "@ariakit/core/utils/types";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import type { PopoverAnchorOptions } from "../popover/popover-anchor.js";
-import { usePopoverAnchor } from "../popover/popover-anchor.js";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import type { PopoverAnchorOptions } from "../popover/popover-anchor.ts";
+import { usePopoverAnchor } from "../popover/popover-anchor.ts";
 import {
   useBooleanEvent,
   useEvent,
@@ -44,15 +44,15 @@ import {
   useSafeLayoutEffect,
   useUpdateEffect,
   useUpdateLayoutEffect,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useComboboxProviderContext } from "./combobox-context.js";
+} from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
   ComboboxStoreSelectedValue,
   ComboboxStoreState,
-} from "./combobox-store.js";
+} from "./combobox-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

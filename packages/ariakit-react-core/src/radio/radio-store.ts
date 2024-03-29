@@ -3,10 +3,10 @@ import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../composite/composite-store.ts";
+import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useRadioStoreProps<T extends Core.RadioStore>(
   store: T,

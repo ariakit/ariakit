@@ -1,10 +1,10 @@
 import type { ElementType } from "react";
-import type { PopoverDismissOptions } from "../popover/popover-dismiss.js";
-import { usePopoverDismiss } from "../popover/popover-dismiss.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useHovercardScopedContext } from "./hovercard-context.js";
-import type { HovercardStore } from "./hovercard-store.js";
+import type { PopoverDismissOptions } from "../popover/popover-dismiss.ts";
+import { usePopoverDismiss } from "../popover/popover-dismiss.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useHovercardScopedContext } from "./hovercard-context.tsx";
+import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

@@ -1,9 +1,9 @@
 import type { ElementType } from "react";
-import type { GroupOptions } from "../group/group.js";
-import { useGroup } from "../group/group.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { FormStore } from "./form-store.js";
+import type { GroupOptions } from "../group/group.tsx";
+import { useGroup } from "../group/group.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { FormStore } from "./form-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

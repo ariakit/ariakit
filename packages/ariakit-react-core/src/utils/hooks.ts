@@ -22,8 +22,8 @@ import { canUseDOM } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { applyState } from "@ariakit/core/utils/misc";
 import type { AnyFunction, SetState } from "@ariakit/core/utils/types";
-import { setRef } from "./misc.js";
-import type { WrapElement } from "./types.js";
+import { setRef } from "./misc.ts";
+import type { WrapElement } from "./types.ts";
 
 // See https://github.com/webpack/webpack/issues/14814
 const _React = { ...React };

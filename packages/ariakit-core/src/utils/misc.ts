@@ -3,7 +3,7 @@ import type {
   AnyObject,
   BivariantCallback,
   SetStateAction,
-} from "./types.js";
+} from "./types.ts";
 
 /**
  * Empty function.

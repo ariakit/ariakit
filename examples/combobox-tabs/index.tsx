@@ -10,8 +10,8 @@ import {
   ComboboxProvider,
   ComboboxTab,
   ComboboxTabList,
-} from "./combobox.jsx";
-import { flatPages, pages } from "./pages.js";
+} from "./combobox.tsx";
+import { flatPages, pages } from "./pages.ts";
 
 const categories = ["All", ...Object.keys(pages)];
 

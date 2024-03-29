@@ -5,25 +5,25 @@ import {
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
-import type { CompositeItemOptions } from "../composite/composite-item.js";
-import { useCompositeItem } from "../composite/composite-item.js";
+import type { CompositeItemOptions } from "../composite/composite-item.tsx";
+import { useCompositeItem } from "../composite/composite-item.tsx";
 import {
   useEvent,
   useForceUpdate,
   useId,
   useMergeRefs,
   useTagName,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useRadioContext } from "./radio-context.js";
-import type { RadioStore, RadioStoreState } from "./radio-store.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useRadioContext } from "./radio-context.tsx";
+import type { RadioStore, RadioStoreState } from "./radio-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

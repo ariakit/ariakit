@@ -2,9 +2,9 @@ import { createContext } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
-} from "../composite/composite-context.jsx";
-import { createStoreContext } from "../utils/system.jsx";
-import type { TagStore } from "./tag-store.js";
+} from "../composite/composite-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { TagStore } from "./tag-store.ts";
 
 export const TagValueContext = createContext<string | null>(null);
 export const TagRemoveIdContext = createContext<((id?: string) => void) | null>(

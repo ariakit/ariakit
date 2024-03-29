@@ -1,10 +1,10 @@
 import { useContext, useMemo, useRef } from "react";
 import type { ElementType } from "react";
-import { useMergeRefs, useTagName } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.jsx";
-import type { Options, Props } from "../utils/types.js";
-import { HeadingContext } from "./heading-context.js";
-import type { HeadingLevels } from "./utils.js";
+import { useMergeRefs, useTagName } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { HeadingContext } from "./heading-context.ts";
+import type { HeadingLevels } from "./utils.ts";
 
 type HeadingElements = `h${HeadingLevels}`;
 const TagName = "h1" satisfies ElementType;

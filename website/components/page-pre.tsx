@@ -4,8 +4,8 @@ import type { Element } from "hast";
 import parseNumericRange from "parse-numeric-range";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
-import { defer } from "utils/defer.js";
-import { CodeBlock } from "./code-block.jsx";
+import { defer } from "utils/defer.ts";
+import { CodeBlock } from "./code-block.tsx";
 
 export interface PagePreProps extends ComponentProps<"pre"> {
   node?: Element;

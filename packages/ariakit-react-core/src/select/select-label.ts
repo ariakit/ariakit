@@ -1,15 +1,15 @@
 import type { ElementType, MouseEvent } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useEvent, useId, useMergeRefs } from "../utils/hooks.js";
+import { useEvent, useId, useMergeRefs } from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { useSelectProviderContext } from "./select-context.js";
-import type { SelectStore } from "./select-store.js";
+} from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useSelectProviderContext } from "./select-context.tsx";
+import type { SelectStore } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

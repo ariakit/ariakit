@@ -2,20 +2,20 @@ import { createContext } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
-} from "../composite/composite-context.js";
+} from "../composite/composite-context.tsx";
 import {
   HovercardContextProvider,
   HovercardScopedContextProvider,
-} from "../hovercard/hovercard-context.js";
+} from "../hovercard/hovercard-context.tsx";
 import {
   MenubarContextProvider,
   MenubarScopedContextProvider,
   useMenubarContext,
   useMenubarProviderContext,
   useMenubarScopedContext,
-} from "../menubar/menubar-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { MenuStore } from "./menu-store.js";
+} from "../menubar/menubar-context.ts";
+import { createStoreContext } from "../utils/system.tsx";
+import type { MenuStore } from "./menu-store.ts";
 
 const menu = createStoreContext<MenuStore>(
   [CompositeContextProvider, HovercardContextProvider],

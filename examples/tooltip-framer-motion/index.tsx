@@ -1,5 +1,5 @@
 import "./style.css";
-import { TooltipAnchor } from "./tooltip-anchor.jsx";
+import { TooltipAnchor } from "./tooltip-anchor.tsx";
 
 export default function Example() {
   const href = "https://ariakit.org/examples/tooltip-framer-motion";

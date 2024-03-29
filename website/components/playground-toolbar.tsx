@@ -8,12 +8,12 @@ import {
   useSelectStore,
   useToolbarStore,
 } from "@ariakit/react";
-import { JavaScript } from "icons/javascript.jsx";
-import { TypeScript } from "icons/typescript.jsx";
-import { tw } from "utils/tw.js";
-import { CopyToClipboard } from "./copy-to-clipboard.jsx";
-import { Popup } from "./popup.jsx";
-import { TooltipButton } from "./tooltip-button.jsx";
+import { JavaScript } from "icons/javascript.tsx";
+import { TypeScript } from "icons/typescript.tsx";
+import { tw } from "utils/tw.ts";
+import { CopyToClipboard } from "./copy-to-clipboard.tsx";
+import { Popup } from "./popup.tsx";
+import { TooltipButton } from "./tooltip-button.tsx";
 
 type Language = "ts" | "js";
 

@@ -1,10 +1,10 @@
 import type { CSSProperties, ElementType, FocusEvent } from "react";
-import type { PopoverOptions } from "../popover/popover.js";
-import { usePopover } from "../popover/popover.js";
-import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { CompositeOverflowStore } from "./composite-overflow-store.js";
+import type { PopoverOptions } from "../popover/popover.tsx";
+import { usePopover } from "../popover/popover.tsx";
+import { useEvent } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { CompositeOverflowStore } from "./composite-overflow-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

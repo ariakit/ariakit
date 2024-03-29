@@ -20,10 +20,10 @@ import {
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CollectionItemOptions } from "../collection/collection-item.js";
-import { useCollectionItem } from "../collection/collection-item.js";
-import type { CommandOptions } from "../command/command.js";
-import { useCommand } from "../command/command.js";
+import type { CollectionItemOptions } from "../collection/collection-item.ts";
+import { useCollectionItem } from "../collection/collection-item.ts";
+import type { CommandOptions } from "../command/command.ts";
+import { useCommand } from "../command/command.ts";
 import {
   useBooleanEvent,
   useEvent,
@@ -31,27 +31,27 @@ import {
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   CompositeItemContext,
   CompositeRowContext,
   useCompositeContext,
-} from "./composite-context.js";
-import type { CompositeStore } from "./composite-store.js";
+} from "./composite-context.tsx";
+import type { CompositeStore } from "./composite-store.ts";
 import {
   focusSilently,
   getEnabledItem,
   isItem,
   selectTextField,
-} from "./utils.js";
+} from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

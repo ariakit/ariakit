@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { useTagContext } from "./tag-context.js";
-import type { TagStore, TagStoreState } from "./tag-store.js";
+import { useTagContext } from "./tag-context.tsx";
+import type { TagStore, TagStoreState } from "./tag-store.ts";
 
 /**
  * Renders the current

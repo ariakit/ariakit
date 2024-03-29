@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import type { ElementType } from "react";
-import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.js";
-import { useCheckboxCheck } from "../checkbox/checkbox-check.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { MenuItemCheckedContext } from "./menu-context.js";
-import type { MenuStore } from "./menu-store.js";
+import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.tsx";
+import { useCheckboxCheck } from "../checkbox/checkbox-check.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { MenuItemCheckedContext } from "./menu-context.ts";
+import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "span" satisfies ElementType;
 type TagName = typeof TagName;

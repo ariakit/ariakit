@@ -1,10 +1,10 @@
 import type { ElementType } from "react";
-import type { CompositeSeparatorOptions } from "../composite/composite-separator.js";
-import { useCompositeSeparator } from "../composite/composite-separator.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useToolbarContext } from "./toolbar-context.js";
-import type { ToolbarStore } from "./toolbar-store.js";
+import type { CompositeSeparatorOptions } from "../composite/composite-separator.ts";
+import { useCompositeSeparator } from "../composite/composite-separator.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useToolbarContext } from "./toolbar-context.tsx";
+import type { ToolbarStore } from "./toolbar-store.ts";
 
 const TagName = "hr" satisfies ElementType;
 type TagName = typeof TagName;

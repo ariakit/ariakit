@@ -15,14 +15,14 @@ import {
   SelectSeparator,
   useSelectStore,
 } from "@ariakit/react/select";
-import { NewWindow } from "icons/new-window.js";
-import { React } from "icons/react.js";
-import { Vue } from "icons/vue.js";
+import { NewWindow } from "icons/new-window.tsx";
+import { React } from "icons/react.tsx";
+import { Vue } from "icons/vue.tsx";
 import Link from "next/link.js";
 import { usePathname } from "next/navigation.js";
-import { tw } from "utils/tw.js";
-import { Command } from "./command.jsx";
-import { Popup } from "./popup.js";
+import { tw } from "utils/tw.ts";
+import { Command } from "./command.tsx";
+import { Popup } from "./popup.tsx";
 
 const style = {
   group: tw`

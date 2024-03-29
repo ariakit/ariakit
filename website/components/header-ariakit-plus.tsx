@@ -16,17 +16,17 @@ import {
   SignedOut,
   useClerk,
 } from "@clerk/clerk-react";
-import { NewWindow } from "icons/new-window.jsx";
+import { NewWindow } from "icons/new-window.tsx";
 import Link from "next/link.js";
 import {
   usePathname,
   useSearchParams,
   useSelectedLayoutSegments,
 } from "next/navigation.js";
-import { useSubscription } from "utils/use-subscription.js";
-import { Command } from "./command.jsx";
-import { DropdownItem } from "./dropdown-item.jsx";
-import { Popup } from "./popup.jsx";
+import { useSubscription } from "utils/use-subscription.ts";
+import { Command } from "./command.tsx";
+import { DropdownItem } from "./dropdown-item.tsx";
+import { Popup } from "./popup.tsx";
 
 const SignInLink = forwardRef<
   ElementRef<typeof Link>,

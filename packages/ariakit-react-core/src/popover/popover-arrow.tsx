@@ -2,12 +2,12 @@ import { useMemo, useState } from "react";
 import type { ElementType } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
-import { usePopoverContext } from "./popover-context.js";
-import type { PopoverStore } from "./popover-store.js";
+import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { POPOVER_ARROW_PATH } from "./popover-arrow-path.ts";
+import { usePopoverContext } from "./popover-context.tsx";
+import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

@@ -2,18 +2,18 @@ import { useMemo, useRef, useState } from "react";
 import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { flushSync } from "react-dom";
-import { DialogScopedContextProvider } from "../dialog/dialog-context.js";
+import { DialogScopedContextProvider } from "../dialog/dialog-context.tsx";
 import {
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, createHook, forwardRef } from "../utils/system.jsx";
-import type { Options, Props } from "../utils/types.js";
-import { useDisclosureProviderContext } from "./disclosure-context.jsx";
-import type { DisclosureStore } from "./disclosure-store.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useDisclosureProviderContext } from "./disclosure-context.tsx";
+import type { DisclosureStore } from "./disclosure-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

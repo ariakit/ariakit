@@ -4,11 +4,11 @@ import {
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useToolbarContext } from "./toolbar-context.js";
-import type { ToolbarItemOptions } from "./toolbar-item.js";
-import { useToolbarItem } from "./toolbar-item.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useToolbarContext } from "./toolbar-context.tsx";
+import type { ToolbarItemOptions } from "./toolbar-item.ts";
+import { useToolbarItem } from "./toolbar-item.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

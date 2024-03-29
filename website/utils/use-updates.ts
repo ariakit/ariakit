@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useEvent } from "@ariakit/react-core/utils/hooks";
-import type { UpdateItem } from "updates.js";
+import type { UpdateItem } from "updates.ts";
 import useLocalStorageState from "use-local-storage-state";
 
 export interface UseUpdatesProps {

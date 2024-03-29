@@ -9,7 +9,7 @@ import {
   SelectPopover,
   SelectProvider,
 } from "@ariakit/react";
-import list from "./list.js";
+import list from "./list.ts";
 
 function renderValue(value: string[]) {
   if (value.length === 0) return "No food selected";

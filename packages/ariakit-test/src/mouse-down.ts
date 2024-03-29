@@ -1,10 +1,10 @@
 import { getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import { wrapAsync } from "./__utils.js";
-import { blur } from "./blur.js";
-import { dispatch } from "./dispatch.js";
-import { focus } from "./focus.js";
+import { wrapAsync } from "./__utils.ts";
+import { blur } from "./blur.ts";
+import { dispatch } from "./dispatch.ts";
+import { focus } from "./focus.ts";
 
 export function mouseDown(element: Element | null, options?: MouseEventInit) {
   return wrapAsync(async () => {

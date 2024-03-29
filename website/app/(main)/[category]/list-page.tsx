@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cx } from "@ariakit/core/utils/misc";
-import { PageContainer } from "../page-container.jsx";
+import { PageContainer } from "../page-container.tsx";
 
 interface Props {
   title?: string;

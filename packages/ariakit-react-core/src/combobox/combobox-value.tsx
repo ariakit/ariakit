@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import { useComboboxContext } from "./combobox-context.js";
-import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.js";
+import { useComboboxContext } from "./combobox-context.tsx";
+import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
 
 /**
  * Renders the current

@@ -2,14 +2,14 @@ import "./style.css";
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
-import { getList, getValue } from "./list.js";
+import { getList, getValue } from "./list.ts";
 import {
   getAnchorRect,
   getSearchValue,
   getTrigger,
   getTriggerOffset,
   replaceValue,
-} from "./utils.js";
+} from "./utils.ts";
 
 export default function Example() {
   const ref = React.useRef<HTMLTextAreaElement>(null);

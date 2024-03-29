@@ -2,11 +2,11 @@ import { useEffect, useRef } from "react";
 import type { ElementType } from "react";
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useId, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { useCollectionContext } from "./collection-context.js";
-import type { CollectionStore } from "./collection-store.js";
+import { useId, useMergeRefs } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useCollectionContext } from "./collection-context.tsx";
+import type { CollectionStore } from "./collection-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

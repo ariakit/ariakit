@@ -3,10 +3,10 @@ import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore } from "../utils/store.js";
+} from "../composite/composite-store.ts";
+import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore } from "../utils/store.tsx";
 
 export function useToolbarStoreProps<T extends Core.ToolbarStore>(
   store: T,

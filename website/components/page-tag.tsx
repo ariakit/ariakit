@@ -1,8 +1,8 @@
 import type { ComponentProps } from "react";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
-import { getTagSlug } from "utils/tag.js";
-import { PlusBordered } from "./plus-bordered.jsx";
+import { getTagSlug } from "utils/tag.ts";
+import { PlusBordered } from "./plus-bordered.tsx";
 
 export interface PageTagProps
   extends Omit<ComponentProps<typeof Link>, "href"> {
