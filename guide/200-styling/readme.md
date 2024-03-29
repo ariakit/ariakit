@@ -257,3 +257,14 @@ The [Dialog](/components/dialog) component will define a `--scrollbar-width` CSS
   padding-inline-end: calc(16px + var(--scrollbar-width, 0));
 }
 ```
+
+## Next steps
+
+Continue reading our [Guide](/guide) to learn more about Ariakit:
+
+<div data-cards>
+
+- [](/guide/getting-started)
+- [](/guide/composition)
+
+</div>

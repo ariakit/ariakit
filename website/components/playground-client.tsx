@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { cx, invariant } from "@ariakit/core/utils/misc";
+import { invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
 import { ChevronDown } from "icons/chevron-down.tsx";
@@ -167,7 +167,7 @@ export function PlaygroundClient({
   }, [collapsed, selectedId]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 md:gap-6">
+    <div className="flex flex-col items-center justify-center gap-4 md:gap-6 [[data-level='1']_&]:md:mt-12">
       {preview && (
         <div
           className={twJoin(
@@ -202,7 +202,10 @@ export function PlaygroundClient({
             className={twJoin(
               "flex h-full w-full flex-1 flex-col items-center justify-center overflow-x-auto",
               type === "wide"
-                ? ["min-h-[240px] p-6 md:p-12", previewLink && "md:pt-10"]
+                ? [
+                    "min-h-[240px] p-6 md:p-12 [[data-level='1']_&]:md:min-h-[320px]",
+                    previewLink && "md:pt-10",
+                  ]
                 : "p-4 md:p-6",
             )}
           >
@@ -225,10 +228,10 @@ export function PlaygroundClient({
       {isAppDir && previewLink && (
         <div className="flex w-full flex-col items-center">
           <div
-            className={cx(
+            className={twJoin(
               "w-full overflow-hidden rounded-lg border border-gray-300 bg-gray-150 dark:border-gray-650 dark:bg-gray-850",
               type === "wide"
-                ? "h-[480px] md:rounded-2xl"
+                ? "h-[560px] md:rounded-2xl"
                 : "h-[320px] md:rounded-xl",
             )}
           >
@@ -247,7 +250,7 @@ export function PlaygroundClient({
           </AuthEnabled>
         </div>
       )}
-      <div className="w-full max-w-[832px] rounded-lg border-none border-black/[15%] dark:border-gray-650 md:rounded-xl">
+      <div className="w-full max-w-[--size-lg] rounded-lg border-none border-black/[15%] dark:border-gray-650 md:rounded-xl">
         <div className="relative z-[12] flex gap-2 rounded-t-[inherit] border border-[inherit] bg-gray-100 dark:bg-gray-750">
           <TabList
             store={tab}
@@ -280,23 +283,23 @@ export function PlaygroundClient({
               "relative overflow-hidden rounded-b-[inherit] border border-t-0",
               "border-[inherit] focus-visible:z-[13] focus-visible:ariakit-outline-input",
               collapsed
-                ? "max-h-64 [&_pre]:!overflow-hidden"
+                ? "max-h-64 [&_pre]:!overflow-hidden [[data-level='1']_&]:md:max-h-80"
                 : "max-h-[min(max(calc(100vh-640px),480px),800px)]",
             )}
           >
             {subscriptionOnly ? (
               <AuthEnabled>
                 <AuthLoading>
-                  <div className="relative h-64 bg-white dark:bg-gray-850">
-                    <div className="absolute left-0 top-0 p-4">
+                  <div className="relative h-64 bg-white dark:bg-gray-850 [[data-level='1']_&]:md:h-80">
+                    <div className="absolute left-0 top-0 p-4 pl-8">
                       <CodePlaceholder />
                     </div>
                   </div>
                 </AuthLoading>
                 <Subscribed>{codeBlockElement}</Subscribed>
                 <NotSubscribed>
-                  <div className="relative z-[1] flex h-64 flex-col items-center justify-center bg-white p-4 dark:bg-gray-850">
-                    <div className="absolute left-0 top-0 p-4">
+                  <div className="relative z-[1] flex h-64 flex-col items-center justify-center bg-white p-4 dark:bg-gray-850 [[data-level='1']_&]:md:h-80">
+                    <div className="absolute left-0 top-0 p-4 pl-8">
                       <CodePlaceholder />
                     </div>
                     <div className="relative flex flex-col items-center justify-center gap-4 text-center ">

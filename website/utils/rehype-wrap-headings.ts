@@ -21,7 +21,9 @@ function getHeadingNode(node: RootContent) {
 
 export const rehypeWrapHeadings: Plugin<any[], Root> = () => {
   return (tree) => {
+    let hasHero = false;
     const groups: Element[] = [];
+
     for (const node of tree.children) {
       if (!isElement(node)) continue;
       const heading = getHeadingNode(node);
@@ -32,14 +34,20 @@ export const rehypeWrapHeadings: Plugin<any[], Root> = () => {
         };
         const wrapper = h("div", props, [node]);
         groups.push(wrapper);
+        if (heading.tagName === "h1") {
+          hasHero = true;
+        }
       } else if (!groups.length) {
         const wrapper = h("div", [node]);
         groups.push(wrapper);
       } else {
-        const previousGroup = groups[groups.length - 1];
+        const previousGroup = groups.at(-1);
         previousGroup?.children.push(node);
       }
     }
-    tree.children = groups;
+
+    tree.children = !hasHero
+      ? groups
+      : [groups.shift()!, h("div", { "data-sections": "" }, [...groups])];
   };
 };

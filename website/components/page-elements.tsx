@@ -11,12 +11,19 @@ import Link from "next/link.js";
 import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import { isValidHref } from "utils/is-valid-href.ts";
-import { AuthEnabled, NotSubscribed, Subscribed } from "./auth.tsx";
+import {
+  AuthDisabled,
+  AuthEnabled,
+  AuthLoading,
+  NotSubscribed,
+  Subscribed,
+} from "./auth.tsx";
 import { Command } from "./command.tsx";
 import { InlineLink } from "./inline-link.tsx";
 import { PageCards } from "./page-cards.tsx";
 import { PageExample } from "./page-example.tsx";
 import { PageHovercardAnchor } from "./page-hovercard.tsx";
+import { PageSidebar } from "./page-sidebar.tsx";
 import { PageTag, PageTagList } from "./page-tag.tsx";
 import { PageVideo } from "./page-video.tsx";
 
@@ -28,9 +35,9 @@ export interface PageHeadingProps extends ComponentPropsWithoutRef<"h1"> {
 export function PageHeading({ node, level, ...props }: PageHeadingProps) {
   const className = twJoin(
     // base styles
-    "text-black dark:text-white tracking-[-0.035em] dark:tracking-[-0.015em]",
+    "text-black text-pretty dark:text-white tracking-[-0.035em] dark:tracking-[-0.015em]",
     "[&_code]:font-monospace [&_code]:rounded [&_code]:px-[0.2em] [&_code]:py-[0.15em]",
-    "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%]",
+    "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%] max-w-[--size-md]",
     // sticky styles
     level < 4 &&
       "sticky md:static [[data-dialog]_&]:static top-14 z-20 pb-2 -mb-2 md:mb-0 md:pb-0 [[data-dialog]_&]:mb-0 [[data-dialog]_&]:pb-0 flex items-center md:block pr-12 md:pr-0 min-h-[48px] md:min-h-0 bg-gray-50 dark:bg-gray-800 [[data-dialog]_&]:bg-inherit",
@@ -45,7 +52,11 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
   );
 
   if (level === 1) {
-    return <h1 {...props} className={className} />;
+    return (
+      <h1 {...props} className={className}>
+        <span className="max-w-[--size-content]">{props.children}</span>
+      </h1>
+    );
   }
 
   if (level === 4) {
@@ -57,7 +68,12 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
 
   return (
     <Element {...rest} className={className}>
-      <a href={`#${id}`}>{props.children}</a>
+      <a
+        href={`#${id}`}
+        className="decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] hover:underline"
+      >
+        {props.children}
+      </a>
     </Element>
   );
 }
@@ -69,13 +85,18 @@ export interface PageParagraphProps extends ComponentPropsWithoutRef<"p"> {
 export function PageParagraph({ node, ...props }: PageParagraphProps) {
   const className = twJoin(
     "dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]",
-    "[p&_code]:rounded [p&_code]:text-[0.9375em]",
+    "max-w-[--size-content] text-pretty",
+    "[p&_code]:rounded [p&_code]:text-[0.9375em] text-pretty",
     "[p&_code]:px-[0.25em] [p&_code]:py-[0.2em]",
     "[p&_code]:bg-black/[7.5%] dark:[p&_code]:bg-white/[7.5%]",
     "[p&_code]:font-monospace",
     props.className,
   );
-  const paragraph = <p {...props} className={className} />;
+  const paragraph = (
+    <div className="max-w-[--size-md]">
+      <p {...props} className={className} />
+    </div>
+  );
   const children = Children.toArray(props.children);
 
   if (children.length > 1) return paragraph;
@@ -100,9 +121,9 @@ export interface PageAsideProps extends ComponentPropsWithoutRef<"div"> {
 export function PageAside({ node, title, ...props }: PageAsideProps) {
   const id = useId();
   const className = twJoin(
-    "flex flex-col items-center justify-center w-full gap-4 p-4 pl-5 sm:p-8",
+    "flex flex-col items-start justify-center w-full gap-4 p-4 pl-5 sm:p-8",
     "rounded-lg sm:rounded-xl !rounded-l relative overflow-hidden",
-    "!max-w-[832px] [&>*]:max-w-3xl [&>*]:w-full",
+    "max-w-[--size-lg] *:w-full",
     "before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1",
 
     "data-[type=danger]:bg-red-100/70",
@@ -126,7 +147,7 @@ export function PageAside({ node, title, ...props }: PageAsideProps) {
 
   return (
     <aside {...props} className={className} aria-labelledby={id}>
-      <PageParagraph id={id} className="font-semibold dark:!text-white">
+      <PageParagraph id={id} className="w-full font-semibold dark:!text-white">
         {title}
       </PageParagraph>
       {props.children}
@@ -152,8 +173,13 @@ export function PageDescription({
 
   return cloneElement(paragraph, {
     ...props,
+    children: (
+      <span className="block max-w-[--size-content]">
+        {paragraph.props.children}
+      </span>
+    ),
     className: twJoin(
-      "-translate-y-2 text-lg sm:text-xl sm:leading-8 !text-black/70 dark:!text-white/60",
+      "-translate-y-2 max-w-[--size-md] text-lg sm:text-xl sm:leading-8 !text-black/70 dark:!text-white/60",
       paragraph.props.className,
       props.className,
     ),
@@ -166,7 +192,7 @@ export interface PageDividerProps extends ComponentPropsWithoutRef<"hr"> {
 
 export function PageDivider({ node, ...props }: PageDividerProps) {
   const className = twJoin(
-    "w-full border-t border-black/10 dark:border-white/10",
+    "w-full max-w-[--size-content] border-t border-black/10 dark:border-white/10",
     "[[data-dialog]_section:last-of-type_&]:hidden",
     props.className,
   );
@@ -181,9 +207,9 @@ export function PageFigure({ node, ...props }: PageFigureProps) {
   const className = twJoin(
     "group gap-2 flex-col grid-cols-1 sm:grid-cols-2 overflow-hidden rounded-lg md:rounded-xl",
     "[&>img]:!rounded-none",
-    "data-[wide]:!max-w-5xl data-[wide]:md:rounded-2xl",
+    "data-[wide]:max-w-[--size-xl] data-[wide]:md:rounded-2xl",
     "data-[media]:grid",
-    "data-[quote]:flex data-[quote]:!max-w-[736px]",
+    "data-[quote]:flex data-[quote]:max-w-[--size-sm]",
     "data-[bigquote]:flex data-[bigquote]:!w-auto data-[bigquote]:p-4",
     props.className,
   );
@@ -197,7 +223,7 @@ export interface PageBlockquoteProps
 
 export function PageBlockquote({ node, ...props }: PageBlockquoteProps) {
   const className = twJoin(
-    "flex flex-col gap-4 px-4 !max-w-[736px] border-l-4 border-black/25 dark:border-white/25",
+    "flex flex-col gap-4 px-4 max-w-[--size-sm] border-l-4 border-black/25 dark:border-white/25",
     "group-data-[bigquote]:border-0",
     "group-data-[bigquote]:italic",
     "group-data-[bigquote]:p-0",
@@ -217,11 +243,15 @@ export interface PageListProps extends ComponentPropsWithoutRef<"ol"> {
 
 export function PageList({ node, ordered, ...props }: PageListProps) {
   const className = twJoin(
-    "flex flex-col gap-4 pl-8 list-none",
+    "flex flex-col gap-4 pl-8 list-none w-full max-w-[--size-content]",
     props.className,
   );
   const Element = ordered ? "ol" : "ul";
-  return <Element {...props} className={className} />;
+  return (
+    <div className="max-w-[--size-md]">
+      <Element {...props} className={className} />
+    </div>
+  );
 }
 
 export interface PageListItemProps extends ComponentPropsWithoutRef<"li"> {
@@ -292,10 +322,13 @@ export function PageSection({
       {...props}
       className={twJoin(
         "flex w-full flex-col items-center justify-center gap-8 [[data-dialog]_&]:gap-5",
-        "scroll-mt-16 md:scroll-mt-24 [&>*]:w-full [&>*]:max-w-3xl",
+        "scroll-mt-16 *:w-full md:scroll-mt-24",
         `data-[level="1"]:mt-0 data-[level="2"]:mt-6 data-[level="3"]:mt-2`,
         "[[data-dialog]_&]:first-of-type:mt-0 [[data-dialog]_&]:data-[level='2']:mt-2",
         "[[data-dialog]_&]:bg-inherit",
+        level === 1
+          ? "[--size-lg:1104px] [--size-md:1040px] [--size-xl:1232px]"
+          : "",
         props.className,
       )}
     />
@@ -312,7 +345,9 @@ export function PageSection({
 
     if (level === 1) {
       tableOfContents = tableOfContents?.filter(
-        (item) => !["Components", "Related examples"].includes(item.text),
+        (item, index) =>
+          index !== 0 &&
+          !["Components", "Related examples"].includes(item.text),
       );
       return (
         <>
@@ -320,7 +355,11 @@ export function PageSection({
           {!!tableOfContents?.length && (
             <AuthEnabled>
               <NotSubscribed>
-                <PageSection level={2} id="learn-more-about-this-example">
+                <PageSection
+                  level={2}
+                  id="learn-more-about-this-example"
+                  className="!mt-12 [--size-lg:1104px] [--size-md:1040px] [--size-xl:1232px]"
+                >
                   <PageHeading level={2} id="learn-more-about-this-example">
                     Learn more about this example
                   </PageHeading>
@@ -333,51 +372,53 @@ export function PageSection({
                   <PageList ordered={false}>
                     {tableOfContents.map((item, index) => (
                       <PageListItem key={item.id} index={index} ordered={false}>
-                        {item.text}
+                        <PageStrong>{item.text}</PageStrong>
                       </PageListItem>
                     ))}
                   </PageList>
-                  <div>
-                    {!!media?.length && (
-                      <div
-                        className={twJoin(
-                          "relative grid max-h-[200px] gap-1 overflow-hidden rounded-t-xl after:absolute after:inset-0 after:bg-gradient-to-t after:from-gray-50 after:from-10% after:to-transparent dark:after:from-gray-800 dark:after:via-80% sm:max-h-[240px] md:max-h-[280px]",
-                          media.length === 1 && "grid-cols-1",
-                          media.length === 2 && "grid-cols-2",
-                          media.length >= 3 && "grid-cols-3",
-                        )}
+                  <div className="max-w-[--size-md]">
+                    <div className="max-w-[--size-content]">
+                      {!!media?.length && (
+                        <div
+                          className={twJoin(
+                            "relative grid max-h-[200px] gap-1 overflow-hidden rounded-t-xl after:absolute after:inset-0 after:bg-gradient-to-t after:from-gray-50 after:from-10% after:to-transparent dark:after:from-gray-800 dark:after:via-80% sm:max-h-[240px] md:max-h-[280px]",
+                            media.length === 1 && "grid-cols-1",
+                            media.length === 2 && "grid-cols-2",
+                            media.length >= 3 && "grid-cols-3",
+                          )}
+                        >
+                          {media.slice(0, 3).map((item) => {
+                            if (item.type === "video") {
+                              return (
+                                <PageVideo
+                                  key={item.src}
+                                  {...item}
+                                  className="!rounded-none"
+                                />
+                              );
+                            } else if (item.type === "image") {
+                              return (
+                                <PageImage
+                                  key={item.src}
+                                  {...item}
+                                  className="!h-full !rounded-none object-cover"
+                                />
+                              );
+                            }
+                            return null;
+                          })}
+                        </div>
+                      )}
+                      <Command
+                        variant="plus"
+                        className="h-14 text-lg focus-visible:!ariakit-outline"
+                        render={
+                          <Link href="/plus?feature=examples" scroll={false} />
+                        }
                       >
-                        {media.slice(0, 3).map((item) => {
-                          if (item.type === "video") {
-                            return (
-                              <PageVideo
-                                key={item.src}
-                                {...item}
-                                className="!rounded-none"
-                              />
-                            );
-                          } else if (item.type === "image") {
-                            return (
-                              <PageImage
-                                key={item.src}
-                                {...item}
-                                className="!h-full !rounded-none object-cover"
-                              />
-                            );
-                          }
-                          return null;
-                        })}
-                      </div>
-                    )}
-                    <Command
-                      variant="plus"
-                      className="h-14 text-lg focus-visible:!ariakit-outline"
-                      render={
-                        <Link href="/plus?feature=examples" scroll={false} />
-                      }
-                    >
-                      Unlock Ariakit Plus
-                    </Command>
+                        Unlock Ariakit Plus
+                      </Command>
+                    </div>
                   </div>
                 </PageSection>
               </NotSubscribed>
@@ -419,6 +460,40 @@ export function PageDiv({
         plus={tags.includes("Plus")}
         tableOfContents={tableOfContents}
       />
+    );
+  }
+  if (node?.properties?.dataSections != null && props.children) {
+    const sidebarPlaceholder = <div className="m-4 w-60 flex-none" />;
+    const sidebar = tableOfContents && (
+      <PageSidebar tableOfContents={tableOfContents} />
+    );
+    return (
+      <div
+        {...props}
+        className={twJoin(
+          "flex w-full flex-col items-start justify-center md:mt-12 md:flex-row-reverse [[data-dialog]_&]:!mt-0",
+          props.className,
+        )}
+      >
+        {tags.includes("Plus") ? (
+          <>
+            <AuthEnabled>
+              <AuthLoading>{sidebarPlaceholder}</AuthLoading>
+              <NotSubscribed>{sidebarPlaceholder}</NotSubscribed>
+              <Subscribed>
+                {tableOfContents ? sidebar : sidebarPlaceholder}
+              </Subscribed>
+            </AuthEnabled>
+            <AuthDisabled>{sidebarPlaceholder}</AuthDisabled>
+          </>
+        ) : (
+          sidebar
+        )}
+
+        <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-4 lg:px-8 [[data-dialog]_&]:!px-0">
+          {props.children}
+        </div>
+      </div>
     );
   }
   if (node?.properties?.dataDescription != null) {
@@ -494,7 +569,7 @@ export function PageImage({
   ...props
 }: PageImageProps) {
   const className = twJoin(
-    "overflow-hidden rounded-lg data-[large]:!max-w-[832px] data-[wide]:!max-w-5xl md:rounded-xl data-[wide]:md:rounded-2xl",
+    "overflow-hidden rounded-lg data-[large]:max-w-[--size-lg] data-[wide]:max-w-[--size-xl] md:rounded-xl data-[wide]:md:rounded-2xl",
     props.className,
   );
   return (
@@ -559,7 +634,7 @@ export function PageA({
         {props.children}
         <span className="whitespace-nowrap">
           &#x2060;
-          <NewWindow className="mb-0.5 ml-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
+          <NewWindow className="mb-0.5 ml-0.5 inline size-[1em] stroke-black/60 dark:stroke-white/60" />
         </span>
       </InlineLink>
     );
@@ -571,7 +646,7 @@ export function PageA({
     return (
       <InlineLink {...props} href={href}>
         <span className="whitespace-nowrap">
-          <Hashtag className="mb-0.5 inline h-[1em] w-[1em] stroke-black/60 dark:stroke-white/60" />
+          <Hashtag className="mb-0.5 inline size-[1em] stroke-black/60 dark:stroke-white/60" />
           &#x2060;
         </span>
         {props.children}

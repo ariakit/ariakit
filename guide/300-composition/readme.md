@@ -174,7 +174,7 @@ When a function is passed to the `render` prop, the HTML props will **not** be a
 
 With this in mind, it's generally recommended to pass all the HTML props you intend to merge to a transitional [Role](/components/role) element passed directly to the `render` prop, as it can handle the merging process for you in a type-safe manner:
 
-<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-x-2 gap-y-4 !max-w-[832px] [&_pre]:h-full">
+<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-x-2 gap-y-4 max-w-[--size-lg] [&_pre]:h-full">
 
 ```jsx "ref" "onClick"
 // ❌ Manually merging props
@@ -240,3 +240,14 @@ const CustomButton = forwardRef(function CustomButton(props, forwardedRef) {
   );
 });
 ```
+
+## Next steps
+
+Continue reading our [Guide](/guide) to learn more about Ariakit:
+
+<div data-cards>
+
+- [](/guide/styling)
+- [](/guide/component-providers)
+
+</div>

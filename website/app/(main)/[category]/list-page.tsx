@@ -27,10 +27,8 @@ export function ListPage({
       )}
       <main
         className={cx(
-          "relative mt-8 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 sm:mt-12 sm:px-4 lg:px-8 [&>*]:w-full",
-          hasSidebar
-            ? "max-w-5xl [&>*]:max-w-3xl"
-            : "max-w-7xl [&>*]:max-w-[1040px]",
+          "relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 *:w-full sm:px-4 md:mt-16 lg:px-8",
+          hasSidebar ? "max-w-5xl *:max-w-3xl" : "max-w-7xl *:max-w-[1040px]",
         )}
       >
         {title ? (

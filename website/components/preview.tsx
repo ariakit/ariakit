@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Suspense, useEffect, useState } from "react";
 import { PortalContext } from "@ariakit/react";
 import examples from "build-pages/examples.ts";
+import { Spinner } from "icons/spinner.tsx";
 
 const ignoredExampleIds = ["examples-menu-wordpress-modal"];
 
@@ -48,7 +49,7 @@ export function Preview({ path, id, css }: Props) {
   const Component = examples[path];
   const preview = Component && <Component />;
   return (
-    <Suspense>
+    <Suspense fallback={<Spinner className="size-8 animate-spin" />}>
       {id ? <PortalProvider id={id}>{preview}</PortalProvider> : preview}
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
     </Suspense>

@@ -31,13 +31,15 @@ export interface PageTagListProps extends ComponentProps<"div"> {}
 
 export function PageTagList({ ...props }: PageTagListProps) {
   return (
-    <div
-      {...props}
-      className={twJoin(
-        "flex gap-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible [[data-description]+&]:-translate-y-2",
-        "[[data-dialog]_&]:hidden",
-        props.className,
-      )}
-    />
+    <div className="max-w-[--size-md] [[data-dialog]_&]:hidden">
+      <div
+        {...props}
+        className={twJoin(
+          "flex gap-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible [[data-description]+&]:-translate-y-2",
+          "max-w-[--size-content]",
+          props.className,
+        )}
+      />
+    </div>
   );
 }
