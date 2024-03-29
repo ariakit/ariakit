@@ -68,7 +68,12 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
 
   return (
     <Element {...rest} className={className}>
-      <a href={`#${id}`}>{props.children}</a>
+      <a
+        href={`#${id}`}
+        className="decoration-1 underline-offset-[0.25em] [text-decoration-skip-ink:none] hover:underline"
+      >
+        {props.children}
+      </a>
     </Element>
   );
 }
