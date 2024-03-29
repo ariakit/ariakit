@@ -45,15 +45,15 @@ export function PageSidebar({ tableOfContents, children }: PageSidebarProps) {
               "underline-offset-[0.2em] hover:text-black dark:hover:text-white",
               "scroll-my-2 focus-visible:ariakit-outline-input",
               `data-[depth="0"]:scroll-mt-96`,
-              `data-[depth="0"]:pl-2 data-[depth="1"]:pl-9 data-[depth="2"]:pl-9 data-[depth="3"]:pl-24`,
-              `md:data-[depth="0"]:pl-1 md:data-[depth="1"]:pl-6 md:data-[depth="2"]:pl-6 md:data-[depth="3"]:pl-12`,
-              isPage && "font-semibold",
+              `data-[depth="0"]:pl-2 data-[depth="1"]:pl-2 data-[depth="2"]:pl-9 data-[depth="3"]:pl-24`,
+              `md:data-[depth="0"]:pl-2 md:data-[depth="1"]:pl-2 md:data-[depth="2"]:pl-6 md:data-[depth="3"]:pl-12`,
+              isPage && "font-semibold text-black dark:text-white",
             )}
           >
             <span className="absolute -left-4 top-0 hidden h-full w-2 rounded-r bg-blue-600 group-aria-[current]:block" />
             {icon}
             <span className="flex gap-[2px] group-aria-[current]:text-black dark:group-aria-[current]:text-white [@media(any-hover:hover)]:group-hover:underline">
-              {depth > 1 && (
+              {depth > 0 && (
                 <ChevronRight className="h-3.5 w-3.5 flex-none -translate-x-[2px] translate-y-[4.5px] opacity-60 md:translate-y-[3px]" />
               )}
               {item.text}
@@ -84,7 +84,7 @@ export function PageSidebar({ tableOfContents, children }: PageSidebarProps) {
         </div>
       }
     >
-      <div className="sticky top-32 m-4 mt-20 hidden max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 dark:border-white/10 md:flex">
+      <div className="sticky top-32 m-4 mt-16 hidden max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 dark:border-white/10 md:flex">
         <nav className="w-full flex-1 flex-col gap-4 overflow-auto p-3 pr-1">
           {navList}
         </nav>

@@ -68,7 +68,7 @@ export function PageVideo({
       src={source}
       {...props}
       className={twJoin(
-        "overflow-hidden rounded-lg data-[large]:!max-w-[832px] data-[wide]:!max-w-5xl md:rounded-xl data-[wide]:md:rounded-2xl",
+        "overflow-hidden rounded-lg data-[large]:max-w-[--size-lg] data-[wide]:max-w-[--size-xl] md:rounded-xl data-[wide]:md:rounded-2xl",
         props.className,
       )}
     />

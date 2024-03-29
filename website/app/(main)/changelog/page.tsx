@@ -3,7 +3,6 @@ import { getPageContent } from "build-pages/get-page-content.js";
 import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
 import type { TableOfContents } from "build-pages/types.ts";
 import { PageMarkdown } from "components/page-markdown.tsx";
-import { PageSidebar } from "components/page-sidebar.tsx";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
 
 export function generateMetadata() {
@@ -27,15 +26,16 @@ export default function Page() {
       id: "",
       href: "#",
       text: "Changelog",
-      children: tableOfContentsChildren?.map(({ children, ...item }) => item),
     },
+    ...(tableOfContentsChildren?.map(({ children, ...item }) => item) || []),
   ];
   return (
-    <div className="flex flex-col items-start justify-center md:flex-row-reverse">
-      <PageSidebar tableOfContents={tableOfContents} />
-      <main className="relative flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 px-3 md:mt-12 md:px-4 lg:px-8">
-        <PageMarkdown file={file} content={content} />
-      </main>
-    </div>
+    <main className="relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 md:mt-16 md:px-4 lg:px-8">
+      <PageMarkdown
+        file={file}
+        content={content}
+        tableOfContents={tableOfContents}
+      />
+    </main>
   );
 }

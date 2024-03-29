@@ -1,7 +1,6 @@
 import type { AnchorHTMLAttributes } from "react";
 import { readFileSync } from "fs";
 import { dirname, relative, resolve } from "path";
-import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getCSSFilesFromDeps } from "build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "build-pages/get-example-deps.js";
@@ -10,6 +9,7 @@ import { getPageName } from "build-pages/get-page-name.js";
 import { parseCSSFile } from "build-pages/parse-css-file.js";
 import { Playground } from "components/playground.tsx";
 import { Preview } from "components/preview.tsx";
+import { twJoin } from "tailwind-merge";
 import { defer } from "utils/defer.ts";
 import { getExampleId } from "utils/get-example-id.js";
 
@@ -89,10 +89,10 @@ export async function PageExample({
 
   return (
     <div
-      className={cx(
-        type === "code" && "!max-w-[832px]",
-        type === "compact" && "!max-w-[832px]",
-        type === "wide" && "!max-w-5xl [[data-level='1']_&]:!max-w-6xl",
+      className={twJoin(
+        type === "code" && "max-w-[--size-lg]",
+        type === "compact" && "max-w-[--size-lg]",
+        type === "wide" && "max-w-[--size-xl]",
       )}
     >
       <Playground

@@ -217,3 +217,13 @@ function RequiredInput(props) {
   return <FormInput {...props} />;
 }
 ```
+
+## Next steps
+
+Continue reading our [Guide](/guide) to learn more about Ariakit:
+
+<div data-cards>
+
+- [](/guide/component-providers)
+
+</div>
