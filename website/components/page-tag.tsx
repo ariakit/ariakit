@@ -31,7 +31,7 @@ export interface PageTagListProps extends ComponentProps<"div"> {}
 
 export function PageTagList({ ...props }: PageTagListProps) {
   return (
-    <div className="max-w-[calc(var(--size-md)+26px)] [[data-dialog]_&]:hidden">
+    <div className="max-w-[--size-md] [[data-dialog]_&]:hidden">
       <div
         {...props}
         className={twJoin(
