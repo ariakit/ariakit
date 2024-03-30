@@ -50,8 +50,10 @@
 .popover {
   @apply
     p-0
-    w-[min(480px,var(--popover-available-width))]
-    max-h-[min(var(--popover-available-height,333.5px),333.5px)]
+    w-[480px]
+    max-w-[max(var(--popover-available-width),calc(100vw-var(--popover-overflow-padding)*2))]
+    h-[333.5px]
+    md:max-h-[max(280px,var(--popover-available-height))]
     rounded-xl
   ;
 }
