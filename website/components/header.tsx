@@ -53,7 +53,7 @@ export async function Header() {
   );
   return (
     <div className="sticky left-0 top-0 z-40 flex w-full justify-center bg-gray-50 dark:bg-gray-800">
-      <div className="flex h-[--header-height] w-full max-w-[--size-wide] items-center gap-2 px-[--viewport-padding] sm:gap-3">
+      <div className="flex h-[--header-height] w-full max-w-[--size-wide] items-center gap-2 px-[--page-padding] sm:gap-3">
         <Link
           href="/"
           className="flex items-center gap-2 rounded-[9px] focus-visible:ariakit-outline"

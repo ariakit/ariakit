@@ -355,7 +355,7 @@ export function PageSection({
             <AuthEnabled>
               <NotSubscribed>
                 <div className="mt-12 flex w-full flex-col items-start justify-center md:flex-row">
-                  <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-[--viewport-padding]">
+                  <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-[--page-padding]">
                     <PageSection level={2} id="learn-more-about-this-example">
                       <PageHeading level={2} id="learn-more-about-this-example">
                         Learn more about this example
@@ -479,7 +479,7 @@ export function PageDiv({
         ) : (
           sidebar
         )}
-        <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-[--viewport-padding] [[data-dialog]_&]:!px-0">
+        <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-[--page-padding] [[data-dialog]_&]:!px-0">
           {props.children}
         </div>
       </div>

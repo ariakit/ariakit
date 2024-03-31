@@ -31,6 +31,6 @@ button:not([type="submit"]) {
     [--size-content:--size-md]
     [--size-content-box:--size-md]
 
-    [--viewport-padding:12px]
-    md:[--viewport-padding:16px]
+    [--page-padding:12px]
+    md:[--page-padding:16px]
 }

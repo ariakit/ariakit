@@ -9,7 +9,6 @@ import { getPageName } from "build-pages/get-page-name.js";
 import { parseCSSFile } from "build-pages/parse-css-file.js";
 import { Playground } from "components/playground.tsx";
 import { Preview } from "components/preview.tsx";
-import { twJoin } from "tailwind-merge";
 import { defer } from "utils/defer.ts";
 import { getExampleId } from "utils/get-example-id.js";
 
@@ -88,26 +87,18 @@ export async function PageExample({
   const showPreview = type !== "code" && !isAppDir;
 
   return (
-    <div
-      className={twJoin(
-        type === "code" && "max-w-[--size-lg]",
-        type === "compact" && "max-w-[--size-lg]",
-        type === "wide" && "max-w-[--size-2xl]",
-      )}
-    >
-      <Playground
-        id={id}
-        type={type}
-        files={finalContents}
-        dependencies={dependencies}
-        devDependencies={devDependencies}
-        githubLink={getGithubLink(path)}
-        previewLink={previewLink}
-        preview={showPreview ? <Preview id={id} path={path} css={css} /> : null}
-        onRender={deferred.resolve}
-        abstracted={abstracted}
-        plus={plus}
-      />
-    </div>
+    <Playground
+      id={id}
+      type={type}
+      files={finalContents}
+      dependencies={dependencies}
+      devDependencies={devDependencies}
+      githubLink={getGithubLink(path)}
+      previewLink={previewLink}
+      preview={showPreview ? <Preview id={id} path={path} css={css} /> : null}
+      onRender={deferred.resolve}
+      abstracted={abstracted}
+      plus={plus}
+    />
   );
 }
