@@ -149,7 +149,6 @@ module.exports = {
     boxShadow: false,
   },
   plugins: [
-    require("@tailwindcss/container-queries"),
     require("tailwindcss-animate"),
     {
       handler: ({ addUtilities, matchUtilities, addVariant, theme }) => {
