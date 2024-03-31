@@ -1,5 +1,4 @@
 import { resolve } from "path";
-import { cx } from "@ariakit/core/utils/misc";
 import pagesConfig from "build-pages/config.js";
 import { getCSSFilesFromDeps } from "build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "build-pages/get-example-deps.js";
@@ -11,6 +10,7 @@ import { parseCSSFile } from "build-pages/parse-css-file.js";
 import type { Page } from "build-pages/types.ts";
 import { Preview } from "components/preview.tsx";
 import { notFound } from "next/navigation.js";
+import { twJoin } from "tailwind-merge";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
 
 interface Props {
@@ -69,7 +69,7 @@ export default async function Page({ params }: Props) {
 
   return (
     <div
-      className={cx(
+      className={twJoin(
         "flex min-h-[200vh] w-full flex-col items-center pt-[min(30vh,400px)]",
         /\-radix/.test(page)
           ? "bg-gradient-to-br from-blue-600 to-purple-600"

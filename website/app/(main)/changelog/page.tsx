@@ -30,7 +30,7 @@ export default function Page() {
     ...(tableOfContentsChildren?.map(({ children, ...item }) => item) || []),
   ];
   return (
-    <main className="relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 md:mt-16 md:px-4 lg:px-8">
+    <main className="relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-[--viewport-padding] md:mt-16">
       <PageMarkdown
         file={file}
         content={content}

@@ -20,6 +20,12 @@ function getBuildDir(buildDir) {
   return buildDir || join(process.cwd(), ".pages");
 }
 
+/** @param {string} path */
+function pathToImport(path) {
+  const projectRoot = new URL("../..", import.meta.url);
+  return path.replace(projectRoot.pathname, "").replace(/\\/g, "/");
+}
+
 /**
  * @param {string} file
  * @param {string} contents
@@ -87,7 +93,7 @@ function writeFiles(buildDir, pages) {
   const examplesFile = join(buildDir, "examples.js");
 
   const examplesContents = `import { lazy } from "react";\n\nexport default {\n${examples
-    .map((path) => `  "${path}": lazy(() => import("${path}"))`)
+    .map((path) => `  "${path}": lazy(() => import("${pathToImport(path)}"))`)
     .join(",\n")}\n};\n`;
 
   writeFileIfNeeded(examplesFile, examplesContents);
@@ -209,7 +215,7 @@ function writeFiles(buildDir, pages) {
       return iconPath
         ? `export { default as ${camelCase(
             `${category.slug}/${pageName}`,
-          )} } from "${iconPath}";\n`
+          )} } from "${pathToImport(iconPath)}";\n`
         : "";
     })
     .join("");

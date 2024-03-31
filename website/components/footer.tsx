@@ -1,21 +1,9 @@
 import { useId } from "react";
-import { cx } from "@ariakit/core/utils/misc";
 import { getPageTitle } from "build-pages/get-page-title.js";
 import { NewWindow } from "icons/new-window.tsx";
 import Link from "next/link.js";
-import { tw } from "utils/tw.ts";
+import { twJoin } from "tailwind-merge";
 import { Logo } from "./logo.tsx";
-
-const style = {
-  link: tw`
-    inline-flex items-center gap-2
-    rounded-sm
-    hover:underline
-    text-black/80 dark:text-white/70
-    hover:text-black dark:hover:text-white
-    focus-visible:ariakit-outline
-  `,
-};
 
 const year = new Date().getFullYear();
 
@@ -54,6 +42,12 @@ const links = [
 
 export function Footer() {
   const id = useId();
+
+  const linkClassName = twJoin(
+    "inline-flex items-center gap-2 focus-visible:ariakit-outline rounded-sm hover:underline",
+    "text-black/80 dark:text-white/70 hover:text-black dark:hover:text-white",
+  );
+
   return (
     <footer className="flex w-full justify-center bg-gray-150 text-black/80 dark:bg-gray-850 dark:text-white/80 sm:text-sm">
       <div className="grid w-full max-w-6xl gap-8 p-4 py-8 sm:grid-cols-4 sm:gap-y-16 sm:py-16">
@@ -79,13 +73,13 @@ export function Footer() {
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={style.link}
+                      className={linkClassName}
                     >
                       {link.title}
                       <NewWindow className="h-4 w-4 opacity-60" />
                     </a>
                   ) : (
-                    <Link href={link.href} className={style.link}>
+                    <Link href={link.href} className={linkClassName}>
                       {link.title}
                     </Link>
                   )}
@@ -100,7 +94,7 @@ export function Footer() {
             href="https://www.vercel.com/?utm_source=ariakit&utm_campaign=oss"
             target="_blank"
             rel="noreferrer"
-            className={cx(style.link, "gap-1 hover:no-underline")}
+            className={twJoin(linkClassName, "gap-1 hover:no-underline")}
           >
             Powered by
             <svg viewBox="0 0 4438 1000" className="h-4 fill-current">

@@ -1,4 +1,4 @@
-import { differenceInMonths } from "date-fns";
+import { differenceInMonths } from "date-fns/differenceInMonths";
 import get from "lodash-es/get.js";
 import { Stripe } from "stripe";
 import invariant from "tiny-invariant";

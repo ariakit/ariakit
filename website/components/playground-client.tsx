@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
@@ -8,6 +8,7 @@ import { ChevronDown } from "icons/chevron-down.tsx";
 import { ChevronUp } from "icons/chevron-up.tsx";
 import { NewWindow } from "icons/new-window.tsx";
 import Link from "next/link.js";
+import { flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.ts";
@@ -35,7 +36,7 @@ export interface PlaygroundClientProps extends EditorProps {
   preview?: ReactNode;
   abstracted?: boolean;
   plus?: boolean;
-  type?: "code" | "compact" | "wide";
+  type?: "code" | "compact" | "wide" | "full";
 }
 
 export function PlaygroundClient({
@@ -74,11 +75,11 @@ export function PlaygroundClient({
   );
   const isJS = language === "js";
 
+  const [collapsible, setCollapsible] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
+
   const tab = useTabStore({
     defaultSelectedId: getTabId(firstFile),
-    setSelectedId: () => {
-      setCollapsed(false);
-    },
   });
   const selectedId = tab.useState("selectedId");
   const file = selectedId && getFileFromTabId(selectedId);
@@ -92,12 +93,41 @@ export function PlaygroundClient({
   const content =
     file && (isJS ? javascript?.[file]?.code || files[file] : files[file]);
 
-  const linesCount = content ? content.split("\n").length : 0;
-  const collapsible = linesCount > 10;
-  const [collapsed, setCollapsed] = useState(collapsible);
+  const tabPanelRef = useRef<HTMLDivElement>(null);
   const collapseRef = useRef<HTMLButtonElement>(null);
   const expandRef = useRef<HTMLButtonElement>(null);
   const isRadix = /\-radix/.test(id);
+
+  useLayoutEffect(() => {
+    const tabPanel = tabPanelRef.current;
+    if (!tabPanel) return;
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        flushSync(() => {
+          setCollapsible(entry.target.scrollHeight > entry.target.clientHeight);
+        });
+      }
+    });
+    const mutationObserver = new MutationObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.type !== "childList") continue;
+        for (const node of entry.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (node.tagName !== "PRE") continue;
+          resizeObserver.observe(node);
+        }
+      }
+    });
+    mutationObserver.observe(tabPanel, { childList: true });
+    const pre = tabPanel.querySelector("pre");
+    if (pre) {
+      resizeObserver.observe(pre);
+    }
+    return () => {
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, []);
 
   const javascriptFiles = useMemo(
     () =>
@@ -148,7 +178,7 @@ export function PlaygroundClient({
   const collapseButton = collapsible && !collapsed && (
     <Button
       ref={collapseRef}
-      className="m-auto mt-2 flex h-8 items-center justify-center gap-1 rounded border border-gray-300 bg-gray-150 pl-4 pr-2 text-sm text-black/80 shadow-sm hover:bg-gray-250 hover:text-black/90 focus-visible:ariakit-outline dark:border-gray-650 dark:bg-gray-750 dark:text-white/90 dark:shadow-sm-dark dark:hover:border-gray-550 dark:hover:bg-gray-650 dark:hover:text-white"
+      className="absolute left-1/2 mt-2 flex h-8 -translate-x-1/2 scroll-mb-2 items-center justify-center gap-1 rounded border border-gray-300 bg-gray-150 pl-4 pr-2 text-sm text-black/80 shadow-sm hover:bg-gray-250 hover:text-black/90 focus-visible:ariakit-outline dark:border-gray-650 dark:bg-gray-750 dark:text-white/90 dark:shadow-sm-dark dark:hover:border-gray-550 dark:hover:bg-gray-650 dark:hover:text-white"
       onClick={() => {
         setCollapsed(true);
         requestAnimationFrame(() => {
@@ -167,51 +197,58 @@ export function PlaygroundClient({
   }, [collapsed, selectedId]);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 md:gap-6 [[data-level='1']_&]:md:mt-12">
+    <div
+      className={twJoin(
+        "[--toolbar-height:58px] sm:[--toolbar-height:50px]",
+        "grid grid-flow-dense grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))] justify-items-center gap-4 [direction:rtl] md:gap-6 md:gap-x-4 [[data-level='1']_&]:md:mt-12",
+        "border-gray-300 dark:border-gray-650",
+        "rounded-lg md:rounded-xl",
+        type === "full" && "-mx-[--viewport-padding] !gap-0 !rounded-none",
+      )}
+    >
       {preview && (
         <div
           className={twJoin(
             id,
-            "relative flex w-full flex-col items-center rounded-lg bg-gray-150 p-2 dark:bg-gray-850",
+            "[direction:ltr]",
+            "top-[72px] grid w-full grid-rows-[var(--toolbar-height)_1fr_var(--toolbar-height)] gap-4 rounded-[inherit] bg-gray-150 dark:bg-gray-850",
+            type === "full" && "border-y border-[inherit]",
             isRadix && "dark bg-gradient-to-br from-blue-600 to-purple-600",
-            type === "wide" ? "md:rounded-2xl" : "md:rounded-xl",
           )}
         >
-          {type === "wide" && previewLink && (
-            <TooltipButton
-              title="Open preview in a new tab"
-              className={twJoin(
-                "w-10 self-end p-0",
-                isRadix
-                  ? "text-white"
-                  : "text-black/80 hover:text-black dark:text-white/70 dark:hover:text-white",
-              )}
-              render={
-                <Command
-                  flat
-                  variant="secondary"
-                  render={<Link href={previewLink} target="_blank" />}
-                />
-              }
-            >
-              <span className="sr-only">Open preview in a new tab</span>
-              <NewWindow strokeWidth={1.5} className="h-5 w-5" />
-            </TooltipButton>
-          )}
+          <div className="flex items-center border border-transparent px-1">
+            {previewLink && (
+              <TooltipButton
+                title="Open preview in a new tab"
+                className={twJoin(
+                  "ml-auto size-12 rounded-md p-0 sm:size-10 sm:rounded-lg",
+                  isRadix
+                    ? "text-white"
+                    : "text-black/80 hover:text-black dark:text-white/70 dark:hover:text-white",
+                )}
+                render={
+                  <Command
+                    flat
+                    variant="secondary"
+                    render={<Link href={previewLink} target="_blank" />}
+                  />
+                }
+              >
+                <span className="sr-only">Open preview in a new tab</span>
+                <NewWindow strokeWidth={1.5} className="h-5 w-5" />
+              </TooltipButton>
+            )}
+          </div>
           <div
             className={twJoin(
-              "flex h-full w-full flex-1 flex-col items-center justify-center overflow-x-auto",
-              type === "wide"
-                ? [
-                    "min-h-[240px] p-6 md:p-12 [[data-level='1']_&]:md:min-h-[320px]",
-                    previewLink && "md:pt-10",
-                  ]
-                : "p-4 md:p-6",
+              "flex size-full flex-1 flex-col items-center justify-center overflow-x-auto",
+              type === "wide" &&
+                "md:min-h-[240px] [[data-level='1']_&]:md:min-h-max",
             )}
           >
             {preview}
           </div>
-          {type === "wide" && (
+          {type === "wide" && false && (
             <AuthEnabled>
               <PreviewToolbar
                 exampleId={id}
@@ -227,14 +264,7 @@ export function PlaygroundClient({
       )}
       {isAppDir && previewLink && (
         <div className="flex w-full flex-col items-center">
-          <div
-            className={twJoin(
-              "w-full overflow-hidden rounded-lg border border-gray-300 bg-gray-150 dark:border-gray-650 dark:bg-gray-850",
-              type === "wide"
-                ? "h-[560px] md:rounded-2xl"
-                : "h-[320px] md:rounded-xl",
-            )}
-          >
+          <div className="w-full overflow-hidden rounded-[inherit] border border-[inherit] bg-gray-150 dark:bg-gray-850">
             <PlaygroundBrowser previewLink={previewLink} />
           </div>
           <AuthEnabled>
@@ -250,20 +280,25 @@ export function PlaygroundClient({
           </AuthEnabled>
         </div>
       )}
-      <div className="w-full max-w-[--size-lg] rounded-lg border-none border-black/[15%] dark:border-gray-650 md:rounded-xl">
-        <div className="relative z-[12] flex gap-2 rounded-t-[inherit] border border-[inherit] bg-gray-100 dark:bg-gray-750">
+      <div
+        className={twJoin(
+          "sticky top-[--header-height] h-max w-full rounded-[inherit] border-[inherit] [direction:ltr]",
+          type !== "full" && "max-w-[--size-lg]",
+        )}
+      >
+        <div className="relative z-[12] flex h-[--toolbar-height] items-center gap-2 rounded-t-[inherit] border border-[inherit] bg-gray-100 dark:bg-gray-750">
           <TabList
             store={tab}
-            className="flex w-full flex-row overflow-x-auto p-2 sm:gap-2"
+            className="flex size-full flex-row items-center overflow-x-auto px-2 sm:gap-2"
           >
             {Object.keys(files).map((file) => (
               <Tab
                 key={file}
                 id={getTabId(file)}
-                className="flex-start group relative flex h-10 items-center justify-center whitespace-nowrap rounded bg-transparent px-2 text-sm tracking-tight text-black/75 outline-none hover:bg-black/5 aria-selected:text-black data-[focus-visible]:ariakit-outline-input dark:text-white/75 dark:hover:bg-white/5 dark:aria-selected:text-white sm:h-8"
+                className="flex-start group relative flex h-10 items-center justify-center whitespace-nowrap rounded bg-transparent px-2 text-sm tracking-tight text-black/75 outline-none hover:bg-black/5 hover:text-black aria-selected:text-black data-[focus-visible]:ariakit-outline-input dark:text-white/75 dark:hover:bg-white/5 dark:hover:text-white dark:aria-selected:text-white sm:h-8"
               >
                 <span>{isJS ? tsToJsFilename(file) : file}</span>
-                <div className="pointer-events-none absolute left-0 top-full h-[3px] w-full translate-y-[5px] bg-transparent group-hover:bg-gray-250 group-aria-selected:bg-blue-600 dark:group-hover:bg-gray-650 dark:group-aria-selected:bg-blue-600" />
+                <div className="pointer-events-none absolute left-0 top-full h-[3px] w-full translate-y-[5px] bg-transparent group-aria-selected:bg-blue-600 dark:group-aria-selected:bg-blue-600" />
               </Tab>
             ))}
           </TabList>
@@ -277,20 +312,24 @@ export function PlaygroundClient({
         </div>
         {codeBlock && (
           <TabPanel
+            ref={tabPanelRef}
             store={tab}
             tabId={selectedId}
             className={twJoin(
-              "relative overflow-hidden rounded-b-[inherit] border border-t-0",
+              "relative overflow-hidden rounded-b-[inherit] border border-t-0 bg-white dark:bg-gray-850",
               "border-[inherit] focus-visible:z-[13] focus-visible:ariakit-outline-input",
+              "min-h-[min(calc(100%-var(--toolbar-height)),var(--max-height))]",
+              "max-h-[--max-height]",
+              collapsed && "[&_pre]:!overflow-hidden",
               collapsed
-                ? "max-h-64 [&_pre]:!overflow-hidden [[data-level='1']_&]:md:max-h-80"
-                : "max-h-[min(max(calc(100vh-640px),480px),800px)]",
+                ? "[--max-height:256px] [[data-level='1']_&]:md:[--max-height:440px]"
+                : "[--max-height:min(max(calc(100vh-320px),640px),800px)]",
             )}
           >
             {subscriptionOnly ? (
               <AuthEnabled>
                 <AuthLoading>
-                  <div className="relative h-64 bg-white dark:bg-gray-850 [[data-level='1']_&]:md:h-80">
+                  <div className="relative h-[--max-height] bg-white dark:bg-gray-850">
                     <div className="absolute left-0 top-0 p-4 pl-8">
                       <CodePlaceholder />
                     </div>
@@ -298,7 +337,7 @@ export function PlaygroundClient({
                 </AuthLoading>
                 <Subscribed>{codeBlockElement}</Subscribed>
                 <NotSubscribed>
-                  <div className="relative z-[1] flex h-64 flex-col items-center justify-center bg-white p-4 dark:bg-gray-850 [[data-level='1']_&]:md:h-80">
+                  <div className="relative z-[1] flex h-[--max-height] flex-col items-center justify-center bg-white p-4 dark:bg-gray-850">
                     <div className="absolute left-0 top-0 p-4 pl-8">
                       <CodePlaceholder />
                     </div>

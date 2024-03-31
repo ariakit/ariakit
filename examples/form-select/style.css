@@ -1,9 +1,13 @@
 @import url("../select/style.css");
 @import url("../form/style.css");
 
+.wrapper {
+  @apply
+    my-40
+}
+
 .primary {
   @apply
     justify-center
-  ;
 }
 

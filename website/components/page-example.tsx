@@ -92,7 +92,7 @@ export async function PageExample({
       className={twJoin(
         type === "code" && "max-w-[--size-lg]",
         type === "compact" && "max-w-[--size-lg]",
-        type === "wide" && "max-w-[--size-xl]",
+        type === "wide" && "max-w-[--size-2xl]",
       )}
     >
       <Playground

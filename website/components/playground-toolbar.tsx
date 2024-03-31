@@ -10,7 +10,7 @@ import {
 } from "@ariakit/react";
 import { JavaScript } from "icons/javascript.tsx";
 import { TypeScript } from "icons/typescript.tsx";
-import { tw } from "utils/tw.ts";
+import { twJoin } from "tailwind-merge";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
 import { Popup } from "./popup.tsx";
 import { TooltipButton } from "./tooltip-button.tsx";
@@ -23,31 +23,22 @@ interface Props {
   code?: string | null;
 }
 
-const style = {
-  toolbarItem: tw`
-    flex h-12 w-12 items-center justify-center rounded-md
-    focus-visible:ariakit-outline-input sm:rounded-lg sm:h-10 sm:w-10
-    text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white
-    bg-transparent hover:bg-black/5 dark:hover:bg-white/5
-    aria-expanded:!bg-black/10 dark:aria-expanded:!bg-gray-850
-  `,
-  popupLabel: tw`
-    cursor-default
-    p-2 text-sm font-medium text-black/60 dark:text-white/50
-  `,
-  popupItem: tw`
-    flex cursor-default scroll-m-2
-    items-center gap-2
-    rounded p-2 pr-6
-    active-item:bg-blue-200/40 active:bg-blue-200/70
-    focus-visible:!outline-none dark:active-item:bg-blue-600/25
-    dark:active:bg-blue-800/25 [a&]:cursor-pointer
-  `,
-  separator: tw`
-    w-full my-2 h-0
-    border-t border-gray-250 dark:border-gray-550
-  `,
-};
+const toolbarItemClassName = twJoin(
+  "flex size-12 items-center justify-center rounded-md",
+  "focus-visible:ariakit-outline-input sm:rounded-lg sm:size-10",
+  "text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white",
+  "bg-transparent hover:bg-black/5 dark:hover:bg-white/5",
+  "aria-expanded:!bg-black/10 dark:aria-expanded:!bg-gray-850",
+);
+
+const popupItemClassName = twJoin(
+  "flex cursor-default scroll-m-2",
+  "items-center gap-2",
+  "rounded p-2 pr-6",
+  "active-item:bg-blue-200/40 active:bg-blue-200/70",
+  "focus-visible:!outline-none dark:active-item:bg-blue-600/25",
+  "dark:active:bg-blue-800/25 [a&]:cursor-pointer",
+);
 
 export function PlaygroundToolbar({ language, setLanguage, code }: Props) {
   const toolbar = useToolbarStore();
@@ -61,9 +52,9 @@ export function PlaygroundToolbar({ language, setLanguage, code }: Props) {
   const isJS = select.useState((state) => state.value === "js");
 
   return (
-    <Toolbar store={toolbar} className="flex flex-none p-1">
+    <Toolbar store={toolbar} className="flex flex-none px-1">
       <ToolbarItem
-        className={style.toolbarItem}
+        className={toolbarItemClassName}
         render={(props) => (
           <Select
             store={select}
@@ -87,17 +78,19 @@ export function PlaygroundToolbar({ language, setLanguage, code }: Props) {
         shift={-6}
         render={<Popup size="responsive" />}
       >
-        <PopoverHeading className={style.popupLabel}>Language</PopoverHeading>
-        <SelectItem value="ts" className={style.popupItem}>
+        <PopoverHeading className="cursor-default p-2 text-sm font-medium text-black/60 dark:text-white/50">
+          Language
+        </PopoverHeading>
+        <SelectItem value="ts" className={popupItemClassName}>
           <TypeScript className="h-5 w-5" /> TypeScript
         </SelectItem>
-        <SelectItem value="js" className={style.popupItem}>
+        <SelectItem value="js" className={popupItemClassName}>
           <JavaScript className="h-5 w-5" /> JavaScript
         </SelectItem>
       </SelectPopover>
       {code != null && (
         <ToolbarItem
-          className={style.toolbarItem}
+          className={toolbarItemClassName}
           render={<CopyToClipboard text={code} />}
         />
       )}

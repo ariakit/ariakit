@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { cx } from "@ariakit/core/utils/misc";
 import { Role } from "@ariakit/react";
 import { Button } from "@ariakit/react/button";
 import type { TooltipAnchorProps, TooltipProps } from "@ariakit/react/tooltip";
@@ -11,6 +10,7 @@ import {
   TooltipProvider,
 } from "@ariakit/react/tooltip";
 import { forwardRef } from "@ariakit/react-core/utils/system";
+import { twJoin } from "tailwind-merge";
 
 export interface TooltipButtonProps
   extends Omit<TooltipAnchorProps<"button">, "title"> {
@@ -36,7 +36,7 @@ export const TooltipButton = forwardRef(function TooltipButton({
         {...tooltipProps}
         fixed
         unmountOnHide
-        className={cx(
+        className={twJoin(
           "z-50 cursor-default rounded-md px-2 py-1 text-sm",
           "drop-shadow-sm dark:drop-shadow-sm-dark",
           "bg-gray-150 dark:bg-gray-700",

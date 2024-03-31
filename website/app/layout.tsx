@@ -1,4 +1,4 @@
-import "./style.css";
+import "./global.css";
 
 import type { PropsWithChildren } from "react";
 import { Analytics } from "@vercel/analytics/react";

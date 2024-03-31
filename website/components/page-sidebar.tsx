@@ -84,7 +84,7 @@ export function PageSidebar({ tableOfContents, children }: PageSidebarProps) {
         </div>
       }
     >
-      <div className="sticky top-32 m-4 mt-16 hidden max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 dark:border-white/10 md:flex">
+      <div className="sticky top-[calc(var(--header-height)+56px)] m-4 mt-16 hidden max-h-[calc(100vh-theme(spacing.36))] w-60 flex-none flex-col gap-8 border-l border-black/10 dark:border-white/10 md:flex">
         <nav className="w-full flex-1 flex-col gap-4 overflow-auto p-3 pr-1">
           {navList}
         </nav>
