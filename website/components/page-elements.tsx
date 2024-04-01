@@ -38,10 +38,15 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
     "[&_code]:font-monospace [&_code]:rounded [&_code]:px-[0.2em] [&_code]:py-[0.15em]",
     "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%] max-w-[--size-content-box]",
     // sticky styles
-    level < 4 &&
-      "sticky md:static [[data-dialog]_&]:static top-14 z-20 pb-2 -mb-2 md:mb-0 md:pb-0 [[data-dialog]_&]:mb-0 [[data-dialog]_&]:pb-0 flex items-center md:block pr-12 md:pr-0 min-h-[48px] md:min-h-0 bg-gray-50 dark:bg-gray-800 [[data-dialog]_&]:bg-inherit",
+    level < 4 && [
+      "max-md:flex items-center z-20 top-[--header-height]",
+      "max-md:sticky max-md:min-h-[48px] max-md:pb-2 max-md:-mb-2 max-md:pr-12",
+      "max-md:-mx-[--page-padding] max-md:w-[calc(100%+var(--page-padding)*2)] max-md:px-[--page-padding]",
+      "[[data-dialog]_&]:static [[data-dialog]_&]:mb-0 [[data-dialog]_&]:pb-0 [[data-dialog]_&]:bg-inherit",
+      "bg-gray-50 dark:bg-gray-800",
+    ],
     level === 1 &&
-      "text-2xl font-extrabold dark:font-bold sm:text-4xl md:text-5xl [[data-dialog]_&]:text-2xl",
+      "text-2xl font-extrabold dark:font-bold sm:text-3xl md:text-5xl [[data-dialog]_&]:text-2xl",
     level === 2 &&
       "text-xl font-semibold dark:font-medium sm:text-2xl md:text-3xl [&_code]:font-medium [[data-dialog]_&]:text-xl",
     level === 3 &&
@@ -326,7 +331,7 @@ export function PageSection({
         "[[data-dialog]_&]:first-of-type:mt-0 [[data-dialog]_&]:data-[level='2']:mt-2",
         "[[data-dialog]_&]:bg-inherit",
         level === 1
-          ? "[--size-2xl:--size-wide] [--size-content-box:--size-md] [--size-lg:1104px] [--size-md:1040px] [--size-xl:1232px]"
+          ? "[--size-2xl:--size-wide] [--size-content-box:--size-md] [--size-lg:--size-4xl] [--size-md:--size-3xl] [--size-xl:--size-5xl]"
           : "",
         props.className,
       )}

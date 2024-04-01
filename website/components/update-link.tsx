@@ -36,7 +36,7 @@ function renderPaths(id: string, url: URL) {
         <span className="truncate text-blue-700 dark:text-blue-400 ">
           {url.host}
         </span>
-        <NewWindow className="h-3 w-3 opacity-50" />
+        <NewWindow className="size-3 opacity-50" />
       </span>
     );
   }

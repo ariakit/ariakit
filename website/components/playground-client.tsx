@@ -1,5 +1,5 @@
 "use client";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
@@ -24,7 +24,6 @@ import type { EditorProps } from "./editor.ts";
 // import { Editor } from "./editor.ts";
 import { PlaygroundBrowser } from "./playground-browser.tsx";
 import { PlaygroundToolbar } from "./playground-toolbar.tsx";
-import { PreviewToolbar } from "./preview-toolbar.tsx";
 import { TooltipButton } from "./tooltip-button.tsx";
 
 export interface PlaygroundClientProps extends EditorProps {
@@ -46,8 +45,8 @@ export function PlaygroundClient({
   previewLink,
   preview,
   // githubLink,
-  dependencies,
-  devDependencies,
+  // dependencies,
+  // devDependencies,
   codeBlocks,
   javascript,
   abstracted,
@@ -75,9 +74,6 @@ export function PlaygroundClient({
   );
   const isJS = language === "js";
 
-  const [collapsible, setCollapsible] = useState(false);
-  const [collapsed, setCollapsed] = useState(true);
-
   const tab = useTabStore({
     defaultSelectedId: getTabId(firstFile),
   });
@@ -92,6 +88,10 @@ export function PlaygroundClient({
 
   const content =
     file && (isJS ? javascript?.[file]?.code || files[file] : files[file]);
+
+  const linesCount = content ? content.split("\n").length : 0;
+  const [collapsible, setCollapsible] = useState(linesCount >= 20);
+  const [collapsed, setCollapsed] = useState(true);
 
   const tabPanelRef = useRef<HTMLDivElement>(null);
   const collapseRef = useRef<HTMLButtonElement>(null);
@@ -129,17 +129,17 @@ export function PlaygroundClient({
     };
   }, []);
 
-  const javascriptFiles = useMemo(
-    () =>
-      Object.entries(files).reduce<typeof files>(
-        (acc, [file, code]) => ({
-          ...acc,
-          [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
-        }),
-        {},
-      ),
-    [files, javascript],
-  );
+  // const javascriptFiles = useMemo(
+  //   () =>
+  //     Object.entries(files).reduce<typeof files>(
+  //       (acc, [file, code]) => ({
+  //         ...acc,
+  //         [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
+  //       }),
+  //       {},
+  //     ),
+  //   [files, javascript],
+  // );
 
   const subscriptionOnly =
     plus && (!abstracted || (file && !/^index\.(j|t)sx?$/.test(file)));
@@ -208,11 +208,11 @@ export function PlaygroundClient({
       <div
         className={twJoin(
           "[--toolbar-height:58px] sm:[--toolbar-height:50px]",
-          "grid w-full grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))] justify-items-center [direction:rtl] [[data-level='1']_&]:md:mt-12",
+          "grid grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))] justify-items-center [direction:rtl] [[data-level='1']_&]:md:mt-12",
           "border-gray-300 dark:border-gray-650",
           type === "full"
             ? "-mx-[--page-padding] w-[calc(100%+var(--page-padding)*2)] border-b"
-            : "gap-4 rounded-lg md:gap-6 md:gap-x-4 md:rounded-xl",
+            : "w-full gap-4 rounded-lg md:gap-6 md:gap-x-4 md:rounded-xl",
         )}
       >
         {preview && (
@@ -220,8 +220,10 @@ export function PlaygroundClient({
             className={twJoin(
               id,
               "[direction:ltr]",
-              "top-[72px] grid w-full grid-rows-[var(--toolbar-height)_1fr_var(--toolbar-height)] gap-4 rounded-[inherit] border-[inherit] bg-gray-150 dark:bg-gray-850",
-              type === "full" && "border-t",
+              "grid w-full grid-rows-[var(--toolbar-height)_1fr_var(--toolbar-height)] gap-4 rounded-[inherit] border-[inherit] bg-gray-150 dark:bg-gray-850",
+              type === "wide" &&
+                "md:min-h-[320px] [[data-level='1']_&]:md:min-h-max",
+              type === "full" && "border border-b-0",
               isRadix && "dark bg-gradient-to-br from-blue-600 to-purple-600",
             )}
           >
@@ -248,45 +250,20 @@ export function PlaygroundClient({
                 </TooltipButton>
               )}
             </div>
-            <div
-              className={twJoin(
-                "flex size-full flex-1 flex-col items-center justify-center overflow-x-auto",
-                type === "wide" &&
-                  "md:min-h-[240px] [[data-level='1']_&]:md:min-h-max",
-              )}
-            >
+            <div className="grid size-full items-center overflow-auto p-4 *:mx-auto">
               {preview}
             </div>
-            {type === "wide" && false && (
-              <AuthEnabled>
-                <PreviewToolbar
-                  exampleId={id}
-                  files={files}
-                  javascriptFiles={javascriptFiles}
-                  dependencies={dependencies}
-                  devDependencies={devDependencies}
-                  language={language}
-                />
-              </AuthEnabled>
-            )}
           </div>
         )}
         {isAppDir && previewLink && (
-          <div className="flex w-full flex-col items-center">
-            <div className="w-full overflow-hidden rounded-[inherit] border border-[inherit] bg-gray-150 dark:bg-gray-850">
-              <PlaygroundBrowser previewLink={previewLink} />
-            </div>
-            <AuthEnabled>
-              <PreviewToolbar
-                exampleId={id}
-                files={files}
-                javascriptFiles={javascriptFiles}
-                dependencies={dependencies}
-                devDependencies={devDependencies}
-                language={language}
-                className="-mt-12 rounded-lg bg-gray-150 p-1 pl-3 dark:bg-gray-850"
-              />
-            </AuthEnabled>
+          <div
+            className={twJoin(
+              "flex w-full flex-col rounded-[inherit] border border-[inherit] bg-gray-150 [direction:ltr] dark:bg-gray-850",
+              type === "full" && "border-b-0",
+              type === "wide" && "min-h-[480px]",
+            )}
+          >
+            <PlaygroundBrowser previewLink={previewLink} />
           </div>
         )}
         <div
@@ -295,7 +272,12 @@ export function PlaygroundClient({
             type !== "full" && "max-w-[--size-lg]",
           )}
         >
-          <div className="relative z-[12] flex h-[--toolbar-height] items-center gap-2 rounded-t-[inherit] border border-[inherit] bg-gray-100 dark:bg-gray-750">
+          <div
+            className={twJoin(
+              "relative z-[12] flex h-[--toolbar-height] items-center gap-2 rounded-t-[inherit] border-[inherit] bg-gray-100 dark:bg-gray-750",
+              type === "full" ? "border-y" : "border",
+            )}
+          >
             <TabList
               store={tab}
               className="flex size-full flex-row items-center overflow-x-auto px-2 sm:gap-2"
@@ -332,7 +314,7 @@ export function PlaygroundClient({
                 "border-[inherit] focus-visible:z-[13] focus-visible:ariakit-outline-input",
                 "min-h-[min(calc(100%-var(--toolbar-height)),var(--max-height))]",
                 "max-h-[--max-height]",
-                type === "full" ? "border-x" : "border border-t-0",
+                type !== "full" && "border border-t-0",
                 collapsed && "[&_pre]:!overflow-hidden",
               )}
             >

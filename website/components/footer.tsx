@@ -49,8 +49,8 @@ export function Footer() {
   );
 
   return (
-    <footer className="flex w-full justify-center bg-gray-150 text-black/80 dark:bg-gray-850 dark:text-white/80 sm:text-sm">
-      <div className="grid w-full max-w-6xl gap-8 p-4 py-8 sm:grid-cols-4 sm:gap-y-16 sm:py-16">
+    <footer className="flex w-full justify-center bg-gray-150 px-4 text-black/80 dark:bg-gray-850 dark:text-white/80 sm:text-sm">
+      <div className="grid w-full max-w-[--size-3xl] gap-8 py-8 sm:grid-cols-4 sm:gap-y-16 sm:py-16">
         <div className="hidden sm:block">
           <div className="flex items-center gap-2">
             <Logo />

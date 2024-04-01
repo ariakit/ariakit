@@ -73,7 +73,7 @@ export function PageCards({
         ))}
       </div>
       {isExamples && (
-        <div className="flex justify-center">
+        <div className="max-w-[--size-content]">
           <InlineLink
             render={
               <Link
@@ -87,7 +87,7 @@ export function PageCards({
         </div>
       )}
       {isComponents && (
-        <div className="flex justify-center">
+        <div className="max-w-[--size-content]">
           <InlineLink render={<Link href="/components" />}>
             View all components
           </InlineLink>
