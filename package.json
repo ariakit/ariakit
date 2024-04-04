@@ -84,7 +84,7 @@
     "@clerk/types": "3.63.0",
     "@guidepup/guidepup": "0.22.3",
     "@guidepup/playwright": "0.13.2",
-    "@playwright/test": "1.42.1",
+    "@playwright/test": "1.43.0",
     "@radix-ui/react-popover": "1.0.7",
     "@radix-ui/react-select": "2.0.0",
     "@stackblitz/sdk": "1.9.0",
