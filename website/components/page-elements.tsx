@@ -21,6 +21,7 @@ import {
 import { Command } from "./command.tsx";
 import { InlineLink } from "./inline-link.tsx";
 import { PageCards } from "./page-cards.tsx";
+import { PageHeroProvider } from "./page-context.tsx";
 import { PageExample } from "./page-example.tsx";
 import { PageHovercardAnchor } from "./page-hovercard.tsx";
 import { PageSidebar } from "./page-sidebar.tsx";
@@ -42,8 +43,8 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
       "max-md:flex items-center z-20 top-[--header-height]",
       "max-md:sticky max-md:min-h-[48px] max-md:pb-2 max-md:-mb-2 max-md:pr-12",
       "max-md:-mx-[--page-padding] max-md:w-[calc(100%+var(--page-padding)*2)] max-md:px-[--page-padding]",
+      "max-md:bg-gray-50 max-md:dark:bg-gray-800",
       "[[data-dialog]_&]:static [[data-dialog]_&]:mb-0 [[data-dialog]_&]:pb-0 [[data-dialog]_&]:bg-inherit",
-      "bg-gray-50 dark:bg-gray-800",
     ],
     level === 1 &&
       "text-2xl font-extrabold dark:font-bold sm:text-3xl md:text-5xl [[data-dialog]_&]:text-2xl",
@@ -183,7 +184,7 @@ export function PageDescription({
       </span>
     ),
     className: twJoin(
-      "-translate-y-2 max-w-[--size-content-box] text-lg sm:text-xl sm:leading-8 !text-black/70 dark:!text-white/60",
+      "-translate-y-2 !max-w-[--size-content-box] [:has([data-call-to-action])_&]:md:grid grid-cols-[1fr_260px] w-full gap-4 md:gap-8 text-lg sm:text-xl sm:leading-8 !text-black/70 dark:!text-white/60",
       paragraph.props.className,
       props.className,
     ),
@@ -354,7 +355,7 @@ export function PageSection({
           !["Components", "Related examples"].includes(item.text),
       );
       return (
-        <>
+        <PageHeroProvider>
           {section}
           {!!tableOfContents?.length && (
             <AuthEnabled>
@@ -419,7 +420,7 @@ export function PageSection({
               </NotSubscribed>
             </AuthEnabled>
           )}
-        </>
+        </PageHeroProvider>
       );
     }
   }

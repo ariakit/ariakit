@@ -1,5 +1,13 @@
 "use client";
-import { useLayoutEffect, useRef, useState } from "react";
+import {
+  Suspense,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { ReactNode } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
@@ -8,10 +16,11 @@ import { ChevronDown } from "icons/chevron-down.tsx";
 import { ChevronUp } from "icons/chevron-up.tsx";
 import { NewWindow } from "icons/new-window.tsx";
 import Link from "next/link.js";
-import { flushSync } from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.ts";
+import { useSubscription } from "utils/use-subscription.ts";
 import {
   AuthEnabled,
   AuthLoading,
@@ -22,7 +31,9 @@ import { CodePlaceholder } from "./code-placeholder.tsx";
 import { Command } from "./command.tsx";
 import type { EditorProps } from "./editor.ts";
 // import { Editor } from "./editor.ts";
+import { PageHeroContext } from "./page-context.tsx";
 import { PlaygroundBrowser } from "./playground-browser.tsx";
+import { PlaygroundEditButton } from "./playground-edit.tsx";
 import { PlaygroundToolbar } from "./playground-toolbar.tsx";
 import { TooltipButton } from "./tooltip-button.tsx";
 
@@ -45,8 +56,8 @@ export function PlaygroundClient({
   previewLink,
   preview,
   // githubLink,
-  // dependencies,
-  // devDependencies,
+  dependencies,
+  devDependencies,
   codeBlocks,
   javascript,
   abstracted,
@@ -66,6 +77,7 @@ export function PlaygroundClient({
 
   invariant(firstFile, "No files provided");
 
+  const inHero = useContext(PageHeroContext);
   const isAppDir = /^(page|layout)\.[tj]sx?/.test(firstFile);
 
   const [language, setLanguage] = useLocalStorageState<"ts" | "js">(
@@ -98,6 +110,16 @@ export function PlaygroundClient({
   const expandRef = useRef<HTMLButtonElement>(null);
   const isRadix = /\-radix/.test(id);
 
+  const { isLoaded } = useSubscription();
+  const [callToActionSlot, setCallToActionSlot] = useState<HTMLElement | null>(
+    null,
+  );
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    setCallToActionSlot(document.getElementById("call-to-action-slot"));
+  }, [isLoaded]);
+
   useLayoutEffect(() => {
     const tabPanel = tabPanelRef.current;
     if (!tabPanel) return;
@@ -129,23 +151,28 @@ export function PlaygroundClient({
     };
   }, []);
 
-  // const javascriptFiles = useMemo(
-  //   () =>
-  //     Object.entries(files).reduce<typeof files>(
-  //       (acc, [file, code]) => ({
-  //         ...acc,
-  //         [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
-  //       }),
-  //       {},
-  //     ),
-  //   [files, javascript],
-  // );
+  const javascriptFiles = useMemo(
+    () =>
+      Object.entries(files).reduce<typeof files>(
+        (acc, [file, code]) => ({
+          ...acc,
+          [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
+        }),
+        {},
+      ),
+    [files, javascript],
+  );
 
   const subscriptionOnly =
     plus && (!abstracted || (file && !/^index\.(j|t)sx?$/.test(file)));
 
   const playgroundToolbar = (
     <PlaygroundToolbar
+      exampleId={id}
+      files={files}
+      javascriptFiles={javascriptFiles}
+      dependencies={dependencies}
+      devDependencies={devDependencies}
       code={content}
       language={language}
       setLanguage={setLanguage}
@@ -206,6 +233,41 @@ export function PlaygroundClient({
       )}
     >
       <div
+        data-call-to-action
+        className="pointer-events-none absolute left-0 top-20 flex w-full justify-center"
+      >
+        <Suspense>
+          {inHero && (
+            <div className="grid w-full max-w-[calc(var(--size-content-box)+var(--page-padding)*2)] justify-end px-[--page-padding] max-md:hidden">
+              <PlaygroundEditButton
+                type="call-to-action"
+                exampleId={id}
+                files={files}
+                javascriptFiles={javascriptFiles}
+                dependencies={dependencies}
+                devDependencies={devDependencies}
+                language={language}
+                className="pointer-events-auto w-max [view-timeline-inset:auto_100%] [view-timeline-name:--call-to-action] [body:has(&)]:[timeline-scope:--call-to-action]"
+              />
+              {callToActionSlot &&
+                createPortal(
+                  <div className="hidden ease-linear [animation-duration:1ms] [animation-fill-mode:both] [animation-name:appear] [animation-range:cover] [animation-timeline:--call-to-action] supports-[animation-timeline:scroll()]:block max-lg:!hidden max-lg:animate-none">
+                    <PlaygroundEditButton
+                      exampleId={id}
+                      files={files}
+                      javascriptFiles={javascriptFiles}
+                      dependencies={dependencies}
+                      devDependencies={devDependencies}
+                      language={language}
+                    />
+                  </div>,
+                  callToActionSlot,
+                )}
+            </div>
+          )}
+        </Suspense>
+      </div>
+      <div
         className={twJoin(
           "[--toolbar-height:58px] sm:[--toolbar-height:50px]",
           "grid grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))] justify-items-center [direction:rtl] [[data-level='1']_&]:md:mt-12",
@@ -250,7 +312,7 @@ export function PlaygroundClient({
                 </TooltipButton>
               )}
             </div>
-            <div className="grid size-full items-center overflow-auto p-4 *:mx-auto">
+            <div className="flex size-full flex-col justify-center overflow-auto p-4 *:mx-auto">
               {preview}
             </div>
           </div>

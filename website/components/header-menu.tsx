@@ -304,7 +304,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           unmountOnHide
           fixed
           fitViewport
-          gutter={4}
+          gutter={parent ? 6 : 4}
           render={
             <Ariakit.MenuList
               store={menu}
@@ -323,7 +323,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
           unmountOnHide
           fixed
           portal
-          gutter={4}
+          gutter={parent ? 6 : 4}
           fitViewport
           typeahead={!searchable}
           composite={!searchable}

@@ -66,6 +66,10 @@ export async function Header() {
           <HeaderNav />
         </div>
         <div className="flex-1" />
+        <div
+          id="call-to-action-slot"
+          className="flex h-full items-center overflow-y-clip"
+        />
         <AuthEnabled>
           <HeaderAriakitPlus />
         </AuthEnabled>

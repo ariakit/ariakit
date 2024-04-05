@@ -46,7 +46,7 @@ interface CheckboxProps
 }
 ```
 
-<div class="text-center -mt-6">
+<div class="text-center -mt-6 max-w-[--size-content-box]">
 
 [Open in TS Playground](https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAKjgQwM5wEoFNkGN4BmUEIcARFDvmQNwBQdA9I3IDLkcAQsgCYA0cYYtwCuuLOmQA7OMEkA3ZABtg3ODACeYLHADuwGAAsIw+FijEodDVrgBhA1lwBrAEYQAHgAViYVABVNbQBeTCoYADpbEkhJLEkYbwhfAHV9IxNsAgAeMlkwEzIAPjgAMjgAbzo4OAhJeykAcywAfgAuOAAKBUVhLHa3CEUcSQBKOCDiuQgVegBfBmY2OD8HODMLGXRaxXU4VCMdaVq4YVRkJrpcWtR4WvrJJvb7R1cPRN8ArQBtMjuDRqwZAAuuNOt1ev0IINhmMJhV5kwWIB1cjgAEl4mYCHhtKAQFhuMBkDAsDs4NwsMT8OhDNp1tA6LJiVAsWI7A5nG4vD50Fh3MTJNx0Ng8BEouBanEEtzUoZjDBMjk8gVipVqn8AW0wUoIXABkMpLDJtNuHMFixAKDkcAA4lC+HACMB3PiGRjmdi2S9Oe9UFU1ny4oK4AB5ED6LLC-CRaIS+LemXpeVYbK5ST5GBFfi-Or-B6AlW+9W5zVdbV9XVQ-WjcZGmZ0WZAA)
 

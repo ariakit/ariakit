@@ -9,7 +9,7 @@ import { track } from "@vercel/analytics";
 import { Bell } from "icons/bell.tsx";
 import { partition } from "lodash-es";
 import Link from "next/link.js";
-import { twJoin, twMerge } from "tailwind-merge";
+import { twJoin } from "tailwind-merge";
 import type { UpdateItem } from "updates.ts";
 import { useMedia } from "utils/use-media.ts";
 import { useUpdates } from "utils/use-updates.ts";
@@ -33,7 +33,6 @@ export function HeaderUpdates({
   const isLarge = useMedia("(min-width: 640px)", true);
   const { seen, previousSeen, seeNow } = useUpdates({ updates });
   const popover = Ariakit.usePopoverStore({
-    animated: true,
     placement: isLarge ? "bottom-end" : "bottom",
     setOpen(open) {
       if (open) {
@@ -99,15 +98,8 @@ export function HeaderUpdates({
         }}
         render={
           <Popup
-            scroller={(props) => (
-              <>
-                <Ariakit.PopoverArrow />
-                <div
-                  {...props}
-                  className={twMerge(props.className, "flex flex-col py-0")}
-                />
-              </>
-            )}
+            arrow={<Ariakit.PopoverArrow />}
+            scroller={<div className="!py-0" />}
           />
         }
       >

@@ -37,3 +37,15 @@ button:not([type="submit"]) {
     [--page-padding:12px]
     md:[--page-padding:16px]
 }
+
+@keyframes appear {
+  from {
+    display: none;
+    opacity: 0;
+  }
+
+  to {
+    display: block;
+    opacity: 1;
+  }
+}

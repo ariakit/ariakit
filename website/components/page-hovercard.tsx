@@ -113,10 +113,13 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
       {...props}
       className={twJoin("max-h-96 max-w-md", props.className)}
       render={
-        <Popup render={props.render} scroller={<div className="gap-4" />} />
+        <Popup
+          render={props.render}
+          arrow={<HovercardArrow />}
+          scroller={<div className="gap-4" />}
+        />
       }
     >
-      <HovercardArrow />
       <PageHovercardContext.Provider value={null}>
         {subscribed ? (
           content
