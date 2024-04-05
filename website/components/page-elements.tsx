@@ -425,6 +425,10 @@ export function PageSection({
     }
   }
 
+  if (level === 1) {
+    return <PageHeroProvider>{section}</PageHeroProvider>;
+  }
+
   return section;
 }
 
