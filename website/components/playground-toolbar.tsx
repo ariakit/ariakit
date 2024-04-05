@@ -58,7 +58,7 @@ export function PlaygroundToolbar({
         className="group grid grid-cols-[20px_1fr_1rem] items-center gap-2 sm:[--block-padding:8px]"
         render={<PopupItem />}
       >
-        <Icon />
+        <Icon className="size-full" />
         <span>{label}</span>
         <SelectItemCheck />
       </SelectItem>

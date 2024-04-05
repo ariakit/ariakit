@@ -140,9 +140,9 @@ export const PlaygroundEditToolbarButton = forwardRef<
         className="group grid cursor-pointer grid-cols-[1rem_1fr_1rem] items-center gap-2"
         render={<PopupItem render={maybeRenderPlusLink()} />}
       >
-        <Icon />
+        <Icon className="size-full" />
         <span className="pr-6">{label}</span>
-        <NewWindow className="opacity-80" />
+        <NewWindow className="size-full opacity-80" />
       </MenuItem>
     );
   };
@@ -234,10 +234,10 @@ export const PlaygroundEditButton = forwardRef<
         className="group grid cursor-pointer grid-cols-[1rem_1fr_1rem] items-center gap-2"
         render={<PopupItem render={maybeRenderPlusLink()} />}
       >
-        <Icon />
+        <Icon className="size-full" />
         <span className="pr-6">{label}</span>
         <SelectItemCheck className="group-data-[active-item]:hidden" />
-        <NewWindow className="hidden opacity-80 group-data-[active-item]:block" />
+        <NewWindow className="hidden size-full opacity-80 group-data-[active-item]:block" />
       </SelectItem>
     );
   };
