@@ -21,6 +21,7 @@ import {
 import { Command } from "./command.tsx";
 import { InlineLink } from "./inline-link.tsx";
 import { PageCards } from "./page-cards.tsx";
+import { PageHeroProvider } from "./page-context.tsx";
 import { PageExample } from "./page-example.tsx";
 import { PageHovercardAnchor } from "./page-hovercard.tsx";
 import { PageSidebar } from "./page-sidebar.tsx";
@@ -36,12 +37,17 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
     // base styles
     "text-black text-pretty dark:text-white tracking-[-0.035em] dark:tracking-[-0.015em]",
     "[&_code]:font-monospace [&_code]:rounded [&_code]:px-[0.2em] [&_code]:py-[0.15em]",
-    "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%] max-w-[--size-md]",
+    "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%] max-w-[--size-content-box]",
     // sticky styles
-    level < 4 &&
-      "sticky md:static [[data-dialog]_&]:static top-14 z-20 pb-2 -mb-2 md:mb-0 md:pb-0 [[data-dialog]_&]:mb-0 [[data-dialog]_&]:pb-0 flex items-center md:block pr-12 md:pr-0 min-h-[48px] md:min-h-0 bg-gray-50 dark:bg-gray-800 [[data-dialog]_&]:bg-inherit",
+    level < 4 && [
+      "max-md:flex items-center z-20 top-[--header-height]",
+      "max-md:sticky max-md:min-h-[48px] max-md:pb-2 max-md:-mb-2 max-md:pr-12",
+      "max-md:-mx-[--page-padding] max-md:w-[calc(100%+var(--page-padding)*2)] max-md:px-[--page-padding]",
+      "max-md:bg-gray-50 max-md:dark:bg-gray-800",
+      "[[data-dialog]_&]:static [[data-dialog]_&]:mb-0 [[data-dialog]_&]:pb-0 [[data-dialog]_&]:bg-inherit",
+    ],
     level === 1 &&
-      "text-2xl font-extrabold dark:font-bold sm:text-4xl md:text-5xl [[data-dialog]_&]:text-2xl",
+      "text-2xl font-extrabold dark:font-bold sm:text-3xl md:text-5xl [[data-dialog]_&]:text-2xl",
     level === 2 &&
       "text-xl font-semibold dark:font-medium sm:text-2xl md:text-3xl [&_code]:font-medium [[data-dialog]_&]:text-xl",
     level === 3 &&
@@ -92,7 +98,7 @@ export function PageParagraph({ node, ...props }: PageParagraphProps) {
     props.className,
   );
   const paragraph = (
-    <div className="max-w-[--size-md]">
+    <div className="max-w-[--size-content-box]">
       <p {...props} className={className} />
     </div>
   );
@@ -178,7 +184,7 @@ export function PageDescription({
       </span>
     ),
     className: twJoin(
-      "-translate-y-2 max-w-[--size-md] text-lg sm:text-xl sm:leading-8 !text-black/70 dark:!text-white/60",
+      "-translate-y-2 !max-w-[--size-content-box] [:has([data-call-to-action])_&]:md:grid grid-cols-[1fr_260px] w-full gap-4 md:gap-8 text-lg sm:text-xl sm:leading-8 !text-black/70 dark:!text-white/60",
       paragraph.props.className,
       props.className,
     ),
@@ -208,7 +214,7 @@ export function PageFigure({ node, ...props }: PageFigureProps) {
     "[&>img]:!rounded-none",
     "data-[wide]:max-w-[--size-xl] data-[wide]:md:rounded-2xl",
     "data-[media]:grid",
-    "data-[quote]:flex data-[quote]:max-w-[--size-sm]",
+    "data-[quote]:flex data-[quote]:max-w-[--size-quote]",
     "data-[bigquote]:flex data-[bigquote]:!w-auto data-[bigquote]:p-4",
     props.className,
   );
@@ -222,7 +228,7 @@ export interface PageBlockquoteProps
 
 export function PageBlockquote({ node, ...props }: PageBlockquoteProps) {
   const className = twJoin(
-    "flex flex-col gap-4 px-4 max-w-[--size-sm] border-l-4 border-black/25 dark:border-white/25",
+    "flex flex-col gap-4 px-4 max-w-[--size-quote] border-l-4 border-black/25 dark:border-white/25",
     "group-data-[bigquote]:border-0",
     "group-data-[bigquote]:italic",
     "group-data-[bigquote]:p-0",
@@ -247,7 +253,7 @@ export function PageList({ node, ordered, ...props }: PageListProps) {
   );
   const Element = ordered ? "ol" : "ul";
   return (
-    <div className="max-w-[--size-md]">
+    <div className="max-w-[--size-content-box]">
       <Element {...props} className={className} />
     </div>
   );
@@ -326,7 +332,7 @@ export function PageSection({
         "[[data-dialog]_&]:first-of-type:mt-0 [[data-dialog]_&]:data-[level='2']:mt-2",
         "[[data-dialog]_&]:bg-inherit",
         level === 1
-          ? "[--size-lg:1104px] [--size-md:1040px] [--size-xl:1232px]"
+          ? "[--size-2xl:--size-wide] [--size-content-box:--size-md] [--size-lg:--size-4xl] [--size-md:--size-3xl] [--size-xl:--size-5xl]"
           : "",
         props.className,
       )}
@@ -349,13 +355,13 @@ export function PageSection({
           !["Components", "Related examples"].includes(item.text),
       );
       return (
-        <>
+        <PageHeroProvider>
           {section}
           {!!tableOfContents?.length && (
             <AuthEnabled>
               <NotSubscribed>
                 <div className="mt-12 flex w-full flex-col items-start justify-center md:flex-row">
-                  <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-4 lg:px-8">
+                  <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-[--page-padding]">
                     <PageSection level={2} id="learn-more-about-this-example">
                       <PageHeading level={2} id="learn-more-about-this-example">
                         Learn more about this example
@@ -378,7 +384,7 @@ export function PageSection({
                           </PageListItem>
                         ))}
                       </PageList>
-                      <div className="max-w-[--size-md]">
+                      <div className="max-w-[--size-content-box]">
                         <div className="max-w-[--size-content]">
                           <Command
                             variant="plus"
@@ -414,9 +420,13 @@ export function PageSection({
               </NotSubscribed>
             </AuthEnabled>
           )}
-        </>
+        </PageHeroProvider>
       );
     }
+  }
+
+  if (level === 1) {
+    return <PageHeroProvider>{section}</PageHeroProvider>;
   }
 
   return section;
@@ -479,7 +489,7 @@ export function PageDiv({
         ) : (
           sidebar
         )}
-        <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-4 lg:px-8 [[data-dialog]_&]:!px-0">
+        <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-[--page-padding] [[data-dialog]_&]:!px-0">
           {props.children}
         </div>
       </div>

@@ -14,7 +14,7 @@ tags:
 
 <div data-description>
 
-Filtering options in a [Combobox](/components/combobox) component through an abstracted implementation using [`React.useDeferredValue`](https://react.dev/reference/react/useDeferredValue), resulting in a simple higher-level API.
+Filtering options in a [Combobox](/components/combobox) component through an abstracted implementation using `React.useDeferredValue`, resulting in a simple higher-level API.
 
 </div>
 

@@ -20,7 +20,7 @@ media:
 
 <div data-description>
 
-Organizing [Combobox](/components/combobox) with [Tab](/components/tab) components that support mouse, keyboard, and screen reader interactions. The UI remains responsive by using [`React.startTransition`](https://react.dev/reference/react/startTransition).
+Organizing [Combobox](/components/combobox) with [Tab](/components/tab) components that support mouse, keyboard, and screen reader interactions. The UI remains responsive by using `React.startTransition`.
 
 </div>
 

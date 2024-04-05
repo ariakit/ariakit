@@ -35,4 +35,3 @@ Combining [Form](/components/form) and [Select](/components/select) to create an
 - [](/examples/form-radio)
 
 </div>
-

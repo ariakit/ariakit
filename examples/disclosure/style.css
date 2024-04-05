@@ -1,8 +1,6 @@
 .wrapper {
   @apply
     w-[min(500px,100%)]
-    my-[70px]
-    md:my-24
     rounded-lg
     bg-white
     dark:bg-gray-700

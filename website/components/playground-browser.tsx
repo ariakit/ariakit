@@ -37,16 +37,15 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
   }, []);
 
   const buttonClassName = twJoin(
-    "flex h-8 w-8 items-center justify-center rounded-full p-1.5",
-    "text-black/70 hover:text-black",
-    "dark:text-white/75 dark:hover:text-white",
+    "flex size-12 items-center justify-center rounded-md",
+    "focus-visible:ariakit-outline-input sm:rounded-lg sm:size-10",
+    "text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white",
     "bg-transparent hover:bg-black/5 dark:hover:bg-white/5",
-    "focus-visible:ariakit-outline-input",
   );
 
   return (
-    <div className="flex h-full flex-col border-none border-[inherit]">
-      <div className="flex items-center gap-2 border-b border-[inherit] bg-white px-2 py-1 dark:bg-gray-750">
+    <div className="flex size-full flex-col rounded-[inherit] border-[inherit]">
+      <div className="flex h-[calc(var(--toolbar-height)-1px)] flex-none items-center gap-1 rounded-t-[inherit] border-b border-[inherit] bg-white p-1 dark:bg-gray-750">
         <div className="flex items-center">
           <TooltipButton
             title="Back"
@@ -54,7 +53,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
             onClick={() => ref.current?.contentWindow?.history.back()}
           >
             <span className="sr-only">Back</span>
-            <ArrowLeft />
+            <ArrowLeft className="size-5 stroke-[1.5px]" />
           </TooltipButton>
           <TooltipButton
             title="Forward"
@@ -62,7 +61,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
             onClick={() => ref.current?.contentWindow?.history.forward()}
           >
             <span className="sr-only">Forward</span>
-            <ArrowRight />
+            <ArrowRight className="size-5 stroke-[1.5px]" />
           </TooltipButton>
           <TooltipButton
             title="Reload"
@@ -70,7 +69,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
             onClick={() => ref.current?.contentWindow?.location.reload()}
           >
             <span className="sr-only">Reload</span>
-            <Refresh />
+            <Refresh className="size-[19px] stroke-[1.5px]" />
           </TooltipButton>
         </div>
         <form
@@ -84,7 +83,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
           }}
         >
           {!loaded && (
-            <Spinner className="absolute left-2 top-2 size-4 animate-spin" />
+            <Spinner className="absolute left-2 top-2 size-5 animate-spin sm:size-4" />
           )}
           <input
             type="url"
@@ -92,7 +91,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
             aria-label="URL"
             value={loaded ? url : ""}
             onChange={(event) => setUrl(event.target.value)}
-            className="h-8 w-full rounded-full border-none bg-gray-150 px-4 text-sm text-black/80 hover:bg-gray-200 focus-visible:ariakit-outline-input dark:bg-gray-850 dark:text-white/80 dark:shadow-input-dark dark:hover:bg-gray-900"
+            className="h-9 w-full rounded-full border-none bg-gray-150 px-4 text-sm text-black/80 hover:bg-gray-200 focus-visible:ariakit-outline-input dark:bg-gray-850 dark:text-white/80 dark:shadow-input-dark dark:hover:bg-gray-900 sm:h-8"
           />
         </form>
         <TooltipButton
@@ -103,14 +102,17 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
           )}
         >
           <span className="sr-only">Open in new tab</span>
-          <NewWindow />
+          <NewWindow className="size-5 stroke-[1.5px]" />
         </TooltipButton>
       </div>
       <iframe
         ref={ref}
         src={previewLink}
         title="Preview"
-        className={twJoin("size-full", loaded ? "visible" : "hidden")}
+        className={twJoin(
+          "size-full rounded-b-[inherit]",
+          loaded ? "visible" : "hidden",
+        )}
       />
     </div>
   );

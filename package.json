@@ -57,6 +57,7 @@
   "workspaces": [
     "packages/*",
     "examples",
+    "guide",
     "website"
   ],
   "lerna": {

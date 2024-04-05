@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { cx } from "@ariakit/core/utils/misc";
+import { twJoin } from "tailwind-merge";
 import { PageContainer } from "../page-container.tsx";
 
 interface Props {
@@ -26,8 +26,8 @@ export function ListPage({
         </div>
       )}
       <main
-        className={cx(
-          "relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 *:w-full sm:px-4 md:mt-16 lg:px-8",
+        className={twJoin(
+          "relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-3 *:w-full sm:px-4 md:mt-20 lg:px-8",
           hasSidebar ? "max-w-5xl *:max-w-3xl" : "max-w-7xl *:max-w-[1040px]",
         )}
       >

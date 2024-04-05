@@ -5,7 +5,6 @@ import { invariant } from "@ariakit/core/utils/misc";
 import { Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import type * as monaco from "monaco-editor";
 import { bundledLanguages } from "shiki";
-import { tw } from "utils/tw.ts";
 import { useMedia } from "utils/use-media.ts";
 
 export interface EditorProps {
@@ -193,14 +192,8 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
   }, [editting, files, theme, isLarge]);
 
   return (
-    <div
-      className={tw`w-full max-w-[832px] overflow-hidden rounded-lg
-    border-gray-650 dark:border md:rounded-xl`}
-    >
-      <div
-        className={tw`relative z-[12] flex h-12 gap-2 rounded-t-[inherit]
-      bg-gray-600 shadow-dark dark:bg-gray-750`}
-      >
+    <div className="w-full max-w-[832px] overflow-hidden rounded-lg border-gray-650 dark:border md:rounded-xl">
+      <div className="relative z-[12] flex h-12 gap-2 rounded-t-[inherit] bg-gray-600 shadow-dark dark:bg-gray-750">
         <TabList store={tab}>
           {Object.entries(files).map(([file]) => (
             <Tab key={file} id={getId(file)}>
