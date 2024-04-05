@@ -281,8 +281,9 @@ export const PlaygroundEditButton = forwardRef<
             <TooltipButton
               title={tooltipTitle}
               placement="bottom-start"
+              showTimeout={100}
+              hideTimeout={250}
               gutter={0}
-              timeout={0}
               popover={tooltip}
               render={maybeRenderPlusLink()}
             />

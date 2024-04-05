@@ -21,6 +21,8 @@ export interface TooltipButtonProps
   title: ReactNode;
   placement?: TooltipProviderProps["placement"];
   timeout?: TooltipProviderProps["timeout"];
+  showTimeout?: TooltipProviderProps["showTimeout"];
+  hideTimeout?: TooltipProviderProps["hideTimeout"];
   popover?: TooltipProps["render"];
   gutter?: TooltipProps["gutter"];
   shift?: TooltipProps["shift"];
@@ -31,6 +33,8 @@ export const TooltipButton = forwardRef(function TooltipButton({
   title,
   placement,
   timeout,
+  showTimeout,
+  hideTimeout,
   popover,
   gutter,
   shift,
@@ -39,7 +43,13 @@ export const TooltipButton = forwardRef(function TooltipButton({
   ...props
 }: TooltipButtonProps) {
   return (
-    <TooltipProvider placement={placement} timeout={timeout} store={store}>
+    <TooltipProvider
+      placement={placement}
+      timeout={timeout}
+      showTimeout={showTimeout}
+      hideTimeout={hideTimeout}
+      store={store}
+    >
       <Role.button
         {...props}
         render={<TooltipAnchor render={<Button render={props.render} />} />}
