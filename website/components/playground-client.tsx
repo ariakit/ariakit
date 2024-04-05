@@ -235,19 +235,19 @@ export function PlaygroundClient({
         className="pointer-events-none absolute left-0 top-20 flex w-full justify-center"
       >
         <Suspense>
-          <AuthLoaded>
-            {inHero && (
-              <div className="grid w-full max-w-[calc(var(--size-content-box)+var(--page-padding)*2)] justify-end px-[--page-padding] max-md:hidden">
-                <PlaygroundEditButton
-                  type="call-to-action"
-                  exampleId={id}
-                  files={files}
-                  javascriptFiles={javascriptFiles}
-                  dependencies={dependencies}
-                  devDependencies={devDependencies}
-                  language={language}
-                  className="pointer-events-auto w-max [view-timeline-inset:auto_100%] [view-timeline-name:--call-to-action] [body:has(&)]:[timeline-scope:--call-to-action]"
-                />
+          {inHero && (
+            <div className="grid w-full max-w-[calc(var(--size-content-box)+var(--page-padding)*2)] justify-end px-[--page-padding] max-md:hidden">
+              <PlaygroundEditButton
+                type="call-to-action"
+                exampleId={id}
+                files={files}
+                javascriptFiles={javascriptFiles}
+                dependencies={dependencies}
+                devDependencies={devDependencies}
+                language={language}
+                className="pointer-events-auto w-max [view-timeline-inset:var(--header-height)_calc(100%_-_var(--header-height))] [view-timeline-name:--call-to-action] [body:has(&)]:[timeline-scope:--call-to-action]"
+              />
+              <AuthLoaded>
                 {callToActionSlot &&
                   createPortal(
                     <div className="hidden ease-linear [animation-duration:1ms] [animation-fill-mode:both] [animation-name:appear] [animation-range:cover] [animation-timeline:--call-to-action] supports-[animation-timeline:scroll()]:block max-lg:!hidden max-lg:animate-none">
@@ -262,9 +262,9 @@ export function PlaygroundClient({
                     </div>,
                     callToActionSlot,
                   )}
-              </div>
-            )}
-          </AuthLoaded>
+              </AuthLoaded>
+            </div>
+          )}
         </Suspense>
       </div>
       <div

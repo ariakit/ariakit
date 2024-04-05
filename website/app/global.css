@@ -43,9 +43,4 @@ button:not([type="submit"]) {
     display: none;
     opacity: 0;
   }
-
-  to {
-    display: block;
-    opacity: 1;
-  }
 }

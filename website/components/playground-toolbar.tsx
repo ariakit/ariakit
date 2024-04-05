@@ -13,6 +13,7 @@ import { Edit } from "icons/edit.tsx";
 import { JavaScript } from "icons/javascript.tsx";
 import { TypeScript } from "icons/typescript.tsx";
 import { twJoin } from "tailwind-merge";
+import { AuthEnabled } from "./auth.tsx";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
 import { PlaygroundEditToolbarButton } from "./playground-edit.tsx";
 import type { PlaygroundEditProps } from "./playground-edit.tsx";
@@ -111,13 +112,17 @@ export function PlaygroundToolbar({
         </SelectPopover>
       </SelectProvider>
 
-      <ToolbarItem
-        className={toolbarItemClassName}
-        render={<PlaygroundEditToolbarButton language={language} {...props} />}
-      >
-        <span className="sr-only">Edit example</span>
-        <Edit className="size-5" />
-      </ToolbarItem>
+      <AuthEnabled>
+        <ToolbarItem
+          className={toolbarItemClassName}
+          render={
+            <PlaygroundEditToolbarButton language={language} {...props} />
+          }
+        >
+          <span className="sr-only">Edit example</span>
+          <Edit className="size-5" />
+        </ToolbarItem>
+      </AuthEnabled>
 
       {code != null && (
         <ToolbarItem
