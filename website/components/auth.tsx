@@ -48,6 +48,13 @@ export function AuthLoading({ children }: PropsWithChildren) {
   return children;
 }
 
+export function AuthLoaded({ children }: PropsWithChildren) {
+  const sub = useSubscription();
+  if (!sub.isLoaded) return null;
+  if (sub.isLoading) return null;
+  return children;
+}
+
 export function Subscribed({ children }: PropsWithChildren) {
   const sub = useSubscription();
   if (!sub.data) return null;

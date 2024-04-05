@@ -20,9 +20,9 @@ import { createPortal, flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
 import { tsToJsFilename } from "utils/ts-to-js-filename.ts";
-import { useSubscription } from "utils/use-subscription.ts";
 import {
   AuthEnabled,
+  AuthLoaded,
   AuthLoading,
   NotSubscribed,
   Subscribed,
@@ -110,15 +110,13 @@ export function PlaygroundClient({
   const expandRef = useRef<HTMLButtonElement>(null);
   const isRadix = /\-radix/.test(id);
 
-  const { isLoaded } = useSubscription();
   const [callToActionSlot, setCallToActionSlot] = useState<HTMLElement | null>(
     null,
   );
 
   useEffect(() => {
-    if (!isLoaded) return;
     setCallToActionSlot(document.getElementById("call-to-action-slot"));
-  }, [isLoaded]);
+  }, []);
 
   useLayoutEffect(() => {
     const tabPanel = tabPanelRef.current;
@@ -237,34 +235,36 @@ export function PlaygroundClient({
         className="pointer-events-none absolute left-0 top-20 flex w-full justify-center"
       >
         <Suspense>
-          {inHero && (
-            <div className="grid w-full max-w-[calc(var(--size-content-box)+var(--page-padding)*2)] justify-end px-[--page-padding] max-md:hidden">
-              <PlaygroundEditButton
-                type="call-to-action"
-                exampleId={id}
-                files={files}
-                javascriptFiles={javascriptFiles}
-                dependencies={dependencies}
-                devDependencies={devDependencies}
-                language={language}
-                className="pointer-events-auto w-max [view-timeline-inset:auto_100%] [view-timeline-name:--call-to-action] [body:has(&)]:[timeline-scope:--call-to-action]"
-              />
-              {callToActionSlot &&
-                createPortal(
-                  <div className="hidden ease-linear [animation-duration:1ms] [animation-fill-mode:both] [animation-name:appear] [animation-range:cover] [animation-timeline:--call-to-action] supports-[animation-timeline:scroll()]:block max-lg:!hidden max-lg:animate-none">
-                    <PlaygroundEditButton
-                      exampleId={id}
-                      files={files}
-                      javascriptFiles={javascriptFiles}
-                      dependencies={dependencies}
-                      devDependencies={devDependencies}
-                      language={language}
-                    />
-                  </div>,
-                  callToActionSlot,
-                )}
-            </div>
-          )}
+          <AuthLoaded>
+            {inHero && (
+              <div className="grid w-full max-w-[calc(var(--size-content-box)+var(--page-padding)*2)] justify-end px-[--page-padding] max-md:hidden">
+                <PlaygroundEditButton
+                  type="call-to-action"
+                  exampleId={id}
+                  files={files}
+                  javascriptFiles={javascriptFiles}
+                  dependencies={dependencies}
+                  devDependencies={devDependencies}
+                  language={language}
+                  className="pointer-events-auto w-max [view-timeline-inset:auto_100%] [view-timeline-name:--call-to-action] [body:has(&)]:[timeline-scope:--call-to-action]"
+                />
+                {callToActionSlot &&
+                  createPortal(
+                    <div className="hidden ease-linear [animation-duration:1ms] [animation-fill-mode:both] [animation-name:appear] [animation-range:cover] [animation-timeline:--call-to-action] supports-[animation-timeline:scroll()]:block max-lg:!hidden max-lg:animate-none">
+                      <PlaygroundEditButton
+                        exampleId={id}
+                        files={files}
+                        javascriptFiles={javascriptFiles}
+                        dependencies={dependencies}
+                        devDependencies={devDependencies}
+                        language={language}
+                      />
+                    </div>,
+                    callToActionSlot,
+                  )}
+              </div>
+            )}
+          </AuthLoaded>
         </Suspense>
       </div>
       <div
