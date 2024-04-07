@@ -350,7 +350,7 @@ export function PlaygroundClient({
                 <Tab
                   key={file}
                   id={getTabId(file)}
-                  className="flex-start group relative flex h-10 items-center justify-center whitespace-nowrap rounded bg-transparent px-2 text-sm tracking-tight text-black/75 outline-none hover:bg-black/5 hover:text-black aria-selected:text-black data-[focus-visible]:ariakit-outline-input dark:text-white/75 dark:hover:bg-white/5 dark:hover:text-white dark:aria-selected:text-white sm:h-8"
+                  className="flex-start group relative flex h-10 items-center justify-center whitespace-nowrap rounded bg-transparent px-2 text-sm tracking-tight text-black/75 outline-none hover:bg-black/5 hover:text-black aria-selected:text-black data-[focus-visible]:ariakit-outline-input sm:h-8 dark:text-white/75 dark:hover:bg-white/5 dark:hover:text-white dark:aria-selected:text-white"
                 >
                   <span>{isJS ? tsToJsFilename(file) : file}</span>
                   <div className="pointer-events-none absolute left-0 top-full h-[3px] w-full translate-y-[5px] bg-transparent group-aria-selected:bg-blue-600 dark:group-aria-selected:bg-blue-600" />

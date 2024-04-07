@@ -192,7 +192,7 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
   }, [editting, files, theme, isLarge]);
 
   return (
-    <div className="w-full max-w-[832px] overflow-hidden rounded-lg border-gray-650 dark:border md:rounded-xl">
+    <div className="w-full max-w-[832px] overflow-hidden rounded-lg border-gray-650 md:rounded-xl dark:border">
       <div className="relative z-[12] flex h-12 gap-2 rounded-t-[inherit] bg-gray-600 shadow-dark dark:bg-gray-750">
         <TabList store={tab}>
           {Object.entries(files).map(([file]) => (

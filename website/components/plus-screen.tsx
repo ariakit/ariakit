@@ -31,19 +31,19 @@ export function PlusScreen() {
             Ariakit{" "}
             <PlusBordered
               thick
-              className="inline-block rounded-xl bg-gray-50 p-1 dark:bg-gray-800 sm:px-2"
+              className="inline-block rounded-xl bg-gray-50 p-1 sm:px-2 dark:bg-gray-800"
             >
               Plus
             </PlusBordered>
           </Heading>
-          <p className="mx-3 max-w-[620px] -translate-y-5 text-center text-lg font-light text-black/80 dark:text-white/80 sm:text-xl [&>strong]:font-medium [&>strong]:text-black [&>strong]:dark:font-semibold [&>strong]:dark:text-white">
+          <p className="mx-3 max-w-[620px] -translate-y-5 text-center text-lg font-light text-black/80 sm:text-xl dark:text-white/80 [&>strong]:font-medium [&>strong]:text-black [&>strong]:dark:font-semibold [&>strong]:dark:text-white">
             Ariakit is a <strong>free</strong>, open-source project.{" "}
             <strong>Ariakit Plus</strong> gives you access to exclusive content
             and features on the site, <strong>forever</strong>.
           </p>
           <div className="grid w-[1024px] max-w-full grid-cols-1 gap-y-8 md:grid-cols-2">
             <div>
-              <div className="top-20 flex w-full flex-col gap-8 rounded-xl bg-white p-8 py-8 [box-shadow:0_0_0_1px_rgb(0_0_0/0.08),0_16px_36px_-12px_rgb(0_0_0/0.25)] dark:bg-gray-700 dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_16px_36px_-12px_rgb(0_0_0/0.35)] sm:rounded-2xl md:sticky">
+              <div className="top-20 flex w-full flex-col gap-8 rounded-xl bg-white p-8 py-8 [box-shadow:0_0_0_1px_rgb(0_0_0/0.08),0_16px_36px_-12px_rgb(0_0_0/0.25)] sm:rounded-2xl md:sticky dark:bg-gray-700 dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_16px_36px_-12px_rgb(0_0_0/0.35)]">
                 <Heading className="text-2xl font-medium">All included</Heading>
                 <ul className="mb-8 flex cursor-default flex-col gap-2">
                   <PlusFeature

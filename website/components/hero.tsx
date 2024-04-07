@@ -13,10 +13,10 @@ export function Hero() {
   return (
     <div className="grid justify-items-center gap-8 p-5 px-3 sm:px-4 md:gap-10 md:px-8">
       <div className="mt-6 grid w-full max-w-4xl justify-items-center gap-[inherit] sm:mt-10 md:mt-20">
-        <h1 className="text-pretty text-center text-4xl font-medium tracking-[-0.035em] text-black dark:tracking-[-0.015em] dark:text-white sm:text-6xl sm:font-extrabold sm:dark:font-bold md:text-7xl">
+        <h1 className="text-pretty text-center text-4xl font-medium tracking-[-0.035em] text-black sm:text-6xl sm:font-extrabold md:text-7xl dark:tracking-[-0.015em] dark:text-white sm:dark:font-bold">
           Build accessible web apps with React
         </h1>
-        <p className="max-w-[720px] text-pretty text-center text-lg text-black/80 dark:text-white/80 md:text-xl md:leading-8 lg:text-2xl lg:leading-9">
+        <p className="max-w-[720px] text-pretty text-center text-lg text-black/80 md:text-xl md:leading-8 lg:text-2xl lg:leading-9 dark:text-white/80">
           Open-source library with{" "}
           <Link href="/guide/styling" className={linkClassName}>
             unstyled
