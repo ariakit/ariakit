@@ -4,6 +4,8 @@ import postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
 import postcssImport from "postcss-import";
 // @ts-expect-error
+import postcssMergeAtRules from "postcss-merge-at-rules";
+// @ts-expect-error
 import mergeSelectors from "postcss-merge-selectors";
 // @ts-expect-error
 import prettify from "postcss-prettify";
@@ -64,6 +66,7 @@ export async function parseCSSFile(filename, options) {
   }
 
   if (options.format) {
+    processor.use(postcssMergeAtRules({ atRulePattern: "layer" }));
     processor.use(
       combineDuplicatedSelectors({ removeDuplicatedProperties: true }),
     );
@@ -90,9 +93,6 @@ export async function parseCSSFile(filename, options) {
   let css = result.css;
 
   if (options.contents) {
-    // TODO: https://github.com/FullHuman/purgecss/issues/1104
-    const originalWarn = console.warn;
-    console.warn = () => {};
     const safelist = [/^aria\-/, /^data-/, ":is", "dark", "svg"];
 
     const content = Object.entries(options.contents).map(([filename, raw]) => ({
@@ -109,8 +109,6 @@ export async function parseCSSFile(filename, options) {
     if (purged?.css) {
       css = purged.css;
     }
-
-    console.warn = originalWarn;
   }
 
   if (options.format) {

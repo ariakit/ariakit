@@ -1,25 +1,56 @@
-.popup {
-  @apply
-    [--border-color:rgb(0_0_0/0.1)]
-    [--shadow-color:rgb(0_0_0/0.25)]
-    [--shadow-size:0_4px_8px_-4px]
-    dark:[--border-color:rgb(255_255_255/0.2)]
-    dark:[--shadow-color:rgb(0_0_0/0.35)]
-    dark:[--shadow-size:0_6px_12px_-4px]
+@layer theme {
+  .focusable {
+    @apply
+      [--outline-offset:0]
+      [--outline:theme(colors.blue.600)]
+  }
+
+  .clickable {
+    @apply
+      [--depth:2px]
+      [--padding-block:0px]
+  }
+
+  .popup {
+    @apply
+      [--border:theme(colors.black/10%)]
+      [--shadow:theme(colors.black/25%)]
+      [--shadow-size:0_4px_8px_-4px]
+      dark:[--border:theme(colors.white/20%)]
+      dark:[--shadow:theme(colors.black/35%)]
+      dark:[--shadow-size:0_6px_12px_-4px]
+  }
+
+  .elevation-1 {
+    @apply
+      [--shadow:theme(colors.black/20%)]
+      [--shadow-size:0_8px_16px_-6px]
+      dark:[--shadow-size:0_12px_24px_-6px]
+  }
+
+  .elevation-2 {
+    @apply
+      [--shadow:theme(colors.black/15%)]
+      [--shadow-size:0_16px_32px_-6px]
+      dark:[--shadow-size:0_18px_36px_-8px]
+  }
 }
 
-.elevation-1 {
+.focusable {
   @apply
-    [--shadow-color:rgb(0_0_0/0.2)]
-    [--shadow-size:0_8px_16px_-6px]
-    dark:[--shadow-size:0_12px_24px_-6px]
+    outline-2
+    outline-[--outline]
+    outline-offset-[--outline-offset]
+    data-[focus-visible]:outline
+    aria-disabled:opacity-50
 }
 
-.elevation-2 {
+.clickable {
   @apply
-    [--shadow-color:rgb(0_0_0/0.15)]
-    [--shadow-size:0_16px_32px_-6px]
-    dark:[--shadow-size:0_18px_36px_-8px]
+    select-none
+    whitespace-nowrap
+    active:pt-[calc(var(--padding-block)+var(--depth))]
+    active:pb-[calc(var(--padding-block)-var(--depth))]
 }
 
 .popup {
@@ -28,7 +59,7 @@
     text-black
     dark:bg-gray-700
     dark:text-white
-    [box-shadow:0_0_0_1px_var(--border-color),var(--shadow-size)_var(--shadow-color)]
+    [box-shadow:0_0_0_1px_var(--border),var(--shadow-size)_var(--shadow)]
 }
 
 .input {
@@ -42,6 +73,6 @@
     outline-blue-600
     focus-within:outline
     cursor-text
-    [box-shadow:inset_0_0_0_1px_rgba(0_0_0/0.15),inset_0_2px_5px_0_rgba(0_0_0/0.08)]
-    dark:[box-shadow:inset_0_0_0_1px_rgba(255_255_255/0.15),inset_0_-1px_0_0_rgba(255_255_255/0.05),inset_0_2px_5px_0_rgba(0_0_0/0.15)]
+    [box-shadow:inset_0_0_0_1px_theme(colors.black/15%),inset_0_2px_5px_0_theme(colors.black/8%)]
+    dark:[box-shadow:inset_0_0_0_1px_theme(colors.white/15%),inset_0_-1px_0_0_theme(colors.white/5%),inset_0_2px_5px_0_theme(colors.black/15%)]
 }
