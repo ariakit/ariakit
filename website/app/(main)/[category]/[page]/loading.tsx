@@ -7,9 +7,9 @@ export default function Loading() {
             <div className="h-12 w-1/2 rounded-md bg-black/10 dark:bg-white/10" />
           </div>
           <div className="flex -translate-y-1.5 flex-col gap-1.5">
-            <div className="h-5 w-full rounded bg-black/10 dark:bg-white/10 sm:h-7" />
-            <div className="h-5 w-full rounded bg-black/10 dark:bg-white/10 sm:h-7" />
-            <div className="h-5 w-1/2 rounded bg-black/10 dark:bg-white/10 sm:h-7" />
+            <div className="h-5 w-full rounded bg-black/10 sm:h-7 dark:bg-white/10" />
+            <div className="h-5 w-full rounded bg-black/10 sm:h-7 dark:bg-white/10" />
+            <div className="h-5 w-1/2 rounded bg-black/10 sm:h-7 dark:bg-white/10" />
           </div>
         </div>
       </div>

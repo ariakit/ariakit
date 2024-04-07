@@ -55,10 +55,40 @@ function getPackageJson(packageJson: Record<string, unknown>) {
     dependencies: packageJson.dependencies,
     devDependencies: {
       ...(packageJson.devDependencies || {}),
+      autoprefixer: "^10.0.0",
       tailwindcss: "^3.0.0",
-      typescript: "5.0.4",
+      postcss: "^8.0.0",
+      typescript: "5.4.4",
     },
   };
+}
+
+function getPostcssConfig() {
+  return `
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`;
+}
+
+function getTailwindConfig(exampleName: string) {
+  return `
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./app/**/*.{js,ts,jsx,tsx}",
+    "./${exampleName}/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
 }
 
 function getTSConfig(tsConfig?: Record<string, unknown>) {
@@ -101,7 +131,9 @@ function getIndexCss(
       ? "hsl(204 20% 94%)"
       : "hsl(204 3% 12%)";
   const color = theme === "light" ? "hsl(204 10% 10%)" : "hsl(204 20% 100%)";
-  return `@import url("tailwindcss/lib/css/preflight.css");
+  return `@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 html {
   color-scheme: ${theme};
@@ -204,6 +236,8 @@ if (root) {
       "index.html": indexHtml,
       "index.tsx": indexTsx,
       "index.css": indexCss,
+      "postcss.config.js": getPostcssConfig(),
+      "tailwind.config.js": getTailwindConfig(exampleName),
       ...sourceFiles,
     },
   };
@@ -222,7 +256,7 @@ function getNextProject(props: StackblitzProps) {
     },
     dependencies: {
       ...props.dependencies,
-      next: "14.1.0",
+      next: "14.2.0-canary.60",
     },
     devDependencies: {
       "@types/node": "latest",
@@ -288,7 +322,7 @@ export default function Page() {
 }
 `
     : `"use client";
-import Example from "./${exampleName}/${tsToJsFilename(firstFile)}";
+import Example from "./${exampleName}/${firstFile}";
 
 export default function Page() {
   return <Example />;
@@ -314,6 +348,8 @@ export default function Page() {
       "app/layout.css": layoutCss,
       "app/layout.tsx": mainLayout,
       "app/page.tsx": page,
+      "postcss.config.js": getPostcssConfig(),
+      "tailwind.config.js": getTailwindConfig(exampleName),
       ...sourceFiles,
     },
   };

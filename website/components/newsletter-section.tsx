@@ -6,13 +6,13 @@ import { NewsletterForm } from "./newsletter-form.tsx";
 
 export function NewsletterSection() {
   return (
-    <div className="relative mt-24 border-t border-black/10 px-3 py-10 dark:border-white/10 sm:mt-40 sm:py-16 sm:pt-12">
+    <div className="relative mt-24 border-t border-black/10 px-3 py-10 sm:mt-40 sm:py-16 sm:pt-12 dark:border-white/10">
       <div className="mx-auto flex flex-col items-center gap-6 px-3 text-center sm:gap-8">
         <Mail className="absolute top-0 mx-auto size-12 -translate-y-1/2 bg-gray-50 stroke-black/40 stroke-1 p-2 dark:bg-gray-800 dark:stroke-white/40" />
         <h2 className="flex items-center gap-2 text-xl font-medium sm:text-2xl">
           Stay tuned
         </h2>
-        <div className="flex flex-col items-center gap-2 text-black/80 dark:text-white/80 max-sm:text-sm">
+        <div className="flex flex-col items-center gap-2 text-black/80 max-sm:text-sm dark:text-white/80">
           <p className="text-balance">
             Join 1,000+ subscribers and receive monthly{" "}
             <strong className="font-medium text-black dark:text-white">

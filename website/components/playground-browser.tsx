@@ -91,7 +91,7 @@ export function PlaygroundBrowser({ previewLink }: PlaygroundBrowserProps) {
             aria-label="URL"
             value={loaded ? url : ""}
             onChange={(event) => setUrl(event.target.value)}
-            className="h-9 w-full rounded-full border-none bg-gray-150 px-4 text-sm text-black/80 hover:bg-gray-200 focus-visible:ariakit-outline-input dark:bg-gray-850 dark:text-white/80 dark:shadow-input-dark dark:hover:bg-gray-900 sm:h-8"
+            className="h-9 w-full rounded-full border-none bg-gray-150 px-4 text-sm text-black/80 hover:bg-gray-200 focus-visible:ariakit-outline-input sm:h-8 dark:bg-gray-850 dark:text-white/80 dark:shadow-input-dark dark:hover:bg-gray-900"
           />
         </form>
         <TooltipButton
