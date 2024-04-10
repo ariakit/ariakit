@@ -1,0 +1,55 @@
+@import url("../style.css");
+@import url("../button/button.css");
+
+@layer theme {
+  .select-combobox-tab-item {
+    @apply
+      [--padding-block:8px]
+      sm:[--padding-block:4px]
+  }
+
+  .tab-default {
+    @apply
+      [--rounded:14px]
+  }
+}
+
+.select-combobox-tab-popover {
+  @apply
+    overflow-hidden
+    data-[searchable]:p-0
+    data-[searchable]:bg-[oklch(from_var(--background)_calc(l-0.04)_c_h)]
+}
+
+.tablist {
+  @apply
+    flex
+    px-2
+}
+
+.combobox {
+  @apply
+    h-10
+    px-2
+    outline-1
+    mx-[--padding]
+    my-2
+    data-[active-item]:outline-2
+    rounded-[calc(var(--rounded)-var(--padding))]
+}
+
+.select-combobox-tab-item {
+  @apply
+    grid
+    grid-cols-[1rem_auto_1rem]
+    items-center
+}
+
+.tab-panel {
+  @apply
+    bg-[--background]
+    p-[--padding]
+    border-t
+    border-gray-300
+    dark:border-gray-600
+}

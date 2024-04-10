@@ -1,8 +1,21 @@
 @import url("../style.css");
 
 @layer theme {
+  .button {
+    @apply
+      [--size:theme(spacing.10)]
+  }
+
+  .button-small {
+    @apply
+      sm:[--size:theme(spacing.8)]
+  }
+
   .button-default {
     @apply
+      [--depth:2px]
+      [--outline-offset:-1px]
+
       [--text:theme(colors.black)]
       dark:[--text:theme(colors.white)]
 
@@ -23,14 +36,15 @@
 
   .button-primary {
     @apply
+      [--depth:2px]
       [--outline-offset:2px]
 
       [--text:theme(colors.white)]
 
-      [--background:theme(colors.blue.600)]
+      [--background:--color-primary]
       dark:[--background:theme(colors.blue.700)]
       hover:[--background:theme(colors.blue.700)]
-      hover:[&:not(:active)]:dark:[--background:theme(colors.blue.600)]
+      hover:[&:not(:active)]:dark:[--background:--color-primary]
 
 
       [--border:theme(colors.black/15%)]
@@ -47,6 +61,7 @@
 
   .button-danger {
     @apply
+      [--depth:2px]
       [--outline-offset:2px]
 
       [--text:theme(colors.white)]
@@ -91,6 +106,7 @@
 
   .button-flat {
     @apply
+      [--depth:1px]
       [--border:none]
       [--light:none]
       [--shadow:none]
@@ -103,7 +119,7 @@
 .button {
   @apply
     flex
-    h-10
+    h-[--size]
     items-center
     justify-center
     rounded-lg
@@ -118,4 +134,15 @@
     dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--light)]
     active:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--border)]
     dark:active:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_1px_1px_1px_var(--shadow)]
+}
+
+.button-icon {
+  @apply
+    px-0
+    size-[--size]
+}
+
+.button-small {
+  @apply
+    sm:text-sm
 }

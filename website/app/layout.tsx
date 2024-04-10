@@ -2,6 +2,7 @@ import "./global.css";
 
 import type { PropsWithChildren } from "react";
 import { Analytics } from "@vercel/analytics/react";
+import { QueryProvider } from "components/query-provider.tsx";
 import { GeistSans } from "geist/font/sans";
 import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
 
@@ -45,16 +46,18 @@ export function generateMetadata() {
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" suppressHydrationWarning className={GeistSans.className}>
-      <body
-        suppressHydrationWarning
-        className="m-0 bg-gray-50 p-0 text-black antialiased dark:bg-gray-800 dark:text-white"
-      >
-        <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
-        <script dangerouslySetInnerHTML={{ __html: dblClickWorkaround }} />
-        {children}
-        <Analytics />
-      </body>
-    </html>
+    <QueryProvider>
+      <html lang="en" suppressHydrationWarning className={GeistSans.className}>
+        <body
+          suppressHydrationWarning
+          className="m-0 bg-gray-50 p-0 text-black antialiased dark:bg-gray-800 dark:text-white"
+        >
+          <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
+          <script dangerouslySetInnerHTML={{ __html: dblClickWorkaround }} />
+          {children}
+          <Analytics />
+        </body>
+      </html>
+    </QueryProvider>
   );
 }

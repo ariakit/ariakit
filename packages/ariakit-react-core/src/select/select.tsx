@@ -158,9 +158,12 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     if (event.ctrlKey) return;
     if (!toggleOnPressProp(event)) return;
     const element = event.currentTarget;
-    queueBeforeEvent(element, "focusin", () => {
-      store?.setDisclosureElement(element);
-      store?.toggle();
+    queueBeforeEvent(element, "click", {
+      timeout: 150,
+      callback() {
+        store?.setDisclosureElement(element);
+        store?.toggle();
+      },
     });
   });
 

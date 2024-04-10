@@ -112,8 +112,9 @@ export function createSelectStore({
       syncState.setValueOnMove,
       false,
     ),
-    selectElement: defaultValue(syncState.selectElement, null),
     labelElement: defaultValue(syncState.labelElement, null),
+    selectElement: defaultValue(syncState.selectElement, null),
+    listElement: defaultValue(syncState.listElement, null),
   };
 
   const select = createStore(initialState, composite, popover, store);
@@ -171,8 +172,9 @@ export function createSelectStore({
     ...select,
     combobox,
     setValue: (value) => select.setState("value", value),
-    setSelectElement: (element) => select.setState("selectElement", element),
     setLabelElement: (element) => select.setState("labelElement", element),
+    setSelectElement: (element) => select.setState("selectElement", element),
+    setListElement: (element) => select.setState("listElement", element),
   };
 }
 
@@ -221,6 +223,10 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
    */
   setValueOnMove: boolean;
   /**
+   * The select label element.
+   */
+  labelElement: HTMLElement | null;
+  /**
    * The select button element.
    *
    * Live examples:
@@ -228,9 +234,9 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
    */
   selectElement: HTMLElement | null;
   /**
-   * The select label element.
+   * The select list element.
    */
-  labelElement: HTMLElement | null;
+  listElement: HTMLElement | null;
 }
 
 export interface SelectStoreFunctions<
@@ -248,13 +254,17 @@ export interface SelectStoreFunctions<
    */
   setValue: SetState<SelectStoreState<T>["value"]>;
   /**
+   * Sets the `labelElement` state.
+   */
+  setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
+  /**
    * Sets the `selectElement` state.
    */
   setSelectElement: SetState<SelectStoreState<T>["selectElement"]>;
   /**
-   * Sets the `labelElement` state.
+   * Sets the `listElement` state.
    */
-  setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
+  setListElement: SetState<SelectStoreState<T>["listElement"]>;
 }
 
 export interface SelectStoreOptions<

@@ -30,6 +30,9 @@ const plugin = (opts = {}) => {
           if (rulesSeen.has(rule)) return;
           rulesSeen.add(rule);
           rule.selectors = rule.selectors.map((selector) => {
+            if (selector.startsWith(":root")) {
+              return selector;
+            }
             if (selector.includes(".dark ")) {
               const selectorWithoutDark = selector.replace(".dark ", "");
               return `.dark .${className} ${selectorWithoutDark}`;

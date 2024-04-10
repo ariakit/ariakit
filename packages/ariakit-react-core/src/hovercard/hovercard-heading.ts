@@ -1,6 +1,6 @@
 import type { ElementType } from "react";
-import type { PopoverHeadingOptions } from "../popover/popover-heading.ts";
-import { usePopoverHeading } from "../popover/popover-heading.ts";
+import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
+import { usePopoverHeading } from "../popover/popover-heading.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { HovercardStore } from "./hovercard-store.ts";

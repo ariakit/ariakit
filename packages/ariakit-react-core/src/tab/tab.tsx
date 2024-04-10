@@ -78,8 +78,13 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   const panelId = store.panels.useState(
     (state) => state.items.find((item) => item.tabId === id)?.id,
   );
-  const selected = store.useState((state) => !!id && state.selectedId === id);
   const shouldRegisterItem = !!defaultId ? props.shouldRegisterItem : false;
+
+  // TODO: Refactor and explain: should be able to move to tab with
+  // selectOnMove={false}
+  const selected = store.useState((state) => !!id && state.selectedId === id);
+  const isActive = store.useState((state) => !!id && state.activeId === id);
+  const hasActiveItem = store.useState((state) => !!store.item(state.activeId));
 
   props = useWrapElement(
     props,
@@ -88,7 +93,8 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
       const defaultProps = {
         id,
         store: store.composite,
-        shouldRegisterItem: selected && shouldRegisterItem,
+        shouldRegisterItem:
+          (isActive || (selected && !hasActiveItem)) && shouldRegisterItem,
         render: element,
       } satisfies CompositeItemOptions;
       // If the tab is rendered as part of another composite widget such as
@@ -110,7 +116,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
         />
       );
     },
-    [store, id, selected, shouldRegisterItem],
+    [store, id, selected, isActive, hasActiveItem, shouldRegisterItem],
   );
 
   props = {

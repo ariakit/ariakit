@@ -34,6 +34,8 @@ export function createTabStore({
     "renderedItems",
     "moves",
     "orientation",
+    "virtualFocus",
+    "includesBaseElement",
     "baseElement",
     "focusLoop",
     "focusShift",

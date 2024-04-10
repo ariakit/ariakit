@@ -165,20 +165,37 @@ export function getInputType(event: Event | { nativeEvent: Event }) {
   return nativeEvent.inputType;
 }
 
+interface QueueBeforeEventOptions {
+  timeout?: number;
+  callback: () => void;
+}
+
 /**
  * Runs a callback on the next animation frame, but before a certain event.
  */
 export function queueBeforeEvent(
   element: Element,
   type: string,
-  callback: () => void,
+  options: QueueBeforeEventOptions | QueueBeforeEventOptions["callback"],
 ) {
-  const raf = requestAnimationFrame(() => {
+  const callback = typeof options === "function" ? options : options.callback;
+  const timeout = typeof options === "function" ? undefined : options.timeout;
+
+  const createTimer = (callback: () => void) => {
+    if (timeout) {
+      const timerId = setTimeout(callback, timeout);
+      return () => clearTimeout(timerId);
+    }
+    const timerId = requestAnimationFrame(callback);
+    return () => cancelAnimationFrame(timerId);
+  };
+
+  const cancelTimer = createTimer(() => {
     element.removeEventListener(type, callImmediately, true);
     callback();
   });
   const callImmediately = () => {
-    cancelAnimationFrame(raf);
+    cancelTimer();
     callback();
   };
   // By listening to the event in the capture phase, we make sure the callback
@@ -187,7 +204,7 @@ export function queueBeforeEvent(
     once: true,
     capture: true,
   });
-  return raf;
+  return cancelTimer;
 }
 
 export function addGlobalEventListener<K extends keyof DocumentEventMap>(

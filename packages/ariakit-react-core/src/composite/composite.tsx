@@ -150,9 +150,24 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         "Composite must receive a `store` prop or be wrapped in a CompositeProvider component.",
     );
 
+    const ref = useRef<HTMLType>(null);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const scheduleFocus = useScheduleFocus(store);
     const moves = store.useState("moves");
+
+    useSafeLayoutEffect(() => {
+      if (!composite) return;
+      if (!ref.current) return;
+      let prevElement: HTMLElement | null = null;
+      store?.setBaseElement((element) => {
+        prevElement = element;
+        return ref.current;
+      });
+      return () => {
+        if (!prevElement) return;
+        store?.setBaseElement(prevElement);
+      };
+    }, [store, composite]);
 
     // Focus on the active item element.
     useEffect(() => {
@@ -428,7 +443,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     props = {
       "aria-activedescendant": activeDescendant,
       ...props,
-      ref: useMergeRefs(composite ? store.setBaseElement : null, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onKeyDownCapture,
       onKeyUpCapture,
       onFocusCapture,

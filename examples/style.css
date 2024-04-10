@@ -1,21 +1,66 @@
 @layer theme {
+  :root {
+    @apply
+      [--color-primary:oklch(56.7%_0.1545_248.51)]
+      [--color-white:theme(colors.white)]
+      [--color-black:theme(colors.black)]
+      [--background:oklch(95%_0.005_248.51)]
+      dark:[--background:oklch(20%_0.002_248.51)]
+  }
+
   .focusable {
     @apply
       [--outline-offset:0]
-      [--outline:theme(colors.blue.600)]
+      [--outline:--color-primary]
   }
 
   .clickable {
     @apply
-      [--depth:2px]
-      [--padding-block:0px]
+      [--depth:1px]
+      [--padding-block:initial]
+  }
+
+  .input {
+    @apply
+      [--outline-offset:-1px]
+
+      [--input-background:--color-white]
+      dark:[--input-background:oklch(from_var(--background)_calc(l-0.05)_c_h)]
+
+      [--border:oklch(from_var(--background)_calc(l-0.33)_c_h)]
+      hover:[--border:oklch(from_var(--background)_calc(l-0.55)_c_h)]
+      [&[placeholder]]:[--border:oklch(from_var(--background)_calc(l-0.2)_c_h)]
+      hover:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l-0.42)_c_h)]
+
+      dark:[--border:oklch(from_var(--background)_calc(l+0.32)_c_h)]
+      dark:hover:[--border:oklch(from_var(--background)_calc(l+0.42)_c_h)]
+      dark:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l+0.13)_c_h)]
+      dark:hover:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l+0.23)_c_h)]
+
+      [--shadow:theme(colors.black/10%)]
+      [--light:theme(colors.white/30%)]
+      dark:[--shadow:theme(colors.black/30%)]
+      dark:[--light:theme(colors.white/10%)]
+  }
+
+  .rounded-container {
+    @apply
+      [--padding:theme(spacing.1)]
+      [--rounded:theme(borderRadius.xl)]
   }
 
   .popup {
     @apply
+      [--padding:theme(spacing.1)]
+      [--rounded:theme(borderRadius.xl)]
+
+      [--background:--color-white]
+      dark:[--background:theme(colors.gray.700)]
+
       [--border:theme(colors.black/10%)]
       [--shadow:theme(colors.black/25%)]
       [--shadow-size:0_4px_8px_-4px]
+
       dark:[--border:theme(colors.white/20%)]
       dark:[--shadow:theme(colors.black/35%)]
       dark:[--shadow-size:0_6px_12px_-4px]
@@ -34,6 +79,37 @@
       [--shadow-size:0_16px_32px_-6px]
       dark:[--shadow-size:0_18px_36px_-8px]
   }
+
+  .option {
+    @apply
+      [--background:transparent]
+      data-[active-item]:[--background:theme(colors.black/8%)]
+      dark:data-[active-item]:[--background:theme(colors.white/8%)]
+      data-[active-item]:data-[focus-visible]:[--background:--color-primary]
+      data-[active-item]:data-[focus-visible]:[--text:--color-white]
+      dark:data-[active-item]:data-[focus-visible]:[--background:--color-primary]
+      dark:data-[active-item]:data-[focus-visible]:[--text:--color-white]
+  }
+
+  .tab-default {
+    @apply
+      [--border:transparent]
+      [--border-size:0px]
+
+      [--accent-background:--color-primary]
+      [--accent-text:--color-white]
+
+      hover:[&:not([aria-selected=true])]:[--background:theme(colors.black/8%)]
+      dark:hover:[&:not([aria-selected=true])]:[--background:theme(colors.white/8%)]
+  }
+
+  .tab-border {
+    @apply
+      [--border:--background]
+      [--border-size:1px]
+      aria-selected:[--border:oklch(from_var(--background)_calc(l-0.15)_c_h)]
+      dark:aria-selected:[--border:oklch(from_var(--background)_calc(l+0.15)_c_h)]
+  }
 }
 
 .focusable {
@@ -49,30 +125,132 @@
   @apply
     select-none
     whitespace-nowrap
-    active:pt-[calc(var(--padding-block)+var(--depth))]
-    active:pb-[calc(var(--padding-block)-var(--depth))]
-}
-
-.popup {
-  @apply
-    bg-white
-    text-black
-    dark:bg-gray-700
-    dark:text-white
-    [box-shadow:0_0_0_1px_var(--border),var(--shadow-size)_var(--shadow)]
+    py-[--padding-block]
+    active:pt-[calc(var(--padding-block,0px)+var(--depth))]
+    active:pb-[calc(var(--padding-block,0px)-var(--depth))]
 }
 
 .input {
   @apply
-    bg-white
-    hover:bg-gray-50
-    dark:bg-gray-900
-    dark:hover:bg-gray-950
-    outline-2
-    outline-offset-[-1px]
-    outline-blue-600
-    focus-within:outline
     cursor-text
-    [box-shadow:inset_0_0_0_1px_theme(colors.black/15%),inset_0_2px_5px_0_theme(colors.black/8%)]
-    dark:[box-shadow:inset_0_0_0_1px_theme(colors.white/15%),inset_0_-1px_0_0_theme(colors.white/5%),inset_0_2px_5px_0_theme(colors.black/15%)]
+    focus-within:outline
+    bg-[--input-background]
+    [box-shadow:inset_0_-1px_0_0_var(--light),inset_0_0_0_1px_var(--border),inset_0_2px_5px_0_var(--shadow)]
+    placeholder:text-[oklch(from_var(--input-background)_calc(l-0.44)_0_0deg)]
+    dark:placeholder:text-[oklch(from_var(--input-background)_calc(l+0.42)_0_0deg)]
+}
+
+.rounded-container {
+  @apply
+    p-[--padding]
+    rounded-[--rounded]
+}
+
+.rounded-item {
+  @apply
+    scroll-m-[--padding]
+    rounded-[calc(var(--rounded)-var(--padding))]
+}
+
+.popup {
+  @apply
+    p-[--padding]
+    bg-[--background]
+    rounded-[--rounded]
+    [outline:none]
+    [box-shadow:0_0_0_1px_var(--border),var(--shadow-size)_var(--shadow)]
+}
+
+.option {
+  @apply
+    bg-[--background]
+    text-[--text,currentColor]
+    cursor-default
+    px-2
+    gap-2
+    [outline:none]
+    scroll-m-[--padding]
+    rounded-[calc(var(--rounded)-var(--padding))]
+}
+
+.popover-enter {
+  @apply
+    origin-[--popover-transform-origin]
+    transition-[opacity,scale]
+    [&:not([data-enter])]:opacity-0
+    [&:not([data-enter])]:[scale:95%]
+}
+
+.tab {
+  @apply
+    relative
+    cursor-default
+    aria-selected:z-20
+    bg-[--background,transparent]
+    aria-selected:[box-shadow:inset_0_0_0_4px_var(--background)]
+    data-[active-item]:data-[focus-visible]:bg-[--accent-background]
+    data-[active-item]:data-[focus-visible]:text-[--accent-text]
+    aria-[selected=false]:data-[active-item]:data-[focus-visible]:[--background:--accent-background]
+}
+
+.tab-default {
+  @apply
+    [--border-smooth:0.1px]
+    [--corner-size:calc(var(--rounded)-var(--padding)-4px)]
+    aria-selected:[--corner-size:calc(var(--rounded)-var(--padding))]
+    [--padding-block:theme(spacing.1)]
+    aria-selected:[--padding-block:theme(spacing.2)]
+    py-[--padding-block]
+    px-2
+    m-1
+    mb-[calc(var(--padding-block)+var(--border-size))]
+    aria-selected:px-3
+    aria-selected:m-0
+    rounded-[--corner-size]
+    /* gradient vars */
+    [--circle-left:circle_at_0_0,var(--transparency)]
+    [--circle-right:circle_at_100%_0,var(--transparency)]
+    [--transparency:transparent_calc(var(--corner-size)-var(--border-size)+var(--border-smooth))]
+    [--tab-border-start:var(--border)_calc(var(--corner-size)-var(--border-size)-var(--border-smooth))]
+    [--tab-border-end:var(--border)_calc(var(--corner-size)-var(--border-smooth))]
+    [--tab-border:var(--tab-border-start),var(--tab-border-end)]
+    [--tab-bg:var(--background)_calc(var(--corner-size)+var(--border-smooth))]
+    /* pseudo-elements */
+    aria-selected:before:block
+    aria-selected:before:[content:'']
+    aria-selected:after:block
+    aria-selected:after:[content:'']
+    /* before */
+    before:hidden
+    before:right-[calc(100%-var(--corner-size))]
+    before:absolute
+    before:bottom-0
+    before:w-[calc(var(--corner-size)*2)]
+    before:h-[--corner-size]
+    before:[background-image:radial-gradient(var(--circle-left),var(--tab-border),var(--tab-bg)),radial-gradient(var(--circle-right),var(--tab-bg))]
+    before:[background-size:50%]
+    before:[background-position:0,100%]
+    before:[background-repeat:no-repeat]
+    before:[content:'']
+    /* after */
+    after:hidden
+    after:left-[calc(100%-var(--corner-size))]
+    after:absolute
+    after:bottom-0
+    after:h-[--corner-size]
+    after:w-[calc(var(--corner-size)*2)]
+    after:[background-image:radial-gradient(var(--circle-right),var(--tab-border),var(--tab-bg)),radial-gradient(var(--circle-left),var(--tab-bg))]
+    after:[background-size:50%]
+    after:[background-position:100%,0]
+    after:[background-repeat:no-repeat]
+    after:[content:'']
+
+  }
+
+  .tab-border {
+    @apply
+      border-[--border,transparent]
+      bg-clip-padding
+      [border-width:var(--border-size)_var(--border-size)_0]
+      [translate:0_var(--border-size)]
 }
