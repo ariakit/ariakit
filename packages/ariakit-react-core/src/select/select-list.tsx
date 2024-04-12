@@ -1,12 +1,5 @@
 import type { ElementType, KeyboardEvent } from "react";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
@@ -22,7 +15,7 @@ import {
   useEvent,
   useId,
   useMergeRefs,
-  useSafeLayoutEffect,
+  useTransactionState,
   useWrapElement,
 } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -74,7 +67,6 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
         "SelectList must receive a `store` prop or be wrapped in a SelectProvider component.",
     );
 
-    const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
     const value = store.useState("value");
     const multiSelectable = Array.isArray(value);
@@ -143,21 +135,11 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     const hasCombobox = !!store.combobox;
     composite = composite ?? (!hasCombobox && childStore !== store);
 
-    useSafeLayoutEffect(() => {
-      if (!composite) return;
-      if (!ref.current) return;
-      let prevElement: HTMLElement | null = null;
-      store?.setListElement((element) => {
-        prevElement = element;
-        return ref.current;
-      });
-      return () => {
-        if (!prevElement) return;
-        store?.setListElement(prevElement);
-      };
-    }, [store, composite]);
+    const [element, setElement] = useTransactionState(
+      composite ? store.setListElement : null,
+    );
 
-    const role = useAttribute(ref, "role", props.role);
+    const role = useAttribute(element, "role", props.role);
     const isCompositeRole =
       role === "listbox" ||
       role === "menu" ||
@@ -186,7 +168,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
       "aria-labelledby": labelId,
       hidden,
       ...props,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(setElement, props.ref),
       style,
       onKeyDown,
     };

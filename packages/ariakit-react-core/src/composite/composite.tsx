@@ -23,6 +23,7 @@ import {
   useEvent,
   useMergeRefs,
   useSafeLayoutEffect,
+  useTransactionState,
   useWrapElement,
 } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -155,19 +156,9 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const scheduleFocus = useScheduleFocus(store);
     const moves = store.useState("moves");
 
-    useSafeLayoutEffect(() => {
-      if (!composite) return;
-      if (!ref.current) return;
-      let prevElement: HTMLElement | null = null;
-      store?.setBaseElement((element) => {
-        prevElement = element;
-        return ref.current;
-      });
-      return () => {
-        if (!prevElement) return;
-        store?.setBaseElement(prevElement);
-      };
-    }, [store, composite]);
+    const [, setBaseElement] = useTransactionState(
+      composite ? store.setBaseElement : null,
+    );
 
     // Focus on the active item element.
     useEffect(() => {
@@ -443,7 +434,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     props = {
       "aria-activedescendant": activeDescendant,
       ...props,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(ref, setBaseElement, props.ref),
       onKeyDownCapture,
       onKeyUpCapture,
       onFocusCapture,
