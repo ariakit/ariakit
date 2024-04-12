@@ -1,5 +1,4 @@
 @import url("../style.css");
-@import url("../button/button.css");
 
 @layer theme {
   .select-combobox-tab-item {
@@ -16,7 +15,6 @@
 
 .select-combobox-tab-popover {
   @apply
-    overflow-hidden
     data-[searchable]:p-0
     data-[searchable]:bg-[oklch(from_var(--background)_calc(l-0.04)_c_h)]
 }

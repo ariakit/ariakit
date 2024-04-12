@@ -324,23 +324,28 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         if (arrow && pos.middlewareData.arrow) {
           const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
 
-          const dir = pos.placement.split("-")[0] as BasePlacement;
+          const side = pos.placement.split("-")[0] as BasePlacement;
+
           const centerX = arrow.clientWidth / 2;
           const centerY = arrow.clientHeight / 2;
-          const originX =
-            arrowX != null ? `${arrowX + centerX}px` : `${-centerX}px`;
-          const originY =
-            arrowY != null ? `${arrowY + centerY}px` : `${-centerY}px`;
+
+          const originX = arrowX != null ? arrowX + centerX : -centerX;
+          const originY = arrowY != null ? arrowY + centerY : -centerY;
 
           popoverElement.style.setProperty(
             "--popover-transform-origin",
-            `${originX} ${originY}`,
+            {
+              top: `${originX}px calc(100% + ${centerY}px)`,
+              bottom: `${originX}px ${-centerY}px`,
+              left: `calc(100% + ${centerX}px) ${originY}px`,
+              right: `${-centerX}px ${originY}px`,
+            }[side],
           );
 
           Object.assign(arrow.style, {
             left: arrowX != null ? `${arrowX}px` : "",
             top: arrowY != null ? `${arrowY}px` : "",
-            [dir]: "100%",
+            [side]: "100%",
           });
         }
       };

@@ -1,41 +1,148 @@
 @layer theme {
   :root {
+    --color-white: theme(colors.white);
+    --color-black: theme(colors.black);
+    --color-primary: #007acc;
     @apply
-      [--color-primary:oklch(56.7%_0.1545_248.51)]
-      [--color-white:theme(colors.white)]
-      [--color-black:theme(colors.black)]
-      [--background:oklch(95%_0.005_248.51)]
-      dark:[--background:oklch(20%_0.002_248.51)]
+      [--background:oklch(from_var(--color-primary)_95%_.005_h)]
+      dark:[--background:oklch(from_var(--color-primary)_20%_.002_h)]
   }
 
   .focusable {
-    @apply
-      [--outline-offset:0]
-      [--outline:--color-primary]
+    --outline-offset: 0;
+    --outline: var(--color-primary);
   }
 
   .clickable {
+    --depth: 1px;
+    --padding-block: initial;
+  }
+
+  .button {
+    --size: theme(spacing.10);
+  }
+
+  .button-small {
+    @apply sm:[--size:theme(spacing.8)]
+  }
+
+  .button-default {
+    --depth: 2px;
+    --outline-offset: -1px;
+    @apply
+      [--text:theme(colors.black)]
+      dark:[--text:theme(colors.white)]
+
+      [--background:theme(colors.white)]
+      dark:[--background:theme(colors.white/5%)]
+
+      [--border:theme(colors.black/13%)]
+      [--light:theme(colors.white/20%)]
+      [--shadow:theme(colors.black/10%)]
+
+      dark:[--border:theme(colors.white/10%)]
+      dark:[--light:theme(colors.white/5%)]
+      dark:[--shadow:theme(colors.black/25%)]
+
+      hover:[&:not(:active)]:[--border:theme(colors.black/33%)]
+      hover:[&:not(:active)]:dark:[--border:theme(colors.white/25%)]
+  }
+
+  .button-primary {
+    --depth: 2px;
+    --outline-offset: 2px;
+    @apply
+      [--text:theme(colors.white)]
+
+      [--background:--color-primary]
+      dark:[--background:oklch(from_var(--color-primary)_calc(l-.05)_c_h)]
+      hover:[--background:oklch(from_var(--color-primary)_calc(l-.05)_c_h)]
+      hover:[&:not(:active)]:dark:[--background:--color-primary]
+
+
+      [--border:theme(colors.black/15%)]
+      [--light:theme(colors.white/25%)]
+      [--shadow:theme(colors.black/15%)]
+
+      dark:[--border:theme(colors.white/10%)]
+      dark:[--light:theme(colors.white/30%)]
+      dark:[--shadow:theme(colors.black/25%)]
+
+      hover:[&:not(:active)]:[--border:theme(colors.black/60%)]
+      hover:[&:not(:active)]:dark:[--border:theme(colors.white/40%)]
+  }
+
+  .button-danger {
+    @apply
+      [--depth:2px]
+      [--outline-offset:2px]
+
+      [--text:theme(colors.white)]
+
+      [--background:theme(colors.red.600)]
+      dark:[--background:theme(colors.red.700)]
+      hover:[--background:theme(colors.red.700)]
+      hover:[&:not(:active)]:dark:[--background:theme(colors.red.600)]
+
+
+      [--border:theme(colors.black/15%)]
+      [--light:theme(colors.white/25%)]
+      [--shadow:theme(colors.black/15%)]
+
+      dark:[--border:theme(colors.white/10%)]
+      dark:[--light:theme(colors.white/30%)]
+      dark:[--shadow:theme(colors.black/25%)]
+
+      hover:[&:not(:active)]:[--border:theme(colors.black/60%)]
+      hover:[&:not(:active)]:dark:[--border:theme(colors.white/40%)]
+  }
+
+  .button-secondary {
+    @apply
+      [--text:theme(colors.current)]
+      [--background:theme(colors.transparent)]
+
+      hover:[--background:theme(colors.black/5%)]
+      dark:hover:[--background:theme(colors.white/5%)]
+
+      [--border:theme(colors.black/13%)]
+      [--light:theme(colors.white/20%)]
+      [--shadow:theme(colors.black/10%)]
+
+      dark:[--border:theme(colors.white/10%)]
+      dark:[--light:theme(colors.white/5%)]
+      dark:[--shadow:theme(colors.black/25%)]
+
+      hover:[&:not(:active)]:[--border:theme(colors.black/33%)]
+      hover:[&:not(:active)]:dark:[--border:theme(colors.white/25%)]
+  }
+
+  .button-flat {
     @apply
       [--depth:1px]
-      [--padding-block:initial]
+      [--border:none]
+      [--light:none]
+      [--shadow:none]
+      dark:[--border:none]
+      dark:[--light:none]
+      dark:[--shadow:none]
   }
 
   .input {
+    --outline-offset: -1px;
     @apply
-      [--outline-offset:-1px]
-
       [--input-background:--color-white]
-      dark:[--input-background:oklch(from_var(--background)_calc(l-0.05)_c_h)]
+      dark:[--input-background:oklch(from_var(--background)_calc(l-.05)_c_h)]
 
-      [--border:oklch(from_var(--background)_calc(l-0.33)_c_h)]
-      hover:[--border:oklch(from_var(--background)_calc(l-0.55)_c_h)]
-      [&[placeholder]]:[--border:oklch(from_var(--background)_calc(l-0.2)_c_h)]
-      hover:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l-0.42)_c_h)]
+      [--border:oklch(from_var(--background)_calc(l-.33)_c_h)]
+      hover:[--border:oklch(from_var(--background)_calc(l-.55)_c_h)]
+      [&[placeholder]]:[--border:oklch(from_var(--background)_calc(l-.2)_c_h)]
+      hover:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l-.42)_c_h)]
 
-      dark:[--border:oklch(from_var(--background)_calc(l+0.32)_c_h)]
-      dark:hover:[--border:oklch(from_var(--background)_calc(l+0.42)_c_h)]
-      dark:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l+0.13)_c_h)]
-      dark:hover:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l+0.23)_c_h)]
+      dark:[--border:oklch(from_var(--background)_calc(l+.32)_c_h)]
+      dark:hover:[--border:oklch(from_var(--background)_calc(l+.42)_c_h)]
+      dark:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l+.13)_c_h)]
+      dark:hover:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l+.23)_c_h)]
 
       [--shadow:theme(colors.black/10%)]
       [--light:theme(colors.white/30%)]
@@ -44,16 +151,14 @@
   }
 
   .rounded-container {
-    @apply
-      [--padding:theme(spacing.1)]
-      [--rounded:theme(borderRadius.xl)]
+    --padding: theme(spacing.1);
+    --rounded: theme(borderRadius.xl);
   }
 
   .popup {
+    --padding: theme(spacing.1);
+    --rounded: theme(borderRadius.xl);
     @apply
-      [--padding:theme(spacing.1)]
-      [--rounded:theme(borderRadius.xl)]
-
       [--background:--color-white]
       dark:[--background:theme(colors.gray.700)]
 
@@ -67,15 +172,15 @@
   }
 
   .elevation-1 {
+    --shadow: theme(colors.black/20%);
     @apply
-      [--shadow:theme(colors.black/20%)]
       [--shadow-size:0_8px_16px_-6px]
       dark:[--shadow-size:0_12px_24px_-6px]
   }
 
   .elevation-2 {
+    --shadow: theme(colors.black/15%);
     @apply
-      [--shadow:theme(colors.black/15%)]
       [--shadow-size:0_16px_32px_-6px]
       dark:[--shadow-size:0_18px_36px_-8px]
   }
@@ -92,165 +197,224 @@
   }
 
   .tab-default {
+    --border: transparent;
+    --border-size: 0px;
+    --accent-background: var(--color-primary);
+    --accent-text: var(--color-white);
     @apply
-      [--border:transparent]
-      [--border-size:0px]
-
-      [--accent-background:--color-primary]
-      [--accent-text:--color-white]
-
       hover:[&:not([aria-selected=true])]:[--background:theme(colors.black/8%)]
       dark:hover:[&:not([aria-selected=true])]:[--background:theme(colors.white/8%)]
   }
 
   .tab-border {
+    --border: var(--background);
+    --border-size: 1px;
     @apply
-      [--border:--background]
-      [--border-size:1px]
-      aria-selected:[--border:oklch(from_var(--background)_calc(l-0.15)_c_h)]
-      dark:aria-selected:[--border:oklch(from_var(--background)_calc(l+0.15)_c_h)]
+      aria-selected:[--border:oklch(from_var(--background)_calc(l-.15)_c_h)]
+      dark:aria-selected:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
   }
 }
 
 .focusable {
-  @apply
-    outline-2
-    outline-[--outline]
-    outline-offset-[--outline-offset]
-    data-[focus-visible]:outline
-    aria-disabled:opacity-50
+  outline-width: 2px;
+  outline-color: var(--outline);
+  outline-offset: var(--outline-offset);
+}
+
+.focusable[data-focus-visible] {
+  outline-style: solid;
+}
+
+.focusable[aria-disabled="true"] {
+  opacity: 0.5;
 }
 
 .clickable {
+  user-select: none;
+  white-space: nowrap;
+  padding-block: var(--padding-block);
+}
+
+.clickable:active,
+.clickable[data-active] {
+  padding-block:
+    calc(var(--padding-block, 0px) + var(--depth))
+    calc(var(--padding-block, 0px) - var(--depth));
+}
+
+.button {
+  display: flex;
+  height: var(--size);
+  align-items: center;
+  justify-content: center;
+  gap: theme(spacing.2);
+  padding-inline: theme(spacing.4);
+  text-decoration-line: none;
+  background-color: var(--background);
+  color: var(--text, currentColor);
+  border-style: none;
+  scroll-margin: var(--padding, 0px);
+  border-radius: calc(var(--rounded, theme(borderRadius.lg)) - var(--padding, 0px));
   @apply
-    select-none
-    whitespace-nowrap
-    py-[--padding-block]
-    active:pt-[calc(var(--padding-block,0px)+var(--depth))]
-    active:pb-[calc(var(--padding-block,0px)-var(--depth))]
+    text-base
+    [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--light),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)]
+    dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--light)]
+    active:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--border)]
+    dark:active:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_1px_1px_1px_var(--shadow)]
+}
+
+.button-icon {
+  padding-inline: 0px;
+  width: var(--size);
+  aspect-ratio: 1 / 1;
+}
+
+.button-small {
+  @apply sm:text-sm
 }
 
 .input {
+  cursor: text;
+  background-color: var(--input-background);
+  box-shadow:
+    inset 0 -1px 0 0 var(--light),
+    inset 0 0 0 1px var(--border),
+    inset 0 2px 5px 0 var(--shadow);
+}
+
+.input:focus-within {
+  outline-style: solid;
+}
+
+.input::placeholder {
   @apply
-    cursor-text
-    focus-within:outline
-    bg-[--input-background]
-    [box-shadow:inset_0_-1px_0_0_var(--light),inset_0_0_0_1px_var(--border),inset_0_2px_5px_0_var(--shadow)]
-    placeholder:text-[oklch(from_var(--input-background)_calc(l-0.44)_0_0deg)]
-    dark:placeholder:text-[oklch(from_var(--input-background)_calc(l+0.42)_0_0deg)]
+    text-[oklch(from_var(--input-background)_calc(l-.44)_0_0deg)]
+    dark:text-[oklch(from_var(--input-background)_calc(l+.42)_0_0deg)]
 }
 
 .rounded-container {
-  @apply
-    p-[--padding]
-    rounded-[--rounded]
+  padding: var(--padding);
+  border-radius: var(--rounded);
 }
 
 .rounded-item {
-  @apply
-    scroll-m-[--padding]
-    rounded-[calc(var(--rounded)-var(--padding))]
+  scroll-margin: var(--padding);
+  border-radius: calc(var(--rounded) - var(--padding));
 }
 
 .popup {
-  @apply
-    p-[--padding]
-    bg-[--background]
-    rounded-[--rounded]
-    [outline:none]
-    [box-shadow:0_0_0_1px_var(--border),var(--shadow-size)_var(--shadow)]
+  outline: none;
+  padding: var(--padding);
+  background-color: var(--background);
+  border-radius: var(--rounded);
+  box-shadow: 0 0 0 1px var(--border), var(--shadow-size) var(--shadow);
 }
 
 .option {
-  @apply
-    bg-[--background]
-    text-[--text,currentColor]
-    cursor-default
-    px-2
-    gap-2
-    [outline:none]
-    scroll-m-[--padding]
-    rounded-[calc(var(--rounded)-var(--padding))]
+  background-color: var(--background);
+  color: var(--text, currentColor);
+  cursor: default;
+  outline: none;
+  gap: theme(spacing.2);
+  padding-inline: theme(spacing.2);
+  scroll-margin: var(--padding);
+  border-radius: calc(var(--rounded) - var(--padding));
 }
 
 .popover-enter {
-  @apply
-    origin-[--popover-transform-origin]
-    transition-[opacity,scale]
-    [&:not([data-enter])]:opacity-0
-    [&:not([data-enter])]:[scale:95%]
+  transform-origin: var(--popover-transform-origin);
+  @apply transition-[opacity,scale]
+}
+
+.popover-enter:not([data-enter]) {
+  opacity: 0;
+  scale: .95;
 }
 
 .tab {
-  @apply
-    relative
-    cursor-default
-    aria-selected:z-20
-    bg-[--background,transparent]
-    aria-selected:[box-shadow:inset_0_0_0_4px_var(--background)]
-    data-[active-item]:data-[focus-visible]:bg-[--accent-background]
-    data-[active-item]:data-[focus-visible]:text-[--accent-text]
-    aria-[selected=false]:data-[active-item]:data-[focus-visible]:[--background:--accent-background]
+  position: relative;
+  cursor: default;
+  background-color: var(--background, transparent);
+}
+
+.tab[aria-selected="true"] {
+  z-index: 20;
+  box-shadow: inset 0 0 0 4px var(--background);
+}
+
+.tab[data-focus-visible][data-active-item] {
+  background-color: var(--accent-background);
+  color: var(--accent-text);
+}
+
+.tab[data-focus-visible][data-active-item]:not([aria-selected="true"]) {
+  --background: var(--accent-background);
 }
 
 .tab-default {
-  @apply
-    [--border-smooth:0.1px]
-    [--corner-size:calc(var(--rounded)-var(--padding)-4px)]
-    aria-selected:[--corner-size:calc(var(--rounded)-var(--padding))]
-    [--padding-block:theme(spacing.1)]
-    aria-selected:[--padding-block:theme(spacing.2)]
-    py-[--padding-block]
-    px-2
-    m-1
-    mb-[calc(var(--padding-block)+var(--border-size))]
-    aria-selected:px-3
-    aria-selected:m-0
-    rounded-[--corner-size]
-    /* gradient vars */
-    [--circle-left:circle_at_0_0,var(--transparency)]
-    [--circle-right:circle_at_100%_0,var(--transparency)]
-    [--transparency:transparent_calc(var(--corner-size)-var(--border-size)+var(--border-smooth))]
-    [--tab-border-start:var(--border)_calc(var(--corner-size)-var(--border-size)-var(--border-smooth))]
-    [--tab-border-end:var(--border)_calc(var(--corner-size)-var(--border-smooth))]
-    [--tab-border:var(--tab-border-start),var(--tab-border-end)]
-    [--tab-bg:var(--background)_calc(var(--corner-size)+var(--border-smooth))]
-    /* pseudo-elements */
-    aria-selected:before:block
-    aria-selected:before:[content:'']
-    aria-selected:after:block
-    aria-selected:after:[content:'']
-    /* before */
-    before:hidden
-    before:right-[calc(100%-var(--corner-size))]
-    before:absolute
-    before:bottom-0
-    before:w-[calc(var(--corner-size)*2)]
-    before:h-[--corner-size]
-    before:[background-image:radial-gradient(var(--circle-left),var(--tab-border),var(--tab-bg)),radial-gradient(var(--circle-right),var(--tab-bg))]
-    before:[background-size:50%]
-    before:[background-position:0,100%]
-    before:[background-repeat:no-repeat]
-    before:[content:'']
-    /* after */
-    after:hidden
-    after:left-[calc(100%-var(--corner-size))]
-    after:absolute
-    after:bottom-0
-    after:h-[--corner-size]
-    after:w-[calc(var(--corner-size)*2)]
-    after:[background-image:radial-gradient(var(--circle-right),var(--tab-border),var(--tab-bg)),radial-gradient(var(--circle-left),var(--tab-bg))]
-    after:[background-size:50%]
-    after:[background-position:100%,0]
-    after:[background-repeat:no-repeat]
-    after:[content:'']
+  --border-smooth: .1px;
+  --corner-size: calc(var(--rounded) - var(--padding) - 4px);
+  --padding-block: theme(spacing.1);
 
-  }
+  border-radius: var(--corner-size);
+  padding-block: var(--padding-block);
+  padding-inline: theme(spacing.2);
+  margin: theme(spacing.1);
+  margin-block-end: calc(var(--padding-block) + var(--border-size));
+}
 
-  .tab-border {
-    @apply
-      border-[--border,transparent]
-      bg-clip-padding
-      [border-width:var(--border-size)_var(--border-size)_0]
-      [translate:0_var(--border-size)]
+.tab-default[aria-selected="true"] {
+  --corner-size: calc(var(--rounded) - var(--padding));
+  --padding-block: theme(spacing.2);
+
+  padding-inline: theme(spacing.3);
+  margin: 0;
+}
+
+.tab-default[aria-selected="true"]::before,
+.tab-default[aria-selected="true"]::after {
+  display: block;
+}
+
+.tab-default::before,
+.tab-default::after {
+  --circle-left: circle at 0 0, var(--transparency);
+  --circle-right: circle at 100% 0, var(--transparency);
+  --transparency: transparent calc(var(--corner-size) - var(--border-size) + var(--border-smooth));
+  --tab-border-start: var(--border) calc(var(--corner-size) - var(--border-size) - var(--border-smooth));
+  --tab-border-end: var(--border) calc(var(--corner-size) - var(--border-smooth));
+  --tab-border: var(--tab-border-start),var(--tab-border-end);
+  --tab-bg: var(--background) calc(var(--corner-size) + var(--border-smooth));
+
+  content: "";
+  display: none;
+  position: absolute;
+  bottom: 0;
+  height: var(--corner-size);
+  width: calc(var(--corner-size) * 2);
+  background-size: 50%;
+  background-repeat: no-repeat;
+}
+
+.tab-default::before {
+  right: calc(100% - var(--corner-size));
+  background-image:
+    radial-gradient(var(--circle-left), var(--tab-border), var(--tab-bg)),
+    radial-gradient(var(--circle-right), var(--tab-bg));
+  background-position: 0, 100%;
+}
+
+.tab-default::after {
+  left: calc(100% - var(--corner-size));
+  background-image:
+    radial-gradient(var(--circle-right), var(--tab-border), var(--tab-bg)),
+    radial-gradient(var(--circle-left), var(--tab-bg));
+  background-position: 100%, 0;
+}
+
+.tab-border {
+  border-color: var(--border, transparent);
+  border-width: var(--border-size) var(--border-size) 0;
+  translate: 0 var(--border-size);
+  background-clip: padding-box;
 }

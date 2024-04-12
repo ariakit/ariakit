@@ -293,7 +293,7 @@ function getNextProject(props: StackblitzProps) {
     },
     dependencies: {
       ...props.dependencies,
-      next: "14.2.0-canary.60",
+      next: "14.2.0",
     },
     devDependencies: {
       "@types/node": "latest",

@@ -6,6 +6,7 @@
     "no-duplicate-selectors": null,
     "selector-class-pattern": null,
     "length-zero-no-unit": null,
+    "value-keyword-case": null,
     "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
     "selector-pseudo-class-no-unknown": [
       true,
