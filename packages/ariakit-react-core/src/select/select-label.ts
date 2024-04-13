@@ -53,7 +53,6 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
       queueMicrotask(() => {
         const select = store?.getState().selectElement;
         select?.focus();
-        select?.click();
       });
     });
 

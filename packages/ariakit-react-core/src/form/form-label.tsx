@@ -95,6 +95,10 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
       queueMicrotask(() => {
         const focusableElement = getFirstTabbableIn(fieldElement, true, true);
         focusableElement?.focus();
+        const role = focusableElement?.getAttribute("role");
+        // If the field is a combobox, we don't want to click on it, as it'll
+        // open the listbox.
+        if (role === "combobox") return;
         focusableElement?.click();
       });
     });
