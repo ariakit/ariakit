@@ -446,7 +446,7 @@ test("ensure sale discount is applied", async ({ page }) => {
   await q.link("Buy now").click();
   const frame = frameLocator(page);
   const checkoutPrice = await getDisplayedPrice(frame);
-  expect(Math.ceil(checkoutPrice)).toBe(price);
+  expect(checkoutPrice).toBe(price);
 
   // Delete coupon and promotion code
   await stripe.coupons.del(coupon.id);
@@ -490,7 +490,7 @@ test("ensure customer discount is applied only to customer", async ({
   await q.link("Buy now").click();
   const frame = frameLocator(page);
   const checkoutPrice = await getDisplayedPrice(frame);
-  expect(Math.ceil(checkoutPrice)).toBe(price);
+  expect(checkoutPrice).toBe(price);
 
   // Sign out
   await q.button("Plus").click();
