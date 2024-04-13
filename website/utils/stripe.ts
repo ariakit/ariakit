@@ -256,6 +256,17 @@ export async function getDiscount({
   const promises: Stripe.ApiListPromise<Stripe.PromotionCode>[] = [];
   const coupons: Stripe.Coupon[] = [];
 
+  // Get all promotion codes for specific customer
+  if (customer) {
+    promises.push(
+      stripe.promotionCodes.list({
+        customer,
+        active: true,
+        limit: 100,
+      }),
+    );
+  }
+
   for await (const coupon of stripe.coupons.list({ limit: 100 })) {
     if (coupon.deleted) continue;
     if (!coupon.valid) continue;
@@ -275,7 +286,11 @@ export async function getDiscount({
     );
   }
 
-  const codes = (await Promise.all(promises)).flatMap((c) => c.data);
+  const codes = (await Promise.all(promises))
+    .flatMap((c) => c.data)
+    // Filter out codes that are not for the customer
+    .filter((c) => !c.customer || getObjectId(c.customer) === customer);
+
   const highestDiscount = getHighestDiscount(
     discountParam ? [...codes, discountParam] : codes,
   );
