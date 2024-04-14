@@ -152,7 +152,7 @@ async function getTokensFromCache(
   const tokens = await codeToTokensBase(code, {
     lang,
     theme: dark ? "dark-plus" : "light-plus",
-    includeExplanation: true,
+    includeExplanation: /[jt]sx?/.test(lang),
   });
   cache.set(code, tokens);
   return tokens;

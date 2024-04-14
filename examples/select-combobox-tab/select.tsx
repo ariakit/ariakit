@@ -43,12 +43,15 @@ export function Select({
         gutter={5}
         shift={-4}
         unmountOnHide
-        data-searchable={searchable || undefined}
-        className="popup elevation-1 popover popover-enter"
+        data-search={searchable || undefined}
+        className="popup elevation-1 popover popover-enter p-0"
       >
         {heading && (
-          <div className="flex items-center gap-2">
-            <Ariakit.SelectHeading render={heading} />
+          <div className="flex items-center gap-2 pl-2">
+            <Ariakit.SelectHeading
+              className="flex-1 font-medium opacity-70"
+              render={heading}
+            />
             <Ariakit.SelectDismiss className="focusable clickable rounded-item button button-secondary button-flat button-icon button-small" />
           </div>
         )}

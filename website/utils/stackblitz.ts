@@ -130,9 +130,9 @@ function getIndexCss(
       ? "hsl(204 20% 94%)"
       : "hsl(204 3% 12%)";
   const color = theme === "light" ? "hsl(204 10% 10%)" : "hsl(204 20% 100%)";
-  return `@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  return `@import url("tailwindcss/base") layer(_base);
+@import url("tailwindcss/components") layer(_components);
+@import url("tailwindcss/utilities") layer(_utilities);
 
 html {
   color-scheme: ${theme};

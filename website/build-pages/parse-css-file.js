@@ -57,6 +57,9 @@ plugin.postcss = true;
  */
 export async function parseCSSFile(filename, options) {
   const processor = postcss();
+  const raw = readFileSync(filename, "utf8");
+
+  const isTheme = /\@import (url\()?[\"\']\.\.\/style\.css/im.test(raw);
 
   if (options.id) {
     processor.use(plugin({ id: options.id }));
@@ -68,11 +71,13 @@ export async function parseCSSFile(filename, options) {
     processor.use(tailwindcss({ config: options.tailwindConfig }));
   }
 
-  if (options.format) {
+  if (!isTheme && options.format) {
     processor.use(postcssMergeAtRules({ atRulePattern: "layer" }));
+
     processor.use(
       combineDuplicatedSelectors({ removeDuplicatedProperties: true }),
     );
+
     processor.use(
       mergeSelectors({
         matchers: {
@@ -87,15 +92,15 @@ export async function parseCSSFile(filename, options) {
         },
       }),
     );
+
     processor.use(prettify());
   }
 
-  const raw = readFileSync(filename, "utf8");
   const result = await processor.process(raw, { from: filename });
 
   let css = result.css;
 
-  if (options.contents) {
+  if (!isTheme && options.contents) {
     const safelist = [/^aria\-/, /^data-/, ":is", "dark", "svg"];
 
     const content = Object.entries(options.contents).map(([filename, raw]) => ({
