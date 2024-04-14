@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "@ariakit/core": "0.4.5",
-    "@testing-library/dom": "^8.0.0 || ^9.0.0"
+    "@testing-library/dom": "^8.0.0 || ^9.0.0 || ^10.0.0"
   },
   "peerDependencies": {
     "@playwright/test": "^1.27.0",
