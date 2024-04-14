@@ -1,5 +1,5 @@
 @import url("tailwindcss/base") layer(_base);
-@import url("tailwindcss/components") layer(_components);
+@import url("tailwindcss/components") layer(theme);
 @import url("tailwindcss/utilities") layer(_utilities);
 
 [role="button"],

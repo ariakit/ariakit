@@ -43,13 +43,12 @@ export function Select({
         gutter={5}
         shift={-4}
         unmountOnHide
-        data-search={searchable || undefined}
-        className="popup elevation-1 popover popover-enter p-0"
+        className="popup elevation-1 popover-enter flex flex-col gap-1 bg-[--popup-background] [--popup-background:--background] has-[[data-tab]]:[--popup-background:oklch(from_var(--background)_calc(l-0.04)_c_h)]"
       >
         {heading && (
-          <div className="flex items-center gap-2 pl-2">
+          <div className="flex items-center gap-2 ps-2">
             <Ariakit.SelectHeading
-              className="flex-1 font-medium opacity-70"
+              className="flex-1 cursor-default font-medium opacity-70"
               render={heading}
             />
             <Ariakit.SelectDismiss className="focusable clickable rounded-item button button-secondary button-flat button-icon button-small" />
@@ -59,7 +58,8 @@ export function Select({
           <Ariakit.Combobox
             autoSelect
             render={combobox}
-            className="focusable combobox input"
+            data-tab
+            className="focusable combobox input rounded-item h-10 w-full px-2 [--background:--popup-background]"
           />
         )}
         {children}
@@ -104,7 +104,10 @@ export function SelectItem(props: SelectItemProps) {
     <Ariakit.SelectItem
       {...props}
       blurOnHoverEnd={false}
-      className={clsx("option clickable", props.className)}
+      className={clsx(
+        "option clickable grid grid-cols-[1rem_auto_1rem] items-center [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
+        props.className,
+      )}
       render={
         combobox ? <Ariakit.ComboboxItem render={props.render} /> : undefined
       }

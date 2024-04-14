@@ -4,8 +4,6 @@ import postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
 import postcssImport from "postcss-import";
 // @ts-expect-error
-import postcssMergeAtRules from "postcss-merge-at-rules";
-// @ts-expect-error
 import mergeSelectors from "postcss-merge-selectors";
 // @ts-expect-error
 import prettify from "postcss-prettify";
@@ -72,8 +70,6 @@ export async function parseCSSFile(filename, options) {
   }
 
   if (!isTheme && options.format) {
-    processor.use(postcssMergeAtRules({ atRulePattern: "layer" }));
-
     processor.use(
       combineDuplicatedSelectors({ removeDuplicatedProperties: true }),
     );

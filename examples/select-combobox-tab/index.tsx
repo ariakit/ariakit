@@ -8,42 +8,15 @@ export default function Example() {
 
   return (
     <div className="flex w-[240px] flex-col gap-4">
-      <input
-        className="input focusable my-2 h-10 rounded-lg px-2"
-        placeholder="Find or create a branch..."
-      />
-      <input className="input focusable my-2 h-10 rounded-lg px-2" />
-      <button className="focusable clickable button button-primary">
-        adsadsa
-      </button>
       <Select
         label={<div hidden>Switch branches/tags</div>}
         heading={<div>Switch branches/tags</div>}
+        combobox={<input placeholder="Find or create a branch..." />}
       >
-        <div className="flex flex-col gap-4">
-          <input
-            className="input focusable my-2 h-10 rounded-lg px-2"
-            placeholder="Find or create a branch..."
-          />
-          <input className="input focusable my-2 h-10 rounded-lg px-2" />
-          <div className="flex px-2">
-            <div
-              aria-selected
-              data-active-item
-              data-focus-visible
-              className="clickable tab tab-default tab-border"
-            >
-              aaa
-            </div>
-            <div className="focusable clickable tab tab-default tab-border">
-              bbb
-            </div>
-          </div>
-          <SelectList>
-            <SelectItem value="main" />
-            <SelectItem value="v0" />
-          </SelectList>
-        </div>
+        <SelectList>
+          <SelectItem value="main" />
+          <SelectItem value="v0" />
+        </SelectList>
       </Select>
     </div>
   );

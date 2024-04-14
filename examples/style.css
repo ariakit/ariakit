@@ -248,9 +248,11 @@
       aria-selected:[--border:oklch(from_var(--background)_calc(l-.15)_c_h)]
       dark:aria-selected:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
   }
-}
 
-@layer _components {
+  /**
+   * Components
+   */
+
   /**
    * Focusable
    */
@@ -343,6 +345,17 @@
     @apply
       text-[oklch(from_var(--input-background)_calc(l-.44)_0_0deg)]
       dark:text-[oklch(from_var(--input-background)_calc(l+.42)_0_0deg)]
+  }
+
+  /**
+   * Combobox
+   */
+  .combobox {
+    outline-width: 1px;
+  }
+
+  .combobox[data-active-item] {
+    outline-width: 2px;
   }
 
   /**
