@@ -34,7 +34,7 @@ export const Command = forwardRef<HTMLButtonElement, CommandProps>(
             "active:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--border)] dark:active:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_1px_1px_1px_var(--shadow)]",
           variant
             ? "[--border:rgba(0,0,0,0.15)] [--highlight:rgba(255,255,255,0.25)] [--shadow:rgba(0,0,0,0.15)] dark:[--border:rgba(255,255,255,0.25)] dark:[--highlight:rgba(255,255,255,0.1)] dark:[--shadow:rgba(0,0,0,0.25)]"
-            : "[--border:rgba(0,0,0,0.1)] [--highlight:rgba(255,255,255,0.2)] [--shadow:rgba(0,0,0,0.1)] dark:[--shadow:rgba(0,0,0,0.25)] dark:[--border:rgba(255,255,255,0.1)] dark:[--highlight:rgba(255,255,255,0.05)]",
+            : "[--border:rgba(0,0,0,0.1)] [--highlight:rgba(255,255,255,0.2)] [--shadow:rgba(0,0,0,0.1)] dark:[--border:rgba(255,255,255,0.1)] dark:[--highlight:rgba(255,255,255,0.05)] dark:[--shadow:rgba(0,0,0,0.25)]",
           variant === "plus" &&
             "bg-white dark:bg-gray-800 dark:aria-expanded:bg-gray-700 dark:active:bg-gray-800 hover:[&:not(:active)]:bg-gray-100 dark:hover:[&:not(:active)]:bg-gray-700",
           variant === "primary" &&
