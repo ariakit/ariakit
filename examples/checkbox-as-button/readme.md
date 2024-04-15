@@ -40,7 +40,7 @@ In this example, we're reading the [`value`](/reference/use-checkbox-store#value
 
 ```jsx
 const label = checkbox.useState((state) =>
-  state.value ? "Checked" : "Unchecked"
+  state.value ? "Checked" : "Unchecked",
 );
 ```
 

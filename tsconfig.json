@@ -31,7 +31,8 @@
     "**/*.cts",
     "**/*.js",
     "**/*.cjs",
-    "**/*.mjs"
+    "**/*.mjs",
+    ".changeset/changelog.cjs"
   ],
   "exclude": ["node_modules", "website", "coverage"]
 }

@@ -134,7 +134,7 @@ export const useMyComponent = createHook<TagName, MyComponentOptions>(
   function useMyComponent({ customProp = "My component", ...props }) {
     props = { children: customProp, ...props };
     return props;
-  }
+  },
 );
 
 /**
@@ -158,7 +158,7 @@ export interface MyComponentOptions<_T extends ElementType = TagName>
    * Description for custom prop.
    */
   customProp?: string;
-};
+}
 
 export type MyComponentProps<T extends ElementType = TagName> = Props<
   T,

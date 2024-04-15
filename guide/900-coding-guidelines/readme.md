@@ -32,7 +32,7 @@ If you use the `type` keyword with intersection (`&`), it may silently introduce
 // ❌ Bad, produces an invalid type without error
 type CheckboxProps = React.ComponentPropsWithoutRef<"input"> & {
   onChange?: (value: boolean) => void;
-}
+};
 
 // ❗ Interface immediately detects the error
 interface CheckboxProps extends React.ComponentPropsWithoutRef<"input"> {
@@ -65,7 +65,7 @@ When wrapping components with `React.forwardRef`, we pass a named function as an
 export const Combobox = React.forwardRef<HTMLInputElement, Props>(
   (props, ref) => {
     // ...
-  }
+  },
 );
 
 // ❌ Bad
@@ -75,7 +75,7 @@ Combobox.displayName = "Combobox";
 export const Combobox = React.forwardRef<HTMLInputElement, Props>(
   function Combobox(props, ref) {
     // ...
-  }
+  },
 );
 ```
 

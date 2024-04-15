@@ -34,6 +34,7 @@
         "framer-motion",
         "fs-extra",
         "glob",
+        "globals",
         "jsdom",
         "lerna",
         "lodash-es",
@@ -46,6 +47,7 @@
         "textarea-caret",
         "tsup",
         "typescript",
+        "typescript-eslint",
         "webpack",
         "zod"
       ],
@@ -56,12 +58,11 @@
         "^@rollup/",
         "^@testing-library/",
         "^@types/",
-        "^@typescript-eslint/",
         "^@vitest/",
         "^eslint",
         "^prettier",
-        "^vitest",
-        "^stylelint"
+        "^stylelint",
+        "^vitest"
       ],
       "automerge": true,
       "automergeType": "pr",

@@ -19,15 +19,17 @@ async function getReleaseLine(changeset) {
 }
 
 /**
- * @param {Array<Promise<string>} changelogLines
+ * @param {Array<Promise<string>>} changelogLines
  */
 async function getChangelogText(changelogLines) {
   const lines = await Promise.all(changelogLines);
   if (!lines.length) return "";
 
-  const isOverviewLine = (l) => l.startsWith("### Overview\n");
-  const isHeadingLine = (l) => l.startsWith("###");
-  const isOtherLine = (l) => !l.startsWith("###");
+  const isOverviewLine = /** @param l {string} */ (l) =>
+    l.startsWith("### Overview\n");
+
+  const isHeadingLine = /** @param l {string} */ (l) => l.startsWith("###");
+  const isOtherLine = /** @param l {string} */ (l) => !l.startsWith("###");
 
   const headingLines = lines
     .filter(isHeadingLine)
