@@ -19,7 +19,7 @@ import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
 const { useSyncExternalStore } = useSyncExternalStoreExports;
 import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.ts";
 
-type UseState<S> = {
+interface UseState<S> {
   /**
    * Re-renders the component when state changes and returns the current state.
    * @example
@@ -45,7 +45,7 @@ type UseState<S> = {
    * const foo = store.useState((state) => state.foo);
    */
   <V>(selector: (state: S) => V): V;
-};
+}
 
 type StateStore<T = CoreStore> = T | null | undefined;
 type StateKey<T = CoreStore> = keyof StoreState<T>;

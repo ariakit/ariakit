@@ -1,6 +1,6 @@
-type IconProps = {
+interface IconProps {
   value: string;
-};
+}
 
 export default function Square({ value }: IconProps) {
   return (

@@ -396,7 +396,7 @@ export type StoreOptions<S extends State, K extends keyof S> = Partial<
  * Props that can be passed to a store creator function.
  * @template S State type.
  */
-export type StoreProps<S extends State = State> = {
+export interface StoreProps<S extends State = State> {
   /**
    * Another store object that will be kept in sync with the original store.
    *
@@ -404,7 +404,7 @@ export type StoreProps<S extends State = State> = {
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
   store?: Store<Partial<S>>;
-};
+}
 
 /**
  * Extracts the state type from a store type.

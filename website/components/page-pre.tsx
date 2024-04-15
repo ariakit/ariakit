@@ -28,13 +28,13 @@ export function PagePre({ node, hovercards, ...props }: PagePreProps) {
 
   if (!child) return pre;
 
-  type Props = {
+  interface ElementProps {
     children: ReactNode;
     className?: string;
     meta?: string;
-  };
+  }
 
-  if (!isValidElement<Props>(child)) return pre;
+  if (!isValidElement<ElementProps>(child)) return pre;
 
   if (child.type !== "code") return pre;
   if (!child.props) return pre;
