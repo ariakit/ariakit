@@ -7,13 +7,13 @@ import type { DialogOptions } from "../dialog.ts";
 import { isElementMarked } from "./mark-tree-outside.ts";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
 
-type EventOutsideOptions = {
+interface EventOutsideOptions {
   store: DialogStore;
   type: string;
   listener: (event: Event) => void;
   capture?: boolean;
   domReady?: boolean | HTMLElement | null;
-};
+}
 
 function isInDocument(target: Element) {
   if (target.tagName === "HTML") return true;

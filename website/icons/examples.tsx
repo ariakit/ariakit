@@ -1,6 +1,6 @@
-type Props = {
+interface Props {
   size?: "md" | "lg";
-};
+}
 
 export function Examples({ size = "md" }: Props) {
   return (

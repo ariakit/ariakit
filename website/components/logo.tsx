@@ -1,9 +1,9 @@
 import { twJoin } from "tailwind-merge";
 
-type LogoProps = {
+interface LogoProps {
   iconOnly?: boolean;
   responsive?: boolean;
-};
+}
 
 export function Logo({ iconOnly, responsive }: LogoProps) {
   return (

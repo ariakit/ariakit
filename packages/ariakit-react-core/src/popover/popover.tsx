@@ -36,12 +36,12 @@ type Placement =
   | `${BasePlacement}-start`
   | `${BasePlacement}-end`;
 
-type AnchorRect = {
+interface AnchorRect {
   x?: number;
   y?: number;
   width?: number;
   height?: number;
-};
+}
 
 function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   if (typeof DOMRect === "function") {
