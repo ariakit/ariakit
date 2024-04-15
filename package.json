@@ -42,7 +42,7 @@
     "test-vo-debug": "npm run test-vo -- --ui",
     "coverage": "npm test -- --coverage",
     "postcoverage": "open-cli coverage/index.html",
-    "lint": "prettier . --check; eslint",
+    "lint": "prettier . --check --cache; eslint",
     "lint-fix": "prettier . --write; eslint --fix",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "tsc": "conc -r 'tsc --noEmit' 'tsc --noEmit -p website/tsconfig.json'",
