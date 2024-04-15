@@ -30,11 +30,11 @@
   ],
   "dependencies": {
     "@ariakit/core": "0.4.5",
-    "@testing-library/dom": "^8.0.0 || ^9.0.0"
+    "@testing-library/dom": "^8.0.0 || ^9.0.0 || ^10.0.0"
   },
   "peerDependencies": {
     "@playwright/test": "^1.27.0",
-    "@testing-library/react": "^12.0.0 || ^13.0.0 || ^14.0.0",
+    "@testing-library/react": "^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0",
     "react": "^17.0.0 || ^18.0.0"
   },
   "peerDependenciesMeta": {

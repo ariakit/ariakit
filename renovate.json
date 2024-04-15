@@ -26,6 +26,10 @@
       "groupName": "monaco"
     },
     {
+      "matchPackagePatterns": ["@testing-library/"],
+      "groupName": "testing-library"
+    },
+    {
       "matchPackageNames": [
         "@wordpress/components",
         "cross-env",
