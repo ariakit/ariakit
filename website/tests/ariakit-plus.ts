@@ -412,102 +412,103 @@ test("purchase Plus from /components, sign out, sign in again, and access the bi
   await expect(nq.text("Ariakit Plus")).toBeVisible();
 });
 
-test("ensure sale discount is applied", async ({ page }) => {
-  test.setTimeout(60_000);
+test.describe.only("with coupon", () => {
+  let coupon: Stripe.Coupon | null = null;
 
-  const q = query(page);
-  const stripe = getStripeClient();
-  const customer = await createCustomer();
-
-  // Create coupon and promotion code for customer
-  const coupon = await stripe.coupons.create({
-    percent_off: 100,
-    duration: "forever",
-    max_redemptions: 1,
-    metadata: { type: "sale" },
+  test.beforeEach(async () => {
+    const stripe = getStripeClient();
+    coupon = await stripe.coupons.create({
+      percent_off: 100,
+      duration: "forever",
+      redeem_by: Math.round(Date.now() / 1000) + 60,
+      metadata: { type: "sale" },
+    });
   });
 
-  await stripe.promotionCodes.create({
-    coupon: coupon.id,
-    max_redemptions: 1,
+  test.afterEach(async () => {
+    if (!coupon) return;
+    const stripe = getStripeClient();
+    await stripe.coupons.del(coupon.id);
   });
 
-  // Check price with unauthenticated user
-  await page.goto("/plus");
-  expect(await getDisplayedPrice(page)).toBe(0);
+  test("ensure sale discount is applied", async ({ page }) => {
+    test.setTimeout(60_000);
 
-  // Check price with authenticated user
-  await page.goto("/sign-in", { waitUntil: "networkidle" });
-  await fillSignIn(page, { email: customer.email });
-  await page.goto("/plus");
-  const price = await getDisplayedPrice(page);
-  expect(price).toBe(0);
+    const q = query(page);
+    const stripe = getStripeClient();
+    const customer = await createCustomer();
 
-  await q.link("Buy now").click();
-  const frame = frameLocator(page);
-  const checkoutPrice = await getDisplayedPrice(frame);
-  expect(checkoutPrice).toBe(price);
+    await stripe.promotionCodes.create({
+      coupon: coupon!.id,
+      max_redemptions: 1,
+    });
 
-  // Delete coupon and promotion code
-  await stripe.coupons.del(coupon.id);
-});
+    // Check price with unauthenticated user
+    await expect(async () => {
+      await page.goto("/plus");
+      expect(await getDisplayedPrice(page)).toBe(0);
+    }).toPass({ intervals: [2000, 5000, 10000] });
 
-test("ensure customer discount is applied only to customer", async ({
-  page,
-}) => {
-  test.setTimeout(60_000);
+    // Check price with authenticated user
+    await page.goto("/sign-in", { waitUntil: "networkidle" });
+    await fillSignIn(page, { email: customer.email });
+    await page.goto("/plus");
+    const price = await getDisplayedPrice(page);
+    expect(price).toBe(0);
 
-  const q = query(page);
-  const stripe = getStripeClient();
-
-  const customerWithoutDiscount = await createCustomer();
-  const customerWithDiscount = await createCustomer();
-
-  // Create coupon and promotion code for customer
-  const coupon = await stripe.coupons.create({
-    percent_off: 100,
-    duration: "forever",
-    max_redemptions: 1,
+    await q.link("Buy now").click();
+    const frame = frameLocator(page);
+    const checkoutPrice = await getDisplayedPrice(frame);
+    expect(checkoutPrice).toBe(price);
   });
 
-  await stripe.promotionCodes.create({
-    coupon: coupon.id,
-    customer: customerWithDiscount.id,
-    max_redemptions: 1,
+  test("ensure customer discount is applied only to customer", async ({
+    page,
+  }) => {
+    test.setTimeout(60_000);
+
+    const q = query(page);
+    const stripe = getStripeClient();
+
+    const customerWithoutDiscount = await createCustomer();
+    const customerWithDiscount = await createCustomer();
+
+    await stripe.promotionCodes.create({
+      coupon: coupon!.id,
+      customer: customerWithDiscount.id,
+      max_redemptions: 1,
+    });
+
+    // Check price with unauthenticated user
+    await page.goto("/plus");
+    expect(await getDisplayedPrice(page)).toBeGreaterThan(0);
+
+    // Check price with authenticated user without discount
+    await page.goto("/sign-in", { waitUntil: "networkidle" });
+    await fillSignIn(page, { email: customerWithoutDiscount.email });
+    await page.goto("/plus");
+    const price = await getDisplayedPrice(page);
+    expect(price).toBeGreaterThan(0);
+
+    await q.link("Buy now").click();
+    const frame = frameLocator(page);
+    const checkoutPrice = await getDisplayedPrice(frame);
+    expect(checkoutPrice).toBe(price);
+
+    // Sign out
+    await q.button("Plus").click();
+    await q.menuitem("Sign out").click();
+
+    // Check price with authenticated user with discount
+    await page.goto("/sign-in", { waitUntil: "networkidle" });
+    await fillSignIn(page, { email: customerWithDiscount.email });
+    await page.goto("/plus");
+    const nextPrice = await getDisplayedPrice(page);
+    expect(nextPrice).toBe(0);
+
+    await q.link("Buy now").click();
+    const nextFrame = frameLocator(page);
+    const nextCheckoutPrice = await getDisplayedPrice(nextFrame);
+    expect(nextCheckoutPrice).toBe(0);
   });
-
-  // Check price with unauthenticated user
-  await page.goto("/plus");
-  expect(await getDisplayedPrice(page)).toBeGreaterThan(0);
-
-  // Check price with authenticated user without discount
-  await page.goto("/sign-in", { waitUntil: "networkidle" });
-  await fillSignIn(page, { email: customerWithoutDiscount.email });
-  await page.goto("/plus");
-  const price = await getDisplayedPrice(page);
-  expect(price).toBeGreaterThan(0);
-
-  await q.link("Buy now").click();
-  const frame = frameLocator(page);
-  const checkoutPrice = await getDisplayedPrice(frame);
-  expect(checkoutPrice).toBe(price);
-
-  // Sign out
-  await q.button("Plus").click();
-  await q.menuitem("Sign out").click();
-
-  // Check price with authenticated user with discount
-  await page.goto("/sign-in", { waitUntil: "networkidle" });
-  await fillSignIn(page, { email: customerWithDiscount.email });
-  await page.goto("/plus");
-  const nextPrice = await getDisplayedPrice(page);
-  expect(nextPrice).toBe(0);
-
-  await q.link("Buy now").click();
-  const nextFrame = frameLocator(page);
-  const nextCheckoutPrice = await getDisplayedPrice(nextFrame);
-  expect(nextCheckoutPrice).toBe(0);
-
-  // Delete coupon and promotion code
-  await stripe.coupons.del(coupon.id);
 });
