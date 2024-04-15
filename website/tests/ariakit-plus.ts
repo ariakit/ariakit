@@ -412,7 +412,7 @@ test("purchase Plus from /components, sign out, sign in again, and access the bi
   await expect(nq.text("Ariakit Plus")).toBeVisible();
 });
 
-test.describe.only("with coupon", () => {
+test.describe("with coupon", () => {
   let coupon: Stripe.Coupon | null = null;
 
   test.beforeEach(async () => {
