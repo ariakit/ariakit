@@ -1,22 +1,35 @@
 import "./style.css";
 // import { startTransition, useState } from "react";
 // import * as Ariakit from "@ariakit/react";
-import { Select, SelectItem, SelectList } from "./select.tsx";
+import {
+  Select,
+  SelectItem,
+  SelectList,
+  SelectTab,
+  SelectTabList,
+  SelectTabPanel,
+} from "./select.tsx";
 
 export default function Example() {
   // const [searchTerm, setSearchTerm] = useState("");
 
   return (
-    <div className="flex w-[240px] flex-col gap-4">
+    <div className="w-[240px]">
       <Select
         label={<div hidden>Switch branches/tags</div>}
         heading={<div>Switch branches/tags</div>}
         combobox={<input placeholder="Find or create a branch..." />}
       >
-        <SelectList>
-          <SelectItem value="main" />
-          <SelectItem value="v0" />
-        </SelectList>
+        <SelectTabList>
+          <SelectTab>Branches</SelectTab>
+          <SelectTab>Tags</SelectTab>
+        </SelectTabList>
+        <SelectTabPanel>
+          <SelectList>
+            <SelectItem value="main" />
+            <SelectItem value="v0" />
+          </SelectList>
+        </SelectTabPanel>
       </Select>
     </div>
   );

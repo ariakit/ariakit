@@ -43,7 +43,7 @@ export function Select({
         gutter={5}
         shift={-4}
         unmountOnHide
-        className="popup elevation-1 popover-enter flex flex-col gap-1 bg-[--popup-background] [--popup-background:--background] has-[[data-tab]]:[--popup-background:oklch(from_var(--background)_calc(l-0.04)_c_h)]"
+        className="popup elevation-1 popover-enter flex flex-col gap-2 overflow-hidden bg-[--popup-background] [--popup-background:--background] has-[[data-tab]]:[--popup-background:oklch(from_var(--background)_calc(l-0.04)_c_h)]"
       >
         {heading && (
           <div className="flex items-center gap-2 ps-2">
@@ -58,11 +58,12 @@ export function Select({
           <Ariakit.Combobox
             autoSelect
             render={combobox}
-            data-tab
             className="focusable combobox input rounded-item h-10 w-full px-2 [--background:--popup-background]"
           />
         )}
-        {children}
+        <Ariakit.TabProvider>
+          <div className="tabs-border">{children}</div>
+        </Ariakit.TabProvider>
       </Ariakit.SelectPopover>
     </Ariakit.SelectProvider>
   );
@@ -91,7 +92,10 @@ export function SelectList(props: SelectListProps) {
   return (
     <Ariakit.SelectList
       {...props}
-      className={clsx("select-combobox-tab-list", props.className)}
+      className={clsx(
+        "tab-panel -m-[--padding] overflow-auto",
+        props.className,
+      )}
     />
   );
 }
@@ -115,5 +119,44 @@ export function SelectItem(props: SelectItemProps) {
       <Ariakit.SelectItemCheck />
       {props.children || props.value}
     </Ariakit.SelectItem>
+  );
+}
+
+export interface SelectTabListProps extends Ariakit.TabListProps {}
+
+export function SelectTabList(props: SelectTabListProps) {
+  return (
+    <Ariakit.TabList {...props} className={clsx("flex", props.className)} />
+  );
+}
+
+export interface SelectTabProps extends Ariakit.TabProps {}
+
+export function SelectTab(props: SelectTabProps) {
+  return (
+    <Ariakit.Tab
+      {...props}
+      data-tab
+      render={<Ariakit.Role.div render={props.render} />}
+      className={clsx(
+        "clickable tab tab-default tab-border aria-[selected=false]:[&:not(:hover)]:[--background:--popup-background]",
+        props.className,
+      )}
+    />
+  );
+}
+
+export interface SelectTabPanelProps extends Ariakit.TabPanelProps {}
+
+export function SelectTabPanel(props: SelectTabPanelProps) {
+  const tab = Ariakit.useTabContext()!;
+  const selectedId = tab.useState("selectedId");
+  return (
+    <Ariakit.TabPanel
+      tabId={selectedId}
+      unmountOnHide
+      {...props}
+      className={clsx("mt-[--padding]", props.className)}
+    />
   );
 }

@@ -229,11 +229,16 @@
   }
 
   /**
-   * Tab
+   * Tabs
    */
+  .tabs-border {
+    --border-size: 1px;
+    @apply
+      [--border:oklch(from_var(--background)_calc(l-.15)_c_h)]
+      dark:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
+  }
+
   .tab-default {
-    --border: transparent;
-    --border-size: 0px;
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
@@ -241,12 +246,8 @@
       dark:hover:[&:not([aria-selected=true])]:[--background:theme(colors.white/8%)]
   }
 
-  .tab-border {
+  .tab-default[aria-selected="false"] {
     --border: var(--background);
-    --border-size: 1px;
-    @apply
-      aria-selected:[--border:oklch(from_var(--background)_calc(l-.15)_c_h)]
-      dark:aria-selected:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
   }
 
   /**
@@ -282,8 +283,8 @@
   .clickable:active,
   .clickable[data-active] {
     padding-block:
-      calc(var(--padding-block, 0px) + var(--depth))
-      calc(var(--padding-block, 0px) - var(--depth));
+      calc(var(--padding-block, 0px) + var(--depth, 0px))
+      calc(var(--padding-block, 0px) - var(--depth, 0px));
   }
 
   /**
@@ -410,12 +411,17 @@
   }
 
   /**
-   * Tab
+   * Tabs
    */
   .tab {
     position: relative;
     cursor: default;
+    user-select: none;
+    white-space: nowrap;
     background-color: var(--background, transparent);
+    border-color: var(--border, transparent);
+    border-width: var(--border-size, 0px) var(--border-size, 0px) 0px;
+    background-clip: padding-box;
   }
 
   .tab[aria-selected="true"] {
@@ -435,21 +441,26 @@
   .tab-default {
     --border-smooth: .1px;
     --corner-size: calc(var(--rounded) - var(--padding) - 4px);
+    --margin: theme(spacing.1);
     --padding-block: theme(spacing.1);
 
     border-radius: var(--corner-size);
     padding-block: var(--padding-block);
     padding-inline: theme(spacing.2);
-    margin: theme(spacing.1);
-    margin-block-end: calc(var(--padding-block) + var(--border-size));
+    margin: var(--margin);
+    margin-block-end: calc(var(--padding-block) + var(--border-size, 0px));
   }
 
   .tab-default[aria-selected="true"] {
     --corner-size: calc(var(--rounded) - var(--padding));
-    --padding-block: theme(spacing.2);
+    --padding-block: calc(theme(spacing.1) + var(--margin));
 
-    padding-inline: theme(spacing.3);
     margin: 0;
+    padding-inline: theme(spacing.3);
+  }
+
+  .tab-default[aria-selected="true"]:not(:active,[data-active]) {
+    padding-block-end: calc(var(--padding-block) + var(--border-size, 0px));
   }
 
   .tab-default[aria-selected="true"]::before,
@@ -461,8 +472,8 @@
   .tab-default::after {
     --circle-left: circle at 0 0, var(--transparency);
     --circle-right: circle at 100% 0, var(--transparency);
-    --transparency: transparent calc(var(--corner-size) - var(--border-size) + var(--border-smooth));
-    --tab-border-start: var(--border) calc(var(--corner-size) - var(--border-size) - var(--border-smooth));
+    --transparency: transparent calc(var(--corner-size) - var(--border-size, 0px) + var(--border-smooth));
+    --tab-border-start: var(--border) calc(var(--corner-size) - var(--border-size, 0px) - var(--border-smooth));
     --tab-border-end: var(--border) calc(var(--corner-size) - var(--border-smooth));
     --tab-border: var(--tab-border-start),var(--tab-border-end);
     --tab-bg: var(--background) calc(var(--corner-size) + var(--border-smooth));
@@ -493,10 +504,10 @@
     background-position: 100%, 0;
   }
 
-  .tab-border {
-    border-color: var(--border, transparent);
-    border-width: var(--border-size) var(--border-size) 0;
-    translate: 0 var(--border-size);
-    background-clip: padding-box;
+  .tab-panel {
+    /* border: var(--border-size, 0px) solid var(--border); */
+    background-color: var(--background);
+    padding: var(--padding);
+    box-shadow: 0 0 0 var(--border-size, 0px) var(--border, transparent);
   }
 }
