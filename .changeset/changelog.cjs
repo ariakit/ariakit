@@ -54,7 +54,7 @@ async function getChangelogText(changelogLines) {
 
 /**
  * @param {import("@changesets/types").ModCompWithPackage} release
- * @param {Record<"major" | "minor" | "patch", Array<Promise<string>>} changelogLines
+ * @param {Record<"major" | "minor" | "patch", Array<Promise<string>>>} changelogLines
  */
 async function getChangelogEntry(release, changelogLines) {
   // const date = new Date().toLocaleDateString("en-US", {
