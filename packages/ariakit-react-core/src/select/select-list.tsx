@@ -133,7 +133,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     );
 
     const hasCombobox = !!store.combobox;
-    composite = composite ?? (!hasCombobox && childStore !== store);
+    composite = composite ?? childStore !== store;
 
     const [element, setElement] = useTransactionState(
       composite ? store.setListElement : null,

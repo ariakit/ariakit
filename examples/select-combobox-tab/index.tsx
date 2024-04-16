@@ -31,6 +31,44 @@ export default function Example() {
           </SelectList>
         </SelectTabPanel>
       </Select>
+      <Select
+        label={<div hidden>Switch branches/tags</div>}
+        combobox={<input placeholder="Find or create a branch..." />}
+      >
+        <SelectList>
+          <SelectItem value="main" />
+          <SelectItem value="v0" />
+        </SelectList>
+      </Select>
+      <Select
+        label={<div hidden>Switch branches/tags</div>}
+        heading={<div>Switch branches/tags</div>}
+        combobox={<input placeholder="Find or create a branch..." />}
+      >
+        <SelectList>
+          <SelectItem value="main" />
+          <SelectItem value="v0" />
+        </SelectList>
+      </Select>
+      <Select label={<div>Switch branches/tags</div>}>
+        <SelectItem value="main" />
+        <SelectItem value="v0" />
+      </Select>
+      <Select label={<div>Switch branches/tags</div>}>
+        <SelectList>
+          <SelectItem value="main" />
+          <SelectItem value="v0" />
+        </SelectList>
+      </Select>
+      <Select
+        label={<div>Switch branches/tags</div>}
+        heading={<div>Switch branches/tags</div>}
+      >
+        <SelectList>
+          <SelectItem value="main" />
+          <SelectItem value="v0" />
+        </SelectList>
+      </Select>
     </div>
   );
 }

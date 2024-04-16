@@ -25,10 +25,14 @@ type TagName = typeof TagName;
  * ```
  */
 export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
-  function useSelectPopover({ store, alwaysVisible, ...props }) {
+  function useSelectPopover({ store, alwaysVisible, composite, ...props }) {
     const context = useSelectProviderContext();
     store = store || context;
-    props = useSelectList({ store, alwaysVisible, ...props });
+
+    const hasCombobox = !!store?.combobox;
+    composite = composite ?? !hasCombobox;
+
+    props = useSelectList({ store, alwaysVisible, composite, ...props });
     props = usePopover({ store, alwaysVisible, ...props });
     return props;
   },

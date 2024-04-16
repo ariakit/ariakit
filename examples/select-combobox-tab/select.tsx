@@ -43,12 +43,12 @@ export function Select({
         gutter={5}
         shift={-4}
         unmountOnHide
-        className="popup elevation-1 popover-enter flex flex-col gap-2 overflow-hidden bg-[--popup-background] [--popup-background:--background] has-[[data-tab]]:[--popup-background:oklch(from_var(--background)_calc(l-0.04)_c_h)]"
+        className="popup elevation-1 popover-enter flex flex-col gap-2 overflow-hidden"
       >
         {heading && (
-          <div className="flex items-center gap-2 ps-2">
+          <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-2">
             <Ariakit.SelectHeading
-              className="flex-1 cursor-default font-medium opacity-70"
+              className="cursor-default font-medium opacity-80"
               render={heading}
             />
             <Ariakit.SelectDismiss className="focusable clickable rounded-item button button-secondary button-flat button-icon button-small" />
@@ -58,7 +58,7 @@ export function Select({
           <Ariakit.Combobox
             autoSelect
             render={combobox}
-            className="focusable combobox input rounded-item h-10 w-full px-2 [--background:--popup-background]"
+            className="focusable combobox input rounded-item h-10 w-full px-2"
           />
         )}
         <Ariakit.TabProvider>
@@ -86,14 +86,17 @@ export function Select({
   return select;
 }
 
-export interface SelectListProps extends Ariakit.SelectListProps {}
+export interface SelectListProps
+  extends Omit<Ariakit.SelectListProps, "store"> {}
 
 export function SelectList(props: SelectListProps) {
+  const combobox = Ariakit.useComboboxContext();
+  const Component = combobox ? Ariakit.ComboboxList : Ariakit.SelectList;
   return (
-    <Ariakit.SelectList
+    <Component
       {...props}
       className={clsx(
-        "tab-panel -m-[--padding] overflow-auto",
+        "tab-panel -m-[--padding] overflow-auto outline-none",
         props.className,
       )}
     />
@@ -104,17 +107,18 @@ export interface SelectItemProps extends Ariakit.SelectItemProps {}
 
 export function SelectItem(props: SelectItemProps) {
   const combobox = Ariakit.useComboboxContext();
+  const render = combobox ? (
+    <Ariakit.ComboboxItem render={props.render} />
+  ) : undefined;
   return (
     <Ariakit.SelectItem
       {...props}
+      render={render}
       blurOnHoverEnd={false}
       className={clsx(
         "option clickable grid grid-cols-[1rem_auto_1rem] items-center [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
         props.className,
       )}
-      render={
-        combobox ? <Ariakit.ComboboxItem render={props.render} /> : undefined
-      }
     >
       <Ariakit.SelectItemCheck />
       {props.children || props.value}
@@ -125,9 +129,7 @@ export function SelectItem(props: SelectItemProps) {
 export interface SelectTabListProps extends Ariakit.TabListProps {}
 
 export function SelectTabList(props: SelectTabListProps) {
-  return (
-    <Ariakit.TabList {...props} className={clsx("flex", props.className)} />
-  );
+  return <Ariakit.TabList {...props} />;
 }
 
 export interface SelectTabProps extends Ariakit.TabProps {}
@@ -139,7 +141,7 @@ export function SelectTab(props: SelectTabProps) {
       data-tab
       render={<Ariakit.Role.div render={props.render} />}
       className={clsx(
-        "clickable tab tab-default tab-border aria-[selected=false]:[&:not(:hover)]:[--background:--popup-background]",
+        "clickable tab tab-default tab-border inline-block aria-[selected=false]:[&:not(:hover)]:[--background:--popup-background]",
         props.className,
       )}
     />
@@ -156,7 +158,7 @@ export function SelectTabPanel(props: SelectTabPanelProps) {
       tabId={selectedId}
       unmountOnHide
       {...props}
-      className={clsx("mt-[--padding]", props.className)}
+      className={clsx("popup-layer mt-[--padding]", props.className)}
     />
   );
 }
