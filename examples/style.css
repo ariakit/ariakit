@@ -374,6 +374,8 @@
 
   /* Option */
   .option {
+    display: flex;
+    align-items: center;
     background-color: var(--option-background, var(--background));
     color: var(--text, currentColor);
     cursor: default;

@@ -51,6 +51,11 @@ export function createTabStore({
 
   const composite = createCompositeStore({
     ...props,
+    includesBaseElement: defaultValue(
+      props.includesBaseElement,
+      syncState?.includesBaseElement,
+      false,
+    ),
     activeId: defaultValue(
       props.activeId,
       syncState?.activeId,

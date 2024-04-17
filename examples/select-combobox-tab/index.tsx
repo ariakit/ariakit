@@ -2,6 +2,7 @@ import "./style.css";
 import { useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
 import * as data from "./data.ts";
+import { BranchIcon, TagIcon } from "./icons.tsx";
 import {
   Select,
   SelectItem,
@@ -30,9 +31,26 @@ export default function Example() {
     <div className="w-[240px]">
       <Select
         label={<div hidden>Switch branches/tags</div>}
-        text={text}
+        text={
+          <>
+            {tab === "branches" ? (
+              <BranchIcon className="opacity-70" />
+            ) : (
+              <TagIcon className="opacity-70" />
+            )}
+            {text}
+          </>
+        }
         heading="Switch branches/tags"
-        combobox={<input placeholder="Find or create a branch..." />}
+        combobox={
+          <input
+            placeholder={
+              tab === "branches"
+                ? "Find or create a branch..."
+                : "Find a tag..."
+            }
+          />
+        }
         value={value}
         setValue={setValue}
         defaultTab={selectedTab}
@@ -51,8 +69,11 @@ export default function Example() {
                 {text}
               </SelectItem>
             ))}
+            {!!matches.length && searchTerm && (
+              <div className="popup-cover my-1 h-px bg-[--border] p-0" />
+            )}
             {searchTerm && (
-              <SelectItem>
+              <SelectItem icon={<BranchIcon className="opacity-70" />}>
                 Create branch <strong>{searchTerm}</strong> from{" "}
                 <strong>{text}</strong>
               </SelectItem>

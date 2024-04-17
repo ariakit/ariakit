@@ -69,7 +69,7 @@ export function Select({
         className="popup elevation-1 popover popover-enter flex flex-col gap-[9px] overflow-clip"
       >
         {heading && (
-          <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-2">
+          <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-[13px]">
             <Ariakit.SelectHeading
               className="cursor-default font-medium opacity-80"
               render={
@@ -84,7 +84,7 @@ export function Select({
             ref={comboboxRef}
             autoSelect
             render={combobox}
-            className="focusable combobox input rounded-item -mb-1 h-10 w-full px-2 has-[~*_[data-tab]]:mb-0"
+            className="focusable combobox input rounded-item -mb-1 h-10 w-full px-[13px] has-[~*_[data-tab]]:mb-0"
           />
         )}
         <Ariakit.TabProvider
@@ -173,9 +173,14 @@ export function SelectList(props: SelectListProps) {
   );
 }
 
-export interface SelectItemProps extends Ariakit.SelectItemProps {}
+export interface SelectItemProps extends Ariakit.SelectItemProps {
+  icon?: React.ReactNode;
+}
 
-export function SelectItem(props: SelectItemProps) {
+export function SelectItem({
+  icon = <Ariakit.SelectItemCheck />,
+  ...props
+}: SelectItemProps) {
   const combobox = Ariakit.useComboboxContext();
   const render = combobox ? (
     <Ariakit.ComboboxItem render={props.render} />
@@ -187,11 +192,11 @@ export function SelectItem(props: SelectItemProps) {
       render={render}
       blurOnHoverEnd={false}
       className={clsx(
-        "option clickable grid grid-cols-[1rem_auto] items-center [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
+        "option clickable [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
         props.className,
       )}
     >
-      <Ariakit.SelectItemCheck />
+      {icon}
       <div className="option-text">{props.children || props.value}</div>
     </Ariakit.SelectItem>
   );
