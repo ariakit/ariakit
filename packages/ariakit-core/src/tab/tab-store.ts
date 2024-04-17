@@ -55,6 +55,8 @@ export function createTabStore({
       props.activeId,
       syncState?.activeId,
       props.defaultActiveId,
+      // If the tabs are part of a combobox widget, allow the combobox input to
+      // be the active item by default, just like in the combobox store.
       combobox ? null : undefined,
     ),
     orientation: defaultValue(
@@ -102,8 +104,10 @@ export function createTabStore({
   // Keep activeId in sync with selectedId.
   setup(tab, () =>
     batch(tab, ["selectedId"], (state, prev) => {
-      // TODO: Comment (write all tests, then remove this to see what breaks)
-      if (composite && state.selectedId === prev.selectedId) return;
+      // If there's a parent composite widget, we don't need to sync the
+      // activeId state with the initial selectedId state. The parent composite
+      // widget should handle the initial activeId state.
+      if (parentComposite && state.selectedId === prev.selectedId) return;
       tab.setState("activeId", state.selectedId);
     }),
   );
