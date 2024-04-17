@@ -1,28 +1,38 @@
 import * as React from "react";
 import * as Ariakit from "@ariakit/react";
+import { SelectValue } from "@ariakit/react-core/select/select-value";
 import clsx from "clsx";
 
 export interface SelectProps extends Ariakit.SelectProps {
+  text?: React.ReactNode;
   value?: Ariakit.SelectProviderProps<string>["value"];
   setValue?: Ariakit.SelectProviderProps<string>["setValue"];
   defaultValue?: Ariakit.SelectProviderProps<string>["defaultValue"];
-  label?: Ariakit.SelectLabelProps["render"];
-  heading?: Ariakit.PopoverHeadingProps["render"];
+  tab?: Ariakit.TabProviderProps["selectedId"];
+  setTab?: Ariakit.TabProviderProps["setSelectedId"];
+  defaultTab?: Ariakit.TabProviderProps["defaultSelectedId"];
+  label?: string | Ariakit.SelectLabelProps["render"];
+  heading?: string | Ariakit.PopoverHeadingProps["render"];
   combobox?: Ariakit.ComboboxProps["render"];
   onSearch?: (value: string) => void;
 }
 
 export function Select({
   children,
+  text,
   value,
   setValue,
   defaultValue,
+  tab,
+  setTab,
+  defaultTab,
   label,
   heading,
   combobox,
   onSearch,
   ...props
 }: SelectProps) {
+  const comboboxRef = React.useRef<HTMLInputElement>(null);
   const searchable = !!combobox || !!onSearch;
 
   const select = (
@@ -31,37 +41,57 @@ export function Select({
       setValue={setValue}
       defaultValue={defaultValue}
     >
-      {label && <Ariakit.SelectLabel render={label} />}
+      {label && (
+        <Ariakit.SelectLabel
+          render={typeof label === "string" ? <div>{label}</div> : label}
+        />
+      )}
       <Ariakit.Select
         {...props}
         className={clsx(
           "focusable clickable button button-default",
           props.className,
         )}
-      />
+      >
+        {text || <SelectValue />}
+        <Ariakit.SelectArrow />
+      </Ariakit.Select>
       <Ariakit.SelectPopover
         gutter={5}
         shift={-4}
         unmountOnHide
+        autoFocusOnShow={(element) => {
+          if (element?.hasAttribute("data-option")) return true;
+          if (!comboboxRef.current) return true;
+          comboboxRef.current.focus();
+          return false;
+        }}
         className="popup elevation-1 popover popover-enter flex flex-col gap-[9px] overflow-clip"
       >
         {heading && (
           <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-2">
             <Ariakit.SelectHeading
               className="cursor-default font-medium opacity-80"
-              render={heading}
+              render={
+                typeof heading === "string" ? <div>{heading}</div> : heading
+              }
             />
             <Ariakit.SelectDismiss className="focusable clickable rounded-item button button-secondary button-flat button-icon button-small opacity-70" />
           </div>
         )}
         {searchable && (
           <Ariakit.Combobox
+            ref={comboboxRef}
             autoSelect
             render={combobox}
             className="focusable combobox input rounded-item -mb-1 h-10 w-full px-2 has-[~*_[data-tab]]:mb-0"
           />
         )}
-        <Ariakit.TabProvider>
+        <Ariakit.TabProvider
+          selectedId={tab}
+          setSelectedId={setTab}
+          defaultSelectedId={defaultTab}
+        >
           <div className="tabs-border popup-cover flex flex-col">
             {children}
           </div>
@@ -111,10 +141,11 @@ export interface SelectTabPanelProps extends Ariakit.TabPanelProps {}
 
 export function SelectTabPanel(props: SelectTabPanelProps) {
   const tab = Ariakit.useTabContext()!;
-  const selectedId = tab.useState("selectedId");
+  const tabId = tab.useState((state) => props.tabId || state.selectedId);
   return (
     <Ariakit.TabPanel
-      tabId={selectedId}
+      key={tabId}
+      tabId={tabId}
       unmountOnHide
       {...props}
       className={clsx(
@@ -152,15 +183,16 @@ export function SelectItem(props: SelectItemProps) {
   return (
     <Ariakit.SelectItem
       {...props}
+      data-option
       render={render}
       blurOnHoverEnd={false}
       className={clsx(
-        "option clickable grid grid-cols-[1rem_auto_1rem] items-center [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
+        "option clickable grid grid-cols-[1rem_auto] items-center [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
         props.className,
       )}
     >
       <Ariakit.SelectItemCheck />
-      {props.children || props.value}
+      <div className="option-text">{props.children || props.value}</div>
     </Ariakit.SelectItem>
   );
 }

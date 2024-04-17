@@ -15,16 +15,13 @@ export const branches = [
   "16.8.6",
   "17.0.0-dev",
   "builds/facebook-www",
-  "cleanup-unified-sync-lane-flag",
   "devtools-v4-merge",
-  "enable-cache-element-flag",
   "fabric-cleanup",
   "fabric-focus-blur",
   "gh-pages",
   "leg",
   "nativefb-enable-cache",
   "nov-main-trigger",
-  "offscreen-manual-mode-detach",
   "rsckeys",
 ];
 

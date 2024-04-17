@@ -349,13 +349,6 @@
     border-radius: calc(var(--rounded) - var(--padding));
   }
 
-  /* Popover */
-  .popover {
-    min-width: 180px;
-    max-width: min(480px, var(--popover-available-width));
-    max-height: min(480px, var(--popover-available-height));
-  }
-
   /* Popup */
   .popup {
     outline: none;
@@ -383,7 +376,19 @@
     border-radius: calc(var(--rounded) - var(--padding));
   }
 
+  .option-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
   /* Popover */
+  .popover {
+    min-width: 180px;
+    max-width: min(480px, var(--popover-available-width));
+    max-height: min(480px, var(--popover-available-height));
+  }
+
   .popover-enter {
     transform-origin: var(--popover-transform-origin);
     @apply transition-[opacity,scale]

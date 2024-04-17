@@ -96,9 +96,10 @@ export function createTabStore({
 
   // Keep activeId in sync with selectedId.
   setup(tab, () =>
-    batch(tab, ["selectedId"], (state) =>
-      tab.setState("activeId", state.selectedId),
-    ),
+    batch(tab, ["selectedId"], (state, prev) => {
+      if (state.selectedId === prev.selectedId) return;
+      tab.setState("activeId", state.selectedId);
+    }),
   );
 
   // Automatically set selectedId if it's undefined.
