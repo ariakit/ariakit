@@ -28,6 +28,48 @@ export default function Example() {
           <SelectList>
             <SelectItem value="main" />
             <SelectItem value="v0" />
+            <SelectItem value="v2" />
+            <SelectItem value="v3" />
+            <SelectItem value="v4" />
+            <SelectItem value="v5" />
+            <SelectItem value="v6" />
+            <SelectItem value="v7" />
+            <SelectItem value="v8" />
+            <SelectItem value="v9" />
+            <SelectItem value="v10" />
+            <SelectItem value="v11" />
+            <SelectItem value="v12" />
+            <SelectItem value="v13" />
+            <SelectItem value="v14" />
+            <SelectItem value="v15" />
+            <SelectItem value="v16" />
+          </SelectList>
+        </SelectTabPanel>
+      </Select>
+      <Select>
+        <SelectTabList>
+          <SelectTab>Branches</SelectTab>
+          <SelectTab>Tags</SelectTab>
+        </SelectTabList>
+        <SelectTabPanel>
+          <SelectList>
+            <SelectItem value="main" />
+            <SelectItem value="v0" />
+            <SelectItem value="v2" />
+            <SelectItem value="v3" />
+            <SelectItem value="v4" />
+            <SelectItem value="v5" />
+            <SelectItem value="v6" />
+            <SelectItem value="v7" />
+            <SelectItem value="v8" />
+            <SelectItem value="v9" />
+            <SelectItem value="v10" />
+            <SelectItem value="v11" />
+            <SelectItem value="v12" />
+            <SelectItem value="v13" />
+            <SelectItem value="v14" />
+            <SelectItem value="v15" />
+            <SelectItem value="v16" />
           </SelectList>
         </SelectTabPanel>
       </Select>
