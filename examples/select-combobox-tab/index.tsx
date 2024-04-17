@@ -15,7 +15,7 @@ export default function Example() {
   const [searchTerm, setSearchTerm] = useState("");
   const [tab, setTab] = useState<string | null | undefined>("branches");
   const [value, setValue] = useState("branches/main");
-  const [selectedTab, text] = value.split("/");
+  const [, selectedTab, text] = value.match(/^([^/]+)\/(.+)$/) || [];
 
   const items =
     tab && Object.hasOwn(data, tab) ? data[tab as keyof typeof data] : null;

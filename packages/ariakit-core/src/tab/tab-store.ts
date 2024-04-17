@@ -51,6 +51,12 @@ export function createTabStore({
 
   const composite = createCompositeStore({
     ...props,
+    activeId: defaultValue(
+      props.activeId,
+      syncState?.activeId,
+      props.defaultActiveId,
+      combobox ? null : undefined,
+    ),
     orientation: defaultValue(
       props.orientation,
       syncState?.orientation,
@@ -67,7 +73,6 @@ export function createTabStore({
       props.selectedId,
       syncState?.selectedId,
       props.defaultSelectedId,
-      undefined,
     ),
     selectOnMove: defaultValue(
       props.selectOnMove,
@@ -97,7 +102,8 @@ export function createTabStore({
   // Keep activeId in sync with selectedId.
   setup(tab, () =>
     batch(tab, ["selectedId"], (state, prev) => {
-      if (state.selectedId === prev.selectedId) return;
+      // TODO: Comment (write all tests, then remove this to see what breaks)
+      if (composite && state.selectedId === prev.selectedId) return;
       tab.setState("activeId", state.selectedId);
     }),
   );

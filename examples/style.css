@@ -209,13 +209,20 @@
   with a popup class. */
   .option {
     @apply
-      [--background:transparent]
-      data-[active-item]:[--background:theme(colors.black/8%)]
-      dark:data-[active-item]:[--background:theme(colors.white/8%)]
-      data-[active-item]:data-[focus-visible]:[--background:--color-primary]
-      data-[active-item]:data-[focus-visible]:[--text:--color-white]
-      dark:data-[active-item]:data-[focus-visible]:[--background:--color-primary]
-      dark:data-[active-item]:data-[focus-visible]:[--text:--color-white]
+      [--option-background:transparent]
+      data-[active-item]:[--option-background:theme(colors.black/8%)]
+      dark:data-[active-item]:[--option-background:theme(colors.white/8%)]
+  }
+
+  .option[data-active-item] {
+    @apply
+      [--option-background:theme(colors.black/8%)]
+      dark:[--option-background:theme(colors.white/8%)]
+  }
+
+  .option[data-active-item][data-focus-visible] {
+    --text: var(--color-white);
+    --option-background: var(--color-primary);
   }
 
   /* Tabs */
@@ -367,7 +374,7 @@
 
   /* Option */
   .option {
-    background-color: var(--background);
+    background-color: var(--option-background, var(--background));
     color: var(--text, currentColor);
     cursor: default;
     outline: none;
@@ -384,7 +391,7 @@
 
   /* Popover */
   .popover {
-    min-width: 180px;
+    min-width: max(180px, calc(var(--popover-anchor-width) + 0.5rem));
     max-width: min(480px, var(--popover-available-width));
     max-height: min(480px, var(--popover-available-height));
   }
