@@ -25,13 +25,14 @@ export function setRef<T>(
 /**
  * Checks if an element is a valid React element with a ref.
  */
-export function isValidElementWithRef<P>(
+export function isValidElementWithRef<P extends { ref?: Ref<any> }>(
   element: unknown,
 ): element is ReactElement<P> & { ref?: Ref<any> } {
   if (!element) return false;
-  if (!isValidElement(element)) return false;
-  if (!("ref" in element)) return false;
-  return true;
+  if (!isValidElement<{ ref?: Ref<any> }>(element)) return false;
+  if ("ref" in element.props) return true;
+  if ("ref" in element) return true;
+  return false;
 }
 
 /**
@@ -39,7 +40,8 @@ export function isValidElementWithRef<P>(
  */
 export function getRefProperty(element: unknown) {
   if (!isValidElementWithRef(element)) return null;
-  return element.ref;
+  const props = { ...element.props };
+  return props.ref || element.ref;
 }
 
 /**

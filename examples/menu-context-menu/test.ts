@@ -3,8 +3,8 @@ import { click, dispatch, press, q, waitFor } from "@ariakit/test";
 test("show context menu and hide it with escape", async () => {
   expect(q.menu()).not.toBeInTheDocument();
   await dispatch.contextMenu(q.text("Right click here"));
-  await waitFor(() => expect(q.menu()).toBeVisible());
-  expect(q.menu()).toHaveFocus();
+  await waitFor(() => expect(q.menu()).toHaveFocus());
+  expect(q.menu()).toBeVisible();
   await dispatch.contextMenu(q.text("Right click here"));
   await waitFor(() => expect(q.menu()).toBeVisible());
   expect(q.menu()).toHaveFocus();
