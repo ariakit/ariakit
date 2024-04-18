@@ -4,6 +4,7 @@ import { SelectValue } from "@ariakit/react-core/select/select-value";
 import clsx from "clsx";
 
 export interface SelectProps extends Ariakit.SelectProps {
+  icon?: React.ReactNode;
   text?: React.ReactNode;
   value?: Ariakit.SelectProviderProps<string>["value"];
   setValue?: Ariakit.SelectProviderProps<string>["setValue"];
@@ -19,6 +20,7 @@ export interface SelectProps extends Ariakit.SelectProps {
 
 export function Select({
   children,
+  icon,
   text,
   value,
   setValue,
@@ -34,12 +36,22 @@ export function Select({
 }: SelectProps) {
   const comboboxRef = React.useRef<HTMLInputElement>(null);
   const searchable = !!combobox || !!onSearch;
+  const tabStore = Ariakit.useTabStore({
+    selectedId: tab,
+    setSelectedId: setTab,
+    defaultSelectedId: defaultTab,
+  });
 
   const select = (
     <Ariakit.SelectProvider
       value={value}
       setValue={setValue}
       defaultValue={defaultValue}
+      setMounted={(mounted) => {
+        if (mounted) return;
+        if (!defaultTab) return;
+        tabStore.select(defaultTab);
+      }}
     >
       {label && (
         <Ariakit.SelectLabel
@@ -53,6 +65,7 @@ export function Select({
           props.className,
         )}
       >
+        {icon}
         {text || <SelectValue />}
         <Ariakit.SelectArrow />
       </Ariakit.Select>
@@ -87,11 +100,7 @@ export function Select({
             className="focusable combobox input rounded-item -mb-1 h-10 w-full px-[13px] has-[~*_[data-tab]]:mb-0"
           />
         )}
-        <Ariakit.TabProvider
-          selectedId={tab}
-          setSelectedId={setTab}
-          defaultSelectedId={defaultTab}
-        >
+        <Ariakit.TabProvider store={tabStore}>
           <div className="tabs-border popup-cover flex flex-col">
             {children}
           </div>
@@ -199,5 +208,19 @@ export function SelectItem({
       {icon}
       <div className="option-text">{props.children || props.value}</div>
     </Ariakit.SelectItem>
+  );
+}
+
+export interface SelectSeparatorProps extends React.ComponentProps<"div"> {}
+
+export function SelectSeparator(props: SelectSeparatorProps) {
+  return (
+    <div
+      {...props}
+      className={clsx(
+        "popup-cover my-[--padding] h-px bg-[--border] p-0",
+        props.className,
+      )}
+    />
   );
 }

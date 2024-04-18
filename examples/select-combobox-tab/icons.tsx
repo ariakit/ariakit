@@ -8,6 +8,7 @@ export function BranchIcon(props: ComponentProps<"svg">) {
       viewBox="0 0 24 24"
       width="1em"
       height="1em"
+      aria-hidden
       {...props}
     >
       <path d="M15 4.75a3.25 3.25 0 1 1 6.5 0 3.25 3.25 0 0 1-6.5 0ZM2.5 19.25a3.25 3.25 0 1 1 6.5 0 3.25 3.25 0 0 1-6.5 0Zm0-14.5a3.25 3.25 0 1 1 6.5 0 3.25 3.25 0 0 1-6.5 0ZM5.75 6.5a1.75 1.75 0 1 0-.001-3.501A1.75 1.75 0 0 0 5.75 6.5Zm0 14.5a1.75 1.75 0 1 0-.001-3.501A1.75 1.75 0 0 0 5.75 21Zm12.5-14.5a1.75 1.75 0 1 0-.001-3.501A1.75 1.75 0 0 0 18.25 6.5Z"></path>
@@ -25,6 +26,7 @@ export function TagIcon(props: ComponentProps<"svg">) {
       viewBox="0 0 24 24"
       width="1em"
       height="1em"
+      aria-hidden
       {...props}
     >
       <path d="M7.75 6.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Z"></path>

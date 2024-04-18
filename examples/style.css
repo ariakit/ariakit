@@ -469,6 +469,7 @@
     margin: var(--margin);
     margin-block-end: calc(var(--padding-block) + var(--border-size, 0px));
     background-clip: padding-box;
+    outline: none;
   }
 
   .tab-default[aria-selected="true"] {

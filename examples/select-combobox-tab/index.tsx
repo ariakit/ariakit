@@ -1,61 +1,52 @@
 import "./style.css";
 import { useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
-import * as data from "./data.ts";
+import * as defaultData from "./data.ts";
 import { BranchIcon, TagIcon } from "./icons.tsx";
 import {
   Select,
   SelectItem,
   SelectList,
+  SelectSeparator,
   SelectTab,
   SelectTabList,
   SelectTabPanel,
 } from "./select.tsx";
 
 export default function Example() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [data, setData] = useState(defaultData);
+
   const [tab, setTab] = useState<string | null | undefined>("branches");
   const [value, setValue] = useState("branches/main");
-  const [, selectedTab, text] = value.match(/^([^/]+)\/(.+)$/) || [];
+  const [, selectedTab, valueText] = value.match(/^([^/]+)\/(.+)$/) || [];
 
-  const items =
-    tab && Object.hasOwn(data, tab) ? data[tab as keyof typeof data] : null;
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const values = tab && tab in data ? data[tab as keyof typeof data] : null;
 
   const matches = useMemo(() => {
-    if (!items) return [];
-    if (!searchTerm) return items;
-    return matchSorter(items, searchTerm);
-  }, [searchTerm, items]);
+    if (!values) return [];
+    if (!searchTerm) return values;
+    return matchSorter(values, searchTerm);
+  }, [values, searchTerm]);
+
+  const Icon = tab === "branches" ? BranchIcon : TagIcon;
+  const placeholder =
+    tab === "branches" ? "Find or create a branch..." : "Find a tag...";
 
   return (
     <div className="w-[240px]">
       <Select
         label={<div hidden>Switch branches/tags</div>}
-        text={
-          <>
-            {tab === "branches" ? (
-              <BranchIcon className="opacity-70" />
-            ) : (
-              <TagIcon className="opacity-70" />
-            )}
-            {text}
-          </>
-        }
+        icon={<Icon className="opacity-70" />}
+        text={valueText}
         heading="Switch branches/tags"
-        combobox={
-          <input
-            placeholder={
-              tab === "branches"
-                ? "Find or create a branch..."
-                : "Find a tag..."
-            }
-          />
-        }
-        value={value}
-        setValue={setValue}
-        defaultTab={selectedTab}
+        combobox={<input placeholder={placeholder} />}
         tab={tab}
         setTab={setTab}
+        defaultTab={selectedTab}
+        value={value}
+        setValue={setValue}
         onSearch={setSearchTerm}
       >
         <SelectTabList>
@@ -69,15 +60,32 @@ export default function Example() {
                 {text}
               </SelectItem>
             ))}
-            {!!matches.length && searchTerm && (
-              <div className="popup-cover my-1 h-px bg-[--border] p-0" />
-            )}
-            {searchTerm && (
-              <SelectItem icon={<BranchIcon className="opacity-70" />}>
-                Create branch <strong>{searchTerm}</strong> from{" "}
-                <strong>{text}</strong>
-              </SelectItem>
-            )}
+            {tab === "branches"
+              ? searchTerm &&
+                !matches.includes(searchTerm) && (
+                  <>
+                    {!!matches.length && <SelectSeparator />}
+                    <SelectItem
+                      value={`${tab}/${searchTerm}`}
+                      setValueOnClick={() => {
+                        setData((data) => ({
+                          ...data,
+                          branches: [...data.branches, searchTerm],
+                        }));
+                        return true;
+                      }}
+                      icon={
+                        <BranchIcon className="opacity-70 [[data-active-item]>&]:opacity-100" />
+                      }
+                    >
+                      Create branch <strong>{searchTerm}</strong> from{" "}
+                      <strong>{valueText}</strong>
+                    </SelectItem>
+                  </>
+                )
+              : !matches.length && (
+                  <div className="py-6 text-center">No {tab} found</div>
+                )}
           </SelectList>
         </SelectTabPanel>
       </Select>
