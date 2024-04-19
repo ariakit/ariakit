@@ -89,7 +89,7 @@ export interface PageParagraphProps extends ComponentPropsWithoutRef<"p"> {
 
 export function PageParagraph({ node, ...props }: PageParagraphProps) {
   const className = twJoin(
-    "dark:text-white/[85%] leading-7 tracking-[-0.016em] dark:tracking-[-0.008em]",
+    "dark:text-white/[85%] leading-7",
     "max-w-[--size-content] text-pretty",
     "[p&_code]:rounded [p&_code]:text-[0.9375em] text-pretty",
     "[p&_code]:px-[0.25em] [p&_code]:py-[0.2em]",
