@@ -13,6 +13,7 @@ import type {
 import { createPopoverStore } from "../popover/popover-store.ts";
 import type { TagStore } from "../tag/tag-store.ts";
 import { chain, defaultValue } from "../utils/misc.ts";
+import { isTouchDevice } from "../utils/platform.ts";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
@@ -29,10 +30,7 @@ type MutableValue<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 > = T extends string ? string : T;
 
-const isMobile =
-  typeof window !== "undefined" &&
-  typeof matchMedia === "function" &&
-  matchMedia("(hover:none)").matches;
+const isMobile = isTouchDevice() && matchMedia("(hover:none)").matches;
 
 /**
  * Creates a combobox store.
