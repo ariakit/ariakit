@@ -1,11 +1,4 @@
-import {
-  closest,
-  contains,
-  getActiveElement,
-  isFrame,
-  isVisible,
-  matches,
-} from "./dom.ts";
+import { contains, getActiveElement, isFrame, isVisible } from "./dom.ts";
 
 const selector =
   "input:not([type='hidden']):not([disabled]), select:not([disabled]), " +
@@ -26,10 +19,10 @@ function hasNegativeTabIndex(element: Element) {
  * isFocusable(document.querySelector("input[hidden]")); // false
  * isFocusable(document.querySelector("input:disabled")); // false
  */
-export function isFocusable(element: Element): element is HTMLElement {
-  if (!matches(element, selector)) return false;
+export function isFocusable(element: Element) {
+  if (!element.matches(selector)) return false;
   if (!isVisible(element)) return false;
-  if (closest(element, "[inert]")) return false;
+  if (element.closest("[inert]")) return false;
   return true;
 }
 
@@ -291,7 +284,7 @@ export function getPreviousTabbable(
  */
 export function getClosestFocusable(element?: HTMLElement | null) {
   while (element && !isFocusable(element)) {
-    element = closest<HTMLElement>(element, selector);
+    element = element.closest<HTMLElement>(selector);
   }
   return element || null;
 }

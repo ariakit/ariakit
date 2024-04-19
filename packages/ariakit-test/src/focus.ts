@@ -10,15 +10,18 @@ export function focus(element: Element | null) {
     invariant(element, "Unable to focus on null element");
     if (getActiveElement(element) === element) return;
     if (!isFocusable(element)) return;
+    const htmlElement = element as HTMLElement;
 
-    const activeElement = getActiveElement(element) as DirtiableElement | null;
+    const activeElement = getActiveElement(
+      htmlElement,
+    ) as DirtiableElement | null;
 
     if (activeElement?.dirty) {
       await dispatch.change(activeElement);
       activeElement.dirty = false;
     }
 
-    element.focus();
+    htmlElement.focus();
     await flushMicrotasks();
   });
 }

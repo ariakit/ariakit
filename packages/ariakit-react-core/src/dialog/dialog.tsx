@@ -9,7 +9,6 @@ import type {
 } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  closest,
   contains,
   getActiveElement,
   getDocument,
@@ -379,7 +378,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // also got hidden when this dialog was shown. We'll try to focus on their
       // disclosure element instead.
       if (element && !isFocusable(element)) {
-        const maybeParentDialog = closest(element, "[data-dialog]");
+        const maybeParentDialog = element.closest("[data-dialog]");
         if (maybeParentDialog && maybeParentDialog.id) {
           const doc = getDocument(maybeParentDialog);
           const selector = `[aria-controls~="${maybeParentDialog.id}"]`;

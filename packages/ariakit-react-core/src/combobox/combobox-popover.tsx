@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import type { ElementType } from "react";
-import { getDocument, matches } from "@ariakit/core/utils/dom";
+import { getDocument } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
@@ -26,7 +26,7 @@ function isController(
       .map((id) => `[aria-controls~="${id}"]`)
       .join(", ");
     if (!selector) return false;
-    return matches(target, selector);
+    return target.matches(selector);
   }
   return false;
 }

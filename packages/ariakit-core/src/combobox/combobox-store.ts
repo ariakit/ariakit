@@ -13,7 +13,6 @@ import type {
 import { createPopoverStore } from "../popover/popover-store.ts";
 import type { TagStore } from "../tag/tag-store.ts";
 import { chain, defaultValue } from "../utils/misc.ts";
-import { isSafari } from "../utils/platform.ts";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
@@ -30,7 +29,8 @@ type MutableValue<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 > = T extends string ? string : T;
 
-const isSafariOnMobile = isSafari() && matchMedia("(hover:none)").matches;
+const isMobile =
+  typeof window !== "undefined" && matchMedia("(hover:none)").matches;
 
 /**
  * Creates a combobox store.
@@ -79,11 +79,9 @@ export function createComboboxStore({
     ),
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
     focusWrap: defaultValue(props.focusWrap, syncState?.focusWrap, true),
-    virtualFocus: defaultValue(
-      props.virtualFocus,
-      syncState?.virtualFocus,
-      !isSafariOnMobile,
-    ),
+    virtualFocus:
+      !isMobile &&
+      defaultValue(props.virtualFocus, syncState?.virtualFocus, true),
   });
 
   const popover = createPopoverStore({
@@ -131,6 +129,14 @@ export function createComboboxStore({
   };
 
   const combobox = createStore(initialState, composite, popover, store);
+
+  // TODO: Comment
+  setup(combobox, () => {
+    if (!isMobile) return;
+    return sync(combobox, ["virtualFocus"], () => {
+      combobox.setState("virtualFocus", false);
+    });
+  });
 
   // Sync tag values with the combobox selectedValue state.
   setup(combobox, () => {
