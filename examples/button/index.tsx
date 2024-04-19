@@ -1,4 +1,4 @@
-import "./button.css";
+import "./theme.css";
 import { Button } from "@ariakit/react";
 
 export default function Example() {

@@ -57,7 +57,9 @@ export async function parseCSSFile(filename, options) {
   const processor = postcss();
   const raw = readFileSync(filename, "utf8");
 
-  const isTheme = /\@import (url\()?[\"\']\.\.\/style\.css/im.test(raw);
+  const isTheme =
+    filename.endsWith("/theme.css") ||
+    /\@import (url\()?[\"\']\.\.\/theme\.css/im.test(raw);
 
   if (options.id) {
     processor.use(plugin({ id: options.id }));

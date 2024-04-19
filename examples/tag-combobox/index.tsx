@@ -1,4 +1,4 @@
-import "./style.css";
+import "./theme.css";
 import { useDeferredValue, useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
 import { Tag, TagInput, TagList, TagOption } from "./tag.tsx";

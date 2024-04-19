@@ -36,22 +36,13 @@ export function Select({
 }: SelectProps) {
   const comboboxRef = React.useRef<HTMLInputElement>(null);
   const searchable = !!combobox || !!onSearch;
-  const tabStore = Ariakit.useTabStore({
-    selectedId: tab,
-    setSelectedId: setTab,
-    defaultSelectedId: defaultTab,
-  });
 
   const select = (
     <Ariakit.SelectProvider
+      virtualFocus={searchable}
       value={value}
       setValue={setValue}
       defaultValue={defaultValue}
-      setMounted={(mounted) => {
-        if (mounted) return;
-        if (!defaultTab) return;
-        tabStore.select(defaultTab);
-      }}
     >
       {label && (
         <Ariakit.SelectLabel
@@ -66,7 +57,7 @@ export function Select({
         )}
       >
         {icon}
-        {text || <SelectValue />}
+        <div className="truncate">{text || <SelectValue />}</div>
         <Ariakit.SelectArrow />
       </Ariakit.Select>
       <Ariakit.SelectPopover
@@ -100,7 +91,11 @@ export function Select({
             className="focusable combobox input rounded-item -mb-1 h-10 w-full px-[13px] has-[~*_[data-tab]]:mb-0"
           />
         )}
-        <Ariakit.TabProvider store={tabStore}>
+        <Ariakit.TabProvider
+          selectedId={tab}
+          setSelectedId={setTab}
+          defaultSelectedId={defaultTab}
+        >
           <div className="tabs-border popup-cover flex flex-col">
             {children}
           </div>
@@ -206,7 +201,7 @@ export function SelectItem({
       )}
     >
       {icon}
-      <div className="option-text">{props.children || props.value}</div>
+      <div className="truncate">{props.children || props.value}</div>
     </Ariakit.SelectItem>
   );
 }

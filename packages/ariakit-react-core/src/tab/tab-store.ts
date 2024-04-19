@@ -10,6 +10,7 @@ import type {
 } from "../composite/composite-store.ts";
 import { useCompositeStoreProps } from "../composite/composite-store.ts";
 import { useSelectContext } from "../select/select-context.tsx";
+import type { SelectStore } from "../select/select-store.ts";
 import { useUpdateEffect } from "../utils/hooks.ts";
 import { useStore, useStoreProps } from "../utils/store.tsx";
 import type { Store } from "../utils/store.tsx";
@@ -97,7 +98,7 @@ export interface TabStoreOptions
    * Live examples:
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
-  composite?: CompositeStore | null;
+  composite?: CompositeStore | SelectStore | null;
   /**
    * A reference to a [combobox
    * store](https://ariakit.org/reference/use-combobox-store). This is

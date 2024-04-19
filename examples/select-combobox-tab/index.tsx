@@ -1,4 +1,4 @@
-import "./style.css";
+import "./theme.css";
 import { useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
 import * as defaultData from "./data.ts";
@@ -12,42 +12,88 @@ import {
   SelectTabList,
   SelectTabPanel,
 } from "./select.tsx";
+import type { SelectProps } from "./select.tsx";
 
 export default function Example() {
   const [data, setData] = useState(defaultData);
-
-  const [tab, setTab] = useState<string | null | undefined>("branches");
-  const [value, setValue] = useState("branches/main");
-  const [, selectedTab, valueText] = value.match(/^([^/]+)\/(.+)$/) || [];
-
-  const [searchTerm, setSearchTerm] = useState("");
-
+  const [tab, setTab] = useState<SelectProps["tab"]>("branches");
+  const [value, setValue] = useState("main");
+  const [searchValue, setSearchValue] = useState("");
   const values = tab && tab in data ? data[tab as keyof typeof data] : null;
 
   const matches = useMemo(() => {
     if (!values) return [];
-    if (!searchTerm) return values;
-    return matchSorter(values, searchTerm);
-  }, [values, searchTerm]);
+    if (!searchValue) return values;
+    return matchSorter(values, searchValue);
+  }, [values, searchValue]);
 
-  const Icon = tab === "branches" ? BranchIcon : TagIcon;
+  const TabIcon = tab === "branches" ? BranchIcon : TagIcon;
+
   const placeholder =
     tab === "branches" ? "Find or create a branch..." : "Find a tag...";
 
+  const addBranch = (value: string) => {
+    setData((data) => ({
+      ...data,
+      branches: [...data.branches, value],
+    }));
+  };
+
+  const canAddBranch =
+    !!searchValue && !matches.includes(searchValue) && tab === "branches";
+
+  const customItem = canAddBranch && (
+    <>
+      {!!matches.length && <SelectSeparator />}
+      <SelectItem
+        icon={<BranchIcon />}
+        value={searchValue}
+        onClick={() => addBranch(searchValue)}
+      >
+        Create branch <strong>{searchValue}</strong> from{" "}
+        <strong>{value}</strong>
+      </SelectItem>
+    </>
+  );
+
+  const empty = !matches.length && (
+    <div className="py-6 text-center">No matches found</div>
+  );
+
   return (
-    <div className="w-[240px]">
+    <div className="flex max-w-full flex-wrap justify-center gap-2">
       <Select
-        label={<div hidden>Switch branches/tags</div>}
-        icon={<Icon className="opacity-70" />}
-        text={valueText}
-        heading="Switch branches/tags"
-        combobox={<input placeholder={placeholder} />}
-        tab={tab}
-        setTab={setTab}
-        defaultTab={selectedTab}
+        label={<div hidden>Select</div>}
+        icon={<TabIcon />}
         value={value}
         setValue={setValue}
-        onSearch={setSearchTerm}
+      >
+        <SelectList>
+          {values?.map((value) => <SelectItem key={value} value={value} />)}
+        </SelectList>
+      </Select>
+
+      <Select
+        label={<div hidden>Select with Combobox</div>}
+        icon={<TabIcon />}
+        combobox={<input placeholder={placeholder} />}
+        value={value}
+        setValue={setValue}
+        onSearch={setSearchValue}
+      >
+        <SelectList>
+          {matches?.map((value) => <SelectItem key={value} value={value} />)}
+          {customItem || empty}
+        </SelectList>
+      </Select>
+
+      <Select
+        label={<div hidden>Select with Tab</div>}
+        icon={<TabIcon />}
+        tab={tab}
+        setTab={setTab}
+        value={value}
+        setValue={setValue}
       >
         <SelectTabList>
           <SelectTab id="branches">Branches</SelectTab>
@@ -55,37 +101,32 @@ export default function Example() {
         </SelectTabList>
         <SelectTabPanel>
           <SelectList>
-            {matches.map((text) => (
-              <SelectItem key={text} value={`${tab}/${text}`}>
-                {text}
-              </SelectItem>
+            {values?.map((value) => <SelectItem key={value} value={value} />)}
+          </SelectList>
+        </SelectTabPanel>
+      </Select>
+
+      <Select
+        label={<div hidden>Select with Combobox and Tab</div>}
+        icon={<TabIcon />}
+        heading="Switch branches/tags"
+        combobox={<input placeholder={placeholder} />}
+        tab={tab}
+        setTab={setTab}
+        value={value}
+        setValue={setValue}
+        onSearch={setSearchValue}
+      >
+        <SelectTabList>
+          <SelectTab id="branches">Branches</SelectTab>
+          <SelectTab id="tags">Tags</SelectTab>
+        </SelectTabList>
+        <SelectTabPanel>
+          <SelectList>
+            {matches.map((value) => (
+              <SelectItem key={value} value={value} />
             ))}
-            {tab === "branches"
-              ? searchTerm &&
-                !matches.includes(searchTerm) && (
-                  <>
-                    {!!matches.length && <SelectSeparator />}
-                    <SelectItem
-                      value={`${tab}/${searchTerm}`}
-                      setValueOnClick={() => {
-                        setData((data) => ({
-                          ...data,
-                          branches: [...data.branches, searchTerm],
-                        }));
-                        return true;
-                      }}
-                      icon={
-                        <BranchIcon className="opacity-70 [[data-active-item]>&]:opacity-100" />
-                      }
-                    >
-                      Create branch <strong>{searchTerm}</strong> from{" "}
-                      <strong>{valueText}</strong>
-                    </SelectItem>
-                  </>
-                )
-              : !matches.length && (
-                  <div className="py-6 text-center">No {tab} found</div>
-                )}
+            {customItem || empty}
           </SelectList>
         </SelectTabPanel>
       </Select>

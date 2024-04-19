@@ -1,4 +1,4 @@
-import "./style.css";
+import "./theme.css";
 import { useState } from "react";
 import * as Ariakit from "./ariakit-experimental.ts";
 
@@ -10,7 +10,7 @@ export default function Example() {
         <Ariakit.TagListLabel className="tag-list-label">
           Tags
         </Ariakit.TagListLabel>
-        <Ariakit.TagList className="tag-list input">
+        <Ariakit.TagList className="tag-list input focusable">
           {values.map((value) => (
             <Ariakit.Tag key={value} value={value} className="tag">
               {value}

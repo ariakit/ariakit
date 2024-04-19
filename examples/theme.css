@@ -1,4 +1,10 @@
 @layer theme {
+  @property --background {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: theme(colors.white);
+  }
+
   /* Default theme colors */
   :root {
     --font-mono: Menlo, Consolas, Courier New, monospace;
@@ -145,18 +151,24 @@
 
       [--border:oklch(from_var(--background)_calc(l-.33)_c_h)]
       hover:[--border:oklch(from_var(--background)_calc(l-.55)_c_h)]
-      [&[placeholder]]:[--border:oklch(from_var(--background)_calc(l-.2)_c_h)]
-      hover:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l-.42)_c_h)]
 
       dark:[--border:oklch(from_var(--background)_calc(l+.32)_c_h)]
       dark:hover:[--border:oklch(from_var(--background)_calc(l+.42)_c_h)]
-      dark:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l+.13)_c_h)]
-      dark:hover:[&[placeholder]]:[--border:oklch(from_var(--background)_calc(l+.23)_c_h)]
 
       [--shadow:theme(colors.black/10%)]
       [--light:theme(colors.white/30%)]
       dark:[--shadow:theme(colors.black/30%)]
       dark:[--light:theme(colors.white/10%)]
+  }
+
+  .input[placeholder],
+  .input:has([placeholder]) {
+    @apply
+      [--border:oklch(from_var(--background)_calc(l-.2)_c_h)]
+      hover:[--border:oklch(from_var(--background)_calc(l-.42)_c_h)]
+
+      dark:[--border:oklch(from_var(--background)_calc(l+.13)_c_h)]
+      dark:hover:[--border:oklch(from_var(--background)_calc(l+.23)_c_h)]
   }
 
   /* Applies rounded corners and padding to an element. The rounded-item class
@@ -281,6 +293,7 @@
   /* Button */
   .button {
     display: flex;
+    max-width: 100%;
     height: var(--size);
     align-items: center;
     justify-content: center;
@@ -330,7 +343,8 @@
     outline-style: solid;
   }
 
-  .input::placeholder {
+  .input::placeholder,
+  .input ::placeholder {
     @apply
       text-[oklch(from_var(--input-background)_calc(l-.44)_0_0deg)]
       dark:text-[oklch(from_var(--input-background)_calc(l+.42)_0_0deg)]
@@ -358,6 +372,7 @@
 
   /* Popup */
   .popup {
+    z-index: 50;
     outline: none;
     padding: var(--padding);
     background-color: var(--popup-background, var(--background));
@@ -369,7 +384,8 @@
   .popup-cover {
     padding: var(--padding);
     margin: calc(var(--padding) * -1);
-    overflow: clip;
+    scroll-padding: var(--padding);
+    overflow: hidden;
   }
 
   /* Option */
@@ -383,12 +399,6 @@
     gap: theme(spacing.2);
     padding-inline: theme(spacing.2);
     border-radius: calc(var(--rounded) - var(--padding));
-  }
-
-  .option-text {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
   }
 
   /* Popover */

@@ -12,7 +12,8 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.ts";
 import { createCompositeStore } from "../composite/composite-store.ts";
-import { defaultValue } from "../utils/misc.ts";
+import type { SelectStore } from "../select/select-store.ts";
+import { chain, defaultValue } from "../utils/misc.ts";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
@@ -157,6 +158,29 @@ export function createTabStore({
     }),
   );
 
+  // TODO: Comment
+  let selectedIdFromSelectedValue: string | null | undefined = null;
+
+  setup(tab, () => {
+    const backupSelectedId = () => {
+      selectedIdFromSelectedValue = tab.getState().selectedId;
+    };
+    const restoreSelectedId = () => {
+      tab.setState("selectedId", selectedIdFromSelectedValue);
+    };
+    if (parentComposite && "setSelectElement" in parentComposite) {
+      return chain(
+        sync(parentComposite, ["value"], backupSelectedId),
+        sync(parentComposite, ["open"], restoreSelectedId),
+      );
+    }
+    if (!combobox) return;
+    return chain(
+      sync(combobox, ["selectedValue"], backupSelectedId),
+      sync(combobox, ["open"], restoreSelectedId),
+    );
+  });
+
   return {
     ...composite,
     ...tab,
@@ -260,7 +284,7 @@ export interface TabStoreOptions
    * [Select](https://ariakit.org/components/select). The stores will share the
    * same state.
    */
-  composite?: CompositeStore | null;
+  composite?: CompositeStore | SelectStore | null;
   /**
    * A reference to a [combobox
    * store](https://ariakit.org/reference/use-combobox-store). This is used when
