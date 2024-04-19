@@ -34,7 +34,6 @@ export function Select({
   onSearch,
   ...props
 }: SelectProps) {
-  const comboboxRef = React.useRef<HTMLInputElement>(null);
   const searchable = !!combobox || !!onSearch;
 
   const select = (
@@ -64,12 +63,6 @@ export function Select({
         gutter={5}
         shift={-4}
         unmountOnHide
-        autoFocusOnShow={(element) => {
-          if (element?.hasAttribute("data-option")) return true;
-          if (!comboboxRef.current) return true;
-          comboboxRef.current.focus();
-          return false;
-        }}
         className="popup elevation-1 popover popover-enter flex flex-col gap-[9px] overflow-clip"
       >
         {heading && (
@@ -85,7 +78,6 @@ export function Select({
         )}
         {searchable && (
           <Ariakit.Combobox
-            ref={comboboxRef}
             autoSelect
             render={combobox}
             className="focusable combobox input rounded-item -mb-1 h-10 w-full px-[13px] has-[~*_[data-tab]]:mb-0"

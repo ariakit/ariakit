@@ -30,7 +30,9 @@ type MutableValue<
 > = T extends string ? string : T;
 
 const isMobile =
-  typeof window !== "undefined" && matchMedia("(hover:none)").matches;
+  typeof window !== "undefined" &&
+  typeof matchMedia === "function" &&
+  matchMedia("(hover:none)").matches;
 
 /**
  * Creates a combobox store.
