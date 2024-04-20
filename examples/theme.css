@@ -318,14 +318,17 @@
       dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_1px_1px_1px_var(--shadow)]
   }
 
+  .button-small {
+    @apply
+      sm:text-sm
+      sm:[padding-inline:theme(spacing.3)]
+  }
+
   .button-icon {
     padding-inline: 0px;
     width: var(--size);
     aspect-ratio: 1 / 1;
-  }
-
-  .button-small {
-    @apply sm:text-sm
+    @apply sm:[padding-inline:0px]
   }
 
   /* Input */

@@ -119,6 +119,15 @@ export function createSelectStore({
 
   const select = createStore(initialState, composite, popover, store);
 
+  // TODO: Explain. See test "clicking on different tab and clicking outside
+  // resets the selected tab"
+  setup(select, () =>
+    sync(select, ["mounted"], (state) => {
+      if (state.mounted) return;
+      select.setState("activeId", initialState.activeId);
+    }),
+  );
+
   // Automatically sets the default value if it's not set.
   setup(select, () =>
     sync(select, ["value", "items"], (state) => {

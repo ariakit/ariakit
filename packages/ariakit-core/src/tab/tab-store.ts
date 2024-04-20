@@ -61,9 +61,6 @@ export function createTabStore({
       props.activeId,
       syncState?.activeId,
       props.defaultActiveId,
-      // If the tabs are part of a combobox widget, allow the combobox input to
-      // be the active item by default, just like in the combobox store.
-      combobox ? null : undefined,
     ),
     orientation: defaultValue(
       props.orientation,
