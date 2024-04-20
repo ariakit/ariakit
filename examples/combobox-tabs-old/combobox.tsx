@@ -275,7 +275,9 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
           // id. This ensures that calling tab.previous() and tab.next()
           // operates correctly from the selected tab.
           tab.setActiveId(tab.getState().selectedId);
-          tab.select(action());
+          requestAnimationFrame(() => {
+            tab.select(action());
+          });
         }}
       />
     );

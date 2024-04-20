@@ -152,6 +152,7 @@ export function createCompositeStore<
   const initialState: CompositeStoreState<T> = {
     ...collection.getState(),
     activeId,
+    focusedId: defaultValue(syncState?.focusedId),
     baseElement: defaultValue(syncState?.baseElement, null),
     includesBaseElement: defaultValue(
       props.includesBaseElement,
@@ -281,6 +282,7 @@ export function createCompositeStore<
       // move() does nothing
       if (id === undefined) return;
       composite.setState("activeId", id);
+      composite.setState("focusedId", id);
       composite.setState("moves", (moves) => moves + 1);
     },
 
@@ -536,6 +538,11 @@ export interface CompositeStoreState<
    * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
    */
   activeId: string | null | undefined;
+  /**
+   * TODO: Comment TODO: Rename to movedId? It's not updated when the composite
+   * item receives focus.
+   */
+  focusedId: string | null | undefined;
 }
 
 export interface CompositeStoreFunctions<
