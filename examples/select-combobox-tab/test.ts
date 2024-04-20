@@ -107,4 +107,44 @@ describe.each(TAB)("Tab tests - %s", (label) => {
     expect(q.option("main")).toHaveAttribute("data-active-item", "true");
     expect(q.option("main")).toHaveAttribute("data-focus-visible", "true");
   });
+
+  test("switch tabs with arrow keys", async () => {
+    await click(q.combobox(label));
+    expect(q.option("main")).toHaveFocus();
+
+    await press.ArrowRight();
+    expect(q.tab("Tags")).toHaveFocus();
+    expect(q.tab("Tags")).toHaveAttribute("aria-selected", "true");
+    expect(q.tab("Tags")).toHaveAttribute("data-active-item", "true");
+    expect(q.tab("Tags")).toHaveAttribute("data-focus-visible", "true");
+    expect(q.tabpanel("Tags")).toBeInTheDocument();
+    expect(q.tab("Branches")).toHaveAttribute("aria-selected", "false");
+    expect(q.tab("Branches")).not.toHaveAttribute("data-active-item");
+    expect(q.tab("Branches")).not.toHaveAttribute("data-focus-visible");
+    expect(q.tabpanel("Branches")).not.toBeInTheDocument();
+
+    await press.ArrowDown();
+    expect(q.option("v18.2.0")).toHaveFocus();
+    expect(q.option("v18.2.0")).toHaveAttribute("aria-selected", "false");
+    expect(q.option("v18.2.0")).toHaveAttribute("data-active-item", "true");
+    expect(q.option("v18.2.0")).toHaveAttribute("data-focus-visible", "true");
+    expect(q.tab("Tags")).toHaveAttribute("aria-selected", "true");
+    expect(q.tab("Tags")).not.toHaveAttribute("data-active-item");
+    expect(q.tab("Tags")).not.toHaveAttribute("data-focus-visible");
+
+    await press.ArrowUp();
+    expect(q.tab("Tags")).toHaveFocus();
+    expect(q.tab("Tags")).toHaveAttribute("aria-selected", "true");
+    expect(q.tab("Tags")).toHaveAttribute("data-active-item", "true");
+    expect(q.tab("Tags")).toHaveAttribute("data-focus-visible", "true");
+
+    await press.ArrowRight();
+    expect(q.tab("Branches")).toHaveFocus();
+    expect(q.tab("Branches")).toHaveAttribute("aria-selected", "true");
+    expect(q.tab("Branches")).toHaveAttribute("data-active-item", "true");
+    expect(q.tab("Branches")).toHaveAttribute("data-focus-visible", "true");
+    expect(q.tab("Tags")).toHaveAttribute("aria-selected", "false");
+    expect(q.tab("Tags")).not.toHaveAttribute("data-active-item");
+    expect(q.tab("Tags")).not.toHaveAttribute("data-focus-visible");
+  });
 });

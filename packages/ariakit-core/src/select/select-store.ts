@@ -119,8 +119,9 @@ export function createSelectStore({
 
   const select = createStore(initialState, composite, popover, store);
 
-  // TODO: Explain. See test "clicking on different tab and clicking outside
-  // resets the selected tab"
+  // TODO: Explain. It's probably safer to reset to the selected item instead.
+  // See test "clicking on different tab and clicking outside resets the
+  // selected tab"
   setup(select, () =>
     sync(select, ["mounted"], (state) => {
       if (state.mounted) return;

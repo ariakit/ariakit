@@ -12,6 +12,7 @@ export interface SelectProps extends Ariakit.SelectProps {
   tab?: Ariakit.TabProviderProps["selectedId"];
   setTab?: Ariakit.TabProviderProps["setSelectedId"];
   defaultTab?: Ariakit.TabProviderProps["defaultSelectedId"];
+  selectTabOnMove?: boolean;
   label?: string | Ariakit.SelectLabelProps["render"];
   heading?: string | Ariakit.PopoverHeadingProps["render"];
   combobox?: Ariakit.ComboboxProps["render"];
@@ -28,6 +29,7 @@ export function Select({
   tab,
   setTab,
   defaultTab,
+  selectTabOnMove,
   label,
   heading,
   combobox,
@@ -87,6 +89,7 @@ export function Select({
           selectedId={tab}
           setSelectedId={setTab}
           defaultSelectedId={defaultTab}
+          selectOnMove={selectTabOnMove}
         >
           <div className="tabs-border popup-cover flex flex-col">
             {children}
