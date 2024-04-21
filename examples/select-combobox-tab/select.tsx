@@ -82,7 +82,7 @@ export function Select({
           <Ariakit.Combobox
             autoSelect
             render={combobox}
-            className="focusable combobox input rounded-item -mb-1 h-10 w-full px-[13px] has-[~*_[data-tab]]:mb-0"
+            className="focusable combobox input rounded-item -mb-1 h-10 w-full px-[13px]"
           />
         )}
         <Ariakit.TabProvider
@@ -129,7 +129,6 @@ export function SelectTab(props: SelectTabProps) {
   return (
     <Ariakit.Tab
       {...props}
-      data-tab
       render={<Ariakit.Role.div render={props.render} />}
       className={clsx("clickable tab tab-default", props.className)}
     />
