@@ -5,6 +5,21 @@ const SELECT_COMBOBOX_TAB = "Select with Combobox and manual Tab";
 const ALL = [SELECT_TAB, SELECT_COMBOBOX_TAB];
 
 describe.each(ALL)("%s", (label) => {
+  test("focus is not trapped", async () => {
+    const div = document.createElement("div");
+    div.tabIndex = 0;
+    document.body.appendChild(div);
+
+    await click(q.combobox(label));
+    await press.ArrowRight();
+    expect(q.tab("Tags")).toHaveFocus();
+    expect(q.dialog()).toBeInTheDocument();
+    await press.Tab();
+    expect(q.dialog()).not.toBeInTheDocument();
+
+    div.remove();
+  });
+
   test("switch tabs with the keyboard", async () => {
     await click(q.combobox(label));
     expect(q.option("main")).toHaveFocus();
