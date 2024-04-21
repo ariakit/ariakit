@@ -254,7 +254,7 @@
   }
 
   .tab-default[aria-selected="false"] {
-    --border: var(--background);
+    --border: transparent;
   }
 
   /* ---------------- Components ---------------- */
@@ -451,7 +451,9 @@
     white-space: nowrap;
     background-color: var(--background, transparent);
     border-color: var(--border, transparent);
-    border-width: var(--border-size, 0px) var(--border-size, 0px) 0px;
+    border-width: var(--border-size, 0px) var(--border-size, 0px);
+    border-block-end-color: transparent;
+    translate: 0 var(--border-size, 0px);
   }
 
   .tab[aria-selected="true"] {
@@ -459,12 +461,12 @@
     box-shadow: inset 0 0 0 4px var(--background);
   }
 
-  .tab[data-focus-visible][data-active-item] {
+  .tab[data-focus-visible] {
     background-color: var(--accent-background);
     color: var(--accent-text);
   }
 
-  .tab[data-focus-visible][data-active-item]:not([aria-selected="true"]) {
+  .tab[data-focus-visible]:not([aria-selected="true"]) {
     --background: var(--accent-background);
   }
 
@@ -473,6 +475,7 @@
     --corner-size: calc(var(--rounded) - var(--padding) - 4px);
     --margin: theme(spacing.1);
     --padding-block: theme(spacing.1);
+    --margin-block-end: calc(var(--padding-block) + var(--border-size, 0px) + 1px);
 
     border-radius: var(--corner-size);
     padding-block:
@@ -480,7 +483,7 @@
       var(--padding-block-end, var(--padding-block));
     padding-inline: theme(spacing.2);
     margin: var(--margin);
-    margin-block-end: calc(var(--padding-block) + var(--border-size, 0px));
+    margin-block-end: var(--margin-block-end);
     background-clip: padding-box;
     outline: none;
   }
@@ -488,13 +491,13 @@
   .tab-default[aria-selected="true"] {
     --corner-size: calc(var(--rounded) - var(--padding));
     --padding-block: calc(theme(spacing.1) + var(--margin));
-    --padding-block-end: calc(var(--padding-block) + var(--border-size, 0px));
+    --padding-block-end: var(--margin-block-end);
 
     margin: 0;
     padding-inline: theme(spacing.3);
   }
 
-  .tab-default[aria-selected="false"]:not(:hover) {
+  .tab-default[aria-selected="false"]:not([data-focus-visible],:hover) {
     --background: var(--popup-background);
   }
 
