@@ -52,6 +52,10 @@ export function createTabStore({
 
   const composite = createCompositeStore({
     ...props,
+    // We need to explicitly set the default value of `includesBaseElement` to
+    // `false` since we don't want the composite store to default it to `true`
+    // when the activeId state is null, which could be the case when rendering
+    // combobox with tab.
     includesBaseElement: defaultValue(
       props.includesBaseElement,
       syncState?.includesBaseElement,
@@ -155,7 +159,8 @@ export function createTabStore({
     }),
   );
 
-  // TODO: Comment
+  // Preserve the selected tab when a select or combobox value is selected
+  // within the tab panel.
   let selectedIdFromSelectedValue: string | null | undefined = null;
 
   setup(tab, () => {
