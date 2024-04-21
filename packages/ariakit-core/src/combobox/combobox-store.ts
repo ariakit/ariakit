@@ -13,7 +13,7 @@ import type {
 import { createPopoverStore } from "../popover/popover-store.ts";
 import type { TagStore } from "../tag/tag-store.ts";
 import { chain, defaultValue } from "../utils/misc.ts";
-import { isTouchDevice } from "../utils/platform.ts";
+import { isSafari, isTouchDevice } from "../utils/platform.ts";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
@@ -30,7 +30,7 @@ type MutableValue<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 > = T extends string ? string : T;
 
-const isMobile = isTouchDevice() && matchMedia("(hover:none)").matches;
+const isTouchSafari = isSafari() && isTouchDevice();
 
 /**
  * Creates a combobox store.
@@ -79,9 +79,11 @@ export function createComboboxStore({
     ),
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
     focusWrap: defaultValue(props.focusWrap, syncState?.focusWrap, true),
-    virtualFocus:
-      !isMobile &&
-      defaultValue(props.virtualFocus, syncState?.virtualFocus, true),
+    virtualFocus: defaultValue(
+      props.virtualFocus,
+      syncState?.virtualFocus,
+      true,
+    ),
   });
 
   const popover = createPopoverStore({
@@ -130,13 +132,18 @@ export function createComboboxStore({
 
   const combobox = createStore(initialState, composite, popover, store);
 
-  // TODO: Comment
-  setup(combobox, () => {
-    if (!isMobile) return;
-    return sync(combobox, ["virtualFocus"], () => {
-      combobox.setState("virtualFocus", false);
-    });
-  });
+  // Safari doesn't support aria-activedescendant on combobox elements. This is
+  // particularly problematic when using touch devices as moving the VoiceOver
+  // virtual cursor through the combobox items will always move the focus to the
+  // input element. To work around this, we disable virtual focus on touch
+  // devices when using Safari.
+  if (isTouchSafari) {
+    setup(combobox, () =>
+      sync(combobox, ["virtualFocus"], () => {
+        combobox.setState("virtualFocus", false);
+      }),
+    );
+  }
 
   // Sync tag values with the combobox selectedValue state.
   setup(combobox, () => {
