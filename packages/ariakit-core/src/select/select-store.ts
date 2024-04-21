@@ -119,17 +119,6 @@ export function createSelectStore({
 
   const select = createStore(initialState, composite, popover, store);
 
-  // TODO: Explain. It's probably safer to reset to the selected item instead.
-  // No, it's not. Because the selected item id may change when the select
-  // popover is dynamically mounted and opens again with new elements. See test
-  // "clicking on different tab and clicking outside resets the selected tab"
-  setup(select, () =>
-    sync(select, ["mounted"], (state) => {
-      if (state.mounted) return;
-      select.setState("activeId", initialState.activeId);
-    }),
-  );
-
   // Automatically sets the default value if it's not set.
   setup(select, () =>
     sync(select, ["value", "items"], (state) => {
@@ -143,11 +132,24 @@ export function createSelectStore({
     }),
   );
 
+  // Resets the active id to its initial state when the popover is hidden. This
+  // guarantees that the active id won't be pointing to another item when the
+  // popover is shown again, which would cause the selected item to not be
+  // auto-focused. See test "clicking on different tab and clicking outside
+  // resets the selected tab".
+  setup(select, () =>
+    sync(select, ["mounted"], (state) => {
+      if (state.mounted) return;
+      select.setState("activeId", initialState.activeId);
+    }),
+  );
+
   // Sets the active id when the value changes and the popover is hidden.
   setup(select, () =>
     sync(select, ["mounted", "items", "value"], (state) => {
       // TODO: Revisit this. See test "open with keyboard, then try to open
-      // again"
+      // again". Probably deprecate together with using ComboboxProvider as a
+      // parent of SelectProvider.
       if (combobox) return;
       if (state.mounted) return;
       const values = toArray(state.value);
@@ -157,7 +159,6 @@ export function createSelectStore({
         (item) => !item.disabled && item.value === lastValue,
       );
       if (!item) return;
-      // TODO: This may be problematic.
       select.setState("activeId", item.id);
     }),
   );
