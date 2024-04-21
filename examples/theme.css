@@ -458,7 +458,9 @@
 
   .tab[aria-selected="true"] {
     z-index: 20;
-    box-shadow: inset 0 0 0 4px var(--background);
+    box-shadow:
+      inset 0 0 0 4px var(--background),
+      inset 0 -2px 0 4px var(--background);
   }
 
   .tab[data-focus-visible] {
