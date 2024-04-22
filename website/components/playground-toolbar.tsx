@@ -77,7 +77,6 @@ export function PlaygroundToolbar({
           render={
             <Select
               aria-label="Select language"
-              toggleOnClick
               render={<TooltipButton title="Select language" />}
             />
           }

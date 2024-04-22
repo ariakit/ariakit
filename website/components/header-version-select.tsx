@@ -102,7 +102,6 @@ export function HeaderVersionSelect({ versions }: Props) {
         Version
       </SelectLabel>
       <Select
-        toggleOnClick
         store={select}
         className="mr-2 hidden h-8 px-3 text-xs font-semibold text-black/80 md:flex md:gap-1.5 dark:text-white/80"
         render={<Command />}
