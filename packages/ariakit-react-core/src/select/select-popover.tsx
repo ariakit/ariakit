@@ -5,7 +5,7 @@ import { usePopover } from "../popover/popover.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useSelectProviderContext } from "./select-context.tsx";
-import type { SelectListOptions } from "./select-list.ts";
+import type { SelectListOptions } from "./select-list.tsx";
 import { useSelectList } from "./select-list.tsx";
 
 const TagName = "div" satisfies ElementType;
