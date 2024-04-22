@@ -106,58 +106,18 @@ const buttonInputTypes = [
 ];
 
 /**
- * Ponyfill for `Element.prototype.matches`
- *
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
- */
-export function matches(element: Element, selectors: string): boolean {
-  if ("matches" in element) {
-    return element.matches(selectors);
-  }
-  if ("msMatchesSelector" in element) {
-    return (element as any).msMatchesSelector(selectors);
-  }
-  return (element as any).webkitMatchesSelector(selectors);
-}
-
-/**
  * Checks if the element is visible or not.
  */
 export function isVisible(element: Element) {
+  if (typeof element.checkVisibility === "function") {
+    return element.checkVisibility();
+  }
   const htmlElement = element as HTMLElement;
   return (
     htmlElement.offsetWidth > 0 ||
     htmlElement.offsetHeight > 0 ||
     element.getClientRects().length > 0
   );
-}
-
-/**
- * Ponyfill for `Element.prototype.closest`
- * @example
- * closest(document.getElementById("id"), "div");
- * // same as
- * document.getElementById("id").closest("div");
- */
-export function closest<K extends keyof HTMLElementTagNameMap>(
-  element: Element,
-  selectors: K,
-): HTMLElementTagNameMap[K];
-export function closest<K extends keyof SVGElementTagNameMap>(
-  element: Element,
-  selectors: K,
-): SVGElementTagNameMap[K];
-export function closest<T extends Element = Element>(
-  element: Element,
-  selectors: string,
-): T | null;
-export function closest(element: Element, selectors: string) {
-  if ("closest" in element) return element.closest(selectors);
-  do {
-    if (matches(element, selectors)) return element;
-    element = (element.parentElement || element.parentNode) as any;
-  } while (element !== null && element.nodeType === 1);
-  return null;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { closest, isVisible } from "@ariakit/core/utils/dom";
+import { isVisible } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import { wrapAsync } from "./__utils.ts";
@@ -11,7 +11,7 @@ import { sleep } from "./sleep.ts";
 
 function getClosestLabel(element: Element) {
   if (!isFocusable(element)) {
-    return closest(element, "label");
+    return element.closest("label");
   }
   return null;
 }
@@ -65,7 +65,7 @@ async function clickOption(
   eventOptions?: MouseEventInit,
 ) {
   // https://stackoverflow.com/a/16530782/5513909
-  const select = closest(element, "select") as HTMLSelectElement & {
+  const select = element.closest("select") as HTMLSelectElement & {
     lastOptionSelectedNotByShiftKey?: HTMLOptionElement;
   };
 
