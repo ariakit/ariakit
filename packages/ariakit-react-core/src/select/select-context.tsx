@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
@@ -39,3 +40,7 @@ export const SelectContextProvider = ctx.ContextProvider;
 export const SelectScopedContextProvider = ctx.ScopedContextProvider;
 
 export const SelectItemCheckedContext = createContext(false);
+
+export const SelectHeadingContext = createContext<
+  [string | undefined, Dispatch<SetStateAction<string | undefined>>] | null
+>(null);

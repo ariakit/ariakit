@@ -112,8 +112,9 @@ export function createSelectStore({
       syncState.setValueOnMove,
       false,
     ),
-    selectElement: defaultValue(syncState.selectElement, null),
     labelElement: defaultValue(syncState.labelElement, null),
+    selectElement: defaultValue(syncState.selectElement, null),
+    listElement: defaultValue(syncState.listElement, null),
   };
 
   const select = createStore(initialState, composite, popover, store);
@@ -131,11 +132,24 @@ export function createSelectStore({
     }),
   );
 
+  // Resets the active id to its initial state when the popover is hidden. This
+  // guarantees that the active id won't be pointing to another item when the
+  // popover is shown again, which would cause the selected item to not be
+  // auto-focused. See test "clicking on different tab and clicking outside
+  // resets the selected tab".
+  setup(select, () =>
+    sync(select, ["mounted"], (state) => {
+      if (state.mounted) return;
+      select.setState("activeId", initialState.activeId);
+    }),
+  );
+
   // Sets the active id when the value changes and the popover is hidden.
   setup(select, () =>
     sync(select, ["mounted", "items", "value"], (state) => {
       // TODO: Revisit this. See test "open with keyboard, then try to open
-      // again"
+      // again". Probably deprecate together with using ComboboxProvider as a
+      // parent of SelectProvider.
       if (combobox) return;
       if (state.mounted) return;
       const values = toArray(state.value);
@@ -145,7 +159,6 @@ export function createSelectStore({
         (item) => !item.disabled && item.value === lastValue,
       );
       if (!item) return;
-      // TODO: This may be problematic.
       select.setState("activeId", item.id);
     }),
   );
@@ -171,8 +184,9 @@ export function createSelectStore({
     ...select,
     combobox,
     setValue: (value) => select.setState("value", value),
-    setSelectElement: (element) => select.setState("selectElement", element),
     setLabelElement: (element) => select.setState("labelElement", element),
+    setSelectElement: (element) => select.setState("selectElement", element),
+    setListElement: (element) => select.setState("listElement", element),
   };
 }
 
@@ -221,6 +235,10 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
    */
   setValueOnMove: boolean;
   /**
+   * The select label element.
+   */
+  labelElement: HTMLElement | null;
+  /**
    * The select button element.
    *
    * Live examples:
@@ -228,9 +246,9 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
    */
   selectElement: HTMLElement | null;
   /**
-   * The select label element.
+   * The select list element.
    */
-  labelElement: HTMLElement | null;
+  listElement: HTMLElement | null;
 }
 
 export interface SelectStoreFunctions<
@@ -248,13 +266,17 @@ export interface SelectStoreFunctions<
    */
   setValue: SetState<SelectStoreState<T>["value"]>;
   /**
+   * Sets the `labelElement` state.
+   */
+  setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
+  /**
    * Sets the `selectElement` state.
    */
   setSelectElement: SetState<SelectStoreState<T>["selectElement"]>;
   /**
-   * Sets the `labelElement` state.
+   * Sets the `listElement` state.
    */
-  setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
+  setListElement: SetState<SelectStoreState<T>["listElement"]>;
 }
 
 export interface SelectStoreOptions<

@@ -7,6 +7,7 @@ import type {
   Ref,
   RefCallback,
   RefObject,
+  SetStateAction,
 } from "react";
 import {
   useCallback,
@@ -112,6 +113,31 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
     ref.current = callback;
   }
   return useCallback<AnyFunction>((...args) => ref.current?.(...args), []) as T;
+}
+
+/**
+ * Creates a React state that calls a callback function whenever the state
+ * changes and rolls back to the previous state on cleanup.
+ */
+export function useTransactionState<T>(
+  callback?: ((state: SetStateAction<T | null>) => void) | null,
+) {
+  const [state, setState] = useState<T | null>(null);
+
+  useSafeLayoutEffect(() => {
+    if (state == null) return;
+    if (!callback) return;
+    let prevState: T | null = null;
+    callback((prev) => {
+      prevState = prev;
+      return state;
+    });
+    return () => {
+      callback(prevState);
+    };
+  }, [state, callback]);
+
+  return [state, setState] as const;
 }
 
 /**

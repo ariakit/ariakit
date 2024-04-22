@@ -3,8 +3,10 @@ export { useSelectContext } from "@ariakit/react-core/select/select-context";
 export { Select } from "@ariakit/react-core/select/select";
 export { SelectProvider } from "@ariakit/react-core/select/select-provider";
 export { SelectArrow } from "@ariakit/react-core/select/select-arrow";
+export { SelectDismiss } from "@ariakit/react-core/select/select-dismiss";
 export { SelectGroupLabel } from "@ariakit/react-core/select/select-group-label";
 export { SelectGroup } from "@ariakit/react-core/select/select-group";
+export { SelectHeading } from "@ariakit/react-core/select/select-heading";
 export { SelectItemCheck } from "@ariakit/react-core/select/select-item-check";
 export { SelectItem } from "@ariakit/react-core/select/select-item";
 export { SelectLabel } from "@ariakit/react-core/select/select-label";
@@ -32,6 +34,11 @@ export type {
 } from "@ariakit/react-core/select/select-arrow";
 
 export type {
+  SelectDismissOptions,
+  SelectDismissProps,
+} from "@ariakit/react-core/select/select-dismiss";
+
+export type {
   SelectGroupLabelOptions,
   SelectGroupLabelProps,
 } from "@ariakit/react-core/select/select-group-label";
@@ -40,6 +47,11 @@ export type {
   SelectGroupOptions,
   SelectGroupProps,
 } from "@ariakit/react-core/select/select-group";
+
+export type {
+  SelectHeadingOptions,
+  SelectHeadingProps,
+} from "@ariakit/react-core/select/select-heading";
 
 export type {
   SelectItemCheckOptions,

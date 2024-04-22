@@ -38,17 +38,20 @@ useSelectContext()
   <Select>
     <SelectArrow />
   </Select>
-  <SelectList />
   <SelectPopover>
-    <SelectGroup>
-      <SelectGroupLabel />
-      <SelectRow>
-        <SelectItem>
-          <SelectItemCheck />
-        </SelectItem>
-        <SelectSeparator />
-      </SelectRow>
-    </SelectGroup>
+    <SelectHeading />
+    <SelectDismiss />
+    <SelectList>
+      <SelectGroup>
+        <SelectGroupLabel />
+        <SelectRow>
+          <SelectItem>
+            <SelectItemCheck />
+          </SelectItem>
+          <SelectSeparator />
+        </SelectRow>
+      </SelectGroup>
+    </SelectList>
   </SelectPopover>
 </SelectProvider>
 ```

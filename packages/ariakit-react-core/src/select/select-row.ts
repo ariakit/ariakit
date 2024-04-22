@@ -37,8 +37,8 @@ export const useSelectRow = createHook<TagName, SelectRowOptions>(
         "SelectRow must be wrapped in a SelectList or SelectPopover component",
     );
 
-    const contentElement = store.useState("contentElement");
-    const popupRole = getPopupRole(contentElement);
+    const listElement = store.useState("listElement");
+    const popupRole = getPopupRole(listElement);
     const role = popupRole === "grid" ? "row" : "presentation";
 
     props = { role, ...props };
