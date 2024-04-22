@@ -5,7 +5,7 @@ import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useMergeRefs, useWrapElement } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { FocusTrap } from "./focus-trap.ts";
+import { FocusTrap } from "./focus-trap.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

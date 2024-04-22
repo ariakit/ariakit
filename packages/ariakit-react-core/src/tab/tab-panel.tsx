@@ -3,13 +3,13 @@ import type { ElementType, KeyboardEvent } from "react";
 import { createTabStore } from "@ariakit/core/tab/tab-store";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CollectionItemOptions } from "../collection/collection-item.ts";
-import { useCollectionItem } from "../collection/collection-item.ts";
+import type { CollectionItemOptions } from "../collection/collection-item.tsx";
+import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
-import type { FocusableOptions } from "../focusable/focusable.ts";
-import { useFocusable } from "../focusable/focusable.ts";
+import type { FocusableOptions } from "../focusable/focusable.tsx";
+import { useFocusable } from "../focusable/focusable.tsx";
 import {
   useEvent,
   useId,

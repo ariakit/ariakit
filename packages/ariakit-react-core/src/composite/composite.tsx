@@ -16,8 +16,8 @@ import {
 import { focusIntoView, hasFocus } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { FocusableOptions } from "../focusable/focusable.ts";
-import { useFocusable } from "../focusable/focusable.ts";
+import type { FocusableOptions } from "../focusable/focusable.tsx";
+import { useFocusable } from "../focusable/focusable.tsx";
 import {
   useBooleanEvent,
   useEvent,

@@ -33,8 +33,8 @@ import type {
 } from "@ariakit/core/utils/types";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import type { PopoverAnchorOptions } from "../popover/popover-anchor.ts";
-import { usePopoverAnchor } from "../popover/popover-anchor.ts";
+import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
+import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
 import {
   useBooleanEvent,
   useEvent,

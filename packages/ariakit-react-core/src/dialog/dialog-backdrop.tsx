@@ -1,10 +1,10 @@
 import { isValidElement, useRef } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
-import { Role } from "../role/role.ts";
+import { Role } from "../role/role.tsx";
 import { useSafeLayoutEffect } from "../utils/hooks.ts";
 import type { DialogStore } from "./dialog-store.ts";
-import type { DialogProps } from "./dialog.ts";
+import type { DialogProps } from "./dialog.tsx";
 import { markAncestor } from "./utils/mark-tree-outside.ts";
 
 interface DialogBackdropProps
