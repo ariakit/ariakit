@@ -4,8 +4,8 @@ import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeHoverOptions } from "../composite/composite-hover.ts";
-import { useCompositeHover } from "../composite/composite-hover.ts";
+import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
+import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import {

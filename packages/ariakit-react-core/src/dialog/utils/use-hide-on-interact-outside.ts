@@ -3,7 +3,7 @@ import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.ts";
 import type { DialogStore } from "../dialog-store.ts";
-import type { DialogOptions } from "../dialog.ts";
+import type { DialogOptions } from "../dialog.tsx";
 import { isElementMarked } from "./mark-tree-outside.ts";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
 

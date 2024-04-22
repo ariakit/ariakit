@@ -3,7 +3,7 @@ import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { CheckboxCheckedContext } from "./checkbox-checked-context.ts";
+import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";
 
 const TagName = "span" satisfies ElementType;

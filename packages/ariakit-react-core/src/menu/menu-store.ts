@@ -17,12 +17,12 @@ import type {
   HovercardStoreState,
 } from "../hovercard/hovercard-store.ts";
 import { useHovercardStoreProps } from "../hovercard/hovercard-store.ts";
-import { useMenubarContext } from "../menubar/menubar-context.ts";
+import { useMenubarContext } from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
-import { useMenuContext } from "./menu-context.ts";
+import { useMenuContext } from "./menu-context.tsx";
 
 export function useMenuStoreProps<T extends Core.MenuStore>(
   store: T,

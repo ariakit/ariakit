@@ -10,7 +10,7 @@ import { useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuProviderContext } from "./menu-context.ts";
+import { useMenuProviderContext } from "./menu-context.tsx";
 import type { MenuListOptions } from "./menu-list.tsx";
 import { useMenuList } from "./menu-list.tsx";
 

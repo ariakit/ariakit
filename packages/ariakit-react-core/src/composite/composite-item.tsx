@@ -20,10 +20,10 @@ import {
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CollectionItemOptions } from "../collection/collection-item.ts";
-import { useCollectionItem } from "../collection/collection-item.ts";
-import type { CommandOptions } from "../command/command.ts";
-import { useCommand } from "../command/command.ts";
+import type { CollectionItemOptions } from "../collection/collection-item.tsx";
+import { useCollectionItem } from "../collection/collection-item.tsx";
+import type { CommandOptions } from "../command/command.tsx";
+import { useCommand } from "../command/command.tsx";
 import {
   useBooleanEvent,
   useEvent,

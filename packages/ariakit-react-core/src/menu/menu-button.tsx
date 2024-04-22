@@ -2,13 +2,13 @@ import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useRef } from "react";
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.ts";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.ts";
-import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.ts";
-import { useHovercardAnchor } from "../hovercard/hovercard-anchor.ts";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
+import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
-import { Role } from "../role/role.ts";
+import { Role } from "../role/role.tsx";
 import {
   useEvent,
   useId,
@@ -18,7 +18,10 @@ import {
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { MenuContextProvider, useMenuProviderContext } from "./menu-context.ts";
+import {
+  MenuContextProvider,
+  useMenuProviderContext,
+} from "./menu-context.tsx";
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "button" satisfies ElementType;

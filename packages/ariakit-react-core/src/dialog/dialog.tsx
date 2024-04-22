@@ -32,8 +32,8 @@ import {
   useDisclosureContent,
 } from "../disclosure/disclosure-content.tsx";
 import { useFocusableContainer } from "../focusable/focusable-container.tsx";
-import type { FocusableOptions } from "../focusable/focusable.ts";
-import { useFocusable } from "../focusable/focusable.ts";
+import type { FocusableOptions } from "../focusable/focusable.tsx";
+import { useFocusable } from "../focusable/focusable.tsx";
 import { HeadingLevel } from "../heading/heading-level.tsx";
 import type { PortalOptions } from "../portal/portal.tsx";
 import { usePortal } from "../portal/portal.tsx";

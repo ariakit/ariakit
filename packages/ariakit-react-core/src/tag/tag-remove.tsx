@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { Role } from "../role/role.ts";
+import { Role } from "../role/role.tsx";
 import { useBooleanEvent, useEvent, useId } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

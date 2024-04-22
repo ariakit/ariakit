@@ -7,7 +7,7 @@ import type { Props } from "../utils/types.ts";
 import {
   MenubarScopedContextProvider,
   useMenubarProviderContext,
-} from "./menubar-context.ts";
+} from "./menubar-context.tsx";
 import { useMenubarStore } from "./menubar-store.ts";
 import type { MenubarStore, MenubarStoreProps } from "./menubar-store.ts";
 
