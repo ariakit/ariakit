@@ -13,7 +13,7 @@ import type {
 import { createPopoverStore } from "../popover/popover-store.ts";
 import type { TagStore } from "../tag/tag-store.ts";
 import { chain, defaultValue } from "../utils/misc.ts";
-import { isSafari } from "../utils/platform.ts";
+import { isSafari, isTouchDevice } from "../utils/platform.ts";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
@@ -30,7 +30,7 @@ type MutableValue<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 > = T extends string ? string : T;
 
-const isSafariOnMobile = isSafari() && matchMedia("(hover:none)").matches;
+const isTouchSafari = isSafari() && isTouchDevice();
 
 /**
  * Creates a combobox store.
@@ -82,7 +82,7 @@ export function createComboboxStore({
     virtualFocus: defaultValue(
       props.virtualFocus,
       syncState?.virtualFocus,
-      !isSafariOnMobile,
+      true,
     ),
   });
 
@@ -131,6 +131,19 @@ export function createComboboxStore({
   };
 
   const combobox = createStore(initialState, composite, popover, store);
+
+  // Safari doesn't support aria-activedescendant on combobox elements. This is
+  // particularly problematic when using touch devices as moving the VoiceOver
+  // virtual cursor through the combobox items will always move the focus to the
+  // input element. To work around this, we disable virtual focus on touch
+  // devices when using Safari.
+  if (isTouchSafari) {
+    setup(combobox, () =>
+      sync(combobox, ["virtualFocus"], () => {
+        combobox.setState("virtualFocus", false);
+      }),
+    );
+  }
 
   // Sync tag values with the combobox selectedValue state.
   setup(combobox, () => {
