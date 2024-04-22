@@ -7,6 +7,7 @@ import {
   useCompositeItem,
 } from "../composite/composite-item.tsx";
 import { useEvent, useId, useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -112,6 +113,22 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     },
     [store, id, selected, shouldRegisterItem],
   );
+
+  // If the tab is rendered within another composite widget with virtual focus,
+  // such as combobox, it shouldn't be tabbable even if the tab store uses
+  // roving tabindex. Otherwise, the focus will be trapped within the composite
+  // widget.
+  const isWithinVirtualFocusComposite = useStoreState(
+    store.combobox || store.composite,
+    "virtualFocus",
+  );
+
+  if (isWithinVirtualFocusComposite) {
+    props = {
+      ...props,
+      tabIndex: -1,
+    };
+  }
 
   props = {
     id,
