@@ -3,7 +3,7 @@ import type { ElementType } from "react";
 import { useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { HeadingContext } from "./heading-context.ts";
+import { HeadingContext } from "./heading-context.tsx";
 import type { HeadingLevels } from "./utils.ts";
 
 type HeadingElements = `h${HeadingLevels}`;

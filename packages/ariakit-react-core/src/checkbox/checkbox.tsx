@@ -9,8 +9,8 @@ import {
   disabledFromProps,
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
-import type { CommandOptions } from "../command/command.ts";
-import { useCommand } from "../command/command.ts";
+import type { CommandOptions } from "../command/command.tsx";
+import { useCommand } from "../command/command.tsx";
 import {
   useEvent,
   useForceUpdate,
@@ -21,7 +21,7 @@ import {
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { CheckboxCheckedContext } from "./checkbox-checked-context.ts";
+import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
 import { useCheckboxContext } from "./checkbox-context.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";
 

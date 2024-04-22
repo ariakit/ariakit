@@ -1,7 +1,7 @@
 import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
-import type { ButtonOptions } from "../button/button.ts";
-import { useButton } from "../button/button.ts";
+import type { ButtonOptions } from "../button/button.tsx";
+import { useButton } from "../button/button.tsx";
 import { useEvent } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useContext } from "react";
-import { HeadingContext } from "./heading-context.ts";
+import { HeadingContext } from "./heading-context.tsx";
 import type { HeadingLevels } from "./utils.ts";
 
 /**

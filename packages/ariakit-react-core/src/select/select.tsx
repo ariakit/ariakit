@@ -10,8 +10,8 @@ import { getPopupRole } from "@ariakit/core/utils/dom";
 import { queueBeforeEvent } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.ts";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.ts";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import {
@@ -22,7 +22,7 @@ import {
 } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { SelectArrow } from "./select-arrow.ts";
+import { SelectArrow } from "./select-arrow.tsx";
 import {
   SelectScopedContextProvider,
   useSelectProviderContext,

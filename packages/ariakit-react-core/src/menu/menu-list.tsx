@@ -1,8 +1,8 @@
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.ts";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.ts";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
@@ -19,7 +19,7 @@ import type { Props } from "../utils/types.ts";
 import {
   MenuScopedContextProvider,
   useMenuProviderContext,
-} from "./menu-context.ts";
+} from "./menu-context.tsx";
 import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;

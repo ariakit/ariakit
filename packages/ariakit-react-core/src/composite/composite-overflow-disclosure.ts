@@ -6,7 +6,7 @@ import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import type { CompositeItemOptions } from "./composite-item.ts";
+import type { CompositeItemOptions } from "./composite-item.tsx";
 import { useCompositeItem } from "./composite-item.tsx";
 import type { CompositeOverflowStore } from "./composite-overflow-store.ts";
 
