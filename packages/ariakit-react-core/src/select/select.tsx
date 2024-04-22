@@ -75,8 +75,8 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   required,
   showOnKeyDown = true,
   moveOnKeyDown = true,
-  toggleOnClick = false,
-  toggleOnPress = !toggleOnClick,
+  toggleOnPress = true,
+  toggleOnClick = toggleOnPress,
   ...props
 }) {
   const context = useSelectProviderContext();
@@ -88,12 +88,9 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
       "Select must receive a `store` prop or be wrapped in a SelectProvider component.",
   );
 
-  toggleOnPress = toggleOnClick ? false : toggleOnPress;
-
   const onKeyDownProp = props.onKeyDown;
   const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
   const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
-  const toggleOnPressProp = useBooleanEvent(toggleOnPress);
   const placement = store.useState("placement");
   const dir = placement.split("-")[0] as BasePlacement;
   const value = store.useState("value");
@@ -104,13 +101,6 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     if (event.defaultPrevented) return;
     if (!store) return;
     const { orientation, items, activeId } = store.getState();
-    // toggleOnPress
-    if (event.key === " " || event.key === "Enter") {
-      if (toggleOnPressProp(event)) {
-        event.preventDefault();
-        store.toggle();
-      }
-    }
     // moveOnKeyDown
     const isVertical = orientation !== "horizontal";
     const isHorizontal = orientation !== "vertical";
@@ -147,21 +137,6 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
       // popover is shown.
       queueBeforeEvent(event.currentTarget, "keyup", store.show);
     }
-  });
-
-  const onMouseDownProp = props.onMouseDown;
-
-  const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
-    onMouseDownProp?.(event);
-    if (event.defaultPrevented) return;
-    if (event.button) return;
-    if (event.ctrlKey) return;
-    if (!toggleOnPressProp(event)) return;
-    const element = event.currentTarget;
-    queueBeforeEvent(element, "focusin", () => {
-      store?.setDisclosureElement(element);
-      store?.toggle();
-    });
   });
 
   props = useWrapElement(
@@ -297,7 +272,6 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     ...props,
     ref: useMergeRefs(store.setSelectElement, props.ref),
     onKeyDown,
-    onMouseDown,
   };
 
   props = usePopoverDisclosure({ store, toggleOnClick, ...props });
@@ -369,28 +343,14 @@ export interface SelectOptions<T extends ElementType = TagName>
    */
   moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * Determines if
-   * [`toggle`](https://ariakit.org/reference/use-select-store#toggle) should be
-   * invoked on click. By default, the
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
-   * are displayed on press (on mouse/key down).
-   *
-   * **Note**: When set to `true`, this prop supersedes the
-   * [`toggleOnPress`](https://ariakit.org/reference/select#toggleonpress) prop.
-   * @default false
-   */
-  toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
-  /**
-   * Determines whether pressing Space, Enter, or a mouse down event will
+   * Determines whether pressing Space, Enter, or a click event will
    * [`toggle`](https://ariakit.org/reference/use-select-store#toggle) the
    * [`SelectList`](https://ariakit.org/reference/select-list) or
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components.
-   *
-   * **Note**: This prop is disregarded if
-   * [`toggleOnClick`](https://ariakit.org/reference/select#toggleonclick) is
-   * set to `true`.
    * @default true
+   * @deprecated Use
+   * [`toggleOnClick`](https://ariakit.org/reference/select#toggleonclick)
+   * instead.
    */
   toggleOnPress?: BooleanOrCallback<
     MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>

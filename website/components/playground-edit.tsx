@@ -307,12 +307,7 @@ export const PlaygroundEditButton = forwardRef<
           title={`Using ${buildToolLabel}`}
           aria-label="Build tool"
           className="size-auto bg-black/[7%] p-0 hover:bg-black/[12%] dark:bg-white/5 dark:hover:bg-white/10"
-          render={
-            <Select
-              toggleOnClick
-              render={<Command flat variant="secondary" />}
-            />
-          }
+          render={<Select render={<Command flat variant="secondary" />} />}
         >
           <BuiltToolIcon className="size-5" />
           <span className="sr-only">{buildToolLabel}</span>
