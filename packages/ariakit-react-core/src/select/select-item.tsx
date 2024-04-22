@@ -130,11 +130,12 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       [selected],
     );
 
-    const contentElement = store.useState("contentElement");
+    const listElement = store.useState("listElement");
+
     const autoFocus = store.useState((state) => {
-      if (state.activeId !== id && store?.item(state.activeId)) return false;
-      if (state.value == null) return false;
       if (value == null) return false;
+      if (state.value == null) return false;
+      if (state.activeId !== id && store?.item(state.activeId)) return false;
       if (Array.isArray(state.value)) {
         return state.value[state.value.length - 1] === value;
       }
@@ -143,7 +144,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
 
     props = {
       id,
-      role: getPopupItemRole(contentElement),
+      role: getPopupItemRole(listElement),
       "aria-selected": selected,
       children: value,
       ...props,

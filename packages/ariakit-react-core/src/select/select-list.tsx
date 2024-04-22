@@ -1,5 +1,5 @@
 import type { ElementType, KeyboardEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
@@ -15,19 +15,25 @@ import {
   useEvent,
   useId,
   useMergeRefs,
+  useTransactionState,
   useWrapElement,
 } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
+  SelectHeadingContext,
   SelectScopedContextProvider,
-  useSelectProviderContext,
+  useSelectContext,
 } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+const SelectListContext = createContext<
+  ((store: SelectStore | null) => void) | null
+>(null);
 
 /**
  * Returns props to create a `SelectList` component.
@@ -52,7 +58,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     alwaysVisible,
     ...props
   }) {
-    const context = useSelectProviderContext();
+    const context = useSelectContext();
     store = store || context;
 
     invariant(
@@ -61,7 +67,6 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
         "SelectList must receive a `store` prop or be wrapped in a SelectProvider component.",
     );
 
-    const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
     const value = store.useState("value");
     const multiSelectable = Array.isArray(value);
@@ -95,25 +100,46 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
       }
     });
 
+    const headingContext = useContext(SelectHeadingContext);
+    const headingState = useState<string>();
+    const [headingId, setHeadingId] = headingContext || headingState;
+
+    const headingContextValue: typeof headingState = useMemo(
+      () => [headingId, setHeadingId],
+      [headingId],
+    );
+
+    const [childStore, setChildStore] = useState<SelectStore | null>(null);
+    const setStore = useContext(SelectListContext);
+
+    useEffect(() => {
+      if (!setStore) return;
+      setStore(store);
+      return () => setStore(null);
+    }, [setStore, store]);
+
     props = useWrapElement(
       props,
       (element) => (
         <SelectScopedContextProvider value={store}>
-          {element}
+          <SelectListContext.Provider value={setChildStore}>
+            <SelectHeadingContext.Provider value={headingContextValue}>
+              {element}
+            </SelectHeadingContext.Provider>
+          </SelectListContext.Provider>
         </SelectScopedContextProvider>
       ),
-      [store],
+      [store, headingContextValue],
     );
 
-    const labelId = store.useState((state) => state.labelElement?.id);
     const hasCombobox = !!store.combobox;
-    composite = composite ?? !hasCombobox;
+    composite = composite ?? (!hasCombobox && childStore !== store);
 
-    if (composite) {
-      props = { role: "listbox", ...props };
-    }
+    const [element, setElement] = useTransactionState(
+      composite ? store.setListElement : null,
+    );
 
-    const role = useAttribute(ref, "role", props.role);
+    const role = useAttribute(element, "role", props.role);
     const isCompositeRole =
       role === "listbox" ||
       role === "menu" ||
@@ -125,13 +151,24 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
+    if (composite) {
+      props = {
+        role: "listbox",
+        "aria-multiselectable": ariaMultiSelectable,
+        ...props,
+      };
+    }
+
+    const labelId = store.useState(
+      (state) => headingId || state.labelElement?.id,
+    );
+
     props = {
       id,
       "aria-labelledby": labelId,
-      "aria-multiselectable": ariaMultiSelectable,
       hidden,
       ...props,
-      ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
+      ref: useMergeRefs(setElement, props.ref),
       style,
       onKeyDown,
     };
@@ -144,24 +181,26 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
 );
 
 /**
- * Renders a select list element. This is the primitive component used by the
- * [`SelectPopover`](https://ariakit.org/reference/select-popover) component.
- *
- * Unlike [`SelectPopover`](https://ariakit.org/reference/select-popover), this
- * component doesn't render a popover and therefore doesn't automatically focus
- * on items when opened.
+ * Renders a wrapper for
+ * [`SelectItem`](https://ariakit.org/reference/select-item) elements. This
+ * component may be rendered within a
+ * [`SelectPopover`](https://ariakit.org/reference/select-popover) component if
+ * there are other non-item elements inside the popover.
  *
  * The `aria-labelledby` prop is set to the
  * [`Select`](https://ariakit.org/reference/select) element's `id` by default.
  * @see https://ariakit.org/components/select
  * @example
- * ```jsx {3-6}
+ * ```jsx {5-8}
  * <SelectProvider>
  *   <Select />
- *   <SelectList>
- *     <SelectItem value="Apple" />
- *     <SelectItem value="Orange" />
- *   </SelectList>
+ *   <SelectPopover>
+ *     <SelectDismiss />
+ *     <SelectList>
+ *       <SelectItem value="Apple" />
+ *       <SelectItem value="Orange" />
+ *     </SelectList>
+ *   </SelectPopover>
  * </SelectProvider>
  * ```
  */
