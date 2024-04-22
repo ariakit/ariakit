@@ -316,7 +316,7 @@ So far, we've been working with the `@ariakit/react-core` package. This is where
 
 To promote our component to the `@ariakit/react` package, we need to create a file and re-export the component from the `@ariakit/react-core` package:
 
-`packages/ariakit-react/src/my-component.tsx`
+`packages/ariakit-react/src/my-component.ts`
 
 ```ts
 export { MyComponent } from "@ariakit/react-core/my-component/my-component";
@@ -333,7 +333,7 @@ Finally, we must update the `index.ts` file to export the component:
 
 ```ts
 // ...
-export * from "./my-component.tsx";
+export * from "./my-component.ts";
 // ...
 ```
 
