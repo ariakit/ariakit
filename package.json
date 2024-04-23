@@ -60,7 +60,7 @@
     "version": "independent"
   },
   "lint-staged": {
-    "package.json": "npm run clean -ws --if-present && biome check --apply",
+    "package.json": ["npm run clean -ws --if-present", "biome check --apply"],
     "*.{js,ts,tsx,json}": "biome check --apply",
     "*.css": "stylelint --fix"
   },
