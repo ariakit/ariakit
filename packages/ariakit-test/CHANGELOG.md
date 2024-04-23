@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.3.15
+
+- Updated dependencies: `@ariakit/core@0.4.6`
+
 ## 0.3.14
 
 - Added `within` function to queries.

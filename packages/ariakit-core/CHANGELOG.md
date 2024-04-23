@@ -1,5 +1,13 @@
 # @ariakit/core
 
+## 0.4.6
+
+- Ensured [Combobox](https://ariakit.org/components/combobox) uses roving tabindex to manage focus on mobile Safari.
+- Added a new `listElement` state to the Select store.
+- Removed unnecessary utility functions: `closest`, `matches`.
+- Improved use of [Tab](https://ariakit.org/components/tab) components within [Select](https://ariakit.org/components/select) widgets.
+- Improved JSDocs.
+
 ## 0.4.5
 
 - Added new `undo` utils.
