@@ -165,22 +165,15 @@ export function getInputType(event: Event | { nativeEvent: Event }) {
   return nativeEvent.inputType;
 }
 
-interface QueueBeforeEventOptions {
-  timeout?: number;
-  callback: () => void;
-}
-
 /**
  * Runs a callback on the next animation frame, but before a certain event.
  */
 export function queueBeforeEvent(
   element: Element,
   type: string,
-  options: QueueBeforeEventOptions | QueueBeforeEventOptions["callback"],
+  callback: () => void,
+  timeout?: number,
 ) {
-  const callback = typeof options === "function" ? options : options.callback;
-  const timeout = typeof options === "function" ? undefined : options.timeout;
-
   const createTimer = (callback: () => void) => {
     if (timeout) {
       const timerId = setTimeout(callback, timeout);
@@ -191,19 +184,16 @@ export function queueBeforeEvent(
   };
 
   const cancelTimer = createTimer(() => {
-    element.removeEventListener(type, callImmediately, true);
+    element.removeEventListener(type, callSync, true);
     callback();
   });
-  const callImmediately = () => {
+  const callSync = () => {
     cancelTimer();
     callback();
   };
   // By listening to the event in the capture phase, we make sure the callback
   // is fired before the respective React events.
-  element.addEventListener(type, callImmediately, {
-    once: true,
-    capture: true,
-  });
+  element.addEventListener(type, callSync, { once: true, capture: true });
   return cancelTimer;
 }
 
