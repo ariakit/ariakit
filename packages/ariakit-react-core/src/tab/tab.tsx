@@ -81,11 +81,10 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   );
   const shouldRegisterItem = !!defaultId ? props.shouldRegisterItem : false;
 
-  // TODO: Refactor and explain: should be able to move to tab with
-  // selectOnMove={false}
-  const selected = store.useState((state) => !!id && state.selectedId === id);
   const isActive = store.useState((state) => !!id && state.activeId === id);
+  const selected = store.useState((state) => !!id && state.selectedId === id);
   const hasActiveItem = store.useState((state) => !!store.item(state.activeId));
+  const canRegisterComposedItem = isActive || (selected && !hasActiveItem);
 
   props = useWrapElement(
     props,
@@ -94,8 +93,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
       const defaultProps = {
         id,
         store: store.composite,
-        shouldRegisterItem:
-          (isActive || (selected && !hasActiveItem)) && shouldRegisterItem,
+        shouldRegisterItem: canRegisterComposedItem && shouldRegisterItem,
         render: element,
       } satisfies CompositeItemOptions;
       // If the tab is rendered as part of another composite widget such as
@@ -117,7 +115,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
         />
       );
     },
-    [store, id, selected, isActive, hasActiveItem, shouldRegisterItem],
+    [store, id, canRegisterComposedItem, shouldRegisterItem],
   );
 
   // If the tab is rendered within another composite widget with virtual focus,
