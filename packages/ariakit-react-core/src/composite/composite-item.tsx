@@ -255,7 +255,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // a scroll jump on Safari. This is necessary when the base element is
       // removed from the DOM just before triggering this focus event.
       if (!baseElement?.isConnected) return;
-      hasFocusedComposite.current = true;
       // Safari doesn't scroll the element into view when another element is
       // immediately focused. So we have to do it manually here.
       if (isSafari() && event.currentTarget.hasAttribute("data-autofocus")) {
@@ -264,6 +263,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           inline: "nearest",
         });
       }
+      hasFocusedComposite.current = true;
       // If the previously focused element is a composite or composite item
       // component, we'll transfer focus silently to the composite element.
       // That's because this is just a transition event, the composite element
