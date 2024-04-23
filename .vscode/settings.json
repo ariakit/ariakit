@@ -16,6 +16,9 @@
   "[css]": {
     "editor.defaultFormatter": "stylelint.vscode-stylelint"
   },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome"
+  },
   "[javascript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },

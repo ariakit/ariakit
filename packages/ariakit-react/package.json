@@ -24,7 +24,7 @@
     "url": "https://opencollective.com/ariakit"
   },
   "scripts": {
-    "lint": "eslint . --ext js,ts,tsx",
+    "lint": "biome check .",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },

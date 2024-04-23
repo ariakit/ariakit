@@ -55,15 +55,13 @@
       ],
       "matchPackagePatterns": [
         "^@babel/",
+        "^@biomejs/",
         "^@playwright/",
         "^@radix-ui/",
         "^@rollup/",
         "^@testing-library/",
         "^@types/",
-        "^@typescript-eslint/",
         "^@vitest/",
-        "^eslint",
-        "^prettier",
         "^vitest",
         "^stylelint"
       ],

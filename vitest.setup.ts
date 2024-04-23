@@ -43,7 +43,6 @@ expect.extend({
 
 if (version.startsWith("17")) {
   vi.mock("react", async () => {
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
     const actual = await vi.importActual<typeof import("react")>("react");
     let id = 0;
     const mocks = {
