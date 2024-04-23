@@ -19,6 +19,7 @@ import {
   disabledFromProps,
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
+import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
@@ -254,6 +255,14 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // a scroll jump on Safari. This is necessary when the base element is
       // removed from the DOM just before triggering this focus event.
       if (!baseElement?.isConnected) return;
+      // Safari doesn't scroll the element into view when another element is
+      // immediately focused. So we have to do it manually here.
+      if (isSafari() && event.currentTarget.hasAttribute("data-autofocus")) {
+        event.currentTarget.scrollIntoView({
+          block: "nearest",
+          inline: "nearest",
+        });
+      }
       hasFocusedComposite.current = true;
       // If the previously focused element is a composite or composite item
       // component, we'll transfer focus silently to the composite element.
