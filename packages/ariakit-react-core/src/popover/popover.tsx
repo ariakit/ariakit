@@ -1,5 +1,5 @@
 import type { ElementType, HTMLAttributes } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import {
   arrow,
@@ -255,6 +255,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     const mounted = store.useState("mounted");
     const rendered = store.useState("rendered");
 
+    const defaultArrowElementRef = useRef<HTMLElement | null>(null);
+
     // We have to wait for the popover to be positioned for the first time
     // before we can move focus, otherwise there may be scroll jumps. See
     // popover-standalone example test-browser file.
@@ -279,11 +281,18 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       const updatePosition = async () => {
         if (!mounted) return;
 
+        if (!arrowElement) {
+          defaultArrowElementRef.current =
+            defaultArrowElementRef.current || document.createElement("div");
+        }
+
+        const arrow = arrowElement || defaultArrowElementRef.current;
+
         const middleware = [
-          getOffsetMiddleware(arrowElement, { gutter, shift }),
+          getOffsetMiddleware(arrow, { gutter, shift }),
           getFlipMiddleware({ flip, overflowPadding }),
           getShiftMiddleware({ slide, shift, overlap, overflowPadding }),
-          getArrowMiddleware(arrowElement, { arrowPadding }),
+          getArrowMiddleware(arrow, { arrowPadding }),
           getSizeMiddleware({
             sameWidth,
             fitViewport,
@@ -312,15 +321,31 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         });
 
         // https://floating-ui.com/docs/arrow#usage
-        if (arrowElement && pos.middlewareData.arrow) {
+        if (arrow && pos.middlewareData.arrow) {
           const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
 
-          const dir = pos.placement.split("-")[0] as BasePlacement;
+          const side = pos.placement.split("-")[0] as BasePlacement;
 
-          Object.assign(arrowElement.style, {
+          const centerX = arrow.clientWidth / 2;
+          const centerY = arrow.clientHeight / 2;
+
+          const originX = arrowX != null ? arrowX + centerX : -centerX;
+          const originY = arrowY != null ? arrowY + centerY : -centerY;
+
+          popoverElement.style.setProperty(
+            "--popover-transform-origin",
+            {
+              top: `${originX}px calc(100% + ${centerY}px)`,
+              bottom: `${originX}px ${-centerY}px`,
+              left: `calc(100% + ${centerX}px) ${originY}px`,
+              right: `${-centerX}px ${originY}px`,
+            }[side],
+          );
+
+          Object.assign(arrow.style, {
             left: arrowX != null ? `${arrowX}px` : "",
             top: arrowY != null ? `${arrowY}px` : "",
-            [dir]: "100%",
+            [side]: "100%",
           });
         }
       };
