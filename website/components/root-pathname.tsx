@@ -8,7 +8,9 @@ const RootPathnameContext = createContext("/");
 
 export function RootPathnameProvider(props: PropsWithChildren) {
   const segments = useSelectedLayoutSegments();
-  const pathname = `/${segments.filter((segment) => !segment.startsWith("(")).join("/")}`;
+  const pathname = `/${segments
+    .filter((segment) => !segment.startsWith("("))
+    .join("/")}`;
   return (
     <RootPathnameContext.Provider value={pathname}>
       {props.children}

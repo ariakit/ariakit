@@ -21,7 +21,9 @@ const SignInLink = forwardRef<
   return (
     <Link
       ref={ref}
-      href={`/sign-in?redirect_url=${encodeURIComponent(`${rootPathname}${search}`)}`}
+      href={`/sign-in?redirect_url=${encodeURIComponent(
+        `${rootPathname}${search}`,
+      )}`}
       {...props}
     />
   );

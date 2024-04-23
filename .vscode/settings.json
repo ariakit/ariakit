@@ -9,29 +9,23 @@
     "tw`([^`]*)`",
     ["(?:twMerge|twJoin)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
   ],
-  "eslint.enable": true,
-  "eslint.format.enable": true,
-  "editor.formatOnSave": true,
   "css.validate": false,
+  "editor.formatOnSave": true,
   "stylelint.enable": true,
   "editor.snippetSuggestions": "bottom",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.fixAll.stylelint": "explicit"
-  },
   "[css]": {
     "editor.defaultFormatter": "stylelint.vscode-stylelint"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[javascriptreact]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescriptreact]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }
