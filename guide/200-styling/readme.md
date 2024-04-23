@@ -246,6 +246,16 @@ The `--popover-overflow-padding` variable exposes the amount of padding that sho
 }
 ```
 
+### `--popover-transform-origin`
+
+You can adjust the transform origin value of the popover element using the `--popover-transform-origin` variable. This comes in handy when you're animating the popover element and need the transform origin anchored to the anchor element.
+
+```css
+.popover {
+  transform-origin: var(--popover-transform-origin);
+}
+```
+
 ### `--scrollbar-width`
 
 The [Dialog](/components/dialog) component will define a `--scrollbar-width` CSS variable on the `html` element when a modal dialog is open. Since the scrollbar is hidden when a modal dialog is open, this variable can be used to adjust the right padding of your `position: fixed` elements.
