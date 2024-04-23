@@ -61,14 +61,12 @@ function isAlwaysFocusVisible(element: HTMLElement) {
     return alwaysFocusVisibleInputTypes.includes(type);
   }
   if (element.isContentEditable) return true;
-  return false;
-}
-
-// See https://github.com/ariakit/ariakit/issues/1257
-function isAlwaysFocusVisibleDelayed(element: HTMLElement) {
+  // Take into account custom Ariakit Select within a form.
   const role = element.getAttribute("role");
-  if (role !== "combobox") return false;
-  return !!element.dataset.name;
+  if (role === "combobox" && element.dataset.name) {
+    return true;
+  }
+  return false;
 }
 
 function getLabels(element: HTMLElement | HTMLInputElement) {
@@ -332,7 +330,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (event.ctrlKey) return;
       if (!isSelfTarget(event)) return;
       const element = event.currentTarget;
-      queueMicrotask(() => handleFocusVisible(event, element));
+      const applyFocusVisible = () => handleFocusVisible(event, element);
+      queueBeforeEvent(element, "focusout", applyFocusVisible);
     });
 
     const onFocusCaptureProp = props.onFocusCapture;
@@ -348,10 +347,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       const element = event.currentTarget;
       const applyFocusVisible = () => handleFocusVisible(event, element);
       if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
-        applyFocusVisible();
-      }
-      // See https://github.com/ariakit/ariakit/issues/1257
-      else if (isAlwaysFocusVisibleDelayed(event.target)) {
         queueBeforeEvent(event.target, "focusout", applyFocusVisible);
       } else {
         setFocusVisible(false);

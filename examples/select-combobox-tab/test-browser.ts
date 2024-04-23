@@ -38,6 +38,10 @@ for (const label of TAB) {
       "true",
     );
 
+    // Move up until the selected option is no longer in the viewport
+    await page.keyboard.press("PageUp");
+    await expect(q.option().last()).not.toBeInViewport();
+
     // Switch to Tags tab
     await page.keyboard.press("ArrowRight");
     await expect(q.option().first()).toBeInViewport();
@@ -45,7 +49,7 @@ for (const label of TAB) {
 
     // Switch back to Branches tab
     await page.keyboard.press("ArrowLeft");
-    await expect(q.option().first()).toBeInViewport();
-    await expect(q.option().last()).not.toBeInViewport();
+    await expect(q.option().first()).not.toBeInViewport();
+    await expect(q.option().last()).toBeInViewport();
   });
 }
