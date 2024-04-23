@@ -1,5 +1,72 @@
 # @ariakit/react
 
+## 0.4.6
+
+### Nested `SelectList`
+
+The [`SelectList`](https://ariakit.org/reference/select-list) component can now be nested within a [`SelectPopover`](https://ariakit.org/reference/select-popover). This lets you render additional elements inside the popover without breaking the accessibility tree. The ARIA roles will be automatically adjusted to ensure a valid accessibility tree:
+
+```jsx {6-9}
+<SelectProvider>
+  <Select />
+  <SelectPopover>
+    <SelectHeading>Fruits</SelectHeading>
+    <SelectDismiss />
+    <SelectList>
+      <SelectItem value="Apple" />
+      <SelectItem value="Banana" />
+    </SelectList>
+  </SelectPopover>
+</SelectProvider>
+```
+
+### New Select components
+
+Two new components have been added to the [Select](https://ariakit.org/components/select) module: [`SelectHeading`](https://ariakit.org/reference/select-heading) and [`SelectDismiss`](https://ariakit.org/reference/select-dismiss).
+
+You can use them alongside [`SelectList`](https://ariakit.org/reference/select-list) to add a heading and a dismiss button to the select popover:
+
+```jsx {4,5}
+<SelectProvider>
+  <Select />
+  <SelectPopover>
+    <SelectHeading>Fruits</SelectHeading>
+    <SelectDismiss />
+    <SelectList>
+      <SelectItem value="Apple" />
+      <SelectItem value="Banana" />
+    </SelectList>
+  </SelectPopover>
+</SelectProvider>
+```
+
+### `--popover-transform-origin`
+
+The [Popover](https://ariakit.org/components/popover) components now expose a [`--popover-transform-origin`](https://ariakit.org/guide/styling#--popover-transform-origin) CSS variable. You can use this to set the `transform-origin` property for the popover content element in relation to the anchor element:
+
+```css
+.popover {
+  transform-origin: var(--popover-transform-origin);
+}
+```
+
+### Opening `SelectPopover` on click
+
+To ensure uniformity across all dropdown buttons in the library, the [`SelectPopover`](https://ariakit.org/reference/select-popover) now opens when you click on the [`Select`](https://ariakit.org/reference/select) component, instead of on mouse/touch/pointer down.
+
+This change also resolves a problem where the `:active` state wouldn't be triggered on the select button due to a focus change on mousedown.
+
+### Other updates
+
+- Fixed `ref` warning in React 19.
+- Ensured [Combobox](https://ariakit.org/components/combobox) uses roving tabindex to manage focus on mobile Safari.
+- Added a new `listElement` state to the Select store.
+- Improved use of [Tab](https://ariakit.org/components/tab) components within [Select](https://ariakit.org/components/select) widgets.
+- Fixed `data-focus-visible` being applied after a `blur` event.
+- Fixed composite items not scrolling into view in Safari.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.6`
+
 ## 0.4.5
 
 ### Multi-selectable Combobox with inline autocomplete
