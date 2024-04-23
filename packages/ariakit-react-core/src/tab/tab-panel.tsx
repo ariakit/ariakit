@@ -92,9 +92,9 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       // and provide the selected id as the active id. This is necessary because
       // the original tab store may have the same active id as the external
       // composite store, which might not be a valid tab id.
-      const { items, renderedItems, selectedId } = store.getState();
-      const tab = createTabStore({ items, activeId: selectedId });
-      tab.setState("renderedItems", renderedItems);
+      const state = store.getState();
+      const tab = createTabStore({ ...state, activeId: state.selectedId });
+      tab.setState("renderedItems", state.renderedItems);
       const keyMap = {
         ArrowLeft: tab.previous,
         ArrowRight: tab.next,
@@ -106,7 +106,7 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       const nextId = action();
       if (!nextId) return;
       event.preventDefault();
-      store.select(nextId);
+      store.move(nextId);
     });
 
     props = useWrapElement(
