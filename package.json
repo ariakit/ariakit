@@ -59,9 +59,9 @@
     "version": "independent"
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": "biome check --apply",
-    "*.css": "stylelint --fix",
-    "package.json": "npm run clean -ws --if-present"
+    "package.json": "npm run clean -ws --if-present",
+    "*.{js,ts,tsx,json}": "biome check --apply",
+    "*.css": "stylelint --fix"
   },
   "overrides": {
     "@wordpress/components": {
