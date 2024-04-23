@@ -257,7 +257,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (!baseElement?.isConnected) return;
       // Safari doesn't scroll the element into view when another element is
       // immediately focused. So we have to do it manually here.
-      if (isSafari()) {
+      if (isSafari() && event.currentTarget.hasAttribute("data-autofocus")) {
         event.currentTarget.scrollIntoView({
           block: "nearest",
           inline: "nearest",
