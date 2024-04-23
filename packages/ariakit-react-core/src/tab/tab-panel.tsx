@@ -106,12 +106,6 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       const nextId = action();
       if (!nextId) return;
       event.preventDefault();
-      // TODO: Bug: with selectOnMove={false}, move to another tab with arrow
-      // key, then don't activate it. Move to a combobox item and press right
-      // arrow key to try to move to the tab again. It doesn't work without
-      // updating the activeId here. Investigate why the previous activeId is
-      // not being set to the combobox item id.
-      store.setActiveId(state.selectedId);
       store.move(nextId);
     });
 

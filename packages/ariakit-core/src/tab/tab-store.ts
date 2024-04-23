@@ -52,6 +52,7 @@ export function createTabStore({
 
   const composite = createCompositeStore({
     ...props,
+    store,
     // We need to explicitly set the default value of `includesBaseElement` to
     // `false` since we don't want the composite store to default it to `true`
     // when the activeId state is null, which could be the case when rendering
@@ -60,11 +61,6 @@ export function createTabStore({
       props.includesBaseElement,
       syncState?.includesBaseElement,
       false,
-    ),
-    activeId: defaultValue(
-      props.activeId,
-      syncState?.activeId,
-      props.defaultActiveId,
     ),
     orientation: defaultValue(
       props.orientation,

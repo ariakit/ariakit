@@ -154,10 +154,13 @@ describe.each(TAB)("Tab tests - %s", (label) => {
     expect(q.tab("Tags")).toHaveAttribute("data-focus-visible", "true");
 
     await press.ArrowRight();
-    expect(q.tab("Branches")).toHaveFocus();
+    expect(q.option("main")).toHaveFocus();
+    expect(q.option("main")).toHaveAttribute("aria-selected", "true");
+    expect(q.option("main")).toHaveAttribute("data-active-item", "true");
+    expect(q.option("main")).toHaveAttribute("data-focus-visible", "true");
     expect(q.tab("Branches")).toHaveAttribute("aria-selected", "true");
-    expect(q.tab("Branches")).toHaveAttribute("data-active-item", "true");
-    expect(q.tab("Branches")).toHaveAttribute("data-focus-visible", "true");
+    expect(q.tab("Branches")).not.toHaveAttribute("data-active-item", "true");
+    expect(q.tab("Branches")).not.toHaveAttribute("data-focus-visible", "true");
     expect(q.tab("Tags")).toHaveAttribute("aria-selected", "false");
     expect(q.tab("Tags")).not.toHaveAttribute("data-active-item");
     expect(q.tab("Tags")).not.toHaveAttribute("data-focus-visible");
