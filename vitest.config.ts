@@ -5,6 +5,7 @@ const excludeFromReact17 = [
   "examples/form-callback-queue",
   "examples/*-framer-motion/**",
   "examples/dialog-animated-various",
+  "examples/combobox-group",
 ];
 
 const includeWithStyles = [
