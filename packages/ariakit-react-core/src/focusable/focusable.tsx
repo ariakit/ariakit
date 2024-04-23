@@ -348,7 +348,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       const element = event.currentTarget;
       const applyFocusVisible = () => handleFocusVisible(event, element);
       if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
-        queueMicrotask(applyFocusVisible);
+        applyFocusVisible();
       }
       // See https://github.com/ariakit/ariakit/issues/1257
       else if (isAlwaysFocusVisibleDelayed(event.target)) {
