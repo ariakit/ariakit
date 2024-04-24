@@ -1,6 +1,6 @@
+import * as ReactTestingLibrary from "@testing-library/react";
 import type { ReactNode } from "react";
 import { StrictMode } from "react";
-import * as ReactTestingLibrary from "@testing-library/react";
 import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.ts";
 
 export * from "./index.ts";

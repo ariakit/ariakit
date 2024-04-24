@@ -1,3 +1,10 @@
+import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
+import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
+import type {
+  AnyObject,
+  BooleanOrCallback,
+  EmptyObject,
+} from "@ariakit/core/utils/types";
 import type {
   CSSProperties,
   ElementType,
@@ -14,13 +21,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
-import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
-import type {
-  AnyObject,
-  BooleanOrCallback,
-  EmptyObject,
-} from "@ariakit/core/utils/types";
 import { flushSync } from "react-dom";
 import {
   useBooleanEvent,

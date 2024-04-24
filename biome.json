@@ -10,7 +10,7 @@
     "ignore": ["website/.next/**", "website/.pages/**"]
   },
   "organizeImports": {
-    "enabled": false
+    "enabled": true
   },
   "formatter": {
     "enabled": true,

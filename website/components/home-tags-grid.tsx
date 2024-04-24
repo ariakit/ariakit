@@ -1,10 +1,10 @@
-import { useId } from "react";
-import type { ReactNode } from "react";
 import pageIndex from "@/build-pages/index.ts";
 import { Check } from "@/icons/check.tsx";
 import { ChevronDown } from "@/icons/chevron-down.tsx";
 import { Close } from "@/icons/close.tsx";
 import Link from "next/link.js";
+import { useId } from "react";
+import type { ReactNode } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
 
 interface DefaultProps {

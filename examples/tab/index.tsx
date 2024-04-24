@@ -1,5 +1,5 @@
-import "./style.css";
 import * as Ariakit from "@ariakit/react";
+import "./style.css";
 
 export default function Example() {
   const defaultSelectedId = "default-selected-tab";

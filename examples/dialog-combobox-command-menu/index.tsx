@@ -1,7 +1,6 @@
-import "./style.css";
-import { useMemo, useState } from "react";
 import { Button } from "@ariakit/react";
 import { matchSorter } from "match-sorter";
+import { useMemo, useState } from "react";
 import {
   CommandMenu,
   CommandMenuGroup,
@@ -11,6 +10,7 @@ import {
 } from "./command-menu.tsx";
 import type { Command } from "./commands.tsx";
 import { allItems, applications, commands, suggestions } from "./commands.tsx";
+import "./style.css";
 
 function search(value: string): Record<string, Command[]> {
   if (!value) {

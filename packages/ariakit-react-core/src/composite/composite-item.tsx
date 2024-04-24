@@ -1,11 +1,3 @@
-import type {
-  ElementType,
-  FocusEvent,
-  KeyboardEvent,
-  RefObject,
-  SyntheticEvent,
-} from "react";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import {
   getScrollingElement,
   getTextboxSelection,
@@ -21,6 +13,14 @@ import {
 } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type {
+  ElementType,
+  FocusEvent,
+  KeyboardEvent,
+  RefObject,
+  SyntheticEvent,
+} from "react";
+import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";

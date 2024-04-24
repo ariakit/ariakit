@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
-import type { ElementType } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import { useMemo, useState } from "react";
+import type { ElementType } from "react";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

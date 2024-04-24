@@ -1,6 +1,6 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
-import { invariant } from "@ariakit/core/utils/misc";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { CompositeOptions } from "../composite/composite.tsx";

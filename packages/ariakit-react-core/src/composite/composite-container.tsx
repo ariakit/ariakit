@@ -1,6 +1,3 @@
-// TODO: Add data-attribute to indicate whether it's expanded?
-import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
-import { useEffect, useRef } from "react";
 import { isButton, isTextField } from "@ariakit/core/utils/dom";
 import { isFocusEventOutside, isSelfTarget } from "@ariakit/core/utils/events";
 import {
@@ -9,6 +6,9 @@ import {
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
+// TODO: Add data-attribute to indicate whether it's expanded?
+import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
+import { useEffect, useRef } from "react";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

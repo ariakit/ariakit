@@ -1,5 +1,5 @@
-import type * as React from "react";
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
+import type * as React from "react";
 
 /**
  * Render prop type.

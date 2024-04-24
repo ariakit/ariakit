@@ -1,3 +1,7 @@
+import { canUseDOM } from "@ariakit/core/utils/dom";
+import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { applyState } from "@ariakit/core/utils/misc";
+import type { AnyFunction, SetState } from "@ariakit/core/utils/types";
 import type {
   ComponentType,
   DependencyList,
@@ -19,10 +23,6 @@ import {
   useState,
 } from "react";
 import * as React from "react";
-import { canUseDOM } from "@ariakit/core/utils/dom";
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { applyState } from "@ariakit/core/utils/misc";
-import type { AnyFunction, SetState } from "@ariakit/core/utils/types";
 import { setRef } from "./misc.ts";
 import type { WrapElement } from "./types.ts";
 

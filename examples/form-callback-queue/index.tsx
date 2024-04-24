@@ -1,7 +1,7 @@
-import "./style.css";
-import { useEffect, useState } from "react";
 import * as Ariakit from "@ariakit/react";
+import { useEffect, useState } from "react";
 import invariant from "tiny-invariant";
+import "./style.css";
 
 interface NameFieldProps extends Ariakit.FormInputProps {
   store: Ariakit.FormStore;

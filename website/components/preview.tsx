@@ -1,10 +1,10 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { Suspense, useEffect, useState } from "react";
-import { PortalContext } from "@ariakit/react";
 import examples from "@/build-pages/examples.ts";
 import { Spinner } from "@/icons/spinner.tsx";
+import { PortalContext } from "@ariakit/react";
+import type { ReactNode } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 const ignoredExampleIds = ["examples-menu-wordpress-modal"];
 

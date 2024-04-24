@@ -1,9 +1,9 @@
 "use client";
 
-import { forwardRef } from "react";
 import { Role } from "@ariakit/react";
 import type { RoleProps } from "@ariakit/react";
 import { track } from "@vercel/analytics";
+import { forwardRef } from "react";
 
 export interface NewsletterFormProps extends RoleProps<"form"> {
   location: string;

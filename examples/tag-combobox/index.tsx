@@ -1,6 +1,6 @@
-import "./style.css";
-import { useDeferredValue, useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
+import { useDeferredValue, useMemo, useState } from "react";
+import "./style.css";
 import { Tag, TagInput, TagList, TagOption } from "./tag.tsx";
 import { users as defaultUsers, getAvatar } from "./users.ts";
 

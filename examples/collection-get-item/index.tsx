@@ -1,6 +1,6 @@
-import "./style.css";
-import { useCallback } from "react";
 import * as Ariakit from "@ariakit/react";
+import { useCallback } from "react";
+import "./style.css";
 
 interface Item {
   id: string;

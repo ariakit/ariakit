@@ -1,7 +1,7 @@
-import "./style.css";
-import { useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import startCase from "lodash-es/startCase.js";
+import { useState } from "react";
+import "./style.css";
 
 function renderValue(email: string) {
   const [username = ""] = email.split("@");

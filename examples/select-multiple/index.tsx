@@ -1,5 +1,3 @@
-import "./style.css";
-import { useState } from "react";
 import {
   Select,
   SelectArrow,
@@ -9,7 +7,9 @@ import {
   SelectPopover,
   SelectProvider,
 } from "@ariakit/react";
+import { useState } from "react";
 import list from "./list.ts";
+import "./style.css";
 
 function renderValue(value: string[]) {
   if (value.length === 0) return "No food selected";

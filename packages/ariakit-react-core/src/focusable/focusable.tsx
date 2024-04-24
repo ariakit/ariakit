@@ -1,12 +1,3 @@
-import type {
-  ElementType,
-  EventHandler,
-  FocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  SyntheticEvent,
-} from "react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { isButton } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
@@ -26,6 +17,15 @@ import {
 } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
+import type {
+  ElementType,
+  EventHandler,
+  FocusEvent,
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  SyntheticEvent,
+} from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

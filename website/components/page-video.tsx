@@ -1,8 +1,8 @@
 "use client";
 
+import type { Element } from "hast";
 import { useEffect, useRef, useState } from "react";
 import type { ComponentProps } from "react";
-import type { Element } from "hast";
 import { flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 

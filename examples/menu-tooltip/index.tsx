@@ -1,4 +1,3 @@
-import "./style.css";
 import {
   Menu,
   MenuButton,
@@ -9,6 +8,7 @@ import {
   TooltipProvider,
   VisuallyHidden,
 } from "@ariakit/react";
+import "./style.css";
 
 export default function Example() {
   return (

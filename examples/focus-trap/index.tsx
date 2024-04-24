@@ -1,6 +1,6 @@
+import * as Ariakit from "@ariakit/react";
 import type { FocusEvent } from "react";
 import { useRef } from "react";
-import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {

@@ -1,7 +1,7 @@
-import type { ElementType, FocusEvent, FormEvent } from "react";
-import { useEffect, useRef, useState } from "react";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType, FocusEvent, FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   useEvent,
   useInitialValue,

@@ -1,5 +1,3 @@
-import "./style.css";
-import { useState } from "react";
 import {
   Menu,
   MenuButton,
@@ -9,6 +7,8 @@ import {
   TooltipAnchor,
   TooltipProvider,
 } from "@ariakit/react";
+import { useState } from "react";
+import "./style.css";
 
 export default function Example() {
   const [unmountPortal, setUnmountPortal] = useState(false);

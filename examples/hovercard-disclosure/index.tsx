@@ -1,5 +1,5 @@
-import "./style.css";
 import * as Ariakit from "@ariakit/react";
+import "./style.css";
 
 const chevronDown = (
   <svg width="1em" height="1em" viewBox="0 0 20 20" fill="currentColor">

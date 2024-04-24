@@ -1,13 +1,13 @@
 "use client";
 
-import "./style.css";
-import type { ElementRef } from "react";
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import Link from "next/link.js";
 import type { LinkProps } from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
+import type { ElementRef } from "react";
+import * as React from "react";
+import "./style.css";
 
 const SelectParamContext = React.createContext<string | null>(null);
 

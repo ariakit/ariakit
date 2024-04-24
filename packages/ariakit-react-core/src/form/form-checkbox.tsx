@@ -1,5 +1,5 @@
-import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
 import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";

@@ -1,6 +1,6 @@
+import { toArray } from "@ariakit/core/utils/array";
 import type { ElementType } from "react";
 import { useMemo } from "react";
-import { toArray } from "@ariakit/core/utils/array";
 import {
   getCompositeRendererItem,
   getCompositeRendererItemId,

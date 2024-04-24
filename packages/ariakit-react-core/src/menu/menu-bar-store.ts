@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import type * as Core from "@ariakit/core/menu/menu-bar-store";
+import { useEffect } from "react";
 import {
   useMenubarStore,
   useMenubarStoreProps,

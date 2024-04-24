@@ -1,9 +1,9 @@
 "use client";
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import Link from "next/link.js";
 import { usePathname, useRouter } from "next/navigation.js";
+import * as React from "react";
 
 export function Tabs(props: Ariakit.TabProviderProps) {
   const router = useRouter();

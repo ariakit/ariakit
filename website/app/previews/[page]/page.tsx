@@ -1,3 +1,4 @@
+import { resolve } from "path";
 import pagesConfig from "@/build-pages/config.js";
 import { getCSSFilesFromDeps } from "@/build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "@/build-pages/get-example-deps.js";
@@ -10,7 +11,6 @@ import type { Page } from "@/build-pages/types.ts";
 import { Preview } from "@/components/preview.tsx";
 import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 import { notFound } from "next/navigation.js";
-import { resolve } from "path";
 import { twJoin } from "tailwind-merge";
 
 interface Props {

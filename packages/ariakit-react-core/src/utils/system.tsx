@@ -1,5 +1,5 @@
-import * as React from "react";
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
+import * as React from "react";
 import { useMergeRefs } from "./hooks.ts";
 import { getRefProperty, mergeProps } from "./misc.ts";
 import type { Store } from "./store.ts";

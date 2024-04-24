@@ -1,7 +1,8 @@
 import "@testing-library/jest-dom/vitest";
-import { Suspense, createElement, version } from "react";
+
 import { render } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
+import { Suspense, createElement, version } from "react";
 import failOnConsole from "vitest-fail-on-console";
 
 if (!version.startsWith("17")) {

@@ -1,5 +1,3 @@
-import { useCallback } from "react";
-import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { hasFocus, hasFocusWithin } from "@ariakit/core/utils/focus";
 import {
@@ -8,6 +6,8 @@ import {
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import { useCallback } from "react";
+import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import {
   useBooleanEvent,
   useEvent,

@@ -1,6 +1,6 @@
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useRef, useState } from "react";
-import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {

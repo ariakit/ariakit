@@ -1,9 +1,9 @@
 "use client";
 
-import type { ButtonHTMLAttributes } from "react";
-import { forwardRef, useEffect, useState } from "react";
 import { Check } from "@/icons/check.tsx";
 import { Copy } from "@/icons/copy.tsx";
+import type { ButtonHTMLAttributes } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { TooltipButton } from "./tooltip-button.tsx";
 
 interface CopyToClipboardProps extends ButtonHTMLAttributes<HTMLButtonElement> {

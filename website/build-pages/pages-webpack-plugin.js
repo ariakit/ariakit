@@ -1,8 +1,8 @@
-import chalk from "chalk";
 import { existsSync, readFileSync, writeFileSync } from "fs";
+import { dirname, join } from "path";
+import chalk from "chalk";
 import fse from "fs-extra";
 import { camelCase, groupBy } from "lodash-es";
-import { dirname, join } from "path";
 import invariant from "tiny-invariant";
 import { nonNullable } from "../lib/non-nullable.js";
 import {

@@ -1,8 +1,8 @@
-import type { ElementType, MouseEvent } from "react";
-import { useCallback, useRef } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType, MouseEvent } from "react";
+import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.ts";

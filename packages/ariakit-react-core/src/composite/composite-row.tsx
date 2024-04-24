@@ -1,6 +1,6 @@
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useMemo } from "react";
 import type { ElementType } from "react";
-import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { useId, useWrapElement } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

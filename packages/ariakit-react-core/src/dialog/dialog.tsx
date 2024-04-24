@@ -1,13 +1,3 @@
-import type {
-  ComponentPropsWithRef,
-  ElementType,
-  FC,
-  ReactElement,
-  KeyboardEvent as ReactKeyboardEvent,
-  RefObject,
-  SyntheticEvent,
-} from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
 import {
   contains,
   getActiveElement,
@@ -26,6 +16,16 @@ import {
 import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type {
+  ComponentPropsWithRef,
+  ElementType,
+  FC,
+  ReactElement,
+  KeyboardEvent as ReactKeyboardEvent,
+  RefObject,
+  SyntheticEvent,
+} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,

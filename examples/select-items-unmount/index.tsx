@@ -1,6 +1,6 @@
-import "./style.css";
-import { useId } from "react";
 import * as Ariakit from "@ariakit/react";
+import { useId } from "react";
+import "./style.css";
 
 export default function Example() {
   const baseId = useId();

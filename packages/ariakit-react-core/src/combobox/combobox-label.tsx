@@ -1,5 +1,5 @@
-import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
 import {
   createElement,
   createHook,
