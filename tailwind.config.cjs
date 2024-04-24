@@ -1,5 +1,5 @@
 // @ts-nocheck
-const path = require("path");
+const path = require("node:path");
 
 const black = "hsl(204 4% 0%)";
 const white = "hsl(204 20% 100%)";

@@ -1,5 +1,5 @@
-import { lstatSync, readFileSync, readdirSync, writeFileSync } from "fs";
-import { join } from "path";
+import { lstatSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { rimrafSync } from "rimraf";
@@ -56,9 +56,11 @@ export function getPackageJson(rootPath, prod = false) {
   const moduleExports = Object.entries(publicFiles).reduce(
     (acc, [name, path]) => {
       if (name === "index") {
+        // biome-ignore lint/performance/noAccumulatingSpread: TODO
         return { ".": getExports(path), ...acc };
       }
       const pathname = `./${name.replace(/\/index$/, "")}`;
+      // biome-ignore lint/performance/noAccumulatingSpread: TODO
       return { ...acc, [pathname]: getExports(path) };
     },
     {},
@@ -151,6 +153,7 @@ export function getPublicFiles(sourcePath, prefix = "") {
           [removeExt(normalizePath(join(prefix, filename)))]:
             normalizePath(path),
         }),
+        // biome-ignore lint/performance/noAccumulatingSpread: TODO
         ...acc,
       };
     }, {});

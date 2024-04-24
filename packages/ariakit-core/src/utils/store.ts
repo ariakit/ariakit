@@ -335,7 +335,7 @@ export function mergeStore<S extends State>(
   const initialState = stores.reduce((state, store) => {
     const nextState = store?.getState?.();
     if (!nextState) return state;
-    return { ...state, ...nextState };
+    return Object.assign(state, nextState);
   }, {} as S);
   const store = createStore(initialState, ...stores);
   return store;

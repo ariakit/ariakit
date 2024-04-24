@@ -85,6 +85,7 @@ function truncate(
   return final + suffix;
 }
 
+// biome-ignore lint/suspicious/noGlobalAssign:
 onmessage = (
   event: MessageEvent<{ query: string; category?: string; allData?: boolean }>,
 ) => {

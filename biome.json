@@ -37,15 +37,9 @@
       "suspicious": {
         "noExplicitAny": "off",
         "noShadowRestrictedNames": "off",
-        "noGlobalAssign": "off",
         "noConfusingVoidType": "off",
         "noArrayIndexKey": "off",
-        "noAssignInExpressions": "off",
-        "noMisleadingCharacterClass": "off"
-      },
-      "performance": {
-        "noAccumulatingSpread": "off",
-        "noDelete": "off"
+        "noAssignInExpressions": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "off",
@@ -54,7 +48,6 @@
       "style": {
         "useSelfClosingElements": "off",
         "noParameterAssign": "off",
-        "useNodejsImportProtocol": "off",
         "noUnusedTemplateLiteral": "off",
         "noNonNullAssertion": "off",
         "noUselessElse": "off"

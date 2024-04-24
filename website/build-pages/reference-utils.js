@@ -1,4 +1,4 @@
-import { join } from "path";
+import { join } from "node:path";
 import invariant from "tiny-invariant";
 import { FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
 

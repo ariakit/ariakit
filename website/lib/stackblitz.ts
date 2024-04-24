@@ -25,6 +25,7 @@ function getPackageName(source: string) {
 
 function normalizeDeps(deps: StackblitzProps["dependencies"] = {}) {
   return Object.entries(deps).reduce(
+    // biome-ignore lint/performance/noAccumulatingSpread: TODO
     (acc, [pkg, version]) => ({ ...acc, [getPackageName(pkg)]: version }),
     {},
   );

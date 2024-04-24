@@ -366,6 +366,7 @@ const HeaderNavMenu = memo(
         "group",
       );
       const items = groups.null || [];
+      // biome-ignore lint/performance/noDelete: TODO
       delete groups.null;
       return [items, groups];
     }, [searchData, pages]);

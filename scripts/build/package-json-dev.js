@@ -1,4 +1,4 @@
-import { join } from "path";
+import { join } from "node:path";
 import { watch } from "chokidar";
 import { globSync } from "glob";
 import { writePackageJson } from "./utils.js";

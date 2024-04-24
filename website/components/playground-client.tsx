@@ -153,6 +153,7 @@ export function PlaygroundClient({
     () =>
       Object.entries(files).reduce<typeof files>(
         (acc, [file, code]) => ({
+          // biome-ignore lint/performance/noAccumulatingSpread: TODO
           ...acc,
           [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
         }),
