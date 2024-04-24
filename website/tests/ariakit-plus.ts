@@ -196,7 +196,7 @@ async function getDisplayedPrice(page: Page | Locator | FrameLocator) {
     .text(/^(US)?\$\d+(\.\d*)?$/)
     .first()
     .textContent())!;
-  return Math.ceil(parseFloat(priceText.replace(/[^\d\.]/g, "")));
+  return Math.ceil(Number.parseFloat(priceText.replace(/[^\d\.]/g, "")));
 }
 
 function frameLocator(page: Page) {

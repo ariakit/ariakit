@@ -15,7 +15,7 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "quickfix.biome": "explicit",
-    "source.organizeImports": "explicit"
+    "source.organizeImports.biome": "explicit"
   },
   "[css]": {
     "editor.defaultFormatter": "stylelint.vscode-stylelint"

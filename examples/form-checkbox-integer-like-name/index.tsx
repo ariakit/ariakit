@@ -14,9 +14,9 @@ export default function Example() {
         {String(form.names["123"])}
         <Ariakit.FormCheckbox name={form.names["123"]} />
       </Ariakit.FormLabel>
-      <Ariakit.FormLabel name={form.names["safe"]}>
-        {String(form.names["safe"])}
-        <Ariakit.FormCheckbox name={form.names["safe"]} />
+      <Ariakit.FormLabel name={form.names.safe}>
+        {String(form.names.safe)}
+        <Ariakit.FormCheckbox name={form.names.safe} />
       </Ariakit.FormLabel>
     </Ariakit.Form>
   );

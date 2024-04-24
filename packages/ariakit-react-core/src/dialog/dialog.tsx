@@ -56,8 +56,8 @@ import {
   DialogScopedContextProvider,
   useDialogProviderContext,
 } from "./dialog-context.tsx";
-import { useDialogStore } from "./dialog-store.ts";
 import type { DialogStore } from "./dialog-store.ts";
+import { useDialogStore } from "./dialog-store.ts";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
@@ -379,7 +379,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // disclosure element instead.
       if (element && !isFocusable(element)) {
         const maybeParentDialog = element.closest("[data-dialog]");
-        if (maybeParentDialog && maybeParentDialog.id) {
+        if (maybeParentDialog?.id) {
           const doc = getDocument(maybeParentDialog);
           const selector = `[aria-controls~="${maybeParentDialog.id}"]`;
           const control = doc.querySelector<HTMLElement>(selector);

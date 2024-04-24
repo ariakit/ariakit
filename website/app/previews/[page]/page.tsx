@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props) {
   });
 }
 
-export default async function Page({ params }: Props) {
+export default async function PreviewPage({ params }: Props) {
   const { page } = params;
 
   const config = pagesConfig.pages.find((page) => page.slug === "examples");

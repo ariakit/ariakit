@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: PageProps) {
   });
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function ContentPage({ params }: PageProps) {
   const { category, page } = params;
 
   const config = pages.find((page) => page.slug === category);

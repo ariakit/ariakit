@@ -17,9 +17,10 @@ function inSnapshot(id: string, element: Element) {
   if (!doc.body[propertyName]) return true;
   do {
     if (element === doc.body) return false;
-    if (!!element[propertyName]) return true;
+    if (element[propertyName]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
+    // biome-ignore lint/correctness/noConstantCondition:
   } while (true);
 }
 

@@ -65,11 +65,9 @@ export type Props<
  * @example
  * type UseButton = Hook<"button", { custom?: boolean }>;
  */
-export interface Hook<
+export type Hook<
   T extends React.ElementType,
   P extends AnyObject = EmptyObject,
-> {
-  <ElementType extends React.ElementType = T>(
-    props?: Props<ElementType, P>,
-  ): HTMLProps<ElementType, P>;
-}
+> = <ElementType extends React.ElementType = T>(
+  props?: Props<ElementType, P>,
+) => HTMLProps<ElementType, P>;

@@ -28,7 +28,7 @@ export function mouseDown(element: Element | null, options?: MouseEventInit) {
     if (defaultAllowed) {
       // Remove current selection
       const selection = getDocument(element).getSelection();
-      if (selection && selection.rangeCount) {
+      if (selection?.rangeCount) {
         const range = selection.getRangeAt(0);
         if (!range.collapsed) {
           selection.removeAllRanges();

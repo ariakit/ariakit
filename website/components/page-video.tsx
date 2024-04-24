@@ -1,8 +1,8 @@
 "use client";
 
 import type { Element } from "hast";
-import { useEffect, useRef, useState } from "react";
 import type { ComponentProps } from "react";
+import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 
@@ -25,7 +25,7 @@ export function PageVideo({
   const [source, setSource] = useState(lazy ? undefined : src);
   gif = gif === "true" || gif === true;
   lazy = lazy ?? gif;
-  const playbackRate = parseFloat(playbackrate.toString());
+  const playbackRate = Number.parseFloat(playbackrate.toString());
 
   useEffect(() => {
     const element = ref.current;

@@ -7,7 +7,7 @@ const selector =
   "video[controls], [contenteditable]:not([contenteditable='false'])";
 
 function hasNegativeTabIndex(element: Element) {
-  const tabIndex = parseInt(element.getAttribute("tabindex") || "0", 10);
+  const tabIndex = Number.parseInt(element.getAttribute("tabindex") || "0", 10);
   return tabIndex < 0;
 }
 

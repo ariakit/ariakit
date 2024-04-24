@@ -104,7 +104,7 @@ function getAllIndexes(string: string, values: string[]) {
   for (const value of values) {
     let pos = 0;
     const length = value.length;
-    while (string.indexOf(value, pos) != -1) {
+    while (string.indexOf(value, pos) !== -1) {
       const index = string.indexOf(value, pos);
       if (index !== -1) {
         indexes.push([index, length]);
@@ -152,14 +152,12 @@ function highlightValue(
 
   const values = [
     itemValue.slice(0, firstIndex),
-    ...allIndexes
-      .map(([index, length], i) => {
-        const value = itemValue.slice(index, index + length);
-        const nextIndex = allIndexes[i + 1]?.[0];
-        const nextValue = itemValue.slice(index + length, nextIndex);
-        return [value, nextValue];
-      })
-      .flat(),
+    ...allIndexes.flatMap(([index, length], i) => {
+      const value = itemValue.slice(index, index + length);
+      const nextIndex = allIndexes[i + 1]?.[0];
+      const nextValue = itemValue.slice(index + length, nextIndex);
+      return [value, nextValue];
+    }),
   ];
 
   values.forEach((value, i) => {

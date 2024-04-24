@@ -45,7 +45,7 @@ export function isPointInPolygon(point: Point, polygon: Polygon) {
           }
         }
       }
-    } else if (y == yi && ((x >= xj && x <= xi) || (x >= xi && x <= xj))) {
+    } else if (y === yi && ((x >= xj && x <= xi) || (x >= xi && x <= xj))) {
       // point on horizontal edge
       return true;
     }

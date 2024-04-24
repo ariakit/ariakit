@@ -33,6 +33,7 @@ export function isElementMarked(element: Element, id?: string) {
     if (element[elementProperty]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
+    // biome-ignore lint/correctness/noConstantCondition:
   } while (true);
 }
 

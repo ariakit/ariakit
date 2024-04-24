@@ -1,5 +1,5 @@
-import contents from "@/build-pages/contents.ts";
 import type { PageContent } from "@/build-pages/contents.ts";
+import contents from "@/build-pages/contents.ts";
 import type { FullOptions } from "fast-fuzzy";
 import { Searcher, search } from "fast-fuzzy";
 
@@ -117,9 +117,9 @@ onmessage = (
       .split(/\p{P}*\s\p{P}*/u)
       .filter(Boolean);
     const terms = searchTerm.split(" ");
-    const keywords = terms
-      .map((term) => search(term, words, { threshold: 0.8 }))
-      .flat();
+    const keywords = terms.flatMap((term) =>
+      search(term, words, { threshold: 0.8 }),
+    );
     return {
       ...item,
       content,

@@ -462,7 +462,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       store,
       ...props,
       getItem,
-      shouldRegisterItem: !!id ? props.shouldRegisterItem : false,
+      shouldRegisterItem: id ? props.shouldRegisterItem : false,
     });
 
     return removeUndefinedValues({

@@ -14,8 +14,7 @@ expect.extend({
     const toHaveFocus = matchers.toHaveFocus.bind(this) as any;
     const result = toHaveFocus(element, expected, options);
     const { activeElement } = element.ownerDocument;
-    const activeId =
-      activeElement && activeElement.getAttribute("aria-activedescendant");
+    const activeId = activeElement?.getAttribute("aria-activedescendant");
     return {
       ...result,
       pass: result.pass || activeId === element.id,
@@ -65,6 +64,7 @@ beforeEach(async ({ task }) => {
   const { default: comp } = await import(`./examples/${example}/index.tsx`);
   const element = createElement(Suspense, {
     fallback: null,
+    // biome-ignore lint/correctness/noChildrenProp:
     children: createElement(comp),
   });
   const unmount = await render(element, { strictMode: true });
