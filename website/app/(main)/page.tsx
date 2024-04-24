@@ -1,6 +1,6 @@
-import { GlobalNotification } from "components/global-notification.tsx";
-import { Hero } from "components/hero.tsx";
-import { HomeTagsGrid } from "components/home-tags-grid.tsx";
+import { GlobalNotification } from "@/components/global-notification.tsx";
+import { Hero } from "@/components/hero.tsx";
+import { HomeTagsGrid } from "@/components/home-tags-grid.tsx";
 
 export default function Page() {
   return (

@@ -1,16 +1,16 @@
-import type { AnchorHTMLAttributes } from "react";
+import pagesConfig from "@/build-pages/config.js";
+import { getCSSFilesFromDeps } from "@/build-pages/get-css-files-from-deps.js";
+import { getExampleDeps } from "@/build-pages/get-example-deps.js";
+import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
+import { getPageName } from "@/build-pages/get-page-name.js";
+import { parseCSSFile } from "@/build-pages/parse-css-file.js";
+import { Playground } from "@/components/playground.tsx";
+import { Preview } from "@/components/preview.tsx";
+import { defer } from "@/lib/defer.ts";
+import { getExampleId } from "@/lib/get-example-id.js";
 import { readFileSync } from "fs";
 import { dirname, relative, resolve } from "path";
-import pagesConfig from "build-pages/config.js";
-import { getCSSFilesFromDeps } from "build-pages/get-css-files-from-deps.js";
-import { getExampleDeps } from "build-pages/get-example-deps.js";
-import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
-import { getPageName } from "build-pages/get-page-name.js";
-import { parseCSSFile } from "build-pages/parse-css-file.js";
-import { Playground } from "components/playground.tsx";
-import { Preview } from "components/preview.tsx";
-import { defer } from "utils/defer.ts";
-import { getExampleId } from "utils/get-example-id.js";
+import type { AnchorHTMLAttributes } from "react";
 
 interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   pageFilename: string;

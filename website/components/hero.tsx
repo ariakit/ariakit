@@ -1,4 +1,4 @@
-import { ArrowRight } from "icons/arrow-right.tsx";
+import { ArrowRight } from "@/icons/arrow-right.tsx";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 

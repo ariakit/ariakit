@@ -1,6 +1,6 @@
 import { useId } from "react";
-import { getPageTitle } from "build-pages/get-page-title.js";
-import { NewWindow } from "icons/new-window.tsx";
+import { getPageTitle } from "@/build-pages/get-page-title.js";
+import { NewWindow } from "@/icons/new-window.tsx";
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
 import { Logo } from "./logo.tsx";

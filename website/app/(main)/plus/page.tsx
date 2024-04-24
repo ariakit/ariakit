@@ -1,6 +1,6 @@
 "use client";
 import { Suspense } from "react";
-import { PlusScreen } from "components/plus-screen.tsx";
+import { PlusScreen } from "@/components/plus-screen.tsx";
 
 export default function Page() {
   return (

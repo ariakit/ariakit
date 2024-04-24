@@ -1,7 +1,7 @@
 "use client";
-import type { PropsWithChildren } from "react";
+import { useSubscription } from "@/lib/use-subscription.ts";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { useSubscription } from "utils/use-subscription.ts";
+import type { PropsWithChildren } from "react";
 
 const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 

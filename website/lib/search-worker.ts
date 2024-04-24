@@ -1,5 +1,5 @@
-import contents from "build-pages/contents.ts";
-import type { PageContent } from "build-pages/contents.ts";
+import contents from "@/build-pages/contents.ts";
+import type { PageContent } from "@/build-pages/contents.ts";
 import type { FullOptions } from "fast-fuzzy";
 import { Searcher, search } from "fast-fuzzy";
 

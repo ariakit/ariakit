@@ -10,9 +10,13 @@
     ["(?:twMerge|twJoin)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
   ],
   "css.validate": false,
-  "editor.formatOnSave": true,
   "stylelint.enable": true,
   "editor.snippetSuggestions": "bottom",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit",
+    "source.organizeImports": "explicit"
+  },
   "[css]": {
     "editor.defaultFormatter": "stylelint.vscode-stylelint"
   },

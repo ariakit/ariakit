@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import { Popup } from "@/components/popup.tsx";
+import { List } from "@/icons/list.tsx";
+import { useMedia } from "@/lib/use-media.ts";
 import {
   getScrollingElement,
   scrollIntoViewIfNeeded,
 } from "@ariakit/core/utils/dom";
 import * as Ariakit from "@ariakit/react";
-import { Popup } from "components/popup.tsx";
-import { List } from "icons/list.tsx";
-import { useMedia } from "utils/use-media.ts";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 interface TableOfContentsProps {
   ids: string[];

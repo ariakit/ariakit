@@ -3,11 +3,11 @@ import { Suspense, forwardRef } from "react";
 import type { ComponentPropsWithoutRef, ElementRef } from "react";
 import { Button, Dialog } from "@ariakit/react";
 import { SignedOut } from "@clerk/clerk-react";
-import { AuthEnabled } from "components/auth.tsx";
-import { Command } from "components/command.tsx";
-import { PlusScreen } from "components/plus-screen.tsx";
-import { useRootPathname } from "components/root-pathname.tsx";
-import { ArrowLeft } from "icons/arrow-left.tsx";
+import { AuthEnabled } from "@/components/auth.tsx";
+import { Command } from "@/components/command.tsx";
+import { PlusScreen } from "@/components/plus-screen.tsx";
+import { useRootPathname } from "@/components/root-pathname.tsx";
+import { ArrowLeft } from "@/icons/arrow-left.tsx";
 import Link from "next/link.js";
 import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
 

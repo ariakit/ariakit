@@ -9,9 +9,9 @@ import {
   ToolbarItem,
 } from "@ariakit/react";
 import { SelectValue } from "@ariakit/react-core/select/select-value";
-import { Edit } from "icons/edit.tsx";
-import { JavaScript } from "icons/javascript.tsx";
-import { TypeScript } from "icons/typescript.tsx";
+import { Edit } from "@/icons/edit.tsx";
+import { JavaScript } from "@/icons/javascript.tsx";
+import { TypeScript } from "@/icons/typescript.tsx";
 import { twJoin } from "tailwind-merge";
 import { AuthEnabled } from "./auth.tsx";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";

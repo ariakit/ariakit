@@ -1,11 +1,11 @@
 "use client";
+import { Heart } from "@/icons/heart.tsx";
+import { Nextjs } from "@/icons/nextjs.tsx";
+import { Vite } from "@/icons/vite.tsx";
+import { usePrice } from "@/lib/use-price.ts";
 import { Heading, HeadingLevel } from "@ariakit/react";
-import { Heart } from "icons/heart.tsx";
-import { Nextjs } from "icons/nextjs.tsx";
-import { Vite } from "icons/vite.tsx";
 import Link from "next/link.js";
 import { useSearchParams } from "next/navigation.js";
-import { usePrice } from "utils/use-price.ts";
 import { CodePlaceholder } from "./code-placeholder.tsx";
 import { Focusable } from "./focusable.tsx";
 import { InlineLink } from "./inline-link.tsx";

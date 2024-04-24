@@ -15,9 +15,9 @@ import {
   SelectSeparator,
   useSelectStore,
 } from "@ariakit/react/select";
-import { NewWindow } from "icons/new-window.tsx";
-import { React } from "icons/react.tsx";
-import { Vue } from "icons/vue.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { React } from "@/icons/react.tsx";
+import { Vue } from "@/icons/vue.tsx";
 import Link from "next/link.js";
 import { usePathname } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";

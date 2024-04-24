@@ -1,12 +1,5 @@
 "use client";
-import {
-  createContext,
-  isValidElement,
-  useContext,
-  useMemo,
-  useRef,
-} from "react";
-import type { ReactNode } from "react";
+import { useSubscription } from "@/lib/use-subscription.ts";
 import type {
   HovercardAnchorProps,
   HovercardProps,
@@ -21,9 +14,16 @@ import {
   useHovercardStore,
 } from "@ariakit/react";
 import Link from "next/link.js";
+import type { ReactNode } from "react";
+import {
+  createContext,
+  isValidElement,
+  useContext,
+  useMemo,
+  useRef,
+} from "react";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
-import { useSubscription } from "utils/use-subscription.ts";
 import { Command } from "./command.tsx";
 import { Popup } from "./popup.tsx";
 

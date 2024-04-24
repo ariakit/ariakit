@@ -1,15 +1,15 @@
-import { forwardRef, useId } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { getPageTitle } from "build-pages/get-page-title.js";
-import pageIndex from "build-pages/index.ts";
-import { ChevronRight } from "icons/chevron-right.tsx";
-import { NewWindow } from "icons/new-window.tsx";
-import { Npm } from "icons/npm.tsx";
-import { Substack } from "icons/substack.tsx";
+import { getPageTitle } from "@/build-pages/get-page-title.js";
+import pageIndex from "@/build-pages/index.ts";
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { Npm } from "@/icons/npm.tsx";
+import { Substack } from "@/icons/substack.tsx";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
+import type { UpdateItem } from "@/updates.ts";
 import Link from "next/link.js";
+import type { ComponentPropsWithoutRef } from "react";
+import { forwardRef, useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
-import type { UpdateItem } from "updates.ts";
-import { getPageIcon } from "utils/get-page-icon.tsx";
 import { DateFromNow } from "./date-from-now.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 

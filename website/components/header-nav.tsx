@@ -1,5 +1,19 @@
 "use client";
 
+import type { PageContent } from "@/build-pages/contents.ts";
+import { getPageTitle, getSearchTitle } from "@/build-pages/get-page-title.js";
+import type { PageIndexDetail } from "@/build-pages/index.ts";
+import pageIndex from "@/build-pages/index.ts";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
+import { getKeys } from "@ariakit/core/utils/misc";
+import { isApple } from "@ariakit/core/utils/platform";
+import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
+import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
+import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
+import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import { track } from "@vercel/analytics";
+import { groupBy } from "lodash-es";
+import { useSelectedLayoutSegments } from "next/navigation.js";
 import type { MouseEvent, ReactElement, ReactNode } from "react";
 import {
   createContext,
@@ -11,28 +25,14 @@ import {
   useMemo,
   useState,
 } from "react";
-import { getKeys } from "@ariakit/core/utils/misc";
-import { isApple } from "@ariakit/core/utils/platform";
-import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
-import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
-import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
-import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import { track } from "@vercel/analytics";
-import type { PageContent } from "build-pages/contents.ts";
-import { getPageTitle, getSearchTitle } from "build-pages/get-page-title.js";
-import type { PageIndexDetail } from "build-pages/index.ts";
-import pageIndex from "build-pages/index.ts";
-import { groupBy } from "lodash-es";
-import { useSelectedLayoutSegments } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
-import { getPageIcon } from "utils/get-page-icon.tsx";
+import type { HeaderMenuItemProps } from "./header-menu.tsx";
 import {
   HeaderMenu,
   HeaderMenuGroup,
   HeaderMenuItem,
   HeaderMenuSeparator,
 } from "./header-menu.tsx";
-import type { HeaderMenuItemProps } from "./header-menu.tsx";
 
 type Data = Array<
   PageContent & {
