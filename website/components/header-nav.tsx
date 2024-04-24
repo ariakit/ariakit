@@ -299,7 +299,7 @@ const HeaderNavMenu = memo(
     useEffect(() => {
       if (!open) return;
       const worker = new Worker(
-        new URL("../utils/search-worker.ts", import.meta.url),
+        new URL("../lib/search-worker.ts", import.meta.url),
       );
       worker.onmessage = (
         event: MessageEvent<{ items: Data; allData?: boolean }>,
