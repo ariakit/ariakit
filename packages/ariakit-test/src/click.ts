@@ -76,17 +76,18 @@ async function clickOption(
 
   if (select.multiple) {
     const options = Array.from(select.options);
-    const resetOptions = () =>
-      options.forEach((option) => {
+    const resetOptions = () => {
+      for (const option of options) {
         setSelected(option, false);
-      });
+      }
+    };
     const selectRange = (a: number, b: number) => {
       const from = Math.min(a, b);
       const to = Math.max(a, b) + 1;
       const selectedOptions = options.slice(from, to);
-      selectedOptions.forEach((option) => {
+      for (const option of selectedOptions) {
         setSelected(option, true);
-      });
+      }
     };
 
     if (eventOptions?.shiftKey) {

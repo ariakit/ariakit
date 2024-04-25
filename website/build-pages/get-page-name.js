@@ -1,4 +1,4 @@
-import { basename, dirname, extname } from "path";
+import { basename, dirname, extname } from "node:path";
 import { kebabCase } from "lodash-es";
 import { PAGE_INDEX_FILE_REGEX } from "./const.js";
 

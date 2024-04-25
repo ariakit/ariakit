@@ -1,7 +1,7 @@
 "use client";
-import { Suspense } from "react";
 import { SignIn } from "@clerk/clerk-react";
 import { useSearchParams } from "next/navigation.js";
+import { Suspense } from "react";
 
 function ClientPage() {
   const searchParams = useSearchParams();

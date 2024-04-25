@@ -1,8 +1,8 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import type { MotionProps } from "framer-motion";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import * as React from "react";
 
 export interface MenuProps extends Ariakit.MenuButtonProps {
   open?: boolean;

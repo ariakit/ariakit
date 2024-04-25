@@ -1,8 +1,8 @@
-import "./style.css";
-import { useMemo, useState, useTransition } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
+import { useMemo, useState, useTransition } from "react";
 import list from "./list.ts";
+import "./style.css";
 
 export default function Example() {
   const [isPending, startTransition] = useTransition();

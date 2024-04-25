@@ -1,8 +1,8 @@
-import "./style.css";
-import { startTransition, useMemo, useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
+import { startTransition, useMemo, useState } from "react";
 import { NewWindow } from "./icons.tsx";
+import "./style.css";
 
 const links = [
   {

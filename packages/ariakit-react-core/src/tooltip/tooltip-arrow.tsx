@@ -1,5 +1,5 @@
-import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
 import { usePopoverArrow } from "../popover/popover-arrow.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

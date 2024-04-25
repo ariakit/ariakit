@@ -1,7 +1,7 @@
-import pagesConfig from "build-pages/config.js";
-import index from "build-pages/index.ts";
+import pagesConfig from "@/build-pages/config.js";
+import index from "@/build-pages/index.ts";
+import { getTagSlug, getTags } from "@/lib/tag.ts";
 import type { MetadataRoute } from "next";
-import { getTagSlug, getTags } from "utils/tag.ts";
 
 const date = new Date();
 

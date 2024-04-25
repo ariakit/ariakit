@@ -1,9 +1,8 @@
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint",
+    "biomejs.biome",
     "editorconfig.editorconfig",
-    "bradlc.vscode-tailwindcss",
-    "christian-kohler.path-intellisense"
+    "bradlc.vscode-tailwindcss"
   ],
   "unwantedRecommendations": []
 }

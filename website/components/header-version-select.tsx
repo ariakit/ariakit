@@ -1,6 +1,8 @@
 "use client";
 
-import { Fragment } from "react";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { React } from "@/icons/react.tsx";
+import { Vue } from "@/icons/vue.tsx";
 import { invariant } from "@ariakit/core/utils/misc";
 import pkg from "@ariakit/react/package.json";
 import {
@@ -15,11 +17,9 @@ import {
   SelectSeparator,
   useSelectStore,
 } from "@ariakit/react/select";
-import { NewWindow } from "icons/new-window.tsx";
-import { React } from "icons/react.tsx";
-import { Vue } from "icons/vue.tsx";
 import Link from "next/link.js";
 import { usePathname } from "next/navigation.js";
+import { Fragment } from "react";
 import { twJoin } from "tailwind-merge";
 import { Command } from "./command.tsx";
 import { Popup } from "./popup.tsx";

@@ -1,5 +1,5 @@
-import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";

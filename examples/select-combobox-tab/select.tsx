@@ -1,7 +1,7 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { SelectValue } from "@ariakit/react-core/select/select-value";
 import clsx from "clsx";
+import * as React from "react";
 
 export interface SelectProps extends Ariakit.SelectProps {
   icon?: React.ReactNode;

@@ -1,5 +1,3 @@
-import type { ElementType, MutableRefObject, RefCallback } from "react";
-import { useContext, useEffect, useRef, useState } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
 import { isFocusEventOutside } from "@ariakit/core/utils/events";
 import {
@@ -8,6 +6,8 @@ import {
   getPreviousTabbable,
   restoreFocusIn,
 } from "@ariakit/core/utils/focus";
+import type { ElementType, MutableRefObject, RefCallback } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FocusTrap } from "../focus-trap/focus-trap.tsx";
 import {

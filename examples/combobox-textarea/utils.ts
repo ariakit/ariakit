@@ -58,11 +58,9 @@ export function replaceValue(
   displayValue: string,
 ) {
   return (prevValue: string) => {
-    const nextValue =
-      prevValue.slice(0, offset) +
-      displayValue +
-      " " +
-      prevValue.slice(offset + searchValue.length + 1);
+    const nextValue = `${
+      prevValue.slice(0, offset) + displayValue
+    } ${prevValue.slice(offset + searchValue.length + 1)}`;
     return nextValue;
   };
 }

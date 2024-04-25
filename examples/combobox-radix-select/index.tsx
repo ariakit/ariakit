@@ -1,5 +1,3 @@
-import "./style.css";
-import { startTransition, useMemo, useState } from "react";
 import {
   Combobox,
   ComboboxItem,
@@ -8,8 +6,10 @@ import {
 } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
 import { matchSorter } from "match-sorter";
+import { startTransition, useMemo, useState } from "react";
 import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "./icons.tsx";
 import { languages } from "./languages.ts";
+import "./style.css";
 
 export default function Example() {
   const [open, setOpen] = useState(false);

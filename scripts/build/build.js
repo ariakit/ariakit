@@ -1,4 +1,4 @@
-import { cpSync } from "fs";
+import { cpSync } from "node:fs";
 import spawn from "cross-spawn";
 import { glob } from "glob";
 import { build } from "tsup";

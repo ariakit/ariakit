@@ -1,4 +1,3 @@
-import "./style.css";
 import {
   Select,
   SelectGroup,
@@ -9,6 +8,7 @@ import {
   SelectProvider,
   SelectSeparator,
 } from "@ariakit/react";
+import "./style.css";
 
 export default function Example() {
   return (

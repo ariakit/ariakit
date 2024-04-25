@@ -1,5 +1,5 @@
 // @ts-nocheck
-const path = require("path");
+const path = require("node:path");
 
 const black = "black";
 const white = "white";

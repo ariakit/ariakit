@@ -1,5 +1,5 @@
-import type * as React from "react";
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
+import type * as React from "react";
 
 /**
  * Render prop type.
@@ -65,11 +65,9 @@ export type Props<
  * @example
  * type UseButton = Hook<"button", { custom?: boolean }>;
  */
-export interface Hook<
+export type Hook<
   T extends React.ElementType,
   P extends AnyObject = EmptyObject,
-> {
-  <ElementType extends React.ElementType = T>(
-    props?: Props<ElementType, P>,
-  ): HTMLProps<ElementType, P>;
-}
+> = <ElementType extends React.ElementType = T>(
+  props?: Props<ElementType, P>,
+) => HTMLProps<ElementType, P>;

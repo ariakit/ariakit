@@ -233,7 +233,9 @@ export function addGlobalEventListener(
     try {
       scope.document.removeEventListener(type, listener, options);
     } catch {}
-    children.forEach((remove) => remove());
+    for (const remove of children) {
+      remove();
+    }
   };
 
   return removeEventListener;

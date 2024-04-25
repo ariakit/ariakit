@@ -1,4 +1,4 @@
-import type { PageLink } from "build-pages/links.ts";
+import type { PageLink } from "@/build-pages/links.ts";
 import invariant from "tiny-invariant";
 import { getTagSlug, getTags } from "./tag.ts";
 

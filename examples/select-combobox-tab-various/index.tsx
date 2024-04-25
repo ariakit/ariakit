@@ -1,6 +1,5 @@
-import "./theme.css";
-import { useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
+import { useMemo, useState } from "react";
 import * as defaultData from "../select-combobox-tab/data.ts";
 import { BranchIcon, TagIcon } from "../select-combobox-tab/icons.tsx";
 import {
@@ -13,6 +12,7 @@ import {
   SelectTabPanel,
 } from "../select-combobox-tab/select.tsx";
 import type { SelectProps } from "../select-combobox-tab/select.tsx";
+import "./theme.css";
 
 export default function Example() {
   const [data, setData] = useState(defaultData);
@@ -78,7 +78,9 @@ export default function Example() {
         </SelectTabList>
         <SelectTabPanel>
           <SelectList>
-            {values?.map((value) => <SelectItem key={value} value={value} />)}
+            {values?.map((value) => (
+              <SelectItem key={value} value={value} />
+            ))}
           </SelectList>
         </SelectTabPanel>
       </Select>

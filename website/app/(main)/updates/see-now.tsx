@@ -1,8 +1,8 @@
 "use client";
 
+import { useUpdates } from "@/lib/use-updates.ts";
+import type { UpdateItem } from "@/updates.ts";
 import { useEffect } from "react";
-import type { UpdateItem } from "updates.ts";
-import { useUpdates } from "utils/use-updates.ts";
 
 export interface SeeNowProps {
   updates?: UpdateItem[];

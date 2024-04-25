@@ -1,5 +1,3 @@
-import "./style.css";
-import { useState } from "react";
 import {
   Button,
   Dialog,
@@ -8,6 +6,8 @@ import {
   DialogHeading,
   VisuallyHidden,
 } from "@ariakit/react";
+import { useState } from "react";
+import "./style.css";
 
 export default function Example() {
   const [cartOpen, setCartOpen] = useState(false);

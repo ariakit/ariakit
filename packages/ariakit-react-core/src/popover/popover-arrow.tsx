@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
-import type { ElementType } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
+import { useMemo, useState } from "react";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -67,7 +67,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
     const fill = style?.getPropertyValue("background-color") || "none";
     const stroke = style?.getPropertyValue(`border-${dir}-color`) || "none";
     const borderWidth = style?.getPropertyValue(`border-${dir}-width`) || "0px";
-    const strokeWidth = parseInt(borderWidth) * 2 * (defaultSize / size);
+    const strokeWidth = Number.parseInt(borderWidth) * 2 * (defaultSize / size);
     const transform = rotateMap[dir];
 
     const children = useMemo(

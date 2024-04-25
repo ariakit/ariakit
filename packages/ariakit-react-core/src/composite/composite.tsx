@@ -1,11 +1,3 @@
-import type {
-  ElementType,
-  FocusEvent,
-  KeyboardEventHandler,
-  KeyboardEvent as ReactKeyboardEvent,
-  RefObject,
-} from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { flatten2DArray, reverseArray } from "@ariakit/core/utils/array";
 import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import {
@@ -16,6 +8,14 @@ import {
 import { focusIntoView, hasFocus } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type {
+  ElementType,
+  FocusEvent,
+  KeyboardEventHandler,
+  KeyboardEvent as ReactKeyboardEvent,
+  RefObject,
+} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import {

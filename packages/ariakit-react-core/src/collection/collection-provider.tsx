@@ -1,5 +1,5 @@
-import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
+import type { ReactElement, ReactNode } from "react";
 import { CollectionContextProvider } from "./collection-context.tsx";
 import { useCollectionStore } from "./collection-store.ts";
 import type {

@@ -1,15 +1,15 @@
-import { forwardRef, useId } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { getPageTitle } from "build-pages/get-page-title.js";
-import pageIndex from "build-pages/index.ts";
-import { ChevronRight } from "icons/chevron-right.tsx";
-import { NewWindow } from "icons/new-window.tsx";
-import { Npm } from "icons/npm.tsx";
-import { Substack } from "icons/substack.tsx";
+import { getPageTitle } from "@/build-pages/get-page-title.js";
+import pageIndex from "@/build-pages/index.ts";
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { Npm } from "@/icons/npm.tsx";
+import { Substack } from "@/icons/substack.tsx";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
+import type { UpdateItem } from "@/updates.ts";
 import Link from "next/link.js";
+import type { ComponentPropsWithoutRef } from "react";
+import { forwardRef, useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
-import type { UpdateItem } from "updates.ts";
-import { getPageIcon } from "utils/get-page-icon.tsx";
 import { DateFromNow } from "./date-from-now.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 
@@ -96,7 +96,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         )}
       >
         {unread && (
-          <div className="absolute left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-blue-600 dark:bg-blue-500"></div>
+          <div className="absolute left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-blue-600 dark:bg-blue-500" />
         )}
         {connected && (
           <div className="absolute -top-3 left-[47px] h-6 w-0.5 bg-black/10 dark:bg-white/10" />

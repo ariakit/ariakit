@@ -1,7 +1,7 @@
-import type { ElementType, MouseEvent } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType, MouseEvent } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useEvent } from "../utils/hooks.ts";
@@ -25,12 +25,12 @@ function findNextOrPreviousField(
   const regex = new RegExp(`^${name}\\.(\\d+)`);
   const nextField = fields?.find((field) => {
     const fieldIndex = field.name.replace(regex, "$1");
-    return parseInt(fieldIndex) > index;
+    return Number.parseInt(fieldIndex) > index;
   });
   if (nextField) return nextField;
   return fields?.reverse().find((field) => {
     const fieldIndex = field.name.replace(regex, "$1");
-    return parseInt(fieldIndex) < index;
+    return Number.parseInt(fieldIndex) < index;
   });
 }
 

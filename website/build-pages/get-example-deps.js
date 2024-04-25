@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
-import { dirname, join } from "path";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { parseSync, traverse } from "@babel/core";
 // @ts-expect-error
 import * as presetEnv from "@babel/preset-env";
@@ -136,9 +136,9 @@ export function getExampleDeps(
         },
       );
 
-      files.forEach((file) => {
+      for (const file of files) {
         getExampleDeps(join(dir, file), deps);
-      });
+      }
     }
 
     traverse(parsed, {

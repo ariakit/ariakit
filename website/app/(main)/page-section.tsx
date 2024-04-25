@@ -1,8 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
 import { Heading, HeadingLevel } from "@ariakit/react/heading";
 import { kebabCase } from "lodash-es";
+import type { ReactNode } from "react";
 
 export interface PageSectionProps {
   title: string;

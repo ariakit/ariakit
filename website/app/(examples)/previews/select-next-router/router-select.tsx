@@ -1,13 +1,13 @@
 "use client";
 
-import "./style.css";
-import type { ElementRef } from "react";
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import Link from "next/link.js";
 import type { LinkProps } from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
+import type { ElementRef } from "react";
+import * as React from "react";
+import "./style.css";
 
 const SelectParamContext = React.createContext<string | null>(null);
 
@@ -121,7 +121,9 @@ function getURLForValue(name: string, value: string | string[]) {
   const url = new URL(location.href);
   if (Array.isArray(value)) {
     url.searchParams.delete(name);
-    value.forEach((v) => url.searchParams.append(name, v));
+    for (const v of value) {
+      url.searchParams.append(name, v);
+    }
   } else {
     url.searchParams.set(name, value);
   }

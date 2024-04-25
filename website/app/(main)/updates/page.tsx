@@ -1,8 +1,8 @@
-import { UpdateLink } from "components/update-link.tsx";
+import { UpdateLink } from "@/components/update-link.tsx";
+import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
+import { getUpdates } from "@/lib/get-updates.ts";
+import { getPagesByTag } from "@/lib/tag.ts";
 import { twJoin } from "tailwind-merge";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
-import { getUpdates } from "utils/get-updates.ts";
-import { getPagesByTag } from "utils/tag.ts";
 import { PageContainer } from "../page-container.tsx";
 import { SeeNow } from "./see-now.tsx";
 

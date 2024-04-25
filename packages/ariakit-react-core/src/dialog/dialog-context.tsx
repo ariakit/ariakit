@@ -1,5 +1,5 @@
-import { createContext } from "react";
 import type { SetState } from "@ariakit/core/utils/types";
+import { createContext } from "react";
 import {
   DisclosureContextProvider,
   DisclosureScopedContextProvider,

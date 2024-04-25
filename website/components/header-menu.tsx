@@ -1,5 +1,19 @@
 "use client";
 
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { Search } from "@/icons/search.tsx";
+import { Spinner } from "@/icons/spinner.tsx";
+import { useMedia } from "@/lib/use-media.ts";
+import { whenIdle } from "@/lib/when-idle.ts";
+import { batch } from "@ariakit/core/utils/store";
+import * as Ariakit from "@ariakit/react";
+import {
+  useEvent,
+  useId,
+  useSafeLayoutEffect,
+} from "@ariakit/react-core/utils/hooks";
+import Link from "next/link.js";
 import type {
   ComponentPropsWithRef,
   ComponentPropsWithoutRef,
@@ -16,21 +30,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { batch } from "@ariakit/core/utils/store";
-import * as Ariakit from "@ariakit/react";
-import {
-  useEvent,
-  useId,
-  useSafeLayoutEffect,
-} from "@ariakit/react-core/utils/hooks";
-import { ChevronRight } from "icons/chevron-right.tsx";
-import { NewWindow } from "icons/new-window.tsx";
-import { Search } from "icons/search.tsx";
-import { Spinner } from "icons/spinner.tsx";
-import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
-import { useMedia } from "utils/use-media.ts";
-import { whenIdle } from "utils/when-idle.ts";
 import { Command } from "./command.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 import { Popup } from "./popup.tsx";

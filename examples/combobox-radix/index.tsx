@@ -1,5 +1,3 @@
-import "./style.css";
-import { useRef, useState } from "react";
 import {
   Combobox,
   ComboboxItem,
@@ -8,6 +6,8 @@ import {
   ComboboxProvider,
 } from "@ariakit/react";
 import * as RadixPopover from "@radix-ui/react-popover";
+import { useRef, useState } from "react";
+import "./style.css";
 
 export default function Example() {
   const comboboxRef = useRef<HTMLInputElement>(null);

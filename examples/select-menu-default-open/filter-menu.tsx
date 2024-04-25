@@ -1,6 +1,6 @@
+import * as Ariakit from "@ariakit/react";
 import { forwardRef } from "react";
 import type { ReactNode } from "react";
-import * as Ariakit from "@ariakit/react";
 
 interface FilterMenuProps extends Omit<Ariakit.MenuButtonProps, "store"> {
   label: ReactNode;

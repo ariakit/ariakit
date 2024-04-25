@@ -1,10 +1,10 @@
 import "./global.css";
 
-import type { PropsWithChildren } from "react";
+import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 import { Analytics } from "@vercel/analytics/react";
 import { QueryProvider } from "components/query-provider.tsx";
 import { GeistSans } from "geist/font/sans";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
+import type { PropsWithChildren } from "react";
 
 const darkModeScript = `
 function classList(action) {

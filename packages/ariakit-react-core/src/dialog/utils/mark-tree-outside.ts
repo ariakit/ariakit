@@ -33,6 +33,7 @@ export function isElementMarked(element: Element, id?: string) {
     if (element[elementProperty]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
+    // biome-ignore lint/correctness/noConstantCondition:
   } while (true);
 }
 
@@ -57,7 +58,9 @@ export function markTreeOutside(id: string, elements: Elements) {
   );
 
   const restoreAccessibilityTree = () => {
-    cleanups.forEach((fn) => fn());
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
   };
 
   return restoreAccessibilityTree;

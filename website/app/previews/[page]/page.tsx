@@ -1,17 +1,17 @@
-import { resolve } from "path";
-import pagesConfig from "build-pages/config.js";
-import { getCSSFilesFromDeps } from "build-pages/get-css-files-from-deps.js";
-import { getExampleDeps } from "build-pages/get-example-deps.js";
-import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
-import { getPageName } from "build-pages/get-page-name.js";
-import { getPageSourceFiles } from "build-pages/get-page-source-files.js";
-import pageIndex from "build-pages/index.ts";
-import { parseCSSFile } from "build-pages/parse-css-file.js";
-import type { Page } from "build-pages/types.ts";
-import { Preview } from "components/preview.tsx";
+import { resolve } from "node:path";
+import pagesConfig from "@/build-pages/config.js";
+import { getCSSFilesFromDeps } from "@/build-pages/get-css-files-from-deps.js";
+import { getExampleDeps } from "@/build-pages/get-example-deps.js";
+import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
+import { getPageName } from "@/build-pages/get-page-name.js";
+import { getPageSourceFiles } from "@/build-pages/get-page-source-files.js";
+import pageIndex from "@/build-pages/index.ts";
+import { parseCSSFile } from "@/build-pages/parse-css-file.js";
+import type { Page } from "@/build-pages/types.ts";
+import { Preview } from "@/components/preview.tsx";
+import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 import { notFound } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
 
 interface Props {
   params: ReturnType<typeof generateStaticParams>[number];
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: Props) {
   });
 }
 
-export default async function Page({ params }: Props) {
+export default async function PreviewPage({ params }: Props) {
   const { page } = params;
 
   const config = pagesConfig.pages.find((page) => page.slug === "examples");

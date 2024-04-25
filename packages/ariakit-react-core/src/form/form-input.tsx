@@ -1,5 +1,5 @@
-import type { ChangeEvent, ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ChangeEvent, ElementType } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import { useEvent } from "../utils/hooks.ts";

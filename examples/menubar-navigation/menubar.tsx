@@ -1,7 +1,7 @@
-import * as React from "react";
-import type { Dispatch, SetStateAction } from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
+import * as React from "react";
+import type { Dispatch, SetStateAction } from "react";
 
 // These contexts allow us to set the props on the parent menu component from a
 // child component.

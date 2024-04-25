@@ -1,10 +1,10 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import { dirname, join } from "path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { camelCase, groupBy } from "lodash-es";
 import invariant from "tiny-invariant";
-import { nonNullable } from "../utils/non-nullable.js";
+import { nonNullable } from "../lib/non-nullable.js";
 import {
   getPageEntryFiles,
   getPageEntryFilesCached,
@@ -61,7 +61,7 @@ function writeFiles(buildDir, pages) {
 
   const referencePages = pages.filter((page) => page.reference);
 
-  const references = referencePages.flatMap((page) =>
+  const referenceObjects = referencePages.flatMap((page) =>
     getPageEntryFilesCached(page).flatMap((file) => ({
       page,
       references: getReferences(file),
@@ -115,12 +115,12 @@ function writeFiles(buildDir, pages) {
     return getPageSections(file, page.slug, page.getGroup);
   });
 
-  references.forEach(({ page, references }) => {
+  for (const { page, references } of referenceObjects) {
     const sections = references.map((reference) => {
       return getPageSections(reference, page.slug, page.getGroup);
     });
     meta.push(...sections);
-  });
+  }
 
   const categories = groupBy(meta, (page) => page.category);
   const contents = meta
@@ -179,18 +179,18 @@ function writeFiles(buildDir, pages) {
   );
 
   // Second pass: find icons in the same folder as the source file
-  Object.entries(icons).forEach(([file, iconPath]) => {
-    if (iconPath) return;
+  for (const [file, iconPath] of Object.entries(icons)) {
+    if (iconPath) continue;
     const sourceFile = sourceFiles[file]?.[0];
-    if (!sourceFile) return;
+    if (!sourceFile) continue;
     const sourceIconPath = join(dirname(sourceFile), "site-icon.tsx");
-    if (!existsSync(sourceIconPath)) return;
+    if (!existsSync(sourceIconPath)) continue;
     icons[file] = sourceIconPath;
-  });
+  }
 
   // Third pass: find icons in the same folder as the original component page
-  Object.entries(icons).forEach(([file, iconPath]) => {
-    if (iconPath) return;
+  for (const [file, iconPath] of Object.entries(icons)) {
+    if (iconPath) continue;
     const key = Object.keys(icons)
       .filter((key) => !!icons[key])
       .find((key) => {
@@ -198,9 +198,9 @@ function writeFiles(buildDir, pages) {
         const currentPageName = getPageName(file);
         return currentPageName.startsWith(pageName);
       });
-    if (!key) return;
+    if (!key) continue;
     icons[file] = icons[key] || null;
-  });
+  }
 
   const iconsContents = Object.entries(icons)
     .map(([file, iconPath]) => {
@@ -277,10 +277,10 @@ class PagesWebpackPlugin {
       if (!compiler.watchMode) return;
       for (const { context, page } of contextsWithPages) {
         compilation.contextDependencies.add(context);
-        getPageEntryFiles(context, page.pageFileRegex).forEach((file) => {
+        for (const file of getPageEntryFiles(context, page.pageFileRegex)) {
           compilation.fileDependencies.add(file);
           compilation.contextDependencies.add(dirname(file));
-        });
+        }
       }
     });
 

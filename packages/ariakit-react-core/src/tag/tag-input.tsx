@@ -1,10 +1,3 @@
-import type {
-  ChangeEvent,
-  ClipboardEvent,
-  ElementType,
-  KeyboardEvent,
-  SyntheticEvent,
-} from "react";
 import { toArray } from "@ariakit/core/utils/array";
 import {
   getTextboxSelection,
@@ -14,6 +7,13 @@ import { getInputType } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import { UndoManager } from "@ariakit/core/utils/undo";
+import type {
+  ChangeEvent,
+  ClipboardEvent,
+  ElementType,
+  KeyboardEvent,
+  SyntheticEvent,
+} from "react";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.ts";

@@ -1,6 +1,6 @@
-import { icons } from "build-pages/icons.ts";
-import { APIReference } from "icons/api-reference.tsx";
-import { Document } from "icons/document.tsx";
+import { icons } from "@/build-pages/icons.ts";
+import { APIReference } from "@/icons/api-reference.tsx";
+import { Document } from "@/icons/document.tsx";
 import { camelCase } from "lodash-es";
 
 export function getPageIcon(category: string, page?: string) {

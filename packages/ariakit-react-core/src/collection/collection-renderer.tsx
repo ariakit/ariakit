@@ -1,3 +1,10 @@
+import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
+import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
+import type {
+  AnyObject,
+  BooleanOrCallback,
+  EmptyObject,
+} from "@ariakit/core/utils/types";
 import type {
   CSSProperties,
   ElementType,
@@ -14,13 +21,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
-import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
-import type {
-  AnyObject,
-  BooleanOrCallback,
-  EmptyObject,
-} from "@ariakit/core/utils/types";
 import { flushSync } from "react-dom";
 import {
   useBooleanEvent,
@@ -467,11 +467,11 @@ export function useCollectionRenderer<T extends Item = any>({
   const visibleIndices = useMemo(() => {
     if (!persistentIndices) return defaultVisibleIndices;
     const nextIndices = defaultVisibleIndices.slice();
-    persistentIndices.forEach((index) => {
-      if (index < 0) return;
-      if (nextIndices.includes(index)) return;
+    for (const index of persistentIndices) {
+      if (index < 0) continue;
+      if (nextIndices.includes(index)) continue;
       nextIndices.push(index);
-    });
+    }
     nextIndices.sort((a, b) => a - b);
     if (shallowEqual(defaultVisibleIndices, nextIndices)) {
       return defaultVisibleIndices;

@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/core",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Ariakit core",
   "sideEffects": false,
   "license": "MIT",
@@ -20,14 +20,11 @@
     "url": "https://github.com/diegohaz"
   },
   "scripts": {
-    "lint": "eslint . --ext js,ts,tsx",
+    "lint": "biome check .",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "core"
-  ],
+  "keywords": ["ariakit", "core"],
   "exports": {
     ".": "./src/index.ts",
     "./utils/undo": "./src/utils/undo.ts",

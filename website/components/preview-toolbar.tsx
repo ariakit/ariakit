@@ -1,13 +1,13 @@
-import { forwardRef } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { Nextjs } from "@/icons/nextjs.tsx";
+import { Vite } from "@/icons/vite.tsx";
+import { openInStackblitz } from "@/lib/stackblitz.ts";
+import { useSubscription } from "@/lib/use-subscription.ts";
 import { track } from "@vercel/analytics/react";
-import { NewWindow } from "icons/new-window.tsx";
-import { Nextjs } from "icons/nextjs.tsx";
-import { Vite } from "icons/vite.tsx";
 import Link from "next/link.js";
+import type { ComponentPropsWithoutRef } from "react";
+import { forwardRef } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
-import { openInStackblitz } from "utils/stackblitz.ts";
-import { useSubscription } from "utils/use-subscription.ts";
 import { Command } from "./command.tsx";
 import { TooltipButton } from "./tooltip-button.tsx";
 

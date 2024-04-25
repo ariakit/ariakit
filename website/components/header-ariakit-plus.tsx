@@ -1,6 +1,6 @@
 "use client";
-import { Suspense, forwardRef } from "react";
-import type { ComponentPropsWithoutRef, ElementRef } from "react";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { useSubscription } from "@/lib/use-subscription.ts";
 import {
   Button,
   Menu,
@@ -16,14 +16,14 @@ import {
   SignedOut,
   useClerk,
 } from "@clerk/clerk-react";
-import { NewWindow } from "icons/new-window.tsx";
 import Link from "next/link.js";
 import {
   usePathname,
   useSearchParams,
   useSelectedLayoutSegments,
 } from "next/navigation.js";
-import { useSubscription } from "utils/use-subscription.ts";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
+import { Suspense, forwardRef } from "react";
 import { Command } from "./command.tsx";
 import { DropdownItem } from "./dropdown-item.tsx";
 import { Popup } from "./popup.tsx";
@@ -38,7 +38,9 @@ const SignInLink = forwardRef<
   return (
     <Link
       ref={ref}
-      href={`/sign-in?redirect_url=${encodeURIComponent(`${pathname}?${search}`)}`}
+      href={`/sign-in?redirect_url=${encodeURIComponent(
+        `${pathname}?${search}`,
+      )}`}
       {...props}
     />
   );

@@ -149,6 +149,7 @@ export function cx(...args: Array<string | null | false | 0 | undefined>) {
  * Removes diatrics from a string.
  */
 export function normalizeString(str: string) {
+  // biome-ignore lint/suspicious/noMisleadingCharacterClass:
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 

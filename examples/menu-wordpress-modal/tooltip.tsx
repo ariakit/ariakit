@@ -1,6 +1,6 @@
-import { forwardRef } from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
+import { forwardRef } from "react";
 
 export interface TooltipProps extends Ariakit.TooltipProps {
   text: React.ReactNode;

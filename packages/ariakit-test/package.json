@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/test",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "description": "Ariakit test utils",
   "sideEffects": false,
   "license": "MIT",
@@ -20,16 +20,13 @@
     "url": "https://github.com/diegohaz"
   },
   "scripts": {
-    "lint": "eslint . --ext js,ts,tsx",
+    "lint": "biome check .",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "react"
-  ],
+  "keywords": ["ariakit", "react"],
   "dependencies": {
-    "@ariakit/core": "0.4.5",
+    "@ariakit/core": "0.4.6",
     "@testing-library/dom": "^8.0.0 || ^9.0.0 || ^10.0.0"
   },
   "peerDependencies": {

@@ -1,5 +1,19 @@
 "use client";
 
+import type { PageContent } from "@/build-pages/contents.ts";
+import { getPageTitle, getSearchTitle } from "@/build-pages/get-page-title.js";
+import type { PageIndexDetail } from "@/build-pages/index.ts";
+import pageIndex from "@/build-pages/index.ts";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
+import { getKeys } from "@ariakit/core/utils/misc";
+import { isApple } from "@ariakit/core/utils/platform";
+import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
+import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
+import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
+import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import { track } from "@vercel/analytics";
+import { groupBy } from "lodash-es";
+import { useSelectedLayoutSegments } from "next/navigation.js";
 import type { MouseEvent, ReactElement, ReactNode } from "react";
 import {
   createContext,
@@ -11,28 +25,14 @@ import {
   useMemo,
   useState,
 } from "react";
-import { getKeys } from "@ariakit/core/utils/misc";
-import { isApple } from "@ariakit/core/utils/platform";
-import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
-import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
-import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
-import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import { track } from "@vercel/analytics";
-import type { PageContent } from "build-pages/contents.ts";
-import { getPageTitle, getSearchTitle } from "build-pages/get-page-title.js";
-import type { PageIndexDetail } from "build-pages/index.ts";
-import pageIndex from "build-pages/index.ts";
-import { groupBy } from "lodash-es";
-import { useSelectedLayoutSegments } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
-import { getPageIcon } from "utils/get-page-icon.tsx";
+import type { HeaderMenuItemProps } from "./header-menu.tsx";
 import {
   HeaderMenu,
   HeaderMenuGroup,
   HeaderMenuItem,
   HeaderMenuSeparator,
 } from "./header-menu.tsx";
-import type { HeaderMenuItemProps } from "./header-menu.tsx";
 
 type Data = Array<
   PageContent & {
@@ -67,9 +67,9 @@ function parseSearchData(data: Data) {
   const dataBySlug = groupBy(data, "slug");
   const searchData: SearchData = [];
   const slugs = getKeys(dataBySlug);
-  slugs.forEach((slug) => {
+  for (const slug of slugs) {
     const items = dataBySlug[slug];
-    if (!items) return;
+    if (!items) continue;
     const parentPage = getSearchParentPageData(items);
     if (parentPage) {
       searchData.push(parentPage);
@@ -80,7 +80,7 @@ function parseSearchData(data: Data) {
         .slice(0, parentPage ? 3 : undefined)
         .map((item) => ({ ...item, nested: !!parentPage })),
     );
-  });
+  }
   return searchData;
 }
 
@@ -104,7 +104,7 @@ function getAllIndexes(string: string, values: string[]) {
   for (const value of values) {
     let pos = 0;
     const length = value.length;
-    while (string.indexOf(value, pos) != -1) {
+    while (string.indexOf(value, pos) !== -1) {
       const index = string.indexOf(value, pos);
       if (index !== -1) {
         indexes.push([index, length]);
@@ -152,14 +152,12 @@ function highlightValue(
 
   const values = [
     itemValue.slice(0, firstIndex),
-    ...allIndexes
-      .map(([index, length], i) => {
-        const value = itemValue.slice(index, index + length);
-        const nextIndex = allIndexes[i + 1]?.[0];
-        const nextValue = itemValue.slice(index + length, nextIndex);
-        return [value, nextValue];
-      })
-      .flat(),
+    ...allIndexes.flatMap(([index, length], i) => {
+      const value = itemValue.slice(index, index + length);
+      const nextIndex = allIndexes[i + 1]?.[0];
+      const nextValue = itemValue.slice(index + length, nextIndex);
+      return [value, nextValue];
+    }),
   ];
 
   values.forEach((value, i) => {
@@ -301,7 +299,7 @@ const HeaderNavMenu = memo(
     useEffect(() => {
       if (!open) return;
       const worker = new Worker(
-        new URL("../utils/search-worker.ts", import.meta.url),
+        new URL("../lib/search-worker.ts", import.meta.url),
       );
       worker.onmessage = (
         event: MessageEvent<{ items: Data; allData?: boolean }>,
@@ -368,6 +366,7 @@ const HeaderNavMenu = memo(
         "group",
       );
       const items = groups.null || [];
+      // biome-ignore lint/performance/noDelete: TODO
       delete groups.null;
       return [items, groups];
     }, [searchData, pages]);

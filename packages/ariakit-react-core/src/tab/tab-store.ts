@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import * as Core from "@ariakit/core/tab/tab-store";
+import { useMemo } from "react";
 import { useComboboxContext } from "../combobox/combobox-context.tsx";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {

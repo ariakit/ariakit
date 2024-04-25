@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState } from "react";
-import type { ElementType } from "react";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
+import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.tsx";
 import {
@@ -38,7 +38,8 @@ function parseCSSTime(...times: string[]) {
     .split(", ")
     .reduce((longestTime, currentTimeString) => {
       const multiplier = currentTimeString.endsWith("ms") ? 1 : 1000;
-      const currentTime = parseFloat(currentTimeString || "0s") * multiplier;
+      const currentTime =
+        Number.parseFloat(currentTimeString || "0s") * multiplier;
       // When multiple times are specified, we want to use the longest one so we
       // wait until the longest transition has finished.
       if (currentTime > longestTime) return currentTime;

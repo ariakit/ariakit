@@ -1,6 +1,5 @@
-import "./theme.css";
-import { useMemo, useState } from "react";
 import { matchSorter } from "match-sorter";
+import { useMemo, useState } from "react";
 import * as defaultData from "./data.ts";
 import { BranchIcon, TagIcon } from "./icons.tsx";
 import {
@@ -13,6 +12,7 @@ import {
   SelectTabPanel,
 } from "./select.tsx";
 import type { SelectProps } from "./select.tsx";
+import "./theme.css";
 
 export default function Example() {
   const [data, setData] = useState(defaultData);
@@ -69,7 +69,9 @@ export default function Example() {
         setValue={setValue}
       >
         <SelectList>
-          {values?.map((value) => <SelectItem key={value} value={value} />)}
+          {values?.map((value) => (
+            <SelectItem key={value} value={value} />
+          ))}
         </SelectList>
       </Select>
 
@@ -82,7 +84,9 @@ export default function Example() {
         onSearch={setSearchValue}
       >
         <SelectList>
-          {matches?.map((value) => <SelectItem key={value} value={value} />)}
+          {matches?.map((value) => (
+            <SelectItem key={value} value={value} />
+          ))}
           {customItem || empty}
         </SelectList>
       </Select>
@@ -101,7 +105,9 @@ export default function Example() {
         </SelectTabList>
         <SelectTabPanel>
           <SelectList>
-            {values?.map((value) => <SelectItem key={value} value={value} />)}
+            {values?.map((value) => (
+              <SelectItem key={value} value={value} />
+            ))}
           </SelectList>
         </SelectTabPanel>
       </Select>
