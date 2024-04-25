@@ -13,4 +13,3 @@ vscode:
     - biomejs.biome
     - EditorConfig.EditorConfig
     - bradlc.vscode-tailwindcss
-    - christian-kohler.path-intellisense
