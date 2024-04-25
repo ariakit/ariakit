@@ -1,5 +1,5 @@
+import { createCheckout } from "@/lib/stripe.ts";
 import type { NextRequest } from "next/server.ts";
-import { createCheckout } from "utils/stripe.ts";
 import { z } from "zod";
 
 export async function POST(req: NextRequest) {

@@ -1,6 +1,6 @@
-import "./style.css";
-import type { SyntheticEvent } from "react";
 import * as Ariakit from "@ariakit/react";
+import type { SyntheticEvent } from "react";
+import "./style.css";
 
 export default function Example() {
   const onEvent = (event: SyntheticEvent) => {

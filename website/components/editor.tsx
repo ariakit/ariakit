@@ -1,11 +1,11 @@
 "use client";
-import type { ReactNode } from "react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useMedia } from "@/lib/use-media.ts";
 import { invariant } from "@ariakit/core/utils/misc";
 import { Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import type * as monaco from "monaco-editor";
+import type { ReactNode } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { bundledLanguages } from "shiki";
-import { useMedia } from "utils/use-media.ts";
 
 export interface EditorProps {
   files: Record<string, string>;
@@ -127,7 +127,9 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
 
       const grammars = new Map<string, string>();
 
-      monaco.editor.getModels().forEach((model) => model.dispose());
+      for (const model of monaco.editor.getModels()) {
+        model.dispose();
+      }
 
       Object.entries(files).map(([file, content]) => {
         const language = languages.find((lang) => lang.pattern.test(file));

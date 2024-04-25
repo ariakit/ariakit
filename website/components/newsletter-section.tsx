@@ -1,5 +1,5 @@
-import { Mail } from "icons/mail.tsx";
-import { NewWindow } from "icons/new-window.tsx";
+import { Mail } from "@/icons/mail.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
 import { Command } from "./command.tsx";
 import { InlineLink } from "./inline-link.tsx";
 import { NewsletterForm } from "./newsletter-form.tsx";

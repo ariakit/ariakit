@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import { Popup } from "@/components/popup.tsx";
+import { List } from "@/icons/list.tsx";
+import { useMedia } from "@/lib/use-media.ts";
 import {
   getScrollingElement,
   scrollIntoViewIfNeeded,
 } from "@ariakit/core/utils/dom";
 import * as Ariakit from "@ariakit/react";
-import { Popup } from "components/popup.tsx";
-import { List } from "icons/list.tsx";
-import { useMedia } from "utils/use-media.ts";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 interface TableOfContentsProps {
   ids: string[];
@@ -34,7 +34,7 @@ export function TableOfContents({
         if (!element) return false;
         const { top } = element.getBoundingClientRect();
         const { scrollMarginTop } = getComputedStyle(element);
-        return top - parseInt(scrollMarginTop) <= 64;
+        return top - Number.parseInt(scrollMarginTop) <= 64;
       });
       setActiveId(activeId ?? null);
     };
@@ -45,7 +45,7 @@ export function TableOfContents({
 
   useEffect(() => {
     const anchors = document.body.querySelectorAll("li a[href^='#']");
-    anchors.forEach((anchor) => {
+    for (const anchor of anchors) {
       anchor.removeAttribute("aria-current");
       if (anchor.getAttribute("href") === `#${activeId ? activeId : ""}`) {
         anchor.setAttribute("aria-current", "true");
@@ -54,7 +54,7 @@ export function TableOfContents({
           scrollIntoViewIfNeeded(anchor, { block: "nearest" });
         }
       }
-    });
+    }
   }, [activeId, mounted, isLarge, children, popoverContents]);
 
   return (

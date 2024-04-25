@@ -1,6 +1,6 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
+import * as React from "react";
 
 export interface SelectProps extends Ariakit.SelectProps {
   value?: string;

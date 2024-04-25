@@ -1,3 +1,5 @@
+import { chain } from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import {
   createContext,
   useCallback,
@@ -5,8 +7,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { chain } from "@ariakit/core/utils/misc";
-import { sync } from "@ariakit/core/utils/store";
 import { useSafeLayoutEffect } from "../../utils/hooks.ts";
 import type { WrapElement } from "../../utils/types.ts";
 import type { DialogStore } from "../dialog-store.ts";

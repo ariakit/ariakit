@@ -121,23 +121,3 @@ const Component = Ariakit.Combobox;
 ```
 
 </aside>
-
-## Import style first
-
-In our code examples, we place the import statement for styles at the top of the file. This ensures that when we edit the example, the autoimport feature will add import statements at the end of the import list. This prevents the style import from being inserted in the middle of the list.
-
-```js
-// ❌ Bad
-import { Combobox } from "@ariakit/react";
-import "./style.css";
-
-// ❌ Bad, autoimport will append the list
-import { Combobox } from "@ariakit/react";
-import "./style.css";
-import { useState } from "react";
-
-// ✅ Good
-import "./style.css";
-import { Combobox } from "@ariakit/react";
-import { useState } from "react";
-```

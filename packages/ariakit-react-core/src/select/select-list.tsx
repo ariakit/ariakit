@@ -1,8 +1,8 @@
-import type { ElementType, KeyboardEvent } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type { ElementType, KeyboardEvent } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { CompositeOptions } from "../composite/composite.tsx";

@@ -1,5 +1,5 @@
-import "./style.css";
 import { Checkbox, CheckboxProvider, Group, GroupLabel } from "@ariakit/react";
+import "./style.css";
 
 export default function Example() {
   return (

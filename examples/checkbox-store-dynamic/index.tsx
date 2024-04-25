@@ -1,6 +1,6 @@
-import "./style.css";
-import { useState } from "react";
 import { Checkbox, useCheckboxStore } from "@ariakit/react";
+import { useState } from "react";
+import "./style.css";
 
 export default function Example() {
   const [allChecked, setAllChecked] = useState(true);

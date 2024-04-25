@@ -1,5 +1,5 @@
-import "./style.css";
 import * as Dialog from "./dialog.tsx";
+import "./style.css";
 
 export default function Example() {
   return (

@@ -1,5 +1,5 @@
-import { lstatSync, readFileSync, readdirSync, writeFileSync } from "fs";
-import { join } from "path";
+import { lstatSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { rimrafSync } from "rimraf";
@@ -56,9 +56,11 @@ export function getPackageJson(rootPath, prod = false) {
   const moduleExports = Object.entries(publicFiles).reduce(
     (acc, [name, path]) => {
       if (name === "index") {
+        // biome-ignore lint/performance/noAccumulatingSpread: TODO
         return { ".": getExports(path), ...acc };
       }
       const pathname = `./${name.replace(/\/index$/, "")}`;
+      // biome-ignore lint/performance/noAccumulatingSpread: TODO
       return { ...acc, [pathname]: getExports(path) };
     },
     {},
@@ -87,7 +89,9 @@ export function writePackageJson(rootPath, prod = false) {
   const currentContents = readFileSync(pkgPath, "utf-8");
   const pkg = getPackageJson(rootPath, prod);
   const nextContents = `${JSON.stringify(pkg, null, 2)}\n`;
-  if (currentContents === nextContents) return;
+  const currentContentsMin = JSON.stringify(JSON.parse(currentContents));
+  const nextContentsMin = JSON.stringify(JSON.parse(nextContents));
+  if (currentContentsMin === nextContentsMin) return;
   writeFileSync(pkgPath, nextContents);
   console.log(`${chalk.blue(pkg.name)} - Updated package.json`);
 }
@@ -151,6 +155,7 @@ export function getPublicFiles(sourcePath, prefix = "") {
           [removeExt(normalizePath(join(prefix, filename)))]:
             normalizePath(path),
         }),
+        // biome-ignore lint/performance/noAccumulatingSpread: TODO
         ...acc,
       };
     }, {});
@@ -211,10 +216,12 @@ function reduceToRootPaths(array, path) {
  */
 export function cleanBuild(rootPath) {
   writePackageJson(rootPath);
-  getBuildFolders(rootPath)
+  const rootPaths = getBuildFolders(rootPath)
     .filter(isRootModule)
-    .reduce(reduceToRootPaths, [])
-    .forEach((name) => rimrafSync(name));
+    .reduce(reduceToRootPaths, []);
+  for (const name of rootPaths) {
+    rimrafSync(name);
+  }
 }
 
 /**
@@ -281,14 +288,14 @@ export function makeProxies(rootPath) {
   const pkg = readPackageJson(rootPath);
   /** @type {string[]} */
   const created = [];
-  Object.entries(getProxyFolders(rootPath)).forEach(([name, path]) => {
+  for (const [name, path] of Object.entries(getProxyFolders(rootPath))) {
     fse.ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
       getProxyPackageContents(rootPath, name, path),
     );
     created.push(chalk.bold(chalk.green(name)));
-  });
+  }
   if (created.length) {
     console.log(
       [

@@ -1,4 +1,4 @@
-import { join } from "path";
+import { join } from "node:path";
 import { watch } from "chokidar";
 import { globSync } from "glob";
 import { writePackageJson } from "./utils.js";
@@ -15,7 +15,9 @@ function processDevPackage(path) {
 
 const packages = globSync("packages/*/src");
 
-packages.forEach(processDevPackage);
+for (const path of packages) {
+  processDevPackage(path);
+}
 
 watch("packages/*/src/**", { ignoreInitial: true })
   .on("add", processDevPackage)

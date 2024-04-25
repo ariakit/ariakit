@@ -1,10 +1,10 @@
 "use client";
 
+import { Moon } from "@/icons/moon.tsx";
+import { Sun } from "@/icons/sun.tsx";
+import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { useState } from "react";
 import type { ButtonHTMLAttributes } from "react";
-import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import { Moon } from "icons/moon.tsx";
-import { Sun } from "icons/sun.tsx";
 import { twJoin } from "tailwind-merge";
 import { Command } from "./command.tsx";
 import { TooltipButton } from "./tooltip-button.tsx";

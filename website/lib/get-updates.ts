@@ -1,7 +1,7 @@
+import updates from "@/updates.ts";
+import type { UpdateItem } from "@/updates.ts";
 import type { AnyObject } from "@ariakit/core/utils/types";
 import spawn from "cross-spawn";
-import updates from "updates.ts";
-import type { UpdateItem } from "updates.ts";
 
 let releasesCache: UpdateItem[] | null = null;
 
@@ -18,8 +18,11 @@ function getReleaseUpdates() {
       "--json",
     ]);
     const { time } = JSON.parse(response.stdout.toString());
+    // biome-ignore lint/performance/noDelete: TODO
     delete time.created;
+    // biome-ignore lint/performance/noDelete: TODO
     delete time.modified;
+    // biome-ignore lint/performance/noDelete: TODO
     delete time["0.0.1"];
     releasesCache = Object.entries(time).map(([version, dateTime]) => ({
       type: "release",

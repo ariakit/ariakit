@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { ArrowLeft } from "icons/arrow-left.tsx";
-import { ArrowRight } from "icons/arrow-right.tsx";
-import { NewWindow } from "icons/new-window.tsx";
-import { Refresh } from "icons/refresh.tsx";
-import { Spinner } from "icons/spinner.tsx";
+import { ArrowLeft } from "@/icons/arrow-left.tsx";
+import { ArrowRight } from "@/icons/arrow-right.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { Refresh } from "@/icons/refresh.tsx";
+import { Spinner } from "@/icons/spinner.tsx";
 import Link from "next/link.js";
+import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 import { TooltipButton } from "./tooltip-button.tsx";

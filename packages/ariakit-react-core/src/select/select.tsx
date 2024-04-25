@@ -1,3 +1,8 @@
+import { toArray } from "@ariakit/core/utils/array";
+import { getPopupRole } from "@ariakit/core/utils/dom";
+import { queueBeforeEvent } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type {
   ElementType,
   KeyboardEvent,
@@ -5,11 +10,6 @@ import type {
   SelectHTMLAttributes,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { toArray } from "@ariakit/core/utils/array";
-import { getPopupRole } from "@ariakit/core/utils/dom";
-import { queueBeforeEvent } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";

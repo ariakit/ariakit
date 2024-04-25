@@ -1,20 +1,20 @@
-import { Fragment, cache } from "react";
-import type { ReactNode } from "react";
-import pagesConfig from "build-pages/config.js";
-import { getPageContent } from "build-pages/get-page-content.js";
-import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
-import { getPageName } from "build-pages/get-page-name.js";
-import pageIndex from "build-pages/index.ts";
-import { getReferences } from "build-pages/reference-utils.js";
-import type { Page, TableOfContents } from "build-pages/types.ts";
+import pagesConfig from "@/build-pages/config.js";
+import { getPageContent } from "@/build-pages/get-page-content.js";
+import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
+import { getPageName } from "@/build-pages/get-page-name.js";
+import pageIndex from "@/build-pages/index.ts";
+import { getReferences } from "@/build-pages/reference-utils.js";
+import type { Page, TableOfContents } from "@/build-pages/types.ts";
+import { rehypeCodeMeta } from "@/lib/rehype-code-meta.ts";
+import { rehypeWrapHeadings } from "@/lib/rehype-wrap-headings.ts";
 import matter from "gray-matter";
+import type { ReactNode } from "react";
+import { Fragment, cache } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import invariant from "tiny-invariant";
-import { rehypeCodeMeta } from "utils/rehype-code-meta.ts";
-import { rehypeWrapHeadings } from "utils/rehype-wrap-headings.ts";
 import { AuthEnabled } from "./auth.tsx";
 import {
   PageA,

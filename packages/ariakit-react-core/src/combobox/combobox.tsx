@@ -1,14 +1,3 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import type {
-  AriaAttributes,
-  ChangeEvent,
-  CompositionEvent,
-  ElementType,
-  MouseEvent,
-  FocusEvent as ReactFocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-  SyntheticEvent,
-} from "react";
 import {
   getPopupRole,
   getScrollingElement,
@@ -31,6 +20,17 @@ import type {
   BooleanOrCallback,
   StringWithValue,
 } from "@ariakit/core/utils/types";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type {
+  AriaAttributes,
+  ChangeEvent,
+  CompositionEvent,
+  ElementType,
+  MouseEvent,
+  FocusEvent as ReactFocusEvent,
+  KeyboardEvent as ReactKeyboardEvent,
+  SyntheticEvent,
+} from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
@@ -412,9 +412,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           store?.setValue(value);
         }
       };
-      elements.forEach((el) => el.addEventListener("focusout", onBlur));
+      for (const element of elements) {
+        element.addEventListener("focusout", onBlur);
+      }
       return () => {
-        elements.forEach((el) => el.removeEventListener("focusout", onBlur));
+        for (const element of elements) {
+          element.removeEventListener("focusout", onBlur);
+        }
       };
     }, [inline, contentElement, store, value]);
 

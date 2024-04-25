@@ -1,5 +1,3 @@
-import "./style.css";
-import { startTransition, useEffect, useState } from "react";
 import * as Ariakit from "@ariakit/react";
 import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
 import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
@@ -7,7 +5,9 @@ import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
 import { matchSorter } from "match-sorter";
+import { startTransition, useEffect, useState } from "react";
 import { countries } from "./countries.ts";
+import "./style.css";
 
 function getItem(country: string) {
   return {

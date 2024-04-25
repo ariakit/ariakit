@@ -1,3 +1,4 @@
+import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import type {
   HTMLAttributes,
   MutableRefObject,
@@ -6,7 +7,6 @@ import type {
   RefCallback,
 } from "react";
 import { isValidElement } from "react";
-import { hasOwnProperty } from "@ariakit/core/utils/misc";
 
 /**
  * Sets both a function and object React ref.

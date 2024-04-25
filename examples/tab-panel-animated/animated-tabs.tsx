@@ -1,7 +1,7 @@
-import type { ElementRef } from "react";
-import { forwardRef, useEffect, useId, useRef } from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
+import type { ElementRef } from "react";
+import { forwardRef, useEffect, useId, useRef } from "react";
 
 export { TabProvider } from "@ariakit/react";
 

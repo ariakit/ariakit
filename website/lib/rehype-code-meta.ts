@@ -3,7 +3,7 @@ import type { Plugin } from "unified";
 import { visit } from "unist-util-visit";
 
 export const rehypeCodeMeta: Plugin<any[], Root> = () => {
-  return function (tree) {
+  return (tree) => {
     visit(tree, (node) => {
       if (node.type !== "element") return;
       if (node.tagName !== "code") return;

@@ -1,7 +1,7 @@
 "use client";
-import { forwardRef } from "react";
 import { Role } from "@ariakit/react";
 import type { RoleProps } from "@ariakit/react";
+import { forwardRef } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
 
 export interface PopupProps extends RoleProps {

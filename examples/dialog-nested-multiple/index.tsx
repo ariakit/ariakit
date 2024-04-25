@@ -1,6 +1,6 @@
-import "./style.css";
 import { useId, useRef, useState } from "react";
 import { Button, Dialog, DialogDismiss, DialogHeading } from "./dialog.tsx";
+import "./style.css";
 
 export default function Example() {
   const buttonRef = useRef<HTMLButtonElement>(null);

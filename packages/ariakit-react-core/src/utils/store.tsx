@@ -1,4 +1,3 @@
-import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
 import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
@@ -12,6 +11,7 @@ import type {
   PickByValue,
   SetState,
 } from "@ariakit/core/utils/types";
+import * as React from "react";
 // import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
 // This doesn't work in ESM, because use-sync-external-store only exposes CJS.
 // The following is a workaround until ESM is supported.

@@ -1,6 +1,6 @@
+import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
-import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import {
   CompositeItem,
@@ -79,7 +79,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   const panelId = store.panels.useState(
     (state) => state.items.find((item) => item.tabId === id)?.id,
   );
-  const shouldRegisterItem = !!defaultId ? props.shouldRegisterItem : false;
+  const shouldRegisterItem = defaultId ? props.shouldRegisterItem : false;
 
   const isActive = store.useState((state) => !!id && state.activeId === id);
   const selected = store.useState((state) => !!id && state.selectedId === id);

@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
 import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { useEffect, useRef } from "react";
 import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.ts";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";

@@ -1,11 +1,11 @@
+import pageLinks from "@/build-pages/links.ts";
+import { isValidHref } from "@/lib/is-valid-href.ts";
 import { hasOwnProperty } from "@ariakit/core/utils/misc";
-import pageLinks from "build-pages/links.ts";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
-import { FontStyle, bundledLanguages, codeToTokensBase } from "shiki";
 import type { BundledLanguage, SpecialLanguage, ThemedToken } from "shiki";
+import { FontStyle, bundledLanguages, codeToTokensBase } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
-import { isValidHref } from "utils/is-valid-href.ts";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
 import { PageHovercardAnchor } from "./page-hovercard.tsx";
 

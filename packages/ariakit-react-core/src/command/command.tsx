@@ -1,5 +1,3 @@
-import type { ElementType, KeyboardEvent } from "react";
-import { useEffect, useRef, useState } from "react";
 import { isButton, isTextField } from "@ariakit/core/utils/dom";
 import {
   fireClickEvent,
@@ -8,6 +6,8 @@ import {
 } from "@ariakit/core/utils/events";
 import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isFirefox } from "@ariakit/core/utils/platform";
+import type { ElementType, KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import {

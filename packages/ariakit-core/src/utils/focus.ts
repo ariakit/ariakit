@@ -7,7 +7,7 @@ const selector =
   "video[controls], [contenteditable]:not([contenteditable='false'])";
 
 function hasNegativeTabIndex(element: Element) {
-  const tabIndex = parseInt(element.getAttribute("tabindex") || "0", 10);
+  const tabIndex = Number.parseInt(element.getAttribute("tabindex") || "0", 10);
   return tabIndex < 0;
 }
 
@@ -347,7 +347,9 @@ export function disableFocusIn(
   includeContainer?: boolean,
 ) {
   const tabbableElements = getAllTabbableIn(container, includeContainer);
-  tabbableElements.forEach(disableFocus);
+  for (const element of tabbableElements) {
+    disableFocus(element);
+  }
 }
 
 /**
@@ -368,7 +370,9 @@ export function restoreFocusIn(container: HTMLElement) {
   if (container.hasAttribute("data-tabindex")) {
     restoreTabIndex(container);
   }
-  elements.forEach(restoreTabIndex);
+  for (const element of elements) {
+    restoreTabIndex(element);
+  }
 }
 
 /**

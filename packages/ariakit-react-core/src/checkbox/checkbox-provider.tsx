@@ -1,5 +1,5 @@
-import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
+import type { ReactElement, ReactNode } from "react";
 import { CheckboxContextProvider } from "./checkbox-context.tsx";
 import { useCheckboxStore } from "./checkbox-store.ts";
 import type {

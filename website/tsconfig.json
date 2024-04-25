@@ -5,7 +5,10 @@
     "baseUrl": ".",
     "jsx": "preserve",
     "incremental": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "**/*.ts",

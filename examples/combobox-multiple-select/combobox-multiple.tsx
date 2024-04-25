@@ -1,6 +1,6 @@
-import { forwardRef, useEffect } from "react";
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
+import { forwardRef, useEffect } from "react";
 
 export interface ComboboxProps extends Omit<Ariakit.ComboboxProps, "onChange"> {
   label?: string;

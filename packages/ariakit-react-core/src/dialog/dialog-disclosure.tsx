@@ -1,6 +1,6 @@
-import type { ElementType } from "react";
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ElementType } from "react";
 import type { DisclosureOptions } from "../disclosure/disclosure.tsx";
 import { useDisclosure } from "../disclosure/disclosure.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

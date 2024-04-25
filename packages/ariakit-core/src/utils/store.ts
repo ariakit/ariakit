@@ -114,7 +114,9 @@ export function createStore<S extends State>(
     );
 
     const teardowns: Array<void | (() => void)> = [];
-    setups.forEach((setup) => teardowns.push(setup()));
+    for (const setup of setups) {
+      teardowns.push(setup());
+    }
 
     const cleanups = stores.map(init);
 
@@ -167,9 +169,9 @@ export function createStore<S extends State>(
     if (nextValue === state[key]) return;
 
     if (!fromStores) {
-      stores.forEach((store) => {
+      for (const store of stores) {
         store?.setState?.(key, nextValue);
-      });
+      }
     }
 
     const prevState = state;
@@ -188,9 +190,9 @@ export function createStore<S extends State>(
       }
     };
 
-    listeners.forEach((listener) => {
+    for (const listener of listeners) {
       run(listener, prevState);
-    });
+    }
 
     queueMicrotask(() => {
       // If setState is called again before this microtask runs, skip this
@@ -200,9 +202,9 @@ export function createStore<S extends State>(
       // Take a snapshot of the state before running batch listeners. This is
       // necessary because batch listeners can setState.
       const snapshot = state;
-      batchListeners.forEach((listener) => {
+      for (const listener of batchListeners) {
         run(listener, prevStateBatch, updatedKeys);
-      });
+      }
       prevStateBatch = snapshot;
       updatedKeys.clear();
     });
@@ -335,7 +337,7 @@ export function mergeStore<S extends State>(
   const initialState = stores.reduce((state, store) => {
     const nextState = store?.getState?.();
     if (!nextState) return state;
-    return { ...state, ...nextState };
+    return Object.assign(state, nextState);
   }, {} as S);
   const store = createStore(initialState, ...stores);
   return store;

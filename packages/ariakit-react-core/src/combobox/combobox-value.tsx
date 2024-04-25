@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
+import type { ReactNode } from "react";
 import { useComboboxContext } from "./combobox-context.tsx";
 import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
 

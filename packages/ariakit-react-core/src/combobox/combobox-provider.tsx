@@ -1,5 +1,5 @@
-import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
+import type { ReactElement, ReactNode } from "react";
 import { ComboboxContextProvider } from "./combobox-context.tsx";
 import { useComboboxStore } from "./combobox-store.ts";
 import type {

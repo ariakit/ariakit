@@ -25,6 +25,7 @@ function getPackageName(source: string) {
 
 function normalizeDeps(deps: StackblitzProps["dependencies"] = {}) {
   return Object.entries(deps).reduce(
+    // biome-ignore lint/performance/noAccumulatingSpread: TODO
     (acc, [pkg, version]) => ({ ...acc, [getPackageName(pkg)]: version }),
     {},
   );
@@ -120,8 +121,8 @@ function getTSConfig(tsConfig?: Record<string, unknown>) {
 }
 
 function getIndexCss(
-  theme: StackblitzProps["theme"] = "light",
   id: StackblitzProps["id"],
+  theme: StackblitzProps["theme"] = "light",
 ) {
   const isRadix = /\-radix/.test(id);
   theme = isRadix ? "light" : theme;
@@ -217,7 +218,7 @@ if (root) {
 }
 `;
 
-  const indexCss = getIndexCss(props.theme, props.id);
+  const indexCss = getIndexCss(props.id, props.theme);
 
   const sourceFiles = Object.entries(props.files).reduce<ProjectFiles>(
     (acc, [filename, content]) => {
@@ -293,7 +294,7 @@ export default nextConfig;
 // see https://nextjs.org/docs/basic-features/typescript for more information.
 `;
 
-  const layoutCss = getIndexCss(props.theme, props.id);
+  const layoutCss = getIndexCss(props.id, props.theme);
 
   const theme = props.theme === "dark" ? "dark" : "light";
 

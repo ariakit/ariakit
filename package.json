@@ -42,7 +42,8 @@
     "test-vo-debug": "npm run test-vo -- --ui",
     "coverage": "npm test -- --coverage",
     "postcoverage": "open-cli coverage/index.html",
-    "lint": "eslint . --ext js,ts,tsx",
+    "lint": "biome check .",
+    "lint-fix": "biome check --apply .",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "tsc": "conc -r 'tsc --noEmit' 'tsc --noEmit -p website/tsconfig.json'",
     "tsc-clean": "tsc --build --clean",
@@ -54,19 +55,14 @@
     "prepare": "husky",
     "postinstall": "patch-package"
   },
-  "workspaces": [
-    "packages/*",
-    "examples",
-    "guide",
-    "website"
-  ],
+  "workspaces": ["packages/*", "examples", "guide", "website"],
   "lerna": {
     "version": "independent"
   },
   "lint-staged": {
-    "*.{js,ts,tsx}": "eslint --fix",
-    "*.css": "stylelint --fix",
-    "package.json": "npm run clean -ws --if-present"
+    "package.json": ["npm run clean -ws --if-present", "biome check --apply"],
+    "*.{js,ts,tsx,json}": "biome check --apply",
+    "*.css": "stylelint --fix"
   },
   "overrides": {
     "@wordpress/components": {
@@ -79,6 +75,7 @@
     "@babel/preset-react": "7.24.1",
     "@babel/preset-typescript": "7.24.1",
     "@babel/types": "7.24.0",
+    "@biomejs/biome": "1.7.1",
     "@changesets/cli": "2.26.2",
     "@clerk/clerk-react": "4.31.0",
     "@clerk/nextjs": "4.30.0",
@@ -108,8 +105,6 @@
     "@types/stylis": "4.2.5",
     "@types/textarea-caret": "3.0.3",
     "@types/use-sync-external-store": "0.0.6",
-    "@typescript-eslint/eslint-plugin": "7.7.1",
-    "@typescript-eslint/parser": "7.7.1",
     "@vercel/analytics": "1.2.2",
     "@vitest/coverage-c8": "0.33.0",
     "@wordpress/components": "27.3.0",
@@ -124,12 +119,6 @@
     "cross-spawn": "7.0.3",
     "date-fns": "3.6.0",
     "dotenv": "16.4.5",
-    "eslint": "8.57.0",
-    "eslint-config-prettier": "9.1.0",
-    "eslint-plugin-import": "2.29.1",
-    "eslint-plugin-prettier": "5.1.3",
-    "eslint-plugin-react": "7.34.1",
-    "eslint-plugin-vitest": "0.5.4",
     "fast-fuzzy": "1.12.0",
     "framer-motion": "9.1.7",
     "fs-extra": "11.2.0",

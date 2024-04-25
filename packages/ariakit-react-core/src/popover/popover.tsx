@@ -1,5 +1,3 @@
-import type { ElementType, HTMLAttributes } from "react";
-import { useRef, useState } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
 import {
   arrow,
@@ -11,6 +9,8 @@ import {
   shift,
   size,
 } from "@floating-ui/dom";
+import type { ElementType, HTMLAttributes } from "react";
+import { useRef, useState } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
 import {

@@ -1,6 +1,6 @@
 "use client";
-import type { ReactNode } from "react";
 import { Heading, HeadingLevel } from "@ariakit/react";
+import type { ReactNode } from "react";
 
 export interface PageContainerProps {
   title?: string;

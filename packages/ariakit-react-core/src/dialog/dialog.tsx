@@ -1,13 +1,3 @@
-import type {
-  ComponentPropsWithRef,
-  ElementType,
-  FC,
-  ReactElement,
-  KeyboardEvent as ReactKeyboardEvent,
-  RefObject,
-  SyntheticEvent,
-} from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
 import {
   contains,
   getActiveElement,
@@ -26,6 +16,16 @@ import {
 import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import type {
+  ComponentPropsWithRef,
+  ElementType,
+  FC,
+  ReactElement,
+  KeyboardEvent as ReactKeyboardEvent,
+  RefObject,
+  SyntheticEvent,
+} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,
@@ -56,8 +56,8 @@ import {
   DialogScopedContextProvider,
   useDialogProviderContext,
 } from "./dialog-context.tsx";
-import { useDialogStore } from "./dialog-store.ts";
 import type { DialogStore } from "./dialog-store.ts";
+import { useDialogStore } from "./dialog-store.ts";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
@@ -379,7 +379,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // disclosure element instead.
       if (element && !isFocusable(element)) {
         const maybeParentDialog = element.closest("[data-dialog]");
-        if (maybeParentDialog && maybeParentDialog.id) {
+        if (maybeParentDialog?.id) {
           const doc = getDocument(maybeParentDialog);
           const selector = `[aria-controls~="${maybeParentDialog.id}"]`;
           const control = doc.querySelector<HTMLElement>(selector);

@@ -1,18 +1,18 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import { Bell } from "@/icons/bell.tsx";
+import { useMedia } from "@/lib/use-media.ts";
+import { useUpdates } from "@/lib/use-updates.ts";
+import type { UpdateItem } from "@/updates.ts";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import * as Ariakit from "@ariakit/react";
 import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { track } from "@vercel/analytics";
-import { Bell } from "icons/bell.tsx";
 import { partition } from "lodash-es";
 import Link from "next/link.js";
+import type { ComponentPropsWithoutRef } from "react";
+import { useId, useMemo, useState } from "react";
 import { twJoin } from "tailwind-merge";
-import type { UpdateItem } from "updates.ts";
-import { useMedia } from "utils/use-media.ts";
-import { useUpdates } from "utils/use-updates.ts";
 // import { NewsletterForm } from "./newsletter-form.tsx";
 import { Command } from "./command.tsx";
 import { Popup } from "./popup.tsx";

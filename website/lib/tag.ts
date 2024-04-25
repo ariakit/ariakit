@@ -1,4 +1,4 @@
-import pageIndex from "build-pages/index.ts";
+import pageIndex from "@/build-pages/index.ts";
 import { kebabCase } from "lodash-es";
 
 const tags: string[] = [];

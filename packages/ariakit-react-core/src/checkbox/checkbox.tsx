@@ -1,3 +1,7 @@
+import {
+  disabledFromProps,
+  removeUndefinedValues,
+} from "@ariakit/core/utils/misc";
 import type {
   ChangeEvent,
   ComponentPropsWithoutRef,
@@ -5,10 +9,6 @@ import type {
   MouseEvent,
 } from "react";
 import { useEffect, useRef, useState } from "react";
-import {
-  disabledFromProps,
-  removeUndefinedValues,
-} from "@ariakit/core/utils/misc";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 import {

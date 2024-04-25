@@ -1,5 +1,5 @@
-import "./style.css";
 import { Menu, MenuGroup, MenuItem, Menubar } from "./menubar.tsx";
+import "./style.css";
 
 export default function Example() {
   return (

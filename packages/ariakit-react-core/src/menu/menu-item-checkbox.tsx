@@ -1,6 +1,6 @@
+import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import { useEffect } from "react";
 import type { ElementType } from "react";
-import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";

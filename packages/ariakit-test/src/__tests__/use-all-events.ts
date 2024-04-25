@@ -109,11 +109,13 @@ export function useAllEvents(ref: React.RefObject<Element>, stack: string[]) {
     if (!element) return undefined;
     const handler = (event: Event) =>
       stack.push(`${event.type} ${getIdentifier(event.target as HTMLElement)}`);
-    eventNames.forEach((event) => element.addEventListener(event, handler));
+    for (const event of eventNames) {
+      element.addEventListener(event, handler);
+    }
     return () => {
-      eventNames.forEach((event) =>
-        element.removeEventListener(event, handler),
-      );
+      for (const event of eventNames) {
+        element.removeEventListener(event, handler);
+      }
     };
   }, [ref]);
 }

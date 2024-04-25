@@ -1,4 +1,3 @@
-import "./style.css";
 import {
   Form,
   FormField,
@@ -8,6 +7,7 @@ import {
   useFormStore,
 } from "./form.tsx";
 import { SelectItem } from "./select.tsx";
+import "./style.css";
 
 export default function Example() {
   const form = useFormStore({ defaultValues: { name: "", fruit: "" } });

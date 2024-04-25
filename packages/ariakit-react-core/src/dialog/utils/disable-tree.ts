@@ -31,6 +31,7 @@ export function disableTree(
       element.focus = noop;
       return () => {
         // @ts-expect-error Delete focus method to restore original behavior
+        // biome-ignore lint/performance/noDelete: TODO
         delete element.focus;
       };
     });
@@ -70,7 +71,9 @@ export function disableTreeOutside(id: string, elements: Elements) {
   );
 
   const restoreTreeOutside = () => {
-    cleanups.forEach((fn) => fn());
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
   };
 
   return restoreTreeOutside;

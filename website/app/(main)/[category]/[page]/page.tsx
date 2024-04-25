@@ -1,20 +1,20 @@
-import pagesConfig from "build-pages/config.js";
-import { getPageEntryFilesCached } from "build-pages/get-page-entry-files.js";
-import { getPageName } from "build-pages/get-page-name.js";
-import { getPageTreeFromContent } from "build-pages/get-page-tree.js";
-import pageIndex from "build-pages/index.ts";
-import { getReferences } from "build-pages/reference-utils.js";
+import pagesConfig from "@/build-pages/config.js";
+import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
+import { getPageName } from "@/build-pages/get-page-name.js";
+import { getPageTreeFromContent } from "@/build-pages/get-page-tree.js";
+import pageIndex from "@/build-pages/index.ts";
+import { getReferences } from "@/build-pages/reference-utils.js";
 import type {
   Page,
   TableOfContents as TableOfContentsData,
-} from "build-pages/types.ts";
+} from "@/build-pages/types.ts";
 import {
   PageMarkdown,
   getContent,
   getFile,
-} from "components/page-markdown.tsx";
+} from "@/components/page-markdown.tsx";
+import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 import { notFound } from "next/navigation.js";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.ts";
 
 const { pages } = pagesConfig;
 
@@ -31,15 +31,15 @@ export function generateStaticParams() {
     return pages.map((page) => ({ category, page }));
   });
 
-  referencePages.forEach((page) => {
+  for (const page of referencePages) {
     const entryFiles = getPageEntryFilesCached(page);
     const category = page.slug;
     const references = entryFiles.flatMap((file) => getReferences(file));
-    references.forEach((reference) => {
+    for (const reference of references) {
       const page = getPageName(reference);
       params.push({ category, page });
-    });
-  });
+    }
+  }
 
   return params;
 }
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: PageProps) {
   });
 }
 
-export default async function Page({ params }: PageProps) {
+export default async function ContentPage({ params }: PageProps) {
   const { category, page } = params;
 
   const config = pages.find((page) => page.slug === category);

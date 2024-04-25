@@ -1,13 +1,13 @@
+import { contains } from "@ariakit/core/utils/dom";
+import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import type {
   ElementType,
   MouseEvent,
   FocusEvent as ReactFocusEvent,
 } from "react";
 import { useEffect, useState } from "react";
-import { contains } from "@ariakit/core/utils/dom";
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
-import { sync } from "@ariakit/core/utils/store";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";

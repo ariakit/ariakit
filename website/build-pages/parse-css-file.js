@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
-import { basename, dirname, extname } from "path";
+import { readFileSync } from "node:fs";
+import { basename, dirname, extname } from "node:path";
 import postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
 import postcssImport from "postcss-import";

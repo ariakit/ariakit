@@ -1,7 +1,7 @@
-import { useCallback, useRef } from "react";
-import type { ElementType } from "react";
 import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
+import { useCallback, useRef } from "react";
+import type { ElementType } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
