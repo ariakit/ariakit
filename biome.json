@@ -46,7 +46,6 @@
         "useJsxKeyInIterable": "off"
       },
       "style": {
-        "useSelfClosingElements": "off",
         "noParameterAssign": "off",
         "noUnusedTemplateLiteral": "off",
         "noNonNullAssertion": "off",

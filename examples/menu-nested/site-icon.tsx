@@ -20,7 +20,7 @@ export default function Icon() {
             </div>
           </div>
           <div className="-mr-14 mt-9 flex w-32 flex-col gap-2 rounded-lg border border-black/20 bg-white p-2 shadow dark:border-white/10 dark:bg-white/10 dark:shadow-dark">
-            <div className="flex h-9 w-full items-center rounded bg-blue-600 px-2"></div>
+            <div className="flex h-9 w-full items-center rounded bg-blue-600 px-2" />
             <div className="flex h-9 w-full items-center rounded px-2">
               <div className="h-2 w-20 rounded-sm bg-black/40 dark:bg-white/50" />
             </div>
