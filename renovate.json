@@ -62,6 +62,7 @@
         "^@testing-library/",
         "^@types/",
         "^@vitest/",
+        "^prettier",
         "^vitest",
         "^stylelint"
       ],
