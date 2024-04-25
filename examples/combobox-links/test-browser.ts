@@ -70,8 +70,10 @@ test("click on link with cmd/ctrl + enter", async ({
   // Safari doesn't support Cmd+Enter to open a link in a new tab
   // programmatically.
   if (browserName === "webkit") {
-    await page.keyboard.press(`${modifier}+Enter`);
-    await expect(page).toHaveURL(/https:\/\/ariakit.org/);
+    await expect(async () => {
+      await page.keyboard.press(`${modifier}+Enter`);
+      await expect(page).toHaveURL(/https:\/\/ariakit.org/);
+    }).toPass();
   } else {
     const [newPage] = await Promise.all([
       context.waitForEvent("page"),
