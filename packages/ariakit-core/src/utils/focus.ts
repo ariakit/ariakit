@@ -347,7 +347,9 @@ export function disableFocusIn(
   includeContainer?: boolean,
 ) {
   const tabbableElements = getAllTabbableIn(container, includeContainer);
-  tabbableElements.forEach(disableFocus);
+  for (const element of tabbableElements) {
+    disableFocus(element);
+  }
 }
 
 /**
@@ -368,7 +370,9 @@ export function restoreFocusIn(container: HTMLElement) {
   if (container.hasAttribute("data-tabindex")) {
     restoreTabIndex(container);
   }
-  elements.forEach(restoreTabIndex);
+  for (const element of elements) {
+    restoreTabIndex(element);
+  }
 }
 
 /**

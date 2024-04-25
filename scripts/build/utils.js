@@ -89,7 +89,9 @@ export function writePackageJson(rootPath, prod = false) {
   const currentContents = readFileSync(pkgPath, "utf-8");
   const pkg = getPackageJson(rootPath, prod);
   const nextContents = `${JSON.stringify(pkg, null, 2)}\n`;
-  if (currentContents === nextContents) return;
+  const currentContentsMin = JSON.stringify(JSON.parse(currentContents));
+  const nextContentsMin = JSON.stringify(JSON.parse(nextContents));
+  if (currentContentsMin === nextContentsMin) return;
   writeFileSync(pkgPath, nextContents);
   console.log(`${chalk.blue(pkg.name)} - Updated package.json`);
 }

@@ -15,7 +15,9 @@ function processDevPackage(path) {
 
 const packages = globSync("packages/*/src");
 
-packages.forEach(processDevPackage);
+for (const path of packages) {
+  processDevPackage(path);
+}
 
 watch("packages/*/src/**", { ignoreInitial: true })
   .on("add", processDevPackage)
