@@ -180,17 +180,17 @@ function writeFiles(buildDir, pages) {
 
   // Second pass: find icons in the same folder as the source file
   for (const [file, iconPath] of Object.entries(icons)) {
-    if (iconPath) return;
+    if (iconPath) continue;
     const sourceFile = sourceFiles[file]?.[0];
-    if (!sourceFile) return;
+    if (!sourceFile) continue;
     const sourceIconPath = join(dirname(sourceFile), "site-icon.tsx");
-    if (!existsSync(sourceIconPath)) return;
+    if (!existsSync(sourceIconPath)) continue;
     icons[file] = sourceIconPath;
   }
 
   // Third pass: find icons in the same folder as the original component page
   for (const [file, iconPath] of Object.entries(icons)) {
-    if (iconPath) return;
+    if (iconPath) continue;
     const key = Object.keys(icons)
       .filter((key) => !!icons[key])
       .find((key) => {
@@ -198,7 +198,7 @@ function writeFiles(buildDir, pages) {
         const currentPageName = getPageName(file);
         return currentPageName.startsWith(pageName);
       });
-    if (!key) return;
+    if (!key) continue;
     icons[file] = icons[key] || null;
   }
 
