@@ -45,7 +45,7 @@ export function TableOfContents({
 
   useEffect(() => {
     const anchors = document.body.querySelectorAll("li a[href^='#']");
-    anchors.forEach((anchor) => {
+    for (const anchor of anchors) {
       anchor.removeAttribute("aria-current");
       if (anchor.getAttribute("href") === `#${activeId ? activeId : ""}`) {
         anchor.setAttribute("aria-current", "true");
@@ -54,7 +54,7 @@ export function TableOfContents({
           scrollIntoViewIfNeeded(anchor, { block: "nearest" });
         }
       }
-    });
+    }
   }, [activeId, mounted, isLarge, children, popoverContents]);
 
   return (

@@ -467,11 +467,11 @@ export function useCollectionRenderer<T extends Item = any>({
   const visibleIndices = useMemo(() => {
     if (!persistentIndices) return defaultVisibleIndices;
     const nextIndices = defaultVisibleIndices.slice();
-    persistentIndices.forEach((index) => {
-      if (index < 0) return;
-      if (nextIndices.includes(index)) return;
+    for (const index of persistentIndices) {
+      if (index < 0) continue;
+      if (nextIndices.includes(index)) continue;
       nextIndices.push(index);
-    });
+    }
     nextIndices.sort((a, b) => a - b);
     if (shallowEqual(defaultVisibleIndices, nextIndices)) {
       return defaultVisibleIndices;

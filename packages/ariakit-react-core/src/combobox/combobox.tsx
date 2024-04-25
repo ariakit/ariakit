@@ -412,9 +412,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           store?.setValue(value);
         }
       };
-      elements.forEach((el) => el.addEventListener("focusout", onBlur));
+      for (const element of elements) {
+        element.addEventListener("focusout", onBlur);
+      }
       return () => {
-        elements.forEach((el) => el.removeEventListener("focusout", onBlur));
+        for (const element of elements) {
+          element.removeEventListener("focusout", onBlur);
+        }
       };
     }, [inline, contentElement, store, value]);
 

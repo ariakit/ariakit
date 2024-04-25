@@ -114,7 +114,11 @@ export const useCompositeContainer = createHook<
       const composite = baseElement;
       const selector = "[data-composite-container]";
       const containers = composite?.querySelectorAll<HTMLElement>(selector);
-      containers?.forEach((container) => disableFocusIn(container));
+      if (containers) {
+        for (const container of containers) {
+          disableFocusIn(container);
+        }
+      }
     } else if (!isOpen) {
       // Otherwise, if any element inside the container has received focus,
       // for example, by a direct user click, we should act as the container

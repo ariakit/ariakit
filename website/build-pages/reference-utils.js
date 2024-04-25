@@ -173,20 +173,19 @@ function getExamples(node) {
   /** @type {import("./types.js").ReferenceExample[]} */
   const examples = [];
 
-  tags.forEach((tag) => {
-    if (tag.tagName === "example") {
-      const text = tag.text?.toString();
-      if (!text) return;
-      const match = text.match(
-        /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m,
-      );
-      examples.push({
-        description: (match?.groups?.description || "").trim(),
-        language: match?.groups?.language || "jsx",
-        code: (match?.groups?.code || text).trim(),
-      });
-    }
-  });
+  for (const tag of tags) {
+    if (tag.tagName !== "example") continue;
+    const text = tag.text?.toString();
+    if (!text) continue;
+    const match = text.match(
+      /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m,
+    );
+    examples.push({
+      description: (match?.groups?.description || "").trim(),
+      language: match?.groups?.language || "jsx",
+      code: (match?.groups?.code || text).trim(),
+    });
+  }
 
   return examples;
 }

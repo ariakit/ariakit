@@ -121,7 +121,9 @@ function getURLForValue(name: string, value: string | string[]) {
   const url = new URL(location.href);
   if (Array.isArray(value)) {
     url.searchParams.delete(name);
-    value.forEach((v) => url.searchParams.append(name, v));
+    for (const v of value) {
+      url.searchParams.append(name, v);
+    }
   } else {
     url.searchParams.set(name, value);
   }

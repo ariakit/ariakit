@@ -214,10 +214,12 @@ function reduceToRootPaths(array, path) {
  */
 export function cleanBuild(rootPath) {
   writePackageJson(rootPath);
-  getBuildFolders(rootPath)
+  const rootPaths = getBuildFolders(rootPath)
     .filter(isRootModule)
-    .reduce(reduceToRootPaths, [])
-    .forEach((name) => rimrafSync(name));
+    .reduce(reduceToRootPaths, []);
+  for (const name of rootPaths) {
+    rimrafSync(name);
+  }
 }
 
 /**
@@ -284,14 +286,14 @@ export function makeProxies(rootPath) {
   const pkg = readPackageJson(rootPath);
   /** @type {string[]} */
   const created = [];
-  Object.entries(getProxyFolders(rootPath)).forEach(([name, path]) => {
+  for (const [name, path] of Object.entries(getProxyFolders(rootPath))) {
     fse.ensureDirSync(name);
     writeFileSync(
       `${name}/package.json`,
       getProxyPackageContents(rootPath, name, path),
     );
     created.push(chalk.bold(chalk.green(name)));
-  });
+  }
   if (created.length) {
     console.log(
       [

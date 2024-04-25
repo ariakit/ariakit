@@ -136,9 +136,9 @@ export function getExampleDeps(
         },
       );
 
-      files.forEach((file) => {
+      for (const file of files) {
         getExampleDeps(join(dir, file), deps);
-      });
+      }
     }
 
     traverse(parsed, {

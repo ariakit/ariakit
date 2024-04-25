@@ -127,7 +127,9 @@ export function Editor({ files, theme, codeBlocks }: EditorProps) {
 
       const grammars = new Map<string, string>();
 
-      monaco.editor.getModels().forEach((model) => model.dispose());
+      for (const model of monaco.editor.getModels()) {
+        model.dispose();
+      }
 
       Object.entries(files).map(([file, content]) => {
         const language = languages.find((lang) => lang.pattern.test(file));

@@ -153,7 +153,9 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
   return useMemo(() => {
     if (!refs.some(Boolean)) return;
     return (value: unknown) => {
-      refs.forEach((ref) => setRef(ref, value));
+      for (const ref of refs) {
+        setRef(ref, value);
+      }
     };
   }, refs);
 }

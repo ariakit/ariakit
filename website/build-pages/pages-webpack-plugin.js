@@ -61,7 +61,7 @@ function writeFiles(buildDir, pages) {
 
   const referencePages = pages.filter((page) => page.reference);
 
-  const references = referencePages.flatMap((page) =>
+  const referenceObjects = referencePages.flatMap((page) =>
     getPageEntryFilesCached(page).flatMap((file) => ({
       page,
       references: getReferences(file),
@@ -115,12 +115,12 @@ function writeFiles(buildDir, pages) {
     return getPageSections(file, page.slug, page.getGroup);
   });
 
-  references.forEach(({ page, references }) => {
+  for (const { page, references } of referenceObjects) {
     const sections = references.map((reference) => {
       return getPageSections(reference, page.slug, page.getGroup);
     });
     meta.push(...sections);
-  });
+  }
 
   const categories = groupBy(meta, (page) => page.category);
   const contents = meta
@@ -179,17 +179,17 @@ function writeFiles(buildDir, pages) {
   );
 
   // Second pass: find icons in the same folder as the source file
-  Object.entries(icons).forEach(([file, iconPath]) => {
+  for (const [file, iconPath] of Object.entries(icons)) {
     if (iconPath) return;
     const sourceFile = sourceFiles[file]?.[0];
     if (!sourceFile) return;
     const sourceIconPath = join(dirname(sourceFile), "site-icon.tsx");
     if (!existsSync(sourceIconPath)) return;
     icons[file] = sourceIconPath;
-  });
+  }
 
   // Third pass: find icons in the same folder as the original component page
-  Object.entries(icons).forEach(([file, iconPath]) => {
+  for (const [file, iconPath] of Object.entries(icons)) {
     if (iconPath) return;
     const key = Object.keys(icons)
       .filter((key) => !!icons[key])
@@ -200,7 +200,7 @@ function writeFiles(buildDir, pages) {
       });
     if (!key) return;
     icons[file] = icons[key] || null;
-  });
+  }
 
   const iconsContents = Object.entries(icons)
     .map(([file, iconPath]) => {
@@ -277,10 +277,10 @@ class PagesWebpackPlugin {
       if (!compiler.watchMode) return;
       for (const { context, page } of contextsWithPages) {
         compilation.contextDependencies.add(context);
-        getPageEntryFiles(context, page.pageFileRegex).forEach((file) => {
+        for (const file of getPageEntryFiles(context, page.pageFileRegex)) {
           compilation.fileDependencies.add(file);
           compilation.contextDependencies.add(dirname(file));
-        });
+        }
       }
     });
 

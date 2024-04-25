@@ -40,21 +40,21 @@ function RequiredForm({ store, requiredNames, ...props }: FormProps) {
   invariant(store);
 
   store.useValidate(() => {
-    requiredNames.forEach((name) => {
+    for (const name of requiredNames) {
       if (!store.getValue(name)) {
         store.setError(name, `${store.getError(name)} - Abstract Form`);
       }
-    });
+    }
   });
   store.useSubmit(() => {
-    requiredNames.forEach((name) => {
+    for (const name of requiredNames) {
       store.setError(name, `${store.getError(name)} - Abstract Form 1`);
-    });
+    }
   });
   store.useSubmit(() => {
-    requiredNames.forEach((name) => {
+    for (const name of requiredNames) {
       store.setError(name, `${store.getError(name)} - Abstract Form 2`);
-    });
+    }
   });
   return <Ariakit.Form store={store} {...props} />;
 }
@@ -65,23 +65,23 @@ export default function Example() {
   const requiredNames = [form.names.name, form.names.email];
 
   form.useValidate(() => {
-    requiredNames.forEach((name) => {
+    for (const name of requiredNames) {
       if (!form.getValue(name)) {
         form.setError(name, `${form.getError(name)} - Form`);
       }
-    });
+    }
   });
 
   form.useSubmit(() => {
-    requiredNames.forEach((name) => {
+    for (const name of requiredNames) {
       form.setError(name, `${form.getError(name)} - Form 1`);
-    });
+    }
   });
 
   form.useSubmit(() => {
-    requiredNames.forEach((name) => {
+    for (const name of requiredNames) {
       form.setError(name, `${form.getError(name)} - Form 2`);
-    });
+    }
   });
 
   useEffect(() => {

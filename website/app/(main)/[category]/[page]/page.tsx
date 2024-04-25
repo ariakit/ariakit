@@ -31,15 +31,15 @@ export function generateStaticParams() {
     return pages.map((page) => ({ category, page }));
   });
 
-  referencePages.forEach((page) => {
+  for (const page of referencePages) {
     const entryFiles = getPageEntryFilesCached(page);
     const category = page.slug;
     const references = entryFiles.flatMap((file) => getReferences(file));
-    references.forEach((reference) => {
+    for (const reference of references) {
       const page = getPageName(reference);
       params.push({ category, page });
-    });
-  });
+    }
+  }
 
   return params;
 }

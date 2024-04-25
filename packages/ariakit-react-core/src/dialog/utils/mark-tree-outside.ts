@@ -58,7 +58,9 @@ export function markTreeOutside(id: string, elements: Elements) {
   );
 
   const restoreAccessibilityTree = () => {
-    cleanups.forEach((fn) => fn());
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
   };
 
   return restoreAccessibilityTree;

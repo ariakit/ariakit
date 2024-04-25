@@ -78,7 +78,9 @@ export function createWalkTreeSnapshot(id: string, elements: Elements) {
 
   walkTreeOutside(id, elements, markElement);
 
-  return chain(setProperty(body, getSnapshotPropertyName(id), true), () =>
-    cleanups.forEach((fn) => fn()),
-  );
+  return chain(setProperty(body, getSnapshotPropertyName(id), true), () => {
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
+  });
 }

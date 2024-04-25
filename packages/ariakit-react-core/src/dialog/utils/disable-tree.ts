@@ -71,7 +71,9 @@ export function disableTreeOutside(id: string, elements: Elements) {
   );
 
   const restoreTreeOutside = () => {
-    cleanups.forEach((fn) => fn());
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
   };
 
   return restoreTreeOutside;

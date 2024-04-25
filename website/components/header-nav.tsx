@@ -67,9 +67,9 @@ function parseSearchData(data: Data) {
   const dataBySlug = groupBy(data, "slug");
   const searchData: SearchData = [];
   const slugs = getKeys(dataBySlug);
-  slugs.forEach((slug) => {
+  for (const slug of slugs) {
     const items = dataBySlug[slug];
-    if (!items) return;
+    if (!items) continue;
     const parentPage = getSearchParentPageData(items);
     if (parentPage) {
       searchData.push(parentPage);
@@ -80,7 +80,7 @@ function parseSearchData(data: Data) {
         .slice(0, parentPage ? 3 : undefined)
         .map((item) => ({ ...item, nested: !!parentPage })),
     );
-  });
+  }
   return searchData;
 }
 
