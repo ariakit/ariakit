@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { basename, dirname, extname } from "node:path";
 import postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
+import discardComments from "postcss-discard-comments";
 import postcssImport from "postcss-import";
 // @ts-expect-error
 import mergeSelectors from "postcss-merge-selectors";
@@ -57,9 +58,7 @@ export async function parseCSSFile(filename, options) {
   const processor = postcss();
   const raw = readFileSync(filename, "utf8");
 
-  const isTheme =
-    filename.endsWith("/theme.css") ||
-    /\@import (url\()?[\"\']\.\.\/theme\.css/im.test(raw);
+  const isTheme = filename.endsWith("/theme.css");
 
   if (options.id) {
     processor.use(plugin({ id: options.id }));
@@ -72,6 +71,7 @@ export async function parseCSSFile(filename, options) {
   }
 
   if (!isTheme && options.format) {
+    processor.use(discardComments());
     processor.use(
       combineDuplicatedSelectors({ removeDuplicatedProperties: true }),
     );

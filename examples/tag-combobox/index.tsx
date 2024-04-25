@@ -1,7 +1,7 @@
 import { matchSorter } from "match-sorter";
 import { useDeferredValue, useMemo, useState } from "react";
+import "./style.css";
 import { Tag, TagInput, TagList, TagOption } from "./tag.tsx";
-import "./theme.css";
 import { users as defaultUsers, getAvatar } from "./users.ts";
 
 export default function Example() {
