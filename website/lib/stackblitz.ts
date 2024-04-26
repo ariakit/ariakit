@@ -1,8 +1,7 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import { hasOwnProperty, invariant } from "@ariakit/core/utils/misc";
 import _sdk from "@stackblitz/sdk";
 import type { ProjectFiles } from "@stackblitz/sdk";
 import { pick } from "lodash-es";
-import { tsToJsFilename } from "./ts-to-js-filename.ts";
 
 const sdk = _sdk as unknown as (typeof _sdk)["default"];
 
@@ -132,9 +131,9 @@ function getIndexCss(
       ? "hsl(204 20% 94%)"
       : "hsl(204 3% 12%)";
   const color = theme === "light" ? "hsl(204 10% 10%)" : "hsl(204 20% 100%)";
-  return `@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  return `@import url("tailwindcss/base") layer(_base);
+@import url("tailwindcss/components") layer(theme);
+@import url("tailwindcss/utilities") layer(_utilities);
 
 html {
   color-scheme: ${theme};
@@ -160,6 +159,24 @@ body {
 `;
 }
 
+function getQueryProvider() {
+  return `"use client";
+
+import type { PropsWithChildren } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+export function QueryProvider(props: PropsWithChildren) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      {props.children}
+    </QueryClientProvider>
+  );
+}
+`;
+}
+
 function getViteProject(props: StackblitzProps) {
   const exampleName = getExampleName(props.id);
   const firstFile = getFirstFilename(props.files);
@@ -178,6 +195,11 @@ function getViteProject(props: StackblitzProps) {
       vite: "^4.0.0",
     },
   });
+
+  const hasQuery = hasOwnProperty(
+    props.dependencies || {},
+    "@tanstack/react-query",
+  );
 
   const tsConfig = getTSConfig();
 
@@ -209,12 +231,23 @@ export default defineConfig({
   const indexTsx = `import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import Example from "./${exampleName}/${tsToJsFilename(firstFile)}";
+${hasQuery ? `import { QueryProvider } from "./query-provider.tsx";` : ""}
+import Example from "./${exampleName}/${firstFile}";
 
 const root = document.getElementById("root");
 
 if (root) {
-  createRoot(root).render(<StrictMode><Example /></StrictMode>);
+  ${
+    hasQuery
+      ? `createRoot(root).render(
+    <StrictMode>
+      <QueryProvider>
+        <Example />
+      </QueryProvider>
+    </StrictMode>
+  );`
+      : `createRoot(root).render(<StrictMode><Example /></StrictMode>);`
+  }
 }
 `;
 
@@ -227,6 +260,10 @@ if (root) {
     },
     {},
   );
+
+  if (hasQuery) {
+    sourceFiles["query-provider.tsx"] = getQueryProvider();
+  }
 
   return {
     sourceFiles,
@@ -257,13 +294,18 @@ function getNextProject(props: StackblitzProps) {
     },
     dependencies: {
       ...props.dependencies,
-      next: "14.2.0-canary.60",
+      next: "14.2.0",
     },
     devDependencies: {
       "@types/node": "latest",
       ...props.devDependencies,
     },
   });
+
+  const hasQuery = hasOwnProperty(
+    props.dependencies || {},
+    "@tanstack/react-query",
+  );
 
   const tsConfig = getTSConfig({
     compilerOptions: {
@@ -299,15 +341,26 @@ export default nextConfig;
   const theme = props.theme === "dark" ? "dark" : "light";
 
   const mainLayout = `import type { PropsWithChildren } from "react";
+${hasQuery ? `import { QueryProvider } from "./query-provider.tsx";` : ""}
 import "./layout.css";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
-    <html lang="en" className="${theme}">
+    ${
+      hasQuery
+        ? `<QueryProvider>
+      <html lang="en" className="${theme}">
+        <body>
+          <div id="root">{children}</div>
+        </body>
+      </html>
+    </QueryProvider>`
+        : `<html lang="en" className="${theme}">
       <body>
         <div id="root">{children}</div>
       </body>
-    </html>
+    </html>`
+    }
   );
 }
 `;
@@ -338,6 +391,10 @@ export default function Page() {
     },
     {},
   );
+
+  if (hasQuery) {
+    sourceFiles["app/query-provider.tsx"] = getQueryProvider();
+  }
 
   return {
     sourceFiles,

@@ -30,7 +30,7 @@ export const TagList = React.forwardRef<HTMLDivElement, TagListProps>(
         <Ariakit.TagList
           ref={ref}
           {...props}
-          className={clsx("tag-list input", props.className)}
+          className={clsx("tag-list input focusable", props.className)}
         />
       </Ariakit.TagProvider>
     );

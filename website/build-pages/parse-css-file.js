@@ -2,9 +2,8 @@ import { readFileSync } from "node:fs";
 import { basename, dirname, extname } from "node:path";
 import postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
+import discardComments from "postcss-discard-comments";
 import postcssImport from "postcss-import";
-// @ts-expect-error
-import postcssMergeAtRules from "postcss-merge-at-rules";
 // @ts-expect-error
 import mergeSelectors from "postcss-merge-selectors";
 // @ts-expect-error
@@ -30,6 +29,9 @@ const plugin = (opts = {}) => {
           if (rulesSeen.has(rule)) return;
           rulesSeen.add(rule);
           rule.selectors = rule.selectors.map((selector) => {
+            if (selector.startsWith(":root")) {
+              return selector;
+            }
             if (selector.includes(".dark ")) {
               const selectorWithoutDark = selector.replace(".dark ", "");
               return `.dark .${className} ${selectorWithoutDark}`;
@@ -54,6 +56,9 @@ plugin.postcss = true;
  */
 export async function parseCSSFile(filename, options) {
   const processor = postcss();
+  const raw = readFileSync(filename, "utf8");
+
+  const isTheme = filename.endsWith("/theme.css");
 
   if (options.id) {
     processor.use(plugin({ id: options.id }));
@@ -65,11 +70,12 @@ export async function parseCSSFile(filename, options) {
     processor.use(tailwindcss({ config: options.tailwindConfig }));
   }
 
-  if (options.format) {
-    processor.use(postcssMergeAtRules({ atRulePattern: "layer" }));
+  if (!isTheme && options.format) {
+    processor.use(discardComments());
     processor.use(
       combineDuplicatedSelectors({ removeDuplicatedProperties: true }),
     );
+
     processor.use(
       mergeSelectors({
         matchers: {
@@ -84,15 +90,15 @@ export async function parseCSSFile(filename, options) {
         },
       }),
     );
+
     processor.use(prettify());
   }
 
-  const raw = readFileSync(filename, "utf8");
   const result = await processor.process(raw, { from: filename });
 
   let css = result.css;
 
-  if (options.contents) {
+  if (!isTheme && options.contents) {
     const safelist = [/^aria\-/, /^data-/, ":is", "dark", "svg"];
 
     const content = Object.entries(options.contents).map(([filename, raw]) => ({

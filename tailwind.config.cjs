@@ -1,8 +1,8 @@
 // @ts-nocheck
 const path = require("node:path");
 
-const black = "hsl(204 4% 0%)";
-const white = "hsl(204 20% 100%)";
+const black = "black";
+const white = "white";
 
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {

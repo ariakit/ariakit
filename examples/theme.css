@@ -1,0 +1,553 @@
+@layer theme {
+  @property --background {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: theme(colors.white);
+  }
+
+  /* Default theme colors */
+  :root {
+    --font-mono: Menlo, Consolas, Courier New, monospace;
+    --color-white: theme(colors.white);
+    --color-black: theme(colors.black);
+    --color-primary: #007acc;
+    @apply
+      [--background:oklch(from_var(--color-primary)_95%_.005_h)]
+      dark:[--background:oklch(from_var(--color-primary)_20%_.002_h)]
+  }
+
+  /* Applies outline to focusable elements when they receive keyboard focus */
+  .focusable {
+    --outline-offset: 0;
+    --outline: var(--color-primary);
+  }
+
+  /* Applies padding to clickable elements when they are active to simulate
+  depth. */
+  .clickable {
+    --depth: 1px;
+    --padding-block: initial;
+  }
+
+  /* Button */
+  .button {
+    --size: theme(spacing.10);
+  }
+
+  .button-small {
+    @apply sm:[--size:theme(spacing.8)]
+  }
+
+  .button-default {
+    --depth: 2px;
+    --outline-offset: -1px;
+    @apply
+      [--text:theme(colors.black)]
+      dark:[--text:theme(colors.white)]
+
+      [--background:theme(colors.white)]
+      dark:[--background:theme(colors.white/5%)]
+
+      [--border:theme(colors.black/13%)]
+      [--light:theme(colors.white/20%)]
+      [--shadow:theme(colors.black/10%)]
+
+      dark:[--border:theme(colors.white/10%)]
+      dark:[--light:theme(colors.white/5%)]
+      dark:[--shadow:theme(colors.black/25%)]
+
+      hover:[&:not(:active)]:[--border:theme(colors.black/33%)]
+      hover:[&:not(:active)]:dark:[--border:theme(colors.white/25%)]
+  }
+
+  .button-primary {
+    --depth: 2px;
+    --outline-offset: 2px;
+    @apply
+      [--text:theme(colors.white)]
+
+      [--background:--color-primary]
+      dark:[--background:oklch(from_var(--color-primary)_calc(l-.05)_c_h)]
+      hover:[--background:oklch(from_var(--color-primary)_calc(l-.05)_c_h)]
+      hover:[&:not(:active)]:dark:[--background:--color-primary]
+
+
+      [--border:theme(colors.black/15%)]
+      [--light:theme(colors.white/25%)]
+      [--shadow:theme(colors.black/15%)]
+
+      dark:[--border:theme(colors.white/10%)]
+      dark:[--light:theme(colors.white/30%)]
+      dark:[--shadow:theme(colors.black/25%)]
+
+      hover:[&:not(:active)]:[--border:theme(colors.black/60%)]
+      hover:[&:not(:active)]:dark:[--border:theme(colors.white/40%)]
+  }
+
+  .button-danger {
+    @apply
+      [--depth:2px]
+      [--outline-offset:2px]
+
+      [--text:theme(colors.white)]
+
+      [--background:theme(colors.red.600)]
+      dark:[--background:theme(colors.red.700)]
+      hover:[--background:theme(colors.red.700)]
+      hover:[&:not(:active)]:dark:[--background:theme(colors.red.600)]
+
+
+      [--border:theme(colors.black/15%)]
+      [--light:theme(colors.white/25%)]
+      [--shadow:theme(colors.black/15%)]
+
+      dark:[--border:theme(colors.white/10%)]
+      dark:[--light:theme(colors.white/30%)]
+      dark:[--shadow:theme(colors.black/25%)]
+
+      hover:[&:not(:active)]:[--border:theme(colors.black/60%)]
+      hover:[&:not(:active)]:dark:[--border:theme(colors.white/40%)]
+  }
+
+  .button-secondary {
+    @apply
+      [--text:theme(colors.current)]
+      [--background:theme(colors.transparent)]
+
+      hover:[--background:theme(colors.black/5%)]
+      dark:hover:[--background:theme(colors.white/5%)]
+
+      [--border:theme(colors.black/13%)]
+      [--light:theme(colors.white/20%)]
+      [--shadow:theme(colors.black/10%)]
+
+      dark:[--border:theme(colors.white/10%)]
+      dark:[--light:theme(colors.white/5%)]
+      dark:[--shadow:theme(colors.black/25%)]
+
+      hover:[&:not(:active)]:[--border:theme(colors.black/33%)]
+      hover:[&:not(:active)]:dark:[--border:theme(colors.white/25%)]
+  }
+
+  .button-flat {
+    @apply
+      [--depth:1px]
+      [--border:none]
+      [--light:none]
+      [--shadow:none]
+      dark:[--border:none]
+      dark:[--light:none]
+      dark:[--shadow:none]
+  }
+
+  /* Input */
+  .input {
+    --outline-offset: -1px;
+    --background: var(--popup-background);
+    --border-size: 1px;
+    @apply
+      [--input-background:--color-white]
+      dark:[--input-background:oklch(from_var(--background)_calc(l-.05)_c_h)]
+
+      [--border:oklch(from_var(--background)_calc(l-.33)_c_h)]
+      hover:[--border:oklch(from_var(--background)_calc(l-.55)_c_h)]
+
+      dark:[--border:oklch(from_var(--background)_calc(l+.32)_c_h)]
+      dark:hover:[--border:oklch(from_var(--background)_calc(l+.42)_c_h)]
+
+      [--shadow:theme(colors.black/10%)]
+      [--light:theme(colors.white/30%)]
+      dark:[--shadow:theme(colors.black/30%)]
+      dark:[--light:theme(colors.white/10%)]
+  }
+
+  .input[placeholder],
+  .input:has([placeholder]) {
+    @apply
+      [--border:oklch(from_var(--background)_calc(l-.2)_c_h)]
+      hover:[--border:oklch(from_var(--background)_calc(l-.42)_c_h)]
+
+      dark:[--border:oklch(from_var(--background)_calc(l+.13)_c_h)]
+      dark:hover:[--border:oklch(from_var(--background)_calc(l+.23)_c_h)]
+  }
+
+  /* Applies rounded corners and padding to an element. The rounded-item class
+  can be used on descendants to automatically adjust their border-radius based
+  on the container's padding and border-radius. */
+  .rounded-container {
+    --padding: theme(spacing.1);
+    --rounded: theme(borderRadius.xl);
+  }
+
+  /* Applies styles that are common to popups, such as padding, border, shadow,
+  and a lighter background color. */
+  .popup {
+    --padding: theme(spacing.1);
+    --rounded: theme(borderRadius.xl);
+    --popup-background: var(--background);
+    @apply
+      [--background:--color-white]
+      dark:[--background:theme(colors.gray.750)]
+
+      [--border:theme(colors.black/10%)]
+      [--shadow:theme(colors.black/25%)]
+      [--shadow-size:0_4px_8px_-4px]
+
+      dark:[--border:theme(colors.white/20%)]
+      dark:[--shadow:theme(colors.black/35%)]
+      dark:[--shadow-size:0_6px_12px_-4px]
+  }
+
+  .popup:has(.popup-layer) {
+    --popup-background: oklch(from var(--background) calc(l - .04) c h);
+  }
+
+  /* Applies styles to simulate depth, usually combined with the popup class. */
+  .elevation-1 {
+    --shadow: theme(colors.black/20%);
+    @apply
+      [--shadow-size:0_8px_16px_-6px]
+      dark:[--shadow-size:0_12px_24px_-6px]
+  }
+
+  .elevation-2 {
+    --shadow: theme(colors.black/15%);
+    @apply
+      [--shadow-size:0_16px_32px_-6px]
+      dark:[--shadow-size:0_18px_36px_-8px]
+  }
+
+  /* Applies styles to option elements, which are typically used within elements
+  with a popup class. */
+  .option {
+    @apply
+      [--option-background:transparent]
+      data-[active-item]:[--option-background:theme(colors.black/8%)]
+      dark:data-[active-item]:[--option-background:theme(colors.white/8%)]
+  }
+
+  .option[data-active-item] {
+    @apply
+      [--option-background:theme(colors.black/8%)]
+      dark:[--option-background:theme(colors.white/8%)]
+  }
+
+  .option[data-active-item][data-focus-visible] {
+    --text: var(--color-white);
+    --option-background: var(--color-primary);
+  }
+
+  /* Tabs */
+  .tabs-border {
+    --border-size: 1px;
+    @apply
+      [--border:oklch(from_var(--background)_calc(l-.15)_c_h)]
+      dark:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
+  }
+
+  .tab-default {
+    --accent-background: var(--color-primary);
+    --accent-text: var(--color-white);
+    @apply
+      hover:[&:not([aria-selected=true])]:[--background:theme(colors.black/8%)]
+      dark:hover:[&:not([aria-selected=true])]:[--background:theme(colors.white/8%)]
+  }
+
+  .tab-default[aria-selected="false"] {
+    --border: transparent;
+  }
+
+  /* ---------------- Components ---------------- */
+
+  /* Focusable */
+  .focusable {
+    outline-width: 2px;
+    outline-color: var(--outline);
+    outline-offset: var(--outline-offset);
+  }
+
+  .focusable[data-focus-visible] {
+    outline-style: solid;
+  }
+
+  .focusable[aria-disabled="true"] {
+    opacity: 0.5;
+  }
+
+  /* Clickable */
+  .clickable {
+    user-select: none;
+    white-space: nowrap;
+    padding-block:
+      var(--padding-block-start, var(--padding-block))
+      var(--padding-block-end, var(--padding-block));
+  }
+
+  .clickable:active,
+  .clickable[data-active] {
+    padding-block:
+      calc(var(--padding-block-start, var(--padding-block, 0px)) + var(--depth, 0px))
+      calc(var(--padding-block-end, var(--padding-block, 0px)) - var(--depth, 0px));
+  }
+
+  /* Button */
+  .button {
+    display: flex;
+    max-width: 100%;
+    height: var(--size);
+    align-items: center;
+    justify-content: center;
+    gap: theme(spacing.2);
+    padding-inline: theme(spacing.4);
+    text-decoration-line: none;
+    background-color: var(--background);
+    color: var(--text, currentColor);
+    border-style: none;
+    scroll-margin: var(--padding, 0px);
+    border-radius: calc(var(--rounded, theme(borderRadius.lg)) - var(--padding, 0px));
+    @apply
+      text-base
+      [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--light),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)]
+      dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--light)]
+  }
+
+  .button:active,
+  .button[data-active] {
+    @apply
+      [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--border)]
+      dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_1px_1px_1px_var(--shadow)]
+  }
+
+  .button-small {
+    @apply
+      sm:text-sm
+      sm:[padding-inline:theme(spacing.3)]
+  }
+
+  .button-icon {
+    padding-inline: 0px;
+    width: var(--size);
+    aspect-ratio: 1 / 1;
+    @apply sm:[padding-inline:0px]
+  }
+
+  /* Input */
+  .input {
+    cursor: text;
+    flex: none;
+    background-color: var(--input-background);
+    box-shadow:
+      inset 0 -1px 0 0 var(--light),
+      inset 0 0 0 var(--border-size, 1px) var(--border),
+      inset 0 2px 5px 0 var(--shadow);
+  }
+
+  .input:focus-within {
+    outline-style: solid;
+  }
+
+  .input::placeholder,
+  .input ::placeholder {
+    @apply
+      text-[oklch(from_var(--input-background)_calc(l-.44)_0_0deg)]
+      dark:text-[oklch(from_var(--input-background)_calc(l+.42)_0_0deg)]
+  }
+
+  /* Combobox */
+  .combobox {
+    outline-width: 1px;
+  }
+
+  .combobox[data-active-item] {
+    outline-width: 2px;
+  }
+
+  /* Rounded */
+  .rounded-container {
+    padding: var(--padding);
+    border-radius: var(--rounded);
+  }
+
+  .rounded-item {
+    scroll-margin: var(--padding);
+    border-radius: calc(var(--rounded) - var(--padding));
+  }
+
+  /* Popup */
+  .popup {
+    z-index: 50;
+    outline: none;
+    padding: var(--padding);
+    background-color: var(--popup-background, var(--background));
+    border-radius: var(--rounded);
+    scroll-padding: var(--padding);
+    box-shadow: 0 0 0 1px var(--border), var(--shadow-size) var(--shadow);
+  }
+
+  .popup-cover {
+    padding: var(--padding);
+    margin: calc(var(--padding) * -1);
+    scroll-padding: var(--padding);
+    overflow: hidden;
+  }
+
+  /* Option */
+  .option {
+    display: flex;
+    align-items: center;
+    background-color: var(--option-background, var(--background));
+    color: var(--text, currentColor);
+    cursor: default;
+    outline: none;
+    gap: theme(spacing.2);
+    padding-inline: theme(spacing.2);
+    border-radius: calc(var(--rounded) - var(--padding));
+  }
+
+  /* Popover */
+  .popover {
+    min-width: max(180px, calc(var(--popover-anchor-width) + 0.5rem));
+    max-width: min(480px, var(--popover-available-width));
+    max-height: min(480px, var(--popover-available-height));
+  }
+
+  .popover-enter {
+    transform-origin: var(--popover-transform-origin);
+    @apply motion-safe:transition-[opacity,scale]
+  }
+
+  .popover-enter:not([data-enter]) {
+    opacity: 0;
+    scale: .95;
+  }
+
+  /* Kbd */
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    padding: 0.1334em 0.2667em;
+    font-size: 0.9375em;
+    border-radius: 0.2667em 0.2667em 0.3334em 0.3334em;
+    border-width: 0.0667em 0 0.1334em;
+    border-color: white transparent theme(colors.black/7.5%);
+    background-image: linear-gradient(to bottom, theme(colors.black/15%), theme(colors.black/5%));
+    box-shadow:0 0 0 max(1px, 0.0333em) theme(colors.black/25%);
+    @apply
+      dark:border-b-black/40
+      dark:[border-width:0_0_0.2em]
+      dark:rounded-b-[0.4em]
+      dark:[background-image:linear-gradient(to_bottom,theme(colors.white/10%),theme(colors.white/15%))]
+      dark:[box-shadow:0_min(-1px,(-0.0666em))_theme(colors.white/10%),0_0_0_max(1px,0.0666em)_theme(colors.white/15%)]
+  }
+
+  /* Tabs */
+  .tab {
+    position: relative;
+    display: inline-block;
+    vertical-align: bottom;
+    cursor: default;
+    user-select: none;
+    white-space: nowrap;
+    background-color: var(--background, transparent);
+    border-color: var(--border, transparent);
+    border-width: var(--border-size, 0px) var(--border-size, 0px);
+    border-block-end-color: transparent;
+    translate: 0 var(--border-size, 0px);
+  }
+
+  .tab[aria-selected="true"] {
+    z-index: 20;
+    box-shadow:
+      inset 0 0 0 4px var(--background),
+      inset 0 -2px 0 4px var(--background);
+  }
+
+  .tab[data-focus-visible] {
+    background-color: var(--accent-background);
+    color: var(--accent-text);
+  }
+
+  .tab[data-focus-visible]:not([aria-selected="true"]) {
+    --background: var(--accent-background);
+  }
+
+  .tab-default {
+    --border-smooth: .1px;
+    --corner-size: calc(var(--rounded) - var(--padding) - 4px);
+    --margin: theme(spacing.1);
+    --padding-block: theme(spacing.1);
+    --margin-block-end: calc(var(--padding-block) + var(--border-size, 0px) + 1px);
+
+    border-radius: var(--corner-size);
+    padding-block:
+      var(--padding-block-start, var(--padding-block))
+      var(--padding-block-end, var(--padding-block));
+    padding-inline: theme(spacing.2);
+    margin: var(--margin);
+    margin-block-end: var(--margin-block-end);
+    background-clip: padding-box;
+    outline: none;
+  }
+
+  .tab-default[aria-selected="true"] {
+    --corner-size: calc(var(--rounded) - var(--padding));
+    --padding-block: calc(theme(spacing.1) + var(--margin));
+    --padding-block-end: var(--margin-block-end);
+
+    margin: 0;
+    padding-inline: theme(spacing.3);
+  }
+
+  .tab-default[aria-selected="false"]:not([data-focus-visible],:hover) {
+    --background: var(--popup-background);
+  }
+
+  .tab-default[aria-selected="true"]::before,
+  .tab-default[aria-selected="true"]::after {
+    display: block;
+  }
+
+  .tab-default::before,
+  .tab-default::after {
+    --circle-left: circle at 0 0, var(--transparency);
+    --circle-right: circle at 100% 0, var(--transparency);
+    --transparency: transparent calc(var(--corner-size) - var(--border-size, 0px) + var(--border-smooth));
+    --tab-border-start: var(--border) calc(var(--corner-size) - var(--border-size, 0px) - var(--border-smooth));
+    --tab-border-end: var(--border) calc(var(--corner-size) - var(--border-smooth));
+    --tab-border: var(--tab-border-start),var(--tab-border-end);
+    --tab-bg: var(--background) calc(var(--corner-size) + var(--border-smooth));
+
+    content: "";
+    display: none;
+    position: absolute;
+    bottom: 0;
+    height: var(--corner-size);
+    width: calc(var(--corner-size) * 2);
+    background-size: 50%;
+    background-repeat: no-repeat;
+  }
+
+  .tab-default::before {
+    right: calc(100% - var(--corner-size));
+    background-image:
+      radial-gradient(var(--circle-left), var(--tab-border), var(--tab-bg)),
+      radial-gradient(var(--circle-right), var(--tab-bg));
+    background-position: 0, 100%;
+  }
+
+  .tab-default::after {
+    left: calc(100% - var(--corner-size));
+    background-image:
+      radial-gradient(var(--circle-right), var(--tab-border), var(--tab-bg)),
+      radial-gradient(var(--circle-left), var(--tab-bg));
+    background-position: 100%, 0;
+  }
+
+  .tab-panel {
+    background-color: var(--background);
+    padding: var(--padding);
+    scroll-padding: var(--padding);
+    box-shadow: 0 0 0 var(--border-size, 0px) var(--border, transparent);
+  }
+}

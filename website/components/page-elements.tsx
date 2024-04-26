@@ -184,7 +184,7 @@ export function PageDescription({
       </span>
     ),
     className: twJoin(
-      "-translate-y-2 !max-w-[--size-content-box] [:has([data-call-to-action])_&]:md:grid grid-cols-[1fr_260px] w-full gap-4 md:gap-8 text-lg sm:text-xl sm:leading-8 !text-black/70 dark:!text-white/60",
+      "-translate-y-2 !max-w-[--size-content-box] [:has([data-call-to-action])_&]:md:grid grid-cols-[1fr_260px] w-full gap-4 md:gap-8 text-lg sm:text-xl sm:leading-8 text-black/70 dark:!text-white/60",
       paragraph.props.className,
       props.className,
     ),
