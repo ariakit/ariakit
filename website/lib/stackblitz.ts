@@ -58,6 +58,7 @@ function getPackageJson(packageJson: Record<string, unknown>) {
       autoprefixer: "^10.0.0",
       tailwindcss: "^3.0.0",
       postcss: "^8.0.0",
+      "postcss-import": "^16.0.0",
       typescript: "5.4.4",
     },
   };
@@ -67,6 +68,7 @@ function getPostcssConfig() {
   return `
 export default {
   plugins: {
+    "postcss-import": {},
     tailwindcss: {},
     autoprefixer: {},
   },
