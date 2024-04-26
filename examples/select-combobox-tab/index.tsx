@@ -32,13 +32,6 @@ export default function Example() {
   const placeholder =
     tab === "branches" ? "Find or create a branch..." : "Find a tag...";
 
-  const addBranch = (value: string) => {
-    setData((data) => ({
-      ...data,
-      branches: [...data.branches, value],
-    }));
-  };
-
   const canAddBranch =
     !!searchValue && !matches.includes(searchValue) && tab === "branches";
 
@@ -48,7 +41,12 @@ export default function Example() {
       <SelectItem
         icon={<BranchIcon />}
         value={searchValue}
-        onClick={() => addBranch(searchValue)}
+        onClick={() => {
+          setData((data) => ({
+            ...data,
+            branches: [...data.branches, searchValue],
+          }));
+        }}
       >
         Create branch <strong>{searchValue}</strong> from{" "}
         <strong>{value}</strong>

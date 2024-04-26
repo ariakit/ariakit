@@ -186,7 +186,6 @@ export function SelectItem({
   return (
     <Ariakit.SelectItem
       {...props}
-      data-option
       render={render}
       blurOnHoverEnd={false}
       className={clsx(

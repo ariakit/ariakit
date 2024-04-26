@@ -24,6 +24,7 @@ Combining [Select](/components/select) and [Combobox](/components/combobox) to c
 
 <div data-cards="examples">
 
+- [](/examples/select-combobox-tab)
 - [](/examples/menu-combobox)
 - [](/examples/menu-nested-combobox)
 - [](/examples/combobox-tabs)
