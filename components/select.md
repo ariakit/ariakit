@@ -37,6 +37,7 @@ useSelectContext()
 <SelectProvider>
   <SelectLabel />
   <Select>
+    <SelectValue />
     <SelectArrow />
   </Select>
   <SelectPopover>
