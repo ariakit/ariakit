@@ -147,7 +147,7 @@ export function PlaygroundClient({
       resizeObserver.disconnect();
       mutationObserver.disconnect();
     };
-  }, []);
+  }, [selectedId]);
 
   const javascriptFiles = useMemo(
     () =>
