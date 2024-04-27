@@ -100,9 +100,11 @@ export interface CollectionItemOptions<_T extends ElementType = TagName>
    * will be automatically generated.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
    * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
   id?: string;
   /**

@@ -210,16 +210,20 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
    *
    * Live examples:
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
   selectedId: TabStoreState["activeId"];
   /**
    * Determines if the tab should be selected when it receives focus. If set to
-   * `false`, the tab will only be selected upon clicking, not when
-   * using arrow keys to shift focus.
+   * `false`, the tab will only be selected upon clicking, not when using arrow
+   * keys to shift focus.
    *
    * Live examples:
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    * @default true
    */
   selectOnMove?: boolean;
@@ -295,8 +299,10 @@ export interface TabStoreOptions
    * will be automatically set to the first enabled tab.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
   defaultSelectedId?: TabStoreState["selectedId"];
 }

@@ -476,7 +476,7 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    *
    * Live examples:
    * - [Submenu](https://ariakit.org/examples/menu-nested)
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Context Menu](https://ariakit.org/examples/menu-context-menu)
    * @default false
    */
@@ -537,7 +537,7 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * controls](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#focusabilityofdisabledcontrols).
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    */
   accessibleWhenDisabled?: boolean;
   /**

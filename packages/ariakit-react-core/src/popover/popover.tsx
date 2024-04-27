@@ -540,10 +540,12 @@ export interface PopoverOptions<T extends ElementType = TagName>
    * negative values to make the popover shift to the opposite side.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Submenu](https://ariakit.org/examples/menu-nested)
    * - [Menubar](https://ariakit.org/components/menubar)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    * @default 0
    */
   shift?: number;

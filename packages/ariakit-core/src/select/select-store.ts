@@ -308,6 +308,8 @@ export interface SelectStoreOptions<
    * - [SelectGroup](https://ariakit.org/examples/select-group)
    * - [Select with Next.js App
    *   Router](https://ariakit.org/examples/select-next-router)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
   defaultValue?: SelectStoreState<T>["value"];
 }

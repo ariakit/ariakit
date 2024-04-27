@@ -141,7 +141,7 @@ When using [Tooltip](https://ariakit.org/components/tooltip) components alongsid
 
 This was already the case when tooltips had no [`timeout`](https://ariakit.org/reference/tooltip-provider#timeout). Now, the behavior is consistent regardless of the timeout value.
 
-### Combobox with tabs
+### Combobox with Tabs
 
 [Tab](https://ariakit.org/components/tab) components can now be rendered as part of other composite widgets, like [Combobox](https://ariakit.org/components/combobox). The following structure should work seamlessly:
 

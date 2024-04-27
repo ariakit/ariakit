@@ -205,9 +205,11 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    * that refers to the selected tab.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
    * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
   tabId?: string | null;
 }
