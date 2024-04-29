@@ -70,11 +70,11 @@
     }
   },
   "dependencies": {
-    "@babel/core": "7.24.4",
-    "@babel/preset-env": "7.24.4",
+    "@babel/core": "7.24.5",
+    "@babel/preset-env": "7.24.5",
     "@babel/preset-react": "7.24.1",
     "@babel/preset-typescript": "7.24.1",
-    "@babel/types": "7.24.0",
+    "@babel/types": "7.24.5",
     "@biomejs/biome": "1.7.1",
     "@changesets/cli": "2.26.2",
     "@clerk/clerk-react": "4.31.0",
