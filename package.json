@@ -190,6 +190,6 @@
     "vitest": "1.5.2",
     "vitest-fail-on-console": "0.6.3",
     "webpack": "5.91.0",
-    "zod": "3.23.4"
+    "zod": "3.23.5"
   }
 }
