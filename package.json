@@ -187,7 +187,7 @@
     "unified": "10.1.2",
     "unist-util-visit": "5.0.0",
     "use-local-storage-state": "19.2.0",
-    "vitest": "1.5.3",
+    "vitest": "1.6.0",
     "vitest-fail-on-console": "0.6.3",
     "webpack": "5.91.0",
     "zod": "3.23.6"
