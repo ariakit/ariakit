@@ -60,8 +60,11 @@
     "version": "independent"
   },
   "lint-staged": {
-    "package.json": ["npm run clean -ws --if-present", "biome check --apply"],
-    "*.{js,ts,tsx,json}": "biome check --apply",
+    "package.json": [
+      "npm run clean -ws --if-present",
+      "biome check --no-errors-on-unmatched --apply"
+    ],
+    "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --apply",
     "*.css": "stylelint --fix"
   },
   "overrides": {
