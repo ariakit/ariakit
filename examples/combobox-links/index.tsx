@@ -6,7 +6,7 @@ import "./style.css";
 
 const links = [
   {
-    href: "https://twitter.com/ariakitjs",
+    href: "https://x.com/ariakitjs",
     children: "Twitter",
     target: "_blank",
   },
