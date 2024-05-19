@@ -27,7 +27,7 @@
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/ariakit/ariakit?style=social">
   </a>
   &nbsp;
-  <a href="https://twitter.com/ariakitjs">
+  <a href="https://x.com/ariakitjs">
     <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg">
   </a>
 </div>

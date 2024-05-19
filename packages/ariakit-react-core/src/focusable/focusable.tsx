@@ -376,7 +376,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     // don't pass the autoFocus prop to the element and instead manually focus
     // the element when it's mounted. The order in which this effect runs also
     // matters. See
-    // https://twitter.com/diegohaz/status/1408180632933388289
+    // https://x.com/diegohaz/status/1408180632933388289
     const autoFocusRef = useEvent((element: HTMLElement | null) => {
       if (!focusable) return;
       if (!autoFocus) return;
