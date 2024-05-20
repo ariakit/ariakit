@@ -6,7 +6,7 @@ export default function Example() {
     <div className="wrapper">
       <Ariakit.HovercardProvider>
         <Ariakit.HovercardAnchor
-          href="https://twitter.com/ariakitjs"
+          href="https://x.com/ariakitjs"
           className="anchor"
         >
           @ariakitjs
@@ -21,10 +21,7 @@ export default function Example() {
             Ariakit
           </Ariakit.HovercardHeading>
           <p>Toolkit for building accessible web apps with React.</p>
-          <a
-            href="https://twitter.com/ariakitjs"
-            className="button primary flat"
-          >
+          <a href="https://x.com/ariakitjs" className="button primary flat">
             Follow
           </a>
         </Ariakit.Hovercard>
