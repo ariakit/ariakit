@@ -61,6 +61,7 @@ test("show menus by hovering over items and subitems", async ({ page }) => {
   await expect(q.menu("Services")).not.toBeFocused();
 
   await q.menuitem("Company").hover();
+  await q.menuitem("Company").hover({ position: { x: 10, y: 10 } });
   await expect(q.menuitem("Company")).not.toBeFocused();
   await expect(q.menu("Services")).not.toBeVisible();
   await expect(q.menu("Company")).toBeVisible();
