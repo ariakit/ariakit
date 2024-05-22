@@ -8,10 +8,10 @@ import {
   SelectItemCheck,
   SelectPopover,
   SelectProvider,
+  SelectValue,
   Toolbar,
   ToolbarItem,
 } from "@ariakit/react";
-import { SelectValue } from "@ariakit/react-core/select/select-value";
 import { twJoin } from "tailwind-merge";
 import { AuthEnabled } from "./auth.tsx";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
