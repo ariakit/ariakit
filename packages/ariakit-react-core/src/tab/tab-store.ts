@@ -84,7 +84,9 @@ export interface TabStoreOptions
    * changes.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
   setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
   /**
@@ -95,7 +97,7 @@ export interface TabStoreOptions
    * [Select](https://ariakit.org/components/select).
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    */
   composite?: CompositeStore | null;
   /**
@@ -105,7 +107,7 @@ export interface TabStoreOptions
    * [Combobox](https://ariakit.org/components/combobox).
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    */
   combobox?: ComboboxStore | null;
 }

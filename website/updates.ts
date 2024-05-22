@@ -13,7 +13,7 @@ const updates: UpdateItem[] = [
     dateTime: "2024-04-26T14:53Z",
   },
   {
-    title: "Improved example: Combobox with tabs",
+    title: "Improved example: Combobox with Tabs",
     type: "page",
     href: "/examples/combobox-tabs",
     dateTime: "2024-03-04T22:34Z",
@@ -79,7 +79,7 @@ const updates: UpdateItem[] = [
     dateTime: "2023-12-27T13:18Z",
   },
   {
-    title: "New example: Combobox with tabs",
+    title: "New example: Combobox with Tabs",
     type: "page",
     href: "/examples/combobox-tabs",
     dateTime: "2023-12-23T17:34Z",

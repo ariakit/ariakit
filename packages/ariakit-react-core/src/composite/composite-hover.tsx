@@ -199,7 +199,7 @@ export interface CompositeHoverOptions<_T extends ElementType = TagName>
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
@@ -215,8 +215,10 @@ export interface CompositeHoverOptions<_T extends ElementType = TagName>
    *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
   blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }

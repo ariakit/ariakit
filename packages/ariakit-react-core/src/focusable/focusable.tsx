@@ -376,7 +376,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     // don't pass the autoFocus prop to the element and instead manually focus
     // the element when it's mounted. The order in which this effect runs also
     // matters. See
-    // https://twitter.com/diegohaz/status/1408180632933388289
+    // https://x.com/diegohaz/status/1408180632933388289
     const autoFocusRef = useEvent((element: HTMLElement | null) => {
       if (!focusable) return;
       if (!autoFocus) return;
@@ -476,7 +476,7 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    *
    * Live examples:
    * - [Submenu](https://ariakit.org/examples/menu-nested)
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Context Menu](https://ariakit.org/examples/menu-context-menu)
    * @default false
    */
@@ -537,7 +537,7 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * controls](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#focusabilityofdisabledcontrols).
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    */
   accessibleWhenDisabled?: boolean;
   /**

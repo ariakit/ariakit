@@ -399,6 +399,10 @@ export interface CompositeStoreState<
    * In both scenarios, the item in focus will carry the
    * [`data-active-item`](https://ariakit.org/guide/styling#data-active-item)
    * attribute.
+   *
+   * Live examples:
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    * @default false
    */
   virtualFocus: boolean;
@@ -533,7 +537,7 @@ export interface CompositeStoreState<
    *   arrow keys.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    */
   activeId: string | null | undefined;
 }

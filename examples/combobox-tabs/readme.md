@@ -16,7 +16,7 @@ media:
     height: 720
 ---
 
-# Combobox with tabs
+# Combobox with Tabs
 
 <div data-description>
 

@@ -653,7 +653,7 @@ export interface DialogOptions<T extends ElementType = TagName>
    * - When the dialog is open, element tree outside it will be inert.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Dialog with details &
    *   summary](https://ariakit.org/examples/dialog-details)
    * - [Form with Select](https://ariakit.org/examples/form-select)
