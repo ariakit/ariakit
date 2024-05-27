@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import { SelectValue } from "@ariakit/react-core/select/select-value";
 import clsx from "clsx";
 import * as React from "react";
 
@@ -58,7 +57,7 @@ export function Select({
         )}
       >
         {icon}
-        <div className="truncate">{text || <SelectValue />}</div>
+        <div className="truncate">{text || <Ariakit.SelectValue />}</div>
         <Ariakit.SelectArrow />
       </Ariakit.Select>
       <Ariakit.SelectPopover
