@@ -1,5 +1,12 @@
 # @ariakit/react-core
 
+## 0.4.7
+
+- Added React 19 to peer dependencies.
+- Fixed [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) behavior with virtualized lists on mobile devices.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.7`
+
 ## 0.4.6
 
 ### Nested `SelectList`
