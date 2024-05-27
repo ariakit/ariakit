@@ -1,5 +1,10 @@
 # @ariakit/test
 
+## 0.3.16
+
+- Added React 19 to peer dependencies.
+- Updated dependencies: `@ariakit/core@0.4.7`
+
 ## 0.3.15
 
 - Updated dependencies: `@ariakit/core@0.4.6`
