@@ -306,7 +306,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const scrollingElement = getScrollingElement(contentElement);
       if (!scrollingElement) return;
       scrollingElementRef.current = scrollingElement;
-      const onWheel = () => {
+      const onUserScroll = () => {
         // A wheel event is always initiated by the user, so we can disable the
         // autoSelect behavior without any additional checks.
         canAutoSelectRef.current = false;
@@ -322,10 +322,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         canAutoSelectRef.current = false;
       };
       const options = { passive: true, capture: true };
-      scrollingElement.addEventListener("wheel", onWheel, options);
+      scrollingElement.addEventListener("wheel", onUserScroll, options);
+      scrollingElement.addEventListener("touchmove", onUserScroll, options);
       scrollingElement.addEventListener("scroll", onScroll, options);
       return () => {
-        scrollingElement.removeEventListener("wheel", onWheel, true);
+        scrollingElement.removeEventListener("wheel", onUserScroll, true);
+        scrollingElement.removeEventListener("touchmove", onUserScroll, true);
         scrollingElement.removeEventListener("scroll", onScroll, true);
       };
     }, [open, contentElement, store]);

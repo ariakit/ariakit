@@ -284,7 +284,7 @@ export const PlaygroundEditButton = forwardRef<
               showTimeout={100}
               hideTimeout={250}
               gutter={0}
-              popover={tooltip}
+              popup={tooltip}
               render={maybeRenderPlusLink()}
             />
           ) : (

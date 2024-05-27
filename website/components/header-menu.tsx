@@ -44,7 +44,10 @@ const HideAllContext = createContext<(() => void) | null>(null);
 const HasTitleContext = createContext(false);
 
 export interface HeaderMenuProps
-  extends Omit<ComponentPropsWithoutRef<"button">, "value" | "onChange"> {
+  extends Omit<
+    ComponentPropsWithoutRef<"button">,
+    "value" | "onChange" | "onToggle"
+  > {
   label?: ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;
