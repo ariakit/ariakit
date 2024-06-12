@@ -93,7 +93,7 @@
     "@stripe/stripe-js": "3.4.1",
     "@tanstack/react-query": "5.44.0",
     "@testing-library/dom": "10.1.0",
-    "@testing-library/jest-dom": "6.4.5",
+    "@testing-library/jest-dom": "6.4.6",
     "@testing-library/react": "16.0.0",
     "@types/babel__core": "7.20.5",
     "@types/cross-spawn": "6.0.6",
