@@ -189,7 +189,7 @@
     "typescript": "5.4.5",
     "unified": "10.1.2",
     "unist-util-visit": "5.0.0",
-    "use-local-storage-state": "19.2.0",
+    "use-local-storage-state": "19.3.1",
     "vitest": "1.6.0",
     "vitest-fail-on-console": "0.7.0",
     "webpack": "5.91.0",
