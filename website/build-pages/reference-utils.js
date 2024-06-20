@@ -178,6 +178,7 @@ function getExamples(node) {
     const text = tag.text?.toString();
     if (!text) continue;
     const match = text.match(
+      // @ts-expect-error
       /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m,
     );
     examples.push({
