@@ -30,6 +30,10 @@
       "groupName": "testing-library"
     },
     {
+      "matchPackagePatterns": ["@radix-ui/"],
+      "groupName": "radix"
+    },
+    {
       "matchPackageNames": [
         "@wordpress/components",
         "cross-env",
