@@ -50,6 +50,7 @@
         "react",
         "react-dom",
         "react-router-dom",
+        "react-shadow",
         "react-toastify",
         "textarea-caret",
         "tsup",
