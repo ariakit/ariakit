@@ -6,6 +6,7 @@ const excludeFromReact17 = [
   "examples/*-framer-motion/**",
   "examples/dialog-animated-various",
   "examples/combobox-group",
+  "examples/*-radix*/**",
 ];
 
 const includeWithStyles = [
