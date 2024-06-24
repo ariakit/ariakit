@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.4.8
+
+- Improved JSDocs.
+
 ## 0.4.7
 
 - Improved JSDocs.
