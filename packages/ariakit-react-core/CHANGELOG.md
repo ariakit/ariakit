@@ -1,5 +1,10 @@
 # @ariakit/react-core
 
+## 0.4.8
+
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.8`
+
 ## 0.4.7
 
 - Added React 19 to peer dependencies.

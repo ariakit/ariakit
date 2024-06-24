@@ -1,5 +1,10 @@
 # @ariakit/react
 
+## 0.4.8
+
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.8`
+
 ## 0.4.7
 
 ### New `SelectValue` component
