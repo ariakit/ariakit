@@ -685,7 +685,8 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * `true`.
    *
    * By default, the first enabled item is auto selected. This function is handy
-   * if you prefer a different item to be auto selected.
+   * if you prefer a different item to be auto selected. Returning `undefined`
+   * from this function will result in the default behavior.
    * @example
    * ```jsx
    * <Combobox
