@@ -67,6 +67,6 @@ beforeEach(async ({ task }) => {
     // biome-ignore lint/correctness/noChildrenProp:
     children: createElement(comp),
   });
-  const { unmount } = await render(element, { strictMode: true });
+  const unmount = await render(element, { strictMode: true });
   return unmount;
 });
