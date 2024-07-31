@@ -73,7 +73,7 @@ export function usePreventBodyScroll(
         restoreStyle();
         // istanbul ignore next: JSDOM doesn't implement window.scrollTo
         if (process.env.NODE_ENV !== "test") {
-          win.scrollTo(scrollX, scrollY);
+          win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
         }
       };
     };
