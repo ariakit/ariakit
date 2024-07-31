@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.4.0
+
+- The `render` method now returns a promise of `{ unmount, rerender }` instead of just the `unmount` function.
+
 ## 0.3.16
 
 - Added React 19 to peer dependencies.
