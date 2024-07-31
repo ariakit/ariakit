@@ -43,7 +43,7 @@
     "coverage": "npm test -- --coverage",
     "postcoverage": "open-cli coverage/index.html",
     "lint": "biome check .",
-    "lint-fix": "biome check --apply .",
+    "lint-fix": "biome check --write .",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "tsc": "conc -r 'tsc --noEmit' 'tsc --noEmit -p website/tsconfig.json'",
     "tsc-clean": "tsc --build --clean",
@@ -62,9 +62,9 @@
   "lint-staged": {
     "package.json": [
       "npm run clean -ws --if-present",
-      "biome check --no-errors-on-unmatched --apply"
+      "biome check --no-errors-on-unmatched --write"
     ],
-    "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --apply",
+    "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write",
     "*.css": "stylelint --fix"
   },
   "overrides": {

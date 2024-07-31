@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/test",
-  "version": "0.3.16",
+  "version": "0.4.0",
   "description": "Ariakit test utils",
   "sideEffects": false,
   "license": "MIT",
