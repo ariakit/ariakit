@@ -10,6 +10,18 @@ export interface RenderOptions
   strictMode?: boolean;
 }
 
+function wrapRender<T extends (...args: any[]) => any>(
+  renderFn: T,
+): Promise<ReturnType<T>> {
+  return wrapAsync(async () => {
+    const output: ReturnType<T> = renderFn();
+    await flushMicrotasks();
+    await nextFrame();
+    await flushMicrotasks();
+    return output;
+  });
+}
+
 export async function render(ui: ReactNode, options?: RenderOptions) {
   const wrapper = (props: { children: ReactNode }) => {
     const Wrapper = options?.wrapper;
@@ -18,11 +30,14 @@ export async function render(ui: ReactNode, options?: RenderOptions) {
     return <StrictMode>{element}</StrictMode>;
   };
 
-  return wrapAsync(async () => {
-    const { unmount } = ReactTestingLibrary.render(ui, { ...options, wrapper });
-    await flushMicrotasks();
-    await nextFrame();
-    await flushMicrotasks();
-    return unmount;
+  return wrapRender(() => {
+    const { unmount, rerender } = ReactTestingLibrary.render(ui, {
+      ...options,
+      wrapper,
+    });
+    return {
+      unmount,
+      rerender: (newUi: ReactNode) => wrapRender(() => rerender(newUi)),
+    };
   });
 }
