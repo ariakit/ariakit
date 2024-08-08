@@ -1,3 +1,7 @@
+/**
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.org/plus/license
+ */
 "use client";
 
 import * as Ariakit from "@ariakit/react";

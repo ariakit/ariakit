@@ -1,3 +1,7 @@
+/**
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.org/plus/license
+ */
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import { matchSorter } from "match-sorter";
