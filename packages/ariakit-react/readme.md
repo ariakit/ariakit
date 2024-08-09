@@ -77,6 +77,11 @@ function App() {
 createRoot(document.getElementById("root")).render(<App />);
 ```
 
+## Core Team
+
+- [Diego Haz](https://x.com/diegohaz)
+- [Ben Rodri](https://x.com/benrodrs)
+
 ## Attribution
 
 Browser testing provided by
