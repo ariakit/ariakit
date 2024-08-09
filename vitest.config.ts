@@ -22,6 +22,7 @@ export default defineConfig({
     watch: false,
     testTimeout: 10_000,
     environment: "jsdom",
+    setupFiles: ["vitest.setup.ts"],
     include: ["**/*test.{ts,tsx}"],
     exclude: [
       ...configDefaults.exclude,
@@ -30,7 +31,9 @@ export default defineConfig({
     css: {
       include: includeWithStyles,
     },
-    setupFiles: ["vitest.setup.ts"],
+    sequence: {
+      hooks: "parallel",
+    },
     coverage: {
       include: ["packages"],
     },
