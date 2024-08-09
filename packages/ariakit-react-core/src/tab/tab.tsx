@@ -6,7 +6,7 @@ import {
   CompositeItem,
   useCompositeItem,
 } from "../composite/composite-item.tsx";
-import { useEvent, useId, useWrapElement } from "../utils/hooks.ts";
+import { useEvent, useId } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
@@ -37,7 +37,6 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useTab = createHook<TagName, TabOptions>(function useTab({
   store,
-  accessibleWhenDisabled = true,
   getItem: getItemProp,
   ...props
 }) {
@@ -85,38 +84,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   const selected = store.useState((state) => !!id && state.selectedId === id);
   const hasActiveItem = store.useState((state) => !!store.item(state.activeId));
   const canRegisterComposedItem = isActive || (selected && !hasActiveItem);
-
-  props = useWrapElement(
-    props,
-    (element) => {
-      if (!store?.composite) return element;
-      const defaultProps = {
-        id,
-        store: store.composite,
-        shouldRegisterItem: canRegisterComposedItem && shouldRegisterItem,
-        render: element,
-      } satisfies CompositeItemOptions;
-      // If the tab is rendered as part of another composite widget such as
-      // combobox, we need to render it as a composite item. This ensures it's
-      // recognized in the composite store and lets us manage arrow key
-      // navigation to move focus to other composite items that might be
-      // rendered in a tab panel. We only register the selected tab to maintain
-      // a vertical list orientation.
-      return (
-        <CompositeItem
-          {...defaultProps}
-          render={
-            store.combobox && store.composite !== store.combobox ? (
-              <CompositeItem {...defaultProps} store={store.combobox} />
-            ) : (
-              element
-            )
-          }
-        />
-      );
-    },
-    [store, id, canRegisterComposedItem, shouldRegisterItem],
-  );
+  const accessibleWhenDisabled = selected || props.accessibleWhenDisabled;
 
   // If the tab is rendered within another composite widget with virtual focus,
   // such as combobox, it shouldn't be tabbable even if the tab store uses
@@ -142,6 +110,37 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     ...props,
     onClick,
   };
+
+  // If the tab is rendered as part of another composite widget such as
+  // combobox, we need to render it as a composite item. This ensures it's
+  // recognized in the composite store and lets us manage arrow key navigation
+  // to move focus to other composite items that might be rendered in a tab
+  // panel. We only register the selected tab to maintain a vertical list
+  // orientation.
+  if (store.composite) {
+    const defaultProps = {
+      id,
+      accessibleWhenDisabled,
+      store: store.composite,
+      shouldRegisterItem: canRegisterComposedItem && shouldRegisterItem,
+      render: props.render,
+    } satisfies CompositeItemOptions;
+    props = {
+      ...props,
+      render: (
+        <CompositeItem
+          {...defaultProps}
+          render={
+            store.combobox && store.composite !== store.combobox ? (
+              <CompositeItem {...defaultProps} store={store.combobox} />
+            ) : (
+              defaultProps.render
+            )
+          }
+        />
+      ),
+    };
+  }
 
   props = useCompositeItem({
     store,

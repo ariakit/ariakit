@@ -224,9 +224,9 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const trulyDisabled = !!disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 
-    // When the focusable element is disabled, it doesn't trigger a blur event so
-    // we can't set focusVisible to false there. Instead, we have to do it here by
-    // checking the element's disabled attribute.
+    // When the focusable element is disabled, it doesn't trigger a blur event
+    // so we can't set focusVisible to false there. Instead, we have to do it
+    // here by checking the element's disabled attribute.
     useEffect(() => {
       if (!focusable) return;
       if (trulyDisabled && focusVisible) {
@@ -311,12 +311,12 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (!focusable) return;
       const element = event.currentTarget;
       if (!element) return;
-      if (!hasFocus(element)) return;
-      onFocusVisible?.(event);
-      if (event.defaultPrevented) return;
       // Some extensions like 1password dispatches some keydown events on
       // autofill and immediately moves focus to the next field. That's why we
       // need to check if the current element is still focused.
+      if (!hasFocus(element)) return;
+      onFocusVisible?.(event);
+      if (event.defaultPrevented) return;
       setFocusVisible(true);
     };
 
