@@ -1,5 +1,12 @@
 # @ariakit/react
 
+## 0.4.8
+
+- Fixed [Dialog](https://ariakit.org/components/dialog) to prevent smooth scrolling on hide.
+- Fixed [Hovercard](https://ariakit.org/components/hovercard) unexpectedly hiding when scrolling in Safari.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.8`
+
 ## 0.4.7
 
 ### New `SelectValue` component
