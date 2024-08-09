@@ -1,5 +1,13 @@
 # @ariakit/react-core
 
+## 0.4.8
+
+- Fixed [Dialog](https://ariakit.org/components/dialog) to prevent smooth scrolling on hide.
+- Fixed [Hovercard](https://ariakit.org/components/hovercard) unexpectedly hiding when scrolling in Safari.
+- Added a README file to the package.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.8`
+
 ## 0.4.7
 
 - Added React 19 to peer dependencies.
