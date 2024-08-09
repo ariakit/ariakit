@@ -1,5 +1,18 @@
 # @ariakit/react
 
+## 0.4.8
+
+### Accessing selected tabs when disabled
+
+A [Tab](https://ariakit.org/components/tab) component that is both selected and disabled will now remain accessible to keyboard focus even if the [`accessibleWhenDisabled`](https://ariakit.org/reference/tab#accessiblewhendisabled) prop is set to `false`. This ensures users can navigate to other tabs using the keyboard.
+
+### Other updates
+
+- Fixed [Dialog](https://ariakit.org/components/dialog) to prevent smooth scrolling on hide.
+- Fixed [Hovercard](https://ariakit.org/components/hovercard) unexpectedly hiding when scrolling in Safari.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.8`
+
 ## 0.4.7
 
 ### New `SelectValue` component
