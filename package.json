@@ -160,7 +160,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-markdown": "8.0.7",
-    "react-router-dom": "6.26.0",
+    "react-router-dom": "6.26.1",
     "react-shadow": "20.5.0",
     "react-toastify": "10.0.5",
     "read-pkg-up": "11.0.0",
