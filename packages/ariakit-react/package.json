@@ -42,6 +42,7 @@
     "./tooltip": "./src/tooltip.ts",
     "./toolbar": "./src/toolbar.ts",
     "./tab": "./src/tab.ts",
+    "./store": "./src/store.ts",
     "./separator": "./src/separator.ts",
     "./select": "./src/select.ts",
     "./role": "./src/role.ts",
