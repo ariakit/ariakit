@@ -1,6 +1,21 @@
-import * as Ariakit from "@ariakit/react";
+import { Focusable, Role } from "@ariakit/react";
+import type { FocusableProps } from "@ariakit/react";
 import * as React from "react";
 import "./style.css";
+
+interface TextareaProps extends FocusableProps<"textarea"> {}
+
+export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  function Textarea(props, ref) {
+    return (
+      <Role.textarea
+        {...props}
+        ref={ref}
+        render={<Focusable render={props.render || <textarea />} />}
+      />
+    );
+  },
+);
 
 export default function Example() {
   return (
@@ -13,18 +28,3 @@ export default function Example() {
     </label>
   );
 }
-
-interface TextareaProps extends Ariakit.FocusableProps<"textarea"> {}
-
-export const Textarea = React.forwardRef<
-  React.ElementRef<"textarea">,
-  TextareaProps
->((props, forwardedRef) => {
-  return (
-    <Ariakit.Role.textarea
-      {...props}
-      ref={forwardedRef}
-      render={<Ariakit.Focusable render={props.render || <textarea />} />}
-    />
-  );
-});
