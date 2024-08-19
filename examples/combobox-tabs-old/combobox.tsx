@@ -68,8 +68,6 @@ export interface ComboboxProps extends Ariakit.ComboboxProps {}
 
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   function Combobox(props, ref) {
-    const combobox = Ariakit.useComboboxContext()!;
-    const hasValue = combobox.useState((state) => state.value !== "");
     return (
       <div className="combobox-wrapper">
         <Ariakit.Combobox
@@ -90,9 +88,13 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           }}
         />
         <div className="combobox-buttons">
-          {hasValue && (
-            <Ariakit.ComboboxCancel className="button secondary combobox-cancel" />
-          )}
+          <Ariakit.ComboboxValue>
+            {(value) =>
+              value !== "" && (
+                <Ariakit.ComboboxCancel className="button secondary combobox-cancel" />
+              )
+            }
+          </Ariakit.ComboboxValue>
           <Ariakit.ComboboxDisclosure className="button flat combobox-disclosure" />
         </div>
       </div>
