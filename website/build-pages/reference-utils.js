@@ -207,11 +207,12 @@ function getProps(node) {
     if (isPrivate(decl)) continue;
     const description = getDescription(decl);
     if (!description) continue;
+    const type = getType(decl);
     props.push({
       name: prop.getEscapedName(),
-      type: getType(decl),
+      type,
       description,
-      optional: prop.isOptional(),
+      optional: prop.isOptional() || type.endsWith(" | undefined"),
       defaultValue: getDefaultValue(decl),
       deprecated: getDeprecated(decl),
       examples: getExamples(decl),
