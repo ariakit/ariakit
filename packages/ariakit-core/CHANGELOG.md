@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.4.9
+
+- Improved JSDocs.
+
 ## 0.4.8
 
 - Added a README file to the package.
