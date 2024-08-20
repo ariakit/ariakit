@@ -4,7 +4,7 @@ import "./style.css";
 
 export default function Example() {
   const dialog = Ariakit.useDialogStore();
-  const mounted = dialog.useState("mounted");
+  const mounted = Ariakit.useStoreState(dialog, "mounted");
   return (
     <>
       <Ariakit.Button onClick={dialog.show} className="button">

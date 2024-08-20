@@ -59,7 +59,7 @@ To dynamically render the menu component, you can use the [`mounted`](/apis/use-
 
 ```jsx
 const menu = Ariakit.useMenuStore({ open, setOpen });
-const mounted = menu.useState("mounted");
+const mounted = Ariakit.useStoreState(menu, "mounted");
 ```
 
 You can learn more about reading state from the store on the [Component stores](/guide/component-stores#reading-the-state) guide.

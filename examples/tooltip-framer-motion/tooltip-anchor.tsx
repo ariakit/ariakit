@@ -9,10 +9,10 @@ interface TooltipAnchorProps extends Ariakit.TooltipAnchorProps {
 export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
   function TooltipAnchor({ description, ...props }, ref) {
     const tooltip = Ariakit.useTooltipStore();
-    const mounted = tooltip.useState("mounted");
+    const mounted = Ariakit.useStoreState(tooltip, "mounted");
 
     // We move the tooltip up or down depending on the current placement.
-    const y = tooltip.useState((state) => {
+    const y = Ariakit.useStoreState(tooltip, (state) => {
       const dir = state.currentPlacement.split("-")[0]!;
       return dir === "top" ? -8 : 8;
     });

@@ -48,7 +48,7 @@ export default function Example() {
     defaultValue: "",
   });
 
-  const selectValue = select.useState("value");
+  const selectValue = Ariakit.useStoreState(select, "value");
 
   useEffect(() => {
     startTransition(() => {

@@ -5,8 +5,7 @@ import "./style.css";
 export default function Example() {
   const [open, setOpen] = useState(false);
   const combobox = Ariakit.useComboboxStore({ open, setOpen });
-
-  const value = combobox.useState("value");
+  const value = Ariakit.useStoreState(combobox, "value");
 
   if (open && value.length < 1) {
     setOpen(false);

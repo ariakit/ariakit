@@ -38,11 +38,14 @@ export const TabPanel = forwardRef<
   ElementRef<typeof Ariakit.TabPanel>,
   Ariakit.TabPanelProps
 >(function TabPanel(props, ref) {
-  const tab = Ariakit.useTabContext()!;
+  const tab = Ariakit.useTabContext();
   const defaultId = useId();
   const id = props.id ?? defaultId;
-  const tabId = tab.useState(() => props.tabId ?? tab.panels.item(id)?.tabId);
-  const previousTabId = usePrevious(tab.useState("selectedId"));
+  const tabId = Ariakit.useStoreState(
+    tab,
+    () => props.tabId ?? tab?.panels.item(id)?.tabId,
+  );
+  const previousTabId = usePrevious(Ariakit.useStoreState(tab, "selectedId"));
   const wasOpen = tabId && previousTabId === tabId;
   return (
     <Ariakit.TabPanel

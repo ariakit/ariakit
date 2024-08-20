@@ -8,7 +8,7 @@ export default function Example() {
   const firstRef = useRef<HTMLInputElement>(null);
   const lastRef = useRef<HTMLButtonElement>(null);
 
-  const focusTrapped = checkbox.useState("value");
+  const focusTrapped = Ariakit.useStoreState(checkbox, "value");
 
   const onTrapFocus = (event: FocusEvent) => {
     if (event.relatedTarget === firstRef.current) {

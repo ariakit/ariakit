@@ -8,7 +8,7 @@ export default function Example() {
   const combobox = Ariakit.useComboboxStore({ resetValueOnHide: true });
   const select = Ariakit.useSelectStore({ combobox, defaultValue: "Apple" });
 
-  const value = combobox.useState("value");
+  const value = Ariakit.useStoreState(combobox, "value");
   const deferredValue = useDeferredValue(value);
 
   const matches = useMemo(() => {

@@ -7,7 +7,7 @@ import "./style.css";
 export default function Example() {
   const combobox = Ariakit.useComboboxStore({ resetValueOnHide: true });
   const menu = Ariakit.useMenuStore({ combobox });
-  const value = combobox.useState("value");
+  const value = Ariakit.useStoreState(combobox, "value");
   const deferredValue = useDeferredValue(value);
 
   const matches = useMemo(() => {

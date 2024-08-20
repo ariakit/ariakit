@@ -60,7 +60,7 @@ To dynamically render the dialog component, you can use the [`mounted`](/apis/us
 
 ```jsx
 const dialog = Ariakit.useDialogStore();
-const mounted = dialog.useState("mounted");
+const mounted = Ariakit.useStoreState(dialog, "mounted");
 ```
 
 You can learn more about reading state from the store on the [Component stores](/guide/component-stores#reading-the-state) guide.

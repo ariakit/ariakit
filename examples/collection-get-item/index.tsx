@@ -16,7 +16,7 @@ export default function Example() {
     defaultItems: [],
   });
   const getItem = useCallback((item: Item) => ({ ...item, custom: true }), []);
-  const renderedItems = collection.useState((state) => state.renderedItems);
+  const renderedItems = Ariakit.useStoreState(collection, "renderedItems");
   const customItems = renderedItems.filter((item) => item.custom === true);
 
   return (
