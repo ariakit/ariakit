@@ -84,7 +84,8 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   const selected = store.useState((state) => !!id && state.selectedId === id);
   const hasActiveItem = store.useState((state) => !!store.item(state.activeId));
   const canRegisterComposedItem = isActive || (selected && !hasActiveItem);
-  const accessibleWhenDisabled = selected || props.accessibleWhenDisabled;
+  const accessibleWhenDisabled =
+    selected || (props.accessibleWhenDisabled ?? true);
 
   // If the tab is rendered within another composite widget with virtual focus,
   // such as combobox, it shouldn't be tabbable even if the tab store uses
