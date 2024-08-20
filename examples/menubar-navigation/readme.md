@@ -91,7 +91,8 @@ To accomplish this:
    This also means that we can use the `anchorElement` state to determine the `open` state of the child menu:
 
    ```js
-   const open = menu.useState(
+   const open = useStoreState(
+     menu,
      (state) => state.mounted && state.anchorElement === button,
    );
    ```
@@ -99,7 +100,7 @@ To accomplish this:
 3. Finally, if the child menu is open, we can render the [`Portal`](/reference/portal) component to append the menu items to the parent [`Menu`](/reference/menu) component using the [`portalElement`](/reference/portal#portalelement) prop:
 
    ```jsx
-   const parentMenu = menu.useState("contentElement");
+   const parentMenu = useStoreState(menu, "contentElement");
 
    if (open) {
      return <Portal portalElement={parentMenu}>{children}</Portal>;

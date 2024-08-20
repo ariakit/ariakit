@@ -85,8 +85,10 @@ export const SelectItem = React.forwardRef<
 >(function SelectItem(props, ref) {
   const searchParams = useSearchParams();
   const param = React.useContext(SelectParamContext);
-  const select = Ariakit.useSelectContext()!;
-  const multi = select.useState((state) => Array.isArray(state.value));
+  const select = Ariakit.useSelectContext();
+  const multi = Ariakit.useStoreState(select, (state) =>
+    Array.isArray(state?.value),
+  );
   const queryString = getQueryString(searchParams, param, props.value, multi);
   return (
     // Passing props to Role.a for type safety.

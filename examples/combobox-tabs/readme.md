@@ -85,7 +85,7 @@ This behavior is abstracted into the custom `ComboboxProvider` component and exp
 Additionally, we can make the mounting of the combobox popover children non-blocking by using [`React.useDeferredValue`](https://react.dev/reference/react/useDeferredValue) on the combobox `mounted` state:
 
 ```jsx "useDeferredValue"
-const mounted = React.useDeferredValue(combobox.useState("mounted"));
+const mounted = React.useDeferredValue(useStoreState(combobox, "mounted"));
 
 <Ariakit.ComboboxPopover hidden={!mounted}>
   {mounted && props.children}
@@ -99,7 +99,7 @@ Typically, we have one [`TabPanel`](/reference/tab-panel) for each [`Tab`](/refe
 To render a single [`TabPanel`](/reference/tab-panel), we need to set its [`tabId`](/reference/tab-panel#tabid) prop to the [`selectedId`](/reference/use-tab-store#selectedid) state:
 
 ```jsx
-const selectedId = tab.useState("selectedId");
+const selectedId = useStoreState(tab, "selectedId");
 
 <Ariakit.TabPanel tabId={selectedId}>
 ```

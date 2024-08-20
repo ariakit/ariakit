@@ -17,7 +17,7 @@ export default function Example() {
     },
   });
 
-  const warningOpen = warning.useState("open");
+  const warningOpen = Ariakit.useStoreState(warning, "open");
 
   // Opens the warning dialog when the post dialog attempts to close while
   // there's an unsaved post value.

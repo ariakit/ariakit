@@ -90,10 +90,15 @@ export const ComboboxPopover = React.forwardRef<
   ComboboxPopoverProps
 >(function ComboboxPopover(props, ref) {
   const combobox = Ariakit.useComboboxContext()!;
-  const isInputActive = combobox.useState((state) => state.activeId === null);
+  const isInputActive = Ariakit.useStoreState(
+    combobox,
+    (state) => state.activeId === null,
+  );
   // React.useDeferredValue helps in maintaining a responsive UI during the
   // mounting of the popover.
-  const mounted = React.useDeferredValue(combobox.useState("mounted"));
+  const mounted = React.useDeferredValue(
+    Ariakit.useStoreState(combobox, "mounted"),
+  );
   return (
     <Ariakit.ComboboxPopover
       ref={ref}
@@ -184,7 +189,10 @@ export const ComboboxPanel = React.forwardRef<
   // We assume a single tab panel is being displayed with the `tabId` and
   // `children` props varying based on the active tab. If a `tabId` prop isn't
   // supplied, we can deduce it from the selected tab.
-  const tabId = tab.useState((state) => props.tabId ?? state.selectedId);
+  const tabId = Ariakit.useStoreState(
+    tab,
+    (state) => props.tabId ?? state.selectedId,
+  );
   return (
     <Ariakit.TabPanel
       ref={ref}

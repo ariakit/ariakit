@@ -24,7 +24,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
     const [list, setList] = React.useState<string[]>([]);
 
     const combobox = Ariakit.useComboboxStore({ value, setValue: onChange });
-    const searchValue = combobox.useState("value");
+    const searchValue = Ariakit.useStoreState(combobox, "value");
 
     // Use deferred value to avoid lag when typing.
     const deferredValue = React.useDeferredValue(searchValue);

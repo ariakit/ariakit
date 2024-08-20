@@ -56,7 +56,7 @@ function findPushButton(
  *   name: store.names.languages,
  *   index: 0,
  * });
- * const values = store.useState("values");
+ * const values = useStoreState(store, "values");
  *
  * <Form store={store}>
  *   {values.languages.map((_, i) => (
@@ -140,7 +140,7 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
  *   },
  * });
  *
- * const values = form.useState("values");
+ * const values = useStoreState(form, "values");
  *
  * <Form store={form}>
  *   {values.languages.map((_, i) => (

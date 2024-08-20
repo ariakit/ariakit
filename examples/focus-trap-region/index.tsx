@@ -3,7 +3,7 @@ import "./style.css";
 
 export default function Example() {
   const checkbox = Ariakit.useCheckboxStore({ defaultValue: false });
-  const focusTrapped = checkbox.useState("value");
+  const focusTrapped = Ariakit.useStoreState(checkbox, "value");
   return (
     <Ariakit.FocusTrapRegion className="wrapper" enabled={focusTrapped}>
       <label className="label">

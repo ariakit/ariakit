@@ -56,10 +56,10 @@ function Combobox({ value, onChange }) {
 }
 ```
 
-We can use the custom [`useState`](/reference/use-combobox-store#usestate) hook provided by [`useComboboxStore`](/reference/use-combobox-store) to access the current value, regardless if it's controlled or uncontrolled:
+We can use the custom [`useStoreState`](/reference/use-store-state) hook provided by Ariakit to access the current value, regardless if it's controlled or uncontrolled:
 
 ```js
-const searchValue = combobox.useState("value");
+const searchValue = useStoreState(combobox, "value");
 ```
 
 You can learn more about these functions on the [Component stores](/guide/component-stores) guide.

@@ -3,7 +3,10 @@ import "./style.css";
 
 export default function Example() {
   const collection = Ariakit.useCollectionStore();
-  const length = collection.useState((state) => state.renderedItems.length);
+  const length = Ariakit.useStoreState(
+    collection,
+    (state) => state.renderedItems.length,
+  );
   return (
     <Ariakit.Collection store={collection} className="collection">
       <div>Items count: {length}</div>

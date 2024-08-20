@@ -3,7 +3,7 @@ import "./style.css";
 
 export default function Example() {
   const select = Ariakit.useSelectStore({ defaultValue: "Apple" });
-  const mounted = select.useState("mounted");
+  const mounted = Ariakit.useStoreState(select, "mounted");
   return (
     <div className="wrapper">
       <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
