@@ -1,5 +1,10 @@
 # @ariakit/react
 
+## 0.4.10
+
+- Fixed a regression introduced in `v0.4.8` that set the default value of the [`accessibleWhenDisabled`](https://ariakit.org/reference/tab#accessiblewhendisabled) prop to `false` on [`Tab`](https://ariakit.org/reference/tab).
+- Updated dependencies: `@ariakit/react-core@0.4.10`
+
 ## 0.4.9
 
 ### New `useStoreState` hook
