@@ -10,6 +10,7 @@ const excludeFromReact17 = [
 ];
 
 const includeWithStyles = [
+  /combobox-tabs-animated/,
   /dialog-animated-various/,
   /dialog-combobox-command-menu/,
 ];

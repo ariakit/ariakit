@@ -104,9 +104,18 @@ export function createTabStore({
     }),
   );
 
+  let syncActiveId = true;
+
   // Keep activeId in sync with selectedId.
   setup(tab, () =>
     batch(tab, ["selectedId"], (state, prev) => {
+      // There are cases where we don't want to sync activeId with selectedId.
+      // For example, restoring the selectedId from a select or combobox
+      // selected value. In those cases, we set syncActiveId to false.
+      if (!syncActiveId) {
+        syncActiveId = true;
+        return;
+      }
       // If there's a parent composite widget, we don't need to sync the
       // activeId state with the initial selectedId state. The parent composite
       // widget should handle the initial activeId state.
@@ -164,18 +173,22 @@ export function createTabStore({
       selectedIdFromSelectedValue = tab.getState().selectedId;
     };
     const restoreSelectedId = () => {
+      // We set syncActiveId to false to prevent the activeId state from being
+      // set to the selectedId state since this is just a restoration of the
+      // selectedId state from a select or combobox selected value.
+      syncActiveId = false;
       tab.setState("selectedId", selectedIdFromSelectedValue);
     };
     if (parentComposite && "setSelectElement" in parentComposite) {
       return chain(
         sync(parentComposite, ["value"], backupSelectedId),
-        sync(parentComposite, ["open"], restoreSelectedId),
+        sync(parentComposite, ["mounted"], restoreSelectedId),
       );
     }
     if (!combobox) return;
     return chain(
       sync(combobox, ["selectedValue"], backupSelectedId),
-      sync(combobox, ["open"], restoreSelectedId),
+      sync(combobox, ["mounted"], restoreSelectedId),
     );
   });
 
