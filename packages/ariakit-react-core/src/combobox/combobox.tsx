@@ -543,9 +543,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (event.shiftKey) return;
       if (event.metaKey) return;
       if (!store) return;
-      const { open, activeId } = store.getState();
+      const { open } = store.getState();
       if (open) return;
-      if (activeId !== null) return;
       // Up and Down arrow keys should open the combobox popover.
       if (event.key === "ArrowUp" || event.key === "ArrowDown") {
         if (showOnKeyPressProp(event)) {

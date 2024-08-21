@@ -169,8 +169,8 @@ export function createComboboxStore({
 
   // Resets the state when the combobox popover is hidden.
   setup(combobox, () =>
-    batch(combobox, ["mounted"], (state) => {
-      if (state.mounted) return;
+    sync(combobox, ["open"], (state) => {
+      if (state.open) return;
       combobox.setState("activeId", activeId);
       combobox.setState("moves", 0);
     }),
