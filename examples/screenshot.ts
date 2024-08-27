@@ -16,6 +16,8 @@ interface ScreenshotOptions {
   paddingLeft?: number;
   paddingRight?: number;
   colorScheme?: "light" | "dark";
+  transparent?: boolean;
+  style?: string;
 }
 
 export async function screenshot({
@@ -32,15 +34,19 @@ export async function screenshot({
   paddingLeft = paddingX,
   paddingRight = paddingX,
   colorScheme,
+  transparent = true,
+  style,
 }: ScreenshotOptions) {
   const colorSchemes = colorScheme
     ? [colorScheme]
     : (["light", "dark"] as const);
 
-  await page.evaluate(() => {
-    document.body.style.background = "transparent";
-    document.body.querySelector("div")!.style.background = "transparent";
-  });
+  if (transparent) {
+    await page.evaluate(() => {
+      document.body.style.background = "transparent";
+      document.body.querySelector("div")!.style.background = "transparent";
+    });
+  }
 
   let clip: PageScreenshotOptions["clip"] | undefined = undefined;
 
@@ -87,6 +93,8 @@ export async function screenshot({
       clip,
       caret: "initial",
       omitBackground: true,
+      animations: "disabled",
+      style,
     });
   }
 }
