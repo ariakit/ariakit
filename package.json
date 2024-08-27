@@ -9,6 +9,7 @@
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'npm:dev-package-json' 'npm:dev -w website'",
     "dev-lite": "cross-env DISABLE_SHIKI=true npm run dev",
+    "generate-images": "playwright test -u -c generate-images.config.ts",
     "test": "vitest",
     "test-watch": "vitest watch",
     "test-react17": "npm run react17 && npm test; npm i",
