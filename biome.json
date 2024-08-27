@@ -46,8 +46,7 @@
         "noParameterAssign": "off",
         "noUnusedTemplateLiteral": "off",
         "noNonNullAssertion": "off",
-        "noUselessElse": "off",
-        "useImportType": "error"
+        "noUselessElse": "off"
       }
     }
   }
