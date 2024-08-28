@@ -1,12 +1,5 @@
-import { query } from "@ariakit/test/playwright";
-import { expect, test } from "@playwright/test";
-import { screenshot } from "../screenshot.ts";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-combobox-command-menu", {
-    waitUntil: "networkidle",
-  });
-});
+import { expect, query } from "@ariakit/test/playwright";
+import { screenshot, test } from "../test-utils.ts";
 
 test("generate images", async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 800 });
@@ -20,8 +13,8 @@ test("generate images", async ({ page }) => {
     name: "small",
     elements: [q.dialog()],
     padding: 24,
-    width: 180,
-    height: 180,
+    width: 178,
+    height: 178,
   });
 
   await screenshot({
@@ -30,11 +23,16 @@ test("generate images", async ({ page }) => {
     elements: [q.dialog()],
   });
 
-  await page.setViewportSize({ width: 440, height: 800 });
+  await page.setViewportSize({ width: 480, height: 800 });
+
   await q.dialog().evaluate((el) => {
     el.style.inset = "48px";
     el.style.margin = "0";
   });
+
+  // Make sure the caret appears
+  await q.combobox().fill("a");
+  await page.keyboard.press("Backspace");
 
   await screenshot({
     page,

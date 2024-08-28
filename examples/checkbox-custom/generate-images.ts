@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { screenshot } from "../screenshot.ts";
+import { screenshot } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/previews/checkbox-custom", { waitUntil: "networkidle" });
