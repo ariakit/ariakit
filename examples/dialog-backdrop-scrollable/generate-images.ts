@@ -63,17 +63,4 @@ test("generate images", async ({ page }) => {
       height: "auto",
     });
   }
-
-  // await screenshot({
-  //   page,
-  //   name: "medium",
-  //   elements: [q.dialog(), button],
-  //   padding: 24,
-  // });
-
-  // await screenshot({
-  //   page,
-  //   name: "large",
-  //   elements: [q.dialog(), button],
-  // });
 });
