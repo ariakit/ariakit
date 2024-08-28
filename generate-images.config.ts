@@ -14,7 +14,10 @@ export default defineConfig({
     {
       name: "generate-images",
       testMatch: [/\/generate-images/],
-      use: { ...devices["Desktop Chrome"], deviceScaleFactor: 2 },
+      use: {
+        ...devices["Desktop Chrome"],
+        deviceScaleFactor: 2,
+      },
     },
   ],
 });

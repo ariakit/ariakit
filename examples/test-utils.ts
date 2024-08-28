@@ -1,6 +1,17 @@
-import { dirname } from "node:path";
-import { test } from "@playwright/test";
+import { basename, dirname } from "node:path";
+import { test as base } from "@playwright/test";
 import type { Locator, Page, PageScreenshotOptions } from "@playwright/test";
+
+export const test = base.extend<{ forEachTest: void }>({
+  forEachTest: [
+    async ({ page }, use, testInfo) => {
+      const name = basename(dirname(testInfo.file));
+      await page.goto(`/previews/${name}`, { waitUntil: "networkidle" });
+      await use();
+    },
+    { auto: true },
+  ],
+});
 
 interface ScreenshotOptions {
   page: Page;
@@ -18,6 +29,7 @@ interface ScreenshotOptions {
   colorScheme?: "light" | "dark";
   transparent?: boolean;
   style?: string;
+  clip?: PageScreenshotOptions["clip"];
 }
 
 export async function screenshot({
@@ -36,6 +48,7 @@ export async function screenshot({
   colorScheme,
   transparent = true,
   style,
+  clip: originalClip,
 }: ScreenshotOptions) {
   const colorSchemes = colorScheme
     ? [colorScheme]
@@ -48,23 +61,40 @@ export async function screenshot({
     });
   }
 
-  let clip: PageScreenshotOptions["clip"] | undefined = undefined;
+  // Wait for the page to finish animating
+  await page.evaluate(() =>
+    Promise.all(
+      document.body
+        .getAnimations({ subtree: true })
+        .map((animation) => animation.finished),
+    ),
+  );
 
-  for (const element of elements) {
-    const boundingBox = await element.boundingBox();
+  let clip = originalClip;
 
-    if (boundingBox) {
-      clip = clip || boundingBox;
-      clip.x = Math.min(clip.x, boundingBox.x);
-      clip.y = Math.min(clip.y, boundingBox.y);
-      clip.width = Math.max(
-        clip.width,
-        boundingBox.x + boundingBox.width - clip.x,
-      );
-      clip.height = Math.max(
-        clip.height,
-        boundingBox.y + boundingBox.height - clip.y,
-      );
+  if (!clip) {
+    for (const element of elements) {
+      const boundingBox = await element.boundingBox();
+      if (!boundingBox) continue;
+
+      if (!clip) {
+        clip = { ...boundingBox };
+      } else {
+        const newX = Math.min(clip.x, boundingBox.x);
+        const newY = Math.min(clip.y, boundingBox.y);
+        const newWidth: number =
+          Math.max(clip.x + clip.width, boundingBox.x + boundingBox.width) -
+          newX;
+        const newHeight: number =
+          Math.max(clip.y + clip.height, boundingBox.y + boundingBox.height) -
+          newY;
+        clip = {
+          x: newX,
+          y: newY,
+          width: newWidth,
+          height: newHeight,
+        };
+      }
     }
   }
 
