@@ -218,7 +218,7 @@ The `--popover-anchor-width` variable exposes the width value of the anchor elem
 
 ### `--popover-available-height`
 
-The `--popover-available-height` variable exposes the available vertical space in the viewport. You can use this to make the popover element have a maximum height that fits the available space.
+The `--popover-available-height` variable exposes the available vertical space in the viewport based on the popover's [`placement`](/reference/popover-provider#placement). You can use this to make the popover element have a maximum height that fits the available space.
 
 ```css
 .popover {
@@ -228,7 +228,7 @@ The `--popover-available-height` variable exposes the available vertical space i
 
 ### `--popover-available-width`
 
-The `--popover-available-width` variable exposes the available horizontal space in the viewport. You can use this to make the popover element have a maximum width that fits the available space.
+The `--popover-available-width` variable exposes the available horizontal space in the viewport based on the popover's [`placement`](/reference/popover-provider#placement). You can use this to make the popover element have a maximum width that fits the available space.
 
 ```css
 .popover {
