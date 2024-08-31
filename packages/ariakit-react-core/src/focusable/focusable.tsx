@@ -8,6 +8,7 @@ import {
 } from "@ariakit/core/utils/events";
 import {
   focusIfNeeded,
+  getClosestFocusable,
   hasFocus,
   isFocusable,
 } from "@ariakit/core/utils/focus";
@@ -52,6 +53,22 @@ const alwaysFocusVisibleInputTypes = [
   "datetime",
   "datetime-local",
 ];
+
+const safariFocusAncestorSymbol = Symbol("safariFocusAncestor");
+type SafariFocusAncestor = Element & { [safariFocusAncestorSymbol]?: boolean };
+
+export function isSafariFocusAncestor(element: SafariFocusAncestor | null) {
+  if (!element) return false;
+  return !!element[safariFocusAncestorSymbol];
+}
+
+function markSafariFocusAncestor(
+  element: SafariFocusAncestor | null,
+  value: boolean,
+) {
+  if (!element) return;
+  element[safariFocusAncestorSymbol] = value;
+}
 
 function isAlwaysFocusVisible(element: HTMLElement) {
   const { tagName, readOnly, type } = element as HTMLInputElement;
@@ -288,6 +305,14 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       };
       const options = { capture: true, once: true };
       element.addEventListener("focusin", onFocus, options);
+
+      const focusableContainer = getClosestFocusable(element.parentElement);
+      // Since Safari focuses on the nearest focusable ancestor and we're not
+      // preventing it (see below), popups may close on mousedown on their
+      // disclosure buttons. Therefore, we mark the focusable container here to
+      // check for that in use-hide-on-interact-outside.ts. See the dialog-menu
+      // "open/close menu by clicking on menu button" test.
+      markSafariFocusAncestor(focusableContainer, true);
       // We can't focus right away after on mouse down, otherwise it would prevent
       // drag events from happening. So we queue the focus to the next animation
       // frame, but always before the next mouseup event. The mouseup event might
@@ -296,6 +321,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // breaks on mobile Safari. See dialog-menu/test-mobile test.
       queueBeforeEvent(element, "mouseup", () => {
         element.removeEventListener("focusin", onFocus, true);
+        markSafariFocusAncestor(focusableContainer, false);
         if (receivedFocus) return;
         focusIfNeeded(element);
       });
