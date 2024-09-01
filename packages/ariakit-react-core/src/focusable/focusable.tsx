@@ -27,7 +27,6 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { flushSync } from "react-dom";
 import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -344,6 +343,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (!hasFocus(element)) return;
       onFocusVisible?.(event);
       if (event.defaultPrevented) return;
+      // Make sure data-focus-visible is applied visually at the same time as
+      // other data attributes like data-active-item. See
+      // https://github.com/ariakit/ariakit/issues/4083
+      element.dataset.focusVisible = "true";
       setFocusVisible(true);
     };
 
@@ -359,12 +362,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (event.ctrlKey) return;
       if (!isSelfTarget(event)) return;
       const element = event.currentTarget;
-      const applyFocusVisible = () => {
-        // Need to flush sync to make sure data-focus-visible is applied
-        // visually at the same time as other data attributes like
-        // data-active-item. See https://github.com/ariakit/ariakit/issues/4083
-        flushSync(() => handleFocusVisible(event, element));
-      };
+      const applyFocusVisible = () => handleFocusVisible(event, element);
       queueBeforeEvent(element, "focusout", applyFocusVisible);
     });
 
@@ -379,10 +377,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         return;
       }
       const element = event.currentTarget;
-      const applyFocusVisible = () => {
-        // See https://github.com/ariakit/ariakit/issues/4083
-        flushSync(() => handleFocusVisible(event, element));
-      };
+      const applyFocusVisible = () => handleFocusVisible(event, element);
       if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
         queueBeforeEvent(event.target, "focusout", applyFocusVisible);
       } else {
