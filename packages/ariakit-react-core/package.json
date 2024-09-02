@@ -24,11 +24,7 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "react",
-    "core"
-  ],
+  "keywords": ["ariakit", "react", "core"],
   "dependencies": {
     "@ariakit/core": "0.4.10",
     "@floating-ui/dom": "^1.0.0",
