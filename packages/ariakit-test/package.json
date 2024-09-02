@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/test",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Ariakit test utils",
   "sideEffects": false,
   "license": "MIT",
@@ -24,9 +24,12 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": ["ariakit", "react"],
+  "keywords": [
+    "ariakit",
+    "react"
+  ],
   "dependencies": {
-    "@ariakit/core": "0.4.9",
+    "@ariakit/core": "0.4.10",
     "@testing-library/dom": "^8.0.0 || ^9.0.0 || ^10.0.0"
   },
   "peerDependencies": {
