@@ -343,6 +343,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (!hasFocus(element)) return;
       onFocusVisible?.(event);
       if (event.defaultPrevented) return;
+      // Make sure data-focus-visible is applied visually at the same time as
+      // other data attributes like data-active-item. See
+      // https://github.com/ariakit/ariakit/issues/4083
+      element.dataset.focusVisible = "true";
       setFocusVisible(true);
     };
 
