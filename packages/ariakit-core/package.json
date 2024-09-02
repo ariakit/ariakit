@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/core",
-  "version": "0.4.9",
+  "version": "0.4.10",
   "description": "Ariakit core",
   "sideEffects": false,
   "license": "MIT",
@@ -24,7 +24,10 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": ["ariakit", "core"],
+  "keywords": [
+    "ariakit",
+    "core"
+  ],
   "exports": {
     ".": "./src/index.ts",
     "./utils/undo": "./src/utils/undo.ts",

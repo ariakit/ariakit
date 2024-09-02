@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.4.3
+
+- Updated dependencies: `@ariakit/core@0.4.10`
+
 ## 0.4.2
 
 - Updated dependencies: `@ariakit/core@0.4.9`
