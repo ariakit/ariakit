@@ -192,7 +192,7 @@
     "unist-util-visit": "5.0.0",
     "use-local-storage-state": "19.4.0",
     "vitest": "2.0.5",
-    "vitest-fail-on-console": "0.7.0",
+    "vitest-fail-on-console": "0.7.1",
     "webpack": "5.94.0",
     "zod": "3.23.8"
   }
