@@ -203,6 +203,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
           {preserveTabOrder && portalNode && (
             <FocusTrap
               ref={innerBeforeRef}
+              data-focus-trap={props.id}
               className="__focus-trap-inner-before"
               onFocus={(event) => {
                 if (isFocusEventOutside(event, portalNode)) {
@@ -217,6 +218,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
           {preserveTabOrder && portalNode && (
             <FocusTrap
               ref={innerAfterRef}
+              data-focus-trap={props.id}
               className="__focus-trap-inner-after"
               onFocus={(event) => {
                 if (isFocusEventOutside(event, portalNode)) {
@@ -239,6 +241,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
           {preserveTabOrder && portalNode && (
             <FocusTrap
               ref={outerBeforeRef}
+              data-focus-trap={props.id}
               className="__focus-trap-outer-before"
               onFocus={(event) => {
                 // If the event is coming from the outer after focus trap, it
@@ -262,6 +265,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
           {preserveTabOrder && portalNode && (
             <FocusTrap
               ref={outerAfterRef}
+              data-focus-trap={props.id}
               className="__focus-trap-outer-after"
               onFocus={(event) => {
                 if (isFocusEventOutside(event, portalNode)) {
