@@ -2,16 +2,16 @@ import { query } from "@ariakit/test/playwright";
 import { screenshot, test } from "../test-utils.ts";
 
 test("generate images", async ({ page }) => {
-  const q = query(page);
-  await q.combobox().click();
-  await q.combobox().fill("en");
+  await page.setViewportSize({ width: 800, height: 1100 });
 
-  const select = q.combobox("Language", { includeHidden: true }).first();
+  const q = query(page);
+  const button = q.button("Edit profile", { includeHidden: true });
+  await button.click();
 
   await screenshot({
     page,
     name: "small",
-    elements: [select, q.dialog()],
+    elements: [q.dialog()],
     padding: 24,
     width: 148,
     height: "auto",
@@ -21,7 +21,7 @@ test("generate images", async ({ page }) => {
   await screenshot({
     page,
     name: "medium",
-    elements: [select, q.dialog()],
+    elements: [button, q.dialog()],
     padding: 24,
     paddingTop: 44,
     height: "auto",
@@ -31,6 +31,6 @@ test("generate images", async ({ page }) => {
   await screenshot({
     page,
     name: "large",
-    elements: [select, q.dialog()],
+    elements: [button, q.dialog()],
   });
 });

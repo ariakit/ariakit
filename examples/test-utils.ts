@@ -66,7 +66,9 @@ export async function screenshot({
     Promise.all(
       document.body
         .getAnimations({ subtree: true })
-        .map((animation) => animation.finished),
+        .map(
+          (animation) => animation.playState === "paused" || animation.finished,
+        ),
     ),
   );
 
@@ -123,7 +125,6 @@ export async function screenshot({
       clip,
       caret: "initial",
       omitBackground: true,
-      animations: "disabled",
       style,
     });
   }

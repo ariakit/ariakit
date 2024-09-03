@@ -3,34 +3,33 @@ import { screenshot, test } from "../test-utils.ts";
 
 test("generate images", async ({ page }) => {
   const q = query(page);
-  await q.combobox().click();
-  await q.combobox().fill("en");
-
-  const select = q.combobox("Language", { includeHidden: true }).first();
+  await q.button().click();
+  await q.textbox().fill("Hello");
+  await page.keyboard.press("Escape");
+  await q.dialog("Save post?").click();
 
   await screenshot({
     page,
     name: "small",
-    elements: [select, q.dialog()],
-    padding: 24,
-    width: 148,
+    elements: [q.dialog("Save post?")],
+    paddingTop: 36,
+    paddingLeft: 24,
+    width: 160,
     height: "auto",
-    transparent: false,
   });
 
   await screenshot({
     page,
     name: "medium",
-    elements: [select, q.dialog()],
-    padding: 24,
-    paddingTop: 44,
+    elements: [q.dialog("Save post?")],
+    paddingTop: 96,
+    padding: 40,
     height: "auto",
-    transparent: false,
   });
 
   await screenshot({
     page,
     name: "large",
-    elements: [select, q.dialog()],
+    elements: [q.dialog("Post", { exact: true }), q.dialog("Save post?")],
   });
 });
