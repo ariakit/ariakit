@@ -62,3 +62,11 @@ test("hide both menu and dialog by clicking outside dialog", async () => {
   expect(q.menu()).not.toBeInTheDocument();
   expect(q.button("View recipe")).toHaveFocus();
 });
+
+test("move back to menu button with Shift+Tab", async () => {
+  await click(q.button("View recipe"));
+  await click(q.button("Share"));
+  expect(q.menu()).toBeVisible();
+  await press.ShiftTab();
+  expect(q.button("Share")).toHaveFocus();
+});

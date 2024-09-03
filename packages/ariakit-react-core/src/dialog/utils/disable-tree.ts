@@ -3,6 +3,7 @@ import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { chain, noop } from "@ariakit/core/utils/misc";
 import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.ts";
 import { isBackdrop } from "./is-backdrop.ts";
+import { isFocusTrap } from "./is-focus-trap.ts";
 import {
   assignStyle,
   orchestrate,
@@ -58,6 +59,9 @@ export function disableTreeOutside(id: string, elements: Elements) {
     elements,
     (element) => {
       if (isBackdrop(element, ...ids)) return;
+      // Ignore focus trap elements connected to any of the dialog elements. See
+      // dialog-menu "move back to menu button with Shift+Tab" test.
+      if (isFocusTrap(element, ...ids)) return;
       cleanups.unshift(disableTree(element, elements));
     },
     (element) => {

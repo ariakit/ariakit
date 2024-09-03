@@ -195,6 +195,7 @@
     "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
     "./dialog/utils/orchestrate": "./src/dialog/utils/orchestrate.ts",
     "./dialog/utils/mark-tree-outside": "./src/dialog/utils/mark-tree-outside.ts",
+    "./dialog/utils/is-focus-trap": "./src/dialog/utils/is-focus-trap.ts",
     "./dialog/utils/is-backdrop": "./src/dialog/utils/is-backdrop.ts",
     "./dialog/utils/disable-tree": "./src/dialog/utils/disable-tree.ts",
     "./dialog/utils/disable-accessibility-tree-outside": "./src/dialog/utils/disable-accessibility-tree-outside.ts",
