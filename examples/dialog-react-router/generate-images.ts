@@ -3,34 +3,33 @@ import { screenshot, test } from "../test-utils.ts";
 
 test("generate images", async ({ page }) => {
   const q = query(page);
-  await q.combobox().click();
-  await q.combobox().fill("en");
-
-  const select = q.combobox("Language", { includeHidden: true }).first();
+  const link = q.link("Post", { includeHidden: true });
+  await link.click();
 
   await screenshot({
     page,
     name: "small",
-    elements: [select, q.dialog()],
+    elements: [q.dialog()],
     padding: 24,
-    width: 148,
+    width: 160,
     height: "auto",
-    transparent: false,
   });
+
+  await page.setViewportSize({ width: 332, height: 970 });
 
   await screenshot({
     page,
     name: "medium",
-    elements: [select, q.dialog()],
-    padding: 24,
-    paddingTop: 44,
+    elements: [link, q.dialog()],
+    padding: 40,
     height: "auto",
-    transparent: false,
   });
+
+  await page.setViewportSize({ width: 800, height: 1340 });
 
   await screenshot({
     page,
     name: "large",
-    elements: [select, q.dialog()],
+    elements: [link, q.dialog()],
   });
 });

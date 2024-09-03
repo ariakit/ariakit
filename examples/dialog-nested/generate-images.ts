@@ -3,34 +3,31 @@ import { screenshot, test } from "../test-utils.ts";
 
 test("generate images", async ({ page }) => {
   const q = query(page);
-  await q.combobox().click();
-  await q.combobox().fill("en");
-
-  const select = q.combobox("Language", { includeHidden: true }).first();
+  await q.button().click();
+  await q.button("Remove").first().click();
 
   await screenshot({
     page,
     name: "small",
-    elements: [select, q.dialog()],
-    padding: 24,
-    width: 148,
+    elements: [q.dialog("Remove")],
+    paddingTop: -64,
+    paddingLeft: 24,
+    width: 163,
     height: "auto",
-    transparent: false,
   });
 
   await screenshot({
     page,
     name: "medium",
-    elements: [select, q.dialog()],
+    elements: [q.dialog("Remove")],
     padding: 24,
-    paddingTop: 44,
+    paddingY: 40,
     height: "auto",
-    transparent: false,
   });
 
   await screenshot({
     page,
     name: "large",
-    elements: [select, q.dialog()],
+    elements: [q.dialog("Shopping Cart"), q.dialog("Remove")],
   });
 });
