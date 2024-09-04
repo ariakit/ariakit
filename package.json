@@ -151,7 +151,7 @@
     "patch-package": "8.0.0",
     "postcss": "8.4.41",
     "postcss-combine-duplicated-selectors": "10.0.3",
-    "postcss-discard-comments": "7.0.2",
+    "postcss-discard-comments": "7.0.3",
     "postcss-import": "16.1.0",
     "postcss-merge-selectors": "0.0.6",
     "postcss-prettify": "0.3.4",
