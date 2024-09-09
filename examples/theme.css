@@ -241,8 +241,22 @@
     --option-background: var(--color-primary);
   }
 
+  /* Backdrop */
+  .backdrop {
+    @apply
+      [--background:theme(colors.black/10%)]
+      dark:[--background:theme(colors.black/30%)]
+  }
+
+  /* Modal */
+  .modal {
+    --inset: theme(spacing.3);
+    --inset-block: var(--inset, theme(spacing.3));
+    --inset-inline: var(--inset, theme(spacing.3));
+  }
+
   /* Tabs */
-  .tabs-border {
+  .tab-border {
     --border-size: 1px;
     @apply
       [--border:oklch(from_var(--background)_calc(l-.15)_c_h)]
@@ -253,12 +267,27 @@
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
-      hover:[&:not([aria-selected=true])]:[--background:theme(colors.black/8%)]
-      dark:hover:[&:not([aria-selected=true])]:[--background:theme(colors.white/8%)]
+      hover:[&:not([data-selected])]:[--tab-background:theme(colors.black/8%)]
+      dark:hover:[&:not([data-selected])]:[--tab-background:theme(colors.white/8%)]
   }
 
-  .tab-default[aria-selected="false"] {
+  .tab-default:not([data-selected]) {
     --border: transparent;
+  }
+
+  .tab-chip {
+    --accent-background: var(--color-primary);
+    --accent-text: var(--color-white);
+    @apply
+      hover:[&:not([data-selected])]:[--tab-background:theme(colors.black/8%)]
+      dark:hover:[&:not([data-selected])]:[--tab-background:theme(colors.white/8%)]
+  }
+
+  .tab-chip[data-selected] {
+    --border: transparent;
+    @apply
+      [--tab-background:oklch(from_var(--background)_calc(l-.1)_c_h)]
+      dark:[--tab-background:oklch(from_var(--background)_calc(l+.1)_c_h)]
   }
 
   /* ---------------- Components ---------------- */
@@ -389,10 +418,34 @@
   }
 
   .popup-cover {
+    --negative-margin: calc(var(--padding) * -1);
+
     padding: var(--padding);
-    margin: calc(var(--padding) * -1);
+    margin-inline: var(--negative-margin);
     scroll-padding: var(--padding);
     overflow: hidden;
+
+    &:first-child {
+      margin-block-start: var(--negative-margin);
+    }
+
+    &:last-child {
+      margin-block-end: var(--negative-margin);
+    }
+  }
+
+  .popup-layer {
+    background-color: var(--background);
+  }
+
+  .popup-enter {
+    transform-origin: var(--popover-transform-origin);
+    @apply motion-safe:transition-[opacity,scale]
+  }
+
+  .popup-enter:not([data-enter]) {
+    opacity: 0;
+    scale: .95;
   }
 
   /* Option */
@@ -408,21 +461,38 @@
     border-radius: calc(var(--rounded) - var(--padding));
   }
 
+  /* Backdrop */
+  .backdrop {
+    z-index: 50;
+    background-color: var(--background);
+    backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+  .backdrop-enter {
+    @apply motion-safe:transition-opacity
+  }
+
+  .backdrop-enter:not([data-enter]) {
+    opacity: 0;
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: var(--inset-block, 0) var(--inset-inline, 0);
+    margin: 0 auto;
+    height: fit-content;
+    max-height: calc(var(--dialog-viewport-height, 100vh) - 2 * var(--inset-block, 0));
+    max-width: calc(100vw - 2 * var(--inset-inline, 0));
+    overflow: auto;
+  }
+
   /* Popover */
   .popover {
     min-width: max(180px, calc(var(--popover-anchor-width) + 0.5rem));
     max-width: min(480px, var(--popover-available-width));
     max-height: min(480px, var(--popover-available-height));
-  }
-
-  .popover-enter {
-    transform-origin: var(--popover-transform-origin);
-    @apply motion-safe:transition-[opacity,scale]
-  }
-
-  .popover-enter:not([data-enter]) {
-    opacity: 0;
-    scale: .95;
   }
 
   /* Kbd */
@@ -453,18 +523,18 @@
     cursor: default;
     user-select: none;
     white-space: nowrap;
-    background-color: var(--background, transparent);
+    background-color: var(--tab-background, var(--popup-background, var(--background, transparent)));
     border-color: var(--border, transparent);
     border-width: var(--border-size, 0px) var(--border-size, 0px);
-    border-block-end-color: transparent;
     translate: 0 var(--border-size, 0px);
   }
 
-  .tab[aria-selected="true"] {
+  .tab[aria-disabled] {
+    opacity: 0.5;
+  }
+
+  .tab[data-selected] {
     z-index: 20;
-    box-shadow:
-      inset 0 0 0 4px var(--background),
-      inset 0 -2px 0 4px var(--background);
   }
 
   .tab[data-focus-visible] {
@@ -472,7 +542,7 @@
     color: var(--accent-text);
   }
 
-  .tab[data-focus-visible]:not([aria-selected="true"]) {
+  .tab[data-focus-visible]:not([data-selected]) {
     --background: var(--accent-background);
   }
 
@@ -483,6 +553,7 @@
     --padding-block: theme(spacing.1);
     --margin-block-end: calc(var(--padding-block) + var(--border-size, 0px) + 1px);
 
+    background-color: var(--tab-background, var(--background, transparent));
     border-radius: var(--corner-size);
     padding-block:
       var(--padding-block-start, var(--padding-block))
@@ -491,24 +562,29 @@
     margin: var(--margin);
     margin-block-end: var(--margin-block-end);
     background-clip: padding-box;
+    border-block-end-color: transparent;
     outline: none;
   }
 
-  .tab-default[aria-selected="true"] {
+  /* TODO: Make this tab-default-selected so users can do data-[selected]:tab-default-selected? */
+  .tab-default[data-selected] {
     --corner-size: calc(var(--rounded) - var(--padding));
     --padding-block: calc(theme(spacing.1) + var(--margin));
     --padding-block-end: var(--margin-block-end);
 
     margin: 0;
     padding-inline: theme(spacing.3);
+    box-shadow:
+      inset 0 0 0 4px var(--background),
+      inset 0 -2px 0 4px var(--background);
   }
 
-  .tab-default[aria-selected="false"]:not([data-focus-visible],:hover) {
+  .tab-default:not([data-selected],[data-focus-visible],:hover) {
     --background: var(--popup-background);
   }
 
-  .tab-default[aria-selected="true"]::before,
-  .tab-default[aria-selected="true"]::after {
+  .tab-default[data-selected]::before,
+  .tab-default[data-selected]::after {
     display: block;
   }
 
@@ -548,8 +624,14 @@
     background-position: 100%, 0;
   }
 
+  .tab-chip {
+    border-radius: 9999px;
+    padding-inline: theme(spacing.3);
+
+    --padding-block: theme(spacing.1);
+  }
+
   .tab-panel {
-    background-color: var(--background);
     padding: var(--padding);
     scroll-padding: var(--padding);
     box-shadow: 0 0 0 var(--border-size, 0px) var(--border, transparent);

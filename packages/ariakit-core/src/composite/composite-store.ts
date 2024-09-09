@@ -193,9 +193,16 @@ export function createCompositeStore<
     orientation: Orientation,
     hasNullItem: boolean,
     skip?: number,
+    passedActiveId?: string | null,
   ): string | null | undefined => {
-    const { activeId, rtl, focusLoop, focusWrap, includesBaseElement } =
-      composite.getState();
+    const {
+      activeId: stateActiveId,
+      rtl,
+      focusLoop,
+      focusWrap,
+      includesBaseElement,
+    } = composite.getState();
+    const activeId = passedActiveId ?? stateActiveId;
     // RTL doesn't make sense on vertical navigation
     const isHorizontal = orientation !== "vertical";
     const isRTL = rtl && isHorizontal;
@@ -289,14 +296,22 @@ export function createCompositeStore<
       findFirstEnabledItem(reverseArray(composite.getState().renderedItems))
         ?.id,
 
-    next: (skip) => {
+    next: (skipOrOptions) => {
       const { renderedItems, orientation } = composite.getState();
-      return getNextId(renderedItems, orientation, false, skip);
+      const skip =
+        typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
+      const activeId =
+        typeof skipOrOptions === "object" ? skipOrOptions.activeId : undefined;
+      return getNextId(renderedItems, orientation, false, skip, activeId);
     },
 
-    previous: (skip) => {
+    previous: (skipOrOptions) => {
       const { renderedItems, orientation, includesBaseElement } =
         composite.getState();
+      const skip =
+        typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
+      const activeId =
+        typeof skipOrOptions === "object" ? skipOrOptions.activeId : undefined;
       // If activeId is initially set to null or if includesBaseElement is set
       // to true, then the composite container will be focusable while
       // navigating with arrow keys. But, if it's a grid, we don't want to
@@ -308,6 +323,7 @@ export function createCompositeStore<
         orientation,
         hasNullItem,
         skip,
+        activeId,
       );
     },
 
@@ -592,7 +608,9 @@ export interface CompositeStoreFunctions<
    * const nextId = store.next();
    * const nextNextId = store.next(2);
    */
-  next: (skip?: number) => string | null | undefined;
+  next: (
+    skip?: number | { skip?: number; activeId?: string | null },
+  ) => string | null | undefined;
   /**
    * Returns the id of the previous enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -601,7 +619,9 @@ export interface CompositeStoreFunctions<
    * const previousId = store.previous();
    * const previousPreviousId = store.previous(2);
    */
-  previous: (skip?: number) => string | null | undefined;
+  previous: (
+    skip?: number | { skip?: number; activeId?: string | null },
+  ) => string | null | undefined;
   /**
    * Returns the id of the enabled item above based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)

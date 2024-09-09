@@ -68,25 +68,29 @@ export function Select({
         gutter={5}
         shift={-4}
         unmountOnHide
-        className="popup elevation-1 popover popover-enter flex flex-col gap-[9px] overflow-clip"
+        className="popup popup-enter elevation-1 popover flex flex-col overflow-clip"
       >
-        {heading && (
-          <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-[13px]">
-            <Ariakit.SelectHeading
-              className="cursor-default font-medium opacity-80"
-              render={
-                typeof heading === "string" ? <div>{heading}</div> : heading
-              }
-            />
-            <Ariakit.SelectDismiss className="focusable clickable rounded-item button button-secondary button-flat button-icon button-small opacity-70" />
+        {(heading || searchable) && (
+          <div className="flex flex-col gap-2">
+            {heading && (
+              <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-[13px]">
+                <Ariakit.SelectHeading
+                  className="cursor-default font-medium opacity-80"
+                  render={
+                    typeof heading === "string" ? <div>{heading}</div> : heading
+                  }
+                />
+                <Ariakit.SelectDismiss className="focusable clickable rounded-item button button-secondary button-flat button-icon button-small opacity-70" />
+              </div>
+            )}
+            {searchable && (
+              <Ariakit.Combobox
+                autoSelect
+                render={combobox}
+                className="focusable combobox input rounded-item h-10 w-full px-[13px]"
+              />
+            )}
           </div>
-        )}
-        {searchable && (
-          <Ariakit.Combobox
-            autoSelect
-            render={combobox}
-            className="focusable combobox input rounded-item -mb-1 h-10 w-full px-[13px]"
-          />
         )}
         <Ariakit.TabProvider
           selectedId={tab}
@@ -94,9 +98,7 @@ export function Select({
           defaultSelectedId={defaultTab}
           selectOnMove={selectTabOnMove}
         >
-          <div className="tabs-border popup-cover flex flex-col">
-            {children}
-          </div>
+          <div className="tab-border popup-cover flex flex-col">{children}</div>
         </Ariakit.TabProvider>
       </Ariakit.SelectPopover>
     </Ariakit.SelectProvider>
@@ -153,7 +155,7 @@ export function SelectTabPanel(props: SelectTabPanelProps) {
       unmountOnHide
       {...props}
       className={clsx(
-        "popup-layer popup-cover flex flex-col pt-[calc(var(--padding)*2)]",
+        "tab-panel popup-layer popup-cover flex flex-col",
         props.className,
       )}
     />
@@ -170,7 +172,7 @@ export function SelectList(props: SelectListProps) {
     <Component
       {...props}
       className={clsx(
-        "tab-panel popup-cover overflow-auto overscroll-contain outline-none",
+        "popup-cover overflow-auto overscroll-contain outline-none",
         props.className,
       )}
     />

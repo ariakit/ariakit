@@ -181,6 +181,10 @@ If you're styling Ariakit components, it's recommended to use the `[data-focus-v
 }
 ```
 
+### `[data-selected]`
+
+TODO
+
 ### `[data-user-value]`
 
 The `data-user-value` attribute is used on the `span` elements within [`ComboboxItemValue`](/reference/combobox-item-value) that correspond to the user's input. This is handy when you need to emphasize the matching segment of the item value.
@@ -204,6 +208,10 @@ The `data-autocomplete-value` attribute is applied to the `span` elements within
 ## CSS variables
 
 Some components, such as [Popover](/components/popover), [Menu](/components/menu), [Hovercard](/components/hovercard), [SelectPopover](/components/select), [ComboboxPopover](/components/combobox), among others, expose CSS variables that you can use to customize their appearance.
+
+### `--dialog-viewport-height`
+
+TODO
 
 ### `--popover-anchor-width`
 

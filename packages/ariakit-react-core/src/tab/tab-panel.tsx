@@ -1,8 +1,8 @@
-import { createTabStore } from "@ariakit/core/tab/tab-store";
+import { getScrollingElement } from "@ariakit/core/utils/dom";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ElementType, KeyboardEvent } from "react";
+import type { ElementType, KeyboardEvent, RefObject } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
@@ -16,6 +16,7 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -47,6 +48,8 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     unmountOnHide,
     tabId: tabIdProp,
     getItem: getItemProp,
+    scrollRestoration = false,
+    scrollElement,
     ...props
   }) {
     const context = useTabProviderContext();
@@ -60,6 +63,64 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
+
+    const tabId = useStoreState(
+      store.panels,
+      () => tabIdProp || store?.panels.item(id)?.tabId,
+    );
+
+    const open = useStoreState(
+      store,
+      (state) => !!tabId && state.selectedId === tabId,
+    );
+
+    // TODO: Comment
+    const scrollPositionRef = useRef<Map<string, { x: number; y: number }>>(
+      new Map(),
+    );
+
+    // TODO: Comment
+    const getScrollElement = useEvent(() => {
+      const panelElement = ref.current;
+      if (!panelElement) return null;
+      if (!scrollElement) {
+        return getScrollingElement(panelElement, true);
+      }
+      if (typeof scrollElement === "function") {
+        return scrollElement(panelElement);
+      }
+      if ("current" in scrollElement) {
+        return scrollElement.current;
+      }
+      return scrollElement;
+    });
+
+    // TODO: Comment
+    useEffect(() => {
+      if (!scrollRestoration) return;
+      if (!open) return;
+      const element = getScrollElement();
+      if (!element) return;
+      if (scrollRestoration === "reset") {
+        element.scrollTo(0, 0);
+        return;
+      }
+      if (!tabId) return;
+      const position = scrollPositionRef.current.get(tabId);
+      element.scrollTo(position?.x ?? 0, position?.y ?? 0);
+
+      const onScroll = () => {
+        scrollPositionRef.current.set(tabId, {
+          x: element.scrollLeft,
+          y: element.scrollTop,
+        });
+      };
+
+      element.addEventListener("scroll", onScroll, { passive: true });
+      return () => {
+        element.removeEventListener("scroll", onScroll);
+      };
+    }, [scrollRestoration, open, tabId, getScrollElement, store]);
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
@@ -87,23 +148,16 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!store?.composite) return;
-      // If the tab panel is part of another composite widget like a combobox,
-      // keyboard navigation is managed here. We need to recreate a tab store
-      // and provide the selected id as the active id. This is necessary because
-      // the original tab store may have the same active id as the external
-      // composite store, which might not be a valid tab id.
-      const state = store.getState();
-      const tab = createTabStore({ ...state, activeId: state.selectedId });
-      tab.setState("renderedItems", state.renderedItems);
       const keyMap = {
-        ArrowLeft: tab.previous,
-        ArrowRight: tab.next,
-        Home: tab.first,
-        End: tab.last,
+        ArrowLeft: store.previous,
+        ArrowRight: store.next,
+        Home: store.first,
+        End: store.last,
       };
       const action = keyMap[event.key as keyof typeof keyMap];
       if (!action) return;
-      const nextId = action();
+      const { selectedId } = store.getState();
+      const nextId = action({ activeId: selectedId });
       if (!nextId) return;
       event.preventDefault();
       store.move(nextId);
@@ -119,15 +173,8 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       [store],
     );
 
-    const tabId = store.panels.useState(
-      () => tabIdProp || store?.panels.item(id)?.tabId,
-    );
-    const open = store.useState(
-      (state) => !!tabId && state.selectedId === tabId,
-    );
-
     const disclosure = useDisclosureStore({ open });
-    const mounted = disclosure.useState("mounted");
+    const mounted = useStoreState(disclosure, "mounted");
 
     props = {
       id,
@@ -212,6 +259,17 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
   tabId?: string | null;
+  /**
+   * TODO: Document this prop.
+   */
+  scrollRestoration?: boolean | "reset";
+  /**
+   * TODO: Document this prop.
+   */
+  scrollElement?:
+    | HTMLElement
+    | RefObject<HTMLElement>
+    | ((panel: HTMLElement) => HTMLElement | null);
 }
 
 export type TabPanelProps<T extends ElementType = TagName> = Props<
