@@ -327,7 +327,7 @@ export function createCompositeStore<
       );
     },
 
-    down: (skip) => {
+    down: (skipOrOptions) => {
       const {
         activeId,
         renderedItems,
@@ -335,6 +335,8 @@ export function createCompositeStore<
         focusLoop,
         includesBaseElement,
       } = composite.getState();
+      const skip =
+        typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const shouldShift = focusShift && !skip;
       // First, we make sure rows have the same number of items by filling it
       // with disabled fake items. Then, we reorganize the items.
@@ -350,9 +352,11 @@ export function createCompositeStore<
       return getNextId(verticalItems, "vertical", hasNullItem, skip);
     },
 
-    up: (skip) => {
+    up: (skipOrOptions) => {
       const { activeId, renderedItems, focusShift, includesBaseElement } =
         composite.getState();
+      const skip =
+        typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const shouldShift = focusShift && !skip;
       const verticalItems = verticalizeItems(
         reverseArray(
@@ -630,7 +634,9 @@ export interface CompositeStoreFunctions<
    * const upId = store.up();
    * const upUpId = store.up(2);
    */
-  up: (skip?: number) => string | null | undefined;
+  up: (
+    skip?: number | { skip?: number; activeId?: string | null },
+  ) => string | null | undefined;
   /**
    * Returns the id of the enabled item below based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -639,7 +645,9 @@ export interface CompositeStoreFunctions<
    * const downId = store.down();
    * const downDownId = store.down(2);
    */
-  down: (skip?: number) => string | null | undefined;
+  down: (
+    skip?: number | { skip?: number; activeId?: string | null },
+  ) => string | null | undefined;
   /**
    * Returns the id of the first enabled item.
    */
