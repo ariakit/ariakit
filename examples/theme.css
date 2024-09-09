@@ -466,7 +466,6 @@
     z-index: 50;
     background-color: var(--background);
     backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
   }
 
   .backdrop-enter {
