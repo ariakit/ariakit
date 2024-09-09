@@ -12,7 +12,7 @@ import {
   CommandMenuTabList,
   CommandMenuTabPanel,
 } from "./command-menu.tsx";
-import "./style.css";
+import "./theme.css";
 
 const categories = ["All", ...Object.keys(pages)];
 
