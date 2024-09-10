@@ -7,17 +7,17 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Ariakit.TagProvider values={values} setValues={setValues}>
-        <Ariakit.TagListLabel className="tag-list-label">
+        <Ariakit.TagListLabel className="ak-tag-list-label">
           Tags
         </Ariakit.TagListLabel>
-        <Ariakit.TagList className="tag-list input focusable">
+        <Ariakit.TagList className="ak-tag-list input focusable">
           {values.map((value) => (
-            <Ariakit.Tag key={value} value={value} className="tag">
+            <Ariakit.Tag key={value} value={value} className="ak-tag">
               {value}
-              <Ariakit.TagRemove className="tag-remove" />
+              <Ariakit.TagRemove className="ak-tag-remove" />
             </Ariakit.Tag>
           ))}
-          <Ariakit.TagInput className="tag-input" />
+          <Ariakit.TagInput className="ak-tag-input" />
         </Ariakit.TagList>
       </Ariakit.TagProvider>
     </div>

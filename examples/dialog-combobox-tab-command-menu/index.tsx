@@ -44,7 +44,7 @@ export default function Example() {
     <>
       <Button
         onClick={() => setOpen(true)}
-        className="focusable clickable button button-default"
+        className="ak-focusable ak-clickable ak-button ak-button-default"
       >
         Open Command Menu
       </Button>

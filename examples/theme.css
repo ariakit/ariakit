@@ -21,28 +21,28 @@
   }
 
   /* Applies outline to focusable elements when they receive keyboard focus */
-  .focusable {
+  .ak-focusable {
     --outline-offset: 0;
     --outline: var(--color-primary);
   }
 
   /* Applies padding to clickable elements when they are active to simulate
   depth. */
-  .clickable {
+  .ak-clickable {
     --depth: 1px;
     --padding-block: initial;
   }
 
   /* Button */
-  .button {
+  .ak-button {
     --size: theme(spacing.10);
   }
 
-  .button-small {
+  .ak-button-small {
     @apply sm:[--size:theme(spacing.8)]
   }
 
-  .button-default {
+  .ak-button-default {
     --depth: 2px;
     --outline-offset: -1px;
     @apply
@@ -64,7 +64,7 @@
       hover:[&:not(:active)]:dark:[--border:theme(colors.white/25%)]
   }
 
-  .button-primary {
+  .ak-button-primary {
     --depth: 2px;
     --outline-offset: 2px;
     @apply
@@ -88,7 +88,7 @@
       hover:[&:not(:active)]:dark:[--border:theme(colors.white/40%)]
   }
 
-  .button-danger {
+  .ak-button-danger {
     @apply
       [--depth:2px]
       [--outline-offset:2px]
@@ -113,7 +113,7 @@
       hover:[&:not(:active)]:dark:[--border:theme(colors.white/40%)]
   }
 
-  .button-secondary {
+  .ak-button-secondary {
     @apply
       [--text:theme(colors.current)]
       [--background:theme(colors.transparent)]
@@ -133,7 +133,7 @@
       hover:[&:not(:active)]:dark:[--border:theme(colors.white/25%)]
   }
 
-  .button-flat {
+  .ak-button-flat {
     @apply
       [--depth:1px]
       [--border:none]
@@ -145,7 +145,7 @@
   }
 
   /* Input */
-  .input {
+  .ak-input {
     --outline-offset: -1px;
     --background: var(--popup-background);
     --border-size: 1px;
@@ -165,8 +165,8 @@
       dark:[--light:theme(colors.white/10%)]
   }
 
-  .input[placeholder],
-  .input:has([placeholder]) {
+  .ak-input[placeholder],
+  .ak-input:has([placeholder]) {
     @apply
       [--border:oklch(from_var(--background)_calc(l-.2)_c_h)]
       hover:[--border:oklch(from_var(--background)_calc(l-.42)_c_h)]
@@ -178,14 +178,14 @@
   /* Applies rounded corners and padding to an element. The rounded-item class
   can be used on descendants to automatically adjust their border-radius based
   on the container's padding and border-radius. */
-  .rounded-container {
+  .ak-rounded-container {
     --padding: theme(spacing.1);
     --rounded: theme(borderRadius.xl);
   }
 
   /* Applies styles that are common to popups, such as padding, border, shadow,
   and a lighter background color. */
-  .popup {
+  .ak-popup {
     --padding: theme(spacing.1);
     --rounded: theme(borderRadius.xl);
     --popup-background: var(--background);
@@ -202,19 +202,19 @@
       dark:[--shadow-size:0_6px_12px_-4px]
   }
 
-  .popup:has(.popup-layer) {
+  .ak-popup:has(.ak-popup-layer) {
     --popup-background: oklch(from var(--background) calc(l - .04) c h);
   }
 
   /* Applies styles to simulate depth, usually combined with the popup class. */
-  .elevation-1 {
+  .ak-elevation-1 {
     --shadow: theme(colors.black/20%);
     @apply
       [--shadow-size:0_8px_16px_-6px]
       dark:[--shadow-size:0_12px_24px_-6px]
   }
 
-  .elevation-2 {
+  .ak-elevation-2 {
     --shadow: theme(colors.black/15%);
     @apply
       [--shadow-size:0_16px_32px_-6px]
@@ -223,47 +223,47 @@
 
   /* Applies styles to option elements, which are typically used within elements
   with a popup class. */
-  .option {
+  .ak-option {
     @apply
       [--option-background:transparent]
       data-[active-item]:[--option-background:theme(colors.black/8%)]
       dark:data-[active-item]:[--option-background:theme(colors.white/8%)]
   }
 
-  .option[data-active-item] {
+  .ak-option[data-active-item] {
     @apply
       [--option-background:theme(colors.black/8%)]
       dark:[--option-background:theme(colors.white/8%)]
   }
 
-  .option[data-active-item][data-focus-visible] {
+  .ak-option[data-active-item][data-focus-visible] {
     --text: var(--color-white);
     --option-background: var(--color-primary);
   }
 
   /* Backdrop */
-  .backdrop {
+  .ak-backdrop {
     @apply
       [--background:theme(colors.black/10%)]
       dark:[--background:theme(colors.black/30%)]
   }
 
   /* Modal */
-  .modal {
+  .ak-modal {
     --inset: theme(spacing.3);
     --inset-block: var(--inset, theme(spacing.3));
     --inset-inline: var(--inset, theme(spacing.3));
   }
 
   /* Tabs */
-  .tab-border {
+  .ak-tab-border {
     --border-size: 1px;
     @apply
       [--border:oklch(from_var(--background)_calc(l-.15)_c_h)]
       dark:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
   }
 
-  .tab-default {
+  .ak-tab-default {
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
@@ -271,11 +271,11 @@
       dark:hover:[&:not([data-selected])]:[--tab-background:theme(colors.white/8%)]
   }
 
-  .tab-default:not([data-selected]) {
+  .ak-tab-default:not([data-selected]) {
     --border: transparent;
   }
 
-  .tab-chip {
+  .ak-tab-chip {
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
@@ -283,7 +283,7 @@
       dark:hover:[&:not([data-selected])]:[--tab-background:theme(colors.white/8%)]
   }
 
-  .tab-chip[data-selected] {
+  .ak-tab-chip[data-selected] {
     --border: transparent;
     @apply
       [--tab-background:oklch(from_var(--background)_calc(l-.1)_c_h)]
@@ -293,22 +293,22 @@
   /* ---------------- Components ---------------- */
 
   /* Focusable */
-  .focusable {
+  .ak-focusable {
     outline-width: 2px;
     outline-color: var(--outline);
     outline-offset: var(--outline-offset);
   }
 
-  .focusable[data-focus-visible] {
+  .ak-focusable[data-focus-visible] {
     outline-style: solid;
   }
 
-  .focusable[aria-disabled="true"] {
+  .ak-focusable[aria-disabled="true"] {
     opacity: 0.5;
   }
 
   /* Clickable */
-  .clickable {
+  .ak-clickable {
     user-select: none;
     white-space: nowrap;
     padding-block:
@@ -316,15 +316,15 @@
       var(--padding-block-end, var(--padding-block));
   }
 
-  .clickable:active,
-  .clickable[data-active] {
+  .ak-clickable:active,
+  .ak-clickable[data-active] {
     padding-block:
       calc(var(--padding-block-start, var(--padding-block, 0px)) + var(--depth, 0px))
       calc(var(--padding-block-end, var(--padding-block, 0px)) - var(--depth, 0px));
   }
 
   /* Button */
-  .button {
+  .ak-button {
     display: flex;
     max-width: 100%;
     height: var(--size);
@@ -344,14 +344,14 @@
       dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--light)]
   }
 
-  .button:active,
-  .button[data-active] {
+  .ak-button:active,
+  .ak-button[data-active] {
     @apply
       [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--border)]
       dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_1px_1px_1px_var(--shadow)]
   }
 
-  .button-small {
+  .ak-button-small {
     @apply
       sm:text-sm
       sm:[padding-inline:theme(spacing.3)]
@@ -365,7 +365,7 @@
   }
 
   /* Input */
-  .input {
+  .ak-input {
     cursor: text;
     flex: none;
     background-color: var(--input-background);
@@ -375,39 +375,39 @@
       inset 0 2px 5px 0 var(--shadow);
   }
 
-  .input:focus-within {
+  .ak-input:focus-within {
     outline-style: solid;
   }
 
-  .input::placeholder,
-  .input ::placeholder {
+  .ak-input::placeholder,
+  .ak-input ::placeholder {
     @apply
       text-[oklch(from_var(--input-background)_calc(l-.44)_0_0deg)]
       dark:text-[oklch(from_var(--input-background)_calc(l+.42)_0_0deg)]
   }
 
   /* Combobox */
-  .combobox {
+  .ak-combobox {
     outline-width: 1px;
   }
 
-  .combobox[data-active-item] {
+  .ak-combobox[data-active-item] {
     outline-width: 2px;
   }
 
   /* Rounded */
-  .rounded-container {
+  .ak-rounded-container {
     padding: var(--padding);
     border-radius: var(--rounded);
   }
 
-  .rounded-item {
+  .ak-rounded-item {
     scroll-margin: var(--padding);
     border-radius: calc(var(--rounded) - var(--padding));
   }
 
   /* Popup */
-  .popup {
+  .ak-popup {
     z-index: 50;
     outline: none;
     padding: var(--padding);
@@ -417,7 +417,7 @@
     box-shadow: 0 0 0 1px var(--border), var(--shadow-size) var(--shadow);
   }
 
-  .popup-cover {
+  .ak-popup-cover {
     --negative-margin: calc(var(--padding) * -1);
 
     padding: var(--padding);
@@ -434,22 +434,22 @@
     }
   }
 
-  .popup-layer {
+  .ak-popup-layer {
     background-color: var(--background);
   }
 
-  .popup-enter {
+  .ak-popup-enter {
     transform-origin: var(--popover-transform-origin);
     @apply motion-safe:transition-[opacity,scale]
   }
 
-  .popup-enter:not([data-enter]) {
+  .ak-popup-enter:not([data-enter]) {
     opacity: 0;
     scale: .95;
   }
 
   /* Option */
-  .option {
+  .ak-option {
     display: flex;
     align-items: center;
     background-color: var(--option-background, var(--background));
@@ -462,22 +462,22 @@
   }
 
   /* Backdrop */
-  .backdrop {
+  .ak-backdrop {
     z-index: 50;
     background-color: var(--background);
     backdrop-filter: blur(4px);
   }
 
-  .backdrop-enter {
+  .ak-backdrop-enter {
     @apply motion-safe:transition-opacity
   }
 
-  .backdrop-enter:not([data-enter]) {
+  .ak-backdrop-enter:not([data-enter]) {
     opacity: 0;
   }
 
   /* Modal */
-  .modal {
+  .ak-modal {
     position: fixed;
     inset: var(--inset-block, 0) var(--inset-inline, 0);
     margin: 0 auto;
@@ -488,14 +488,14 @@
   }
 
   /* Popover */
-  .popover {
+  .ak-popover {
     min-width: max(180px, calc(var(--popover-anchor-width) + 0.5rem));
     max-width: min(480px, var(--popover-available-width));
     max-height: min(480px, var(--popover-available-height));
   }
 
   /* Kbd */
-  .kbd {
+  .ak-kbd {
     display: inline-flex;
     align-items: center;
     font-family: var(--font-mono);
@@ -515,7 +515,7 @@
   }
 
   /* Tabs */
-  .tab {
+  .ak-tab {
     position: relative;
     display: inline-block;
     vertical-align: bottom;
@@ -528,24 +528,24 @@
     translate: 0 var(--border-size, 0px);
   }
 
-  .tab[aria-disabled] {
+  .ak-tab[aria-disabled] {
     opacity: 0.5;
   }
 
-  .tab[data-selected] {
+  .ak-tab[data-selected] {
     z-index: 20;
   }
 
-  .tab[data-focus-visible] {
+  .ak-tab[data-focus-visible] {
     background-color: var(--accent-background);
     color: var(--accent-text);
   }
 
-  .tab[data-focus-visible]:not([data-selected]) {
+  .ak-tab[data-focus-visible]:not([data-selected]) {
     --background: var(--accent-background);
   }
 
-  .tab-default {
+  .ak-tab-default {
     --border-smooth: .1px;
     --corner-size: calc(var(--rounded) - var(--padding) - 4px);
     --margin: theme(spacing.1);
@@ -566,7 +566,7 @@
   }
 
   /* TODO: Make this tab-default-selected so users can do data-[selected]:tab-default-selected? */
-  .tab-default[data-selected] {
+  .ak-tab-default[data-selected] {
     --corner-size: calc(var(--rounded) - var(--padding));
     --padding-block: calc(theme(spacing.1) + var(--margin));
     --padding-block-end: var(--margin-block-end);
@@ -578,17 +578,17 @@
       inset 0 -2px 0 4px var(--background);
   }
 
-  .tab-default:not([data-selected],[data-focus-visible],:hover) {
+  .ak-tab-default:not([data-selected],[data-focus-visible],:hover) {
     --background: var(--popup-background);
   }
 
-  .tab-default[data-selected]::before,
-  .tab-default[data-selected]::after {
+  .ak-tab-default[data-selected]::before,
+  .ak-tab-default[data-selected]::after {
     display: block;
   }
 
-  .tab-default::before,
-  .tab-default::after {
+  .ak-tab-default::before,
+  .ak-tab-default::after {
     --circle-left: circle at 0 0, var(--transparency);
     --circle-right: circle at 100% 0, var(--transparency);
     --transparency: transparent calc(var(--corner-size) - var(--border-size, 0px) + var(--border-smooth));
@@ -607,7 +607,7 @@
     background-repeat: no-repeat;
   }
 
-  .tab-default::before {
+  .ak-tab-default::before {
     right: calc(100% - var(--corner-size));
     background-image:
       radial-gradient(var(--circle-left), var(--tab-border), var(--tab-bg)),
@@ -615,7 +615,7 @@
     background-position: 0, 100%;
   }
 
-  .tab-default::after {
+  .ak-tab-default::after {
     left: calc(100% - var(--corner-size));
     background-image:
       radial-gradient(var(--circle-right), var(--tab-border), var(--tab-bg)),
@@ -623,14 +623,14 @@
     background-position: 100%, 0;
   }
 
-  .tab-chip {
+  .ak-tab-chip {
     border-radius: 9999px;
     padding-inline: theme(spacing.3);
 
     --padding-block: theme(spacing.1);
   }
 
-  .tab-panel {
+  .ak-tab-panel {
     padding: var(--padding);
     scroll-padding: var(--padding);
     box-shadow: 0 0 0 var(--border-size, 0px) var(--border, transparent);

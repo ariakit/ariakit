@@ -32,7 +32,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
         {...props}
         store={dialog}
         className={clsx(
-          "modal popup popup-enter elevation-2 flex flex-col sm:max-h-[480px] overflow-clip sm:[--inset-block:72px] max-sm:h-auto sm:w-[640px]",
+          "ak-modal ak-popup ak-popup-enter ak-elevation-2 flex flex-col sm:max-h-[480px] overflow-clip sm:[--inset-block:72px] max-sm:h-auto sm:w-[640px]",
           props.className,
         )}
       >
@@ -67,28 +67,28 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
             }}
           >
             {props.children}
-            <footer className="popup-cover popup-layer flex gap-3 text-sm flex-none mt-auto p-2 border-t border-[--border]">
+            <footer className="ak-popup-cover ak-popup-layer flex gap-3 text-sm flex-none mt-auto p-2 border-t border-[--border]">
               <div className="flex items-center gap-1">
-                <kbd className="kbd" aria-label="Up Arrow">
+                <kbd className="ak-kbd" aria-label="Up Arrow">
                   <ArrowIcon direction="up" />
                 </kbd>
-                <kbd className="kbd" aria-label="Down Arrow">
+                <kbd className="ak-kbd" aria-label="Down Arrow">
                   <ArrowIcon direction="down" />
                 </kbd>
-                {/* <kbd className="kbd" aria-label="Left Arrow">
+                {/* <kbd className="ak-kbd" aria-label="Left Arrow">
                   <ArrowIcon direction="left" />
                 </kbd>
-                <kbd className="kbd" aria-label="Right Arrow">
+                <kbd className="ak-kbd" aria-label="Right Arrow">
                   <ArrowIcon direction="right" />
                 </kbd> */}
                 to navigate
               </div>
               <div className="flex items-center gap-1">
-                <kbd className="kbd text-xs">Tab</kbd>
+                <kbd className="ak-kbd text-xs">Tab</kbd>
                 to switch tabs
               </div>
               <div className="flex items-center gap-1">
-                <kbd className="kbd" aria-label="Enter">
+                <kbd className="ak-kbd" aria-label="Enter">
                   <ReturnIcon />
                 </kbd>
                 to select
@@ -109,13 +109,13 @@ export const CommandMenuInput = forwardRef<
 >(function CommandMenuInput(props, ref) {
   const tab = Ariakit.useTabContext();
   return (
-    <div className="popup-cover grid grid-cols-[auto_max-content] border-b border-[--border] p-0 flex-none">
+    <div className="ak-popup-cover grid grid-cols-[auto_max-content] border-b border-[--border] p-0 flex-none">
       <Ariakit.Combobox
         ref={ref}
         autoSelect
         {...props}
         className={clsx(
-          "input rounded-item [box-shadow:none] bg-transparent outline-none p-3 py-[14px] text-[17px]",
+          "ak-input ak-rounded-item [box-shadow:none] bg-transparent outline-none p-3 py-[14px] text-[17px]",
           props.className,
         )}
         onKeyDown={(event) => {
@@ -131,7 +131,7 @@ export const CommandMenuInput = forwardRef<
           );
         }}
       />
-      <Ariakit.DialogDismiss className="focusable clickable rounded-item button button-small button-secondary button-flat">
+      <Ariakit.DialogDismiss className="ak-focusable ak-clickable ak-rounded-item ak-button ak-button-small ak-button-secondary ak-button-flat">
         Esc
       </Ariakit.DialogDismiss>
     </div>
@@ -165,7 +165,7 @@ export const CommandMenuTab = forwardRef<
       accessibleWhenDisabled={false}
       {...props}
       render={<Ariakit.Role.div render={props.render} />}
-      className={clsx("clickable tab tab-chip", props.className)}
+      className={clsx("ak-clickable ak-tab ak-tab-chip", props.className)}
     />
   );
 });
@@ -190,7 +190,10 @@ export const CommandMenuTabPanel = forwardRef<
       key={tabId}
       tabId={tabId}
       {...props}
-      className={clsx("tab-panel popup-cover flex flex-col", props.className)}
+      className={clsx(
+        "ak-tab-panel ak-popup-cover flex flex-col",
+        props.className,
+      )}
     />
   );
 });
@@ -204,7 +207,7 @@ export const CommandMenuList = forwardRef<HTMLDivElement, CommandMenuListProps>(
         ref={ref}
         {...props}
         className={clsx(
-          "popup-cover overflow-auto overscroll-contain",
+          "ak-popup-cover overflow-auto overscroll-contain",
           props.className,
         )}
       />
@@ -248,7 +251,7 @@ export const CommandMenuItem = forwardRef<HTMLDivElement, CommandMenuItemProps>(
         blurOnHoverEnd={false}
         {...props}
         className={clsx(
-          "option clickable [--padding-block:0.5rem]",
+          "ak-option ak-clickable [--padding-block:0.5rem]",
           props.className,
         )}
       />
