@@ -329,7 +329,7 @@ export function createCompositeStore<
 
     down: (skipOrOptions) => {
       const {
-        activeId,
+        activeId: stateActiveId,
         renderedItems,
         focusShift,
         focusLoop,
@@ -337,6 +337,10 @@ export function createCompositeStore<
       } = composite.getState();
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
+      const activeId =
+        typeof skipOrOptions === "object"
+          ? skipOrOptions.activeId
+          : stateActiveId;
       const shouldShift = focusShift && !skip;
       // First, we make sure rows have the same number of items by filling it
       // with disabled fake items. Then, we reorganize the items.
@@ -349,14 +353,22 @@ export function createCompositeStore<
       // Pressing down arrow key will only focus on the composite container if
       // loop is true, both, or vertical.
       const hasNullItem = canLoop && includesBaseElement;
-      return getNextId(verticalItems, "vertical", hasNullItem, skip);
+      return getNextId(verticalItems, "vertical", hasNullItem, skip, activeId);
     },
 
     up: (skipOrOptions) => {
-      const { activeId, renderedItems, focusShift, includesBaseElement } =
-        composite.getState();
+      const {
+        activeId: stateActiveId,
+        renderedItems,
+        focusShift,
+        includesBaseElement,
+      } = composite.getState();
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
+      const activeId =
+        typeof skipOrOptions === "object"
+          ? skipOrOptions.activeId
+          : stateActiveId;
       const shouldShift = focusShift && !skip;
       const verticalItems = verticalizeItems(
         reverseArray(
@@ -372,7 +384,7 @@ export function createCompositeStore<
       // If activeId is initially set to null, we'll always focus on the
       // composite container when the up arrow key is pressed in the first row.
       const hasNullItem = includesBaseElement;
-      return getNextId(verticalItems, "vertical", hasNullItem, skip);
+      return getNextId(verticalItems, "vertical", hasNullItem, skip, activeId);
     },
   };
 }
