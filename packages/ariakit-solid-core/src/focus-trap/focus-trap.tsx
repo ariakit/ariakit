@@ -24,7 +24,6 @@ export const useFocusTrap = createHook<TagName, FocusTrapOptions>(
         "data-focus-trap": "",
         tabIndex: 0,
         "aria-hidden": true,
-        ...props,
         style: {
           // Prevents unintended scroll jumps.
           position: "fixed",
