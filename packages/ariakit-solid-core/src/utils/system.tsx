@@ -1,7 +1,6 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import type { ValidComponent } from "solid-js";
+import { type ValidComponent, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import type { Role } from "../role/role.tsx";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 // TODO: implement `wrapElement` prop.
@@ -10,11 +9,16 @@ import type { HTMLProps, Hook, Options, Props } from "./types.ts";
  * `wrapElement` props.
  */
 export function createInstance(
-  Type: keyof typeof Role,
+  Component: ValidComponent,
   props: Props<ValidComponent, Options>,
 ) {
+  const [features, rest] = splitProps(props, ["render", "wrapElement"]);
   return (
-    <Dynamic {...props} component={(props.render as ValidComponent) ?? Type} />
+    // TODO: replace with LazyDynamic
+    <Dynamic
+      {...rest}
+      component={(features.render as ValidComponent) ?? Component}
+    />
   );
 }
 

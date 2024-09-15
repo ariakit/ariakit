@@ -45,6 +45,7 @@ export const As = new Proxy(
       if (!component) {
         component = function AsElement(props: any): JSX.Element {
           return ((parentProps: unknown) => (
+            // TODO: replace with LazyDynamic
             <Dynamic
               {...combineProps([parentProps, props], {
                 reverseEventHandlers: true,
