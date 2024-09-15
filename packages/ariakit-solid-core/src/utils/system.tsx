@@ -9,13 +9,13 @@ import type { HTMLProps, Hook, Options, Props } from "./types.ts";
  * Creates a Solid component instance that supports the `render` and
  * `wrapElement` props.
  */
-export function createElement(
+export function createInstance(
   Type: keyof typeof Role,
   props: Props<ValidComponent, Options>,
 ) {
   // TODO: can `render` and `wrapElement` be moved here from Role?
-  // This would be more consistent with the React implementation,
-  // and potentially allow Type to be the broader ValidComponent type.
+  // TODO: This would be more consistent with the React implementation,
+  // TODO: and potentially allow Type to be the broader ValidComponent type.
   return <Dynamic {...props} component={Role[Type]} />;
 }
 

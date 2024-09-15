@@ -1,6 +1,6 @@
 import { combineProps } from "@solid-primitives/props";
 import type { ValidComponent } from "solid-js";
-import { createElement, createHook } from "../utils/system.ts";
+import { createHook, createInstance } from "../utils/system.ts";
 import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "span" satisfies ValidComponent;
@@ -52,7 +52,7 @@ export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
  */
 export function VisuallyHidden(props: VisuallyHiddenProps) {
   const htmlProps = useVisuallyHidden(props);
-  return createElement(TagName, htmlProps);
+  return createInstance(TagName, htmlProps);
 }
 
 export interface VisuallyHiddenOptions<_T extends ValidComponent = TagName>
