@@ -1,0 +1,32 @@
+# Automatically generated
+# TODO: how? is there something else to set up for this to be generated?
+/button
+/checkbox
+/cjs
+/collection
+/combobox
+/command
+/composite
+/dialog
+/disclosure
+/esm
+/focus-trap
+/focusable
+/form
+/group
+/heading
+/hovercard
+/menu
+/menubar
+/popover
+/portal
+/radio
+/role
+/select
+/separator
+/tab
+/tag
+/toolbar
+/tooltip
+/utils
+/visually-hidden
