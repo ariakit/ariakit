@@ -13,7 +13,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
   function Select({ children, value, setValue, defaultValue, ...props }, ref) {
     const select = Ariakit.useSelectStore({ value, setValue, defaultValue });
     const portalRef = React.useRef<HTMLDivElement>(null);
-    const selectValue = select.useState("value");
+    const selectValue = Ariakit.useStoreState(select, "value");
 
     // Only call onBlur if the focus is leaving the whole widget.
     const onBlur = (event: React.FocusEvent<HTMLElement>) => {

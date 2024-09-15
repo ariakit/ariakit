@@ -1,3 +1,7 @@
+/**
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.org/plus/license
+ */
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
@@ -137,8 +141,11 @@ export function SelectTab(props: SelectTabProps) {
 export interface SelectTabPanelProps extends Ariakit.TabPanelProps {}
 
 export function SelectTabPanel(props: SelectTabPanelProps) {
-  const tab = Ariakit.useTabContext()!;
-  const tabId = tab.useState((state) => props.tabId || state.selectedId);
+  const tab = Ariakit.useTabContext();
+  const tabId = Ariakit.useStoreState(
+    tab,
+    (state) => props.tabId || state?.selectedId,
+  );
   return (
     <Ariakit.TabPanel
       key={tabId}

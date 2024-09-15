@@ -1,3 +1,7 @@
+/**
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.org/plus/license
+ */
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
@@ -82,10 +86,11 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   const menu = Ariakit.useMenuStore({ store: context });
   // Get the menu element rendered by the parent component (contentElement) and
   // use it as the portal element for this menu's contents.
-  const parentMenu = menu.useState("contentElement");
+  const parentMenu = Ariakit.useStoreState(menu, "contentElement");
   // Compare the menu button element with the current anchor element set when
   // the menu opens to ascertain whether the menu is open.
-  const open = menu.useState(
+  const open = Ariakit.useStoreState(
+    menu,
     (state) => state.mounted && state.anchorElement === menuButton,
   );
 

@@ -1,6 +1,7 @@
 import { join } from "node:path";
 import invariant from "tiny-invariant";
 import { FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
+import { getPageName } from "./get-page-name.js";
 
 const project = new Project({
   tsConfigFilePath: join(process.cwd(), "../tsconfig.json"),
@@ -206,11 +207,12 @@ function getProps(node) {
     if (isPrivate(decl)) continue;
     const description = getDescription(decl);
     if (!description) continue;
+    const type = getType(decl);
     props.push({
       name: prop.getEscapedName(),
-      type: getType(decl),
+      type,
       description,
-      optional: prop.isOptional(),
+      optional: prop.isOptional() || type.endsWith(" | undefined"),
       defaultValue: getDefaultValue(decl),
       deprecated: getDeprecated(decl),
       examples: getExamples(decl),
@@ -254,7 +256,11 @@ function getReference(filename, node, props, returnedProps) {
     ? node.getVariableStatementOrThrow()
     : node;
 
-  props = props || getFunction(node)?.getParameters()?.at(0);
+  const hasProps = getPageName(filename) !== "store";
+  if (hasProps) {
+    props = props || getFunction(node)?.getParameters()?.at(0);
+  }
+
   returnedProps =
     returnedProps ||
     (name.endsWith("Store")

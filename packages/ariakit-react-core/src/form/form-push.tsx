@@ -49,7 +49,7 @@ function getFirstFieldsByName(
  *   name: store.names.languages,
  *   value: "",
  * });
- * const values = store.useState("values");
+ * const values = useStoreState(store, "values");
  *
  * <Form store={store}>
  *   {values.languages.map((_, i) => (
@@ -144,7 +144,7 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
  *   },
  * });
  *
- * const values = form.useState("values");
+ * const values = useStoreState(form, "values");
  *
  * <Form store={form}>
  *   {values.languages.map((_, i) => (

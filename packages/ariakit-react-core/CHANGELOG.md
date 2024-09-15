@@ -1,5 +1,52 @@
 # @ariakit/react-core
 
+## 0.4.11
+
+### Tabs inside animated Combobox or Select
+
+When rendering [Tab](https://ariakit.org/components/tab) inside [Combobox](https://ariakit.org/components/combobox) or [Select](https://ariakit.org/components/select), it now waits for the closing animation to finish before restoring the tab with the selected item. This should prevent an inconsistent UI where the tab is restored immediately while the content is still animating out. See [Select with Combobox and Tabs](https://ariakit.org/examples/select-combobox-tab).
+
+### Other updates
+
+- Updated [Combobox](https://ariakit.org/components/combobox) to immediately reset the [`activeId`](https://ariakit.org/reference/use-combobox-store#activeid) upon closing the popover.
+- Removed delay when applying the [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible) attribute.
+- Fixed mouse down on [`MenuButton`](https://ariakit.org/reference/menu-button) hiding the menu on Safari.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.10`
+
+## 0.4.10
+
+- Fixed a regression introduced in `v0.4.8` that set the default value of the [`accessibleWhenDisabled`](https://ariakit.org/reference/tab#accessiblewhendisabled) prop to `false` on [`Tab`](https://ariakit.org/reference/tab).
+
+## 0.4.9
+
+### `aria-selected` on composite items
+
+Composite items like [`ComboboxItem`](https://ariakit.org/reference/combobox-item) no longer have the `aria-selected` attribute automatically set when focused. This attribute was previously used to address an old bug in Google Chrome, but it's no longer needed. Now, it's only set when the item is actually selected, such as in a select widget or a multi-selectable combobox.
+
+This change shouldn't affect most users since the `aria-selected` attribute is not part of the public API and is not recommended as a [CSS selector](https://ariakit.org/guide/styling#css-selectors) (use [`[data-active-item]`](https://ariakit.org/guide/styling#data-active-item) instead). However, if you have snapshot tests, you may need to update them.
+
+### Other updates
+
+- Removed `useControlledState` and `useRefId` hooks.
+- Added [`userValue`](https://ariakit.org/reference/combobox-item-value#uservalue) prop to [`ComboboxItemValue`](https://ariakit.org/reference/combobox-item-value).
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.9`
+
+## 0.4.8
+
+### Accessing selected tabs when disabled
+
+A [Tab](https://ariakit.org/components/tab) component that is both selected and disabled will now remain accessible to keyboard focus even if the [`accessibleWhenDisabled`](https://ariakit.org/reference/tab#accessiblewhendisabled) prop is set to `false`. This ensures users can navigate to other tabs using the keyboard.
+
+### Other updates
+
+- Fixed [Dialog](https://ariakit.org/components/dialog) to prevent smooth scrolling on hide.
+- Fixed [Hovercard](https://ariakit.org/components/hovercard) unexpectedly hiding when scrolling in Safari.
+- Added a README file to the package.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.8`
+
 ## 0.4.7
 
 - Added React 19 to peer dependencies.

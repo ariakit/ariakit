@@ -20,6 +20,7 @@ export * from "./radio.ts";
 export * from "./role.ts";
 export * from "./select.ts";
 export * from "./separator.ts";
+export * from "./store.ts";
 export * from "./tab.ts";
 export * from "./toolbar.ts";
 export * from "./tooltip.ts";

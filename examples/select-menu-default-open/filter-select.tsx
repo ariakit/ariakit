@@ -45,7 +45,7 @@ export const FilterSelect = React.forwardRef<
       }
     },
   });
-  const selectValue = select.useState("value");
+  const selectValue = Ariakit.useStoreState(select, "value");
   return (
     <div className="filter">
       <Ariakit.Select

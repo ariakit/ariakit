@@ -9,7 +9,7 @@ import { rehypeCodeMeta } from "@/lib/rehype-code-meta.ts";
 import { rehypeWrapHeadings } from "@/lib/rehype-wrap-headings.ts";
 import matter from "gray-matter";
 import type { ReactNode } from "react";
-import { Fragment, cache } from "react";
+import { Fragment } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
@@ -35,7 +35,7 @@ import { PageHovercard, PageHovercardProvider } from "./page-hovercard.tsx";
 import { PagePre } from "./page-pre.tsx";
 import { PageVideo } from "./page-video.tsx";
 
-export const getFile = cache((config: Page, page: string) => {
+export const getFile = (config: Page, page: string) => {
   const entryFiles = getPageEntryFilesCached(config);
   const file = config.reference
     ? [...entryFiles]
@@ -45,15 +45,15 @@ export const getFile = cache((config: Page, page: string) => {
         )
     : entryFiles.find((file) => getPageName(file) === page);
   return file;
-});
+};
 
-export const getContent = cache((config: Page, file: string, page: string) => {
+export const getContent = (config: Page, file: string, page: string) => {
   const reference = config.reference
     ? getReferences(file).find((reference) => getPageName(reference) === page)
     : undefined;
   if (config.reference && !reference) return;
   return getPageContent(reference || file);
-});
+};
 
 export interface PageMarkdownProps {
   category?: string;

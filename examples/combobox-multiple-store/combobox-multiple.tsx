@@ -41,7 +41,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
       defaultValue: defaultValues,
     });
 
-    const selectValue = select.useState("value");
+    const selectValue = Ariakit.useStoreState(select, "value");
 
     // Reset the combobox value whenever an item is checked or unchecked.
     useEffect(() => combobox.setValue(""), [selectValue, combobox]);

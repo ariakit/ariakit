@@ -19,7 +19,7 @@ export default function Example() {
 
   const combobox = Ariakit.useComboboxStore();
 
-  const searchValue = combobox.useState("value");
+  const searchValue = Ariakit.useStoreState(combobox, "value");
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
   const matches = React.useMemo(() => {

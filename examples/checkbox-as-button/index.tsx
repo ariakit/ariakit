@@ -1,9 +1,9 @@
-import { Checkbox, useCheckboxStore } from "@ariakit/react";
+import { Checkbox, useCheckboxStore, useStoreState } from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
   const checkbox = useCheckboxStore();
-  const label = checkbox.useState((state) =>
+  const label = useStoreState(checkbox, (state) =>
     state.value ? "Checked" : "Unchecked",
   );
   return (

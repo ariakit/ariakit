@@ -8,7 +8,7 @@ export default function Example() {
     placement: "bottom",
     setValueOnMove: true,
   });
-  const value = select.useState("value");
+  const value = Ariakit.useStoreState(select, "value");
 
   const renderItem = (value: string) => (
     <Ariakit.SelectItem

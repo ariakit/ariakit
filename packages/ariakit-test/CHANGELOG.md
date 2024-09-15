@@ -1,5 +1,22 @@
 # @ariakit/test
 
+## 0.4.3
+
+- Updated dependencies: `@ariakit/core@0.4.10`
+
+## 0.4.2
+
+- Updated dependencies: `@ariakit/core@0.4.9`
+
+## 0.4.1
+
+- Added a README file to the package.
+- Updated dependencies: `@ariakit/core@0.4.8`
+
+## 0.4.0
+
+- The `render` method now returns a promise of `{ unmount, rerender }` instead of just the `unmount` function.
+
 ## 0.3.16
 
 - Added React 19 to peer dependencies.

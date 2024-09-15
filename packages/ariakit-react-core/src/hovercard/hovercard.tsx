@@ -23,6 +23,7 @@ import { usePopover } from "../popover/popover.tsx";
 import {
   useBooleanEvent,
   useEvent,
+  useIsMouseMoving,
   useLiveRef,
   useMergeRefs,
   usePortalRef,
@@ -150,6 +151,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     const enterPointRef = useRef<Point | null>(null);
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
+    const isMouseMoving = useIsMouseMoving();
+
     const mayHideOnHoverOutside = !!hideOnHoverOutside;
     const hideOnHoverOutsideProp = useBooleanEvent(hideOnHoverOutside);
     const mayDisablePointerEvents = !!disablePointerEventsOnApproach;
@@ -170,6 +173,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       if (!element) return;
       const onMouseMove = (event: MouseEvent) => {
         if (!store) return;
+        if (!isMouseMoving()) return;
         const { anchorElement, hideTimeout, timeout } = store.getState();
         const enterPoint = enterPointRef.current;
         const [target] = event.composedPath() as Node[];
@@ -221,6 +225,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       );
     }, [
       store,
+      isMouseMoving,
       domReady,
       mounted,
       mayHideOnHoverOutside,

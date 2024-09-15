@@ -41,6 +41,7 @@ useComboboxContext()
   <Combobox />
   <ComboboxCancel />
   <ComboboxDisclosure />
+  <ComboboxValue />
   <ComboboxList />
   <ComboboxPopover>
     <ComboboxGroup>

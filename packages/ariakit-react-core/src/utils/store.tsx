@@ -22,6 +22,8 @@ import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.ts";
 export interface UseState<S> {
   /**
    * Re-renders the component when state changes and returns the current state.
+   * @deprecated Use
+   * [`useStoreState`](https://ariakit.org/reference/use-store-state) instead.
    * @example
    * const state = store.useState();
    */
@@ -31,6 +33,8 @@ export interface UseState<S> {
    * state given the passed key. Changes on other keys will not trigger a
    * re-render.
    * @param key The state key.
+   * @deprecated Use
+   * [`useStoreState`](https://ariakit.org/reference/use-store-state) instead.
    * @example
    * const foo = store.useState("foo");
    */
@@ -41,6 +45,8 @@ export interface UseState<S> {
    * be compared to the previous value. Returns the value returned by the
    * selector function.
    * @param selector The selector function.
+   * @deprecated Use
+   * [`useStoreState`](https://ariakit.org/reference/use-store-state) instead.
    * @example
    * const foo = store.useState((state) => state.foo);
    */
@@ -51,6 +57,40 @@ type StateStore<T = CoreStore> = T | null | undefined;
 type StateKey<T = CoreStore> = keyof StoreState<T>;
 
 const noopSubscribe = () => () => {};
+
+/**
+ * Receives an Ariakit store object (which can be `null` or `undefined`) and
+ * returns the current state. If a key is provided as the second argument, it
+ * returns the value of that key. If a selector function is provided, the state
+ * is passed to it, and its return value is used.
+ *
+ * The component using this hook will re-render when the returned value changes.
+ * @example
+ * Accessing the whole combobox state:
+ * ```js
+ * const combobox = Ariakit.useComboboxStore();
+ * const state = Ariakit.useStoreState(combobox);
+ * ```
+ * @example
+ * Accessing a specific value from the combobox state:
+ * ```js
+ * const combobox = Ariakit.useComboboxStore();
+ * const value = Ariakit.useStoreState(combobox, "value");
+ * ```
+ * @example
+ * Accessing a value using a selector function:
+ * ```js
+ * const combobox = Ariakit.useComboboxStore();
+ * const value = Ariakit.useStoreState(combobox, (state) => state.value);
+ * ```
+ * @example
+ * Accessing the state of a store that may be `null` or `undefined` (for
+ * example, using a context):
+ * ```js
+ * const combobox = Ariakit.useComboboxContext();
+ * const value = Ariakit.useStoreState(combobox, "value");
+ * ```
+ */
 
 export function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
 
@@ -179,6 +219,8 @@ export type Store<T extends CoreStore = CoreStore> = T & {
   /**
    * Re-renders the component when the state changes and returns the current
    * state.
+   * @deprecated Use
+   * [`useStoreState`](https://ariakit.org/reference/use-store-state) instead.
    */
   useState: UseState<StoreState<T>>;
 };

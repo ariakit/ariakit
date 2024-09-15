@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-core",
-  "version": "0.4.7",
+  "version": "0.4.11",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
@@ -26,7 +26,7 @@
   },
   "keywords": ["ariakit", "react", "core"],
   "dependencies": {
-    "@ariakit/core": "0.4.7",
+    "@ariakit/core": "0.4.10",
     "@floating-ui/dom": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
@@ -195,6 +195,7 @@
     "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
     "./dialog/utils/orchestrate": "./src/dialog/utils/orchestrate.ts",
     "./dialog/utils/mark-tree-outside": "./src/dialog/utils/mark-tree-outside.ts",
+    "./dialog/utils/is-focus-trap": "./src/dialog/utils/is-focus-trap.ts",
     "./dialog/utils/is-backdrop": "./src/dialog/utils/is-backdrop.ts",
     "./dialog/utils/disable-tree": "./src/dialog/utils/disable-tree.ts",
     "./dialog/utils/disable-accessibility-tree-outside": "./src/dialog/utils/disable-accessibility-tree-outside.ts",

@@ -18,3 +18,5 @@ export function query(locator: Page | Locator | FrameLocator) {
 
   return roleQueries;
 }
+
+export * from "@playwright/test";

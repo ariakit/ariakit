@@ -1,7 +1,9 @@
 import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { useEffect, useRef } from "react";
+import { isSafariFocusAncestor } from "../../focusable/focusable.tsx";
 import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.ts";
+import { useStoreState } from "../../utils/store.tsx";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";
 import { isElementMarked } from "./mark-tree-outside.ts";
@@ -53,7 +55,7 @@ function useEventOutside({
   domReady,
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
-  const open = store.useState("open");
+  const open = useStoreState(store, "open");
   const focusedRef = useRef(false);
 
   useSafeLayoutEffect(() => {
@@ -92,6 +94,12 @@ function useEventOutside({
       // don't stay open when new nodes are added to the DOM and focused.
       const focused = focusedRef.current;
       if (focused && !isElementMarked(target, contentElement.id)) return;
+      // Since Safari focuses on the closest focusable ancestor and we're not
+      // preventing it (see focusable.tsx), dialogs may close on mousedown on
+      // their disclosure buttons. So we check if the target of this focus event
+      // is triggered by the Safari behavior. See the dialog-menu "open/close
+      // menu by clicking on menu button" test.
+      if (isSafariFocusAncestor(target)) return;
       // Finally, if the target has been marked as "outside" or is an ancestor
       // of the content element, we call the listener.
       callListener(event);
@@ -115,7 +123,7 @@ export function useHideOnInteractOutside(
   hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
   domReady?: boolean | HTMLElement | null,
 ) {
-  const open = store.useState("open");
+  const open = useStoreState(store, "open");
   const previousMouseDownRef = usePreviousMouseDownRef(open);
   const props = { store, domReady, capture: true };
 

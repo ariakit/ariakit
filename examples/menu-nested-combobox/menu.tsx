@@ -1,3 +1,7 @@
+/**
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.org/plus/license
+ */
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
@@ -138,8 +142,6 @@ export interface MenuItemProps
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   function MenuItem({ name, value, ...props }, ref) {
     const menu = Ariakit.useMenuContext();
-    if (!menu) throw new Error("MenuItem must be used inside a Menu");
-
     const searchable = React.useContext(SearchableContext);
     const defaultProps: MenuItemProps = {
       ref,
@@ -149,15 +151,15 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
       className: clsx("menu-item", props.className),
     };
 
-    const checkable = menu.useState((state) => {
+    const checkable = Ariakit.useStoreState(menu, (state) => {
       if (!name) return false;
       if (value == null) return false;
-      return state.values[name] != null;
+      return state?.values[name] != null;
     });
 
-    const checked = menu.useState((state) => {
+    const checked = Ariakit.useStoreState(menu, (state) => {
       if (!name) return false;
-      return state.values[name] === value;
+      return state?.values[name] === value;
     });
 
     // If the item is checkable, we render a checkmark icon next to the label.
@@ -204,7 +206,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
           // selectedValue state of the combobox. However, since we're sharing
           // state between combobox and menu, we also need to update the menu's
           // values state.
-          menu.setValue(name, value);
+          menu?.setValue(name, value);
           return true;
         }}
         hideOnClick={(event) => {
@@ -215,7 +217,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
           // By default, clicking on a ComboboxItem only closes its own popover.
           // However, since we're in a menu context, we also close all parent
           // menus.
-          menu.hideAll();
+          menu?.hideAll();
           return true;
         }}
       />
