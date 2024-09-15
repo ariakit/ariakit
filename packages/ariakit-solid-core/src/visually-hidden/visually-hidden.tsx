@@ -1,6 +1,6 @@
 import { combineProps } from "@solid-primitives/props";
 import type { ValidComponent } from "solid-js";
-import { createHook, createInstance } from "../utils/system.ts";
+import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "span" satisfies ValidComponent;
