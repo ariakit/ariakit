@@ -175,6 +175,7 @@
     "rimraf": "6.0.1",
     "sharp": "0.33.5",
     "shiki": "1.14.1",
+    "solid-js": "1.8.22",
     "stripe": "16.8.0",
     "stylelint": "16.9.0",
     "stylelint-config-standard": "36.0.1",
