@@ -1,5 +1,7 @@
+import { combineProps } from "@solid-primitives/props";
 import type { Component, JSX, ValidComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
+import { createHook } from "../utils/system.ts";
 import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "div" satisfies ValidComponent;
@@ -40,7 +42,26 @@ type RoleElements = {
 };
 
 /**
- * Renders an abstract element that supports the `render` prop.
+ * Returns props to create a `Role` component.
+ * @see https://solid.ariakit.org/components/role
+ * @example
+ * ```jsx
+ * const props = useRole();
+ * <Role {...props} />
+ * ```
+ */
+export const useRole = createHook<TagName, RoleOptions>(
+  function useRole(props) {
+    // TODO: is this necessary?
+    return combineProps(props);
+  },
+);
+
+// TODO: implement `wrapElement` prop.
+/**
+ * Renders an abstract element that supports the `render` prop and a
+ * `wrapElement` prop that can be used to wrap the underlying component instance
+ * with Solid Portal, Context or other component types.
  * @see https://solid.ariakit.org/components/role
  * @example
  * ```jsx

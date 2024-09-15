@@ -40,3 +40,18 @@ export type Props<
   T extends ValidComponent,
   P extends AnyObject = EmptyObject,
 > = P & HTMLProps<T, P>;
+
+/**
+ * A component hook that supports the `render` prop and returns HTML props based
+ * on the element type.
+ * @template T The element type.
+ * @template P Custom props.
+ * @example
+ * type UseButton = Hook<"button", { custom?: boolean }>;
+ */
+export type Hook<
+  T extends ValidComponent,
+  P extends AnyObject = EmptyObject,
+> = <ElementType extends ValidComponent = T>(
+  props?: Props<ElementType, P>,
+) => HTMLProps<ElementType, P>;
