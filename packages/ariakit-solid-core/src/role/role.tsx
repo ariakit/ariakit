@@ -1,7 +1,7 @@
 import { combineProps } from "@solid-primitives/props";
 import type { Component, JSX, ValidComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { createHook } from "../utils/system.ts";
+import { createHook } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "div" satisfies ValidComponent;
