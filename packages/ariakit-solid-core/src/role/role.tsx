@@ -1,7 +1,6 @@
 import { combineProps } from "@solid-primitives/props";
 import type { Component, JSX, ValidComponent } from "solid-js";
-import { Dynamic } from "solid-js/web";
-import { createHook } from "../utils/system.tsx";
+import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "div" satisfies ValidComponent;
@@ -58,6 +57,7 @@ export const useRole = createHook<TagName, RoleOptions>(
 );
 
 // TODO: implement `wrapElement` prop.
+// TODO: adapt docs wording to be more accurate for Solid
 /**
  * Renders an abstract element that supports the `render` prop and a
  * `wrapElement` prop that can be used to wrap the underlying component instance
@@ -65,12 +65,12 @@ export const useRole = createHook<TagName, RoleOptions>(
  * @see https://solid.ariakit.org/components/role
  * @example
  * ```jsx
- * <Role render="button" renderProps={{ type: "button" }} />
+ * <Role render={<As.div />} />
  * ```
  */
-export const Role = function Role(props: any): JSX.Element {
-  return <Dynamic {...props} component={props.render ?? TagName} />;
-} as Component<RoleProps<"div">> & RoleElements;
+export const Role = function Role(props: RoleProps): JSX.Element {
+  return createInstance(TagName, props);
+} as Component<RoleProps> & RoleElements;
 
 Object.assign(
   Role,
@@ -78,12 +78,7 @@ Object.assign(
     acc[element] = function Role(
       props: RoleProps<typeof element>,
     ): JSX.Element {
-      return (
-        <Dynamic
-          {...props}
-          component={(props.render as ValidComponent) ?? element}
-        />
-      );
+      return createInstance(element, props);
     };
     return acc;
   }, {} as RoleElements),

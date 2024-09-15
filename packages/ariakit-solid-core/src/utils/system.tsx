@@ -1,7 +1,7 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import type { ValidComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { Role } from "../role/role.tsx";
+import type { Role } from "../role/role.tsx";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 // TODO: implement `wrapElement` prop.
@@ -13,10 +13,9 @@ export function createInstance(
   Type: keyof typeof Role,
   props: Props<ValidComponent, Options>,
 ) {
-  // TODO: can `render` and `wrapElement` be moved here from Role?
-  // TODO: This would be more consistent with the React implementation,
-  // TODO: and potentially allow Type to be the broader ValidComponent type.
-  return <Dynamic {...props} component={Role[Type]} />;
+  return (
+    <Dynamic {...props} component={(props.render as ValidComponent) ?? Type} />
+  );
 }
 
 /**
