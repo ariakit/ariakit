@@ -1,12 +1,7 @@
 import { combineProps } from "@solid-primitives/props";
 import { type MaybeAccessor, access } from "@solid-primitives/utils";
-import {
-  type Accessor,
-  type JSX,
-  type ValidComponent,
-  createUniqueId,
-} from "solid-js";
-import type { WrapElement } from "./types.ts";
+import { type Accessor, type ValidComponent, createUniqueId } from "solid-js";
+import type { WrapElement, WrapElementValue } from "./types.ts";
 
 /**
  * Generates a unique ID.
@@ -45,7 +40,7 @@ export function useTagName(
  */
 export function useWrapElement<P, Q = P & { wrapElement: WrapElement }>(
   props: P & { wrapElement?: WrapElement },
-  element: JSX.Element,
+  element: WrapElementValue,
 ): Q {
   const wrapElement = [...(props.wrapElement ?? []), element];
   return combineProps(props, { wrapElement }) as Q;

@@ -1,10 +1,20 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import type { ComponentProps, JSX, ValidComponent } from "solid-js";
+import type {
+  ComponentProps,
+  JSX,
+  ParentComponent,
+  ValidComponent,
+} from "solid-js";
+
+/**
+ * A value passed to the `wrapElement` prop.
+ */
+export type WrapElementValue = JSX.Element | ParentComponent;
 
 /**
  * The `wrapElement` prop.
  */
-export type WrapElement = Array<JSX.Element>;
+export type WrapElement = Array<WrapElementValue>;
 
 /**
  * Custom props including the `render` prop.

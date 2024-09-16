@@ -1,8 +1,7 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { combineProps } from "@solid-primitives/props";
-import { type JSX, Show, type ValidComponent, createSignal } from "solid-js";
-import { As } from "../as/as.tsx";
+import { Show, type ValidComponent, createSignal } from "solid-js";
 import { useWrapElement } from "../utils/hooks.ts";
 import { extractPropsWithDefaults } from "../utils/misc.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
@@ -24,13 +23,13 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
   function useFocusTrapRegion(props) {
-    const p = extractPropsWithDefaults(props, (p) => (props = p), {
+    const p = extractPropsWithDefaults(props, (rest) => (props = rest), {
       enabled: false,
     });
 
     const [ref, setRef] = createSignal<HTMLType>();
 
-    function Wrapper(props: { children: JSX.Element }) {
+    props = useWrapElement(props, (wrapperProps) => {
       const renderFocusTrap = () => {
         return (
           <Show when={p.enabled}>
@@ -59,14 +58,11 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
       return (
         <>
           {renderFocusTrap()}
-          {props.children}
+          {wrapperProps.children}
           {renderFocusTrap()}
         </>
       );
-    }
-    // TODO: experiment with accepting inline component functions here
-    // instead of "As".
-    props = useWrapElement(props, <As component={Wrapper} />);
+    });
 
     props = combineProps({ ref: setRef }, props);
 
