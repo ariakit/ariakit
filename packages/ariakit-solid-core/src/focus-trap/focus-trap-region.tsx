@@ -35,6 +35,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
           <Show when={p.enabled}>
             <FocusTrap
               onFocus={(event) => {
+                // TODO: opportunity to extract into @ariakit/core?
                 const container = ref();
                 if (!container) return;
                 const tabbables = getAllTabbableIn(container, true);
