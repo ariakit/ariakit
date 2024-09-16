@@ -11,12 +11,12 @@ import type {
  * A value that can be rendered when passed to the `render` prop or the
  * `wrapInstance` prop.
  */
-export type Renderable<P extends AnyObject> = JSX.Element | Component<P>;
+export type RenderValue<P extends AnyObject> = JSX.Element | Component<P>;
 
 /**
  * A value passed to the `wrapInstance` prop.
  */
-export type WrapInstanceValue = Renderable<ParentProps>;
+export type WrapInstanceValue = RenderValue<ParentProps>;
 
 /**
  * The `wrapInstance` prop.
@@ -37,7 +37,7 @@ export interface Options {
    * Check out the [Composition](https://solid.ariakit.org/guide/composition) guide
    * for more details.
    */
-  render?: Renderable<JSX.HTMLAttributes<any>>;
+  render?: RenderValue<JSX.HTMLAttributes<any>>;
 }
 
 /**
