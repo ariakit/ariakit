@@ -3,7 +3,6 @@ import { type ValidComponent, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
-// TODO: implement `wrapElement` prop.
 /**
  * Creates a Solid component instance that supports the `render` and
  * `wrapElement` props.
@@ -13,13 +12,22 @@ export function createInstance(
   props: Props<ValidComponent, Options>,
 ) {
   const [features, rest] = splitProps(props, ["render", "wrapElement"]);
-  return (
+  let tree = (
     // TODO: replace with LazyDynamic
     <Dynamic
       {...rest}
       component={(features.render as ValidComponent) ?? Component}
     />
   );
+  if (features.wrapElement) {
+    for (const element of features.wrapElement) {
+      tree = (
+        // TODO: replace with LazyDynamic
+        <Dynamic component={element as ValidComponent}>{tree}</Dynamic>
+      );
+    }
+  }
+  return tree;
 }
 
 /**

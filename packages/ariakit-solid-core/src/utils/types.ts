@@ -2,9 +2,15 @@ import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import type { ComponentProps, JSX, ValidComponent } from "solid-js";
 
 /**
+ * The `wrapElement` prop.
+ */
+export type WrapElement = Array<JSX.Element>;
+
+/**
  * Custom props including the `render` prop.
  */
 export interface Options {
+  wrapElement?: WrapElement;
   /**
    * Allows the component to be rendered as a different HTML element or Solid
    * component. The value can be an `As` component instance or a function that

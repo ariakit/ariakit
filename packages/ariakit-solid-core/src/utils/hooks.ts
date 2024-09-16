@@ -1,4 +1,6 @@
-import type { Accessor, ValidComponent } from "solid-js";
+import { combineProps } from "@solid-primitives/props";
+import type { Accessor, JSX, ValidComponent } from "solid-js";
+import type { WrapElement } from "./types.ts";
 
 /**
  * Returns the tag name by parsing an element.
@@ -21,4 +23,15 @@ export function useTagName(
       (typeof fallback === "string" ? fallback : undefined)
     );
   };
+}
+
+/**
+ * Returns props with an additional `wrapElement` prop.
+ */
+export function useWrapElement<P, Q = P & { wrapElement: WrapElement }>(
+  props: P & { wrapElement?: WrapElement },
+  element: JSX.Element,
+): Q {
+  const wrapElement = [...(props.wrapElement ?? []), element];
+  return combineProps(props, { wrapElement }) as Q;
 }
