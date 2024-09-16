@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/solid",
-  "version": "0.4.11",
+  "version": "0.0.1",
   "description": "Toolkit for building accessible web apps with Solid",
   "sideEffects": false,
   "license": "MIT",
