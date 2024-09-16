@@ -1,7 +1,7 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { combineProps } from "@solid-primitives/props";
 import { Show, type ValidComponent, createSignal } from "solid-js";
-import { useWrapElement } from "../utils/hooks.ts";
+import { useWrapInstance } from "../utils/hooks.ts";
 import { createHook, createInstance, withOptions } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusTrap } from "./focus-trap.tsx";
@@ -23,7 +23,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
   withOptions({ enabled: false }, function useFocusTrapRegion(props, options) {
     const [ref, setRef] = createSignal<HTMLType>();
 
-    props = useWrapElement(props, (wrapperProps) => {
+    props = useWrapInstance(props, (wrapperProps) => {
       const renderFocusTrap = () => {
         return (
           <Show when={options.enabled}>

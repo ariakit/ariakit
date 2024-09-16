@@ -1,7 +1,7 @@
 import { combineProps } from "@solid-primitives/props";
 import { type ValidComponent, createSignal } from "solid-js";
 import { As } from "../as/as.tsx";
-import { useWrapElement } from "../utils/hooks.ts";
+import { useWrapInstance } from "../utils/hooks.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";
@@ -22,7 +22,7 @@ export const useGroup = createHook<TagName, GroupOptions>(
   function useGroup(props) {
     const [labelId, setLabelId] = createSignal<string>();
 
-    props = useWrapElement(
+    props = useWrapInstance(
       props,
       <As component={GroupLabelContext.Provider} value={setLabelId} />,
     );

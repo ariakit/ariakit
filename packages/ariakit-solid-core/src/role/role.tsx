@@ -59,8 +59,8 @@ export const useRole = createHook<TagName, RoleOptions>(
 // TODO: adapt docs wording to be more accurate for Solid
 /**
  * Renders an abstract element that supports the `render` prop and a
- * `wrapElement` prop that can be used to wrap the underlying component instance
- * with Solid Portal, Context or other component types.
+ * `wrapInstance` prop that can be used to wrap the underlying component
+ * instance with Solid Portal, Context or other component types.
  * @see https://solid.ariakit.org/components/role
  * @example
  * ```jsx

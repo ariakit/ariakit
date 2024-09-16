@@ -10,7 +10,7 @@ import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 /**
  * Creates a Solid component instance that supports the `render` and
- * `wrapElement` props.
+ * `wrapInstance` props.
  */
 export function createInstance(
   Component: ValidComponent,
@@ -19,7 +19,7 @@ export function createInstance(
   // TODO: consider adding a dev-only runtime check to clarify that
   // the JSX.Element type is only accepted through `As`, so that
   // the error is not a vague "value is not a function" error.
-  const [features, rest] = splitProps(props, ["render", "wrapElement"]);
+  const [features, rest] = splitProps(props, ["render", "wrapInstance"]);
   const withRender = () => (
     // TODO: replace with LazyDynamic
     <Dynamic
@@ -28,8 +28,8 @@ export function createInstance(
     />
   );
   let tree = withRender;
-  if (features.wrapElement) {
-    for (const element of features.wrapElement) {
+  if (features.wrapInstance) {
+    for (const element of features.wrapInstance) {
       const children = tree;
       tree = () => (
         // TODO: replace with LazyDynamic

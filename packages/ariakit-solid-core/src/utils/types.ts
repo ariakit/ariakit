@@ -9,25 +9,25 @@ import type {
 
 /**
  * A value that can be rendered when passed to the `render` prop or the
- * `wrapElement` prop.
+ * `wrapInstance` prop.
  */
 export type Renderable<P extends AnyObject> = JSX.Element | Component<P>;
 
 /**
- * A value passed to the `wrapElement` prop.
+ * A value passed to the `wrapInstance` prop.
  */
-export type WrapElementValue = Renderable<ParentProps>;
+export type WrapInstanceValue = Renderable<ParentProps>;
 
 /**
- * The `wrapElement` prop.
+ * The `wrapInstance` prop.
  */
-export type WrapElement = Array<WrapElementValue>;
+export type WrapInstance = Array<WrapInstanceValue>;
 
 /**
  * Custom props including the `render` prop.
  */
 export interface Options {
-  wrapElement?: WrapElement;
+  wrapInstance?: WrapInstance;
   /**
    * Allows the component to be rendered as a different HTML element or Solid
    * component. The value can be an `As` component instance or a function that
