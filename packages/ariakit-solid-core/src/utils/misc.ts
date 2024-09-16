@@ -28,7 +28,7 @@ export type ExtractPropsWithDefaults<T, D extends { [P in keyof T]?: T[P] }> = {
 // intermediate utility.
 /**
  * Extracts props from a props object and applies defaults to them. The
- * rest of the props are set through the provided setter . To extract a
+ * rest of the props are set through the provided setter. To extract a
  * prop without a default, set it to `undefined`.
  * @example
  * const extractedProps = extractPropsWithDefaults(
