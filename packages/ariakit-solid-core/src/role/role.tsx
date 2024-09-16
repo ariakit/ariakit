@@ -1,4 +1,3 @@
-import { combineProps } from "@solid-primitives/props";
 import type { Component, JSX, ValidComponent } from "solid-js";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -51,8 +50,7 @@ type RoleElements = {
  */
 export const useRole = createHook<TagName, RoleOptions>(
   function useRole(props) {
-    // TODO: is this necessary?
-    return combineProps(props);
+    return props;
   },
 );
 
