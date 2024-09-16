@@ -12,22 +12,24 @@ export function createInstance(
   props: Props<ValidComponent, Options>,
 ) {
   const [features, rest] = splitProps(props, ["render", "wrapElement"]);
-  let tree = (
+  const withRender = () => (
     // TODO: replace with LazyDynamic
     <Dynamic
       {...rest}
       component={(features.render as ValidComponent) ?? Component}
     />
   );
+  let tree = withRender;
   if (features.wrapElement) {
     for (const element of features.wrapElement) {
-      tree = (
+      const children = tree;
+      tree = () => (
         // TODO: replace with LazyDynamic
-        <Dynamic component={element as ValidComponent}>{tree}</Dynamic>
+        <Dynamic component={element as ValidComponent}>{children()}</Dynamic>
       );
     }
   }
-  return tree;
+  return tree();
 }
 
 /**
