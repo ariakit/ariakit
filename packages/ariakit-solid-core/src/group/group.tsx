@@ -37,8 +37,6 @@ export const useGroup = createHook<TagName, GroupOptions>(
       props,
     );
 
-    // TODO: is this still necessary in Solid?
-    // return removeUndefinedValues(props);
     return props;
   },
 );

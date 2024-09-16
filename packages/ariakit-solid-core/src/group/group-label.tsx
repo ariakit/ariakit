@@ -46,8 +46,6 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
       props,
     );
 
-    // TODO: is this still necessary in Solid?
-    // return removeUndefinedValues(props);
     return props;
   },
 );

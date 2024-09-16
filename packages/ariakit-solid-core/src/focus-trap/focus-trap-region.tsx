@@ -1,5 +1,4 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
-import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import { combineProps } from "@solid-primitives/props";
 import { Show, type ValidComponent, createSignal } from "solid-js";
 import { useWrapElement } from "../utils/hooks.ts";
@@ -67,7 +66,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
 
     props = combineProps({ ref: setRef }, props);
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 
