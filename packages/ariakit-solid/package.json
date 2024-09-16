@@ -37,7 +37,7 @@
   },
   "keywords": ["ariakit", "solid", "a11y", "ui", "toolkit", "components"],
   "dependencies": {
-    "@ariakit/solid-core": "0.4.11"
+    "@ariakit/solid-core": "0.0.1"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
