@@ -12,7 +12,6 @@
   <a href="https://npmjs.org/package/@ariakit/solid">
     <img alt="NPM version" src="https://img.shields.io/npm/v/@ariakit/solid.svg?logo=npm&color=007acc" />
   </a>
-  <!-- TODO: does this need to be tweaked? -->
   <a href="https://github.com/ariakit/ariakit/releases">
     <img alt="GitHub Release Date" src="https://img.shields.io/github/release-date/ariakit/ariakit?logo=github&color=007acc">
   </a>
