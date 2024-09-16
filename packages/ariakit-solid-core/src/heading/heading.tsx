@@ -42,7 +42,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
         // TODO: replace with LazyDynamic
         render: Element(),
         get role() {
-          return !isNativeHeading() ? ("heading" as any) : undefined;
+          return !isNativeHeading() ? "heading" : undefined;
         },
         get "aria-level"() {
           return !isNativeHeading() ? level() : undefined;
