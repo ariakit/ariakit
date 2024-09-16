@@ -52,8 +52,8 @@ export function createHook<
 }
 
 /**
- * Allows splitting "option props" from the rest in a component hook. Must be
- * called inside `createHook`.
+ * Splits "option props" from the rest in a component hook. Must be called
+ * inside `createHook`.
  *
  * The first argument is an object that defines the props that will be extracted,
  * with their default values. To extract a prop without a default, set it to
