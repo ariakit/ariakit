@@ -33,7 +33,7 @@ export type ExtractPropsWithDefaults<T, D extends { [P in keyof T]?: T[P] }> = {
  * @example
  * const extractedProps = extractPropsWithDefaults(
  *   props,
- *   (p) => (props = p),
+ *   (rest) => (props = rest),
  *   { orientation: "horizontal" },
  * );
  * extractedProps.orientation; // "horizontal"

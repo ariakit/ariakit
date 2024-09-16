@@ -18,7 +18,7 @@ type TagName = typeof TagName;
  */
 export const useSeparator = createHook<TagName, SeparatorOptions>(
   function useSeparator(props) {
-    const p = extractPropsWithDefaults(props, (p) => (props = p), {
+    const p = extractPropsWithDefaults(props, (rest) => (props = rest), {
       orientation: "horizontal",
     });
 
