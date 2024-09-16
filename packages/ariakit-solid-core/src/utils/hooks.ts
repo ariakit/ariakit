@@ -1,4 +1,5 @@
 import { combineProps } from "@solid-primitives/props";
+import { type MaybeAccessor, access } from "@solid-primitives/utils";
 import {
   type Accessor,
   type JSX,
@@ -11,11 +12,10 @@ import type { WrapElement } from "./types.ts";
  * Generates a unique ID.
  */
 export function useId(
-  defaultId?: Accessor<string | undefined> | string,
+  defaultId?: MaybeAccessor<string | undefined>,
 ): Accessor<string> {
   const id = createUniqueId();
-  return () =>
-    (typeof defaultId === "function" ? defaultId() : defaultId) ?? id;
+  return () => access(defaultId) ?? id;
 }
 
 /**
@@ -28,12 +28,11 @@ export function useId(
  * }
  */
 export function useTagName(
-  refOrElement?: Accessor<HTMLElement | undefined> | HTMLElement,
+  refOrElement?: MaybeAccessor<HTMLElement | undefined>,
   fallback?: ValidComponent,
 ) {
   return () => {
-    const element =
-      typeof refOrElement === "function" ? refOrElement() : refOrElement;
+    const element = access(refOrElement);
     return (
       element?.tagName.toLowerCase() ??
       (typeof fallback === "string" ? fallback : undefined)

@@ -34,7 +34,8 @@
   "keywords": ["ariakit", "solid", "core"],
   "dependencies": {
     "@ariakit/core": "0.4.7",
-    "@solid-primitives/props": "3.1.11"
+    "@solid-primitives/props": "3.1.11",
+    "@solid-primitives/utils": "6.2.3"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
@@ -42,7 +43,19 @@
   "exports": {
     "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
     "./utils/types": "./src/utils/types.ts",
+    "./utils/system": "./src/utils/system.tsx",
+    "./utils/misc": "./src/utils/misc.ts",
+    "./utils/hooks": "./src/utils/hooks.ts",
+    "./separator/separator": "./src/separator/separator.tsx",
     "./role/role": "./src/role/role.tsx",
+    "./heading/utils": "./src/heading/utils.ts",
+    "./heading/heading": "./src/heading/heading.tsx",
+    "./heading/heading-level": "./src/heading/heading-level.tsx",
+    "./heading/heading-context": "./src/heading/heading-context.tsx",
+    "./group/group": "./src/group/group.tsx",
+    "./group/group-label": "./src/group/group-label.tsx",
+    "./group/group-label-context": "./src/group/group-label-context.tsx",
+    "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
     "./as/as": "./src/as/as.tsx",
     "./package.json": "./package.json"
   }
