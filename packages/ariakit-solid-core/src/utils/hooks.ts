@@ -1,6 +1,22 @@
 import { combineProps } from "@solid-primitives/props";
-import type { Accessor, JSX, ValidComponent } from "solid-js";
+import {
+  type Accessor,
+  type JSX,
+  type ValidComponent,
+  createUniqueId,
+} from "solid-js";
 import type { WrapElement } from "./types.ts";
+
+/**
+ * Generates a unique ID.
+ */
+export function useId(
+  defaultId?: Accessor<string | undefined> | string,
+): Accessor<string> {
+  const id = createUniqueId();
+  return () =>
+    (typeof defaultId === "function" ? defaultId() : defaultId) ?? id;
+}
 
 /**
  * Returns the tag name by parsing an element.
