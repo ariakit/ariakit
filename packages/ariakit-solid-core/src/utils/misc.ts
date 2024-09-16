@@ -1,3 +1,4 @@
+import type { AnyObject } from "@ariakit/core/utils/types";
 import { mergeProps, splitProps } from "solid-js";
 
 /**
@@ -16,37 +17,44 @@ export function stableAccessor<T, U>(
   return () => callback(value);
 }
 
-export type ExtractPropsWithDefaults<T, D extends { [P in keyof T]?: T[P] }> = {
-  -readonly [P in keyof D]: P extends keyof T
-    ? D[P] extends undefined
-      ? T[P]
-      : Exclude<T[P], undefined>
-    : never;
+// https://github.com/microsoft/TypeScript/issues/31025#issuecomment-484734942
+type NullablyRequired<T> = { [P in keyof T & keyof any]: T[P] };
+export type ExtractPropsWithDefaultsExtractedProps<
+  P,
+  D extends Partial<R>,
+  R = NullablyRequired<P>,
+> = {
+  -readonly [K in keyof R as Extract<K, keyof D>]: D[K] extends undefined
+    ? R[K]
+    : Exclude<R[K], undefined>;
 };
+export type ExtractPropsWithDefaultsRestProps<P, D extends Partial<P>> = Omit<
+  P,
+  keyof D
+>;
+export type ExtractPropsWithDefaultsReturn<P, D extends Partial<P>> = [
+  ExtractPropsWithDefaultsExtractedProps<P, D>,
+  ExtractPropsWithDefaultsRestProps<P, D>,
+];
 
-// TODO: explore integrating this into createHook or creating some sort of
-// intermediate utility.
 /**
  * Extracts props from a props object and applies defaults to them. The
- * rest of the props are set through the provided setter. To extract a
- * prop without a default, set it to `undefined`.
+ * return value is a tuple of the extracted props and the rest of the props.
+ *
+ * To extract a prop without a default, set it to `undefined`.
  * @example
- * const extractedProps = extractPropsWithDefaults(
+ * const [extractedProps, restProps] = extractPropsWithDefaults(
  *   props,
- *   (rest) => (props = rest),
  *   { orientation: "horizontal" },
  * );
- * extractedProps.orientation; // "horizontal"
  */
 export function extractPropsWithDefaults<
-  T extends Record<any, any>,
-  const D extends { [P in keyof T]?: T[P] },
->(
-  props: T,
-  setter: (props: T) => void,
-  defaults: D,
-): ExtractPropsWithDefaults<T, D> {
+  P extends AnyObject,
+  const D extends Partial<P>,
+>(props: P, defaults: D): ExtractPropsWithDefaultsReturn<P, D> {
   const [own, rest] = splitProps(props, Object.keys(defaults));
-  setter(rest as T);
-  return mergeProps(defaults, own) as ExtractPropsWithDefaults<T, D>;
+  return [
+    mergeProps(defaults, own),
+    rest,
+  ] as unknown as ExtractPropsWithDefaultsReturn<P, D>;
 }

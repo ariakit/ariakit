@@ -1,6 +1,11 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import { type ValidComponent, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
+import {
+  type ExtractPropsWithDefaultsExtractedProps,
+  type ExtractPropsWithDefaultsRestProps,
+  extractPropsWithDefaults,
+} from "./misc.ts";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 /**
@@ -44,4 +49,44 @@ export function createHook<
   P extends AnyObject = EmptyObject,
 >(useProps: (props: Props<T, P>) => HTMLProps<T, P>) {
   return useProps as Hook<T, P>;
+}
+
+/**
+ * Allows splitting "option props" from the rest in a component hook. Must be
+ * called inside `createHook`.
+ *
+ * The first argument is an object that defines the props that will be extracted,
+ * with their default values. To extract a prop without a default, set it to
+ * `undefined`.
+ *
+ * The hook function must be passed as the second argument, and it will receive
+ * the rest of the props and the extracted options.
+ * @example
+ * ```jsx
+ * export const useMyComponent = createHook<TagName, MyComponentOptions>(
+ *   withOptions(
+ *     { orientation: "horizontal" },
+ *     function useMyComponent(props, options) {
+ *       // ...
+ *     },
+ *   ),
+ * );
+ * ```
+ */
+export function withOptions<
+  T extends ValidComponent,
+  P extends AnyObject,
+  const D extends Partial<ComputedP>,
+  ComputedP extends Props<T, P>,
+>(
+  defaults: D,
+  useProps: (
+    props: ExtractPropsWithDefaultsRestProps<ComputedP, D>,
+    options: ExtractPropsWithDefaultsExtractedProps<ComputedP, D>,
+  ) => HTMLProps<T, P>,
+): (props: ComputedP) => HTMLProps<T, P> {
+  return function usePropsWithOptions(props: ComputedP) {
+    const [options, rest] = extractPropsWithDefaults(props, defaults);
+    return useProps(rest, options);
+  };
 }

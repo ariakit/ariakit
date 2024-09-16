@@ -1,7 +1,6 @@
 import { combineProps } from "@solid-primitives/props";
 import type { ValidComponent } from "solid-js";
-import { extractPropsWithDefaults } from "../utils/misc.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
+import { createHook, createInstance, withOptions } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "hr" satisfies ValidComponent;
@@ -17,22 +16,21 @@ type TagName = typeof TagName;
  * ```
  */
 export const useSeparator = createHook<TagName, SeparatorOptions>(
-  function useSeparator(props) {
-    const p = extractPropsWithDefaults(props, (rest) => (props = rest), {
-      orientation: "horizontal",
-    });
-
-    props = combineProps(
-      {
-        role: "separator" as const,
-        get "aria-orientation"() {
-          return p.orientation ?? "horizontal";
+  withOptions(
+    { orientation: "horizontal" },
+    function useSeparator(props, options) {
+      props = combineProps(
+        {
+          role: "separator" as const,
+          get "aria-orientation"() {
+            return options.orientation;
+          },
         },
-      },
-      props,
-    );
-    return props;
-  },
+        props,
+      );
+      return props;
+    },
+  ),
 );
 
 /**
