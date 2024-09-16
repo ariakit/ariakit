@@ -11,6 +11,9 @@ export function createInstance(
   Component: ValidComponent,
   props: Props<ValidComponent, Options>,
 ) {
+  // TODO: consider adding a dev-only runtime check to clarify that
+  // the JSX.Element type is only accepted through `As`, so that
+  // the error is not a vague "value is not a function" error.
   const [features, rest] = splitProps(props, ["render", "wrapElement"]);
   const withRender = () => (
     // TODO: replace with LazyDynamic
