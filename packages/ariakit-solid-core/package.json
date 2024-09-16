@@ -56,6 +56,7 @@
     "./group/group-label": "./src/group/group-label.tsx",
     "./group/group-label-context": "./src/group/group-label-context.tsx",
     "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
+    "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
     "./as/as": "./src/as/as.tsx",
     "./package.json": "./package.json"
   }
