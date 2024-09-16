@@ -33,6 +33,7 @@ const cache = new Map<string, Component<any>>();
 export const As = new Proxy(
   function As(props: any) {
     return ((parentProps: unknown) => (
+      // TODO: replace with LazyDynamic
       <Dynamic
         {...combineProps([parentProps, props], { reverseEventHandlers: true })}
         component={props.component}
