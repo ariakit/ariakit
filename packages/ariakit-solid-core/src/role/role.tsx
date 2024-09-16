@@ -56,7 +56,6 @@ export const useRole = createHook<TagName, RoleOptions>(
   },
 );
 
-// TODO: implement `wrapElement` prop.
 // TODO: adapt docs wording to be more accurate for Solid
 /**
  * Renders an abstract element that supports the `render` prop and a
