@@ -11,9 +11,24 @@ import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import { createStore, setup, sync } from "../utils/store.ts";
 import type { SetState } from "../utils/types.ts";
 
-type Orientation = "horizontal" | "vertical" | "both";
+type Orientation = "horizontal" | "vertical" | "both" | "layout";
 
 const NULL_ITEM = { id: null as unknown as string };
+
+interface NextOptions
+  extends Pick<
+    Partial<CompositeStoreState>,
+    | "activeId"
+    | "orientation"
+    | "focusShift"
+    | "focusLoop"
+    | "focusWrap"
+    | "includesBaseElement"
+    | "renderedItems"
+    | "rtl"
+  > {
+  skip?: number;
+}
 
 function findFirstEnabledItem(items: CompositeStoreItem[], excludeId?: string) {
   return items.find((item) => {
@@ -188,6 +203,94 @@ export function createCompositeStore<
     }),
   );
 
+  const getNextIdInDirection = (
+    direction: "next" | "previous" | "up" | "down",
+    options: NextOptions = {},
+  ) => {
+    const defaultState = composite.getState();
+    const {
+      skip = 0,
+      activeId = defaultState.activeId,
+      orientation = defaultState.orientation,
+      focusShift = defaultState.focusShift,
+      focusLoop = defaultState.focusLoop,
+      focusWrap = defaultState.focusWrap,
+      includesBaseElement = defaultState.includesBaseElement,
+      renderedItems = defaultState.renderedItems,
+      rtl = defaultState.rtl,
+    } = options;
+
+    const isVerticalDirection = direction === "up" || direction === "down";
+    const isNextDirection = direction === "next" || direction === "down";
+    const canReverse = isNextDirection
+      ? rtl && !isVerticalDirection
+      : !rtl || isVerticalDirection;
+
+    const items = canReverse ? reverseArray(renderedItems) : renderedItems;
+
+    if (orientation === "layout") {
+      const activeItem = collection.item(activeId);
+      if (!activeItem) {
+        return findFirstEnabledItem(items)?.id;
+      }
+      const index = items.indexOf(activeItem);
+      const nextItems = items.slice(index + 1);
+      const activeRect = activeItem.element?.getBoundingClientRect();
+
+      if (!activeRect) return;
+
+      const getOverlap = (rect: DOMRect) => {
+        const endSide = isVerticalDirection ? "right" : "bottom";
+        const startSide = isVerticalDirection ? "left" : "top";
+        return Math.max(
+          0,
+          Math.min(activeRect[endSide], rect[endSide]) -
+            Math.max(activeRect[startSide], rect[startSide]),
+        );
+      };
+
+      const isInDirection = (rect: DOMRect) => {
+        if (direction === "up") return rect.bottom <= activeRect.top;
+        if (direction === "down") return true; // rect.top >= activeRect.bottom;
+        if (direction === "next") return rect.left >= activeRect.right;
+        if (direction === "previous") return rect.right <= activeRect.left;
+        return false;
+      };
+
+      let bestElement: CompositeStoreItem | null = null;
+      let bestOverlap = 0;
+      let closestDistance = Number.POSITIVE_INFINITY;
+
+      for (const item of nextItems) {
+        const rect = item.element?.getBoundingClientRect();
+        if (!rect) continue;
+        if (isInDirection(rect)) {
+          const overlap = getOverlap(rect);
+          const distance = Math.abs(
+            isVerticalDirection
+              ? activeRect.top - rect.top
+              : activeRect.left - rect.left,
+          );
+          if (
+            overlap > bestOverlap ||
+            (focusShift &&
+              overlap === 0 &&
+              bestOverlap === 0 &&
+              distance < closestDistance)
+          ) {
+            bestElement = item;
+            bestOverlap = overlap;
+            closestDistance = distance;
+          } else if ((bestOverlap && !overlap) || distance > closestDistance) {
+            break;
+          }
+        }
+      }
+
+      return bestElement?.id;
+    }
+  };
+
   const getNextId = (
     items: CompositeStoreItem[],
     orientation: Orientation,
@@ -298,6 +401,9 @@ export function createCompositeStore<
 
     next: (skipOrOptions) => {
       const { renderedItems, orientation } = composite.getState();
+      if (orientation === "layout") {
+        return getNextIdInDirection("next");
+      }
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const activeId =
@@ -308,6 +414,9 @@ export function createCompositeStore<
     previous: (skipOrOptions) => {
       const { renderedItems, orientation, includesBaseElement } =
         composite.getState();
+      if (orientation === "layout") {
+        return getNextIdInDirection("previous");
+      }
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const activeId =
@@ -334,7 +443,11 @@ export function createCompositeStore<
         focusShift,
         focusLoop,
         includesBaseElement,
+        orientation,
       } = composite.getState();
+      if (orientation === "layout") {
+        return getNextIdInDirection("down");
+      }
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const activeId =
@@ -359,10 +472,14 @@ export function createCompositeStore<
     up: (skipOrOptions) => {
       const {
         activeId: stateActiveId,
+        orientation,
         renderedItems,
         focusShift,
         includesBaseElement,
       } = composite.getState();
+      if (orientation === "layout") {
+        return getNextIdInDirection("up");
+      }
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const activeId =
@@ -622,44 +739,48 @@ export interface CompositeStoreFunctions<
    * state.
    * @example
    * const nextId = store.next();
-   * const nextNextId = store.next(2);
    */
-  next: (
-    skip?: number | { skip?: number; activeId?: string | null },
-  ) => string | null | undefined;
+  next(options?: NextOptions): string | null | undefined;
+  /**
+   * @deprecated Use the object syntax instead: `next({ skip: 2 })`.
+   */
+  next(skip?: number): string | null | undefined;
   /**
    * Returns the id of the previous enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
    * state.
    * @example
    * const previousId = store.previous();
-   * const previousPreviousId = store.previous(2);
    */
-  previous: (
-    skip?: number | { skip?: number; activeId?: string | null },
-  ) => string | null | undefined;
+  previous(options?: NextOptions): string | null | undefined;
+  /**
+   * @deprecated Use the object syntax instead: `previous({ skip: 2 })`.
+   */
+  previous(skip?: number): string | null | undefined;
   /**
    * Returns the id of the enabled item above based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
    * state.
    * @example
    * const upId = store.up();
-   * const upUpId = store.up(2);
    */
-  up: (
-    skip?: number | { skip?: number; activeId?: string | null },
-  ) => string | null | undefined;
+  up(options?: NextOptions): string | null | undefined;
+  /**
+   * @deprecated Use the object syntax instead: `up({ skip: 2 })`.
+   */
+  up(skip?: number): string | null | undefined;
   /**
    * Returns the id of the enabled item below based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
    * state.
    * @example
    * const downId = store.down();
-   * const downDownId = store.down(2);
    */
-  down: (
-    skip?: number | { skip?: number; activeId?: string | null },
-  ) => string | null | undefined;
+  down(options?: NextOptions): string | null | undefined;
+  /**
+   * @deprecated Use the object syntax instead: `down({ skip: 2 })`.
+   */
+  down(skip?: number): string | null | undefined;
   /**
    * Returns the id of the first enabled item.
    */

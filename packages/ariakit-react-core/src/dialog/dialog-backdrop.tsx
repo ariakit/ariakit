@@ -1,4 +1,4 @@
-import { isValidElement, useRef } from "react";
+import { isValidElement, useEffect, useRef } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
 import { Role } from "../role/role.tsx";
@@ -22,7 +22,7 @@ export function DialogBackdrop({
   const disclosure = useDisclosureStore({ disclosure: store });
   const contentElement = store.useState("contentElement");
 
-  useSafeLayoutEffect(() => {
+  useEffect(() => {
     const backdrop = ref.current;
     const dialog = contentElement;
     if (!backdrop) return;

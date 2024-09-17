@@ -28,20 +28,22 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
       <Ariakit.Dialog
         ref={ref}
         unmountOnHide
-        backdrop={<div className="backdrop backdrop-enter" />}
+        backdrop={<div className="ak-backdrop ak-backdrop-enter" />}
         {...props}
         store={dialog}
+        // dir="rtl"
         className={clsx(
-          "ak-modal ak-popup ak-popup-enter ak-elevation-2 flex flex-col sm:max-h-[480px] overflow-clip sm:[--inset-block:72px] max-sm:h-auto sm:w-[640px]",
+          "ak-modal ak-popup ak-popup-enter ak-elevation-2 flex flex-col overflow-clip max-sm:h-auto sm:max-h-[480px] sm:w-[640px] sm:[--inset-block:72px]",
           props.className,
         )}
       >
         <Ariakit.ComboboxProvider
           disclosure={dialog}
           focusLoop={false}
-          focusShift
-          orientation="both"
-          focusWrap="horizontal"
+          // focusShift
+          orientation="layout"
+          // rtl
+          // focusWrap="horizontal"
           resetValueOnHide
           setValue={(value) => {
             startTransition(() => {
@@ -67,7 +69,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
             }}
           >
             {props.children}
-            <footer className="ak-popup-cover ak-popup-layer flex gap-3 text-sm flex-none mt-auto p-2 border-t border-[--border]">
+            <footer className="ak-popup-cover ak-popup-layer mt-auto flex flex-none gap-3 border-[--border] border-t p-2 text-sm">
               <div className="flex items-center gap-1">
                 <kbd className="ak-kbd" aria-label="Up Arrow">
                   <ArrowIcon direction="up" />
@@ -109,13 +111,13 @@ export const CommandMenuInput = forwardRef<
 >(function CommandMenuInput(props, ref) {
   const tab = Ariakit.useTabContext();
   return (
-    <div className="ak-popup-cover grid grid-cols-[auto_max-content] border-b border-[--border] p-0 flex-none">
+    <div className="ak-popup-cover grid flex-none grid-cols-[auto_max-content] items-center border-[--border] border-b p-0 pe-[7px] sm:pe-[11px]">
       <Ariakit.Combobox
         ref={ref}
-        autoSelect
+        autoSelect="always"
         {...props}
         className={clsx(
-          "ak-input ak-rounded-item [box-shadow:none] bg-transparent outline-none p-3 py-[14px] text-[17px]",
+          "ak-input ak-rounded-item bg-transparent p-3 py-[14px] text-[17px] outline-none [box-shadow:none]",
           props.className,
         )}
         onKeyDown={(event) => {
@@ -131,7 +133,7 @@ export const CommandMenuInput = forwardRef<
           );
         }}
       />
-      <Ariakit.DialogDismiss className="ak-focusable ak-clickable ak-rounded-item ak-button ak-button-small ak-button-secondary ak-button-flat">
+      <Ariakit.DialogDismiss className="ak-focusable ak-clickable ak-rounded-item ak-button ak-button-small ak-button-secondary [--border:inherit]">
         Esc
       </Ariakit.DialogDismiss>
     </div>
@@ -148,7 +150,7 @@ export const CommandMenuTabList = forwardRef<
     <Ariakit.TabList
       ref={ref}
       {...props}
-      className={clsx("flex gap-2 p-2", props.className)}
+      className={clsx("flex items-center gap-2 p-2 pt-3", props.className)}
     />
   );
 });
@@ -207,7 +209,7 @@ export const CommandMenuList = forwardRef<HTMLDivElement, CommandMenuListProps>(
         ref={ref}
         {...props}
         className={clsx(
-          "ak-popup-cover overflow-auto overscroll-contain",
+          "ak-popup-cover grid grid-cols-2 overflow-auto overscroll-contain",
           props.className,
         )}
       />

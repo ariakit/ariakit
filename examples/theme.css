@@ -144,6 +144,15 @@
       dark:[--shadow:none]
   }
 
+  .ak-button-flat-border {
+    @apply
+      [--depth:1px]
+      [--light:none]
+      [--shadow:none]
+      dark:[--light:none]
+      dark:[--shadow:none]
+  }
+
   /* Input */
   .ak-input {
     --outline-offset: -1px;

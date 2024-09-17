@@ -28,7 +28,7 @@ export default function Example() {
   const [open, setOpen] = useState(false);
   const prefix = useId();
   const [searchValue, setSearchValue] = useState("");
-  const [tabId, setTabId] = useState(getTabId("Components", prefix));
+  const [tabId, setTabId] = useState(getTabId("All", prefix));
 
   const matches = useMemo(() => {
     const keys = ["label", "path"];
