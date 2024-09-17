@@ -1,11 +1,6 @@
 import { combineProps } from "@solid-primitives/props";
-import {
-  type ValidComponent,
-  createMemo,
-  createSignal,
-  useContext,
-} from "solid-js";
-import { useTagName } from "../utils/hooks.ts";
+import { type ValidComponent, createMemo, useContext } from "solid-js";
+import { createRef, useTagName } from "../utils/hooks.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { HeadingContext } from "./heading-context.tsx";
@@ -29,10 +24,10 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useHeading = createHook<TagName, HeadingOptions>(
   function useHeading(props) {
-    const [ref, setRef] = createSignal<HTMLType>();
+    const ref = createRef<HTMLType>();
     const level = useContext(HeadingContext) || (() => 1);
     const Element = () => `h${level()}` as const;
-    const tagName = useTagName(ref);
+    const tagName = useTagName(() => ref.value);
     const isNativeHeading = createMemo(
       () => !!tagName() && /^h\d$/.test(tagName()!),
     );
@@ -47,7 +42,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
         get "aria-level"() {
           return !isNativeHeading() ? level() : undefined;
         },
-        ref: setRef,
+        ref: ref.set,
       },
       props,
     );

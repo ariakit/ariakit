@@ -1,7 +1,7 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { combineProps } from "@solid-primitives/props";
-import { Show, type ValidComponent, createSignal } from "solid-js";
-import { useWrapInstance } from "../utils/hooks.ts";
+import { Show, type ValidComponent } from "solid-js";
+import { createRef, useWrapInstance } from "../utils/hooks.ts";
 import { createHook, createInstance, withOptions } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusTrap } from "./focus-trap.tsx";
@@ -21,7 +21,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
   withOptions({ enabled: false }, function useFocusTrapRegion(props, options) {
-    const [ref, setRef] = createSignal<HTMLType>();
+    const ref = createRef<HTMLType>();
 
     props = useWrapInstance(props, (wrapperProps) => {
       const renderFocusTrap = () => {
@@ -29,8 +29,8 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
           <Show when={options.enabled}>
             <FocusTrap
               onFocus={(event) => {
-                // TODO: opportunity to extract into @ariakit/core?
-                const container = ref();
+                // TODO: (react) opportunity to extract into @ariakit/core?
+                const container = ref.value;
                 if (!container) return;
                 const tabbables = getAllTabbableIn(container, true);
                 const first = tabbables[0];
@@ -59,7 +59,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
       );
     });
 
-    props = combineProps({ ref: setRef }, props);
+    props = combineProps({ ref: ref.set }, props);
 
     return props;
   }),

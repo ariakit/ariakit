@@ -1,7 +1,15 @@
 import { combineProps } from "@solid-primitives/props";
 import { type MaybeAccessor, access } from "@solid-primitives/utils";
-import { type Accessor, type ValidComponent, createUniqueId } from "solid-js";
+import {
+  type Accessor,
+  type Setter,
+  type ValidComponent,
+  createSignal,
+  createUniqueId,
+} from "solid-js";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
+
+// TODO: rename "use" to "create" and similar?
 
 /**
  * Generates a unique ID.
@@ -44,4 +52,62 @@ export function useWrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
 ): Q {
   const wrapInstance = [...(props.wrapInstance ?? []), element];
   return combineProps(props, { wrapInstance }) as Q;
+}
+
+/**
+ * A ref object that contains the value getter (`value`) and setter (`set`) as
+ * properties for convenience. It also has a `reset` method that can be used to
+ * set the value to the initial value that was passed, which is `undefined` by
+ * default.
+ *
+ * Created by the `createRef` function.
+ * @example
+ * const ref = createRef();
+ * createEffect(() => {
+ *   console.log(ref.value);
+ * });
+ * ref.set(buttonElement);
+ * ref.reset();
+ */
+export type RefStore<T> = {
+  /**
+   * The current value of the ref. It is a reactive getter.
+   */
+  value: T;
+  /**
+   * The setter function for the ref.
+   */
+  set: Setter<T>;
+  /**
+   * Resets the ref to the initial value that was passed, which is `undefined`
+   * by default.
+   */
+  reset: () => void;
+};
+
+/**
+ * Creates a ref object that contains the value getter (`value`) and setter
+ * (`set`) as properties for convenience. It also has a `reset` method that
+ * can be used to set the value to the initial value that was passed,
+ * which is `undefined` by default.
+ * @example
+ * ```jsx
+ * const ref = createRef();
+ * createEffect(() => {
+ *   console.log(ref.value);
+ * });
+ * <button ref={ref.set}>Button</button>
+ * ```
+ */
+export function createRef<T>(): RefStore<T | undefined>;
+export function createRef<T>(initialValue: T): RefStore<T>;
+export function createRef<T>(initialValue?: any): any {
+  const [value, set] = createSignal<T>(initialValue);
+  return {
+    get value() {
+      return value();
+    },
+    set,
+    reset: () => set(initialValue),
+  };
 }
