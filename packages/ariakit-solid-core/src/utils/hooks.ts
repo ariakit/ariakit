@@ -9,12 +9,10 @@ import {
 } from "solid-js";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
-// TODO: rename "use" to "create" and similar?
-
 /**
  * Generates a unique ID.
  */
-export function useId(
+export function createId(
   defaultId?: MaybeAccessor<string | undefined>,
 ): Accessor<string> {
   const id = createUniqueId();
@@ -26,11 +24,11 @@ export function useId(
  * @example
  * function Component(props) {
  *   const [ref, setRef] = createSignal();
- *   const tagName = useTagName(ref, "button"); // () => "div"
+ *   const tagName = extractTagName(ref, "button"); // () => "div"
  *   return <div ref={setRef} {...props} />;
  * }
  */
-export function useTagName(
+export function extractTagName(
   refOrElement?: MaybeAccessor<HTMLElement | undefined>,
   fallback?: ValidComponent,
 ) {
@@ -46,7 +44,7 @@ export function useTagName(
 /**
  * Returns props with an additional `wrapInstance` prop.
  */
-export function useWrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
+export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
   props: P & { wrapInstance?: WrapInstance },
   element: WrapInstanceValue,
 ): Q {
