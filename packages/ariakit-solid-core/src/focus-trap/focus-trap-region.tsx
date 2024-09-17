@@ -1,7 +1,7 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { combineProps } from "@solid-primitives/props";
 import { Show, type ValidComponent } from "solid-js";
-import { createRef, wrapInstance } from "../utils/hooks.ts";
+import { createRef, wrapInstance } from "../utils/misc.ts";
 import { createHook, createInstance, withOptions } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusTrap } from "./focus-trap.tsx";
