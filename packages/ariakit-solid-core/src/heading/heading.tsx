@@ -1,7 +1,6 @@
-import { combineProps } from "@solid-primitives/props";
 import { type ValidComponent, createMemo, useContext } from "solid-js";
 import { extractTagName } from "../utils/misc.ts";
-import { createRef } from "../utils/reactivity.ts";
+import { createRef, mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { HeadingContext } from "./heading-context.tsx";
@@ -33,7 +32,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
       () => !!tagName() && /^h\d$/.test(tagName()!),
     );
 
-    props = combineProps(
+    props = mergeProps(
       {
         // TODO: replace with LazyDynamic
         render: Element(),

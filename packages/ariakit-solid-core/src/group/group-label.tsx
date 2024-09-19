@@ -1,4 +1,3 @@
-import { combineProps } from "@solid-primitives/props";
 import {
   type ValidComponent,
   createEffect,
@@ -6,7 +5,7 @@ import {
   useContext,
 } from "solid-js";
 import { createId } from "../utils/misc.ts";
-import { stableAccessor } from "../utils/reactivity.ts";
+import { mergeProps, stableAccessor } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";
@@ -36,7 +35,7 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
       onCleanup(() => setLabelId?.(undefined));
     });
 
-    props = combineProps(
+    props = mergeProps(
       {
         get id() {
           return id();

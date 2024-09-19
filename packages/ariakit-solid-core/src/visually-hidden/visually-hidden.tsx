@@ -1,5 +1,5 @@
-import { combineProps } from "@solid-primitives/props";
 import type { ValidComponent } from "solid-js";
+import { mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
@@ -21,7 +21,7 @@ type TagName = typeof TagName;
  */
 export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
   function useVisuallyHidden(props) {
-    props = combineProps(
+    props = mergeProps(
       {
         style: {
           border: 0,

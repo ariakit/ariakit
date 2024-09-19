@@ -1,5 +1,5 @@
-import { combineProps } from "@solid-primitives/props";
 import type { ValidComponent } from "solid-js";
+import { mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.tsx";
@@ -19,7 +19,7 @@ type TagName = typeof TagName;
  */
 export const useFocusTrap = createHook<TagName, FocusTrapOptions>(
   function useFocusTrap(props) {
-    props = combineProps(
+    props = mergeProps(
       {
         "data-focus-trap": "",
         tabIndex: 0,

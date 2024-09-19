@@ -1,8 +1,10 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
+import { combineProps } from "@solid-primitives/props";
 import {
+  type JSX,
   type Setter,
   createSignal,
-  mergeProps,
+  mergeProps as solidMergeProps,
   splitProps,
   untrack,
 } from "solid-js";
@@ -60,7 +62,7 @@ export function extractPropsWithDefaults<
 >(props: P, defaults: D): ExtractPropsWithDefaultsReturn<P, D> {
   const [own, rest] = splitProps(props, Object.keys(defaults));
   return [
-    mergeProps(defaults, own),
+    solidMergeProps(defaults, own),
     rest,
   ] as unknown as ExtractPropsWithDefaultsReturn<P, D>;
 }
@@ -163,4 +165,18 @@ export function createRef<T>(initialValue?: any): any {
     set,
     reset: () => set(initialValue),
   };
+}
+
+/**
+ * Merges two sets of props.
+ */
+export function mergeProps<T extends JSX.HTMLAttributes<any>>(
+  base: T,
+  overrides: T,
+  skipProps?: Array<keyof T>,
+) {
+  return combineProps(
+    [base, skipProps ? splitProps(overrides, skipProps)[1] : overrides],
+    { reverseEventHandlers: true },
+  ) as T;
 }

@@ -1,5 +1,5 @@
-import { combineProps } from "@solid-primitives/props";
 import type { ValidComponent } from "solid-js";
+import { mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance, withOptions } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
@@ -19,7 +19,7 @@ export const useSeparator = createHook<TagName, SeparatorOptions>(
   withOptions(
     { orientation: "horizontal" },
     function useSeparator(props, options) {
-      props = combineProps(
+      props = mergeProps(
         {
           role: "separator" as const,
           get "aria-orientation"() {

@@ -1,7 +1,6 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
-import { combineProps } from "@solid-primitives/props";
 import { Show, type ValidComponent } from "solid-js";
-import { createRef } from "../utils/reactivity.ts";
+import { createRef, mergeProps } from "../utils/reactivity.ts";
 import {
   createHook,
   createInstance,
@@ -64,7 +63,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
       );
     });
 
-    props = combineProps({ ref: ref.set }, props);
+    props = mergeProps({ ref: ref.set }, props);
 
     return props;
   }),

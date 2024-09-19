@@ -1,6 +1,5 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import { combineProps } from "@solid-primitives/props";
-import { type ValidComponent, splitProps } from "solid-js";
+import { type ValidComponent, mergeProps, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import {
   type ExtractPropsWithDefaultsExtractedProps,
@@ -56,7 +55,7 @@ export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
   element: WrapInstanceValue,
 ): Q {
   const wrapInstance = [...(props.wrapInstance ?? []), element];
-  return combineProps(props, { wrapInstance }) as Q;
+  return mergeProps(props, { wrapInstance }) as Q;
 }
 
 /**

@@ -1,6 +1,6 @@
-import { combineProps } from "@solid-primitives/props";
 import { type ValidComponent, createSignal } from "solid-js";
 import { As } from "../as/as.tsx";
+import { mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance, wrapInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";
@@ -26,7 +26,7 @@ export const useGroup = createHook<TagName, GroupOptions>(
       <As component={GroupLabelContext.Provider} value={setLabelId} />,
     );
 
-    props = combineProps(
+    props = mergeProps(
       {
         role: "group" as const,
         get "aria-labelledby"() {
