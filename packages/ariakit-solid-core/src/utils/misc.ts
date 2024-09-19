@@ -21,13 +21,12 @@ export function createId(
  * }
  */
 export function extractTagName(
-  refOrElement?: MaybeAccessor<HTMLElement | undefined>,
+  element?: MaybeAccessor<HTMLElement | undefined>,
   fallback?: ValidComponent,
 ) {
   return () => {
-    const element = access(refOrElement);
     return (
-      element?.tagName.toLowerCase() ??
+      access(element)?.tagName.toLowerCase() ??
       (typeof fallback === "string" ? fallback : undefined)
     );
   };
