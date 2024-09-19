@@ -1,11 +1,7 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
-import { type MaybeAccessor, access } from "@solid-primitives/utils";
 import {
-  type Accessor,
   type Setter,
-  type ValidComponent,
   createSignal,
-  createUniqueId,
   mergeProps,
   splitProps,
   untrack,
@@ -166,37 +162,5 @@ export function createRef<T>(initialValue?: any): any {
     },
     set,
     reset: () => set(initialValue),
-  };
-}
-
-/**
- * Generates a unique ID.
- */
-export function createId(
-  defaultId?: MaybeAccessor<string | undefined>,
-): Accessor<string> {
-  const id = createUniqueId();
-  return () => access(defaultId) ?? id;
-}
-
-/**
- * Returns the tag name by parsing an element.
- * @example
- * function Component(props) {
- *   const [ref, setRef] = createSignal();
- *   const tagName = extractTagName(ref, "button"); // () => "div"
- *   return <div ref={setRef} {...props} />;
- * }
- */
-export function extractTagName(
-  refOrElement?: MaybeAccessor<HTMLElement | undefined>,
-  fallback?: ValidComponent,
-) {
-  return () => {
-    const element = access(refOrElement);
-    return (
-      element?.tagName.toLowerCase() ??
-      (typeof fallback === "string" ? fallback : undefined)
-    );
   };
 }

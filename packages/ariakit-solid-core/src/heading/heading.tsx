@@ -1,6 +1,7 @@
 import { combineProps } from "@solid-primitives/props";
 import { type ValidComponent, createMemo, useContext } from "solid-js";
-import { createRef, extractTagName } from "../utils/reactivity.ts";
+import { extractTagName } from "../utils/misc.ts";
+import { createRef } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { HeadingContext } from "./heading-context.tsx";
