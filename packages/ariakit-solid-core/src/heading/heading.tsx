@@ -27,7 +27,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
     const ref = createRef<HTMLType>();
     const level = useContext(HeadingContext) || (() => 1);
     const Element = () => `h${level()}` as const;
-    const tagName = extractTagName(() => ref.value);
+    const tagName = extractTagName(ref.get);
     const isNativeHeading = createMemo(
       () => !!tagName() && /^h\d$/.test(tagName()!),
     );

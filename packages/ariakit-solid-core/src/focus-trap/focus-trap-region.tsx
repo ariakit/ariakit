@@ -34,7 +34,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
             <FocusTrap
               onFocus={(event) => {
                 // TODO: (react) opportunity to extract into @ariakit/core?
-                const container = ref.value;
+                const container = ref.current;
                 if (!container) return;
                 const tabbables = getAllTabbableIn(container, true);
                 const first = tabbables[0];

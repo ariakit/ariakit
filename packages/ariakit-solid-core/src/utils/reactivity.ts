@@ -86,26 +86,6 @@ export function extractPropsWithDefaults<
  */
 export type RefStore<T> = {
   /**
-   * The current value of the ref. It is a reactive getter.
-   *
-   * **Important note**: since this is a getter, TypeScript might reflect the
-   * wrong type in some cases. For example:
-   *
-   * ```ts
-   * const ref = createRef<number>(); // ref.value type: number | undefined
-   * ref.set(1);
-   * console.log(ref.value); // 1
-   * if (ref.value) {
-   *   // ref.value type: number (narrowed by the if statement)
-   *   console.log(ref.value); // 1
-   *   ref.set(undefined);
-   *   // ref.value type: number (wrong!)
-   *   console.log(ref.value); // undefined
-   * }
-   * ```
-   */
-  value: T;
-  /**
    * The current value of the ref. It is a non-reactive getter, wrapped with
    * the `untrack` function.
    *
@@ -158,12 +138,9 @@ export type RefStore<T> = {
  */
 export function createRef<T>(): RefStore<T | undefined>;
 export function createRef<T>(initialValue: T): RefStore<T>;
-export function createRef<T>(initialValue?: any): any {
+export function createRef<T>(initialValue?: any): RefStore<T> {
   const [get, set] = createSignal<T>(initialValue);
   return {
-    get value() {
-      return get();
-    },
     get current() {
       return untrack(() => get());
     },
