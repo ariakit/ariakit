@@ -31,7 +31,7 @@ export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
           overflow: "hidden",
           padding: 0,
           position: "absolute",
-          whiteSpace: "nowrap",
+          "white-space": "nowrap",
           width: "1px",
         },
       },
