@@ -6,7 +6,7 @@ import {
   type ExtractPropsWithDefaultsExtractedProps,
   type ExtractPropsWithDefaultsRestProps,
   extractPropsWithDefaults,
-} from "./misc.ts";
+} from "./reactivity.ts";
 import type {
   HTMLProps,
   Hook,

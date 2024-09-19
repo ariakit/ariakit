@@ -1,7 +1,7 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { combineProps } from "@solid-primitives/props";
 import { Show, type ValidComponent } from "solid-js";
-import { createRef } from "../utils/misc.ts";
+import { createRef } from "../utils/reactivity.ts";
 import {
   createHook,
   createInstance,
