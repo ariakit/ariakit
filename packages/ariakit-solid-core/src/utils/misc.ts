@@ -9,6 +9,7 @@ import {
   createUniqueId,
   mergeProps,
   splitProps,
+  untrack,
 } from "solid-js";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
@@ -117,7 +118,8 @@ export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
  * A ref object that contains the value getter (`value`) and setter (`set`) as
  * properties for convenience. It also has a `reset` method that can be used to
  * set the value to the initial value that was passed, which is `undefined` by
- * default.
+ * default. The `current` getter can be used to obtain the value without
+ * tracking it reactively.
  *
  * Created by the `createRef` function.
  * @example
@@ -131,8 +133,45 @@ export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
 export type RefStore<T> = {
   /**
    * The current value of the ref. It is a reactive getter.
+   *
+   * **Important note**: since this is a getter, TypeScript might reflect the
+   * wrong type in some cases. For example:
+   *
+   * ```ts
+   * const ref = createRef<number>(); // ref.value type: number | undefined
+   * ref.set(1);
+   * console.log(ref.value); // 1
+   * if (ref.value) {
+   *   // ref.value type: number (narrowed by the if statement)
+   *   console.log(ref.value); // 1
+   *   ref.set(undefined);
+   *   // ref.value type: number (wrong!)
+   *   console.log(ref.value); // undefined
+   * }
+   * ```
    */
   value: T;
+  /**
+   * The current value of the ref. It is a non-reactive getter, wrapped with
+   * the `untrack` function.
+   *
+   * **Important note**: since this is a getter, TypeScript might reflect the
+   * wrong type in some cases. For example:
+   *
+   * ```ts
+   * const ref = createRef<number>(); // ref.current type: number | undefined
+   * ref.set(1);
+   * console.log(ref.current); // 1
+   * if (ref.current) {
+   *   // ref.current type: number (narrowed by the if statement)
+   *   console.log(ref.current); // 1
+   *   ref.set(undefined);
+   *   // ref.current type: number (wrong!)
+   *   console.log(ref.current); // undefined
+   * }
+   * ```
+   */
+  current: T;
   /**
    * The setter function for the ref.
    */
@@ -148,7 +187,8 @@ export type RefStore<T> = {
  * Creates a ref object that contains the value getter (`value`) and setter
  * (`set`) as properties for convenience. It also has a `reset` method that
  * can be used to set the value to the initial value that was passed,
- * which is `undefined` by default.
+ * which is `undefined` by default. The `current` getter can be used to obtain
+ * the value without tracking it reactively.
  * @example
  * ```jsx
  * const ref = createRef();
@@ -165,6 +205,9 @@ export function createRef<T>(initialValue?: any): any {
   return {
     get value() {
       return value();
+    },
+    get current() {
+      return untrack(() => value());
     },
     set,
     reset: () => set(initialValue),
