@@ -1,6 +1,7 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { combineProps } from "@solid-primitives/props";
 import {
+  type Accessor,
   type JSX,
   type Setter,
   createSignal,
@@ -126,6 +127,10 @@ export type RefStore<T> = {
    */
   current: T;
   /**
+   * The getter function for the ref.
+   */
+  get: Accessor<T>;
+  /**
    * The setter function for the ref.
    */
   set: Setter<T>;
@@ -154,14 +159,15 @@ export type RefStore<T> = {
 export function createRef<T>(): RefStore<T | undefined>;
 export function createRef<T>(initialValue: T): RefStore<T>;
 export function createRef<T>(initialValue?: any): any {
-  const [value, set] = createSignal<T>(initialValue);
+  const [get, set] = createSignal<T>(initialValue);
   return {
     get value() {
-      return value();
+      return get();
     },
     get current() {
-      return untrack(() => value());
+      return untrack(() => get());
     },
+    get,
     set,
     reset: () => set(initialValue),
   };
