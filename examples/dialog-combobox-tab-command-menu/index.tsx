@@ -84,6 +84,7 @@ export default function Example() {
             {currentPages.map((page, i) => (
               <CommandMenuItem
                 key={page.path + i}
+                disabled={page.label === "Button"}
                 // rowId={`${Math.ceil((i + 1) / 2)}`}
                 // render={<a href={page.path} target="_blank" rel="noreferrer" />}
               >

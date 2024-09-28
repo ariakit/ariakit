@@ -105,7 +105,10 @@ function findNextPageItemId(
   for (let i = 0; i < renderedItems.length; i += 1) {
     const previousId = id;
     id = next(i);
-    if (!id) break;
+    if (!id) {
+      id = previousId;
+      break;
+    }
     if (id === previousId) continue;
     const itemElement = getEnabledItem(store, id)?.element;
     if (!itemElement) continue;

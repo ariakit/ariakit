@@ -237,24 +237,28 @@ export function useAttribute(
   attributeName: string,
   defaultValue?: string,
 ) {
-  const [attribute, setAttribute] = useState(defaultValue);
+  const initialValue = useInitialValue(defaultValue);
+  const [attribute, setAttribute] = useState(initialValue);
 
-  useSafeLayoutEffect(() => {
+  useEffect(() => {
     const element =
       refOrElement && "current" in refOrElement
         ? refOrElement.current
         : refOrElement;
     if (!element) return;
+
     const callback = () => {
       const value = element.getAttribute(attributeName);
-      if (value == null) return;
-      setAttribute(value);
+      setAttribute(value == null ? initialValue : value);
     };
+
     const observer = new MutationObserver(callback);
     observer.observe(element, { attributeFilter: [attributeName] });
+
     callback();
+
     return () => observer.disconnect();
-  }, [refOrElement, attributeName]);
+  }, [refOrElement, attributeName, initialValue]);
 
   return attribute;
 }

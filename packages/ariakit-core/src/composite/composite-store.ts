@@ -208,6 +208,7 @@ export function createCompositeStore<
     options: NextOptions = {},
   ) => {
     const defaultState = composite.getState();
+    const baseElement = defaultState.baseElement;
     const {
       skip = 0,
       activeId = defaultState.activeId,
@@ -226,69 +227,120 @@ export function createCompositeStore<
       ? rtl && !isVerticalDirection
       : !rtl || isVerticalDirection;
 
+    const canLoop =
+      focusLoop &&
+      (isVerticalDirection
+        ? focusLoop !== "horizontal"
+        : focusLoop !== "vertical");
+
+    const canWrap =
+      focusWrap &&
+      (isVerticalDirection
+        ? focusWrap !== "horizontal"
+        : focusWrap !== "vertical");
+
     const items = canReverse ? reverseArray(renderedItems) : renderedItems;
 
-    if (orientation === "layout") {
-      const activeItem = collection.item(activeId);
-      if (!activeItem) {
-        return findFirstEnabledItem(items)?.id;
+    if (orientation !== "layout") return;
+
+    const activeItem = collection.item(activeId);
+    if (!activeItem) {
+      return findFirstEnabledItem(items)?.id;
+    }
+
+    const index = items.indexOf(activeItem);
+    const nextItems =
+      canLoop && activeId != null
+        ? flipItems(getEnabledItems(items), activeId, includesBaseElement)
+        : getEnabledItems(items.slice(index + 1));
+    const activeRect = activeItem.element?.getBoundingClientRect();
+
+    if (!activeRect) return;
+
+    const isInDirection = (rect: DOMRect, dir = direction) => {
+      if (dir === "up") return rect.bottom <= activeRect.top;
+      if (dir === "down") return rect.top >= activeRect.bottom;
+      if (dir === "next") return rect.left >= activeRect.right;
+      if (dir === "previous") return rect.right <= activeRect.left;
+      return false;
+    };
+
+    const getOverlap = (rect: DOMRect) => {
+      const endSide = isVerticalDirection ? "right" : "bottom";
+      const startSide = isVerticalDirection ? "left" : "top";
+      return Math.max(
+        0,
+        Math.min(activeRect[endSide], rect[endSide]) -
+          Math.max(activeRect[startSide], rect[startSide]),
+      );
+    };
+
+    let bestElement: CompositeStoreItem | null = null;
+    let bestOverlap = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    for (let i = skip; i < nextItems.length; i += 1) {
+      const item = nextItems[i];
+      if (item === NULL_ITEM) {
+        item.element = baseElement;
       }
-      const index = items.indexOf(activeItem);
-      const nextItems = items.slice(index + 1);
-      const activeRect = activeItem.element?.getBoundingClientRect();
+      if (!item) continue;
+      const rect = item?.element?.getBoundingClientRect();
+      if (!rect) continue;
+      const overlap = getOverlap(rect);
+      const distance = Math.abs(
+        isVerticalDirection
+          ? activeRect.top - rect.top
+          : activeRect.left - rect.left,
+      );
+      if (
+        (overlap > bestOverlap && distance <= closestDistance) ||
+        (focusShift &&
+          isVerticalDirection &&
+          overlap === 0 &&
+          bestOverlap === 0 &&
+          distance < closestDistance &&
+          isInDirection(rect))
+      ) {
+        bestElement = item;
+        bestOverlap = overlap;
+        closestDistance = distance;
+      } else if ((bestOverlap && !overlap) || distance > closestDistance) {
+        break;
+      }
+    }
 
-      if (!activeRect) return;
-
-      const getOverlap = (rect: DOMRect) => {
-        const endSide = isVerticalDirection ? "right" : "bottom";
-        const startSide = isVerticalDirection ? "left" : "top";
-        return Math.max(
-          0,
-          Math.min(activeRect[endSide], rect[endSide]) -
-            Math.max(activeRect[startSide], rect[startSide]),
-        );
-      };
-
-      const isInDirection = (rect: DOMRect) => {
-        if (direction === "up") return rect.bottom <= activeRect.top;
-        if (direction === "down") return true; // rect.top >= activeRect.bottom;
-        if (direction === "next") return rect.left >= activeRect.right;
-        if (direction === "previous") return rect.right <= activeRect.left;
-        return false;
-      };
-
-      let bestElement: CompositeStoreItem | null = null;
-      let bestOverlap = 0;
-      let closestDistance = Number.POSITIVE_INFINITY;
-
-      for (const item of nextItems) {
-        const rect = item.element?.getBoundingClientRect();
-        if (!rect) continue;
-        if (isInDirection(rect)) {
-          const overlap = getOverlap(rect);
-          const distance = Math.abs(
-            isVerticalDirection
-              ? activeRect.top - rect.top
-              : activeRect.left - rect.left,
-          );
-          if (
-            overlap > bestOverlap ||
-            (focusShift &&
-              overlap === 0 &&
-              bestOverlap === 0 &&
-              distance < closestDistance)
-          ) {
-            bestElement = item;
-            bestOverlap = overlap;
-            closestDistance = distance;
-          } else if ((bestOverlap && !overlap) || distance > closestDistance) {
-            break;
-          }
+    if (!bestElement) {
+      if (canWrap && !skip) {
+        if (isVerticalDirection) {
+          // TODO: Need to do the thing based on layout indeed.
+          //   let bestOv = 0;
+          //   for (let i = 0; i < items.length; i += 1) {
+          //     const item = items[i];
+          //     if (!item) continue;
+          //     const rect = item.element?.getBoundingClientRect();
+          //     if (!rect) continue;
+          //     const overlap = getOverlap(rect);
+          //     if (overlap > bestOv) {
+          //       bestOv = overlap;
+          //     } else if (
+          //       bestOv &&
+          //       item.id &&
+          //       isInDirection(rect, direction === "down" ? "next" : "previous")
+          //     ) {
+          //       return item.id;
+          //     }
+          //   }
+        } else {
+          return findFirstEnabledItem(nextItems)?.id;
         }
       }
-
-      return bestElement?.id;
+      if (includesBaseElement && !isNextDirection) {
+        return null;
+      }
     }
+
+    return bestElement?.id;
   };
 
   const getNextId = (
@@ -401,26 +453,26 @@ export function createCompositeStore<
 
     next: (skipOrOptions) => {
       const { renderedItems, orientation } = composite.getState();
-      if (orientation === "layout") {
-        return getNextIdInDirection("next");
-      }
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const activeId =
         typeof skipOrOptions === "object" ? skipOrOptions.activeId : undefined;
+      if (orientation === "layout") {
+        return getNextIdInDirection("next", { skip, activeId });
+      }
       return getNextId(renderedItems, orientation, false, skip, activeId);
     },
 
     previous: (skipOrOptions) => {
       const { renderedItems, orientation, includesBaseElement } =
         composite.getState();
-      if (orientation === "layout") {
-        return getNextIdInDirection("previous");
-      }
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const activeId =
         typeof skipOrOptions === "object" ? skipOrOptions.activeId : undefined;
+      if (orientation === "layout") {
+        return getNextIdInDirection("previous", { skip, activeId });
+      }
       // If activeId is initially set to null or if includesBaseElement is set
       // to true, then the composite container will be focusable while
       // navigating with arrow keys. But, if it's a grid, we don't want to
@@ -445,9 +497,6 @@ export function createCompositeStore<
         includesBaseElement,
         orientation,
       } = composite.getState();
-      if (orientation === "layout") {
-        return getNextIdInDirection("down");
-      }
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const activeId =
@@ -455,6 +504,13 @@ export function createCompositeStore<
           ? skipOrOptions.activeId
           : stateActiveId;
       const shouldShift = focusShift && !skip;
+      if (orientation === "layout") {
+        return getNextIdInDirection("down", {
+          skip,
+          activeId,
+          focusShift: shouldShift,
+        });
+      }
       // First, we make sure rows have the same number of items by filling it
       // with disabled fake items. Then, we reorganize the items.
       const verticalItems = verticalizeItems(
@@ -477,9 +533,6 @@ export function createCompositeStore<
         focusShift,
         includesBaseElement,
       } = composite.getState();
-      if (orientation === "layout") {
-        return getNextIdInDirection("up");
-      }
       const skip =
         typeof skipOrOptions === "number" ? skipOrOptions : skipOrOptions?.skip;
       const activeId =
@@ -487,6 +540,13 @@ export function createCompositeStore<
           ? skipOrOptions.activeId
           : stateActiveId;
       const shouldShift = focusShift && !skip;
+      if (orientation === "layout") {
+        return getNextIdInDirection("up", {
+          skip,
+          activeId,
+          focusShift: shouldShift,
+        });
+      }
       const verticalItems = verticalizeItems(
         reverseArray(
           flatten2DArray(
