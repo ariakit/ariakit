@@ -229,10 +229,6 @@ If the dialog has margins, use `calc()` to subtract the margin from the viewport
 }
 ```
 
-### `--dialog-viewport-height`
-
-TODO
-
 ### `--popover-anchor-width`
 
 The `--popover-anchor-width` variable exposes the width value of the anchor element. It's useful when you want to make the popover element have a minimum or the same width as the anchor element.
