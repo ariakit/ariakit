@@ -203,7 +203,27 @@ The `data-autocomplete-value` attribute is applied to the `span` elements within
 
 ## CSS variables
 
-Some components, such as [Popover](/components/popover), [Menu](/components/menu), [Hovercard](/components/hovercard), [SelectPopover](/components/select), [ComboboxPopover](/components/combobox), among others, expose CSS variables that you can use to customize their appearance.
+Some components, such as [Dialog](/components/dialog), [Popover](/components/popover), [Menu](/components/menu), [Hovercard](/components/hovercard), [SelectPopover](/components/select), [ComboboxPopover](/components/combobox), among others, expose CSS variables that you can use to customize their appearance.
+
+### `--dialog-viewport-height`
+
+The `--dialog-viewport-height` variable exposes the height of the visual viewport, considering the space taken by virtual keyboards on mobile devices. Use this CSS variable when you have input fields in your dialog to ensure it always fits within the visual viewport:
+
+```css
+.dialog {
+  max-height: var(--dialog-viewport-height, 100dvh);
+}
+```
+
+If the dialog has margins, use `calc()` to subtract the margin from the viewport height value:
+
+```css
+.dialog {
+  --inset: 16px;
+  inset: var(--inset);
+  max-height: calc(var(--dialog-viewport-height, 100dvh) - var(--inset) * 2);
+}
+```
 
 ### `--popover-anchor-width`
 
