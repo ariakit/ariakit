@@ -166,27 +166,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const { wrapElement, nestedDialogs } = useNestedDialogs(store);
   props = useWrapElement(props, wrapElement, [wrapElement]);
 
-  // Sets --dialog-viewport-height CSS variable to the height of the visual
-  // viewport. This allows the dialog to be positioned correctly when the
-  // viewport height changes (e.g., when the keyboard is shown on mobile).
-  useSafeLayoutEffect(() => {
-    if (!mounted) return;
-    if (!domReady) return;
-    const dialog = ref.current;
-    if (!dialog) return;
-    const win = getWindow(dialog);
-    const viewport = win.visualViewport || win;
-    const setViewportHeight = () => {
-      const height = win.visualViewport?.height ?? win.innerHeight;
-      dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
-    };
-    setViewportHeight();
-    viewport.addEventListener("resize", setViewportHeight, { passive: true });
-    return () => {
-      viewport.removeEventListener("resize", setViewportHeight);
-    };
-  }, [mounted, domReady]);
-
   // Sets disclosure element using the current active element right after the
   // dialog is opened.
   useSafeLayoutEffect(() => {
@@ -229,6 +208,27 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       };
     }, [store, mounted]);
   }
+
+  // Sets --dialog-viewport-height CSS variable to the height of the visual
+  // viewport. This allows the dialog to be positioned correctly when the
+  // viewport height changes (e.g., when the keyboard is shown on mobile).
+  useEffect(() => {
+    if (!mounted) return;
+    if (!domReady) return;
+    const dialog = ref.current;
+    if (!dialog) return;
+    const win = getWindow(dialog);
+    const viewport = win.visualViewport || win;
+    const setViewportHeight = () => {
+      const height = win.visualViewport?.height ?? win.innerHeight;
+      dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
+    };
+    setViewportHeight();
+    viewport.addEventListener("resize", setViewportHeight);
+    return () => {
+      viewport.removeEventListener("resize", setViewportHeight);
+    };
+  }, [mounted, domReady]);
 
   // Renders a hidden dismiss button at the top of the modal dialog element. So
   // that screen reader users aren't trapped in the dialog when there's no
