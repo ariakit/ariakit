@@ -75,9 +75,11 @@ await Promise.all(
       splitting: true,
       esbuildOptions(options) {
         options.chunkNames = "__chunks/[hash]";
-        options.banner = {
-          js: '"use client";',
-        };
+        if (format === "esm") {
+          options.banner = {
+            js: '"use client";',
+          };
+        }
       },
     }),
   ),
