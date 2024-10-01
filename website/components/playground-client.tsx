@@ -382,7 +382,7 @@ export function PlaygroundClient({
                 "min-h-[min(calc(100%-var(--toolbar-height)),var(--max-height))]",
                 "max-h-[--max-height]",
                 type !== "full" && "border border-t-0",
-                collapsed && "[&_pre]:!overflow-hidden",
+                collapsed && "[&_pre]:!overflow-y-hidden",
               )}
             >
               {subscriptionOnly ? (
