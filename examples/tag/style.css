@@ -10,12 +10,12 @@
     mx-auto
 }
 
-.tag-list-label {
+.ak-tag-list-label {
   @apply
     ms-3
 }
 
-.tag-list {
+.ak-tag-list {
   @apply
     flex
     flex-wrap
@@ -29,7 +29,7 @@
     rounded-lg
 }
 
-.tag {
+.ak-tag {
   @apply
     inline-flex
     items-center
@@ -46,7 +46,7 @@
     [:focus-within>&]:data-[active-item]:[--tag-remove-opacity:1]
 }
 
-.tag-remove {
+.ak-tag-remove {
   @apply
     grid
     place-items-center
@@ -61,7 +61,7 @@
     hover:dark:bg-white/10
 }
 
-.tag-input {
+.ak-tag-input {
   @apply
     flex-1
     h-8
@@ -72,7 +72,7 @@
     [&[value=""]]:min-w-[16ch]
 }
 
-.popover {
+.ak-popover {
   @apply
     max-h-[min(var(--popover-available-height,300px),300px)]
     min-w-[min(var(--popover-available-width,280px),280px)]
@@ -89,7 +89,7 @@
     p-1
 }
 
-.combobox-item {
+.ak-combobox-item {
   @apply
     ![outline:none]
     flex
