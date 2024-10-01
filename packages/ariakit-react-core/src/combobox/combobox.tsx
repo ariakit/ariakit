@@ -375,7 +375,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         const autoSelectId =
           userAutoSelectId !== undefined
             ? userAutoSelectId
-            : getDefaultAutoSelectId(items) ?? store.first();
+            : (getDefaultAutoSelectId(items) ?? store.first());
         autoSelectIdRef.current = autoSelectId;
         // If there's no first item (that is, there are no items or all items
         // are disabled), we should move the focus to the input (null),

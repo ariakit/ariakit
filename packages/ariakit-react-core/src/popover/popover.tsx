@@ -106,7 +106,7 @@ function getOffsetMiddleware(
     const finalGutter =
       typeof props.gutter === "number"
         ? props.gutter + arrowOffset
-        : props.gutter ?? arrowOffset;
+        : (props.gutter ?? arrowOffset);
     // If there's no placement alignment (*-start or *-end),
     // we'll fallback to the crossAxis offset as it also works
     // for center-aligned placements.
