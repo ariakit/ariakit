@@ -1,4 +1,3 @@
-import { createTabStore } from "@ariakit/core/tab/tab-store";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -16,6 +15,7 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -87,23 +87,16 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!store?.composite) return;
-      // If the tab panel is part of another composite widget like a combobox,
-      // keyboard navigation is managed here. We need to recreate a tab store
-      // and provide the selected id as the active id. This is necessary because
-      // the original tab store may have the same active id as the external
-      // composite store, which might not be a valid tab id.
-      const state = store.getState();
-      const tab = createTabStore({ ...state, activeId: state.selectedId });
-      tab.setState("renderedItems", state.renderedItems);
       const keyMap = {
-        ArrowLeft: tab.previous,
-        ArrowRight: tab.next,
-        Home: tab.first,
-        End: tab.last,
+        ArrowLeft: store.previous,
+        ArrowRight: store.next,
+        Home: store.first,
+        End: store.last,
       };
       const action = keyMap[event.key as keyof typeof keyMap];
       if (!action) return;
-      const nextId = action();
+      const { selectedId } = store.getState();
+      const nextId = action({ activeId: selectedId });
       if (!nextId) return;
       event.preventDefault();
       store.move(nextId);
@@ -119,15 +112,17 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       [store],
     );
 
-    const tabId = store.panels.useState(
+    const tabId = useStoreState(
+      store.panels,
       () => tabIdProp || store?.panels.item(id)?.tabId,
     );
-    const open = store.useState(
+    const open = useStoreState(
+      store,
       (state) => !!tabId && state.selectedId === tabId,
     );
 
     const disclosure = useDisclosureStore({ open });
-    const mounted = disclosure.useState("mounted");
+    const mounted = useStoreState(disclosure, "mounted");
 
     props = {
       id,
