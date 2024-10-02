@@ -116,7 +116,7 @@
     "babel-plugin-transform-rewrite-imports": "1.2.0",
     "babylon": "6.18.0",
     "chalk": "5.3.0",
-    "chokidar": "3.6.0",
+    "chokidar": "4.0.1",
     "clsx": "2.1.1",
     "concurrently": "9.0.1",
     "cross-env": "7.0.3",
