@@ -217,7 +217,9 @@ export const useDisclosureContent = createHook<
   const hidden = isHidden(mounted, props.hidden, alwaysVisible);
   const styleProp = props.style;
   const style = useMemo(() => {
-    if (hidden) return { ...styleProp, display: "none" };
+    if (hidden) {
+      return { ...styleProp, display: "none" };
+    }
     return styleProp;
   }, [hidden, styleProp]);
 
