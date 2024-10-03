@@ -438,7 +438,8 @@
       margin-block-start: var(--negative-margin);
     }
 
-    &:last-child {
+    &:has(+ &),
+    &:not(:has(~ *:not([hidden]))) {
       margin-block-end: var(--negative-margin);
     }
   }
@@ -524,6 +525,19 @@
   }
 
   /* Tabs */
+  .ak-tab-list {
+    display: flex;
+    flex: none;
+    overflow-x: auto;
+    background-image: linear-gradient(
+      to bottom,
+      var(--popup-background) calc(100% - var(--padding) - 1px),
+      var(--border) calc(100% - var(--padding) - 1px),
+      var(--border) calc(100% - var(--padding)),
+      transparent calc(100% - var(--padding))
+    );
+  }
+
   .ak-tab {
     position: relative;
     display: inline-block;

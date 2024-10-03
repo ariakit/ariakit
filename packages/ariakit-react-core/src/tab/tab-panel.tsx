@@ -72,6 +72,9 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       (state) => !!tabId && state.selectedId === tabId,
     );
 
+    const disclosure = useDisclosureStore({ open });
+    const mounted = useStoreState(disclosure, "mounted");
+
     // Store the scroll position for each tabId. The component may receive
     // different tab ids if it's a single tab panel with dynamic tab id and
     // content.
@@ -95,18 +98,18 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     // Adds scroll restoration behavior to the tab panel.
     useEffect(() => {
       if (!scrollRestoration) return;
-      if (!open) return;
+      if (!mounted) return;
       const element = getScrollElement();
       if (!element) return;
       // If scrollRestoration is set to "reset", scroll to the top of the
       // element and return early.
       if (scrollRestoration === "reset") {
-        element.scrollTo(0, 0);
+        element.scroll(0, 0);
         return;
       }
       if (!tabId) return;
       const position = scrollPositionRef.current.get(tabId);
-      element.scrollTo(position?.x ?? 0, position?.y ?? 0);
+      element.scroll(position?.x ?? 0, position?.y ?? 0);
       // On scroll, save the scroll position for the current tab id.
       const onScroll = () => {
         scrollPositionRef.current.set(tabId, {
@@ -118,7 +121,7 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       return () => {
         element.removeEventListener("scroll", onScroll);
       };
-    }, [scrollRestoration, open, tabId, getScrollElement, store]);
+    }, [scrollRestoration, mounted, tabId, getScrollElement, store]);
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
@@ -170,9 +173,6 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       ),
       [store],
     );
-
-    const disclosure = useDisclosureStore({ open });
-    const mounted = useStoreState(disclosure, "mounted");
 
     props = {
       id,
