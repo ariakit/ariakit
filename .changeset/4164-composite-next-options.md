@@ -10,7 +10,7 @@ The [`next`](https://ariakit.org/reference/use-composite-store#next), [`previous
 
 ```js
 const store = useCompositeStore({ defaultActiveId: "item1" });
-const item3 = composite.next({ activeId: "item2" });
+const item3 = store.next({ activeId: "item2" });
 ```
 
 It's important to note that the composite state is not modified when using this feature. The state passed to these methods is used solely for that specific method call.
