@@ -594,7 +594,7 @@ export interface CompositeStoreFunctions<
   /**
    * Returns the id of the next enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * state. You can pass additional options to override the current state.
    * @example
    * const nextId = store.next();
    */
@@ -606,7 +606,7 @@ export interface CompositeStoreFunctions<
   /**
    * Returns the id of the previous enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * state. You can pass additional options to override the current state.
    * @example
    * const previousId = store.previous();
    */
@@ -618,7 +618,7 @@ export interface CompositeStoreFunctions<
   /**
    * Returns the id of the enabled item above based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * state. You can pass additional options to override the current state.
    * @example
    * const upId = store.up();
    */
@@ -630,7 +630,7 @@ export interface CompositeStoreFunctions<
   /**
    * Returns the id of the enabled item below based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * state. You can pass additional options to override the current state.
    * @example
    * const downId = store.down();
    */
