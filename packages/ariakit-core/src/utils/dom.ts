@@ -255,14 +255,17 @@ export function getScrollingElement(
   element?: Element | null,
 ): HTMLElement | Element | null {
   if (!element) return null;
+  const isScrollableOverflow = (overflow: string) => {
+    if (overflow === "auto") return true;
+    if (overflow === "scroll") return true;
+    return false;
+  };
   if (element.clientHeight && element.scrollHeight > element.clientHeight) {
     const { overflowY } = getComputedStyle(element);
-    const isScrollable = overflowY !== "visible" && overflowY !== "hidden";
-    if (isScrollable) return element;
+    if (isScrollableOverflow(overflowY)) return element;
   } else if (element.clientWidth && element.scrollWidth > element.clientWidth) {
     const { overflowX } = getComputedStyle(element);
-    const isScrollable = overflowX !== "visible" && overflowX !== "hidden";
-    if (isScrollable) return element;
+    if (isScrollableOverflow(overflowX)) return element;
   }
   return (
     getScrollingElement(element.parentElement) ||
