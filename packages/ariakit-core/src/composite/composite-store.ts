@@ -13,6 +13,23 @@ import type { SetState } from "../utils/types.ts";
 
 type Orientation = "horizontal" | "vertical" | "both";
 
+interface NextOptions
+  extends Pick<
+    Partial<CompositeStoreState>,
+    | "activeId"
+    | "focusShift"
+    | "focusLoop"
+    | "focusWrap"
+    | "includesBaseElement"
+    | "renderedItems"
+    | "rtl"
+  > {
+  /**
+   * The number of items to skip.
+   */
+  skip?: number;
+}
+
 const NULL_ITEM = { id: null as unknown as string };
 
 function findFirstEnabledItem(items: CompositeStoreItem[], excludeId?: string) {
@@ -31,12 +48,6 @@ function getEnabledItems(items: CompositeStoreItem[], excludeId?: string) {
     }
     return !item.disabled;
   });
-}
-
-function getOppositeOrientation(orientation: Orientation) {
-  if (orientation === "vertical") return "horizontal" as const;
-  if (orientation === "horizontal") return "vertical" as const;
-  return;
 }
 
 function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
@@ -189,32 +200,57 @@ export function createCompositeStore<
   );
 
   const getNextId = (
-    items: CompositeStoreItem[],
-    orientation: Orientation,
-    hasNullItem: boolean,
-    skip?: number,
+    direction: "next" | "previous" | "up" | "down" = "next",
+    options: NextOptions = {},
   ): string | null | undefined => {
-    const { activeId, rtl, focusLoop, focusWrap, includesBaseElement } =
-      composite.getState();
-    // RTL doesn't make sense on vertical navigation
-    const isHorizontal = orientation !== "vertical";
-    const isRTL = rtl && isHorizontal;
-    const allItems = isRTL ? reverseArray(items) : items;
-    // If there's no item focused, we just move the first one.
+    const defaultState = composite.getState();
+    const {
+      skip = 0,
+      activeId = defaultState.activeId,
+      focusShift = defaultState.focusShift,
+      focusLoop = defaultState.focusLoop,
+      focusWrap = defaultState.focusWrap,
+      includesBaseElement = defaultState.includesBaseElement,
+      renderedItems = defaultState.renderedItems,
+      rtl = defaultState.rtl,
+    } = options;
+
+    const isVerticalDirection = direction === "up" || direction === "down";
+    const isNextDirection = direction === "next" || direction === "down";
+
+    const canReverse = isNextDirection
+      ? rtl && !isVerticalDirection
+      : !rtl || isVerticalDirection;
+
+    const canShift = focusShift && !skip;
+
+    let items = !isVerticalDirection
+      ? renderedItems
+      : flatten2DArray(
+          normalizeRows(groupItemsByRows(renderedItems), activeId, canShift),
+        );
+
+    items = canReverse ? reverseArray(renderedItems) : renderedItems;
+    items = isVerticalDirection ? verticalizeItems(items) : items;
+
     if (activeId == null) {
-      return findFirstEnabledItem(allItems)?.id;
+      // If there's no item focused, we just move the first one.
+      return findFirstEnabledItem(items)?.id;
     }
-    const activeItem = allItems.find((item) => item.id === activeId);
-    // If there's no item focused, we just move to the first one.
+
+    const activeItem = items.find((item) => item.id === activeId);
     if (!activeItem) {
-      return findFirstEnabledItem(allItems)?.id;
+      // If there's no item focused, we just move to the first one.
+      return findFirstEnabledItem(items)?.id;
     }
-    const isGrid = !!activeItem.rowId;
-    const activeIndex = allItems.indexOf(activeItem);
-    const nextItems = allItems.slice(activeIndex + 1);
+
+    const isGrid = items.some((item) => item.rowId);
+    const activeIndex = items.indexOf(activeItem);
+    const nextItems = items.slice(activeIndex + 1);
     const nextItemsInRow = getItemsInRow(nextItems, activeItem.rowId);
-    // Home, End, PageUp, PageDown
-    if (skip !== undefined) {
+
+    if (skip) {
+      // Home, End, PageUp, PageDown
       const nextEnabledItemsInRow = getEnabledItems(nextItemsInRow, activeId);
       const nextItem =
         nextEnabledItemsInRow.slice(skip)[0] ||
@@ -222,27 +258,36 @@ export function createCompositeStore<
         nextEnabledItemsInRow[nextEnabledItemsInRow.length - 1];
       return nextItem?.id;
     }
-    const oppositeOrientation = getOppositeOrientation(
-      // If it's a grid and orientation is not set, it's a next/previous call,
-      // which is inherently horizontal. up/down will call next with orientation
-      // set to vertical by default (see below on up/down methods).
-      isGrid ? orientation || "horizontal" : orientation,
-    );
-    const canLoop = focusLoop && focusLoop !== oppositeOrientation;
-    const canWrap = isGrid && focusWrap && focusWrap !== oppositeOrientation;
-    // previous and up methods will set hasNullItem, but when calling next
-    // directly, hasNullItem will only be true if if it's not a grid and
-    // focusLoop is set to true, which means that pressing right or down keys on
-    // grids will never focus the composite container element. On
+
+    const canLoop =
+      focusLoop &&
+      (isVerticalDirection
+        ? focusLoop !== "horizontal"
+        : focusLoop !== "vertical");
+
+    const canWrap =
+      isGrid &&
+      focusWrap &&
+      (isVerticalDirection
+        ? focusWrap !== "horizontal"
+        : focusWrap !== "vertical");
+
+    // When calling next directly, hasNullItem will only be true if if it's not
+    // a grid and focusLoop is set to true, which means that pressing right or
+    // down keys on grids will never focus the composite container element. On
     // one-dimensional composites that don't loop, pressing right or down keys
     // also doesn't focus on the composite container element.
-    hasNullItem = hasNullItem || (!isGrid && canLoop && includesBaseElement);
+    const hasNullItem = isNextDirection
+      ? (!isGrid || isVerticalDirection) && canLoop && includesBaseElement
+      : isVerticalDirection
+        ? includesBaseElement
+        : false;
 
     if (canLoop) {
       const loopItems =
         canWrap && !hasNullItem
-          ? allItems
-          : getItemsInRow(allItems, activeItem.rowId);
+          ? items
+          : getItemsInRow(items, activeItem.rowId);
       const sortedItems = flipItems(loopItems, activeId, hasNullItem);
       const nextItem = findFirstEnabledItem(sortedItems, activeId);
       return nextItem?.id;
@@ -289,70 +334,32 @@ export function createCompositeStore<
       findFirstEnabledItem(reverseArray(composite.getState().renderedItems))
         ?.id,
 
-    next: (skip) => {
-      const { renderedItems, orientation } = composite.getState();
-      return getNextId(renderedItems, orientation, false, skip);
+    next: (options) => {
+      if (options !== undefined && typeof options === "number") {
+        options = { skip: options };
+      }
+      return getNextId("next", options);
     },
 
-    previous: (skip) => {
-      const { renderedItems, orientation, includesBaseElement } =
-        composite.getState();
-      // If activeId is initially set to null or if includesBaseElement is set
-      // to true, then the composite container will be focusable while
-      // navigating with arrow keys. But, if it's a grid, we don't want to
-      // focus on the composite container with horizontal navigation.
-      const isGrid = !!findFirstEnabledItem(renderedItems)?.rowId;
-      const hasNullItem = !isGrid && includesBaseElement;
-      return getNextId(
-        reverseArray(renderedItems),
-        orientation,
-        hasNullItem,
-        skip,
-      );
+    previous: (options) => {
+      if (options !== undefined && typeof options === "number") {
+        options = { skip: options };
+      }
+      return getNextId("previous", options);
     },
 
-    down: (skip) => {
-      const {
-        activeId,
-        renderedItems,
-        focusShift,
-        focusLoop,
-        includesBaseElement,
-      } = composite.getState();
-      const shouldShift = focusShift && !skip;
-      // First, we make sure rows have the same number of items by filling it
-      // with disabled fake items. Then, we reorganize the items.
-      const verticalItems = verticalizeItems(
-        flatten2DArray(
-          normalizeRows(groupItemsByRows(renderedItems), activeId, shouldShift),
-        ),
-      );
-      const canLoop = focusLoop && focusLoop !== "horizontal";
-      // Pressing down arrow key will only focus on the composite container if
-      // loop is true, both, or vertical.
-      const hasNullItem = canLoop && includesBaseElement;
-      return getNextId(verticalItems, "vertical", hasNullItem, skip);
+    down: (options) => {
+      if (options !== undefined && typeof options === "number") {
+        options = { skip: options };
+      }
+      return getNextId("down", options);
     },
 
-    up: (skip) => {
-      const { activeId, renderedItems, focusShift, includesBaseElement } =
-        composite.getState();
-      const shouldShift = focusShift && !skip;
-      const verticalItems = verticalizeItems(
-        reverseArray(
-          flatten2DArray(
-            normalizeRows(
-              groupItemsByRows(renderedItems),
-              activeId,
-              shouldShift,
-            ),
-          ),
-        ),
-      );
-      // If activeId is initially set to null, we'll always focus on the
-      // composite container when the up arrow key is pressed in the first row.
-      const hasNullItem = includesBaseElement;
-      return getNextId(verticalItems, "vertical", hasNullItem, skip);
+    up: (options) => {
+      if (options !== undefined && typeof options === "number") {
+        options = { skip: options };
+      }
+      return getNextId("up", options);
     },
   };
 }
@@ -587,39 +594,51 @@ export interface CompositeStoreFunctions<
   /**
    * Returns the id of the next enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * state. You can pass additional options to override the current state.
    * @example
    * const nextId = store.next();
-   * const nextNextId = store.next(2);
    */
-  next: (skip?: number) => string | null | undefined;
+  next(options?: NextOptions): string | null | undefined;
+  /**
+   * @deprecated Use the object syntax instead: `next({ skip: 2 })`.
+   */
+  next(skip?: number): string | null | undefined;
   /**
    * Returns the id of the previous enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * state. You can pass additional options to override the current state.
    * @example
    * const previousId = store.previous();
-   * const previousPreviousId = store.previous(2);
    */
-  previous: (skip?: number) => string | null | undefined;
+  previous(options?: NextOptions): string | null | undefined;
+  /**
+   * @deprecated Use the object syntax instead: `previous({ skip: 2 })`.
+   */
+  previous(skip?: number): string | null | undefined;
   /**
    * Returns the id of the enabled item above based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * state. You can pass additional options to override the current state.
    * @example
    * const upId = store.up();
-   * const upUpId = store.up(2);
    */
-  up: (skip?: number) => string | null | undefined;
+  up(options?: NextOptions): string | null | undefined;
+  /**
+   * @deprecated Use the object syntax instead: `up({ skip: 2 })`.
+   */
+  up(skip?: number): string | null | undefined;
   /**
    * Returns the id of the enabled item below based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * state. You can pass additional options to override the current state.
    * @example
    * const downId = store.down();
-   * const downDownId = store.down(2);
    */
-  down: (skip?: number) => string | null | undefined;
+  down(options?: NextOptions): string | null | undefined;
+  /**
+   * @deprecated Use the object syntax instead: `down({ skip: 2 })`.
+   */
+  down(skip?: number): string | null | undefined;
   /**
    * Returns the id of the first enabled item.
    */
