@@ -4,7 +4,7 @@ import { NewWindow } from "@/icons/new-window.tsx";
 import { React } from "@/icons/react.tsx";
 import { Vue } from "@/icons/vue.tsx";
 import { invariant } from "@ariakit/core/utils/misc";
-import pkg from "@ariakit/react/package.json";
+import pkg from "@ariakit/react/package.json" assert { type: "json" };
 import {
   Select,
   SelectArrow,
