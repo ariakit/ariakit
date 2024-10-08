@@ -116,6 +116,10 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
       event.stopPropagation();
       return;
     }
+    if (!store) return;
+    // Do not call onChange if the value is the same as the current value. See
+    // https://github.com/ariakit/ariakit/issues/3771
+    if (store.getState().value === value) return;
     if (!nativeRadio) {
       event.currentTarget.checked = true;
       schedulePropertyUpdate();
