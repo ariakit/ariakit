@@ -130,12 +130,10 @@ export const useDisclosureContent = createHook<
   useSafeLayoutEffect(() => {
     if (!store) return;
     if (!animated) return;
+    if (!transition) return;
+    if (!contentElement) return;
     const stopAnimation = () => store?.setState("animating", false);
     const stopAnimationSync = () => flushSync(stopAnimation);
-    if (!transition || !contentElement) {
-      stopAnimation();
-      return;
-    }
     // Ignore transition states that don't match the current open state. This
     // may happen because transitions are updated asynchronously using
     // requestAnimationFrame.
