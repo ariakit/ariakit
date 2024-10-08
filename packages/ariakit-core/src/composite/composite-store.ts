@@ -230,7 +230,7 @@ export function createCompositeStore<
           normalizeRows(groupItemsByRows(renderedItems), activeId, canShift),
         );
 
-    items = canReverse ? reverseArray(renderedItems) : renderedItems;
+    items = canReverse ? reverseArray(items) : items;
     items = isVerticalDirection ? verticalizeItems(items) : items;
 
     if (activeId == null) {
