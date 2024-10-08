@@ -12,6 +12,7 @@ import {
   HovercardArrow,
   Role,
   useHovercardStore,
+  useStoreState,
 } from "@ariakit/react";
 import Link from "next/link.js";
 import type { ReactNode } from "react";
@@ -19,12 +20,15 @@ import {
   createContext,
   isValidElement,
   useContext,
-  useMemo,
+  useEffect,
   useRef,
+  useState,
+  useTransition,
 } from "react";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import { Command } from "./command.tsx";
+import { getPageMarkdown } from "./get-page-markdown.tsx";
 import { Popup } from "./popup.tsx";
 
 // Breadth-first search algorithm
@@ -83,20 +87,28 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
 
   const sub = useSubscription();
   const ref = useRef<HTMLDivElement>(null);
-  const href = store.useState("anchorElement")?.getAttribute("href");
+  const href = useStoreState(store, "anchorElement")?.getAttribute("href");
   const url = new URL(href || "", "https://ariakit.org");
-  const [, , page] = url.pathname.split("/");
+  const [, category, page] = url.pathname.split("/");
   const id = url.hash.slice(1);
 
-  const content = useMemo(() => {
-    if (!contents) return;
-    if (!page) return;
-    const content = contents[page];
-    if (!content) return;
-    if (!id) return content;
-    return findSection(content, id);
-  }, [contents, page, id]);
+  const [isPending, startTransition] = useTransition();
+  const [content, setContent] = useState<ReactNode | null>(null);
 
+  useEffect(() => {
+    if (!category || !page) return;
+    startTransition(async () => {
+      const lol = await getPageMarkdown({ category, page });
+      if (!id) {
+        setContent(lol);
+        return;
+      }
+      const section = findSection(lol, id);
+      setContent(section);
+    });
+  }, [id, category, page]);
+
+  if (isPending) return null;
   if (!content) return null;
   if (!sub.isLoaded) return null;
   if (sub.userId && !sub.isFetched) return null;
