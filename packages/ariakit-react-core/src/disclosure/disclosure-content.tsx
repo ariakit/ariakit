@@ -116,7 +116,6 @@ export const useDisclosureContent = createHook<
     // wait for the portal to be mounted and connected to the DOM before we
     // can start the animation.
     if (!contentElement?.isConnected) {
-      console.log("dsadsa");
       setTransition(null);
       return;
     }
