@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.4.13
+
+- Improved JSDocs.
+
 ## 0.4.12
 
 - Fixed regression in [`focusShift`](https://ariakit.org/reference/composite-provider#focusshift).

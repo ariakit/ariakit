@@ -1,5 +1,10 @@
 # @ariakit/react
 
+## 0.4.14
+
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.14`
+
 ## 0.4.13
 
 ### Accessible composite widgets with invalid `activeId`
