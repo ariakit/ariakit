@@ -41,7 +41,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
           disclosure={dialog}
           focusLoop={false}
           focusShift
-          orientation="layout"
+          // orientation="layout"
           // rtl
           // focusWrap="horizontal"
           resetValueOnHide
@@ -208,10 +208,7 @@ export const CommandMenuList = forwardRef<HTMLDivElement, CommandMenuListProps>(
       <Ariakit.ComboboxList
         ref={ref}
         {...props}
-        className={clsx(
-          "ak-popup-cover grid grid-cols-2 overflow-auto overscroll-contain",
-          props.className,
-        )}
+        className={clsx("overflow-auto overscroll-contain", props.className)}
       />
     );
   },
