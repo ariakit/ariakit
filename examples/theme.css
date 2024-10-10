@@ -276,11 +276,11 @@
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
-      hover:[&:not([data-selected])]:[--tab-background:theme(colors.black/8%)]
-      dark:hover:[&:not([data-selected])]:[--tab-background:theme(colors.white/8%)]
+      hover:aria-[selected=false]:[--tab-background:theme(colors.black/8%)]
+      dark:hover:aria-[selected=false]:[--tab-background:theme(colors.white/8%)]
   }
 
-  .ak-tab-default:not([data-selected]) {
+  .ak-tab-default[aria-selected="false"] {
     --border: transparent;
   }
 
@@ -288,11 +288,11 @@
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
-      hover:[&:not([data-selected])]:[--tab-background:theme(colors.black/8%)]
-      dark:hover:[&:not([data-selected])]:[--tab-background:theme(colors.white/8%)]
+      hover:aria-[selected=false]:[--tab-background:theme(colors.black/8%)]
+      dark:hover:aria-[selected=false]:[--tab-background:theme(colors.white/8%)]
   }
 
-  .ak-tab-chip[data-selected] {
+  .ak-tab-chip[aria-selected="true"] {
     --border: transparent;
     @apply
       [--tab-background:oklch(from_var(--background)_calc(l-.1)_c_h)]
@@ -555,7 +555,7 @@
     opacity: 0.5;
   }
 
-  .ak-tab[data-selected] {
+  .ak-tab[aria-selected="true"] {
     z-index: 20;
   }
 
@@ -564,7 +564,7 @@
     color: var(--accent-text);
   }
 
-  .ak-tab[data-focus-visible]:not([data-selected]) {
+  .ak-tab[data-focus-visible]:not([aria-selected="true"]) {
     --background: var(--accent-background);
   }
 
@@ -588,8 +588,7 @@
     outline: none;
   }
 
-  /* TODO: Make this tab-default-selected so users can do data-[selected]:tab-default-selected? */
-  .ak-tab-default[data-selected] {
+  .ak-tab-default[aria-selected="true"] {
     --corner-size: calc(var(--rounded) - var(--padding));
     --padding-block: calc(theme(spacing.1) + var(--margin));
     --padding-block-end: var(--margin-block-end);
@@ -601,12 +600,12 @@
       inset 0 -2px 0 4px var(--background);
   }
 
-  .ak-tab-default:not([data-selected],[data-focus-visible],:hover) {
+  .ak-tab-default:not([aria-selected="true"],[data-focus-visible],:hover) {
     --background: var(--popup-background);
   }
 
-  .ak-tab-default[data-selected]::before,
-  .ak-tab-default[data-selected]::after {
+  .ak-tab-default[aria-selected="true"]::before,
+  .ak-tab-default[aria-selected="true"]::after {
     display: block;
   }
 

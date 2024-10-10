@@ -181,10 +181,6 @@ If you're styling Ariakit components, it's recommended to use the `[data-focus-v
 }
 ```
 
-### `[data-selected]`
-
-TODO
-
 ### `[data-user-value]`
 
 The `data-user-value` attribute is used on the `span` elements within [`ComboboxItemValue`](/reference/combobox-item-value) that correspond to the user's input. This is handy when you need to emphasize the matching segment of the item value.
