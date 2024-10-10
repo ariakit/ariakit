@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 function query(locator: Page | Locator) {
   return {
@@ -8,7 +9,7 @@ function query(locator: Page | Locator) {
     dialog: (name: string) =>
       locator
         .getByRole("dialog", { name, exact: true, includeHidden: true })
-        .or(locator.getByRole("none", { name, exact: true })),
+        .or(locator.getByRole("heading", { name, exact: true }).locator("..")),
     accDialog: (name: string) =>
       locator.getByRole("dialog", { name, exact: true }),
   };
@@ -43,12 +44,6 @@ async function canScrollBody(page: Page) {
   const scrollY2 = await page.evaluate(() => window.scrollY);
   return scrollY !== scrollY2;
 }
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-nested-multiple", {
-    waitUntil: "networkidle",
-  });
-});
 
 for (const { name, type } of [
   { name: "nested", type: "" },
