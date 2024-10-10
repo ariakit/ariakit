@@ -112,10 +112,10 @@ function Item() {
 
 Regardless of whether the item is rendered as a [`ComboboxItem`](/reference/combobox-item) or a [`MenuItem`](/reference/menu-item), we control the checked state of all items using the menu store. This is automatically managed by the [`MenuItemRadio`](/reference/menu-item-radio) component. However, we need to manually link this state with the [`ComboboxItem`](/reference/combobox-item) component.
 
-1. First, to confirm if an item can be checked, we use the [callback version of the `useState` hook](/guide/component-stores#computed-values) from the menu store to check if the menu values already include a state with the same `name` property as the item:
+1. First, to confirm if an item can be checked, we use the [callback version of the `useStoreState` hook](/guide/component-stores#computed-values) to check if the menu values already include a state with the same `name` property as the item:
 
    ```jsx
-   const checkable = menu.useState((state) => {
+   const checkable = useStoreState(menu, (state) => {
      return (
        props.name != null &&
        props.value != null &&
@@ -127,7 +127,7 @@ Regardless of whether the item is rendered as a [`ComboboxItem`](/reference/comb
 2. Next, we can use the same approach to determine if the item is checked in our custom `MenuItem` component:
 
    ```jsx
-   const checked = menu.useState((state) => {
+   const checked = useStoreState(menu, (state) => {
      return (
        props.name != null &&
        props.value != null &&

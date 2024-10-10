@@ -1,3 +1,7 @@
+/**
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.org/plus/license
+ */
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
@@ -85,11 +89,16 @@ export const ComboboxPopover = React.forwardRef<
   HTMLDivElement,
   ComboboxPopoverProps
 >(function ComboboxPopover(props, ref) {
-  const combobox = Ariakit.useComboboxContext()!;
-  const isInputActive = combobox.useState((state) => state.activeId === null);
+  const combobox = Ariakit.useComboboxContext();
+  const isInputActive = Ariakit.useStoreState(
+    combobox,
+    (state) => state?.activeId === null,
+  );
   // React.useDeferredValue helps in maintaining a responsive UI during the
   // mounting of the popover.
-  const mounted = React.useDeferredValue(combobox.useState("mounted"));
+  const mounted = React.useDeferredValue(
+    Ariakit.useStoreState(combobox, "mounted"),
+  );
   return (
     <Ariakit.ComboboxPopover
       ref={ref}
@@ -176,11 +185,14 @@ export const ComboboxPanel = React.forwardRef<
   HTMLDivElement,
   ComboboxPanelProps
 >(function ComboboxTabPanel(props, ref) {
-  const tab = Ariakit.useTabContext()!;
+  const tab = Ariakit.useTabContext();
   // We assume a single tab panel is being displayed with the `tabId` and
   // `children` props varying based on the active tab. If a `tabId` prop isn't
   // supplied, we can deduce it from the selected tab.
-  const tabId = tab.useState((state) => props.tabId ?? state.selectedId);
+  const tabId = Ariakit.useStoreState(
+    tab,
+    (state) => props.tabId ?? state?.selectedId,
+  );
   return (
     <Ariakit.TabPanel
       ref={ref}

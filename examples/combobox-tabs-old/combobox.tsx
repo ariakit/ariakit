@@ -68,8 +68,6 @@ export interface ComboboxProps extends Ariakit.ComboboxProps {}
 
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   function Combobox(props, ref) {
-    const combobox = Ariakit.useComboboxContext()!;
-    const hasValue = combobox.useState((state) => state.value !== "");
     return (
       <div className="combobox-wrapper">
         <Ariakit.Combobox
@@ -90,9 +88,13 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           }}
         />
         <div className="combobox-buttons">
-          {hasValue && (
-            <Ariakit.ComboboxCancel className="button secondary combobox-cancel" />
-          )}
+          <Ariakit.ComboboxValue>
+            {(value) =>
+              value !== "" && (
+                <Ariakit.ComboboxCancel className="button secondary combobox-cancel" />
+              )
+            }
+          </Ariakit.ComboboxValue>
           <Ariakit.ComboboxDisclosure className="button flat combobox-disclosure" />
         </div>
       </div>
@@ -106,11 +108,16 @@ export const ComboboxPopover = React.forwardRef<
   HTMLDivElement,
   ComboboxPopoverProps
 >(function ComboboxPopover(props, ref) {
-  const combobox = Ariakit.useComboboxContext()!;
-  const isInputActive = combobox.useState((state) => state.activeId === null);
+  const combobox = Ariakit.useComboboxContext();
+  const isInputActive = Ariakit.useStoreState(
+    combobox,
+    (state) => state?.activeId === null,
+  );
   // React.useDeferredValue helps in maintaining a responsive UI during the
   // mounting of the popover.
-  const mounted = React.useDeferredValue(combobox.useState("mounted"));
+  const mounted = React.useDeferredValue(
+    Ariakit.useStoreState(combobox, "mounted"),
+  );
   return (
     <Ariakit.ComboboxPopover
       ref={ref}
@@ -184,10 +191,13 @@ export interface ComboboxTabProps extends Ariakit.ComboboxItemProps {}
 
 export const ComboboxTab = React.forwardRef<HTMLDivElement, ComboboxTabProps>(
   function ComboboxTab({ disabled, ...props }, ref) {
-    const tab = Ariakit.useTabContext()!;
+    const tab = Ariakit.useTabContext();
     const defaultId = React.useId();
     const id = props.id ?? defaultId;
-    const isSelected = tab.useState((state) => state.selectedId === id);
+    const selected = Ariakit.useStoreState(
+      tab,
+      (state) => state?.selectedId === id,
+    );
     return (
       <Ariakit.ComboboxItem
         ref={ref}
@@ -197,7 +207,7 @@ export const ComboboxTab = React.forwardRef<HTMLDivElement, ComboboxTabProps>(
         // remaining tabs will continue to be registered as tabs, but they won't
         // be part of the combobox widget's focus order when using the up and
         // down arrow keys.
-        shouldRegisterItem={isSelected}
+        shouldRegisterItem={selected}
         {...props}
         className={clsx("tab", props.className)}
         render={
@@ -208,7 +218,7 @@ export const ComboboxTab = React.forwardRef<HTMLDivElement, ComboboxTabProps>(
             // it to be disabled. Users must still be able to focus on it and
             // navigate to other enabled tabs. However, we can safely disable
             // tabs that aren't selected.
-            disabled={isSelected ? false : disabled}
+            disabled={selected ? false : disabled}
           />
         }
       />
@@ -222,11 +232,14 @@ export const ComboboxPanel = React.forwardRef<
   HTMLDivElement,
   ComboboxPanelProps
 >(function ComboboxTabPanel(props, ref) {
-  const tab = Ariakit.useTabContext()!;
+  const tab = Ariakit.useTabContext();
   // We assume a single tab panel is being displayed with the `tabId` and
   // `children` props varying based on the active tab. If a `tabId` prop isn't
   // supplied, we can deduce it from the selected tab.
-  const tabId = tab.useState((state) => props.tabId ?? state.selectedId);
+  const tabId = Ariakit.useStoreState(
+    tab,
+    (state) => props.tabId ?? state?.selectedId,
+  );
   return (
     <Ariakit.TabPanel
       ref={ref}
@@ -246,7 +259,7 @@ export interface ComboboxItemProps extends Ariakit.ComboboxItemProps {}
 
 export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
   function ComboboxItem(props, ref) {
-    const tab = Ariakit.useTabContext()!;
+    const tab = Ariakit.useTabContext();
     return (
       <Ariakit.ComboboxItem
         ref={ref}
@@ -260,6 +273,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         onKeyDown={(event) => {
           props.onKeyDown?.(event);
           if (event.defaultPrevented) return;
+          if (!tab) return;
           const keyMap = {
             ArrowLeft: tab.previous,
             ArrowRight: tab.next,

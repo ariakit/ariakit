@@ -31,8 +31,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   ref,
 ) {
   const menu = Ariakit.useMenuStore({ open, setOpen });
-  const currentPlacement = menu.useState("currentPlacement");
-  const mounted = menu.useState("mounted");
+  const currentPlacement = Ariakit.useStoreState(menu, "currentPlacement");
+  const mounted = Ariakit.useStoreState(menu, "mounted");
   return (
     <MotionConfig reducedMotion="user">
       <Ariakit.MenuButton
@@ -78,7 +78,8 @@ export interface MenuItemProps
 // Instead of using the Ariakit `render` prop, we give control to Framer Motion
 // so it can process the props before we pass the remainder to
 // `Ariakit.MenuItem`.
-const MotionMenuItem = motion(Ariakit.MenuItem);
+// @ts-expect-error https://github.com/framer/motion/issues/2792
+const MotionMenuItem = motion.create(Ariakit.MenuItem);
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   function MenuItem(props, ref) {

@@ -85,11 +85,14 @@ By using [`React.useOptimistic`](https://react.dev/reference/react/useOptimistic
 
 The [Select](/components/select) component can function as either a single select or multi-select component. This is decided by the [`value`](/reference/select-provider#value) prop's type. For single select, the value is a string, while for multi-select, it's an array of strings. Simply setting the value as an array activates the multi-select function.
 
-In this example, we use the [`useSelectContext`](/reference/use-select-context) hook within our custom `SelectItem` component to access the [select store](/reference/use-select-store). We then verify if the value is an array using the [`store.useState`](/reference/use-select-store#usestate) hook:
+In this example, we use the [`useSelectContext`](/reference/use-select-context) hook within our custom `SelectItem` component to access the [select store](/reference/use-select-store). We then verify if the value is an array using the [`useStoreState`](/reference/use-store-state) hook:
 
 ```jsx
 const select = useSelectContext();
-const isMultiSelect = select.useState((state) => Array.isArray(state.value));
+const isMultiSelect = useStoreState(
+  select,
+  (state) => Array.isArray(state.value),
+);
 ```
 
 To learn more, check out the [Component stores](/guide/component-stores#computed-values) guide.

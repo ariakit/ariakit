@@ -1,5 +1,131 @@
 # @ariakit/react-core
 
+## 0.4.13
+
+### Accessible composite widgets with invalid `activeId`
+
+We've improved the logic for composite widgets such as [Tabs](https://ariakit.org/components/tab) and [Toolbar](https://ariakit.org/components/toolbar) when the [`activeId`](https://ariakit.org/reference/composite-provider#activeid) state points to an element that is disabled or missing from the DOM. This can happen if an item is dynamically removed, disabled, or lazily rendered, potentially making the composite widget inaccessible to keyboard users.
+
+Now, when the [`activeId`](https://ariakit.org/reference/composite-provider#activeid) state is invalid, all composite items will remain tabbable, enabling users to <kbd>Tab</kbd> into the composite widget. Once a composite item receives focus or the element referenced by the [`activeId`](https://ariakit.org/reference/composite-provider#activeid) state becomes available, the roving tabindex behavior is restored.
+
+### Other updates
+
+- Fixed regression in [`focusShift`](https://ariakit.org/reference/composite-provider#focusshift).
+- Fixed [Radio](https://ariakit.org/components/radio) to prevent `onChange` from triggering on radios that are already checked.
+- Fixed [`DisclosureContent`](https://ariakit.org/reference/disclosure-content) setting an incorrect `animating` state value during enter animations.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.12`
+
+## 0.4.12
+
+### Tab panels with scroll restoration
+
+Ariakit now supports scroll restoration for the [`TabPanel`](https://ariakit.org/reference/tab-panel) component. This allows you to control whether and how the scroll position is restored when switching tabs.
+
+To enable scroll restoration, use the new [`scrollRestoration`](https://ariakit.org/reference/tab-panel#scrollrestoration) prop:
+
+```jsx
+// Restores the scroll position of the tab panel element when switching tabs
+<TabPanel scrollRestoration />
+```
+
+By default, the scroll position is restored when switching tabs. You can set it to `"reset"` to return the scroll position to the top of the tab panel when changing tabs. Use the [`scrollElement`](https://ariakit.org/reference/tab-panel#scrollelement) prop to specify a different scrollable element:
+
+```jsx
+// Resets the scroll position of a different scrollable element
+<div className="overflow-auto">
+  <TabPanel
+    scrollRestoration="reset"
+    scrollElement={(panel) => panel.parentElement}
+  />
+</div>
+```
+
+### Full height dialogs and on-screen virtual keyboards
+
+A new [`--dialog-viewport-height`](https://ariakit.org/guide/styling#--dialog-viewport-height) CSS variable has been added to the [Dialog](https://ariakit.org/components/dialog) component. This variable exposes the height of the visual viewport, considering the space taken by virtual keyboards on mobile devices. Use this CSS variable when you have input fields in your dialog to ensure it always fits within the visual viewport:
+
+```css
+.dialog {
+  max-height: var(--dialog-viewport-height, 100dvh);
+}
+```
+
+### Overriding composite state for specific methods
+
+The [`next`](https://ariakit.org/reference/use-composite-store#next), [`previous`](https://ariakit.org/reference/use-composite-store#previous), [`up`](https://ariakit.org/reference/use-composite-store#up), and [`down`](https://ariakit.org/reference/use-composite-store#down) methods of the [composite store](https://ariakit.org/reference/use-composite-store) now accept an object as the first argument to override the composite state for that specific method. For example, you can pass a different [`activeId`](https://ariakit.org/reference/use-composite-store#activeid) value to the [`next`](https://ariakit.org/reference/use-composite-store#next) method so it returns the next item based on that value rather than the current active item in the composite store:
+
+```js
+const store = useCompositeStore({ defaultActiveId: "item1" });
+const item3 = store.next({ activeId: "item2" });
+```
+
+It's important to note that the composite state is not modified when using this feature. The state passed to these methods is used solely for that specific method call.
+
+### Other updates
+
+- Fixed the ability to <kbd>Tab</kbd> out of a nested [Menu](https://ariakit.org/components/menu) within a modal [Dialog](https://ariakit.org/components/dialog).
+- Fixed CJS build on Next.js.
+- Enhanced performance on [Dialog](https://ariakit.org/components/dialog) backdrops.
+- Updated the `useAttribute` hook to handle cases when the attribute is removed from the element.
+- Fixed [`Tab`](https://ariakit.org/reference/tab) to pass the [`rowId`](https://ariakit.org/reference/tab#rowid) prop when used with other composite widgets.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.11`
+
+## 0.4.11
+
+### Tabs inside animated Combobox or Select
+
+When rendering [Tab](https://ariakit.org/components/tab) inside [Combobox](https://ariakit.org/components/combobox) or [Select](https://ariakit.org/components/select), it now waits for the closing animation to finish before restoring the tab with the selected item. This should prevent an inconsistent UI where the tab is restored immediately while the content is still animating out. See [Select with Combobox and Tabs](https://ariakit.org/examples/select-combobox-tab).
+
+### Other updates
+
+- Updated [Combobox](https://ariakit.org/components/combobox) to immediately reset the [`activeId`](https://ariakit.org/reference/use-combobox-store#activeid) upon closing the popover.
+- Removed delay when applying the [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible) attribute.
+- Fixed mouse down on [`MenuButton`](https://ariakit.org/reference/menu-button) hiding the menu on Safari.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.10`
+
+## 0.4.10
+
+- Fixed a regression introduced in `v0.4.8` that set the default value of the [`accessibleWhenDisabled`](https://ariakit.org/reference/tab#accessiblewhendisabled) prop to `false` on [`Tab`](https://ariakit.org/reference/tab).
+
+## 0.4.9
+
+### `aria-selected` on composite items
+
+Composite items like [`ComboboxItem`](https://ariakit.org/reference/combobox-item) no longer have the `aria-selected` attribute automatically set when focused. This attribute was previously used to address an old bug in Google Chrome, but it's no longer needed. Now, it's only set when the item is actually selected, such as in a select widget or a multi-selectable combobox.
+
+This change shouldn't affect most users since the `aria-selected` attribute is not part of the public API and is not recommended as a [CSS selector](https://ariakit.org/guide/styling#css-selectors) (use [`[data-active-item]`](https://ariakit.org/guide/styling#data-active-item) instead). However, if you have snapshot tests, you may need to update them.
+
+### Other updates
+
+- Removed `useControlledState` and `useRefId` hooks.
+- Added [`userValue`](https://ariakit.org/reference/combobox-item-value#uservalue) prop to [`ComboboxItemValue`](https://ariakit.org/reference/combobox-item-value).
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.9`
+
+## 0.4.8
+
+### Accessing selected tabs when disabled
+
+A [Tab](https://ariakit.org/components/tab) component that is both selected and disabled will now remain accessible to keyboard focus even if the [`accessibleWhenDisabled`](https://ariakit.org/reference/tab#accessiblewhendisabled) prop is set to `false`. This ensures users can navigate to other tabs using the keyboard.
+
+### Other updates
+
+- Fixed [Dialog](https://ariakit.org/components/dialog) to prevent smooth scrolling on hide.
+- Fixed [Hovercard](https://ariakit.org/components/hovercard) unexpectedly hiding when scrolling in Safari.
+- Added a README file to the package.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.8`
+
+## 0.4.7
+
+- Added React 19 to peer dependencies.
+- Fixed [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) behavior with virtualized lists on mobile devices.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.7`
+
 ## 0.4.6
 
 ### Nested `SelectList`

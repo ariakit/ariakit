@@ -23,14 +23,14 @@ export const TagList = React.forwardRef<HTMLDivElement, TagListProps>(
         setValues={setValues}
       >
         {label && (
-          <Ariakit.TagListLabel className="tag-list-label">
+          <Ariakit.TagListLabel className="ak-tag-list-label">
             {label}
           </Ariakit.TagListLabel>
         )}
         <Ariakit.TagList
           ref={ref}
           {...props}
-          className={clsx("tag-list input focusable", props.className)}
+          className={clsx("ak-tag-list ak-input ak-focusable", props.className)}
         />
       </Ariakit.TagProvider>
     );
@@ -45,10 +45,10 @@ export const Tag = React.forwardRef<HTMLDivElement, TagProps>(
       <Ariakit.Tag
         ref={ref}
         {...props}
-        className={clsx("tag", props.className)}
+        className={clsx("ak-tag", props.className)}
       >
         {props.children}
-        <Ariakit.TagRemove className="tag-remove" />
+        <Ariakit.TagRemove className="ak-tag-remove" />
       </Ariakit.Tag>
     );
   },
@@ -64,7 +64,7 @@ export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
       <Ariakit.TagInput
         ref={ref}
         {...props}
-        className={clsx("tag-input", props.className)}
+        className={clsx("ak-tag-input", props.className)}
       />
     );
 
@@ -81,7 +81,7 @@ export const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
           render={tagInput}
         />
         <Ariakit.ComboboxPopover
-          className="popover popup elevation-1"
+          className="ak-popover ak-popup ak-elevation-1"
           flip={false}
           gutter={12}
           shift={-4}
@@ -117,7 +117,7 @@ export const TagOption = React.forwardRef<HTMLDivElement, TagOptionProps>(
           return true;
         }}
         {...props}
-        className={clsx("combobox-item", props.className)}
+        className={clsx("ak-combobox-item", props.className)}
       >
         {props.children}
         <Ariakit.ComboboxItemCheck />

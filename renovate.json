@@ -30,6 +30,10 @@
       "groupName": "testing-library"
     },
     {
+      "matchPackagePatterns": ["@radix-ui/"],
+      "groupName": "radix"
+    },
+    {
       "matchPackageNames": [
         "@wordpress/components",
         "cross-env",
@@ -46,6 +50,7 @@
         "react",
         "react-dom",
         "react-router-dom",
+        "react-shadow",
         "react-toastify",
         "textarea-caret",
         "tsup",

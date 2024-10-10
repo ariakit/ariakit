@@ -6,7 +6,7 @@ import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
 
-export function mouseDown(element: Element | null, options?: MouseEventInit) {
+export function mouseDown(element: Element | null, options?: PointerEventInit) {
   return wrapAsync(async () => {
     invariant(element, "Unable to mouseDown on null element");
 

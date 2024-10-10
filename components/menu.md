@@ -78,11 +78,11 @@ Learn more on the [Styling](/guide/styling) guide.
 Because they behave similarly, it may not be obvious when to use `Menu` and when to use [Select](/components/select). Here are some guidelines to help you decide:
 
 - Use `Select` when the purpose is to select a value from a list of options. For example, a dropdown to select a country from a list of countries.
-- Use `Menu` when the purpose is to access a set of commands, actions, or links. For example, a dropdown to access a set of commands to edit a document.
+- Use `Menu` when the purpose is to access a set of commands, actions, links, or settings. For example, a dropdown to access a set of commands to edit a document or a list of settings to configure part of an application.
 
-There are also some differences in how both components behave. Similarly to the native `<select>` element, the [`Select`](/reference/select) button's text will reflect the selected item. The button should also have a label in addition to the value. When the [`SelectPopover`](/reference/select-popover) opens, the selected item will be focused and brought into view.
+Like the native `<select>` element, the [`Select`](/reference/select) button's text reflects the selected option (the value). The button should also have a label alongside the value, even if it's visually hidden. When the [`SelectPopover`](/reference/select-popover) opens, the selected item will be focused and brought into view. If your design requires these features, use `Select`.
 
-On the other hand, [`MenuButton`](/reference/menu-button) can't hold a value, only a label, which won't reflect the active item. It's usually a static call to action.
+On the other hand, [`MenuButton`](/reference/menu-button) can only display a label, not hold a value. The label is usually a static call to action. Opening the [`Menu`](/reference/menu) won't automatically focus on a checked [`MenuItemCheckbox`](/reference/menu-item-checkbox) or [`MenuItemRadio`](/reference/menu-item-radio), which are commonly used for settings.
 
 ## Related components
 

@@ -28,8 +28,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     animated: isSubmenu ? 500 : false,
   });
 
-  const open = menu.useState("open");
-  const autoFocusOnShow = menu.useState("autoFocusOnShow");
+  const open = Ariakit.useStoreState(menu, "open");
+  const autoFocusOnShow = Ariakit.useStoreState(menu, "autoFocusOnShow");
 
   // By default, submenus don't automatically receive focus when they open.
   // But here we want them to always receive focus.

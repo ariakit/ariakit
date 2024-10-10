@@ -160,8 +160,8 @@ function initPointerEvent(
     tiltX,
     tiltY,
     twist,
-    pointerType,
     isPrimary,
+    pointerType = "mouse",
   }: PointerEventInit,
 ) {
   assignProps(event, {
@@ -173,8 +173,8 @@ function initPointerEvent(
     tiltX: sanitizeNumber(tiltX),
     tiltY: sanitizeNumber(tiltY),
     twist: sanitizeNumber(twist),
-    pointerType: String(pointerType),
     isPrimary: !!isPrimary,
+    pointerType: String(pointerType),
   });
 }
 

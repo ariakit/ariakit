@@ -14,6 +14,7 @@ export { SelectList } from "@ariakit/react-core/select/select-list";
 export { SelectPopover } from "@ariakit/react-core/select/select-popover";
 export { SelectRow } from "@ariakit/react-core/select/select-row";
 export { SelectSeparator } from "@ariakit/react-core/select/select-separator";
+export { SelectValue } from "@ariakit/react-core/select/select-value";
 
 export type {
   SelectStoreProps,
@@ -87,3 +88,5 @@ export type {
   SelectSeparatorOptions,
   SelectSeparatorProps,
 } from "@ariakit/react-core/select/select-separator";
+
+export type { SelectValueProps } from "@ariakit/react-core/select/select-value";

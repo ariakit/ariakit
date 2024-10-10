@@ -21,7 +21,7 @@ test("show context menu and hide it by clicking outside", async () => {
 
 test("navigate through context menu with keyboard", async () => {
   await dispatch.contextMenu(q.text("Right click here"));
-  await waitFor(() => expect(q.menu()).toBeVisible());
+  await waitFor(() => expect(q.menu()).toHaveFocus());
   await press.ArrowDown();
   expect(q.menuitem("Back")).toHaveFocus();
   await press.ArrowDown();

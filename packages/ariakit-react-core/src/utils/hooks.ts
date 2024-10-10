@@ -1,7 +1,6 @@
 import { canUseDOM } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { applyState } from "@ariakit/core/utils/misc";
-import type { AnyFunction, SetState } from "@ariakit/core/utils/types";
+import type { AnyFunction } from "@ariakit/core/utils/types";
 import type {
   ComponentType,
   DependencyList,
@@ -161,17 +160,6 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
 }
 
 /**
- * Returns the ref element's ID.
- */
-export function useRefId(ref?: RefObject<HTMLElement>, deps?: DependencyList) {
-  const [id, setId] = useState<string | undefined>(undefined);
-  useSafeLayoutEffect(() => {
-    setId(ref?.current?.id);
-  }, deps);
-  return id;
-}
-
-/**
  * Generates a unique ID. Uses React's useId if available.
  */
 export function useId(defaultId?: string): string | undefined {
@@ -249,24 +237,28 @@ export function useAttribute(
   attributeName: string,
   defaultValue?: string,
 ) {
-  const [attribute, setAttribute] = useState(defaultValue);
+  const initialValue = useInitialValue(defaultValue);
+  const [attribute, setAttribute] = useState(initialValue);
 
-  useSafeLayoutEffect(() => {
+  useEffect(() => {
     const element =
       refOrElement && "current" in refOrElement
         ? refOrElement.current
         : refOrElement;
     if (!element) return;
+
     const callback = () => {
       const value = element.getAttribute(attributeName);
-      if (value == null) return;
-      setAttribute(value);
+      setAttribute(value == null ? initialValue : value);
     };
+
     const observer = new MutationObserver(callback);
     observer.observe(element, { attributeFilter: [attributeName] });
+
     callback();
+
     return () => observer.disconnect();
-  }, [refOrElement, attributeName]);
+  }, [refOrElement, attributeName, initialValue]);
 
   return attribute;
 }
@@ -314,55 +306,6 @@ export function useUpdateLayoutEffect(
     },
     [],
   );
-}
-
-/**
- * A custom version of `React.useState` that uses the `state` and `setState`
- * arguments. If they're not provided, it will use the internal state.
- */
-export function useControlledState<S>(
-  defaultState: S | (() => S),
-  state?: S,
-  setState?: (value: S) => void,
-): [S, SetState<S>] {
-  const [localState, setLocalState] = useState(defaultState);
-  const nextState = state !== undefined ? state : localState;
-
-  const stateRef = useLiveRef(state);
-  const setStateRef = useLiveRef(setState);
-  const nextStateRef = useLiveRef(nextState);
-
-  const setNextState = useCallback((prevValue: S) => {
-    const setStateProp = setStateRef.current;
-    if (setStateProp) {
-      if (isSetNextState(setStateProp)) {
-        setStateProp(prevValue);
-      } else {
-        const nextValue = applyState(prevValue, nextStateRef.current);
-        nextStateRef.current = nextValue;
-        setStateProp(nextValue);
-      }
-    }
-    if (stateRef.current === undefined) {
-      setLocalState(prevValue);
-    }
-  }, []);
-
-  defineSetNextState(setNextState);
-
-  return [nextState, setNextState];
-}
-
-const SET_NEXT_STATE = Symbol("setNextState");
-
-function isSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
-  return arg[SET_NEXT_STATE] === true;
-}
-
-function defineSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
-  if (!isSetNextState(arg)) {
-    Object.defineProperty(arg, SET_NEXT_STATE, { value: true });
-  }
 }
 
 /**

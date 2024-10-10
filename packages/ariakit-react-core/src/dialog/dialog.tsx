@@ -2,6 +2,7 @@ import {
   contains,
   getActiveElement,
   getDocument,
+  getWindow,
   isButton,
 } from "@ariakit/core/utils/dom";
 import {
@@ -149,13 +150,14 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // Sets preserveTabOrder to true only if the dialog is not a modal and is
   // open.
   const preserveTabOrderProp = props.preserveTabOrder;
-  const preserveTabOrder = store.useState(
+  const preserveTabOrder = useStoreState(
+    store,
     (state) => preserveTabOrderProp && !modal && state.mounted,
   );
   const id = useId(props.id);
-  const open = store.useState("open");
-  const mounted = store.useState("mounted");
-  const contentElement = store.useState("contentElement");
+  const open = useStoreState(store, "open");
+  const mounted = useStoreState(store, "mounted");
+  const contentElement = useStoreState(store, "contentElement");
   const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
   usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
@@ -206,6 +208,27 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       };
     }, [store, mounted]);
   }
+
+  // Sets --dialog-viewport-height CSS variable to the height of the visual
+  // viewport. This allows the dialog to be positioned correctly when the
+  // viewport height changes (e.g., when the keyboard is shown on mobile).
+  useEffect(() => {
+    if (!mounted) return;
+    if (!domReady) return;
+    const dialog = ref.current;
+    if (!dialog) return;
+    const win = getWindow(dialog);
+    const viewport = win.visualViewport || win;
+    const setViewportHeight = () => {
+      const height = win.visualViewport?.height ?? win.innerHeight;
+      dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
+    };
+    setViewportHeight();
+    viewport.addEventListener("resize", setViewportHeight);
+    return () => {
+      viewport.removeEventListener("resize", setViewportHeight);
+    };
+  }, [mounted, domReady]);
 
   // Renders a hidden dismiss button at the top of the modal dialog element. So
   // that screen reader users aren't trapped in the dialog when there's no

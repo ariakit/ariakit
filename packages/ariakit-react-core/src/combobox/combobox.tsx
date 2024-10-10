@@ -375,7 +375,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         const autoSelectId =
           userAutoSelectId !== undefined
             ? userAutoSelectId
-            : getDefaultAutoSelectId(items) ?? store.first();
+            : (getDefaultAutoSelectId(items) ?? store.first());
         autoSelectIdRef.current = autoSelectId;
         // If there's no first item (that is, there are no items or all items
         // are disabled), we should move the focus to the input (null),
@@ -543,9 +543,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (event.shiftKey) return;
       if (event.metaKey) return;
       if (!store) return;
-      const { open, activeId } = store.getState();
+      const { open } = store.getState();
       if (open) return;
-      if (activeId !== null) return;
       // Up and Down arrow keys should open the combobox popover.
       if (event.key === "ArrowUp" || event.key === "ArrowDown") {
         if (showOnKeyPressProp(event)) {
@@ -685,7 +684,8 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * `true`.
    *
    * By default, the first enabled item is auto selected. This function is handy
-   * if you prefer a different item to be auto selected.
+   * if you prefer a different item to be auto selected. Returning `undefined`
+   * from this function will result in the default behavior.
    * @example
    * ```jsx
    * <Combobox

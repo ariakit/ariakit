@@ -14,6 +14,7 @@ export { ComboboxList } from "@ariakit/react-core/combobox/combobox-list";
 export { ComboboxPopover } from "@ariakit/react-core/combobox/combobox-popover";
 export { ComboboxRow } from "@ariakit/react-core/combobox/combobox-row";
 export { ComboboxSeparator } from "@ariakit/react-core/combobox/combobox-separator";
+export { ComboboxValue } from "@ariakit/react-core/combobox/combobox-value";
 
 export type {
   ComboboxStore,
@@ -87,3 +88,5 @@ export type {
   ComboboxSeparatorOptions,
   ComboboxSeparatorProps,
 } from "@ariakit/react-core/combobox/combobox-separator";
+
+export type { ComboboxValueProps } from "@ariakit/react-core/combobox/combobox-value";

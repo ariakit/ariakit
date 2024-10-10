@@ -1,5 +1,53 @@
 # @ariakit/core
 
+## 0.4.12
+
+- Fixed regression in [`focusShift`](https://ariakit.org/reference/composite-provider#focusshift).
+- Improved JSDocs.
+
+## 0.4.11
+
+### Overriding composite state for specific methods
+
+The [`next`](https://ariakit.org/reference/use-composite-store#next), [`previous`](https://ariakit.org/reference/use-composite-store#previous), [`up`](https://ariakit.org/reference/use-composite-store#up), and [`down`](https://ariakit.org/reference/use-composite-store#down) methods of the [composite store](https://ariakit.org/reference/use-composite-store) now accept an object as the first argument to override the composite state for that specific method. For example, you can pass a different [`activeId`](https://ariakit.org/reference/use-composite-store#activeid) value to the [`next`](https://ariakit.org/reference/use-composite-store#next) method so it returns the next item based on that value rather than the current active item in the composite store:
+
+```js
+const store = useCompositeStore({ defaultActiveId: "item1" });
+const item3 = store.next({ activeId: "item2" });
+```
+
+It's important to note that the composite state is not modified when using this feature. The state passed to these methods is used solely for that specific method call.
+
+### Other updates
+
+- Fixed CJS build on Next.js.
+- Fixed `getScrollingElement` to consider `overflow: clip`.
+- Improved JSDocs.
+
+## 0.4.10
+
+### Tabs inside animated Combobox or Select
+
+When rendering [Tab](https://ariakit.org/components/tab) inside [Combobox](https://ariakit.org/components/combobox) or [Select](https://ariakit.org/components/select), it now waits for the closing animation to finish before restoring the tab with the selected item. This should prevent an inconsistent UI where the tab is restored immediately while the content is still animating out. See [Select with Combobox and Tabs](https://ariakit.org/examples/select-combobox-tab).
+
+### Other updates
+
+- Updated [Combobox](https://ariakit.org/components/combobox) to immediately reset the [`activeId`](https://ariakit.org/reference/use-combobox-store#activeid) upon closing the popover.
+- Improved JSDocs.
+
+## 0.4.9
+
+- Improved JSDocs.
+
+## 0.4.8
+
+- Added a README file to the package.
+- Improved JSDocs.
+
+## 0.4.7
+
+- Improved JSDocs.
+
 ## 0.4.6
 
 - Ensured [Combobox](https://ariakit.org/components/combobox) uses roving tabindex to manage focus on mobile Safari.

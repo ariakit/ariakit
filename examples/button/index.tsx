@@ -3,7 +3,7 @@ import "./button.css";
 
 export default function Example() {
   return (
-    <Button className="focusable clickable button button-default">
+    <Button className="ak-focusable ak-clickable ak-button ak-button-default">
       Button
     </Button>
   );

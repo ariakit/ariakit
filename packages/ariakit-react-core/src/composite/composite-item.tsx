@@ -17,10 +17,9 @@ import type {
   ElementType,
   FocusEvent,
   KeyboardEvent,
-  RefObject,
   SyntheticEvent,
 } from "react";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useMemo, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";
@@ -30,7 +29,6 @@ import {
   useEvent,
   useId,
   useMergeRefs,
-  useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
@@ -136,34 +134,6 @@ function findNextPageItemId(
 function targetIsAnotherItem(event: SyntheticEvent, store: CompositeStore) {
   if (isSelfTarget(event)) return false;
   return isItem(store, event.target as HTMLElement);
-}
-
-function useRole(ref: RefObject<HTMLElement>, props: CompositeItemProps) {
-  const roleProp = props.role;
-  const [role, setRole] = useState(roleProp);
-
-  useSafeLayoutEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    setRole(element.getAttribute("role") || roleProp);
-  }, [roleProp]);
-
-  return role;
-}
-
-function requiresAriaSelected(role?: string) {
-  return role === "option" || role === "treeitem";
-}
-
-function supportsAriaSelected(role?: string) {
-  if (role === "option") return true;
-  if (role === "tab") return true;
-  if (role === "treeitem") return true;
-  if (role === "gridcell") return true;
-  if (role === "row") return true;
-  if (role === "columnheader") return true;
-  if (role === "rowheader") return true;
-  return false;
 }
 
 /**
@@ -401,23 +371,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       store,
       (state) => !!state && state.activeId === id,
     );
-    const virtualFocus = useStoreState(store, "virtualFocus");
-    const role = useRole(ref, props);
-    let ariaSelected: boolean | undefined;
-
-    if (isActiveItem) {
-      if (requiresAriaSelected(role)) {
-        // When the active item role _requires_ the aria-selected attribute
-        // (e.g., option, treeitem), we always set it to true.
-        ariaSelected = true;
-      } else if (virtualFocus && supportsAriaSelected(role)) {
-        // Otherwise, it will be set to true when virtualFocus is set to true
-        // (meaning that the focus will be managed using the
-        // aria-activedescendant attribute) and the aria-selected attribute is
-        // _supported_ by the active item role.
-        ariaSelected = true;
-      }
-    }
 
     const ariaSetSize = useStoreState(store, (state) => {
       if (ariaSetSizeProp != null) return ariaSetSizeProp;
@@ -442,12 +395,20 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (!state?.renderedItems.length) return true;
       if (state.virtualFocus) return false;
       if (tabbable) return true;
+      if (state.activeId === null) return false;
+      // If activeId refers to an item that's disabled or not connected to the
+      // DOM, we make all items tabbable so users can tab into the composite
+      // widget. Once the activeId is valid, we restore the roving tabindex. See
+      // https://github.com/ariakit/ariakit/issues/3232
+      // https://github.com/ariakit/ariakit/issues/4129
+      const item = store?.item(state.activeId);
+      if (item?.disabled) return true;
+      if (!item?.element?.isConnected) return true;
       return state.activeId === id;
     });
 
     props = {
       id,
-      "aria-selected": ariaSelected,
       "data-active-item": isActiveItem || undefined,
       ...props,
       ref: useMergeRefs(ref, props.ref),
