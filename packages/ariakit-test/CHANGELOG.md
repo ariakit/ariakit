@@ -1,5 +1,15 @@
 # @ariakit/test
 
+## 0.4.5
+
+- Updated dependencies: `@ariakit/core@0.4.12`
+
+## 0.4.4
+
+- Fixed CJS build on Next.js.
+- Updated pointer events to initialize with a default `pointerType` value of `mouse`.
+- Updated dependencies: `@ariakit/core@0.4.11`
+
 ## 0.4.3
 
 - Updated dependencies: `@ariakit/core@0.4.10`

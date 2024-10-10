@@ -105,10 +105,7 @@ function findNextPageItemId(
   for (let i = 0; i < renderedItems.length; i += 1) {
     const previousId = id;
     id = next(i);
-    if (!id) {
-      id = previousId;
-      break;
-    }
+    if (!id) break;
     if (id === previousId) continue;
     const itemElement = getEnabledItem(store, id)?.element;
     if (!itemElement) continue;
@@ -398,6 +395,15 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (!state?.renderedItems.length) return true;
       if (state.virtualFocus) return false;
       if (tabbable) return true;
+      if (state.activeId === null) return false;
+      // If activeId refers to an item that's disabled or not connected to the
+      // DOM, we make all items tabbable so users can tab into the composite
+      // widget. Once the activeId is valid, we restore the roving tabindex. See
+      // https://github.com/ariakit/ariakit/issues/3232
+      // https://github.com/ariakit/ariakit/issues/4129
+      const item = store?.item(state.activeId);
+      if (item?.disabled) return true;
+      if (!item?.element?.isConnected) return true;
       return state.activeId === id;
     });
 

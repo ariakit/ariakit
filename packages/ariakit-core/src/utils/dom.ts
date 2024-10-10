@@ -253,8 +253,6 @@ export function scrollIntoViewIfNeeded(
  */
 export function getScrollingElement(
   element?: Element | null,
-  // TODO: Refactor
-  reverse = false,
 ): HTMLElement | Element | null {
   if (!element) return null;
   const isScrollableOverflow = (overflow: string) => {
@@ -268,15 +266,6 @@ export function getScrollingElement(
   } else if (element.clientWidth && element.scrollWidth > element.clientWidth) {
     const { overflowX } = getComputedStyle(element);
     if (isScrollableOverflow(overflowX)) return element;
-  }
-  if (reverse) {
-    for (const child of element.children) {
-      const scrollingElement = getScrollingElement(child, true);
-      if (scrollingElement) {
-        return scrollingElement;
-      }
-    }
-    return null;
   }
   return (
     getScrollingElement(element.parentElement) ||

@@ -1,4 +1,3 @@
-import { getScrollingElement } from "@ariakit/core/utils/dom";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -48,7 +47,7 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     unmountOnHide,
     tabId: tabIdProp,
     getItem: getItemProp,
-    scrollRestoration = false,
+    scrollRestoration,
     scrollElement,
     ...props
   }) {
@@ -68,24 +67,25 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       store.panels,
       () => tabIdProp || store?.panels.item(id)?.tabId,
     );
-
     const open = useStoreState(
       store,
       (state) => !!tabId && state.selectedId === tabId,
     );
 
-    // TODO: Comment
+    const disclosure = useDisclosureStore({ open });
+    const mounted = useStoreState(disclosure, "mounted");
+
+    // Store the scroll position for each tabId. The component may receive
+    // different tab ids if it's a single tab panel with dynamic tab id and
+    // content.
     const scrollPositionRef = useRef<Map<string, { x: number; y: number }>>(
       new Map(),
     );
 
-    // TODO: Comment
     const getScrollElement = useEvent(() => {
       const panelElement = ref.current;
       if (!panelElement) return null;
-      if (!scrollElement) {
-        return getScrollingElement(panelElement, true);
-      }
+      if (!scrollElement) return panelElement;
       if (typeof scrollElement === "function") {
         return scrollElement(panelElement);
       }
@@ -95,32 +95,33 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       return scrollElement;
     });
 
-    // TODO: Comment
+    // Adds scroll restoration behavior to the tab panel.
     useEffect(() => {
       if (!scrollRestoration) return;
-      if (!open) return;
+      if (!mounted) return;
       const element = getScrollElement();
       if (!element) return;
+      // If scrollRestoration is set to "reset", scroll to the top of the
+      // element and return early.
       if (scrollRestoration === "reset") {
-        element.scrollTo(0, 0);
+        element.scroll(0, 0);
         return;
       }
       if (!tabId) return;
       const position = scrollPositionRef.current.get(tabId);
-      element.scrollTo(position?.x ?? 0, position?.y ?? 0);
-
+      element.scroll(position?.x ?? 0, position?.y ?? 0);
+      // On scroll, save the scroll position for the current tab id.
       const onScroll = () => {
         scrollPositionRef.current.set(tabId, {
           x: element.scrollLeft,
           y: element.scrollTop,
         });
       };
-
-      element.addEventListener("scroll", onScroll, { passive: true });
+      element.addEventListener("scroll", onScroll);
       return () => {
         element.removeEventListener("scroll", onScroll);
       };
-    }, [scrollRestoration, open, tabId, getScrollElement, store]);
+    }, [scrollRestoration, mounted, tabId, getScrollElement, store]);
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
@@ -172,9 +173,6 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       ),
       [store],
     );
-
-    const disclosure = useDisclosureStore({ open });
-    const mounted = useStoreState(disclosure, "mounted");
 
     props = {
       id,
@@ -260,11 +258,41 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    */
   tabId?: string | null;
   /**
-   * TODO: Document this prop.
+   * Manages the scrolling behavior of the tab panel when it is hidden and then
+   * shown again.
+   *
+   * This is especially useful when using a single tab panel for multiple tabs,
+   * where you dynamically change the
+   * [`tabId`](https://ariakit.org/reference/tab-panel#tabid) prop and the
+   * panel's children, which would otherwise retain the current scroll position
+   * when switching tabs.
+   *
+   * When set to `true`, the component will save the scroll position and restore
+   * it when the panel is shown again. When set to `"reset"`, the scroll
+   * position will reset to the top when the panel is displayed again.
+   *
+   * The default scroll element is the tab panel itself. To scroll a different
+   * element, use the
+   * [`scrollElement`](https://ariakit.org/reference/tab-panel#scrollelement)
+   * prop.
+   * @default false
    */
   scrollRestoration?: boolean | "reset";
   /**
-   * TODO: Document this prop.
+   * When using the
+   * [`scrollRestoration`](https://ariakit.org/reference/tab-panel#scrollrestoration)
+   * prop, the tab panel element serves as the default scroll element. You can
+   * use this prop to designate a different element for scrolling.
+   *
+   * If a function is provided, it will be called with the tab panel element as
+   * an argument. The function should return the element to scroll.
+   * @example
+   * ```jsx
+   * <TabPanel
+   *   scrollRestoration
+   *   scrollElement={(panel) => panel.querySelector(".scrollable")}
+   * />
+   * ```
    */
   scrollElement?:
     | HTMLElement

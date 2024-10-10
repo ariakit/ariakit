@@ -13,6 +13,7 @@ const includeWithStyles = [
   /combobox-tabs-animated/,
   /dialog-animated-various/,
   /dialog-combobox-command-menu/,
+  /disclosure-content-animating/,
 ];
 
 const isReact17 = version.startsWith("17");

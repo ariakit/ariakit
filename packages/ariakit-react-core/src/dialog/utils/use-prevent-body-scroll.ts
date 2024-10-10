@@ -44,8 +44,6 @@ export function usePreventBodyScroll(
         `${scrollbarWidth}px`,
       );
 
-    // TODO: Get padding property only if needed (if scrollbar width is bigger
-    // than 0)
     const paddingProperty = getPaddingProperty(documentElement);
 
     const setStyle = () =>

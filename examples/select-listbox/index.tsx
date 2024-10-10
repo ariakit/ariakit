@@ -9,22 +9,26 @@ export default function Example() {
       <Ariakit.SelectItem
         className="select-item"
         focusOnHover={false}
+        hideOnClick={false}
         value="Apple"
       />
       <Ariakit.SelectItem
         className="select-item"
         focusOnHover={false}
+        hideOnClick={false}
         value="Banana"
       />
       <Ariakit.SelectItem
         className="select-item"
         focusOnHover={false}
+        hideOnClick={false}
         value="Grape"
         disabled
       />
       <Ariakit.SelectItem
         className="select-item"
         focusOnHover={false}
+        hideOnClick={false}
         value="Orange"
       />
     </Ariakit.SelectList>

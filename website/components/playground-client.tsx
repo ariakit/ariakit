@@ -370,9 +370,9 @@ export function PlaygroundClient({
             <TabPanel
               ref={tabPanelRef}
               store={tab}
-              scrollRestoration
-              scrollElement={(element) => element.querySelector("pre")}
               tabId={selectedId}
+              scrollRestoration
+              scrollElement={(panel) => panel.querySelector("pre")}
               className={twJoin(
                 collapsed
                   ? "[--max-height:256px] [[data-level='1']_&]:md:[--max-height:440px]"
