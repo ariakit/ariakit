@@ -403,7 +403,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // https://github.com/ariakit/ariakit/issues/4129
       const item = store?.item(state.activeId);
       if (item?.disabled) return true;
-      if (!item?.element?.isConnected) return true;
+      if (!item?.element) return true;
       return state.activeId === id;
     });
 
