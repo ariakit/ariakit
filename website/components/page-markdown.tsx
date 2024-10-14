@@ -8,7 +8,6 @@ import type { Page, TableOfContents } from "@/build-pages/types.ts";
 import { rehypeCodeMeta } from "@/lib/rehype-code-meta.ts";
 import { rehypeWrapHeadings } from "@/lib/rehype-wrap-headings.ts";
 import matter from "gray-matter";
-import type { ReactNode } from "react";
 import { Fragment } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -70,11 +69,9 @@ export function PageMarkdown({
   page,
   content,
   file,
-  showHovercards = false,
+  showHovercards = true,
   tableOfContents,
 }: PageMarkdownProps) {
-  const hovercards = new Set<Promise<string | Iterable<string>>>();
-
   if (!content || !file) {
     invariant(category && page);
     const config = pagesConfig.pages.find((page) => page.slug === category);
@@ -122,12 +119,7 @@ export function PageMarkdown({
           img: PageImage,
 
           pre(props) {
-            return (
-              <PagePre
-                {...props}
-                hovercards={showHovercards ? hovercards : undefined}
-              />
-            );
+            return <PagePre {...props} />;
           },
 
           a(props) {
@@ -137,7 +129,6 @@ export function PageMarkdown({
                 category={category}
                 page={page}
                 file={file!}
-                hovercards={showHovercards ? hovercards : undefined}
                 tags={pageDetail?.tags}
               />
             );
@@ -160,45 +151,15 @@ export function PageMarkdown({
       >
         {contentWithoutMatter}
       </ReactMarkdown>
-      {showHovercards && <Hovercards hovercards={hovercards} />}
+      {showHovercards && <Hovercards />}
     </Wrapper>
   );
 }
 
-async function Hovercards({
-  hovercards,
-}: {
-  hovercards: Set<Promise<string | Iterable<string>>>;
-}) {
-  const hrefs = new Set<string>();
-  const maybeIterables = await Promise.all(hovercards);
-  for (const maybeIterable of maybeIterables) {
-    if (typeof maybeIterable === "string") {
-      hrefs.add(maybeIterable);
-    } else {
-      for (const href of maybeIterable) {
-        hrefs.add(href);
-      }
-    }
-  }
-
-  const contents: Record<string, ReactNode> = {};
-
-  for (const href of hrefs) {
-    const url = new URL(href, "https://ariakit.dev");
-    const pathname = url.pathname;
-    const [, category, page] = pathname.split("/");
-    if (!page) continue;
-    if (!category) continue;
-    if (contents[page]) continue;
-    contents[page] = (
-      <PageMarkdown category={category} page={page} showHovercards={false} />
-    );
-  }
-
+async function Hovercards() {
   return (
     <AuthEnabled>
-      <PageHovercard contents={contents} />
+      <PageHovercard />
     </AuthEnabled>
   );
 }
