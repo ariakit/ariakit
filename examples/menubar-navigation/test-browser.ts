@@ -9,10 +9,6 @@ function pressTab(page: Page, browserName: string, shift = false) {
   return page.keyboard.press(key);
 }
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menubar-navigation", { waitUntil: "networkidle" });
-});
-
 test.describe.configure({ retries: 2 });
 
 test("show menus by hovering over items without moving focus", async ({
