@@ -340,7 +340,7 @@ export function mergeStore<S extends State>(
     return Object.assign(state, nextState);
   }, {} as S);
   const store = createStore(initialState, ...stores);
-  return store;
+  return Object.assign({}, ...stores, store);
 }
 
 /**
