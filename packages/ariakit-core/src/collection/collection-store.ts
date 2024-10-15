@@ -222,7 +222,7 @@ export function createCollectionStore<
       if (!id) return null;
       let item = itemsMap.get(id);
       if (!item) {
-        const { items } = collection.getState();
+        const { items } = privateStore.getState();
         item = items.find((item) => item.id === id);
         if (item) {
           itemsMap.set(id, item);

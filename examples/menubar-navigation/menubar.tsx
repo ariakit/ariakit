@@ -32,7 +32,6 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
         <SetShiftContext.Provider value={setShift}>
           <SetPlacementContext.Provider value={setPlacement}>
             <Ariakit.MenuProvider
-              animated
               placement={placement}
               showTimeout={100}
               hideTimeout={250}

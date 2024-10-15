@@ -55,8 +55,8 @@ interface AuthOptions {
 
 async function fillAuth(page: Page, options: AuthOptions = {}) {
   const q = query(page);
-  await q
-    .textbox("Email address", true)
+  await page
+    .getByLabel("Email address", { exact: true })
     .fill(options.email || generateUserEmail());
   await q.textbox("Password").fill(options.password || DEFAULT_PASSWORD);
   await page.keyboard.press("Enter");

@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.4.5
+
+- Updated dependencies: `@ariakit/core@0.4.12`
+
 ## 0.4.4
 
 - Fixed CJS build on Next.js.
