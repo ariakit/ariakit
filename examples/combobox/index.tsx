@@ -1,29 +1,30 @@
 import * as Ariakit from "@ariakit/react";
+import { ComboboxItem } from "@ariakit/react-core/combobox/combobox-item-offscreen";
+import { useRef } from "react";
 import "./style.css";
 
 export default function Example() {
+  const ref = useRef<HTMLDivElement>(null);
   return (
-    <Ariakit.ComboboxProvider>
+    <Ariakit.ComboboxProvider focusLoop={false}>
       <Ariakit.ComboboxLabel className="label">
         Your favorite fruit
       </Ariakit.ComboboxLabel>
       <Ariakit.Combobox placeholder="e.g., Apple" className="combobox" />
-      <Ariakit.ComboboxPopover gutter={4} sameWidth className="popover">
-        <Ariakit.ComboboxItem className="combobox-item" value="Apple">
-          🍎 Apple
-        </Ariakit.ComboboxItem>
-        <Ariakit.ComboboxItem className="combobox-item" value="Grape">
-          🍇 Grape
-        </Ariakit.ComboboxItem>
-        <Ariakit.ComboboxItem className="combobox-item" value="Orange">
-          🍊 Orange
-        </Ariakit.ComboboxItem>
-        <Ariakit.ComboboxItem className="combobox-item" value="Strawberry">
-          🍓 Strawberry
-        </Ariakit.ComboboxItem>
-        <Ariakit.ComboboxItem className="combobox-item" value="Watermelon">
-          🍉 Watermelon
-        </Ariakit.ComboboxItem>
+      <Ariakit.ComboboxPopover
+        ref={ref}
+        gutter={4}
+        sameWidth
+        unmountOnHide
+        className="popover"
+      >
+        {Array.from({ length: 1000 }).map((_, index) => (
+          <ComboboxItem
+            key={index}
+            className="combobox-item"
+            value={`Item ${index}`}
+          />
+        ))}
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );

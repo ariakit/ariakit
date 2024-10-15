@@ -181,6 +181,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           id: id || item.id,
           rowId,
           disabled: !!trulyDisabled,
+          children: item.element?.textContent,
         };
         if (getItemProp) {
           return getItemProp(nextItem);

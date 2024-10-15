@@ -133,7 +133,7 @@ export const useCompositeTypeahead = createHook<
     // However, the composite list might be unmounted or virtualized, in which
     // case we'll use the original items.
     let enabledItems = getEnabledItems(
-      renderedItems.length ? renderedItems : items,
+      items.length > renderedItems.length ? items : renderedItems,
     );
     if (!isSelfTargetOrItem(event, enabledItems)) return clearChars();
     event.preventDefault();
