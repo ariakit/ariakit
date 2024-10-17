@@ -1,5 +1,12 @@
 # @ariakit/react
 
+## 0.4.14
+
+- Fixed the [`item`](https://ariakit.org/reference/use-collection-store#item) method to prevent it from returning items that have been removed from the collection store.
+- Fixed the [`item`](https://ariakit.org/reference/use-menu-store#item) method when keeping different menu stores in sync.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.14`
+
 ## 0.4.13
 
 ### Accessible composite widgets with invalid `activeId`
