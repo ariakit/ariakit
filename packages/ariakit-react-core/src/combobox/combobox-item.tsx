@@ -10,6 +10,7 @@ import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.ts";
+import { useFastStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -90,6 +91,13 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       },
       [value, getItemProp],
     );
+
+    // const { multiSelectable, selected, resetValueOnSelectState } =
+    //   useFastStoreState(store, {
+    //     multiSelectable: (state) => Array.isArray(state?.selectedValue),
+    //     selected: (state) => isSelected(state?.selectedValue, value),
+    //     resetValueOnSelectState: "resetValueOnSelect",
+    //   });
 
     const multiSelectable = store.useState((state) =>
       Array.isArray(state.selectedValue),

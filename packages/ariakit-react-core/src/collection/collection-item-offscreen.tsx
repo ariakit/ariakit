@@ -1,10 +1,10 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import { type RefCallback, useCallback, useRef, useState } from "react";
 import type { ElementType, RefObject } from "react";
 import { Role } from "../role/role.tsx";
-import { useId, useMergeRefs } from "../utils/hooks.ts";
+import { useForceUpdate, useId, useMergeRefs } from "../utils/hooks.ts";
 import { forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useCollectionContext } from "./collection-context.tsx";
 import * as Base from "./collection-item.tsx";
 
 const TagName = "div" satisfies ElementType;
@@ -28,31 +28,15 @@ function cancelIdleCallback(id: number) {
 export function useCollectionItemOffscreen<
   T extends ElementType,
   P extends CollectionItemProps<T>,
->({ offscreenBehavior = "lazy", offscreenRoot, ...props }: P) {
-  const context = useCollectionContext();
-  const store = props.store || context;
-
+>({ offscreenBehavior = "active", offscreenRoot, ...props }: P) {
   const id = useId(props.id);
+  const [updated, forceUpdate] = useForceUpdate();
 
   const [_active, setActive] = useState(offscreenBehavior === "active");
   const active = _active || offscreenBehavior === "active";
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const idleCallbackIdRef = useRef(0);
-
-  const getOffscreenRoot = useCallback(
-    (element: HTMLElement) => {
-      if (!offscreenRoot) return null;
-      if (typeof offscreenRoot === "function") {
-        return offscreenRoot(element);
-      }
-      if ("current" in offscreenRoot) {
-        return offscreenRoot.current;
-      }
-      return offscreenRoot;
-    },
-    [offscreenRoot],
-  );
 
   const ref = useCallback<RefCallback<HTMLType>>(
     (element) => {
@@ -62,7 +46,29 @@ export function useCollectionItemOffscreen<
         return;
       }
 
-      const root = getOffscreenRoot(element);
+      invariant(
+        offscreenRoot !== undefined,
+        process.env.NODE_ENV !== "production" &&
+          "offscreenRoot must not be undefined.",
+      );
+
+      const getOffscreenRoot = () => {
+        if (!offscreenRoot) return null;
+        if (typeof offscreenRoot === "function") {
+          return offscreenRoot(element);
+        }
+        if ("current" in offscreenRoot) {
+          return offscreenRoot.current;
+        }
+        return offscreenRoot;
+      };
+
+      const root = getOffscreenRoot();
+
+      if (!root) {
+        forceUpdate();
+        return;
+      }
 
       if (!observerRef.current || observerRef.current.root !== root) {
         observerRef.current = new IntersectionObserver(
@@ -80,20 +86,27 @@ export function useCollectionItemOffscreen<
 
       observerRef.current.observe(element);
     },
-    [store, offscreenBehavior, getOffscreenRoot],
+    [updated, offscreenBehavior, offscreenRoot],
   );
 
   return {
     id,
     active,
     ref,
+    "data-offscreen": !active || undefined,
   };
 }
 
-export const CollectionItem = forwardRef(function CollectionItem(
-  props: CollectionItemProps,
-) {
-  const { active, ref, ...rest } = useCollectionItemOffscreen(props);
+export const CollectionItem = forwardRef(function CollectionItem({
+  offscreenBehavior,
+  offscreenRoot,
+  ...props
+}: CollectionItemProps) {
+  const { active, ref, ...rest } = useCollectionItemOffscreen({
+    offscreenBehavior,
+    offscreenRoot,
+    ...props,
+  });
   const allProps = { ...rest, ...props, ref: useMergeRefs(ref, props.ref) };
   if (active) {
     return <Base.CollectionItem {...allProps} />;
@@ -117,7 +130,8 @@ export interface CollectionItemOptions<T extends ElementType = TagName>
   offscreenRoot?:
     | HTMLElement
     | RefObject<HTMLElement>
-    | ((element: HTMLElement) => HTMLElement | null);
+    | ((element: HTMLElement) => HTMLElement | null)
+    | null;
 }
 
 export type CollectionItemProps<T extends ElementType = TagName> = Props<

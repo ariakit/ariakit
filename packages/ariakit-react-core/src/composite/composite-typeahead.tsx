@@ -1,4 +1,5 @@
-import { isTextField } from "@ariakit/core/utils/dom";
+import { sortBasedOnDOMPosition } from "@ariakit/core/collection/collection-store";
+import { getDocument, isTextField } from "@ariakit/core/utils/dom";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import {
   invariant,
@@ -127,7 +128,7 @@ export const useCompositeTypeahead = createHook<
     if (event.defaultPrevented) return;
     if (!typeahead) return;
     if (!store) return;
-    const { renderedItems, items, activeId } = store.getState();
+    const { renderedItems, items, activeId, id } = store.getState();
     if (!isValidTypeaheadEvent(event)) return clearChars();
     // We typically want to use the rendered items, as they're already sorted.
     // However, the composite list might be unmounted or virtualized, in which
@@ -135,6 +136,26 @@ export const useCompositeTypeahead = createHook<
     let enabledItems = getEnabledItems(
       items.length > renderedItems.length ? items : renderedItems,
     );
+
+    const document = getDocument(event.currentTarget);
+    const offscreenItems = document.querySelectorAll<
+      HTMLElement | HTMLButtonElement
+    >(`[data-offscreen-id="${id}"]`);
+
+    for (const element of offscreenItems) {
+      enabledItems.push({
+        id: element.id,
+        element,
+        disabled:
+          element.ariaDisabled === "true" ||
+          ("disabled" in element && !!element.disabled),
+      });
+    }
+
+    if (offscreenItems.length) {
+      enabledItems = sortBasedOnDOMPosition(enabledItems);
+    }
+
     if (!isSelfTargetOrItem(event, enabledItems)) return clearChars();
     event.preventDefault();
     // We need to clear the previous cleanup timeout so we can append the
@@ -151,7 +172,14 @@ export const useCompositeTypeahead = createHook<
     enabledItems = getSameInitialItems(enabledItems, char, activeId);
     const item = enabledItems.find((item) => itemTextStartsWith(item, chars));
     if (item) {
-      store.move(item.id);
+      if (offscreenItems.length) {
+        store.move(item.id);
+        queueMicrotask(() => {
+          store.move(item.id);
+        });
+      } else {
+        store.move(item.id);
+      }
     } else {
       // Immediately clear the characters so the next keypress starts a new
       // search.

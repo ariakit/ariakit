@@ -16,7 +16,9 @@ function isElementPreceding(a: Element, b: Element) {
   );
 }
 
-function sortBasedOnDOMPosition<T extends CollectionStoreItem>(items: T[]) {
+export function sortBasedOnDOMPosition<T extends CollectionStoreItem>(
+  items: T[],
+) {
   const pairs = items.map((item, index) => [index, item] as const);
   let isOrderDifferent = false;
   pairs.sort(([indexA, a], [indexB, b]) => {

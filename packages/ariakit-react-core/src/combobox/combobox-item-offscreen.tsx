@@ -31,25 +31,19 @@ function getItemRole(popupRole?: string) {
 export function useComboboxItemOffscreen<
   T extends ElementType,
   P extends ComboboxItemProps<T>,
->({
-  store,
-  value,
-  getItem: getItemProp,
-  shouldRegisterItem = true,
-  ...props
-}: P) {
+>({ store, value, ...props }: P) {
   const context = useComboboxScopedContext();
   store = store || context;
 
   const offscreenRoot = useStoreState(
     store,
-    (state) => props.offscreenRoot ?? state?.contentElement,
+    (state) => props.offscreenRoot ?? (state?.contentElement || null),
   );
 
   const offscreenProps = useCompositeItemOffscreen({
+    ...props,
     store,
     offscreenRoot,
-    ...props,
   });
 
   const popupRole = useContext(ComboboxListRoleContext);
@@ -65,10 +59,16 @@ export function useComboboxItemOffscreen<
   return offscreenProps;
 }
 
-export const ComboboxItem = forwardRef(function ComboboxItem(
-  props: ComboboxItemProps,
-) {
-  const { active, ref, ...rest } = useComboboxItemOffscreen(props);
+export const ComboboxItem = forwardRef(function ComboboxItem({
+  offscreenBehavior,
+  offscreenRoot,
+  ...props
+}: ComboboxItemProps) {
+  const { active, ref, ...rest } = useComboboxItemOffscreen({
+    offscreenBehavior,
+    offscreenRoot,
+    ...props,
+  });
   const allProps = { ...rest, ...props, ref: useMergeRefs(ref, props.ref) };
   if (active) {
     return <Base.ComboboxItem {...allProps} />;
