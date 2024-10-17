@@ -144,6 +144,65 @@ export function useStoreState(
   return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
 }
 
+export function useFastStoreState<
+  T extends CoreStore,
+  S extends StoreState<T>,
+  O extends Record<string, StateKey<T> | ((state?: S) => any)>,
+>(store: T | undefined, object: O) {
+  const counterRef = React.useRef(0);
+  const objRef = React.useRef(
+    {} as {
+      [K in keyof O]: O[K] extends keyof S
+        ? S[O[K]]
+        : O[K] extends (state: S) => any
+          ? ReturnType<O[K]>
+          : never;
+    },
+  );
+
+  const storeSubscribe = React.useCallback(
+    (callback: () => void) => {
+      if (!store) return noopSubscribe();
+      return subscribe(store as CoreStore, null, callback);
+    },
+    [store],
+  );
+
+  const getSnapshot = () => {
+    const state = store?.getState();
+    if (!state) return;
+    let updated = false;
+    const obj = objRef.current;
+
+    for (const prop in object) {
+      const keyOrSelector = object[prop];
+
+      if (typeof keyOrSelector === "function") {
+        const value = keyOrSelector(state as S);
+        if (value !== obj[prop]) {
+          obj[prop] = value;
+          updated = true;
+        }
+      }
+
+      if (typeof keyOrSelector === "string") {
+        if (!hasOwnProperty(state, keyOrSelector)) continue;
+        const value = state[keyOrSelector];
+        if (value !== obj[prop]) {
+          obj[prop] = value;
+          updated = true;
+        }
+      }
+    }
+
+    return updated ? counterRef.current++ : undefined;
+  };
+
+  useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
+
+  return objRef.current;
+}
+
 /**
  * Synchronizes the store with the props, including parent store props.
  * @param store The store to synchronize.
