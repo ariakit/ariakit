@@ -77,6 +77,6 @@ test("search", async () => {
   await type("t");
   expect(q.option.all()).toHaveLength(0);
   expect(q.text("No results found")).toBeVisible();
-  await type("\b\b\b\b\b");
+  await type("\b\b\b\b\b\b");
   expect(q.option("Search Contacts")).toHaveFocus();
 });
