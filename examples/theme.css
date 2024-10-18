@@ -438,7 +438,6 @@
       margin-block-start: var(--negative-margin);
     }
 
-    &:has(+ &),
     &:not(:has(~ *:not([hidden]))) {
       margin-block-end: var(--negative-margin);
     }
