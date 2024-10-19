@@ -162,6 +162,11 @@ export function createCompositeStore<
 
   const initialState: CompositeStoreState<T> = {
     ...collection.getState(),
+    id: defaultValue(
+      props.id,
+      syncState?.id,
+      `id-${Math.random().toString(36).slice(2, 8)}`,
+    ),
     activeId,
     baseElement: defaultValue(syncState?.baseElement, null),
     includesBaseElement: defaultValue(
@@ -387,6 +392,10 @@ export interface CompositeStoreItem extends CollectionStoreItem {
 export interface CompositeStoreState<
   T extends CompositeStoreItem = CompositeStoreItem,
 > extends CollectionStoreState<T> {
+  /**
+   * TODO: Comment
+   */
+  id: string;
   /**
    * The composite element itself. Typically, it's the wrapper element that
    * contains composite items. However, in a combobox, it's the input element.
@@ -654,6 +663,7 @@ export interface CompositeStoreOptions<
 > extends CollectionStoreOptions<T>,
     StoreOptions<
       CompositeStoreState<T>,
+      | "id"
       | "virtualFocus"
       | "orientation"
       | "rtl"

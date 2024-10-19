@@ -95,7 +95,7 @@ const noopSubscribe = () => () => {};
 export function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
 
 export function useStoreState<T extends CoreStore>(
-  store: T | null | undefined,
+  store: StateStore<T>,
 ): StoreState<T> | undefined;
 
 export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
@@ -104,7 +104,7 @@ export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
 ): StoreState<T>[K];
 
 export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
-  store: T | null | undefined,
+  store: StateStore<T>,
   key: K,
 ): StoreState<T>[K] | undefined;
 
@@ -114,7 +114,7 @@ export function useStoreState<T extends CoreStore, V>(
 ): V;
 
 export function useStoreState<T extends CoreStore, V>(
-  store: T | null | undefined,
+  store: StateStore<T>,
   selector: (state?: StoreState<T>) => V,
 ): V;
 
@@ -142,6 +142,139 @@ export function useStoreState(
   };
 
   return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
+}
+
+type StoreStateObject<
+  T extends StateStore,
+  S extends StoreState<T> | undefined,
+> = Record<string, StateKey<T> | ((state: S) => any)>;
+
+type StoreStateObjectResult<
+  T extends StateStore,
+  S extends StoreState<T> | undefined,
+  O extends StoreStateObject<T, S>,
+> = {
+  [K in keyof O]: O[K] extends keyof StoreState<T>
+    ? O[K] extends keyof S
+      ? S[O[K]]
+      : StoreState<T>[O[K]] | undefined
+    : O[K] extends (state: S) => infer R
+      ? R
+      : never;
+};
+
+/**
+ * TODO: Comment
+ */
+export function useStoreStateObject<
+  T extends CoreStore,
+  O extends StoreStateObject<T, StoreState<T>>,
+>(store: T, object: O): StoreStateObjectResult<T, StoreState<T>, O>;
+
+export function useStoreStateObject<
+  T extends StateStore,
+  O extends StoreStateObject<T, StoreState<T> | undefined>,
+>(store: T, object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
+
+export function useStoreStateObject<
+  T extends CoreStore,
+  O extends StoreStateObject<T, StoreState<T>>,
+>(
+  store: T,
+  props: StoreStateObjectResult<T, StoreState<T>, O> | undefined,
+  object: O,
+): StoreStateObjectResult<T, StoreState<T>, O>;
+
+export function useStoreStateObject<
+  T extends StateStore,
+  O extends StoreStateObject<T, StoreState<T>>,
+>(
+  store: T,
+  props: StoreStateObjectResult<T, StoreState<T>, O>,
+  object: O,
+): StoreStateObjectResult<T, StoreState<T>, O>;
+
+export function useStoreStateObject<
+  T extends StateStore,
+  O extends StoreStateObject<T, StoreState<T> | undefined>,
+>(
+  store: T,
+  props: StoreStateObjectResult<T, StoreState<T>, O> | undefined,
+  object: O,
+): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
+
+export function useStoreStateObject(
+  store: StateStore,
+  props:
+    | StoreStateObject<StateStore, State | undefined>
+    | StoreStateObjectResult<StateStore, State, any>
+    | undefined,
+  object?: StoreStateObject<StateStore, State | undefined>,
+) {
+  if (!object) {
+    object = props;
+  } else if (props) {
+    if (process.env.NODE_ENV !== "production") {
+      for (const key in object) {
+        if (!hasOwnProperty(props, key)) {
+          throw new Error(
+            `The key "${key}" is not present in the props argument.`,
+          );
+        }
+      }
+    }
+    return props;
+  }
+
+  const objRef = React.useRef(
+    {} as StoreStateObjectResult<StateStore, State, any>,
+  );
+
+  const storeSubscribe = React.useCallback(
+    (callback: () => void) => {
+      if (!store) return noopSubscribe();
+      return subscribe(store as CoreStore, null, callback);
+    },
+    [store],
+  );
+
+  const getSnapshot = () => {
+    const state = store?.getState();
+    if (!state) return;
+    let updated = false;
+    const obj = objRef.current;
+
+    for (const prop in object) {
+      const keyOrSelector = object[prop];
+
+      if (typeof keyOrSelector === "function") {
+        const value = keyOrSelector(state);
+        if (value !== obj[prop]) {
+          obj[prop] = value;
+          updated = true;
+        }
+      }
+
+      if (typeof keyOrSelector === "string") {
+        if (!hasOwnProperty(state, keyOrSelector)) continue;
+        const value = state[keyOrSelector];
+        if (value !== obj[prop]) {
+          obj[prop] = value;
+          updated = true;
+        }
+      }
+    }
+
+    if (updated) {
+      objRef.current = { ...obj };
+    }
+
+    return objRef.current;
+  };
+
+  useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
+
+  return objRef.current;
 }
 
 /**
