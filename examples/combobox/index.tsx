@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import "./style.css";
 
 export default function Example() {
-  const [offscreen, setOffscreen] = useState(true);
+  const [offscreen, setOffscreen] = useState(false);
   const [renderer, setRenderer] = useState(false);
   const Component = offscreen ? ComboboxItem : Ariakit.ComboboxItem;
   const ref = useRef<HTMLDivElement>(null);
