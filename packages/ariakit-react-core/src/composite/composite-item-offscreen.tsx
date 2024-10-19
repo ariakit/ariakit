@@ -1,11 +1,12 @@
-import { type ElementType, useCallback } from "react";
+import type { ElementType } from "react";
 import {
   type CollectionItemOptions,
   useCollectionItemOffscreen,
 } from "../collection/collection-item-offscreen.tsx";
+import type { ComboboxStoreState } from "../combobox/combobox-store.ts";
 import { Role } from "../role/role.tsx";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
+import { useStoreStateObject } from "../utils/store.tsx";
 import { forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useCompositeContext } from "./composite-context.tsx";
@@ -24,26 +25,27 @@ export function useCompositeItemOffscreen<
 
   const id = useId(props.id);
 
-  const storeId = useStoreState(store, "id");
-
-  // for (let i = 0; i < 50; i++) {
-  //   useStoreState(store, "id");
-  // }
-
-  const active = useStoreState(
-    store,
-    useCallback(
-      (state?: CompositeStoreState) => !!id && state?.activeId === id,
-      [id],
-    ),
-  );
+  const { storeId, active, offscreenRoot } = useStoreStateObject(store, {
+    storeId: "id",
+    active(state) {
+      return !!id && state?.activeId === id;
+    },
+    offscreenRoot(state?: CompositeStoreState | ComboboxStoreState) {
+      if (props.offscreenRoot) return props.offscreenRoot;
+      if (!state) return;
+      if ("contentElement" in state) {
+        return state.contentElement || null;
+      }
+      return;
+    },
+  });
 
   const offscreenProps = useCollectionItemOffscreen({
     id,
     store,
-    // offscreenBehavior,
     offscreenBehavior: active ? "active" : offscreenBehavior,
     ...props,
+    offscreenRoot,
   });
 
   if (!offscreenProps.active) {

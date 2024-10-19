@@ -272,7 +272,9 @@ export function useStoreStateObject(
     return objRef.current;
   };
 
-  return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
+  useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
+
+  return objRef.current;
 }
 
 /**

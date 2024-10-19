@@ -5,7 +5,6 @@ import {
 } from "../composite/composite-item-offscreen.tsx";
 import { Role } from "../role/role.tsx";
 import { useMergeRefs } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
 import { forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -35,17 +34,7 @@ export function useComboboxItemOffscreen<
   const context = useComboboxScopedContext();
   store = store || context;
 
-  const offscreenRoot = useStoreState(
-    store,
-    (state) => props.offscreenRoot ?? (state?.contentElement || null),
-  );
-
-  const offscreenProps = useCompositeItemOffscreen({
-    ...props,
-    store,
-    offscreenRoot,
-  });
-
+  const offscreenProps = useCompositeItemOffscreen({ store, ...props });
   const popupRole = useContext(ComboboxListRoleContext);
 
   if (!offscreenProps.active) {
@@ -82,6 +71,7 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
     selectValueOnClick,
     resetValueOnSelect,
     focusOnHover,
+    blurOnHoverEnd,
     moveOnKeyPress,
     getItem,
     ...htmlProps
