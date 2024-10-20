@@ -1,3 +1,4 @@
+import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import type { ElementType } from "react";
 import {
   type CollectionItemOptions,
@@ -5,6 +6,7 @@ import {
 } from "../collection/collection-item-offscreen.tsx";
 import type { ComboboxStoreState } from "../combobox/combobox-store.ts";
 import { Role } from "../role/role.tsx";
+import type { SelectStoreState } from "../select/select-store.ts";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreStateObject } from "../utils/store.tsx";
 import { forwardRef } from "../utils/system.tsx";
@@ -19,26 +21,40 @@ type TagName = typeof TagName;
 export function useCompositeItemOffscreen<
   T extends ElementType,
   P extends CompositeItemProps<T>,
->({ store, offscreenBehavior = "active", disabled, ...props }: P) {
+>({ store, offscreenBehavior = "active", disabled, value, ...props }: P) {
   const context = useCompositeContext();
   store = store || context;
 
   const id = useId(props.id);
 
-  const { storeId, active, offscreenRoot } = useStoreStateObject(store, {
-    storeId: "id",
-    active(state) {
-      return !!id && state?.activeId === id;
+  const { storeId, active, listElement, offscreenRoot } = useStoreStateObject(
+    store,
+    {
+      storeId: "id",
+      active(
+        state?: CompositeStoreState | ComboboxStoreState | SelectStoreState,
+      ) {
+        if (!state) return;
+        if (!("selectedValue" in state) && "value" in state) {
+          if (state.value === value) return true;
+        }
+        return !!id && state.activeId === id;
+      },
+      listElement(state?: CompositeStoreState | SelectStoreState) {
+        if (!state) return;
+        if (!("listElement" in state)) return;
+        return state.listElement;
+      },
+      offscreenRoot(state?: CompositeStoreState | ComboboxStoreState) {
+        if (props.offscreenRoot) return props.offscreenRoot;
+        if (!state) return;
+        if ("contentElement" in state) {
+          return state.contentElement || null;
+        }
+        return;
+      },
     },
-    offscreenRoot(state?: CompositeStoreState | ComboboxStoreState) {
-      if (props.offscreenRoot) return props.offscreenRoot;
-      if (!state) return;
-      if ("contentElement" in state) {
-        return state.contentElement || null;
-      }
-      return;
-    },
-  });
+  );
 
   const offscreenProps = useCollectionItemOffscreen({
     id,
@@ -51,6 +67,8 @@ export function useCompositeItemOffscreen<
   if (!offscreenProps.active) {
     return {
       ...offscreenProps,
+      children: value,
+      role: getPopupItemRole(listElement),
       "aria-disabled": disabled || undefined,
       "data-offscreen-id": storeId,
     };

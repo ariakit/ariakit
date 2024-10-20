@@ -26,7 +26,6 @@ const nextConfig = {
   images: {
     remotePatterns: [{ protocol: "https", hostname: "img.clerk.com" }],
   },
-  reactStrictMode: true,
   transpilePackages: ["@ariakit/*"],
   eslint: {
     ignoreDuringBuilds: true,

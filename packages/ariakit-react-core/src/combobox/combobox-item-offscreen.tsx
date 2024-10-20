@@ -34,14 +34,13 @@ export function useComboboxItemOffscreen<
   const context = useComboboxScopedContext();
   store = store || context;
 
-  const offscreenProps = useCompositeItemOffscreen({ store, ...props });
+  const offscreenProps = useCompositeItemOffscreen({ store, value, ...props });
   const popupRole = useContext(ComboboxListRoleContext);
 
   if (!offscreenProps.active) {
     return {
       ...offscreenProps,
       role: getItemRole(popupRole),
-      children: value,
     };
   }
 

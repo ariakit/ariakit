@@ -85,6 +85,7 @@
     "./select/select-list": "./src/select/select-list.tsx",
     "./select/select-label": "./src/select/select-label.tsx",
     "./select/select-item": "./src/select/select-item.tsx",
+    "./select/select-item-offscreen": "./src/select/select-item-offscreen.tsx",
     "./select/select-item-check": "./src/select/select-item-check.tsx",
     "./select/select-heading": "./src/select/select-heading.tsx",
     "./select/select-group": "./src/select/select-group.tsx",

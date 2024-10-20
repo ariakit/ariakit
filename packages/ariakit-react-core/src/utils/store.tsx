@@ -176,56 +176,10 @@ export function useStoreStateObject<
   O extends StoreStateObject<T, StoreState<T> | undefined>,
 >(store: T, object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
 
-export function useStoreStateObject<
-  T extends CoreStore,
-  O extends StoreStateObject<T, StoreState<T>>,
->(
-  store: T,
-  props: StoreStateObjectResult<T, StoreState<T>, O> | undefined,
-  object: O,
-): StoreStateObjectResult<T, StoreState<T>, O>;
-
-export function useStoreStateObject<
-  T extends StateStore,
-  O extends StoreStateObject<T, StoreState<T>>,
->(
-  store: T,
-  props: StoreStateObjectResult<T, StoreState<T>, O>,
-  object: O,
-): StoreStateObjectResult<T, StoreState<T>, O>;
-
-export function useStoreStateObject<
-  T extends StateStore,
-  O extends StoreStateObject<T, StoreState<T> | undefined>,
->(
-  store: T,
-  props: StoreStateObjectResult<T, StoreState<T>, O> | undefined,
-  object: O,
-): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
-
 export function useStoreStateObject(
   store: StateStore,
-  props:
-    | StoreStateObject<StateStore, State | undefined>
-    | StoreStateObjectResult<StateStore, State, any>
-    | undefined,
-  object?: StoreStateObject<StateStore, State | undefined>,
+  object: StoreStateObject<StateStore, State | undefined>,
 ) {
-  if (!object) {
-    object = props;
-  } else if (props) {
-    if (process.env.NODE_ENV !== "production") {
-      for (const key in object) {
-        if (!hasOwnProperty(props, key)) {
-          throw new Error(
-            `The key "${key}" is not present in the props argument.`,
-          );
-        }
-      }
-    }
-    return props;
-  }
-
   const objRef = React.useRef(
     {} as StoreStateObjectResult<StateStore, State, any>,
   );
@@ -240,7 +194,7 @@ export function useStoreStateObject(
 
   const getSnapshot = () => {
     const state = store?.getState();
-    if (!state) return;
+    if (!state) return objRef.current;
     let updated = false;
     const obj = objRef.current;
 
@@ -272,9 +226,7 @@ export function useStoreStateObject(
     return objRef.current;
   };
 
-  useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
-
-  return objRef.current;
+  return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
 }
 
 /**
