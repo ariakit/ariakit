@@ -31,6 +31,7 @@ export function useCollectionItemOffscreen<
 >({ offscreenBehavior = "active", offscreenRoot, ...props }: P) {
   const id = useId(props.id);
   const [updated, forceUpdate] = useForceUpdate();
+  const forcedUpdatesCountRef = useRef(0);
 
   const [_active, setActive] = useState(offscreenBehavior === "active");
   const active = _active || offscreenBehavior === "active";
@@ -66,6 +67,12 @@ export function useCollectionItemOffscreen<
       const root = getOffscreenRoot();
 
       if (!root) {
+        forcedUpdatesCountRef.current++;
+        if (forcedUpdatesCountRef.current > 3) {
+          throw new Error(
+            "The offscreenRoot is not available. Please make sure the root element is mounted.",
+          );
+        }
         forceUpdate();
         return;
       }
