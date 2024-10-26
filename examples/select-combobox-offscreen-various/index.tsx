@@ -1,12 +1,11 @@
 import * as Ariakit from "@ariakit/react";
-// import "./theme.css";
 import { ComboboxItem } from "@ariakit/react-core/combobox/combobox-item-offscreen";
 import { SelectItem } from "@ariakit/react-core/select/select-item-offscreen";
 import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
 import { matchSorter } from "match-sorter";
-import { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useMemo, useRef, useState } from "react";
 import { countries } from "./countries.ts";
 
 function getItem(country: string) {

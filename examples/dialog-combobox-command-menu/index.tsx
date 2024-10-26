@@ -48,9 +48,9 @@ export default function Example() {
           {!matchEntries.length && (
             <div className="no-results">No results found</div>
           )}
-          {matchEntries.map(([group, items], i) => (
+          {matchEntries.map(([group, items]) => (
             <CommandMenuGroup key={group} label={group}>
-              {items.map((item, j) => (
+              {items.map((item) => (
                 <CommandMenuItem key={item.name} id={item.name}>
                   {item.icon && (
                     <span className="item-icon" aria-hidden>
