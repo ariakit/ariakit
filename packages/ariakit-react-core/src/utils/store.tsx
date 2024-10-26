@@ -194,7 +194,6 @@ export function useStoreStateObject(
 
   const getSnapshot = () => {
     const state = store?.getState();
-    if (!state) return objRef.current;
     let updated = false;
     const obj = objRef.current;
 
@@ -210,6 +209,7 @@ export function useStoreStateObject(
       }
 
       if (typeof keyOrSelector === "string") {
+        if (!state) continue;
         if (!hasOwnProperty(state, keyOrSelector)) continue;
         const value = state[keyOrSelector];
         if (value !== obj[prop]) {
