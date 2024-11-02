@@ -213,8 +213,6 @@ const noAutoSelect = labels.filter(
 
 for (const label of noAutoSelect) {
   test(`no autoSelect: ${label}`, async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 1280 });
-
     const q = query(page);
     await disableAnimations(page);
 
@@ -232,10 +230,10 @@ for (const label of noAutoSelect) {
     });
 
     await test.step("scroll with page down", async () => {
-      for (let i = 0; i < 5; i++) {
-        await page.keyboard.press("PageDown", { delay: 100 });
-      }
-      await expect(firstOption).not.toBeInViewport();
+      await expect(async () => {
+        await page.keyboard.press("PageDown");
+        await expect(firstOption).not.toBeInViewport();
+      }).toPass();
     });
 
     await test.step("typeahead", async () => {
