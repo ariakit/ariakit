@@ -56,8 +56,6 @@ async function getValue(combobox: Locator) {
   return (await combobox.textContent()) || (await combobox.inputValue());
 }
 
-test.describe.configure({ retries: 0 });
-
 const defaultValue = labels.filter((value) => value.includes("defaultValue"));
 
 for (const label of defaultValue) {
@@ -150,6 +148,7 @@ for (const label of autoSelect) {
     });
 
     await test.step("move with keyboard", async () => {
+      await expect(nextOption).not.toHaveAttribute("data-offscreen");
       await page.keyboard.press("ArrowDown");
       await expect(nextOption).toBeInViewport();
       await expect(nextOption).toHaveAttribute("data-active-item");

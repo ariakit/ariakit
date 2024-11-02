@@ -326,7 +326,7 @@
       var(--padding-block-end, var(--padding-block));
   }
 
-  .ak-clickable:active:active,
+  .ak-clickable:active,
   .ak-clickable[data-active] {
     padding-block:
       calc(var(--padding-block-start, var(--padding-block)) + var(--depth, 0px))
