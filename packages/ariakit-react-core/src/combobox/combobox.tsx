@@ -357,7 +357,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
       if (!open) return;
-      if ((!autoSelect || !canAutoSelect) && !resetValueOnSelect) return;
+      // TODO: Test this (no autoSelect scrolls to top).
+      // if ((!autoSelect || !canAutoSelect) && !resetValueOnSelect) return;
+      if (!canAutoSelect) return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribute is an internal state added by the Popover
@@ -383,7 +385,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // Test this.
         store.move(autoSelectId ?? null);
       } else {
-        const element = store.item(activeId)?.element;
+        const element = store.item(activeId || store.first())?.element;
         if (element && "scrollIntoView" in element) {
           element.scrollIntoView({ block: "nearest", inline: "nearest" });
         }

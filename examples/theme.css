@@ -43,7 +43,6 @@
   }
 
   .ak-button-default {
-    --depth: 2px;
     --outline-offset: -1px;
     @apply
       [--text:theme(colors.black)]

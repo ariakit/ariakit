@@ -12,6 +12,7 @@ import { Preview } from "@/components/preview.tsx";
 import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 import { notFound } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
+import { HydrationContainer } from "./hydration-container.tsx";
 
 interface Props {
   params: ReturnType<typeof generateStaticParams>[number];
@@ -68,7 +69,7 @@ export default async function PreviewPage({ params }: Props) {
   const css = await parseStyles(styles);
 
   return (
-    <div
+    <HydrationContainer
       className={twJoin(
         "flex min-h-[200vh] w-full flex-col items-center pt-[min(30vh,400px)]",
         /\-radix/.test(page)
@@ -77,6 +78,6 @@ export default async function PreviewPage({ params }: Props) {
       )}
     >
       <Preview path={source} css={css} />
-    </div>
+    </HydrationContainer>
   );
 }
