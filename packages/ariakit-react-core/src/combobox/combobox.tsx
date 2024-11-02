@@ -357,9 +357,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
       if (!open) return;
-      // TODO: Test this (no autoSelect scrolls to top).
-      // if ((!autoSelect || !canAutoSelect) && !resetValueOnSelect) return;
-      if (!canAutoSelect) return;
+      if (!canAutoSelect && !resetValueOnSelect) return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribute is an internal state added by the Popover
@@ -385,6 +383,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // Test this.
         store.move(autoSelectId ?? null);
       } else {
+        // Reset the scroll position to the active item when an item is selected
+        // and the combobox value is reset, which might move the active item
+        // offscreen. Otherwise, if no item is selected, reset to the first
+        // item, such as when `autoSelect` is false.
         const element = store.item(activeId || store.first())?.element;
         if (element && "scrollIntoView" in element) {
           element.scrollIntoView({ block: "nearest", inline: "nearest" });
