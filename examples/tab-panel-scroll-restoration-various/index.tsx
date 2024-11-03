@@ -19,7 +19,7 @@ const Scroller = forwardRef<HTMLDivElement, Ariakit.RoleProps>(
         {...props}
         className={clsx(
           props.className,
-          "!overflow-auto overscroll-contain h-48",
+          "ak-popup-scroll ak-popup-cover !overflow-auto h-48",
         )}
       />
     );
@@ -47,7 +47,10 @@ const TabList = forwardRef<HTMLDivElement, Ariakit.TabListProps>(
       <Ariakit.TabList
         ref={ref}
         {...props}
-        className={clsx(props.className, "ak-tab-list ak-popup-cover")}
+        className={clsx(
+          props.className,
+          "ak-tab-list ak-popup-cover -mb-[var(--padding)]",
+        )}
       />
     );
   },
@@ -59,7 +62,7 @@ const Tab = forwardRef<HTMLButtonElement, Ariakit.TabProps>(
       <Ariakit.Tab
         ref={ref}
         {...props}
-        className={clsx(props.className, "ak-tab ak-tab-default ak-clickable")}
+        className={clsx(props.className, "ak-tab ak-tab-default")}
       />
     );
   },

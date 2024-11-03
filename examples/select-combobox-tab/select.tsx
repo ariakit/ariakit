@@ -55,10 +55,7 @@ export function Select({
       )}
       <Ariakit.Select
         {...props}
-        className={clsx(
-          "ak-focusable ak-clickable ak-button ak-button-default",
-          props.className,
-        )}
+        className={clsx("ak-button ak-button-default", props.className)}
       >
         {icon}
         <div className="truncate">{text || <Ariakit.SelectValue />}</div>
@@ -80,14 +77,14 @@ export function Select({
                     typeof heading === "string" ? <div>{heading}</div> : heading
                   }
                 />
-                <Ariakit.SelectDismiss className="ak-focusable ak-clickable ak-rounded-item ak-button ak-button-secondary ak-button-flat ak-button-icon ak-button-small opacity-70" />
+                <Ariakit.SelectDismiss className="ak-rounded-item ak-button ak-button-secondary ak-button-flat ak-button-icon ak-button-small opacity-70" />
               </div>
             )}
             {searchable && (
               <Ariakit.Combobox
                 autoSelect
                 render={combobox}
-                className="ak-focusable ak-combobox ak-input ak-rounded-item h-10 w-full px-[13px]"
+                className="ak-combobox h-10 w-full px-[13px]"
               />
             )}
           </div>
@@ -137,7 +134,7 @@ export function SelectTab(props: SelectTabProps) {
     <Ariakit.Tab
       {...props}
       render={<Ariakit.Role.div render={props.render} />}
-      className={clsx("ak-clickable ak-tab ak-tab-default", props.className)}
+      className={clsx("ak-tab ak-tab-default", props.className)}
     />
   );
 }
@@ -174,7 +171,7 @@ export function SelectList(props: SelectListProps) {
     <Component
       {...props}
       className={clsx(
-        "ak-popup-cover overflow-auto overscroll-contain outline-none",
+        "ak-popup-cover ak-popup-scroll outline-none",
         props.className,
       )}
     />
@@ -199,7 +196,7 @@ export function SelectItem({
       render={render}
       blurOnHoverEnd={false}
       className={clsx(
-        "ak-option ak-clickable [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
+        "ak-option [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
         props.className,
       )}
     >

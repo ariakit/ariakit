@@ -30,7 +30,7 @@
   depth. */
   .ak-clickable {
     --depth: 1px;
-    --padding-block: initial;
+    --padding-block: var(--depth);
   }
 
   /* Button */
@@ -43,7 +43,6 @@
   }
 
   .ak-button-default {
-    --depth: 2px;
     --outline-offset: -1px;
     @apply
       [--text:theme(colors.black)]
@@ -234,6 +233,8 @@
   with a popup class. */
   .ak-option {
     @apply
+      ak-clickable
+      flex-none
       [--option-background:transparent]
       data-[active-item]:[--option-background:theme(colors.black/8%)]
       dark:data-[active-item]:[--option-background:theme(colors.white/8%)]
@@ -328,8 +329,8 @@
   .ak-clickable:active,
   .ak-clickable[data-active] {
     padding-block:
-      calc(var(--padding-block-start, var(--padding-block, 0px)) + var(--depth, 0px))
-      calc(var(--padding-block-end, var(--padding-block, 0px)) - var(--depth, 0px));
+      calc(var(--padding-block-start, var(--padding-block)) + var(--depth, 0px))
+      calc(var(--padding-block-end, var(--padding-block)) - var(--depth, 0px));
   }
 
   /* Button */
@@ -348,6 +349,8 @@
     scroll-margin: var(--padding, 0px);
     border-radius: calc(var(--rounded, theme(borderRadius.lg)) - var(--padding, 0px));
     @apply
+      ak-focusable
+      ak-clickable
       text-base
       [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--light),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)]
       dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--light)]
@@ -398,6 +401,8 @@
   /* Combobox */
   .ak-combobox {
     outline-width: 1px;
+
+    @apply ak-input ak-focusable ak-rounded-item;
   }
 
   .ak-combobox[data-active-item] {
@@ -424,6 +429,9 @@
     border-radius: var(--rounded);
     scroll-padding: var(--padding);
     box-shadow: 0 0 0 1px var(--border), var(--shadow-size) var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
   }
 
   .ak-popup-cover {
@@ -432,16 +440,47 @@
     padding: var(--padding);
     margin-inline: var(--negative-margin);
     scroll-padding: var(--padding);
-    overflow: hidden;
+    min-height: 0;
+    overflow: clip;
 
     &:first-child {
       margin-block-start: var(--negative-margin);
     }
 
-    &:has(+ &),
     &:not(:has(~ *:not([hidden]))) {
       margin-block-end: var(--negative-margin);
     }
+  }
+
+  .ak-popup-scroll {
+    overflow: auto;
+    overscroll-behavior: contain;
+
+    @apply
+      [--sticky-header-height:40px]
+      sm:[--sticky-header-height:32px]
+      has-[.ak-popup-sticky-header]:scroll-pt-[calc(var(--sticky-header-height)+var(--padding))]
+  }
+
+  .ak-popup-sticky-header {
+    position: sticky;
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    top: calc(var(--padding) * -1);
+    z-index: 10;
+    padding-inline: calc(var(--padding) + theme(spacing.2));
+    background-color: var(--background);
+    cursor: default;
+    border-bottom: 1px solid var(--border);
+    height: var(--sticky-header-height);
+
+    @apply
+      text-sm
+      font-medium
+      text-black/60
+      dark:text-white/60
+      [&+*]:scroll-pt-[100px]
   }
 
   .ak-popup-layer {
@@ -529,6 +568,8 @@
     display: flex;
     flex: none;
     overflow-x: auto;
+    scrollbar-width: none;
+    margin-block-end: calc(var(--padding) * -1);
     background-image: linear-gradient(
       to bottom,
       var(--popup-background) calc(100% - var(--padding) - 1px),
@@ -549,6 +590,9 @@
     border-color: var(--border, transparent);
     border-width: var(--border-size, 0px) var(--border-size, 0px);
     translate: 0 var(--border-size, 0px);
+
+    @apply
+      ak-clickable
   }
 
   .ak-tab[aria-disabled] {
@@ -577,9 +621,6 @@
 
     background-color: var(--tab-background, var(--background, transparent));
     border-radius: var(--corner-size);
-    padding-block:
-      var(--padding-block-start, var(--padding-block))
-      var(--padding-block-end, var(--padding-block));
     padding-inline: theme(spacing.2);
     margin: var(--margin);
     margin-block-end: var(--margin-block-end);
