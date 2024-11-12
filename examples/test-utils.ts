@@ -6,8 +6,7 @@ export const test = base.extend<{ forEachTest: void }>({
   forEachTest: [
     async ({ page }, use, testInfo) => {
       const name = basename(dirname(testInfo.file));
-      await page.goto(`/previews/${name}`);
-      await page.waitForSelector("body > [data-hydrated]");
+      await page.goto(`/previews/${name}`, { waitUntil: "networkidle" });
       await use();
     },
     { auto: true },
