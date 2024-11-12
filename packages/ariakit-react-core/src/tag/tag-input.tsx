@@ -94,7 +94,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       if (event.defaultPrevented) return;
       const text = event.clipboardData.getData("text");
       const delimiters = getDelimiters(delimiter);
-      const values = splitValueByDelimiter(text, delimiters)
+      const values = splitValueByDelimiter(text.trim(), delimiters)
         .map((value) => value.trim())
         .filter((value) => value !== "");
       // Create a new event with the values extracted from the clipboard text so
