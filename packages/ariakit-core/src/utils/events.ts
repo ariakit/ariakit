@@ -223,7 +223,7 @@ export function addGlobalEventListener(
 
   // Prevent errors from "sandbox" frames.
   try {
-    scope.document.addEventListener(type, listener, options);
+    scope.addEventListener(type, listener, options);
     for (const frame of Array.from(scope.frames)) {
       children.push(addGlobalEventListener(type, listener, options, frame));
     }
@@ -231,7 +231,7 @@ export function addGlobalEventListener(
 
   const removeEventListener = () => {
     try {
-      scope.document.removeEventListener(type, listener, options);
+      scope.removeEventListener(type, listener, options);
     } catch {}
     for (const remove of children) {
       remove();
