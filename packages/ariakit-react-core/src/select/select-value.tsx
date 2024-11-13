@@ -71,7 +71,10 @@ export function SelectValue({
   const context = useSelectContext();
   store = store || context;
 
-  const value = useStoreState(store, (state) => state?.value || fallback);
+  const value = useStoreState(store, (state) => {
+    if (!state?.value.length) return fallback;
+    return state.value;
+  });
 
   if (children) {
     return children(value || "");
