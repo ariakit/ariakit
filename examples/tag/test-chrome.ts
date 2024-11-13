@@ -134,3 +134,13 @@ test("paste tags with semicolon, comma and space from tag list", async ({
     "jkl",
   ]);
 });
+
+test("paste tags with a final newline", async ({ page }) => {
+  const q = query(page);
+  await copy(page, "abc, def\n");
+  await page.keyboard.press("Tab");
+  await paste(page);
+  await expect(q.textbox("Tags")).toHaveValue("");
+  await expect(q.textbox("Tags")).toBeFocused();
+  expect(await tags(page)).toEqual(["JavaScript", "React", "abc", "def"]);
+});
