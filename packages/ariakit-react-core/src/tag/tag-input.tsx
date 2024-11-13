@@ -17,6 +17,7 @@ import type {
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useTagContext } from "./tag-context.tsx";
@@ -84,7 +85,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
         "TagInput must receive a `store` prop or be wrapped in a TagProvider component.",
     );
 
-    const value = store.useState("value");
+    const value = useStoreState(store, "value");
 
     const onPasteProp = props.onPaste;
     const addValueOnPasteProp = useBooleanEvent(addValueOnPaste);
