@@ -50,7 +50,7 @@ export function useCollectionItemOffscreen<
       invariant(
         offscreenRoot !== undefined,
         process.env.NODE_ENV !== "production" &&
-          "offscreenRoot must not be undefined.",
+          "The offscreenRoot prop must provided.",
       );
 
       const getOffscreenRoot = () => {

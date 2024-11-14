@@ -48,10 +48,8 @@ export function useCompositeItemOffscreen<
       offscreenRoot(state?: CompositeStoreState | ComboboxStoreState) {
         if (props.offscreenRoot) return props.offscreenRoot;
         if (!state) return;
-        if ("contentElement" in state) {
-          return state.contentElement || null;
-        }
-        return;
+        if (!("contentElement" in state)) return;
+        return state.contentElement || null;
       },
     },
   );

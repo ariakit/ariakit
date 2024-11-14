@@ -393,7 +393,9 @@ export interface CompositeStoreState<
   T extends CompositeStoreItem = CompositeStoreItem,
 > extends CollectionStoreState<T> {
   /**
-   * TODO: Comment
+   * The ID of the composite store is used to reference elements within the
+   * composite widget before hydration. If not provided, a random ID will be
+   * generated.
    */
   id: string;
   /**

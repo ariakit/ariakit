@@ -322,3 +322,42 @@ export function setSelectionRange(
     element.setSelectionRange(...args);
   }
 }
+
+/**
+ * Sort the items based on their DOM position.
+ */
+export function sortBasedOnDOMPosition<T>(
+  items: T[],
+  getElement: (item: T) => Element | null | undefined,
+) {
+  const pairs = items.map((item, index) => [index, item] as const);
+  let isOrderDifferent = false;
+  pairs.sort(([indexA, a], [indexB, b]) => {
+    const elementA = getElement(a);
+    const elementB = getElement(b);
+    if (elementA === elementB) return 0;
+    if (!elementA || !elementB) return 0;
+    // a before b
+    if (isElementPreceding(elementA, elementB)) {
+      if (indexA > indexB) {
+        isOrderDifferent = true;
+      }
+      return -1;
+    }
+    // a after b
+    if (indexA < indexB) {
+      isOrderDifferent = true;
+    }
+    return 1;
+  });
+  if (isOrderDifferent) {
+    return pairs.map(([_, item]) => item);
+  }
+  return items;
+}
+
+function isElementPreceding(a: Element, b: Element) {
+  return Boolean(
+    b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING,
+  );
+}

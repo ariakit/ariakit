@@ -164,7 +164,9 @@ type StoreStateObjectResult<
 };
 
 /**
- * TODO: Comment
+ * Receives an Ariakit store object (which can be `null` or `undefined`) and
+ * returns the current state. Unlike `useStoreState`, this hook receives an
+ * object with keys that map to store keys or selector functions.
  */
 export function useStoreStateObject<
   T extends CoreStore,
