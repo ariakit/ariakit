@@ -10,7 +10,10 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
-import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
@@ -20,6 +23,17 @@ import { usePopoverStoreProps } from "../popover/popover-store.ts";
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
+
+export function useSelectStoreOptions<T extends Core.SelectStoreOptions>(
+  props: T,
+) {
+  const combobox = useComboboxProviderContext();
+  props = {
+    ...props,
+    combobox: props.combobox !== undefined ? props.combobox : combobox,
+  };
+  return useCompositeStoreOptions(props);
+}
 
 export function useSelectStoreProps<T extends Core.SelectStore>(
   store: T,
@@ -61,11 +75,7 @@ export function useSelectStore<T extends SelectStoreValue = SelectStoreValue>(
 export function useSelectStore(props?: SelectStoreProps): SelectStore;
 
 export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
-  const combobox = useComboboxProviderContext();
-  props = {
-    ...props,
-    combobox: props.combobox !== undefined ? props.combobox : combobox,
-  };
+  props = useSelectStoreOptions(props);
   const [store, update] = useStore(Core.createSelectStore, props);
   return useSelectStoreProps(store, update, props);
 }

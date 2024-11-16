@@ -1,4 +1,4 @@
-import { getDocument } from "../utils/dom.ts";
+import { getDocument, sortBasedOnDOMPosition } from "../utils/dom.ts";
 import { chain, defaultValue } from "../utils/misc.ts";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
@@ -9,39 +9,6 @@ import {
   throwOnConflictingProps,
 } from "../utils/store.ts";
 import type { BivariantCallback } from "../utils/types.ts";
-
-function isElementPreceding(a: Element, b: Element) {
-  return Boolean(
-    b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING,
-  );
-}
-
-function sortBasedOnDOMPosition<T extends CollectionStoreItem>(items: T[]) {
-  const pairs = items.map((item, index) => [index, item] as const);
-  let isOrderDifferent = false;
-  pairs.sort(([indexA, a], [indexB, b]) => {
-    const elementA = a.element;
-    const elementB = b.element;
-    if (elementA === elementB) return 0;
-    if (!elementA || !elementB) return 0;
-    // a before b
-    if (isElementPreceding(elementA, elementB)) {
-      if (indexA > indexB) {
-        isOrderDifferent = true;
-      }
-      return -1;
-    }
-    // a after b
-    if (indexA < indexB) {
-      isOrderDifferent = true;
-    }
-    return 1;
-  });
-  if (isOrderDifferent) {
-    return pairs.map(([_, item]) => item);
-  }
-  return items;
-}
 
 function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);
@@ -101,7 +68,7 @@ export function createCollectionStore<
   const collection = createStore(initialState, props.store);
 
   const sortItems = (renderedItems: T[]) => {
-    const sortedItems = sortBasedOnDOMPosition(renderedItems);
+    const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
     privateStore.setState("renderedItems", sortedItems);
     collection.setState("renderedItems", sortedItems);
   };

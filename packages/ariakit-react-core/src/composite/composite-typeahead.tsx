@@ -1,4 +1,8 @@
-import { isTextField } from "@ariakit/core/utils/dom";
+import {
+  getDocument,
+  isTextField,
+  sortBasedOnDOMPosition,
+} from "@ariakit/core/utils/dom";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import {
   invariant,
@@ -127,14 +131,34 @@ export const useCompositeTypeahead = createHook<
     if (event.defaultPrevented) return;
     if (!typeahead) return;
     if (!store) return;
-    const { renderedItems, items, activeId } = store.getState();
-    if (!isValidTypeaheadEvent(event)) return clearChars();
+    if (!isValidTypeaheadEvent(event)) {
+      return clearChars();
+    }
+    const { renderedItems, items, activeId, id } = store.getState();
     // We typically want to use the rendered items, as they're already sorted.
     // However, the composite list might be unmounted or virtualized, in which
     // case we'll use the original items.
     let enabledItems = getEnabledItems(
-      renderedItems.length ? renderedItems : items,
+      items.length > renderedItems.length ? items : renderedItems,
     );
+    // When the composite widget contains items with the `offscreenBehavior`
+    // prop, we need to consider them as well.
+    const document = getDocument(event.currentTarget);
+    const selector = `[data-offscreen-id="${id}"]`;
+    const offscreenItems = document.querySelectorAll<HTMLElement>(selector);
+    // Push the offscreen items to the enabled items list.
+    for (const element of offscreenItems) {
+      const disabled =
+        element.ariaDisabled === "true" ||
+        ("disabled" in element && !!element.disabled);
+      enabledItems.push({ id: element.id, element, disabled });
+    }
+    // If there are offscreen items, we need to sort the enabled items based on
+    // their DOM position so offscreen elements above the viewport are correctly
+    // considered.
+    if (offscreenItems.length) {
+      enabledItems = sortBasedOnDOMPosition(enabledItems, (i) => i.element);
+    }
     if (!isSelfTargetOrItem(event, enabledItems)) return clearChars();
     event.preventDefault();
     // We need to clear the previous cleanup timeout so we can append the
