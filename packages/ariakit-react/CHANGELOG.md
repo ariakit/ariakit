@@ -1,5 +1,30 @@
 # @ariakit/react
 
+## 0.4.14
+
+### Improved performance on composite widgets
+
+Composite item components such as [`ComboboxItem`](https://ariakit.org/reference/combobox-item) and [`SelectItem`](https://ariakit.org/reference/select-item) now render 20-30% faster compared to Ariakit v0.4.13.
+
+This enhancement should decrease the time needed to render large collections of items in composite widgets and improve the Interaction to Next Paint (INP) metric. We're working on further optimizations to make composite widgets even faster in future releases.
+
+### Combobox auto-scroll
+
+The [`Combobox`](https://ariakit.org/reference/combobox) component now scrolls the list to the top while typing when the [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop is disabled.
+
+The behavior is now consistent with the [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop, except the first item won't be automatically focused.
+
+### Other updates
+
+- Fixed the [`item`](https://ariakit.org/reference/use-collection-store#item) method to prevent it from returning items that have been removed from the collection store.
+- Fixed the [`item`](https://ariakit.org/reference/use-menu-store#item) method when keeping different menu stores in sync.
+- Added [`id`](https://ariakit.org/reference/use-composite-store#id) prop to composite stores.
+- Fixed composite typeahead functionality when rendering virtualized lists.
+- Fixed [`SelectValue`](https://ariakit.org/reference/select-value) to display the [`fallback`](https://ariakit.org/reference/select-value#fallback) when the value is an empty array or string.
+- Fixed an issue where composite widgets might not navigate to the correct item when pressing <kbd>↑</kbd> while the composite base element was focused.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.14`
+
 ## 0.4.13
 
 ### Accessible composite widgets with invalid `activeId`
