@@ -5,7 +5,10 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
-import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
@@ -17,6 +20,17 @@ import type { TagStore } from "../tag/tag-store.ts";
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
+
+export function useComboboxStoreOptions<T extends Core.ComboboxStoreOptions>(
+  props: T,
+) {
+  const tag = useTagContext();
+  props = {
+    ...props,
+    tag: props.tag !== undefined ? props.tag : tag,
+  };
+  return useCompositeStoreOptions(props);
+}
 
 export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   store: T,
@@ -72,11 +86,7 @@ export function useComboboxStore(props?: ComboboxStoreProps): ComboboxStore;
 export function useComboboxStore(
   props: ComboboxStoreProps = {},
 ): ComboboxStore {
-  const tag = useTagContext();
-  props = {
-    ...props,
-    tag: props.tag !== undefined ? props.tag : tag,
-  };
+  props = useComboboxStoreOptions(props);
   const [store, update] = useStore(Core.createComboboxStore, props);
   return useComboboxStoreProps(store, update, props);
 }

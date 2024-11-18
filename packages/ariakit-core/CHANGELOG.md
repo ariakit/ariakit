@@ -1,5 +1,14 @@
 # @ariakit/core
 
+## 0.4.13
+
+- Fixed the [`item`](https://ariakit.org/reference/use-collection-store#item) method to prevent it from returning items that have been removed from the collection store.
+- Fixed the [`item`](https://ariakit.org/reference/use-menu-store#item) method when keeping different menu stores in sync.
+- Added [`id`](https://ariakit.org/reference/use-composite-store#id) prop to composite stores.
+- Added `sortBasedOnDOMPosition` function.
+- Updated core utils.
+- Improved JSDocs.
+
 ## 0.4.12
 
 - Fixed regression in [`focusShift`](https://ariakit.org/reference/composite-provider#focusshift).

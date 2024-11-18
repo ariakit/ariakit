@@ -31,7 +31,7 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
+import { useStoreStateObject } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -164,15 +164,65 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
     const row = useContext(CompositeRowContext);
-    const rowId = useStoreState(store, (state) => {
-      if (rowIdProp) return rowIdProp;
-      if (!state) return;
-      if (!row?.baseElement) return;
-      if (row.baseElement !== state.baseElement) return;
-      return row.id;
-    });
     const disabled = disabledFromProps(props);
     const trulyDisabled = disabled && !props.accessibleWhenDisabled;
+
+    const {
+      rowId,
+      baseElement,
+      isActiveItem,
+      ariaSetSize,
+      ariaPosInSet,
+      isTabbable,
+    } = useStoreStateObject(store, {
+      rowId(state) {
+        if (rowIdProp) return rowIdProp;
+        if (!state) return;
+        if (!row?.baseElement) return;
+        if (row.baseElement !== state.baseElement) return;
+        return row.id;
+      },
+      baseElement(state) {
+        return state?.baseElement || undefined;
+      },
+      isActiveItem(state) {
+        return !!state && state.activeId === id;
+      },
+      ariaSetSize(state) {
+        if (ariaSetSizeProp != null) return ariaSetSizeProp;
+        if (!state) return;
+        if (!row?.ariaSetSize) return;
+        if (row.baseElement !== state.baseElement) return;
+        return row.ariaSetSize;
+      },
+      ariaPosInSet(state) {
+        if (ariaPosInSetProp != null) return ariaPosInSetProp;
+        if (!state) return;
+        if (!row?.ariaPosInSet) return;
+        if (row.baseElement !== state.baseElement) return;
+        const itemsInRow = state.renderedItems.filter(
+          (item) => item.rowId === rowId,
+        );
+        return (
+          row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id)
+        );
+      },
+      isTabbable(state) {
+        if (!state?.renderedItems.length) return true;
+        if (state.virtualFocus) return false;
+        if (tabbable) return true;
+        if (state.activeId === null) return false;
+        // If activeId refers to an item that's disabled or not connected to the
+        // DOM, we make all items tabbable so users can tab into the composite
+        // widget. Once the activeId is valid, we restore the roving tabindex. See
+        // https://github.com/ariakit/ariakit/issues/3232
+        // https://github.com/ariakit/ariakit/issues/4129
+        const item = store?.item(state.activeId);
+        if (item?.disabled) return true;
+        if (!item?.element) return true;
+        return state.activeId === id;
+      },
+    });
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
@@ -181,6 +231,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           id: id || item.id,
           rowId,
           disabled: !!trulyDisabled,
+          children: item.element?.textContent,
         };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -347,11 +398,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       }
     });
 
-    const baseElement = useStoreState(
-      store,
-      (state) => state?.baseElement || undefined,
-    );
-
     const providerValue = useMemo(
       () => ({ id, baseElement }),
       [id, baseElement],
@@ -366,46 +412,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       ),
       [providerValue],
     );
-
-    const isActiveItem = useStoreState(
-      store,
-      (state) => !!state && state.activeId === id,
-    );
-
-    const ariaSetSize = useStoreState(store, (state) => {
-      if (ariaSetSizeProp != null) return ariaSetSizeProp;
-      if (!state) return;
-      if (!row?.ariaSetSize) return;
-      if (row.baseElement !== state.baseElement) return;
-      return row.ariaSetSize;
-    });
-
-    const ariaPosInSet = useStoreState(store, (state) => {
-      if (ariaPosInSetProp != null) return ariaPosInSetProp;
-      if (!state) return;
-      if (!row?.ariaPosInSet) return;
-      if (row.baseElement !== state.baseElement) return;
-      const itemsInRow = state.renderedItems.filter(
-        (item) => item.rowId === rowId,
-      );
-      return row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id);
-    });
-
-    const isTabbable = useStoreState(store, (state) => {
-      if (!state?.renderedItems.length) return true;
-      if (state.virtualFocus) return false;
-      if (tabbable) return true;
-      if (state.activeId === null) return false;
-      // If activeId refers to an item that's disabled or not connected to the
-      // DOM, we make all items tabbable so users can tab into the composite
-      // widget. Once the activeId is valid, we restore the roving tabindex. See
-      // https://github.com/ariakit/ariakit/issues/3232
-      // https://github.com/ariakit/ariakit/issues/4129
-      const item = store?.item(state.activeId);
-      if (item?.disabled) return true;
-      if (!item?.element?.isConnected) return true;
-      return state.activeId === id;
-    });
 
     props = {
       id,

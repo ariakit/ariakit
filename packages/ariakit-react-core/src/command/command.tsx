@@ -10,12 +10,7 @@ import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
-import {
-  useEvent,
-  useMergeRefs,
-  useMetadataProps,
-  useTagName,
-} from "../utils/hooks.ts";
+import { useEvent, useMergeRefs, useMetadataProps } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 
@@ -61,11 +56,7 @@ const symbol = Symbol("command");
 export const useCommand = createHook<TagName, CommandOptions>(
   function useCommand({ clickOnEnter = true, clickOnSpace = true, ...props }) {
     const ref = useRef<HTMLType>(null);
-    const tagName = useTagName(ref);
-    const type = props.type;
-    const [isNativeButton, setIsNativeButton] = useState(
-      () => !!tagName && isButton({ tagName, type }),
-    );
+    const [isNativeButton, setIsNativeButton] = useState(false);
 
     useEffect(() => {
       if (!ref.current) return;

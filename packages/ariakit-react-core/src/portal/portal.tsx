@@ -44,7 +44,7 @@ function getPortalElement(
 function getRandomId(prefix = "id") {
   return `${prefix ? `${prefix}-` : ""}${Math.random()
     .toString(36)
-    .substr(2, 6)}`;
+    .slice(2, 8)}`;
 }
 
 function queueFocus(element?: HTMLElement | null) {
