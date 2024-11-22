@@ -2,7 +2,6 @@ import { Button } from "@ariakit/react";
 import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
 import { type CSSProperties, useId, useMemo, useState } from "react";
-import { flatPages, pages } from "../combobox-tabs/pages.ts";
 import {
   CommandMenu,
   CommandMenuFooter,
@@ -13,16 +12,17 @@ import {
   CommandMenuTabList,
   CommandMenuTabPanel,
 } from "./command-menu.tsx";
+import { flatPages, pages } from "./pages.ts";
 import "./theme.css";
 
 export default function Example() {
   return (
-    <>
+    <div className="flex gap-2 flex-wrap">
       <Simple />
       <WithTabs />
       <WithTabsAndGrid cols={2} />
       <WithTabsAndGrid cols={3} />
-    </>
+    </div>
   );
 }
 
@@ -64,7 +64,9 @@ function Simple() {
         <CommandMenuInput placeholder="Search pages..." />
         <CommandMenuList>
           {currentPages.map((page, i) => (
-            <CommandMenuItem key={i}>{page.label}</CommandMenuItem>
+            <CommandMenuItem key={i}>
+              <span className="truncate">{page.label}</span>
+            </CommandMenuItem>
           ))}
         </CommandMenuList>
         <CommandMenuFooter />
@@ -123,7 +125,9 @@ function WithTabs() {
         <CommandMenuTabPanel>
           <CommandMenuList>
             {currentPages.map((page, i) => (
-              <CommandMenuItem key={i}>{page.label}</CommandMenuItem>
+              <CommandMenuItem key={i}>
+                <span className="truncate">{page.label}</span>
+              </CommandMenuItem>
             ))}
           </CommandMenuList>
         </CommandMenuTabPanel>
@@ -188,7 +192,7 @@ function WithTabsAndGrid({ cols = 2 }: { cols?: number }) {
           >
             {currentPages.map((page, i) => (
               <CommandMenuItem key={i} rowId={`${Math.ceil((i + 1) / cols)}`}>
-                {page.label}
+                <span className="truncate">{page.label}</span>
               </CommandMenuItem>
             ))}
           </CommandMenuList>

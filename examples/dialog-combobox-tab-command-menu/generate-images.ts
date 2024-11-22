@@ -5,8 +5,10 @@ test("generate images", async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 800 });
 
   const q = query(page);
-  await q.button("Open Command Menu").click();
+  await q.button("With Tabs", { exact: true }).click();
   await expect(q.dialog("Command Menu")).toBeVisible();
+
+  await page.keyboard.type("sel");
 
   await screenshot({
     page,
@@ -31,8 +33,8 @@ test("generate images", async ({ page }) => {
   });
 
   // Make sure the caret appears
-  await q.combobox().fill("a");
   await page.keyboard.press("Backspace");
+  await page.keyboard.type("l");
 
   await screenshot({
     page,

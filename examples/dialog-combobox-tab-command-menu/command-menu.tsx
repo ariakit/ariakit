@@ -272,7 +272,7 @@ export const CommandMenuFooter = forwardRef<
       {...props}
       className={clsx(
         props.className,
-        "ak-popup-cover ak-popup-layer mt-auto flex flex-none gap-3 border-[--border] border-t p-2 text-sm",
+        "ak-popup-cover ak-popup-layer mt-auto flex flex-none gap-3 border-[--border] border-t p-2 text-sm whitespace-nowrap overflow-x-auto max-sm:hidden",
       )}
     >
       <div className="flex items-center gap-1">
