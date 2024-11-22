@@ -4,7 +4,7 @@
  */
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { forwardRef, startTransition } from "react";
 import { ArrowIcon, ReturnIcon } from "./icons.tsx";
 
@@ -31,7 +31,6 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
         backdrop={<div className="ak-backdrop ak-backdrop-enter" />}
         {...props}
         store={dialog}
-        // dir="rtl"
         className={clsx(
           "ak-modal ak-popup ak-popup-enter ak-elevation-2 flex flex-col overflow-clip max-sm:h-auto sm:max-h-[480px] sm:w-[640px] sm:[--inset-block:72px]",
           props.className,
@@ -41,9 +40,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
           disclosure={dialog}
           focusLoop={false}
           focusShift
-          // orientation="layout"
-          // rtl
-          // focusWrap="horizontal"
+          focusWrap="horizontal"
           resetValueOnHide
           setValue={(value) => {
             startTransition(() => {
@@ -69,33 +66,6 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
             }}
           >
             {props.children}
-            <footer className="ak-popup-cover ak-popup-layer mt-auto flex flex-none gap-3 border-[--border] border-t p-2 text-sm">
-              <div className="flex items-center gap-1">
-                <kbd className="ak-kbd" aria-label="Up Arrow">
-                  <ArrowIcon direction="up" />
-                </kbd>
-                <kbd className="ak-kbd" aria-label="Down Arrow">
-                  <ArrowIcon direction="down" />
-                </kbd>
-                {/* <kbd className="ak-kbd" aria-label="Left Arrow">
-                  <ArrowIcon direction="left" />
-                </kbd>
-                <kbd className="ak-kbd" aria-label="Right Arrow">
-                  <ArrowIcon direction="right" />
-                </kbd> */}
-                to navigate
-              </div>
-              <div className="flex items-center gap-1">
-                <kbd className="ak-kbd text-xs">Tab</kbd>
-                to switch tabs
-              </div>
-              <div className="flex items-center gap-1">
-                <kbd className="ak-kbd" aria-label="Enter">
-                  <ReturnIcon />
-                </kbd>
-                to select
-              </div>
-            </footer>
           </Ariakit.TabProvider>
         </Ariakit.ComboboxProvider>
       </Ariakit.Dialog>
@@ -124,13 +94,14 @@ export const CommandMenuInput = forwardRef<
           props.onKeyDown?.(event);
           if (event.defaultPrevented) return;
           if (event.key !== "Tab") return;
-          event.preventDefault();
           const activeId = tab?.getState().selectedId;
-          tab?.select(
-            event.shiftKey
-              ? tab.previous({ activeId })
-              : tab.next({ activeId }),
-          );
+          const options = { activeId, focusLoop: false };
+          const nextId = event.shiftKey
+            ? tab?.previous(options)
+            : tab?.next(options);
+          if (!nextId) return;
+          event.preventDefault();
+          tab?.select(nextId);
         }}
       />
       <Ariakit.DialogDismiss className="ak-focusable ak-clickable ak-rounded-item ak-button ak-button-small ak-button-secondary [--border:inherit]">
@@ -203,13 +174,38 @@ export const CommandMenuTabPanel = forwardRef<
 export interface CommandMenuListProps extends Ariakit.ComboboxListProps {}
 
 export const CommandMenuList = forwardRef<HTMLDivElement, CommandMenuListProps>(
-  function CommandMenuList(props, ref) {
+  function CommandMenuList({ children, ...props }, ref) {
+    const combobox = Ariakit.useComboboxContext();
+    const value = Ariakit.useStoreState(combobox, (state) => state?.value);
+
+    const hasChildren = Array.isArray(children)
+      ? !!children.length
+      : !!children;
+
     return (
       <Ariakit.ComboboxList
         ref={ref}
         {...props}
-        className={clsx("overflow-auto overscroll-contain", props.className)}
-      />
+        className={clsx(
+          "ak-popup-cover overflow-auto overscroll-contain",
+          props.className,
+        )}
+      >
+        {hasChildren ? (
+          children
+        ) : (
+          <div className="my-10 text-center">
+            No pages found
+            {!!value && (
+              <>
+                {" "}
+                for &quot;<strong>{value}</strong>
+              </>
+            )}
+            &quot;
+          </div>
+        )}
+      </Ariakit.ComboboxList>
     );
   },
 );
@@ -257,3 +253,59 @@ export const CommandMenuItem = forwardRef<HTMLDivElement, CommandMenuItemProps>(
     );
   },
 );
+
+export interface CommandMenuFooterProps extends ComponentProps<"footer"> {}
+
+export const CommandMenuFooter = forwardRef<
+  HTMLDivElement,
+  CommandMenuFooterProps
+>(function CommandMenuFooter(props, ref) {
+  const combobox = Ariakit.useComboboxContext();
+  const tab = Ariakit.useTabContext();
+  const isGrid = Ariakit.useStoreState(combobox, (state) =>
+    state?.items.find((item) => !!item.rowId),
+  );
+  const hasTabs = Ariakit.useStoreState(tab, (state) => !!state?.selectedId);
+  return (
+    <footer
+      ref={ref}
+      {...props}
+      className={clsx(
+        props.className,
+        "ak-popup-cover ak-popup-layer mt-auto flex flex-none gap-3 border-[--border] border-t p-2 text-sm",
+      )}
+    >
+      <div className="flex items-center gap-1">
+        <kbd className="ak-kbd" aria-label="Up Arrow">
+          <ArrowIcon direction="up" />
+        </kbd>
+        <kbd className="ak-kbd" aria-label="Down Arrow">
+          <ArrowIcon direction="down" />
+        </kbd>
+        {isGrid && (
+          <>
+            <kbd className="ak-kbd" aria-label="Left Arrow">
+              <ArrowIcon direction="left" />
+            </kbd>
+            <kbd className="ak-kbd" aria-label="Right Arrow">
+              <ArrowIcon direction="right" />
+            </kbd>
+          </>
+        )}
+        to navigate
+      </div>
+      {hasTabs && (
+        <div className="flex items-center gap-1">
+          <kbd className="ak-kbd text-xs">Tab</kbd>
+          to switch tabs
+        </div>
+      )}
+      <div className="flex items-center gap-1">
+        <kbd className="ak-kbd" aria-label="Enter">
+          <ReturnIcon />
+        </kbd>
+        to select
+      </div>
+    </footer>
+  );
+});
