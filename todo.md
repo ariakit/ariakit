@@ -1,0 +1,5 @@
+- role unneccesary generic
+- consistent use of `interface` for option types
+- wording of "element", "component instance", etc
+- use `chain` or `mergeProps` in `combineProps` (contribution)
+- "Fallbacks to the container element" -> "Falls back to the container element"
