@@ -232,6 +232,8 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
         </>
       );
 
+      // TODO: (react) this check seems unnecessary since portalNode is
+      // always defined at this point.
       if (portalNode) {
         element = createPortal(element, portalNode);
       }
