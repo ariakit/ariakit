@@ -131,7 +131,7 @@
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
     "hastscript": "7.2.0",
-    "husky": "9.1.6",
+    "husky": "9.1.7",
     "jsdom": "25.0.1",
     "lerna": "8.1.9",
     "lint-staged": "15.2.10",
