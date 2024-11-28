@@ -1,5 +1,12 @@
 # @ariakit/react-core
 
+## 0.4.15
+
+- Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
+- Fixed typings for [`onSubmit`](https://ariakit.org/reference/use-form-store#onsubmit) and [`onValidate`](https://ariakit.org/reference/use-form-store#onvalidate).
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.14`
+
 ## 0.4.14
 
 ### Improved performance on composite widgets
