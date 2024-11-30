@@ -6,7 +6,7 @@ tags:
   - Abstracted examples
 ---
 
-# Tab with React Router
+# Tab with React Router v7
 
 <div data-description>
 

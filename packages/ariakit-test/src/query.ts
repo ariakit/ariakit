@@ -13,10 +13,10 @@ type ElementQueries = ReturnType<
   typeof getQueriesForElement<typeof baseQueries>
 >;
 
-function createQueries(container: HTMLElement = document.body) {
+function createQueries(container?: HTMLElement) {
   return Object.entries(baseQueries).reduce((queries, [key, query]) => {
     // @ts-expect-error
-    queries[key] = (...args) => query(container, ...args);
+    queries[key] = (...args) => query(container || document.body, ...args);
     return queries;
   }, {} as ElementQueries);
 }

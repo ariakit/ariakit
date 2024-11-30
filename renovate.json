@@ -49,7 +49,7 @@
         "null-loader",
         "react",
         "react-dom",
-        "react-router-dom",
+        "react-router",
         "react-shadow",
         "react-toastify",
         "textarea-caret",

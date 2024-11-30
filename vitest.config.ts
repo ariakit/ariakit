@@ -7,6 +7,7 @@ const excludeFromReact17 = [
   "examples/dialog-animated-various",
   "examples/combobox-group",
   "examples/*-radix*/**",
+  "examples/*react-router*/**",
 ];
 
 const includeWithStyles = [
