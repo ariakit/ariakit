@@ -109,7 +109,7 @@
     "@types/stylis": "4.2.6",
     "@types/textarea-caret": "3.0.3",
     "@types/use-sync-external-store": "0.0.6",
-    "@vercel/analytics": "1.3.1",
+    "@vercel/analytics": "1.4.1",
     "@vitest/coverage-c8": "0.33.0",
     "@wordpress/components": "28.13.0",
     "autoprefixer": "10.4.20",
