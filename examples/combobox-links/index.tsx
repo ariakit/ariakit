@@ -6,8 +6,8 @@ import "./style.css";
 
 const links = [
   {
-    href: "https://x.com/ariakitjs",
-    children: "Twitter",
+    href: "https://bsky.app/profile/ariakit.org",
+    children: "Bluesky",
     target: "_blank",
   },
   {
