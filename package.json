@@ -76,9 +76,9 @@
   "dependencies": {
     "@babel/core": "7.26.0",
     "@babel/preset-env": "7.26.0",
-    "@babel/preset-react": "7.25.9",
+    "@babel/preset-react": "7.26.3",
     "@babel/preset-typescript": "7.26.0",
-    "@babel/types": "7.26.0",
+    "@babel/types": "7.26.3",
     "@biomejs/biome": "1.9.4",
     "@changesets/cli": "2.26.2",
     "@clerk/clerk-react": "4.32.4",
