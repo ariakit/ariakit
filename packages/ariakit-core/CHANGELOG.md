@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.4.15
+
+- Improved JSDocs.
+
 ## 0.4.14
 
 - Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
