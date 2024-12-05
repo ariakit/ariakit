@@ -1,5 +1,10 @@
 # @ariakit/react
 
+## 0.4.16
+
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/react-core@0.4.16`
+
 ## 0.4.15
 
 - Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
