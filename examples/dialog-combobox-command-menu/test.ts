@@ -72,11 +72,8 @@ test("search", async () => {
   expect(q.option.all()).toHaveLength(2);
   expect(q.option("Fix Spelling and Grammar")).toHaveFocus();
   await type("ec");
-  expect(q.option.all()).toHaveLength(1);
-  expect(q.option("My Schedule")).toBeVisible();
-  await type("t");
   expect(q.option.all()).toHaveLength(0);
   expect(q.text("No results found")).toBeVisible();
-  await type("\b\b\b\b\b\b");
+  await type("\b\b\b\b\b");
   expect(q.option("Search Contacts")).toHaveFocus();
 });

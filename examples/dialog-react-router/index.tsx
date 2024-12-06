@@ -1,4 +1,5 @@
 import * as Ariakit from "@ariakit/react";
+import type { SyntheticEvent } from "react";
 import {
   Link,
   MemoryRouter,
@@ -6,12 +7,17 @@ import {
   Route,
   Routes,
   useNavigate,
-} from "react-router-dom";
+} from "react-router";
 import "./style.css";
 
 function Post() {
   const navigate = useNavigate();
-  const close = () => navigate("/");
+
+  const close = (event?: Event | SyntheticEvent) => {
+    event?.preventDefault();
+    navigate("/");
+  };
+
   return (
     <Ariakit.Dialog
       open
