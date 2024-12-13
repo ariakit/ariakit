@@ -1,5 +1,5 @@
 {
-  "name": "@ariakit/react",
+  "name": "@shared-test/react",
   "version": "0.4.15",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,

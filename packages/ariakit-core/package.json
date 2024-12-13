@@ -1,5 +1,5 @@
 {
-  "name": "@ariakit/core",
+  "name": "@shared-test/core",
   "version": "0.4.14",
   "description": "Ariakit core",
   "sideEffects": false,
