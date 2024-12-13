@@ -1,11 +1,11 @@
 <h1 align="center">Ariakit</h1>
 
+<br>
 <p align="center">
   Toolkit for building accessible web apps with <a href="https://reactjs.org">React</a>.
   <br>
   <a href="https://ariakit.org"><strong>Explore website »</strong></a>
 </p>
-<br>
 <br>
 
 <div align="center">
