@@ -1,5 +1,10 @@
 # @ariakit/react-core
 
+## 0.1.0
+
+- Added export to index path"
+- Testing for proper export"
+
 ## 0.0.2
 
 - Added datatable
