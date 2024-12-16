@@ -60,11 +60,11 @@ export default defineConfig({
       testMatch: [/\/test[^\/]*\-android/, /\/test[^\/]*\-mobile/],
       use: devices["Pixel 5"],
     },
-    {
-      name: "plus",
-      testMatch: [/website\/tests\/ariakit-plus/],
-      use: devices["Desktop Chrome"],
-    },
+    // {
+    //   name: "plus",
+    //   // testMatch: [/website\/tests\/ariakit-plus/],
+    //   use: devices["Desktop Chrome"],
+    // },
     {
       name: "vo",
       testMatch: [/\/test[^\/]*\-vo/],

@@ -68,11 +68,6 @@
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write",
     "*.css": "stylelint --fix"
   },
-  "overrides": {
-    "@wordpress/components": {
-      "@ariakit/react": "file:packages/ariakit-react"
-    }
-  },
   "dependencies": {
     "@babel/core": "7.26.0",
     "@babel/preset-env": "7.26.0",
