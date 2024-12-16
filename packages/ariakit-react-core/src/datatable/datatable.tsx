@@ -1,11 +1,10 @@
-import * as React from "react";
-
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useReducer, useState } from "react";
 
 type Person = {
   firstName: string;
@@ -80,10 +79,10 @@ export interface DataTableInterface {
 }
 
 const DataTable: React.FC<DataTableInterface> = ({ inputData }) => {
-  const [data, _setData] = React.useState(() =>
+  const [data, _setData] = useState(() =>
     inputData ? [...inputData] : [...defaultData],
   );
-  const rerender = React.useReducer(() => ({}), {})[1];
+  const rerender = useReducer(() => ({}), {})[1];
 
   const table = useReactTable({
     data,
