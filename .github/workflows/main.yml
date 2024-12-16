@@ -312,61 +312,61 @@ jobs:
   #         retention-days: 30
 
   # test-macos:
-    name: Test macOS
-    needs: website
-    runs-on: macos-latest
+    # name: Test macOS
+    # needs: website
+    # runs-on: macos-latest
     # concurrency:
     #   group: test-macos-${{ github.head_ref || github.run_id }}
     #   cancel-in-progress: true
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+    # steps:
+    #   - name: Checkout repository
+    #     uses: actions/checkout@v4
+    #     with:
+    #       fetch-depth: 2
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
+    #   - name: Set up Node
+    #     uses: actions/setup-node@v4
+    #     with:
+    #       node-version-file: .nvmrc
 
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+    #   - name: Cache node_modules
+    #     uses: actions/cache/restore@v4
+    #     id: cache-node-modules
+    #     with:
+    #       path: |
+    #         node_modules
+    #         packages/*/node_modules
+    #       key: modules-${{ hashFiles('package-lock.json') }}
 
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+    #   - name: Install dependencies
+    #     if: steps.cache-node-modules.outputs.cache-hit != 'true'
+    #     run: npm ci --no-audit
 
-      - name: Cache playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/Library/Caches/ms-playwright
-          key: playwright-macos-${{ hashFiles('package-lock.json') }}
-          restore-keys: playwright-macos-
+    #   - name: Cache playwright
+    #     uses: actions/cache@v4
+    #     with:
+    #       path: ~/Library/Caches/ms-playwright
+    #       key: playwright-macos-${{ hashFiles('package-lock.json') }}
+    #       restore-keys: playwright-macos-
 
-      - name: Install playwright
-        run: npx playwright install --with-deps webkit
+    #   - name: Install playwright
+    #     run: npx playwright install --with-deps webkit
 
-      - name: Restore website
-        uses: actions/cache/restore@v4
-        with:
-          path: website/.next
-          key: nextjs-${{ github.run_id }}
+    #   - name: Restore website
+    #     uses: actions/cache/restore@v4
+    #     with:
+    #       path: website/.next
+    #       key: nextjs-${{ github.run_id }}
 
-      - name: Test
-        id: test
-        run: npm run playwright -- --project safari --project ios
+    #   - name: Test
+    #     id: test
+    #     run: npm run playwright -- --project safari --project ios
 
-      - name: Upload test results to GitHub
-        if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: test-results
-          retention-days: 30
+    #   - name: Upload test results to GitHub
+    #     if: failure() && steps.test.outcome == 'failure'
+    #     uses: actions/upload-artifact@v3
+    #     with:
+    #       name: test-results
+    #       path: test-results
+    #       retention-days: 30
