@@ -1,6 +1,6 @@
 # Change Log
 
-Change logs are organized by package:
+Change logs are organized by package testing:
 
 - [@ariakit/core](packages/ariakit-core/CHANGELOG.md)
 - [@ariakit/react](packages/ariakit-react/CHANGELOG.md)
