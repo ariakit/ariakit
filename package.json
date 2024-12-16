@@ -49,6 +49,7 @@
     "tsc": "conc -r 'tsc --noEmit' 'tsc --noEmit -p website/tsconfig.json'",
     "tsc-clean": "tsc --build --clean",
     "build": "lerna exec --scope @sample-test/* -- npm run build",
+    "app:dev": "lerna run dev --scope=demo",
     "build-website": "npm run build --prefix website",
     "build-website-lite": "cross-env DISABLE_SHIKI=true npm run build-website",
     "clean": "npm run clean -ws --if-present",
@@ -56,7 +57,7 @@
     "prepare": "husky",
     "postinstall": "patch-package"
   },
-  "workspaces": ["packages/*", "examples", "guide", "website"],
+  "workspaces": ["packages/*", "examples", "guide", "website", "apps/*"],
   "lerna": {
     "version": "independent"
   },
