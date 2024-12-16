@@ -1,6 +1,6 @@
 {
   "name": "@sample-test/core",
-  "version": "0.4.14",
+  "version": "0.0.1",
   "description": "Ariakit core",
   "sideEffects": false,
   "license": "MIT",
