@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-table";
 import { useReducer, useState } from "react";
 
-type Person = {
+export type Person = {
   firstName: string;
   lastName: string;
   age: number;
@@ -78,7 +78,7 @@ export interface DataTableInterface {
   inputData?: Person[];
 }
 
-const DataTable: React.FC<DataTableInterface> = ({ inputData }) => {
+export const DataTable: React.FC<DataTableInterface> = ({ inputData }) => {
   const [data, _setData] = useState(() =>
     inputData ? [...inputData] : [...defaultData],
   );
@@ -144,5 +144,3 @@ const DataTable: React.FC<DataTableInterface> = ({ inputData }) => {
     </div>
   );
 };
-
-export default DataTable;
