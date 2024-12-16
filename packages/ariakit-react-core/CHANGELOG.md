@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.0.2
+
+- Added datatable
+
 ## 0.4.15
 
 - Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
@@ -8,6 +12,7 @@
 - Updated dependencies: `@ariakit/core@0.4.14`
 
 ## 0.4.14
+
 sdasdasdas
 
 ### Improved performance on composite widgets
