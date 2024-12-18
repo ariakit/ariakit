@@ -2889,7 +2889,7 @@
   resolved "file:packages/ariakit-core"
 
 "@sample-test/react-core@*", "@sample-test/react-core@file:/home/runner/work/packaging-sample/packaging-sample/packages/ariakit-react-core":
-  version "0.3.0"
+  version "0.4.0"
   resolved "file:packages/ariakit-react-core"
   dependencies:
     "@ariakit/core" "^0.4.14"
