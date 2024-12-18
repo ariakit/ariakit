@@ -2889,7 +2889,7 @@
   resolved "file:packages/ariakit-core"
 
 "@sample-test/react-core@*", "@sample-test/react-core@file:/home/runner/work/packaging-sample/packaging-sample/packages/ariakit-react-core":
-  version "0.4.0"
+  version "0.5.0"
   resolved "file:packages/ariakit-react-core"
   dependencies:
     "@ariakit/core" "^0.4.14"
@@ -3028,18 +3028,6 @@
   integrity sha512-tj2ltjAn2a3fs+Dqonlvs6GyLQ/LKVJE2DVSYW+8pJ3P6/VCVGrfqv5UEchmlP7tLOvvtZcOuSyI2ooVlR5Yqw==
   dependencies:
     "@tanstack/query-core" "5.62.0"
-
-"@tanstack/react-table@8.20.6":
-  version "8.20.6"
-  resolved "https://registry.npmjs.org/@tanstack/react-table/-/react-table-8.20.6.tgz"
-  integrity sha512-w0jluT718MrOKthRcr2xsjqzx+oEM7B7s/XXyfs19ll++hlId3fjTm+B2zrR3ijpANpkzBAr15j1XGVOMxpggQ==
-  dependencies:
-    "@tanstack/table-core" "8.20.5"
-
-"@tanstack/table-core@8.20.5":
-  version "8.20.5"
-  resolved "https://registry.npmjs.org/@tanstack/table-core/-/table-core-8.20.5.tgz"
-  integrity sha512-P9dF7XbibHph2PFRz8gfBKEXEY/HJPOhym8CHmjF8y3q5mWpKx9xtZapXQUWCgkqvsK0R46Azuz+VaxD4Xl+Tg==
 
 "@testing-library/dom@10.4.0":
   version "10.4.0"

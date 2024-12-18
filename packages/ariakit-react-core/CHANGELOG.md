@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.5.0
+
+- Moved @tanstack to dependencies
+
 ## 0.4.0
 
 - Test
