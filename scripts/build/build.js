@@ -73,6 +73,7 @@ await Promise.all(
       // dts: true,
       // tsconfig: "tsconfig.build.json",
       splitting: true,
+      external: ["react", "@radix-ui/themes"],
       esbuildOptions(options) {
         options.chunkNames = "__chunks/[hash]";
         if (format === "esm") {
