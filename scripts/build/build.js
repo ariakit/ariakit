@@ -73,7 +73,7 @@ await Promise.all(
       // dts: true,
       // tsconfig: "tsconfig.build.json",
       splitting: true,
-      external: ["@tanstack/table-core"],
+      external: ["@tanstack/react-table"],
       esbuildOptions(options) {
         options.chunkNames = "__chunks/[hash]";
         if (format === "esm") {
