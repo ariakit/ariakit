@@ -1,6 +1,6 @@
 {
   "name": "@sample-test/react-core",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
