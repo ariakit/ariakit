@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.5.1
+
+- Added new styled-button
+
 ## 0.5.0
 
 - Moved @tanstack to dependencies
