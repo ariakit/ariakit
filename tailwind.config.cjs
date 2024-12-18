@@ -14,6 +14,7 @@ module.exports = {
     path.join(__dirname, "website/app/**/*.{ts,tsx}"),
     path.join(__dirname, "website/components/**/*.{ts,tsx}"),
     path.join(__dirname, "website/icons/**/*.{ts,tsx}"),
+    path.join(__dirname, "packages/**/*.{ts,tsx,js,jsx}"),
   ],
   darkMode: "selector",
   theme: {

@@ -2,7 +2,7 @@ import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import * as React from "react";
 import { useMergeRefs } from "./hooks.ts";
 import { getRefProperty, mergeProps } from "./misc.ts";
-import type { Store } from "./store.ts";
+import type { Store } from "./store.tsx";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 /**
