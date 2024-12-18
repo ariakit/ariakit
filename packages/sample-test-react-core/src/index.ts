@@ -25,3 +25,4 @@ export * from "./tab/tab.tsx";
 export * from "./toolbar/toolbar.tsx";
 export * from "./tooltip/tooltip.tsx";
 export * from "./visually-hidden/visually-hidden.tsx";
+export * from "./styled-button/styled-button.tsx";

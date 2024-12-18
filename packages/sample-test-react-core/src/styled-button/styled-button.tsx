@@ -13,7 +13,7 @@ export const StyledButton: React.FC<StyledButtonInterface> = ({
   return (
     <Button
       className={twMerge(
-        "bg-blue-600 text-white hover:bg-blue-700 font-bold px-3 py-2 text-lg",
+        "bg-primary hover:bg-primary/95 px-md py-lg text-textPrimary font-bold",
         className,
       )}
     >

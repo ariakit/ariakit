@@ -1,0 +1,3 @@
+.button-styles {
+  @apply bg-primary hover:bg-primary/95 px-md py-lg text-textPrimary font-bold;
+}

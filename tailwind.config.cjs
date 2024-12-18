@@ -23,6 +23,10 @@ module.exports = {
         inherit: "inherit",
         black,
         white,
+        primary: "#2563EB",
+        secondary: "#4B5563",
+        accent: "#EAB308",
+        textPrimary: "#FFFFFF",
         gray: {
           50: "hsl(204 20% 99%)",
           100: "hsl(204 20% 96%)",
@@ -69,6 +73,11 @@ module.exports = {
           900: "hsl(357 56% 30%)",
         },
       },
+      padding: {
+        sm: "0.5rem",
+        md: "1rem",
+        lg: "1.5rem",
+      }
     },
 
     dropShadow: {
