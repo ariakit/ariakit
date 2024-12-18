@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.4.0
+
+- Test
+
 ## 0.3.0
 
 - Added @tanstack/table-core to external dependency
