@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.5.2
+
+- clear
+
 ## 0.5.1
 
 - Added new styled-button
