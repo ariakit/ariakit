@@ -2902,6 +2902,19 @@
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.10.4.tgz#427d5549943a9c6fce808e39ea64dbe60d4047f1"
   integrity sha512-WJgX9nzTqknM393q1QJDJmoW28kUfEnybeTfVNcNAPnIx210RXm2DiXiHzfNPJNIUUb1tJnz/l4QGtJ30PgWmA==
 
+"@sample-test/core@file:/home/runner/work/packaging-sample/packaging-sample/packages/ariakit-core":
+  version "0.0.1"
+  resolved "file:packages/ariakit-core"
+
+"@sample-test/react-core@*", "@sample-test/react-core@file:/home/runner/work/packaging-sample/packaging-sample/packages/ariakit-react-core":
+  version "0.5.0"
+  resolved "file:packages/ariakit-react-core"
+  dependencies:
+    "@ariakit/core" "^0.4.14"
+    "@floating-ui/dom" "^1.0.0"
+    "@tanstack/react-table" "8.20.6"
+    use-sync-external-store "^1.2.0"
+
 "@shikijs/core@1.14.1":
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/@shikijs/core/-/core-1.14.1.tgz#008f1c4a20ff83fd1672d9e31d76b687862f7511"
