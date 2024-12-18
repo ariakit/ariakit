@@ -81,6 +81,7 @@ await Promise.all(
           };
         }
       },
+      onSuccess: "tailwindcss build src/styles/tailwind.css -o dist/index.css",
     }),
   ),
 );
