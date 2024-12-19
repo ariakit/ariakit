@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.6.0
+
+- Added tailwind styles
+
 ## 0.5.2
 
 - clear
