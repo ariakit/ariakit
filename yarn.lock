@@ -2894,7 +2894,7 @@
   resolved "file:packages/sample-test-core"
 
 "@sample-test/react-core@*", "@sample-test/react-core@file:/home/runner/work/packaging-sample/packaging-sample/packages/sample-test-react-core":
-  version "0.6.0"
+  version "0.6.1"
   resolved "file:packages/sample-test-react-core"
   dependencies:
     "@ariakit/core" "^0.4.14"

@@ -1,6 +1,6 @@
 {
   "name": "@sample-test/react-core",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Ariakit React core",
   "sideEffects": false,
   "license": "MIT",
@@ -27,7 +27,11 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": ["ariakit", "react", "core"],
+  "keywords": [
+    "ariakit",
+    "react",
+    "core"
+  ],
   "dependencies": {
     "@ariakit/core": "^0.4.14",
     "@floating-ui/dom": "^1.0.0",

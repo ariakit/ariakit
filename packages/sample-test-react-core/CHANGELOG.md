@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.6.1
+
+- Added sample init cli command to package.json
+
 ## 0.6.0
 
 - Added tailwind styles
