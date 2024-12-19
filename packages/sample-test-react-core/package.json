@@ -9,6 +9,9 @@
   "main": "src/index.ts",
   "module": "src/index.ts",
   "types": "src/index.ts",
+  "bin": {
+    "init": "./bin/init.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -24,11 +27,7 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "react",
-    "core"
-  ],
+  "keywords": ["ariakit", "react", "core"],
   "dependencies": {
     "@ariakit/core": "^0.4.14",
     "@floating-ui/dom": "^1.0.0",
