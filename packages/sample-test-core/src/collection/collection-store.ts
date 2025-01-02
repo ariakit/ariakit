@@ -10,6 +10,8 @@ import {
 } from "../utils/store.ts";
 import type { BivariantCallback } from "../utils/types.ts";
 
+// Console.log sample added for checking commit
+
 function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);
   const lastItem = [...items].reverse().find((item) => !!item.element);
