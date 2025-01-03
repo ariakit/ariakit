@@ -5,6 +5,16 @@ test("generate images", async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 800 });
 
   const q = query(page);
+
+  const buttons = await q
+    .button(undefined, { includeHidden: true })
+    .filter({ hasNotText: /^With Tabs$/ })
+    .all();
+
+  for (const button of buttons) {
+    await button.evaluate((el) => (el.style.display = "none"));
+  }
+
   await q.button("With Tabs", { exact: true }).click();
   await expect(q.dialog("Command Menu")).toBeVisible();
 
@@ -15,8 +25,9 @@ test("generate images", async ({ page }) => {
     name: "small",
     elements: [q.dialog()],
     padding: 24,
-    width: 178,
-    height: 178,
+    paddingTop: 21,
+    width: 176,
+    height: 176,
   });
 
   await screenshot({
