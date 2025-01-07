@@ -1,10 +1,5 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import {
-  type Component,
-  type ValidComponent,
-  mergeProps,
-  splitProps,
-} from "solid-js";
+import { type ValidComponent, mergeProps, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import {
   type ExtractPropsWithDefaultsExtractedProps,
@@ -32,23 +27,24 @@ export function createInstance(
   // the JSX.Element type is only accepted through `As`, so that
   // the error is not a vague "value is not a function" error.
   const [features, rest] = splitProps(props, ["render", "wrapInstance"]);
-  let tree: Component = () => (
+  const withRender = () => (
     // TODO: replace with LazyDynamic
     <Dynamic
       {...rest}
       component={(features.render as ValidComponent) ?? Component}
     />
   );
+  let tree = withRender;
   if (features.wrapInstance) {
     for (const element of features.wrapInstance) {
       const children = tree;
       tree = () => (
         // TODO: replace with LazyDynamic
-        <Dynamic component={element as ValidComponent}>{children({})}</Dynamic>
+        <Dynamic component={element as ValidComponent}>{children()}</Dynamic>
       );
     }
   }
-  return tree({});
+  return tree();
 }
 
 /**
