@@ -55,7 +55,8 @@
     "clean": "npm run clean -ws --if-present",
     "changeset": "changeset",
     "prepare": "husky",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "release": "release-it"
   },
   "workspaces": ["packages/*", "examples", "guide", "website", "apps/*"],
   "lerna": {
@@ -191,5 +192,11 @@
     "vitest-fail-on-console": "0.7.1",
     "webpack": "5.97.1",
     "zod": "3.23.8"
+  },
+  "release-it": {
+    "$schema": "https://unpkg.com/release-it/schema/release-it.json"
+  },
+  "devDependencies": {
+    "release-it": "18.0.0"
   }
 }
