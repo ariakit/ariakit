@@ -1,8 +1,9 @@
-// TODO: is the redundant tsconfig necessary?
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "outDir": "./dist/",
+    "jsx": "preserve",
     "jsxImportSource": "solid-js"
   },
-  "include": ["src"]
+  "include": ["./**/*"]
 }

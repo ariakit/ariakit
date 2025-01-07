@@ -46,7 +46,7 @@
     "lint": "biome check .",
     "lint-fix": "biome check --write .",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
-    "tsc": "conc -r 'tsc --noEmit' 'tsc --noEmit -p website/tsconfig.json'",
+    "tsc": "tsc -b",
     "tsc-clean": "tsc --build --clean",
     "build": "lerna exec --scope @ariakit/* -- npm run build",
     "build-website": "npm run build --prefix website",
@@ -197,5 +197,6 @@
     "vitest-fail-on-console": "0.7.1",
     "webpack": "5.94.0",
     "zod": "3.23.8"
-  }
+  },
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }

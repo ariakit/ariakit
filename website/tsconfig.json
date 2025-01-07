@@ -6,19 +6,11 @@
     "jsx": "preserve",
     "incremental": true,
     "isolatedModules": true,
+    "outDir": "./dist/",
     "paths": {
       "@/*": ["./*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mts",
-    "**/*.cts",
-    "**/*.js",
-    "**/*.cjs",
-    "**/*.mjs",
-    ".next/types/**/*.ts"
-  ],
+  "include": ["./**/*"],
   "exclude": ["node_modules", ".next"]
 }
