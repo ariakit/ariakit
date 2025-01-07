@@ -12,7 +12,7 @@
     { "path": "packages/ariakit-solid" },
     { "path": "packages/ariakit-solid-core" },
     { "path": "packages/ariakit-test" },
-    // { "path": "examples" },
+    { "path": "examples" },
     { "path": "website" }
   ]
 }

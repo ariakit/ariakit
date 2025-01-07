@@ -1,7 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "jsxImportSource": "react-jsx",
+    "jsx": "preserve",
+    "jsxImportSource": "react",
     "outDir": "./dist/"
   },
   "include": ["./**/*", "./global.d.ts"]

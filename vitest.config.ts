@@ -1,3 +1,4 @@
+import react from "@vitejs/plugin-react";
 import { version } from "react";
 import { configDefaults, defineConfig } from "vitest/config";
 
@@ -18,6 +19,7 @@ const includeWithStyles = [
 const isReact17 = version.startsWith("17");
 
 export default defineConfig({
+  plugins: [react()],
   test: {
     globals: true,
     watch: false,
