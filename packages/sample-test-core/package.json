@@ -14,6 +14,9 @@
     "url": "https://github.com/ariakit/ariakit.git",
     "directory": "packages/ariakit-core"
   },
+  "release": {
+    "extends": "semantic-release-monorepo"
+  },
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",

@@ -12,6 +12,9 @@
   "bin": {
     "init": "node ./bin/init.js"
   },
+  "release": {
+    "extends": "semantic-release-monorepo"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
