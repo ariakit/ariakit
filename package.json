@@ -123,6 +123,7 @@
     "clsx": "2.1.1",
     "concurrently": "9.1.0",
     "conventional-changelog": "6.0.0",
+    "conventional-changelog-cli": "5.0.0",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
     "date-fns": "4.1.0",
