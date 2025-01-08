@@ -1,6 +1,6 @@
-import { process_and_validate } from "./utils.js";
 import createVersionIncrement from "./create-version-increment.js";
 import { getGitLogs } from "./get-git-logs.js";
+import { process_and_validate } from "./utils.js";
 
 const {
   repo_name,
@@ -17,6 +17,4 @@ const { currentVersion, newVersion } = createVersionIncrement(
 console.log(">>>>>> Current Version", currentVersion);
 console.log(">>>>>> New Version", newVersion);
 
-const gitLogs = getGitLogs(repo_name, package_name, currentVersion);
-
-console.log(">>>>>> Git Logs", gitLogs);
+const gitLogs = getGitLogs(repo_name, package_name, currentVersion, newVersion);
