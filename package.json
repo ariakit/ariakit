@@ -197,6 +197,7 @@
     "$schema": "https://unpkg.com/release-it/schema/release-it.json"
   },
   "devDependencies": {
-    "release-it": "18.0.0"
+    "release-it": "18.0.0",
+    "semantic-release": "24.2.1"
   }
 }
