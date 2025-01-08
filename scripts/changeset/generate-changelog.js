@@ -18,3 +18,5 @@ console.log(">>>>>> Current Version", currentVersion);
 console.log(">>>>>> New Version", newVersion);
 
 const gitLogs = getGitLogs(repo_name, package_name, currentVersion, newVersion);
+
+console.log(">>>>>. GIT LOGS", gitLogs);
