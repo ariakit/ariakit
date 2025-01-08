@@ -214,9 +214,7 @@
       "npm",
       "all-contributors",
       "conventional-commits",
-      "first-time-contributor",
-      "released",
-      "twitter"
+      "released"
     ]
   }
 }

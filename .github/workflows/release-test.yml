@@ -17,13 +17,19 @@ jobs:
         with:
           node-version: 22.x
 
-      - name: Install packages
-        run: npm install
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: yarn-deps-${{ hashFiles('package-lock.lock') }}
+          restore-keys: |
+            yarn-deps-${{ hashFiles('package-lock.lock') }}
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          npm ci
           npm run build
           npx auto shipit
