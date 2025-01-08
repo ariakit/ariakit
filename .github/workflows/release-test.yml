@@ -32,4 +32,14 @@ jobs:
         run: |
           npm ci
           npm run build
+          git add .
+          git commit -m "ci:[skip ci] Commiting build files"
+          git push
           npx auto shipit
+
+      - name: Clean up
+        run: |
+          npm run clean
+          git add .
+          git commit -m "ci:[skip ci] Removing build files"
+          git push
