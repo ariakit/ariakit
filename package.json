@@ -134,7 +134,7 @@
     "husky": "9.1.7",
     "jsdom": "25.0.1",
     "lerna": "8.1.9",
-    "lint-staged": "15.2.10",
+    "lint-staged": "15.3.0",
     "lodash-es": "4.17.21",
     "marked": "4.3.0",
     "match-sorter": "8.0.0",
