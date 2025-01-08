@@ -58,7 +58,13 @@
     "postinstall": "patch-package",
     "release": "release-it"
   },
-  "workspaces": ["packages/*", "examples", "guide", "website", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "examples",
+    "guide",
+    "website",
+    "apps/*"
+  ],
   "lerna": {
     "version": "independent"
   },
@@ -116,6 +122,7 @@
     "chokidar": "4.0.1",
     "clsx": "2.1.1",
     "concurrently": "9.1.0",
+    "conventional-changelog": "6.0.0",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
     "date-fns": "4.1.0",
