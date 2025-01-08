@@ -6,9 +6,9 @@
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "cjs/index.cjs",
+  "module": "esm/index.js",
+  "types": "cjs/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -29,36 +29,216 @@
     "core"
   ],
   "exports": {
-    ".": "./src/index.ts",
-    "./utils/undo": "./src/utils/undo.ts",
-    "./utils/types": "./src/utils/types.ts",
-    "./utils/store": "./src/utils/store.ts",
-    "./utils/platform": "./src/utils/platform.ts",
-    "./utils/misc": "./src/utils/misc.ts",
-    "./utils/focus": "./src/utils/focus.ts",
-    "./utils/events": "./src/utils/events.ts",
-    "./utils/dom": "./src/utils/dom.ts",
-    "./utils/array": "./src/utils/array.ts",
-    "./tooltip/tooltip-store": "./src/tooltip/tooltip-store.ts",
-    "./toolbar/toolbar-store": "./src/toolbar/toolbar-store.ts",
-    "./tag/tag-store": "./src/tag/tag-store.ts",
-    "./tab/tab-store": "./src/tab/tab-store.ts",
-    "./select/select-store": "./src/select/select-store.ts",
-    "./radio/radio-store": "./src/radio/radio-store.ts",
-    "./popover/popover-store": "./src/popover/popover-store.ts",
-    "./menubar/menubar-store": "./src/menubar/menubar-store.ts",
-    "./menu/menu-store": "./src/menu/menu-store.ts",
-    "./menu/menu-bar-store": "./src/menu/menu-bar-store.ts",
-    "./hovercard/hovercard-store": "./src/hovercard/hovercard-store.ts",
-    "./form/types": "./src/form/types.ts",
-    "./form/form-store": "./src/form/form-store.ts",
-    "./disclosure/disclosure-store": "./src/disclosure/disclosure-store.ts",
-    "./dialog/dialog-store": "./src/dialog/dialog-store.ts",
-    "./composite/composite-store": "./src/composite/composite-store.ts",
-    "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
-    "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
-    "./collection/collection-store": "./src/collection/collection-store.ts",
-    "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",
+    ".": {
+      "import": "./esm/index.js",
+      "require": {
+        "types": "./cjs/index.d.cts",
+        "default": "./cjs/index.cjs"
+      }
+    },
+    "./utils/undo": {
+      "import": "./esm/utils/undo.js",
+      "require": {
+        "types": "./cjs/utils/undo.d.cts",
+        "default": "./cjs/utils/undo.cjs"
+      }
+    },
+    "./utils/types": {
+      "import": "./esm/utils/types.js",
+      "require": {
+        "types": "./cjs/utils/types.d.cts",
+        "default": "./cjs/utils/types.cjs"
+      }
+    },
+    "./utils/store": {
+      "import": "./esm/utils/store.js",
+      "require": {
+        "types": "./cjs/utils/store.d.cts",
+        "default": "./cjs/utils/store.cjs"
+      }
+    },
+    "./utils/platform": {
+      "import": "./esm/utils/platform.js",
+      "require": {
+        "types": "./cjs/utils/platform.d.cts",
+        "default": "./cjs/utils/platform.cjs"
+      }
+    },
+    "./utils/misc": {
+      "import": "./esm/utils/misc.js",
+      "require": {
+        "types": "./cjs/utils/misc.d.cts",
+        "default": "./cjs/utils/misc.cjs"
+      }
+    },
+    "./utils/focus": {
+      "import": "./esm/utils/focus.js",
+      "require": {
+        "types": "./cjs/utils/focus.d.cts",
+        "default": "./cjs/utils/focus.cjs"
+      }
+    },
+    "./utils/events": {
+      "import": "./esm/utils/events.js",
+      "require": {
+        "types": "./cjs/utils/events.d.cts",
+        "default": "./cjs/utils/events.cjs"
+      }
+    },
+    "./utils/dom": {
+      "import": "./esm/utils/dom.js",
+      "require": {
+        "types": "./cjs/utils/dom.d.cts",
+        "default": "./cjs/utils/dom.cjs"
+      }
+    },
+    "./utils/array": {
+      "import": "./esm/utils/array.js",
+      "require": {
+        "types": "./cjs/utils/array.d.cts",
+        "default": "./cjs/utils/array.cjs"
+      }
+    },
+    "./tooltip/tooltip-store": {
+      "import": "./esm/tooltip/tooltip-store.js",
+      "require": {
+        "types": "./cjs/tooltip/tooltip-store.d.cts",
+        "default": "./cjs/tooltip/tooltip-store.cjs"
+      }
+    },
+    "./toolbar/toolbar-store": {
+      "import": "./esm/toolbar/toolbar-store.js",
+      "require": {
+        "types": "./cjs/toolbar/toolbar-store.d.cts",
+        "default": "./cjs/toolbar/toolbar-store.cjs"
+      }
+    },
+    "./tag/tag-store": {
+      "import": "./esm/tag/tag-store.js",
+      "require": {
+        "types": "./cjs/tag/tag-store.d.cts",
+        "default": "./cjs/tag/tag-store.cjs"
+      }
+    },
+    "./tab/tab-store": {
+      "import": "./esm/tab/tab-store.js",
+      "require": {
+        "types": "./cjs/tab/tab-store.d.cts",
+        "default": "./cjs/tab/tab-store.cjs"
+      }
+    },
+    "./select/select-store": {
+      "import": "./esm/select/select-store.js",
+      "require": {
+        "types": "./cjs/select/select-store.d.cts",
+        "default": "./cjs/select/select-store.cjs"
+      }
+    },
+    "./radio/radio-store": {
+      "import": "./esm/radio/radio-store.js",
+      "require": {
+        "types": "./cjs/radio/radio-store.d.cts",
+        "default": "./cjs/radio/radio-store.cjs"
+      }
+    },
+    "./popover/popover-store": {
+      "import": "./esm/popover/popover-store.js",
+      "require": {
+        "types": "./cjs/popover/popover-store.d.cts",
+        "default": "./cjs/popover/popover-store.cjs"
+      }
+    },
+    "./menubar/menubar-store": {
+      "import": "./esm/menubar/menubar-store.js",
+      "require": {
+        "types": "./cjs/menubar/menubar-store.d.cts",
+        "default": "./cjs/menubar/menubar-store.cjs"
+      }
+    },
+    "./menu/menu-store": {
+      "import": "./esm/menu/menu-store.js",
+      "require": {
+        "types": "./cjs/menu/menu-store.d.cts",
+        "default": "./cjs/menu/menu-store.cjs"
+      }
+    },
+    "./menu/menu-bar-store": {
+      "import": "./esm/menu/menu-bar-store.js",
+      "require": {
+        "types": "./cjs/menu/menu-bar-store.d.cts",
+        "default": "./cjs/menu/menu-bar-store.cjs"
+      }
+    },
+    "./hovercard/hovercard-store": {
+      "import": "./esm/hovercard/hovercard-store.js",
+      "require": {
+        "types": "./cjs/hovercard/hovercard-store.d.cts",
+        "default": "./cjs/hovercard/hovercard-store.cjs"
+      }
+    },
+    "./form/types": {
+      "import": "./esm/form/types.js",
+      "require": {
+        "types": "./cjs/form/types.d.cts",
+        "default": "./cjs/form/types.cjs"
+      }
+    },
+    "./form/form-store": {
+      "import": "./esm/form/form-store.js",
+      "require": {
+        "types": "./cjs/form/form-store.d.cts",
+        "default": "./cjs/form/form-store.cjs"
+      }
+    },
+    "./disclosure/disclosure-store": {
+      "import": "./esm/disclosure/disclosure-store.js",
+      "require": {
+        "types": "./cjs/disclosure/disclosure-store.d.cts",
+        "default": "./cjs/disclosure/disclosure-store.cjs"
+      }
+    },
+    "./dialog/dialog-store": {
+      "import": "./esm/dialog/dialog-store.js",
+      "require": {
+        "types": "./cjs/dialog/dialog-store.d.cts",
+        "default": "./cjs/dialog/dialog-store.cjs"
+      }
+    },
+    "./composite/composite-store": {
+      "import": "./esm/composite/composite-store.js",
+      "require": {
+        "types": "./cjs/composite/composite-store.d.cts",
+        "default": "./cjs/composite/composite-store.cjs"
+      }
+    },
+    "./composite/composite-overflow-store": {
+      "import": "./esm/composite/composite-overflow-store.js",
+      "require": {
+        "types": "./cjs/composite/composite-overflow-store.d.cts",
+        "default": "./cjs/composite/composite-overflow-store.cjs"
+      }
+    },
+    "./combobox/combobox-store": {
+      "import": "./esm/combobox/combobox-store.js",
+      "require": {
+        "types": "./cjs/combobox/combobox-store.d.cts",
+        "default": "./cjs/combobox/combobox-store.cjs"
+      }
+    },
+    "./collection/collection-store": {
+      "import": "./esm/collection/collection-store.js",
+      "require": {
+        "types": "./cjs/collection/collection-store.d.cts",
+        "default": "./cjs/collection/collection-store.cjs"
+      }
+    },
+    "./checkbox/checkbox-store": {
+      "import": "./esm/checkbox/checkbox-store.js",
+      "require": {
+        "types": "./cjs/checkbox/checkbox-store.d.cts",
+        "default": "./cjs/checkbox/checkbox-store.cjs"
+      }
+    },
     "./package.json": "./package.json"
   }
 }
