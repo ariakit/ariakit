@@ -2572,7 +2572,7 @@
   integrity sha512-WJgX9nzTqknM393q1QJDJmoW28kUfEnybeTfVNcNAPnIx210RXm2DiXiHzfNPJNIUUb1tJnz/l4QGtJ30PgWmA==
 
 "@sample-test/core@file:/Users/shreydhyani/Desktop/Workshop/packaging-sample/packages/sample-test-core":
-  version "0.0.1"
+  version "0.6.2"
   resolved "file:packages/sample-test-core"
 
 "@sample-test/react-core@*", "@sample-test/react-core@file:/Users/shreydhyani/Desktop/Workshop/packaging-sample/packages/sample-test-react-core":
