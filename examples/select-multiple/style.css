@@ -1,7 +1,0 @@
-@import url("../select/style.css");
-
-.popover {
-  @apply
-    overflow-auto
-  ;
-}

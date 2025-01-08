@@ -1,9 +1,0 @@
-@import url("../select-menu-default-open/style.css");
-
-.select {
-  @apply
-    text-base
-    h-10
-    px-4
-  ;
-}

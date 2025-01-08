@@ -1,8 +1,0 @@
-@import url("../select/style.css");
-@import url("../form/style.css");
-
-.primary {
-  @apply
-    justify-center
-}
-

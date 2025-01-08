@@ -1,8 +1,0 @@
-@import url("../dialog/style.css");
-@import url("../menu/style.css");
-
-.dialog {
-  @apply
-    items-start
-  ;
-}

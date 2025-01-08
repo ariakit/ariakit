@@ -1,9 +1,0 @@
-@import url("../dialog/style.css");
-@import url("../popover/style.css");
-
-.popover {
-  @apply
-    max-w-none
-    sm:max-w-[min(calc(100vw-16px),320px)]
-  ;
-}
