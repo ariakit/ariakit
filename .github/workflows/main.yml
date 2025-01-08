@@ -198,7 +198,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Install React 17
-        run: npm run react17 # TODO: replace with Bun
+        run: bun run react17
 
       - name: Test
         run: bun run test -- --shard ${{ matrix.shard }}

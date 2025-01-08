@@ -74,11 +74,16 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: bun install --frozen-lockfile
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
       - name: Print version of react@next
         run: npm view react@next && npm view react-dom@next # TODO: replace with Bun?
 
       - name: Install React@next
-        run: npm run reactnext # TODO: replace with Bun
+        run: bun run reactnext
 
       - name: Test
         run: bun run test -- --shard ${{ matrix.shard }}
