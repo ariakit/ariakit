@@ -20,30 +20,30 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version-file: .nvmrc
+          bun-version-file: ".bun-version"
 
       - name: Cache
         uses: actions/cache@v4
         with:
           path: |
-            ~/.npm
+            ~/.bun/install/cache
             website/.next/cache
           key: |
-            test-vo-14-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+            test-vo-14-nextjs-${{ hashFiles('**/bun.lock') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: |
-            test-vo-14-nextjs-${{ hashFiles('**/package-lock.json') }}-
+            test-vo-14-nextjs-${{ hashFiles('**/bun.lock') }}-
 
       - name: Install dependencies
-        run: npm ci --no-audit
+        run: bun install --frozen-lockfile
 
       - name: Install playwright
-        run: npx playwright install --with-deps webkit
+        run: bunx playwright install --with-deps webkit
 
       - name: Build website
-        run: npm run build-website-lite
+        run: bun run build-website-lite
 
       - name: Guidepup Setup
         uses: guidepup/setup-action@0.17.2
@@ -52,7 +52,7 @@ jobs:
 
       - name: Test
         id: test
-        run: npm run test-vo
+        run: bun run test-vo
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
