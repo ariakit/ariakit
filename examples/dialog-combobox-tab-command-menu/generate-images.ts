@@ -24,16 +24,17 @@ test("generate images", async ({ page }) => {
     page,
     name: "small",
     elements: [q.dialog()],
-    padding: 24,
-    paddingTop: 21,
-    width: 176,
-    height: 176,
+    padding: 16,
+    width: 204,
+    height: 204,
+    caret: "force",
   });
 
   await screenshot({
     page,
     name: "large",
     elements: [q.dialog()],
+    caret: "force",
   });
 
   await page.setViewportSize({ width: 480, height: 800 });
@@ -43,10 +44,6 @@ test("generate images", async ({ page }) => {
     el.style.margin = "0";
   });
 
-  // Make sure the caret appears
-  await page.keyboard.press("Backspace");
-  await page.keyboard.type("l");
-
   await screenshot({
     page,
     name: "medium",
@@ -54,5 +51,6 @@ test("generate images", async ({ page }) => {
     padding: 16,
     paddingTop: 32,
     height: "auto",
+    caret: "force",
   });
 });

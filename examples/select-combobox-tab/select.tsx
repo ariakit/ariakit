@@ -65,7 +65,7 @@ export function Select({
         gutter={5}
         shift={-4}
         unmountOnHide
-        className="ak-popup ak-popup-enter ak-elevation-1 ak-popover flex flex-col overflow-clip"
+        className="ak-popup ak-popup-enter ak-elevation-1 ak-popover flex flex-col overflow-clip gap-px"
       >
         {(heading || searchable) && (
           <div className="flex flex-col gap-2">
@@ -95,9 +95,7 @@ export function Select({
           defaultSelectedId={defaultTab}
           selectOnMove={selectTabOnMove}
         >
-          <div className="ak-tab-border ak-popup-cover flex flex-col">
-            {children}
-          </div>
+          <div className="ak-popup-cover flex flex-col">{children}</div>
         </Ariakit.TabProvider>
       </Ariakit.SelectPopover>
     </Ariakit.SelectProvider>
@@ -124,7 +122,15 @@ export function Select({
 export interface SelectTabListProps extends Ariakit.TabListProps {}
 
 export function SelectTabList(props: SelectTabListProps) {
-  return <Ariakit.TabList {...props} />;
+  return (
+    <Ariakit.TabList
+      {...props}
+      className={clsx(
+        "ak-tab-list ak-tab-border ak-popup-cover",
+        props.className,
+      )}
+    />
+  );
 }
 
 export interface SelectTabProps extends Ariakit.TabProps {}
@@ -134,7 +140,7 @@ export function SelectTab(props: SelectTabProps) {
     <Ariakit.Tab
       {...props}
       render={<Ariakit.Role.div render={props.render} />}
-      className={clsx("ak-tab ak-tab-default", props.className)}
+      className={clsx("ak-tab ak-tab-folder", props.className)}
     />
   );
 }

@@ -5,8 +5,17 @@
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import type { ComponentProps, ReactNode } from "react";
-import { forwardRef, startTransition } from "react";
+import {
+  createContext,
+  forwardRef,
+  startTransition,
+  useContext,
+  useId,
+} from "react";
 import { ArrowIcon, ReturnIcon } from "./icons.tsx";
+
+const CommandMenuGridColsContext = createContext(0);
+const CommandMenuGroupContext = createContext<string | undefined>(undefined);
 
 export interface CommandMenuProps extends Ariakit.DialogProps {
   open?: Ariakit.DialogStoreProps["open"];
@@ -121,7 +130,10 @@ export const CommandMenuTabList = forwardRef<
     <Ariakit.TabList
       ref={ref}
       {...props}
-      className={clsx("flex items-center gap-2 p-2 pt-3", props.className)}
+      className={clsx(
+        "ak-tab-list ak-popup-cover flex gap-2 p-2 pt-3",
+        props.className,
+      )}
     />
   );
 });
@@ -138,7 +150,7 @@ export const CommandMenuTab = forwardRef<
       accessibleWhenDisabled={false}
       {...props}
       render={<Ariakit.Role.div render={props.render} />}
-      className={clsx("ak-clickable ak-tab ak-tab-chip", props.className)}
+      className={clsx("ak-tab-chip", props.className)}
     />
   );
 });
@@ -186,10 +198,7 @@ export const CommandMenuList = forwardRef<HTMLDivElement, CommandMenuListProps>(
       <Ariakit.ComboboxList
         ref={ref}
         {...props}
-        className={clsx(
-          "ak-popup-cover overflow-auto overscroll-contain",
-          props.className,
-        )}
+        className={clsx("ak-popup-cover ak-popup-scroll", props.className)}
       >
         {hasChildren ? (
           children
@@ -218,37 +227,74 @@ export const CommandMenuGroup = forwardRef<
   HTMLDivElement,
   CommandMenuGroupProps
 >(function CommandMenuGroup({ label, ...props }, ref) {
+  const defaultId = useId();
+  const id = props.id ?? defaultId;
   return (
     <Ariakit.ComboboxGroup
       ref={ref}
+      id={id}
       {...props}
       className={clsx("group", props.className)}
     >
       {label && (
-        <Ariakit.ComboboxGroupLabel className="group-label">
+        <Ariakit.ComboboxGroupLabel className="ak-popup-sticky-header ak-popup-cover border-none">
           {label}
         </Ariakit.ComboboxGroupLabel>
       )}
-      {props.children}
+      <CommandMenuGroupContext.Provider value={id}>
+        {props.children}
+      </CommandMenuGroupContext.Provider>
     </Ariakit.ComboboxGroup>
   );
 });
 
-export interface CommandMenuItemProps extends Ariakit.ComboboxItemProps {}
+export interface CommandMenuGridProps extends ComponentProps<"div"> {
+  cols?: number;
+}
+
+export const CommandMenuGrid = forwardRef<HTMLDivElement, CommandMenuGridProps>(
+  function CommandMenuGrid({ cols = 2, ...props }, ref) {
+    return (
+      <CommandMenuGridColsContext.Provider value={cols}>
+        <div
+          ref={ref}
+          {...props}
+          style={{ "--grid-cols": cols } as React.CSSProperties}
+          className={clsx(
+            "grid grid-cols-[repeat(var(--grid-cols),minmax(0,1fr))] ak-popup-cover",
+            props.className,
+          )}
+        />
+      </CommandMenuGridColsContext.Provider>
+    );
+  },
+);
+
+export interface CommandMenuItemProps extends Ariakit.ComboboxItemProps {
+  index?: number;
+}
+
+function getRowId(cols: number, index?: number, prefix?: string) {
+  if (cols === 1) return;
+  if (index == null) return;
+  const row = Math.ceil((index + 1) / cols);
+  return prefix ? `${prefix}/${row}` : `${row}`;
+}
 
 export const CommandMenuItem = forwardRef<HTMLDivElement, CommandMenuItemProps>(
-  function CommandMenuItem(props, ref) {
+  function CommandMenuItem({ index, ...props }, ref) {
+    const cols = useContext(CommandMenuGridColsContext);
+    const group = useContext(CommandMenuGroupContext);
+    const rowId = getRowId(cols, index, group);
     return (
       <Ariakit.ComboboxItem
         ref={ref}
         hideOnClick
         focusOnHover
         blurOnHoverEnd={false}
+        rowId={rowId}
         {...props}
-        className={clsx(
-          "ak-option ak-clickable [--padding-block:0.5rem]",
-          props.className,
-        )}
+        className={clsx("ak-option [--padding-block:0.5rem]", props.className)}
       />
     );
   },

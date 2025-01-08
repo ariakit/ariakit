@@ -2,23 +2,14 @@ import { click, press, q, type } from "@ariakit/test";
 
 const SIMPLE = "Simple";
 const WITH_TABS = "With Tabs";
-const WITH_TABS_AND_GRID_2_COLUMNS = "With Tabs and Grid (2 columns)";
-const WITH_TABS_AND_GRID_3_COLUMNS = "With Tabs and Grid (3 columns)";
+const WITH_TABS_2_COLUMNS = "With Tabs (2 columns)";
+const WITH_TABS_3_COLUMNS = "With Tabs (3 columns)";
 
-const LABELS = [
-  SIMPLE,
-  WITH_TABS,
-  WITH_TABS_AND_GRID_2_COLUMNS,
-  WITH_TABS_AND_GRID_3_COLUMNS,
-];
+const LABELS = [SIMPLE, WITH_TABS, WITH_TABS_2_COLUMNS, WITH_TABS_3_COLUMNS];
 
-const TABS = [
-  WITH_TABS,
-  WITH_TABS_AND_GRID_2_COLUMNS,
-  WITH_TABS_AND_GRID_3_COLUMNS,
-];
+const TABS = [WITH_TABS, WITH_TABS_2_COLUMNS, WITH_TABS_3_COLUMNS];
 
-const GRIDS = [WITH_TABS_AND_GRID_2_COLUMNS, WITH_TABS_AND_GRID_3_COLUMNS];
+const GRIDS = [WITH_TABS_2_COLUMNS, WITH_TABS_3_COLUMNS];
 
 describe.each(LABELS)("%s", (label) => {
   beforeEach(async () => {

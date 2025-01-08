@@ -3,6 +3,7 @@ tags:
   - Plus
   - Dialog
   - Combobox
+  - Tab
   - Button
   - Animated
   - CSS transitions
@@ -15,7 +16,7 @@ tags:
 
 <div data-description>
 
-Combining [Dialog](/components/dialog) and [Combobox](/components/combobox) to enable users to search a command list in a [Raycast](https://www.raycast.com/)-style modal.
+Combining [Dialog](/components/dialog), [Tab](/components/tab), and [Combobox](/components/combobox) from [Ariakit React](/components) to build a command palette component.
 
 </div>
 
@@ -29,6 +30,7 @@ Combining [Dialog](/components/dialog) and [Combobox](/components/combobox) to e
 
 - [](/components/dialog)
 - [](/components/combobox)
+- [](/components/tab)
 - [](/components/button)
 
 </div>
@@ -40,27 +42,38 @@ This example creates a custom `CommandMenu` component with the following API str
 ```jsx
 <CommandMenu>
   <CommandMenuInput />
-  <CommandMenuList>
-    <CommandMenuGroup>
-      <CommandMenuItem />
-    </CommandMenuGroup>
-  </CommandMenuList>
+  <CommandMenuTabList>
+    <CommandMenuTab />
+  </CommandMenuTabList>
+  <CommandMenuTabPanel>
+    <CommandMenuList>
+      <CommandMenuGroup>
+        <CommandMenuItem />
+      </CommandMenuGroup>
+    </CommandMenuList>
+  </CommandMenuTabPanel>
 </CommandMenu>
 ```
 
-Under the hood, we render a set of [Dialog](/components/dialog) and [Combobox](/components/combobox) components structured as follows:
+`CommandMenuTabList`, `CommandMenuTab`, `CommandMenuTabPanel`, and `CommandMenuGroup` are optional components that let you display multiple tabs and item groups in the command menu. If you don't need these features, just leave them out.
+
+Under the hood, we render a set of [Dialog](/components/dialog), [Tab](/components/tab), and [Combobox](/components/combobox) components from [Ariakit React](/components) structured as follows:
 
 ```jsx
 <Dialog>
   <ComboboxProvider>
     <Combobox />
     <DialogDismiss />
-    <ComboboxList>
-      <ComboboxGroup>
-        <ComboboxGroupLabel />
-        <ComboboxItem />
-      </ComboboxGroup>
-    </ComboboxList>
+    <TabList>
+      <Tab />
+    </TabList>
+    <TabPanel>
+      <ComboboxList>
+        <ComboboxGroup>
+          <ComboboxItem />
+        </ComboboxGroup>
+      </ComboboxList>
+    </TabPanel>
   </ComboboxProvider>
 </Dialog>
 ```

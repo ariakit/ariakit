@@ -1,10 +1,12 @@
 import { Button } from "@ariakit/react";
 import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
-import { type CSSProperties, useId, useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import {
   CommandMenu,
   CommandMenuFooter,
+  CommandMenuGrid,
+  CommandMenuGroup,
   CommandMenuInput,
   CommandMenuItem,
   CommandMenuList,
@@ -17,22 +19,22 @@ import "./theme.css";
 
 export default function Example() {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex gap-2 justify-center flex-wrap">
       <Simple />
-      <WithTabs />
-      <WithTabsAndGrid cols={2} />
-      <WithTabsAndGrid cols={3} />
+      <WithTabs cols={1} />
+      <WithTabs cols={2} />
+      <WithTabs cols={3} />
     </div>
   );
 }
 
 const categories = ["All", ...Object.keys(pages)];
 
-function getTabId(category: string, prefix: string) {
+function getCategoryId(category: string, prefix: string) {
   return `${prefix}/${category}`;
 }
 
-function getCategory(tabId: string, prefix: string) {
+function getCategoryLabel(tabId: string, prefix: string) {
   return tabId.replace(`${prefix}/`, "");
 }
 
@@ -75,21 +77,47 @@ function Simple() {
   );
 }
 
-function WithTabs() {
+function WithTabs({ cols = 1 }: { cols?: number }) {
   const prefix = useId();
+
+  const allLabel = "All";
+  const allId = getCategoryId(allLabel, prefix);
+
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
-  const [tabId, setTabId] = useState(getTabId("All", prefix));
+  const [tabId, setTabId] = useState(allId);
+  const isAllTab = tabId === allId;
 
-  const matches = useMemo(() => {
-    const keys = ["label", "path"];
-    const allMatches = matchSorter(flatPages, searchValue, { keys });
-    const groups = groupBy(allMatches, "category");
-    groups.All = allMatches;
-    return groups;
+  const [allMatches, groupMatches] = useMemo(() => {
+    const allMatches = searchValue
+      ? matchSorter(flatPages, searchValue, { keys: ["label", "path"] })
+      : flatPages;
+    const groupMatches = groupBy(allMatches, "category");
+    return [allMatches, groupMatches];
   }, [searchValue]);
 
-  const currentPages = matches[getCategory(tabId, prefix)] || [];
+  const matchedPages = isAllTab
+    ? groupMatches
+    : groupMatches[getCategoryLabel(tabId, prefix)] || [];
+
+  const renderGrid = (pages: typeof matchedPages) => {
+    if (!Array.isArray(pages)) {
+      return Object.entries(pages).map(([category, pages], index) => (
+        <CommandMenuGroup key={index} label={category}>
+          {renderGrid(pages)}
+        </CommandMenuGroup>
+      ));
+    }
+    return (
+      <CommandMenuGrid cols={cols}>
+        {pages.map((page, index) => (
+          <CommandMenuItem key={index} index={index}>
+            <span className="truncate">{page.label}</span>
+          </CommandMenuItem>
+        ))}
+      </CommandMenuGrid>
+    );
+  };
 
   return (
     <>
@@ -97,7 +125,7 @@ function WithTabs() {
         className="ak-button ak-button-default"
         onClick={() => setOpen(true)}
       >
-        With Tabs
+        With Tabs{cols > 1 ? ` (${cols} columns)` : ""}
       </Button>
       <CommandMenu
         aria-label="Command Menu"
@@ -109,92 +137,23 @@ function WithTabs() {
       >
         <CommandMenuInput placeholder="Search pages..." />
         <CommandMenuTabList aria-label="Categories">
-          {categories.map((category) => {
-            const currentPages = matches[category];
+          {categories.map((label) => {
+            const pages = label === allLabel ? allMatches : groupMatches[label];
             return (
               <CommandMenuTab
-                key={category}
-                id={getTabId(category, prefix)}
-                disabled={!currentPages?.length}
+                key={label}
+                id={getCategoryId(label, prefix)}
+                disabled={!pages?.length}
+                rowId={cols > 1 ? "tabs" : undefined}
               >
-                {category} ({currentPages?.length || 0})
+                {label} ({pages?.length || 0})
               </CommandMenuTab>
             );
           })}
         </CommandMenuTabList>
         <CommandMenuTabPanel>
-          <CommandMenuList>
-            {currentPages.map((page, i) => (
-              <CommandMenuItem key={i}>
-                <span className="truncate">{page.label}</span>
-              </CommandMenuItem>
-            ))}
-          </CommandMenuList>
-        </CommandMenuTabPanel>
-        <CommandMenuFooter />
-      </CommandMenu>
-    </>
-  );
-}
-
-function WithTabsAndGrid({ cols = 2 }: { cols?: number }) {
-  const prefix = useId();
-  const [open, setOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const [tabId, setTabId] = useState(getTabId("All", prefix));
-
-  const matches = useMemo(() => {
-    const keys = ["label", "path"];
-    const allMatches = matchSorter(flatPages, searchValue, { keys });
-    const groups = groupBy(allMatches, "category");
-    groups.All = allMatches;
-    return groups;
-  }, [searchValue]);
-
-  const currentPages = matches[getCategory(tabId, prefix)] || [];
-
-  return (
-    <>
-      <Button
-        className="ak-button ak-button-default"
-        onClick={() => setOpen(true)}
-      >
-        With Tabs and Grid ({cols} columns)
-      </Button>
-      <CommandMenu
-        aria-label="Command Menu"
-        open={open}
-        setOpen={setOpen}
-        onSearch={setSearchValue}
-        defaultTab={tabId}
-        onTabChange={setTabId}
-      >
-        <CommandMenuInput placeholder="Search pages..." />
-        <CommandMenuTabList aria-label="Categories">
-          {categories.map((category) => {
-            const currentPages = matches[category];
-            return (
-              <CommandMenuTab
-                key={category}
-                id={getTabId(category, prefix)}
-                disabled={!currentPages?.length}
-                rowId="0"
-              >
-                {category} ({currentPages?.length || 0})
-              </CommandMenuTab>
-            );
-          })}
-        </CommandMenuTabList>
-        <CommandMenuTabPanel>
-          <CommandMenuList
-            style={{ "--grid-cols": cols } as CSSProperties}
-            className="grid grid-cols-[repeat(var(--grid-cols),minmax(0,1fr))]"
-          >
-            {currentPages.map((page, i) => (
-              <CommandMenuItem key={i} rowId={`${Math.ceil((i + 1) / cols)}`}>
-                <span className="truncate">{page.label}</span>
-              </CommandMenuItem>
-            ))}
+          <CommandMenuList className="flex flex-col gap-4">
+            {renderGrid(matchedPages)}
           </CommandMenuList>
         </CommandMenuTabPanel>
         <CommandMenuFooter />
