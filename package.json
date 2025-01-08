@@ -62,7 +62,7 @@
   },
   "lint-staged": {
     "package.json": [
-      "npm run clean -ws --if-present",
+      "bun run clean -ws --if-present",
       "biome check --no-errors-on-unmatched --write"
     ],
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write",
