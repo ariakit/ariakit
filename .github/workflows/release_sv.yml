@@ -1,0 +1,91 @@
+// Root package.json
+{
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/github": "^8.0.0",
+    "@semantic-release/npm": "^8.0.0",
+    "lerna": "^6.0.0",
+    "semantic-release": "^19.0.0",
+    "semantic-release-monorepo": "^7.0.0"
+  },
+  "scripts": {
+    "release": "lerna exec --concurrency 1 -- semantic-release -e semantic-release-monorepo"
+  }
+}
+
+// .releaserc.js (root level)
+module.exports = {
+  branches: ['main'],
+  plugins: [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/release-notes-generator',
+    '@semantic-release/changelog',
+    '@semantic-release/npm',
+    '@semantic-release/github',
+    '@semantic-release/git'
+  ]
+}
+
+// packages/package-example/package.json
+{
+  "name": "@scope/package-example",
+  "version": "0.0.0-development",
+  "publishConfig": {
+    "access": "public"
+  },
+  "release": {
+    "extends": "semantic-release-monorepo"
+  }
+}
+
+// lerna.json
+{
+  "version": "independent",
+  "npmClient": "npm",
+  "command": {
+    "publish": {
+      "conventionalCommits": true,
+      "yes": true
+    }
+  },
+  "packages": ["packages/*"]
+}
+
+// .github/workflows/release.yml
+name: Release
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm run release
