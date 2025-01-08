@@ -51,7 +51,7 @@
     "build": "bun run --filter '@ariakit/*' build",
     "build-website": "bun run --filter website build",
     "build-website-lite": "cross-env DISABLE_SHIKI=true bun run build-website",
-    "clean": "npm run clean -ws --if-present",
+    "clean": "bun run --filter '*' clean",
     "changeset": "changeset",
     "prepare": "husky",
     "postinstall": "patch-package"
