@@ -11,16 +11,6 @@ const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-/**
- * Returns props to create a `Button` component. If the element is not a native
- * button, the hook will return additional props to make sure it's accessible.
- * @see https://ariakit.org/components/button
- * @example
- * ```jsx
- * const props = useButton({ render: <div /> });
- * <Role {...props}>Accessible button</Role>
- * ```
- */
 export const useButton = createHook<TagName, ButtonOptions>(
   function useButton(props) {
     const ref = useRef<HTMLType>(null);
