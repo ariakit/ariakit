@@ -110,6 +110,7 @@
     "@types/textarea-caret": "3.0.3",
     "@types/use-sync-external-store": "0.0.6",
     "@vercel/analytics": "1.3.1",
+    "@vitejs/plugin-react": "4.3.4",
     "@vitest/coverage-c8": "0.33.0",
     "@wordpress/components": "28.7.0",
     "autoprefixer": "10.4.20",
@@ -197,8 +198,5 @@
     "vitest-fail-on-console": "0.7.1",
     "webpack": "5.94.0",
     "zod": "3.23.8"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "4.3.4"
   }
 }

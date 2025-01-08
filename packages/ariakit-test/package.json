@@ -59,7 +59,6 @@
     "./mouse-up": "./src/mouse-up.ts",
     "./mouse-down": "./src/mouse-down.ts",
     "./hover": "./src/hover.ts",
-    "./global.d": "./src/global.d.ts",
     "./focus": "./src/focus.ts",
     "./dispatch": "./src/dispatch.ts",
     "./click": "./src/click.ts",
