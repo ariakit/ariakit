@@ -118,7 +118,7 @@
     "chalk": "5.3.0",
     "chokidar": "4.0.3",
     "clsx": "2.1.1",
-    "concurrently": "9.1.0",
+    "concurrently": "9.1.2",
     "cross-env": "7.0.3",
     "cross-spawn": "7.0.6",
     "date-fns": "4.1.0",
