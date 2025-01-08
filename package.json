@@ -108,7 +108,7 @@
     "@types/use-sync-external-store": "0.0.6",
     "@vercel/analytics": "1.4.1",
     "@vitest/coverage-c8": "0.33.0",
-    "@wordpress/components": "28.13.0",
+    "@wordpress/components": "29.1.1",
     "autoprefixer": "10.4.20",
     "babel-plugin-transform-rewrite-imports": "1.5.3",
     "babylon": "6.18.0",
