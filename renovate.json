@@ -43,7 +43,6 @@
         "fs-extra",
         "glob",
         "jsdom",
-        "lerna",
         "lodash-es",
         "match-sorter",
         "null-loader",

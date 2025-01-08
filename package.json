@@ -57,9 +57,6 @@
     "postinstall": "patch-package"
   },
   "workspaces": ["packages/*", "examples", "guide", "website"],
-  "lerna": {
-    "version": "independent"
-  },
   "lint-staged": {
     "package.json": [
       "bun run clean -ws --if-present",
@@ -133,7 +130,6 @@
     "hastscript": "7.2.0",
     "husky": "9.1.7",
     "jsdom": "25.0.1",
-    "lerna": "8.1.9",
     "lint-staged": "15.3.0",
     "lodash-es": "4.17.21",
     "marked": "4.3.0",
