@@ -7,7 +7,7 @@
     "react17": "npm i --no-save react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
     "reactnext": "npm i --no-save react@next react-dom@next",
     "dev-package-json": "node scripts/build/package-json-dev.js",
-    "dev": "conc -r 'npm:dev-package-json' 'npm:dev -w website'",
+    "dev": "conc -r 'bun:dev-package-json' 'bun run --filter website dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true npm run dev",
     "generate-images": "playwright test -u -c generate-images.config.ts",
     "test": "vitest",
