@@ -3,9 +3,6 @@ import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import { createStore, throwOnConflictingProps } from "../utils/store.ts";
 import type { PickRequired, SetState, ToPrimitive } from "../utils/types.ts";
 
-/**
- * Creates a checkbox store.
- */
 export function createCheckboxStore<
   T extends CheckboxStoreValue = CheckboxStoreValue,
 >(
