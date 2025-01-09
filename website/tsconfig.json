@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "composite": true,
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
     "jsx": "react-jsx",

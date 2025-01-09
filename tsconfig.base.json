@@ -3,7 +3,6 @@
     "allowImportingTsExtensions": true,
     "allowJs": true,
     "checkJs": true,
-    "composite": true,
     "declaration": true,
     "emitDeclarationOnly": true,
     "esModuleInterop": true,
