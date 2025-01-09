@@ -127,7 +127,7 @@ async function clickOption(
 
 export function click(
   element: Element | null,
-  options?: MouseEventInit,
+  options?: PointerEventInit,
   tap = false,
 ) {
   return wrapAsync(async () => {

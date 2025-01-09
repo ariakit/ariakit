@@ -14,6 +14,8 @@ test.each([
   "AnimationUnmountLeave",
 ])("%s", async (name) => {
   await click(q.button(name));
+  // Wait for opacity to be greater than 0, otherwise toBeVisible() will fail
+  await sleep(16);
   expect(q.dialog(name)).toBeVisible();
   expect(q.button("Close")).toHaveFocus();
   await press.Enter();

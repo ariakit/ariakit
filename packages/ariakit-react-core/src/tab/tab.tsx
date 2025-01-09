@@ -124,6 +124,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
       accessibleWhenDisabled,
       store: store.composite,
       shouldRegisterItem: canRegisterComposedItem && shouldRegisterItem,
+      rowId: props.rowId,
       render: props.render,
     } satisfies CompositeItemOptions;
     props = {

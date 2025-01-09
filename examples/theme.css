@@ -21,29 +21,28 @@
   }
 
   /* Applies outline to focusable elements when they receive keyboard focus */
-  .focusable {
+  .ak-focusable {
     --outline-offset: 0;
     --outline: var(--color-primary);
   }
 
   /* Applies padding to clickable elements when they are active to simulate
   depth. */
-  .clickable {
+  .ak-clickable {
     --depth: 1px;
-    --padding-block: initial;
+    --padding-block: var(--depth);
   }
 
   /* Button */
-  .button {
+  .ak-button {
     --size: theme(spacing.10);
   }
 
-  .button-small {
+  .ak-button-small {
     @apply sm:[--size:theme(spacing.8)]
   }
 
-  .button-default {
-    --depth: 2px;
+  .ak-button-default {
     --outline-offset: -1px;
     @apply
       [--text:theme(colors.black)]
@@ -64,7 +63,7 @@
       hover:[&:not(:active)]:dark:[--border:theme(colors.white/25%)]
   }
 
-  .button-primary {
+  .ak-button-primary {
     --depth: 2px;
     --outline-offset: 2px;
     @apply
@@ -88,7 +87,7 @@
       hover:[&:not(:active)]:dark:[--border:theme(colors.white/40%)]
   }
 
-  .button-danger {
+  .ak-button-danger {
     @apply
       [--depth:2px]
       [--outline-offset:2px]
@@ -113,7 +112,7 @@
       hover:[&:not(:active)]:dark:[--border:theme(colors.white/40%)]
   }
 
-  .button-secondary {
+  .ak-button-secondary {
     @apply
       [--text:theme(colors.current)]
       [--background:theme(colors.transparent)]
@@ -133,7 +132,7 @@
       hover:[&:not(:active)]:dark:[--border:theme(colors.white/25%)]
   }
 
-  .button-flat {
+  .ak-button-flat {
     @apply
       [--depth:1px]
       [--border:none]
@@ -144,8 +143,17 @@
       dark:[--shadow:none]
   }
 
+  .ak-button-flat-border {
+    @apply
+      [--depth:1px]
+      [--light:none]
+      [--shadow:none]
+      dark:[--light:none]
+      dark:[--shadow:none]
+  }
+
   /* Input */
-  .input {
+  .ak-input {
     --outline-offset: -1px;
     --background: var(--popup-background);
     --border-size: 1px;
@@ -165,8 +173,8 @@
       dark:[--light:theme(colors.white/10%)]
   }
 
-  .input[placeholder],
-  .input:has([placeholder]) {
+  .ak-input[placeholder],
+  .ak-input:has([placeholder]) {
     @apply
       [--border:oklch(from_var(--background)_calc(l-.2)_c_h)]
       hover:[--border:oklch(from_var(--background)_calc(l-.42)_c_h)]
@@ -178,14 +186,14 @@
   /* Applies rounded corners and padding to an element. The rounded-item class
   can be used on descendants to automatically adjust their border-radius based
   on the container's padding and border-radius. */
-  .rounded-container {
+  .ak-rounded-container {
     --padding: theme(spacing.1);
     --rounded: theme(borderRadius.xl);
   }
 
   /* Applies styles that are common to popups, such as padding, border, shadow,
   and a lighter background color. */
-  .popup {
+  .ak-popup {
     --padding: theme(spacing.1);
     --rounded: theme(borderRadius.xl);
     --popup-background: var(--background);
@@ -202,19 +210,19 @@
       dark:[--shadow-size:0_6px_12px_-4px]
   }
 
-  .popup:has(.popup-layer) {
+  .ak-popup:has(.ak-popup-layer) {
     --popup-background: oklch(from var(--background) calc(l - .04) c h);
   }
 
   /* Applies styles to simulate depth, usually combined with the popup class. */
-  .elevation-1 {
+  .ak-elevation-1 {
     --shadow: theme(colors.black/20%);
     @apply
       [--shadow-size:0_8px_16px_-6px]
       dark:[--shadow-size:0_12px_24px_-6px]
   }
 
-  .elevation-2 {
+  .ak-elevation-2 {
     --shadow: theme(colors.black/15%);
     @apply
       [--shadow-size:0_16px_32px_-6px]
@@ -223,63 +231,94 @@
 
   /* Applies styles to option elements, which are typically used within elements
   with a popup class. */
-  .option {
+  .ak-option {
     @apply
+      ak-clickable
+      flex-none
       [--option-background:transparent]
       data-[active-item]:[--option-background:theme(colors.black/8%)]
       dark:data-[active-item]:[--option-background:theme(colors.white/8%)]
   }
 
-  .option[data-active-item] {
+  .ak-option[data-active-item] {
     @apply
       [--option-background:theme(colors.black/8%)]
       dark:[--option-background:theme(colors.white/8%)]
   }
 
-  .option[data-active-item][data-focus-visible] {
+  .ak-option[data-active-item][data-focus-visible] {
     --text: var(--color-white);
     --option-background: var(--color-primary);
   }
 
+  /* Backdrop */
+  .ak-backdrop {
+    @apply
+      [--background:theme(colors.black/10%)]
+      dark:[--background:theme(colors.black/30%)]
+  }
+
+  /* Modal */
+  .ak-modal {
+    --inset: theme(spacing.3);
+    --inset-block: var(--inset, theme(spacing.3));
+    --inset-inline: var(--inset, theme(spacing.3));
+  }
+
   /* Tabs */
-  .tabs-border {
+  .ak-tab-border {
     --border-size: 1px;
     @apply
       [--border:oklch(from_var(--background)_calc(l-.15)_c_h)]
       dark:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
   }
 
-  .tab-default {
+  .ak-tab-default {
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
-      hover:[&:not([aria-selected=true])]:[--background:theme(colors.black/8%)]
-      dark:hover:[&:not([aria-selected=true])]:[--background:theme(colors.white/8%)]
+      hover:aria-[selected=false]:[--tab-background:theme(colors.black/8%)]
+      dark:hover:aria-[selected=false]:[--tab-background:theme(colors.white/8%)]
   }
 
-  .tab-default[aria-selected="false"] {
+  .ak-tab-default[aria-selected="false"] {
     --border: transparent;
+  }
+
+  .ak-tab-chip {
+    --accent-background: var(--color-primary);
+    --accent-text: var(--color-white);
+    @apply
+      hover:aria-[selected=false]:[--tab-background:theme(colors.black/8%)]
+      dark:hover:aria-[selected=false]:[--tab-background:theme(colors.white/8%)]
+  }
+
+  .ak-tab-chip[aria-selected="true"] {
+    --border: transparent;
+    @apply
+      [--tab-background:oklch(from_var(--background)_calc(l-.1)_c_h)]
+      dark:[--tab-background:oklch(from_var(--background)_calc(l+.1)_c_h)]
   }
 
   /* ---------------- Components ---------------- */
 
   /* Focusable */
-  .focusable {
+  .ak-focusable {
     outline-width: 2px;
     outline-color: var(--outline);
     outline-offset: var(--outline-offset);
   }
 
-  .focusable[data-focus-visible] {
+  .ak-focusable[data-focus-visible] {
     outline-style: solid;
   }
 
-  .focusable[aria-disabled="true"] {
+  .ak-focusable[aria-disabled="true"] {
     opacity: 0.5;
   }
 
   /* Clickable */
-  .clickable {
+  .ak-clickable {
     user-select: none;
     white-space: nowrap;
     padding-block:
@@ -287,15 +326,15 @@
       var(--padding-block-end, var(--padding-block));
   }
 
-  .clickable:active,
-  .clickable[data-active] {
+  .ak-clickable:active,
+  .ak-clickable[data-active] {
     padding-block:
-      calc(var(--padding-block-start, var(--padding-block, 0px)) + var(--depth, 0px))
-      calc(var(--padding-block-end, var(--padding-block, 0px)) - var(--depth, 0px));
+      calc(var(--padding-block-start, var(--padding-block)) + var(--depth, 0px))
+      calc(var(--padding-block-end, var(--padding-block)) - var(--depth, 0px));
   }
 
   /* Button */
-  .button {
+  .ak-button {
     display: flex;
     max-width: 100%;
     height: var(--size);
@@ -310,19 +349,21 @@
     scroll-margin: var(--padding, 0px);
     border-radius: calc(var(--rounded, theme(borderRadius.lg)) - var(--padding, 0px));
     @apply
+      ak-focusable
+      ak-clickable
       text-base
       [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--light),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)]
       dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--light)]
   }
 
-  .button:active,
-  .button[data-active] {
+  .ak-button:active,
+  .ak-button[data-active] {
     @apply
       [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--border)]
       dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_1px_1px_1px_var(--shadow)]
   }
 
-  .button-small {
+  .ak-button-small {
     @apply
       sm:text-sm
       sm:[padding-inline:theme(spacing.3)]
@@ -336,7 +377,7 @@
   }
 
   /* Input */
-  .input {
+  .ak-input {
     cursor: text;
     flex: none;
     background-color: var(--input-background);
@@ -346,39 +387,41 @@
       inset 0 2px 5px 0 var(--shadow);
   }
 
-  .input:focus-within {
+  .ak-input:focus-within {
     outline-style: solid;
   }
 
-  .input::placeholder,
-  .input ::placeholder {
+  .ak-input::placeholder,
+  .ak-input ::placeholder {
     @apply
       text-[oklch(from_var(--input-background)_calc(l-.44)_0_0deg)]
       dark:text-[oklch(from_var(--input-background)_calc(l+.42)_0_0deg)]
   }
 
   /* Combobox */
-  .combobox {
+  .ak-combobox {
     outline-width: 1px;
+
+    @apply ak-input ak-focusable ak-rounded-item;
   }
 
-  .combobox[data-active-item] {
+  .ak-combobox[data-active-item] {
     outline-width: 2px;
   }
 
   /* Rounded */
-  .rounded-container {
+  .ak-rounded-container {
     padding: var(--padding);
     border-radius: var(--rounded);
   }
 
-  .rounded-item {
+  .ak-rounded-item {
     scroll-margin: var(--padding);
     border-radius: calc(var(--rounded) - var(--padding));
   }
 
   /* Popup */
-  .popup {
+  .ak-popup {
     z-index: 50;
     outline: none;
     padding: var(--padding);
@@ -386,17 +429,76 @@
     border-radius: var(--rounded);
     scroll-padding: var(--padding);
     box-shadow: 0 0 0 1px var(--border), var(--shadow-size) var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
   }
 
-  .popup-cover {
+  .ak-popup-cover {
+    --negative-margin: calc(var(--padding) * -1);
+
     padding: var(--padding);
-    margin: calc(var(--padding) * -1);
+    margin-inline: var(--negative-margin);
     scroll-padding: var(--padding);
-    overflow: hidden;
+    min-height: 0;
+    overflow: clip;
+
+    &:first-child {
+      margin-block-start: var(--negative-margin);
+    }
+
+    &:not(:has(~ *:not([hidden]))) {
+      margin-block-end: var(--negative-margin);
+    }
+  }
+
+  .ak-popup-scroll {
+    overflow: auto;
+    overscroll-behavior: contain;
+
+    @apply
+      [--sticky-header-height:40px]
+      sm:[--sticky-header-height:32px]
+      has-[.ak-popup-sticky-header]:scroll-pt-[calc(var(--sticky-header-height)+var(--padding))]
+  }
+
+  .ak-popup-sticky-header {
+    position: sticky;
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    top: calc(var(--padding) * -1);
+    z-index: 10;
+    padding-inline: calc(var(--padding) + theme(spacing.2));
+    background-color: var(--background);
+    cursor: default;
+    border-bottom: 1px solid var(--border);
+    height: var(--sticky-header-height);
+
+    @apply
+      text-sm
+      font-medium
+      text-black/60
+      dark:text-white/60
+      [&+*]:scroll-pt-[100px]
+  }
+
+  .ak-popup-layer {
+    background-color: var(--background);
+  }
+
+  .ak-popup-enter {
+    transform-origin: var(--popover-transform-origin);
+    @apply motion-safe:transition-[opacity,scale]
+  }
+
+  .ak-popup-enter:not([data-enter]) {
+    opacity: 0;
+    scale: .95;
   }
 
   /* Option */
-  .option {
+  .ak-option {
     display: flex;
     align-items: center;
     background-color: var(--option-background, var(--background));
@@ -408,25 +510,41 @@
     border-radius: calc(var(--rounded) - var(--padding));
   }
 
+  /* Backdrop */
+  .ak-backdrop {
+    z-index: 50;
+    background-color: var(--background);
+    backdrop-filter: blur(4px);
+  }
+
+  .ak-backdrop-enter {
+    @apply motion-safe:transition-opacity
+  }
+
+  .ak-backdrop-enter:not([data-enter]) {
+    opacity: 0;
+  }
+
+  /* Modal */
+  .ak-modal {
+    position: fixed;
+    inset: var(--inset-block, 0) var(--inset-inline, 0);
+    margin: 0 auto;
+    height: fit-content;
+    max-height: calc(var(--dialog-viewport-height, 100vh) - 2 * var(--inset-block, 0));
+    max-width: calc(100vw - 2 * var(--inset-inline, 0));
+    overflow: auto;
+  }
+
   /* Popover */
-  .popover {
+  .ak-popover {
     min-width: max(180px, calc(var(--popover-anchor-width) + 0.5rem));
     max-width: min(480px, var(--popover-available-width));
     max-height: min(480px, var(--popover-available-height));
   }
 
-  .popover-enter {
-    transform-origin: var(--popover-transform-origin);
-    @apply motion-safe:transition-[opacity,scale]
-  }
-
-  .popover-enter:not([data-enter]) {
-    opacity: 0;
-    scale: .95;
-  }
-
   /* Kbd */
-  .kbd {
+  .ak-kbd {
     display: inline-flex;
     align-items: center;
     font-family: var(--font-mono);
@@ -446,74 +564,94 @@
   }
 
   /* Tabs */
-  .tab {
+  .ak-tab-list {
+    display: flex;
+    flex: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-block-end: calc(var(--padding) * -1);
+    background-image: linear-gradient(
+      to bottom,
+      var(--popup-background) calc(100% - var(--padding) - 1px),
+      var(--border) calc(100% - var(--padding) - 1px),
+      var(--border) calc(100% - var(--padding)),
+      transparent calc(100% - var(--padding))
+    );
+  }
+
+  .ak-tab {
     position: relative;
     display: inline-block;
     vertical-align: bottom;
     cursor: default;
     user-select: none;
     white-space: nowrap;
-    background-color: var(--background, transparent);
+    background-color: var(--tab-background, var(--popup-background, var(--background, transparent)));
     border-color: var(--border, transparent);
     border-width: var(--border-size, 0px) var(--border-size, 0px);
-    border-block-end-color: transparent;
     translate: 0 var(--border-size, 0px);
+
+    @apply
+      ak-clickable
   }
 
-  .tab[aria-selected="true"] {
+  .ak-tab[aria-disabled] {
+    opacity: 0.5;
+  }
+
+  .ak-tab[aria-selected="true"] {
     z-index: 20;
-    box-shadow:
-      inset 0 0 0 4px var(--background),
-      inset 0 -2px 0 4px var(--background);
   }
 
-  .tab[data-focus-visible] {
+  .ak-tab[data-focus-visible] {
     background-color: var(--accent-background);
     color: var(--accent-text);
   }
 
-  .tab[data-focus-visible]:not([aria-selected="true"]) {
+  .ak-tab[data-focus-visible]:not([aria-selected="true"]) {
     --background: var(--accent-background);
   }
 
-  .tab-default {
+  .ak-tab-default {
     --border-smooth: .1px;
     --corner-size: calc(var(--rounded) - var(--padding) - 4px);
     --margin: theme(spacing.1);
     --padding-block: theme(spacing.1);
     --margin-block-end: calc(var(--padding-block) + var(--border-size, 0px) + 1px);
 
+    background-color: var(--tab-background, var(--background, transparent));
     border-radius: var(--corner-size);
-    padding-block:
-      var(--padding-block-start, var(--padding-block))
-      var(--padding-block-end, var(--padding-block));
     padding-inline: theme(spacing.2);
     margin: var(--margin);
     margin-block-end: var(--margin-block-end);
     background-clip: padding-box;
+    border-block-end-color: transparent;
     outline: none;
   }
 
-  .tab-default[aria-selected="true"] {
+  .ak-tab-default[aria-selected="true"] {
     --corner-size: calc(var(--rounded) - var(--padding));
     --padding-block: calc(theme(spacing.1) + var(--margin));
     --padding-block-end: var(--margin-block-end);
 
     margin: 0;
     padding-inline: theme(spacing.3);
+    box-shadow:
+      inset 0 0 0 4px var(--background),
+      inset 0 -2px 0 4px var(--background);
   }
 
-  .tab-default[aria-selected="false"]:not([data-focus-visible],:hover) {
+  .ak-tab-default:not([aria-selected="true"],[data-focus-visible],:hover) {
     --background: var(--popup-background);
   }
 
-  .tab-default[aria-selected="true"]::before,
-  .tab-default[aria-selected="true"]::after {
+  .ak-tab-default[aria-selected="true"]::before,
+  .ak-tab-default[aria-selected="true"]::after {
     display: block;
   }
 
-  .tab-default::before,
-  .tab-default::after {
+  .ak-tab-default::before,
+  .ak-tab-default::after {
     --circle-left: circle at 0 0, var(--transparency);
     --circle-right: circle at 100% 0, var(--transparency);
     --transparency: transparent calc(var(--corner-size) - var(--border-size, 0px) + var(--border-smooth));
@@ -532,7 +670,7 @@
     background-repeat: no-repeat;
   }
 
-  .tab-default::before {
+  .ak-tab-default::before {
     right: calc(100% - var(--corner-size));
     background-image:
       radial-gradient(var(--circle-left), var(--tab-border), var(--tab-bg)),
@@ -540,7 +678,7 @@
     background-position: 0, 100%;
   }
 
-  .tab-default::after {
+  .ak-tab-default::after {
     left: calc(100% - var(--corner-size));
     background-image:
       radial-gradient(var(--circle-right), var(--tab-border), var(--tab-bg)),
@@ -548,8 +686,14 @@
     background-position: 100%, 0;
   }
 
-  .tab-panel {
-    background-color: var(--background);
+  .ak-tab-chip {
+    border-radius: 9999px;
+    padding-inline: theme(spacing.3);
+
+    --padding-block: theme(spacing.1);
+  }
+
+  .ak-tab-panel {
     padding: var(--padding);
     scroll-padding: var(--padding);
     box-shadow: 0 0 0 var(--border-size, 0px) var(--border, transparent);

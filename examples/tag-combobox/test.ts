@@ -5,7 +5,7 @@ function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
   if (!element) return null;
   const { start, end } = getTextboxSelection(element);
   const content =
-    "value" in element ? element.value : element.textContent ?? "";
+    "value" in element ? element.value : (element.textContent ?? "");
   const selectionValue = content.slice(start, end);
   return selectionValue;
 }

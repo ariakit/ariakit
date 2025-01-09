@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": ["website/.next/**", "website/.pages/**"]
+    "ignore": ["website/.next/**", "website/.pages/**", "**/*.css"]
   },
   "organizeImports": {
     "enabled": true
@@ -29,7 +29,10 @@
         "useAnchorContent": "off",
         "useValidAnchor": "off",
         "useKeyWithClickEvents": "off",
-        "noAutofocus": "off"
+        "noAutofocus": "off",
+        "noLabelWithoutControl": "off",
+        "useSemanticElements": "off",
+        "useFocusableInteractive": "off"
       },
       "suspicious": {
         "noExplicitAny": "off",

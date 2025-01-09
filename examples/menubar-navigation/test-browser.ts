@@ -1,5 +1,5 @@
-import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { type Page, expect, query } from "@ariakit/test/playwright";
+import { test } from "../test-utils.ts";
 
 function pressTab(page: Page, browserName: string, shift = false) {
   const key = shift ? "Shift+Tab" : "Tab";
@@ -8,18 +8,6 @@ function pressTab(page: Page, browserName: string, shift = false) {
   }
   return page.keyboard.press(key);
 }
-
-function query(locator: Page | Locator) {
-  return {
-    menu: (name: string) => locator.getByRole("menu", { name }),
-    menuitem: (name: string) =>
-      locator.getByRole("menuitem", { name, includeHidden: true }),
-  };
-}
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menubar-navigation", { waitUntil: "networkidle" });
-});
 
 test.describe.configure({ retries: 2 });
 
@@ -183,4 +171,20 @@ test("click on menuitem links", async ({ page, browserName }) => {
   await page.keyboard.press("Enter");
   await expect(q.menu("Services")).not.toBeVisible();
   await expect(q.menuitem("Services")).toBeFocused();
+});
+
+test("moving between menu items with arrow keys", async ({ page }) => {
+  const q = query(page);
+
+  await q.menuitem("Blog").click();
+  await expect(q.menu("Blog")).toBeVisible();
+
+  await page.keyboard.press("ArrowDown");
+  await expect(q.menuitem("Tech")).toBeFocused();
+
+  await page.keyboard.press("ArrowDown");
+  await expect(q.menuitem("Business")).toBeFocused();
+
+  await page.keyboard.press("ArrowDown");
+  await expect(q.menuitem("Archives")).toBeFocused();
 });

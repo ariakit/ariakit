@@ -70,7 +70,7 @@ export function PageMarkdown({
   page,
   content,
   file,
-  showHovercards = true,
+  showHovercards = false,
   tableOfContents,
 }: PageMarkdownProps) {
   const hovercards = new Set<Promise<string | Iterable<string>>>();

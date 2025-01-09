@@ -29,7 +29,7 @@ const links = [
   {
     title: "Community",
     links: [
-      { title: "Twitter", href: "https://x.com/ariakitjs" },
+      { title: "Bluesky", href: "https://bsky.app/profile/ariakit.org" },
       { title: "GitHub", href: "https://github.com/ariakit/ariakit" },
       {
         title: "Discussions",

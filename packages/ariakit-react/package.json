@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react",
-  "version": "0.4.11",
+  "version": "0.4.15",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -30,7 +30,7 @@
   },
   "keywords": ["ariakit", "react", "a11y", "ui", "toolkit", "components"],
   "dependencies": {
-    "@ariakit/react-core": "0.4.11"
+    "@ariakit/react-core": "0.4.15"
   },
   "devDependencies": {
     "@types/react": "18.3.5",

@@ -12,7 +12,7 @@ function isPointerEventsEnabled(element: Element) {
   return getComputedStyle(element).pointerEvents !== "none";
 }
 
-export function hover(element: Element | null, options?: MouseEventInit) {
+export function hover(element: Element | null, options?: PointerEventInit) {
   return wrapAsync(async () => {
     invariant(element, "Unable to hover on null element");
 

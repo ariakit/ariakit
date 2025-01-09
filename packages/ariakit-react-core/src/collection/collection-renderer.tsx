@@ -194,7 +194,7 @@ function getItemSize(
   fallbackElement?: HTMLElement | null | false,
 ): number {
   const itemObject = getItemObject(item);
-  horizontal = itemObject.orientation === "horizontal" ?? horizontal;
+  horizontal = itemObject.orientation === "horizontal" || horizontal;
   const prop = horizontal ? "width" : "height";
   const style = itemObject.style;
   if (style) {
@@ -760,7 +760,7 @@ export function useCollectionRenderer<T extends Item = any>({
       const itemId = getItemId(item, index, baseId);
       const offset = itemSize
         ? paddingStart + itemSize * index + gap * index
-        : data.get(itemId)?.start ?? 0;
+        : (data.get(itemId)?.start ?? 0);
       const baseItemProps: BaseItemProps = {
         id: itemId,
         ref: itemRef,
