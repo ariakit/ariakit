@@ -10,7 +10,7 @@ import { sleep } from "./sleep.ts";
 export function select(
   text: string,
   element: Element | null = document.body,
-  options?: MouseEventInit,
+  options?: PointerEventInit,
 ) {
   return wrapAsync(async () => {
     invariant(element, "Unable to select text on null element");

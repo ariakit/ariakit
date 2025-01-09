@@ -528,7 +528,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    *   }
    * });
    */
-  onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => void;
+  onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => () => void;
   /**
    * Function that accepts a callback that will be used to submit the form when
    * [`submit`](https://ariakit.org/reference/use-form-store#submit) is called.
@@ -543,7 +543,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    *   }
    * });
    */
-  onSubmit: (callback: FormStoreCallback<FormStoreState<T>>) => void;
+  onSubmit: (callback: FormStoreCallback<FormStoreState<T>>) => () => void;
   /**
    * Validates the form.
    * @example

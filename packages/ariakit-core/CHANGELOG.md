@@ -1,5 +1,44 @@
 # @ariakit/core
 
+## 0.4.14
+
+- Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
+- Fixed typings for [`onSubmit`](https://ariakit.org/reference/use-form-store#onsubmit) and [`onValidate`](https://ariakit.org/reference/use-form-store#onvalidate).
+- Improved JSDocs.
+
+## 0.4.13
+
+- Fixed the [`item`](https://ariakit.org/reference/use-collection-store#item) method to prevent it from returning items that have been removed from the collection store.
+- Fixed the [`item`](https://ariakit.org/reference/use-menu-store#item) method when keeping different menu stores in sync.
+- Added [`id`](https://ariakit.org/reference/use-composite-store#id) prop to composite stores.
+- Added `sortBasedOnDOMPosition` function.
+- Updated core utils.
+- Improved JSDocs.
+
+## 0.4.12
+
+- Fixed regression in [`focusShift`](https://ariakit.org/reference/composite-provider#focusshift).
+- Improved JSDocs.
+
+## 0.4.11
+
+### Overriding composite state for specific methods
+
+The [`next`](https://ariakit.org/reference/use-composite-store#next), [`previous`](https://ariakit.org/reference/use-composite-store#previous), [`up`](https://ariakit.org/reference/use-composite-store#up), and [`down`](https://ariakit.org/reference/use-composite-store#down) methods of the [composite store](https://ariakit.org/reference/use-composite-store) now accept an object as the first argument to override the composite state for that specific method. For example, you can pass a different [`activeId`](https://ariakit.org/reference/use-composite-store#activeid) value to the [`next`](https://ariakit.org/reference/use-composite-store#next) method so it returns the next item based on that value rather than the current active item in the composite store:
+
+```js
+const store = useCompositeStore({ defaultActiveId: "item1" });
+const item3 = store.next({ activeId: "item2" });
+```
+
+It's important to note that the composite state is not modified when using this feature. The state passed to these methods is used solely for that specific method call.
+
+### Other updates
+
+- Fixed CJS build on Next.js.
+- Fixed `getScrollingElement` to consider `overflow: clip`.
+- Improved JSDocs.
+
 ## 0.4.10
 
 ### Tabs inside animated Combobox or Select

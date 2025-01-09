@@ -55,10 +55,7 @@ export function Select({
       )}
       <Ariakit.Select
         {...props}
-        className={clsx(
-          "focusable clickable button button-default",
-          props.className,
-        )}
+        className={clsx("ak-button ak-button-default", props.className)}
       >
         {icon}
         <div className="truncate">{text || <Ariakit.SelectValue />}</div>
@@ -68,25 +65,29 @@ export function Select({
         gutter={5}
         shift={-4}
         unmountOnHide
-        className="popup elevation-1 popover popover-enter flex flex-col gap-[9px] overflow-clip"
+        className="ak-popup ak-popup-enter ak-elevation-1 ak-popover flex flex-col overflow-clip"
       >
-        {heading && (
-          <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-[13px]">
-            <Ariakit.SelectHeading
-              className="cursor-default font-medium opacity-80"
-              render={
-                typeof heading === "string" ? <div>{heading}</div> : heading
-              }
-            />
-            <Ariakit.SelectDismiss className="focusable clickable rounded-item button button-secondary button-flat button-icon button-small opacity-70" />
+        {(heading || searchable) && (
+          <div className="flex flex-col gap-2">
+            {heading && (
+              <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-[13px]">
+                <Ariakit.SelectHeading
+                  className="cursor-default font-medium opacity-80"
+                  render={
+                    typeof heading === "string" ? <div>{heading}</div> : heading
+                  }
+                />
+                <Ariakit.SelectDismiss className="ak-rounded-item ak-button ak-button-secondary ak-button-flat ak-button-icon ak-button-small opacity-70" />
+              </div>
+            )}
+            {searchable && (
+              <Ariakit.Combobox
+                autoSelect
+                render={combobox}
+                className="ak-combobox h-10 w-full px-[13px]"
+              />
+            )}
           </div>
-        )}
-        {searchable && (
-          <Ariakit.Combobox
-            autoSelect
-            render={combobox}
-            className="focusable combobox input rounded-item -mb-1 h-10 w-full px-[13px]"
-          />
         )}
         <Ariakit.TabProvider
           selectedId={tab}
@@ -94,7 +95,7 @@ export function Select({
           defaultSelectedId={defaultTab}
           selectOnMove={selectTabOnMove}
         >
-          <div className="tabs-border popup-cover flex flex-col">
+          <div className="ak-tab-border ak-popup-cover flex flex-col">
             {children}
           </div>
         </Ariakit.TabProvider>
@@ -133,7 +134,7 @@ export function SelectTab(props: SelectTabProps) {
     <Ariakit.Tab
       {...props}
       render={<Ariakit.Role.div render={props.render} />}
-      className={clsx("clickable tab tab-default", props.className)}
+      className={clsx("ak-tab ak-tab-default", props.className)}
     />
   );
 }
@@ -153,7 +154,7 @@ export function SelectTabPanel(props: SelectTabPanelProps) {
       unmountOnHide
       {...props}
       className={clsx(
-        "popup-layer popup-cover flex flex-col pt-[calc(var(--padding)*2)]",
+        "ak-tab-panel ak-popup-layer ak-popup-cover flex flex-col",
         props.className,
       )}
     />
@@ -170,7 +171,7 @@ export function SelectList(props: SelectListProps) {
     <Component
       {...props}
       className={clsx(
-        "tab-panel popup-cover overflow-auto overscroll-contain outline-none",
+        "ak-popup-cover ak-popup-scroll outline-none",
         props.className,
       )}
     />
@@ -195,7 +196,7 @@ export function SelectItem({
       render={render}
       blurOnHoverEnd={false}
       className={clsx(
-        "option clickable [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
+        "ak-option [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
         props.className,
       )}
     >
@@ -212,7 +213,7 @@ export function SelectSeparator(props: SelectSeparatorProps) {
     <div
       {...props}
       className={clsx(
-        "popup-cover my-[--padding] h-px bg-[--border] p-0",
+        "ak-popup-cover my-[--padding] h-px bg-[--border] p-0",
         props.className,
       )}
     />

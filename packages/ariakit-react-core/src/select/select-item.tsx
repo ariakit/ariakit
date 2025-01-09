@@ -14,6 +14,7 @@ import {
   useId,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreStateObject } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -73,6 +74,28 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
     const id = useId(props.id);
     const disabled = disabledFromProps(props);
 
+    const { listElement, multiSelectable, selected, autoFocus } =
+      useStoreStateObject(store, {
+        listElement: "listElement",
+        multiSelectable(state) {
+          return Array.isArray(state.value);
+        },
+        selected(state) {
+          return isSelected(state.value, value);
+        },
+        autoFocus(state) {
+          if (value == null) return false;
+          if (state.value == null) return false;
+          if (state.activeId !== id && store?.item(state.activeId)) {
+            return false;
+          }
+          if (Array.isArray(state.value)) {
+            return state.value[state.value.length - 1] === value;
+          }
+          return state.value === value;
+        },
+      });
+
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {
         // When the item is disabled, we don't register its value.
@@ -87,10 +110,6 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
         return nextItem;
       },
       [disabled, value, getItemProp],
-    );
-
-    const multiSelectable = store.useState((state) =>
-      Array.isArray(state.value),
     );
 
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
@@ -118,8 +137,6 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       }
     });
 
-    const selected = store.useState((state) => isSelected(state.value, value));
-
     props = useWrapElement(
       props,
       (element) => (
@@ -129,18 +146,6 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       ),
       [selected],
     );
-
-    const listElement = store.useState("listElement");
-
-    const autoFocus = store.useState((state) => {
-      if (value == null) return false;
-      if (state.value == null) return false;
-      if (state.activeId !== id && store?.item(state.activeId)) return false;
-      if (Array.isArray(state.value)) {
-        return state.value[state.value.length - 1] === value;
-      }
-      return state.value === value;
-    });
 
     props = {
       id,

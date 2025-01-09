@@ -39,7 +39,7 @@ function getReleaseUpdates() {
   return releasesCache;
 }
 
-let substackCache: UpdateItem[] | null = []; // null;
+let substackCache: UpdateItem[] | null = null;
 
 async function getSubstackUpdates() {
   if (substackCache) {

@@ -7,6 +7,12 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "Improved example: Dialog with React Router",
+    type: "page",
+    href: "/examples/dialog-react-router",
+    dateTime: "2024-11-30T23:24Z",
+  },
+  {
     title: "New example: Select with Combobox and Tabs",
     type: "page",
     href: "/examples/select-combobox-tab",

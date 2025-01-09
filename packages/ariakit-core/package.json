@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/core",
-  "version": "0.4.10",
+  "version": "0.4.14",
   "description": "Ariakit core",
   "sideEffects": false,
   "license": "MIT",

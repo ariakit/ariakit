@@ -60,9 +60,14 @@ export function PlusScreen() {
                   </PlusFeature>
                   <PlusFeature
                     feature="preview-docs"
+                    disabled
+                    className="aria-disabled:opacity-50"
                     render={<Focusable flat render={<li />} />}
                   >
-                    Preview API docs
+                    Preview API docs{" "}
+                    <span className="uppercase ms-2 text-xs px-1.5 py-1 rounded bg-black/60 dark:bg-white/60 text-white dark:text-black font-semibold">
+                      Soon
+                    </span>
                   </PlusFeature>
                   <PlusFeature
                     feature="support"

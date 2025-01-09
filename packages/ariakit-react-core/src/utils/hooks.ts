@@ -171,7 +171,7 @@ export function useId(defaultId?: string): string | undefined {
   const [id, setId] = useState(defaultId);
   useSafeLayoutEffect(() => {
     if (defaultId || id) return;
-    const random = Math.random().toString(36).substr(2, 6);
+    const random = Math.random().toString(36).slice(2, 8);
     setId(`id-${random}`);
   }, [defaultId, id]);
   return defaultId || id;
@@ -237,24 +237,28 @@ export function useAttribute(
   attributeName: string,
   defaultValue?: string,
 ) {
-  const [attribute, setAttribute] = useState(defaultValue);
+  const initialValue = useInitialValue(defaultValue);
+  const [attribute, setAttribute] = useState(initialValue);
 
-  useSafeLayoutEffect(() => {
+  useEffect(() => {
     const element =
       refOrElement && "current" in refOrElement
         ? refOrElement.current
         : refOrElement;
     if (!element) return;
+
     const callback = () => {
       const value = element.getAttribute(attributeName);
-      if (value == null) return;
-      setAttribute(value);
+      setAttribute(value == null ? initialValue : value);
     };
+
     const observer = new MutationObserver(callback);
     observer.observe(element, { attributeFilter: [attributeName] });
+
     callback();
+
     return () => observer.disconnect();
-  }, [refOrElement, attributeName]);
+  }, [refOrElement, attributeName, initialValue]);
 
   return attribute;
 }

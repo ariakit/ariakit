@@ -1,8 +1,8 @@
 import { matchSorter } from "match-sorter";
 import { useDeferredValue, useMemo, useState } from "react";
-import "./style.css";
 import { Tag, TagInput, TagList, TagOption } from "./tag.tsx";
 import { users as defaultUsers, getAvatar } from "./users.ts";
+import "./style.css";
 
 export default function Example() {
   const [users, setUsers] = useState(defaultUsers);
@@ -53,22 +53,26 @@ export default function Example() {
       >
         {invitees.map((email) => (
           <Tag key={email} value={email}>
-            <img src={getAvatar(email)} alt="" className="tag-avatar" />
-            <span className="tag-name">{getUserName(email)}</span>
+            <img src={getAvatar(email)} alt="" className="ak-tag-avatar" />
+            <span className="ak-tag-name">{getUserName(email)}</span>
           </Tag>
         ))}
         <TagInput delimiter={null}>
           {isCustomEmail(value) && (
             <TagOption value={value}>
-              <img src={getAvatar(value)} alt="" className="tag-avatar" />
-              <span className="tag-name">Add &quot;{value}&quot;</span>
+              <img src={getAvatar(value)} alt="" className="ak-tag-avatar" />
+              <span className="ak-tag-name">Add &quot;{value}&quot;</span>
             </TagOption>
           )}
           {matches.map((user) => (
             <TagOption key={user.email} value={user.email}>
-              <img src={getAvatar(user.email)} alt="" className="tag-avatar" />
-              <span className="tag-name">{user.name}</span>
-              <span className="tag-email">{user.email}</span>
+              <img
+                src={getAvatar(user.email)}
+                alt=""
+                className="ak-tag-avatar"
+              />
+              <span className="ak-tag-name">{user.name}</span>
+              <span className="ak-tag-email">{user.email}</span>
             </TagOption>
           ))}
         </TagInput>

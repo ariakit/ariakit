@@ -97,7 +97,7 @@ await Promise.all(
         splitting: true,
         esbuildOptions(options) {
           options.chunkNames = "__chunks/[hash]";
-          if (isCore || isReact) {
+          if ((isCore || isReact) && format === "esm") {
             options.banner = {
               js: '"use client";',
             };
