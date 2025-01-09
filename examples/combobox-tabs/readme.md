@@ -128,6 +128,7 @@ It might not be clear that pressing <kbd>←</kbd> and <kbd>→</kbd> while an `
 
 <div data-cards="examples">
 
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/combobox-filtering)
 - [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-group)
@@ -135,6 +136,5 @@ It might not be clear that pressing <kbd>←</kbd> and <kbd>→</kbd> while an `
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-disclosure)
 - [](/examples/select-combobox-tab)
-- [](/examples/dialog-combobox-command-menu)
 
 </div>

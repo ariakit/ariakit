@@ -1,4 +1,9 @@
 import { basename, dirname } from "node:path";
+import {
+  getTextboxSelection,
+  getTextboxValue,
+  isTextbox,
+} from "@ariakit/core/utils/dom";
 import { test as base } from "@playwright/test";
 import type { Locator, Page, PageScreenshotOptions } from "@playwright/test";
 
@@ -30,6 +35,7 @@ interface ScreenshotOptions {
   transparent?: boolean;
   style?: string;
   clip?: PageScreenshotOptions["clip"];
+  caret?: "initial" | "hide" | "force";
 }
 
 export async function screenshot({
@@ -49,6 +55,7 @@ export async function screenshot({
   transparent = true,
   style,
   clip: originalClip,
+  caret = "initial",
 }: ScreenshotOptions) {
   const colorSchemes = colorScheme
     ? [colorScheme]
@@ -120,10 +127,26 @@ export async function screenshot({
     const folder = `${dirname(test.info().file)}/images`;
     const path = `${folder}/${name}-${colorScheme}.png`;
 
+    // Force the caret to appear
+    if (caret === "force") {
+      const activeElement = await page.evaluate(
+        () => document.activeElement as HTMLElement | null,
+      );
+      if (activeElement && isTextbox(activeElement)) {
+        const selection = getTextboxSelection(activeElement);
+        const value = getTextboxValue(activeElement);
+        const collapsedAtEnd = selection.start === value.length;
+        if (collapsedAtEnd) {
+          await page.keyboard.press("Backspace");
+          await page.keyboard.type(value.slice(0, -1));
+        }
+      }
+    }
+
     await page.screenshot({
       path,
       clip,
-      caret: "initial",
+      caret: caret === "hide" ? "hide" : "initial",
       omitBackground: true,
       style,
     });

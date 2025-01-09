@@ -273,7 +273,7 @@
       dark:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
   }
 
-  .ak-tab-default {
+  .ak-tab-folder {
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
@@ -281,7 +281,7 @@
       dark:hover:aria-[selected=false]:[--tab-background:theme(colors.white/8%)]
   }
 
-  .ak-tab-default[aria-selected="false"] {
+  .ak-tab-folder[aria-selected="false"] {
     --border: transparent;
   }
 
@@ -470,7 +470,7 @@
     top: calc(var(--padding) * -1);
     z-index: 10;
     padding-inline: calc(var(--padding) + theme(spacing.2));
-    background-color: var(--background);
+    background-color: var(--popup-background, var(--background));
     cursor: default;
     border-bottom: 1px solid var(--border);
     height: var(--sticky-header-height);
@@ -569,13 +569,14 @@
     flex: none;
     overflow-x: auto;
     scrollbar-width: none;
-    margin-block-end: calc(var(--padding) * -1);
+    padding-block-end: 0;
+    background-color: var(--popup-background);
     background-image: linear-gradient(
       to bottom,
-      var(--popup-background) calc(100% - var(--padding) - 1px),
-      var(--border) calc(100% - var(--padding) - 1px),
-      var(--border) calc(100% - var(--padding)),
-      transparent calc(100% - var(--padding))
+      transparent calc(100% - var(--border-size) - 1px),
+      var(--border) calc(100% - var(--border-size) - 1px),
+      var(--border) calc(100% - var(--border-size)),
+      var(--background) calc(100% - var(--border-size))
     );
   }
 
@@ -589,7 +590,6 @@
     background-color: var(--tab-background, var(--popup-background, var(--background, transparent)));
     border-color: var(--border, transparent);
     border-width: var(--border-size, 0px) var(--border-size, 0px);
-    translate: 0 var(--border-size, 0px);
 
     @apply
       ak-clickable
@@ -612,7 +612,7 @@
     --background: var(--accent-background);
   }
 
-  .ak-tab-default {
+  .ak-tab-folder {
     --border-smooth: .1px;
     --corner-size: calc(var(--rounded) - var(--padding) - 4px);
     --margin: theme(spacing.1);
@@ -627,9 +627,10 @@
     background-clip: padding-box;
     border-block-end-color: transparent;
     outline: none;
+    @apply ak-tab;
   }
 
-  .ak-tab-default[aria-selected="true"] {
+  .ak-tab-folder[aria-selected="true"] {
     --corner-size: calc(var(--rounded) - var(--padding));
     --padding-block: calc(theme(spacing.1) + var(--margin));
     --padding-block-end: var(--margin-block-end);
@@ -641,17 +642,17 @@
       inset 0 -2px 0 4px var(--background);
   }
 
-  .ak-tab-default:not([aria-selected="true"],[data-focus-visible],:hover) {
+  .ak-tab-folder:not([aria-selected="true"],[data-focus-visible],:hover) {
     --background: var(--popup-background);
   }
 
-  .ak-tab-default[aria-selected="true"]::before,
-  .ak-tab-default[aria-selected="true"]::after {
+  .ak-tab-folder[aria-selected="true"]::before,
+  .ak-tab-folder[aria-selected="true"]::after {
     display: block;
   }
 
-  .ak-tab-default::before,
-  .ak-tab-default::after {
+  .ak-tab-folder::before,
+  .ak-tab-folder::after {
     --circle-left: circle at 0 0, var(--transparency);
     --circle-right: circle at 100% 0, var(--transparency);
     --transparency: transparent calc(var(--corner-size) - var(--border-size, 0px) + var(--border-smooth));
@@ -670,7 +671,7 @@
     background-repeat: no-repeat;
   }
 
-  .ak-tab-default::before {
+  .ak-tab-folder::before {
     right: calc(100% - var(--corner-size));
     background-image:
       radial-gradient(var(--circle-left), var(--tab-border), var(--tab-bg)),
@@ -678,7 +679,7 @@
     background-position: 0, 100%;
   }
 
-  .ak-tab-default::after {
+  .ak-tab-folder::after {
     left: calc(100% - var(--corner-size));
     background-image:
       radial-gradient(var(--circle-right), var(--tab-border), var(--tab-bg)),
@@ -687,15 +688,16 @@
   }
 
   .ak-tab-chip {
+    --padding-block: theme(spacing.1);
+
     border-radius: 9999px;
     padding-inline: theme(spacing.3);
 
-    --padding-block: theme(spacing.1);
+    @apply ak-tab;
   }
 
   .ak-tab-panel {
     padding: var(--padding);
     scroll-padding: var(--padding);
-    box-shadow: 0 0 0 var(--border-size, 0px) var(--border, transparent);
   }
 }

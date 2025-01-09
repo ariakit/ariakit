@@ -122,6 +122,6 @@ Here are a few things to keep in mind when assembling these components:
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-tabs)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 
 </div>
