@@ -470,7 +470,7 @@
     top: calc(var(--padding) * -1);
     z-index: 10;
     padding-inline: calc(var(--padding) + theme(spacing.2));
-    background-color: var(--popup-background, --background);
+    background-color: var(--popup-background, var(--background));
     cursor: default;
     border-bottom: 1px solid var(--border);
     height: var(--sticky-header-height);
