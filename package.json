@@ -59,7 +59,7 @@
   "workspaces": ["packages/*", "examples", "guide", "website"],
   "lint-staged": {
     "package.json": [
-      "bun run clean -ws --if-present",
+      "bun run --filter '*' clean",
       "biome check --no-errors-on-unmatched --write"
     ],
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write",
