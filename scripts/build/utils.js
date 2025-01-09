@@ -1,7 +1,10 @@
 import { lstatSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { cpSync } from "node:fs";
 import { join } from "node:path";
 import chalk from "chalk";
+import spawn from "cross-spawn";
 import fse from "fs-extra";
+import { glob } from "glob";
 import { rimrafSync } from "rimraf";
 
 /**
@@ -305,4 +308,29 @@ export function makeProxies(rootPath) {
       ].join("\n"),
     );
   }
+}
+
+/**
+ * @param {string} rootPath
+ */
+export function makeDeclarationFiles(rootPath) {
+  const pkg = readPackageJson(rootPath);
+  const esmDir = getESMDir();
+  const cjsDir = getCJSDir();
+
+  spawn.sync("tsc", ["--outDir", esmDir], { stdio: "inherit" });
+
+  cpSync(esmDir, cjsDir, { recursive: true });
+
+  const declarationFiles = glob.sync("**/*.d.ts", {
+    cwd: cjsDir,
+    absolute: true,
+  });
+
+  for (const file of declarationFiles) {
+    const ctsFile = file.replace(/\.d\.ts$/, ".d.cts");
+    cpSync(file, ctsFile);
+  }
+
+  console.log(`\nCreated declaration files in ${chalk.bold(pkg.name)}`);
 }

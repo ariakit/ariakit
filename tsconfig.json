@@ -4,13 +4,13 @@
     "emitDeclarationOnly": true,
     "outDir": "./dist/"
   },
-  "include": ["./vitest.setup.ts"],
   "references": [
     { "path": "packages/ariakit-core" },
     { "path": "packages/ariakit-react" },
     { "path": "packages/ariakit-react-core" },
     { "path": "packages/ariakit-test" },
     { "path": "examples" },
-    { "path": "website" }
+    { "path": "website" },
+    { "path": "./tsconfig.vitest.json" }
   ]
 }

@@ -1,6 +1,3 @@
-import { cpSync } from "node:fs";
-import spawn from "cross-spawn";
-import { glob } from "glob";
 import { build } from "tsup";
 import {
   cleanBuild,
@@ -8,6 +5,7 @@ import {
   getESMDir,
   getPublicFiles,
   getSourcePath,
+  makeDeclarationFiles,
   makeGitignore,
   makeProxies,
   writePackageJson,
@@ -27,37 +25,13 @@ cleanBuild(cwd);
 writePackageJson(cwd, true);
 makeGitignore(cwd);
 makeProxies(cwd);
+makeDeclarationFiles(cwd);
+console.log("");
 
 const sourcePath = getSourcePath(cwd);
 const entry = getPublicFiles(sourcePath);
 const esmDir = getESMDir();
 const cjsDir = getCJSDir();
-
-spawn.sync(
-  "tsc",
-  [
-    "--emitDeclarationOnly",
-    "--project",
-    "tsconfig.build.json",
-    "--noEmit",
-    "false",
-    "--outDir",
-    esmDir,
-  ],
-  { stdio: "inherit" },
-);
-
-cpSync(esmDir, cjsDir, { recursive: true });
-
-const declarationFiles = glob.sync("**/*.d.ts", {
-  cwd: cjsDir,
-  absolute: true,
-});
-
-for (const file of declarationFiles) {
-  const ctsFile = file.replace(/\.d\.ts$/, ".d.cts");
-  cpSync(file, ctsFile);
-}
 
 const builds = /** @type {const} */ ([
   { format: "esm", outDir: esmDir },

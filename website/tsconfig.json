@@ -3,7 +3,7 @@
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "isolatedModules": true,
     "outDir": "./dist/",
