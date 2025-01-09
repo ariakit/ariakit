@@ -302,6 +302,8 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**

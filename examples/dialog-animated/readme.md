@@ -61,7 +61,7 @@ You can learn more about these `data-*` attributes on the [Styling](/guide/styli
 - [](/examples/combobox-animated)
 - [](/examples/select-animated)
 - [](/examples/tab-panel-animated)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menubar-navigation)
 
 </div>

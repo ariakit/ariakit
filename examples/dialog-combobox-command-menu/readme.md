@@ -106,6 +106,7 @@ In this example, we've decided to maintain the highlight state on the currently 
 
 <div data-cards="examples">
 
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/combobox-links)
 - [](/examples/combobox-filtering)
 - [](/examples/combobox-tabs)

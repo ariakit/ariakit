@@ -18,7 +18,7 @@ describe.each(LABELS)("%s", (label) => {
   });
 
   test("open command menu when button is clicked and focus on the first option", async () => {
-    const firstOption = q.option("Animated Combobox");
+    const firstOption = q.option("Getting Started");
     expect(firstOption).toHaveFocus();
     expect(firstOption).toHaveAttribute("data-active-item");
     expect(firstOption).not.toHaveAttribute("data-focus-visible");
@@ -46,6 +46,16 @@ describe.each(LABELS)("%s", (label) => {
     expect(firstOption).toHaveFocus();
     expect(firstOption).toHaveAttribute("data-active-item");
     expect(firstOption).toHaveAttribute("data-focus-visible");
+  });
+
+  test("closing and reopening the command menu should reset filter", async () => {
+    const initialLength = q.option.all().length;
+    await type("but");
+    expect(q.option.all().length).toBeLessThan(initialLength);
+    await press.Escape();
+    await click(q.button(label));
+    expect(q.option.all()).toHaveLength(initialLength);
+    expect(q.combobox()).toHaveValue("");
   });
 });
 
@@ -132,7 +142,7 @@ describe.each(GRIDS)("Grids - %s", (label) => {
 
   test("pressing arrow keys moves focus between grid items and tabs", async () => {
     await press.ArrowRight();
-    const secondOption = q.option("Animated Dialog");
+    const secondOption = q.option("Styling");
     expect(secondOption).toHaveFocus();
     expect(secondOption).toHaveAttribute("data-active-item");
     expect(secondOption).toHaveAttribute("data-focus-visible");
@@ -150,7 +160,7 @@ describe.each(GRIDS)("Grids - %s", (label) => {
     await press.ArrowRight();
     await press.ArrowRight();
     await press.ArrowRight();
-    const option = q.option("Button");
+    const option = q.option("Component providers");
     expect(option).toHaveFocus();
     expect(option).toHaveAttribute("data-active-item");
     expect(option).toHaveAttribute("data-focus-visible");
@@ -163,5 +173,18 @@ describe.each(GRIDS)("Grids - %s", (label) => {
     expect(q.tab(/^All/)).toHaveAttribute("aria-selected", "true");
     expect(q.tab(/^All/)).toHaveAttribute("data-active-item");
     expect(q.tab(/^All/)).toHaveAttribute("data-focus-visible");
+  });
+
+  test("focusShift", async () => {
+    await type("ert");
+    await press.ArrowRight();
+    await press.ArrowDown();
+    await press.ArrowDown();
+    try {
+      expect(q.option("Navigation Menubar")).toHaveFocus();
+    } catch {
+      await press.ArrowDown();
+      expect(q.option("Navigation Menubar")).toHaveFocus();
+    }
   });
 });

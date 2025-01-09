@@ -493,6 +493,10 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * retrieved by the
    * [`CompositeRow`](https://ariakit.org/reference/composite-row) component
    * through context so in most cases you don't need to set it manually.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   rowId?: string;
   /**

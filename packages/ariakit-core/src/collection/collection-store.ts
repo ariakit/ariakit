@@ -222,6 +222,10 @@ export interface CollectionStoreState<
    * updated when an item is registered or unregistered using the
    * [`registerItem`](https://ariakit.org/reference/use-collection-store#registeritem)
    * function.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   items: T[];
   /**

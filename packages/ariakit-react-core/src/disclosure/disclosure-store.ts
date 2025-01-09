@@ -67,6 +67,8 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
    *
    * Live examples:
    * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   disclosure?: DisclosureStore | null;
 }

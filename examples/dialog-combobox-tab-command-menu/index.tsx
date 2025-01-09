@@ -43,8 +43,8 @@ function Simple() {
   const [searchValue, setSearchValue] = useState("");
 
   const matches = useMemo(() => {
-    const keys = ["label", "path"];
-    return matchSorter(flatPages, searchValue, { keys });
+    if (!searchValue) return flatPages;
+    return matchSorter(flatPages, searchValue, { keys: ["label", "path"] });
   }, [searchValue]);
 
   const currentPages = matches;
@@ -65,8 +65,8 @@ function Simple() {
       >
         <CommandMenuInput placeholder="Search pages..." />
         <CommandMenuList>
-          {currentPages.map((page, i) => (
-            <CommandMenuItem key={i}>
+          {currentPages.map((page) => (
+            <CommandMenuItem key={page.label} render={<a href={page.path} />}>
               <span className="truncate">{page.label}</span>
             </CommandMenuItem>
           ))}
@@ -111,7 +111,11 @@ function WithTabs({ cols = 1 }: { cols?: number }) {
     return (
       <CommandMenuGrid cols={cols}>
         {pages.map((page, index) => (
-          <CommandMenuItem key={index} index={index}>
+          <CommandMenuItem
+            key={page.label}
+            index={index}
+            render={<a href={page.path} />}
+          >
             <span className="truncate">{page.label}</span>
           </CommandMenuItem>
         ))}
@@ -144,7 +148,6 @@ function WithTabs({ cols = 1 }: { cols?: number }) {
                 key={label}
                 id={getCategoryId(label, prefix)}
                 disabled={!pages?.length}
-                rowId={cols > 1 ? "tabs" : undefined}
               >
                 {label} ({pages?.length || 0})
               </CommandMenuTab>

@@ -60,12 +60,12 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
           <Ariakit.TabProvider
             selectedId={tab}
             defaultSelectedId={defaultTab}
-            // If consumers want to control the state, they should use `setTabId`.
-            // `onTabChange` is best used when they simply want to identify the
-            // selected tab so they can update the content without blocking the UI.
-            // This approach allows users on lower-end devices to continue
-            // interacting with the UI, including switching tabs, even as the
-            // content updates.
+            // If consumers want to control the state, they should use
+            // `setTabId`. `onTabChange` is best used when they simply want to
+            // identify the selected tab so they can update the content without
+            // blocking the UI. This approach allows users on lower-end devices
+            // to continue interacting with the UI, including switching tabs,
+            // even as the content updates.
             setSelectedId={(id) => {
               if (!id) return;
               setTab?.(id);
@@ -100,10 +100,18 @@ export const CommandMenuInput = forwardRef<
           props.className,
         )}
         onKeyDown={(event) => {
+          // Tab key navigation across tabs
           props.onKeyDown?.(event);
           if (event.defaultPrevented) return;
           if (event.key !== "Tab") return;
           const activeId = tab?.getState().selectedId;
+          // Ensure the selected tab is recognized as the active (focused) tab
+          // before switching to the next or previous tab. This is because the
+          // actual focus might be on an option or another tab when using manual
+          // activation. It also disables the focus loop, allowing users to exit
+          // the tab list when they reach the end. Passing options to the `next`
+          // or `previous` functions only affects that specific call and doesn't
+          // change the tab state.
           const options = { activeId, focusLoop: false };
           const nextId = event.shiftKey
             ? tab?.previous(options)
@@ -144,9 +152,19 @@ export const CommandMenuTab = forwardRef<
   HTMLButtonElement,
   CommandMenuTabProps
 >(function CommandMenuTab(props, ref) {
+  // Automatically sets the `rowId` prop if the tab is part of a multi-column
+  // grid layout. This ensures the tab is recognized within the grid when
+  // navigating with arrow keys.
+  const combobox = Ariakit.useComboboxContext();
+  const isGrid = Ariakit.useStoreState(
+    combobox,
+    (state) => !!state?.items.find((item) => !!item.rowId),
+  );
+  const rowId = isGrid ? "tabs" : undefined;
   return (
     <Ariakit.Tab
       ref={ref}
+      rowId={rowId}
       accessibleWhenDisabled={false}
       {...props}
       render={<Ariakit.Role.div render={props.render} />}

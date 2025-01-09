@@ -216,7 +216,8 @@ export interface CompositeHoverOptions<_T extends ElementType = TagName>
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * - [Select with Combobox and
    *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */
