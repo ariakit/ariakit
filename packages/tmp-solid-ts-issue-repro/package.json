@@ -1,0 +1,8 @@
+{
+  "name": "tmp-solid-ts-issue-repro",
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "solid-js": "^1.8"
+  }
+}
