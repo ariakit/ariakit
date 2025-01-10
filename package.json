@@ -121,7 +121,7 @@
     "date-fns": "4.1.0",
     "dotenv": "16.4.7",
     "fast-fuzzy": "1.12.0",
-    "framer-motion": "11.16.6",
+    "framer-motion": "11.17.0",
     "fs-extra": "11.2.0",
     "geist": "1.3.0",
     "glob": "11.0.1",
