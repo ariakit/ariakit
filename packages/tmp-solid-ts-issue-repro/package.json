@@ -1,0 +1,11 @@
+{
+  "name": "tmp-solid-ts-issue-repro",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "solid-js": "^1.8"
+  }
+}

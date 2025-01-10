@@ -9,6 +9,7 @@
     { "path": "packages/ariakit-react" },
     { "path": "packages/ariakit-react-core" },
     { "path": "packages/ariakit-test" },
+    { "path": "packages/tmp-solid-ts-issue-repro" },
     { "path": "examples" },
     { "path": "website" },
     { "path": "./tsconfig.vitest.json" }
