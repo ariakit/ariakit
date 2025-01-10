@@ -124,7 +124,7 @@
     "framer-motion": "11.16.4",
     "fs-extra": "11.2.0",
     "geist": "1.3.0",
-    "glob": "11.0.0",
+    "glob": "11.0.1",
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
     "hastscript": "7.2.0",
