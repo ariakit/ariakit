@@ -3,6 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "rootDir": "./src"
   },
   "include": ["./src/**/*"]
