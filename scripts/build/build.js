@@ -61,11 +61,10 @@ for (const file of declarationFiles) {
   cpSync(file, ctsFile);
 }
 
-/** @type {Array<{ format: import("tsup").Format, outDir: string }>} */
-const builds = [
+const builds = /** @type {const} */ ([
   { format: "esm", outDir: esmDir },
   { format: "cjs", outDir: cjsDir },
-];
+]);
 
 /** @param {{ format: import("tsup").Format, outDir: string }} options */
 function buildCoreAndReact({ format, outDir }) {

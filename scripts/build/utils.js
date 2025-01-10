@@ -47,12 +47,12 @@ export function getPackageJson(rootPath, prod = false) {
     }
     path = removeExt(path).replace(sourcePath, "");
     return {
+      ...(isSolid && { solid: `./${join(solidSourceDir, path)}.jsx` }),
       import: `./${join(esmDir, path)}.js`,
       require: {
         types: `./${join(cjsDir, path)}.d.cts`,
         default: `./${join(cjsDir, path)}.cjs`,
       },
-      ...(isSolid && { solid: `./${join(solidSourceDir, path)}.jsx` }),
     };
   };
 
