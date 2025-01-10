@@ -61,59 +61,70 @@ for (const file of declarationFiles) {
   cpSync(file, ctsFile);
 }
 
-/** @type {Array<{ format: import("tsup").Format, outDir: string, options?: Record<string, any> }>} */
+/** @type {Array<{ format: import("tsup").Format, outDir: string }>} */
 const builds = [
   { format: "esm", outDir: esmDir },
   { format: "cjs", outDir: cjsDir },
-  {
-    format: "esm",
-    outDir: solidSourceDir,
-    options: {
-      skip: !isSolid,
-      outJsExtension: ".jsx",
-      solidSource: true,
-    },
-  },
 ];
 
-await Promise.all(
-  builds.map(
-    ({
-      format,
-      outDir,
-      options: {
-        skip = false,
-        outJsExtension = ".js",
-        solidSource = false,
-      } = {},
-    }) =>
-      !skip &&
-      build({
-        entry,
-        format,
-        outDir,
-        // dts: true,
-        // tsconfig: "tsconfig.build.json",
-        splitting: true,
-        esbuildOptions(options) {
-          options.chunkNames = "__chunks/[hash]";
-          if ((isCore || isReact) && format === "esm") {
-            options.banner = {
-              js: '"use client";',
-            };
-          }
-          if (isSolid) {
-            options.jsx = "preserve";
-          }
-        },
-        outExtension() {
-          return { js: outJsExtension };
-        },
-        esbuildPlugins: [
-          ...(isSolid && !solidSource
-            ? [solidPlugin({ solid: { generate: "dom" } })]
-            : []),
-        ],
-      }),
-  ),
-);
+/** @param {{ format: import("tsup").Format, outDir: string }} options */
+function buildCoreAndReact({ format, outDir }) {
+  if (!isCore && !isReact) return;
+  return build({
+    entry,
+    format,
+    outDir,
+    // dts: true,
+    // tsconfig: "tsconfig.build.json",
+    splitting: true,
+    esbuildOptions(options) {
+      options.chunkNames = "__chunks/[hash]";
+      if (format === "esm") {
+        options.banner = {
+          js: '"use client";',
+        };
+      }
+    },
+  });
+}
+
+/** @param {{ format: import("tsup").Format, outDir: string }} options */
+function buildSolid({ format, outDir }) {
+  if (!isSolid) return;
+  return build({
+    entry,
+    format,
+    outDir,
+    // dts: true,
+    // tsconfig: "tsconfig.build.json",
+    splitting: true,
+    esbuildOptions(options) {
+      options.chunkNames = "__chunks/[hash]";
+      options.jsx = "preserve";
+    },
+    esbuildPlugins: [solidPlugin({ solid: { generate: "dom" } })],
+  });
+}
+
+function buildSolidSource() {
+  if (!isSolid) return;
+  return build({
+    entry,
+    format: "esm",
+    outDir: solidSourceDir,
+    splitting: true,
+    outExtension() {
+      return { js: ".jsx" };
+    },
+    esbuildOptions(options) {
+      options.chunkNames = "__chunks/[hash]";
+      options.jsx = "preserve";
+    },
+  });
+}
+
+await Promise.all([
+  ...builds.map(buildCoreAndReact),
+  ...builds.map(buildSolid),
+  buildSolidSource(),
+]);
