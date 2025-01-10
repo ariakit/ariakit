@@ -30,7 +30,7 @@
   "keywords": ["ariakit", "react", "a11y", "ui", "toolkit", "components"],
   "files": ["dist"],
   "tshy": {
-    "exports": "./src/**"
+    "exports": ["./src/[!_]*.*", "./src/[!_]*/[!_]*"]
   },
   "dependencies": {
     "@ariakit/react-core": "0.4.15"

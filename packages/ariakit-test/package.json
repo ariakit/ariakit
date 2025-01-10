@@ -26,7 +26,7 @@
   "keywords": ["ariakit", "react"],
   "files": ["dist"],
   "tshy": {
-    "exports": "./src/**"
+    "exports": ["./src/[!_]*.*", "./src/[!_]*/[!_]*"]
   },
   "dependencies": {
     "@ariakit/core": "0.4.14",
@@ -49,46 +49,6 @@
     }
   },
   "exports": {
-    "./__aria-role": {
-      "import": {
-        "types": "./dist/esm/__aria-role.d.ts",
-        "default": "./dist/esm/__aria-role.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/__aria-role.d.ts",
-        "default": "./dist/commonjs/__aria-role.js"
-      }
-    },
-    "./__tests__/blur-test": {
-      "import": {
-        "types": "./dist/esm/__tests__/blur-test.d.ts",
-        "default": "./dist/esm/__tests__/blur-test.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/__tests__/blur-test.d.ts",
-        "default": "./dist/commonjs/__tests__/blur-test.js"
-      }
-    },
-    "./__tests__/use-all-events": {
-      "import": {
-        "types": "./dist/esm/__tests__/use-all-events.d.ts",
-        "default": "./dist/esm/__tests__/use-all-events.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/__tests__/use-all-events.d.ts",
-        "default": "./dist/commonjs/__tests__/use-all-events.js"
-      }
-    },
-    "./__utils": {
-      "import": {
-        "types": "./dist/esm/__utils.d.ts",
-        "default": "./dist/esm/__utils.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/__utils.d.ts",
-        "default": "./dist/commonjs/__utils.js"
-      }
-    },
     "./blur": {
       "import": {
         "types": "./dist/esm/blur.d.ts",

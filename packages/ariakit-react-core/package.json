@@ -26,7 +26,7 @@
   "keywords": ["ariakit", "react", "core"],
   "files": ["dist"],
   "tshy": {
-    "exports": "./src/**"
+    "exports": ["./src/[!_]*.*", "./src/[!_]*/[!_]*"]
   },
   "dependencies": {
     "@ariakit/core": "0.4.14",
@@ -648,146 +648,6 @@
         "default": "./dist/commonjs/dialog/dialog.js"
       }
     },
-    "./dialog/utils/disable-accessibility-tree-outside": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/disable-accessibility-tree-outside.d.ts",
-        "default": "./dist/esm/dialog/utils/disable-accessibility-tree-outside.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/disable-accessibility-tree-outside.d.ts",
-        "default": "./dist/commonjs/dialog/utils/disable-accessibility-tree-outside.js"
-      }
-    },
-    "./dialog/utils/disable-tree": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/disable-tree.d.ts",
-        "default": "./dist/esm/dialog/utils/disable-tree.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/disable-tree.d.ts",
-        "default": "./dist/commonjs/dialog/utils/disable-tree.js"
-      }
-    },
-    "./dialog/utils/is-backdrop": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/is-backdrop.d.ts",
-        "default": "./dist/esm/dialog/utils/is-backdrop.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/is-backdrop.d.ts",
-        "default": "./dist/commonjs/dialog/utils/is-backdrop.js"
-      }
-    },
-    "./dialog/utils/is-focus-trap": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/is-focus-trap.d.ts",
-        "default": "./dist/esm/dialog/utils/is-focus-trap.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/is-focus-trap.d.ts",
-        "default": "./dist/commonjs/dialog/utils/is-focus-trap.js"
-      }
-    },
-    "./dialog/utils/mark-tree-outside": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/mark-tree-outside.d.ts",
-        "default": "./dist/esm/dialog/utils/mark-tree-outside.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/mark-tree-outside.d.ts",
-        "default": "./dist/commonjs/dialog/utils/mark-tree-outside.js"
-      }
-    },
-    "./dialog/utils/orchestrate": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/orchestrate.d.ts",
-        "default": "./dist/esm/dialog/utils/orchestrate.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/orchestrate.d.ts",
-        "default": "./dist/commonjs/dialog/utils/orchestrate.js"
-      }
-    },
-    "./dialog/utils/prepend-hidden-dismiss": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/prepend-hidden-dismiss.d.ts",
-        "default": "./dist/esm/dialog/utils/prepend-hidden-dismiss.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/prepend-hidden-dismiss.d.ts",
-        "default": "./dist/commonjs/dialog/utils/prepend-hidden-dismiss.js"
-      }
-    },
-    "./dialog/utils/supports-inert": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/supports-inert.d.ts",
-        "default": "./dist/esm/dialog/utils/supports-inert.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/supports-inert.d.ts",
-        "default": "./dist/commonjs/dialog/utils/supports-inert.js"
-      }
-    },
-    "./dialog/utils/use-hide-on-interact-outside": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/use-hide-on-interact-outside.d.ts",
-        "default": "./dist/esm/dialog/utils/use-hide-on-interact-outside.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/use-hide-on-interact-outside.d.ts",
-        "default": "./dist/commonjs/dialog/utils/use-hide-on-interact-outside.js"
-      }
-    },
-    "./dialog/utils/use-nested-dialogs": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/use-nested-dialogs.d.ts",
-        "default": "./dist/esm/dialog/utils/use-nested-dialogs.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/use-nested-dialogs.d.ts",
-        "default": "./dist/commonjs/dialog/utils/use-nested-dialogs.js"
-      }
-    },
-    "./dialog/utils/use-prevent-body-scroll": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/use-prevent-body-scroll.d.ts",
-        "default": "./dist/esm/dialog/utils/use-prevent-body-scroll.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/use-prevent-body-scroll.d.ts",
-        "default": "./dist/commonjs/dialog/utils/use-prevent-body-scroll.js"
-      }
-    },
-    "./dialog/utils/use-previous-mouse-down-ref": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/use-previous-mouse-down-ref.d.ts",
-        "default": "./dist/esm/dialog/utils/use-previous-mouse-down-ref.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/use-previous-mouse-down-ref.d.ts",
-        "default": "./dist/commonjs/dialog/utils/use-previous-mouse-down-ref.js"
-      }
-    },
-    "./dialog/utils/use-root-dialog": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/use-root-dialog.d.ts",
-        "default": "./dist/esm/dialog/utils/use-root-dialog.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/use-root-dialog.d.ts",
-        "default": "./dist/commonjs/dialog/utils/use-root-dialog.js"
-      }
-    },
-    "./dialog/utils/walk-tree-outside": {
-      "import": {
-        "types": "./dist/esm/dialog/utils/walk-tree-outside.d.ts",
-        "default": "./dist/esm/dialog/utils/walk-tree-outside.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/dialog/utils/walk-tree-outside.d.ts",
-        "default": "./dist/commonjs/dialog/utils/walk-tree-outside.js"
-      }
-    },
     "./disclosure/disclosure-content": {
       "import": {
         "types": "./dist/esm/disclosure/disclosure-content.d.ts",
@@ -1246,36 +1106,6 @@
       "require": {
         "types": "./dist/commonjs/hovercard/hovercard.d.ts",
         "default": "./dist/commonjs/hovercard/hovercard.js"
-      }
-    },
-    "./hovercard/utils/__tests__/polygon-test": {
-      "import": {
-        "types": "./dist/esm/hovercard/utils/__tests__/polygon-test.d.ts",
-        "default": "./dist/esm/hovercard/utils/__tests__/polygon-test.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/hovercard/utils/__tests__/polygon-test.d.ts",
-        "default": "./dist/commonjs/hovercard/utils/__tests__/polygon-test.js"
-      }
-    },
-    "./hovercard/utils/debug-polygon": {
-      "import": {
-        "types": "./dist/esm/hovercard/utils/debug-polygon.d.ts",
-        "default": "./dist/esm/hovercard/utils/debug-polygon.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/hovercard/utils/debug-polygon.d.ts",
-        "default": "./dist/commonjs/hovercard/utils/debug-polygon.js"
-      }
-    },
-    "./hovercard/utils/polygon": {
-      "import": {
-        "types": "./dist/esm/hovercard/utils/polygon.d.ts",
-        "default": "./dist/esm/hovercard/utils/polygon.js"
-      },
-      "require": {
-        "types": "./dist/commonjs/hovercard/utils/polygon.d.ts",
-        "default": "./dist/commonjs/hovercard/utils/polygon.js"
       }
     },
     ".": {

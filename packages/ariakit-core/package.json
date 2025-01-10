@@ -26,7 +26,7 @@
   "keywords": ["ariakit", "core"],
   "files": ["dist"],
   "tshy": {
-    "exports": "./src/**"
+    "exports": ["./src/[!_]*.*", "./src/[!_]*/[!_]*"]
   },
   "exports": {
     "./checkbox/checkbox-store": {
