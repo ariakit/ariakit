@@ -6,9 +6,9 @@
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/commonjs/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -20,43 +20,315 @@
     "url": "https://github.com/diegohaz"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "lint": "biome check .",
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "prepare": "tshy && biome check . --fix",
+    "lint": "biome check ."
   },
   "keywords": ["ariakit", "core"],
+  "files": ["dist"],
+  "tshy": {
+    "exports": "./src/**"
+  },
   "exports": {
-    ".": "./src/index.ts",
-    "./utils/undo": "./src/utils/undo.ts",
-    "./utils/types": "./src/utils/types.ts",
-    "./utils/store": "./src/utils/store.ts",
-    "./utils/platform": "./src/utils/platform.ts",
-    "./utils/misc": "./src/utils/misc.ts",
-    "./utils/focus": "./src/utils/focus.ts",
-    "./utils/events": "./src/utils/events.ts",
-    "./utils/dom": "./src/utils/dom.ts",
-    "./utils/array": "./src/utils/array.ts",
-    "./tooltip/tooltip-store": "./src/tooltip/tooltip-store.ts",
-    "./toolbar/toolbar-store": "./src/toolbar/toolbar-store.ts",
-    "./tag/tag-store": "./src/tag/tag-store.ts",
-    "./tab/tab-store": "./src/tab/tab-store.ts",
-    "./select/select-store": "./src/select/select-store.ts",
-    "./radio/radio-store": "./src/radio/radio-store.ts",
-    "./popover/popover-store": "./src/popover/popover-store.ts",
-    "./menubar/menubar-store": "./src/menubar/menubar-store.ts",
-    "./menu/menu-store": "./src/menu/menu-store.ts",
-    "./menu/menu-bar-store": "./src/menu/menu-bar-store.ts",
-    "./hovercard/hovercard-store": "./src/hovercard/hovercard-store.ts",
-    "./form/types": "./src/form/types.ts",
-    "./form/form-store": "./src/form/form-store.ts",
-    "./disclosure/disclosure-store": "./src/disclosure/disclosure-store.ts",
-    "./dialog/dialog-store": "./src/dialog/dialog-store.ts",
-    "./composite/composite-store": "./src/composite/composite-store.ts",
-    "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
-    "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
-    "./collection/collection-store": "./src/collection/collection-store.ts",
-    "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",
+    "./checkbox/checkbox-store": {
+      "import": {
+        "types": "./dist/esm/checkbox/checkbox-store.d.ts",
+        "default": "./dist/esm/checkbox/checkbox-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/checkbox/checkbox-store.d.ts",
+        "default": "./dist/commonjs/checkbox/checkbox-store.js"
+      }
+    },
+    "./collection/collection-store": {
+      "import": {
+        "types": "./dist/esm/collection/collection-store.d.ts",
+        "default": "./dist/esm/collection/collection-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/collection/collection-store.d.ts",
+        "default": "./dist/commonjs/collection/collection-store.js"
+      }
+    },
+    "./combobox/combobox-store": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-store.d.ts",
+        "default": "./dist/esm/combobox/combobox-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-store.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-store.js"
+      }
+    },
+    "./composite/composite-overflow-store": {
+      "import": {
+        "types": "./dist/esm/composite/composite-overflow-store.d.ts",
+        "default": "./dist/esm/composite/composite-overflow-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-overflow-store.d.ts",
+        "default": "./dist/commonjs/composite/composite-overflow-store.js"
+      }
+    },
+    "./composite/composite-store": {
+      "import": {
+        "types": "./dist/esm/composite/composite-store.d.ts",
+        "default": "./dist/esm/composite/composite-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-store.d.ts",
+        "default": "./dist/commonjs/composite/composite-store.js"
+      }
+    },
+    "./dialog/dialog-store": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-store.d.ts",
+        "default": "./dist/esm/dialog/dialog-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-store.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-store.js"
+      }
+    },
+    "./disclosure/disclosure-store": {
+      "import": {
+        "types": "./dist/esm/disclosure/disclosure-store.d.ts",
+        "default": "./dist/esm/disclosure/disclosure-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/disclosure/disclosure-store.d.ts",
+        "default": "./dist/commonjs/disclosure/disclosure-store.js"
+      }
+    },
+    "./form/form-store": {
+      "import": {
+        "types": "./dist/esm/form/form-store.d.ts",
+        "default": "./dist/esm/form/form-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-store.d.ts",
+        "default": "./dist/commonjs/form/form-store.js"
+      }
+    },
+    "./form/types": {
+      "import": {
+        "types": "./dist/esm/form/types.d.ts",
+        "default": "./dist/esm/form/types.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/types.d.ts",
+        "default": "./dist/commonjs/form/types.js"
+      }
+    },
+    "./hovercard/hovercard-store": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-store.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-store.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-store.js"
+      }
+    },
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./menu/menu-bar-store": {
+      "import": {
+        "types": "./dist/esm/menu/menu-bar-store.d.ts",
+        "default": "./dist/esm/menu/menu-bar-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-bar-store.d.ts",
+        "default": "./dist/commonjs/menu/menu-bar-store.js"
+      }
+    },
+    "./menu/menu-store": {
+      "import": {
+        "types": "./dist/esm/menu/menu-store.d.ts",
+        "default": "./dist/esm/menu/menu-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-store.d.ts",
+        "default": "./dist/commonjs/menu/menu-store.js"
+      }
+    },
+    "./menubar/menubar-store": {
+      "import": {
+        "types": "./dist/esm/menubar/menubar-store.d.ts",
+        "default": "./dist/esm/menubar/menubar-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menubar/menubar-store.d.ts",
+        "default": "./dist/commonjs/menubar/menubar-store.js"
+      }
+    },
+    "./popover/popover-store": {
+      "import": {
+        "types": "./dist/esm/popover/popover-store.d.ts",
+        "default": "./dist/esm/popover/popover-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-store.d.ts",
+        "default": "./dist/commonjs/popover/popover-store.js"
+      }
+    },
+    "./radio/radio-store": {
+      "import": {
+        "types": "./dist/esm/radio/radio-store.d.ts",
+        "default": "./dist/esm/radio/radio-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/radio/radio-store.d.ts",
+        "default": "./dist/commonjs/radio/radio-store.js"
+      }
+    },
+    "./select/select-store": {
+      "import": {
+        "types": "./dist/esm/select/select-store.d.ts",
+        "default": "./dist/esm/select/select-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-store.d.ts",
+        "default": "./dist/commonjs/select/select-store.js"
+      }
+    },
+    "./tab/tab-store": {
+      "import": {
+        "types": "./dist/esm/tab/tab-store.d.ts",
+        "default": "./dist/esm/tab/tab-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tab/tab-store.d.ts",
+        "default": "./dist/commonjs/tab/tab-store.js"
+      }
+    },
+    "./tag/tag-store": {
+      "import": {
+        "types": "./dist/esm/tag/tag-store.d.ts",
+        "default": "./dist/esm/tag/tag-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-store.d.ts",
+        "default": "./dist/commonjs/tag/tag-store.js"
+      }
+    },
+    "./toolbar/toolbar-store": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar-store.d.ts",
+        "default": "./dist/esm/toolbar/toolbar-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar-store.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar-store.js"
+      }
+    },
+    "./tooltip/tooltip-store": {
+      "import": {
+        "types": "./dist/esm/tooltip/tooltip-store.d.ts",
+        "default": "./dist/esm/tooltip/tooltip-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tooltip/tooltip-store.d.ts",
+        "default": "./dist/commonjs/tooltip/tooltip-store.js"
+      }
+    },
+    "./utils/array": {
+      "import": {
+        "types": "./dist/esm/utils/array.d.ts",
+        "default": "./dist/esm/utils/array.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/array.d.ts",
+        "default": "./dist/commonjs/utils/array.js"
+      }
+    },
+    "./utils/dom": {
+      "import": {
+        "types": "./dist/esm/utils/dom.d.ts",
+        "default": "./dist/esm/utils/dom.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/dom.d.ts",
+        "default": "./dist/commonjs/utils/dom.js"
+      }
+    },
+    "./utils/events": {
+      "import": {
+        "types": "./dist/esm/utils/events.d.ts",
+        "default": "./dist/esm/utils/events.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/events.d.ts",
+        "default": "./dist/commonjs/utils/events.js"
+      }
+    },
+    "./utils/focus": {
+      "import": {
+        "types": "./dist/esm/utils/focus.d.ts",
+        "default": "./dist/esm/utils/focus.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/focus.d.ts",
+        "default": "./dist/commonjs/utils/focus.js"
+      }
+    },
+    "./utils/misc": {
+      "import": {
+        "types": "./dist/esm/utils/misc.d.ts",
+        "default": "./dist/esm/utils/misc.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/misc.d.ts",
+        "default": "./dist/commonjs/utils/misc.js"
+      }
+    },
+    "./utils/platform": {
+      "import": {
+        "types": "./dist/esm/utils/platform.d.ts",
+        "default": "./dist/esm/utils/platform.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/platform.d.ts",
+        "default": "./dist/commonjs/utils/platform.js"
+      }
+    },
+    "./utils/store": {
+      "import": {
+        "types": "./dist/esm/utils/store.d.ts",
+        "default": "./dist/esm/utils/store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/store.d.ts",
+        "default": "./dist/commonjs/utils/store.js"
+      }
+    },
+    "./utils/types": {
+      "import": {
+        "types": "./dist/esm/utils/types.d.ts",
+        "default": "./dist/esm/utils/types.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/types.d.ts",
+        "default": "./dist/commonjs/utils/types.js"
+      }
+    },
+    "./utils/undo": {
+      "import": {
+        "types": "./dist/esm/utils/undo.d.ts",
+        "default": "./dist/esm/utils/undo.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/undo.d.ts",
+        "default": "./dist/commonjs/utils/undo.js"
+      }
+    },
     "./package.json": "./package.json"
   }
 }
