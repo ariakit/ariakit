@@ -1,6 +1,8 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
     "composite": true,
     "jsx": "react-jsx",
     "outDir": "./dist/"

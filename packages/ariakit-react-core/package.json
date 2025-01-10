@@ -6,9 +6,9 @@
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/commonjs/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -38,232 +38,2276 @@
     "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
-    "./utils/types": "./src/utils/types.ts",
-    "./utils/system": "./src/utils/system.tsx",
-    "./utils/store": "./src/utils/store.tsx",
-    "./utils/misc": "./src/utils/misc.ts",
-    "./utils/hooks": "./src/utils/hooks.ts",
-    "./tooltip/tooltip": "./src/tooltip/tooltip.tsx",
-    "./tooltip/tooltip-store": "./src/tooltip/tooltip-store.ts",
-    "./tooltip/tooltip-provider": "./src/tooltip/tooltip-provider.tsx",
-    "./tooltip/tooltip-context": "./src/tooltip/tooltip-context.tsx",
-    "./tooltip/tooltip-arrow": "./src/tooltip/tooltip-arrow.tsx",
-    "./tooltip/tooltip-anchor": "./src/tooltip/tooltip-anchor.tsx",
-    "./toolbar/toolbar": "./src/toolbar/toolbar.tsx",
-    "./toolbar/toolbar-store": "./src/toolbar/toolbar-store.ts",
-    "./toolbar/toolbar-separator": "./src/toolbar/toolbar-separator.tsx",
-    "./toolbar/toolbar-provider": "./src/toolbar/toolbar-provider.tsx",
-    "./toolbar/toolbar-item": "./src/toolbar/toolbar-item.tsx",
-    "./toolbar/toolbar-input": "./src/toolbar/toolbar-input.tsx",
-    "./toolbar/toolbar-context": "./src/toolbar/toolbar-context.tsx",
-    "./toolbar/toolbar-container": "./src/toolbar/toolbar-container.tsx",
-    "./tag/utils": "./src/tag/utils.ts",
-    "./tag/tag": "./src/tag/tag.tsx",
-    "./tag/tag-values": "./src/tag/tag-values.tsx",
-    "./tag/tag-value": "./src/tag/tag-value.tsx",
-    "./tag/tag-store": "./src/tag/tag-store.ts",
-    "./tag/tag-remove": "./src/tag/tag-remove.tsx",
-    "./tag/tag-provider": "./src/tag/tag-provider.tsx",
-    "./tag/tag-list": "./src/tag/tag-list.tsx",
-    "./tag/tag-list-label": "./src/tag/tag-list-label.tsx",
-    "./tag/tag-input": "./src/tag/tag-input.tsx",
-    "./tag/tag-context": "./src/tag/tag-context.tsx",
-    "./tab/tab": "./src/tab/tab.tsx",
-    "./tab/tab-store": "./src/tab/tab-store.ts",
-    "./tab/tab-provider": "./src/tab/tab-provider.tsx",
-    "./tab/tab-panel": "./src/tab/tab-panel.tsx",
-    "./tab/tab-list": "./src/tab/tab-list.tsx",
-    "./tab/tab-context": "./src/tab/tab-context.tsx",
-    "./separator/separator": "./src/separator/separator.tsx",
-    "./select/select": "./src/select/select.tsx",
-    "./select/select-value": "./src/select/select-value.tsx",
-    "./select/select-store": "./src/select/select-store.ts",
-    "./select/select-separator": "./src/select/select-separator.tsx",
-    "./select/select-row": "./src/select/select-row.tsx",
-    "./select/select-renderer": "./src/select/select-renderer.tsx",
-    "./select/select-provider": "./src/select/select-provider.tsx",
-    "./select/select-popover": "./src/select/select-popover.tsx",
-    "./select/select-list": "./src/select/select-list.tsx",
-    "./select/select-label": "./src/select/select-label.tsx",
-    "./select/select-item": "./src/select/select-item.tsx",
-    "./select/select-item-offscreen": "./src/select/select-item-offscreen.tsx",
-    "./select/select-item-check": "./src/select/select-item-check.tsx",
-    "./select/select-heading": "./src/select/select-heading.tsx",
-    "./select/select-group": "./src/select/select-group.tsx",
-    "./select/select-group-label": "./src/select/select-group-label.tsx",
-    "./select/select-dismiss": "./src/select/select-dismiss.tsx",
-    "./select/select-context": "./src/select/select-context.tsx",
-    "./select/select-arrow": "./src/select/select-arrow.tsx",
-    "./role/role": "./src/role/role.tsx",
-    "./radio/radio": "./src/radio/radio.tsx",
-    "./radio/radio-store": "./src/radio/radio-store.ts",
-    "./radio/radio-provider": "./src/radio/radio-provider.tsx",
-    "./radio/radio-group": "./src/radio/radio-group.tsx",
-    "./radio/radio-context": "./src/radio/radio-context.tsx",
-    "./portal/portal": "./src/portal/portal.tsx",
-    "./portal/portal-context": "./src/portal/portal-context.tsx",
-    "./popover/popover": "./src/popover/popover.tsx",
-    "./popover/popover-store": "./src/popover/popover-store.ts",
-    "./popover/popover-provider": "./src/popover/popover-provider.tsx",
-    "./popover/popover-heading": "./src/popover/popover-heading.tsx",
-    "./popover/popover-dismiss": "./src/popover/popover-dismiss.tsx",
-    "./popover/popover-disclosure": "./src/popover/popover-disclosure.tsx",
-    "./popover/popover-disclosure-arrow": "./src/popover/popover-disclosure-arrow.tsx",
-    "./popover/popover-description": "./src/popover/popover-description.tsx",
-    "./popover/popover-context": "./src/popover/popover-context.tsx",
-    "./popover/popover-arrow": "./src/popover/popover-arrow.tsx",
-    "./popover/popover-arrow-path": "./src/popover/popover-arrow-path.ts",
-    "./popover/popover-anchor": "./src/popover/popover-anchor.tsx",
-    "./menubar/menubar": "./src/menubar/menubar.tsx",
-    "./menubar/menubar-store": "./src/menubar/menubar-store.ts",
-    "./menubar/menubar-provider": "./src/menubar/menubar-provider.tsx",
-    "./menubar/menubar-context": "./src/menubar/menubar-context.tsx",
-    "./menu/menu": "./src/menu/menu.tsx",
-    "./menu/menu-store": "./src/menu/menu-store.ts",
-    "./menu/menu-separator": "./src/menu/menu-separator.tsx",
-    "./menu/menu-provider": "./src/menu/menu-provider.tsx",
-    "./menu/menu-list": "./src/menu/menu-list.tsx",
-    "./menu/menu-item": "./src/menu/menu-item.tsx",
-    "./menu/menu-item-radio": "./src/menu/menu-item-radio.tsx",
-    "./menu/menu-item-checkbox": "./src/menu/menu-item-checkbox.tsx",
-    "./menu/menu-item-check": "./src/menu/menu-item-check.tsx",
-    "./menu/menu-heading": "./src/menu/menu-heading.tsx",
-    "./menu/menu-group": "./src/menu/menu-group.tsx",
-    "./menu/menu-group-label": "./src/menu/menu-group-label.tsx",
-    "./menu/menu-dismiss": "./src/menu/menu-dismiss.tsx",
-    "./menu/menu-description": "./src/menu/menu-description.tsx",
-    "./menu/menu-context": "./src/menu/menu-context.tsx",
-    "./menu/menu-button": "./src/menu/menu-button.tsx",
-    "./menu/menu-button-arrow": "./src/menu/menu-button-arrow.tsx",
-    "./menu/menu-bar": "./src/menu/menu-bar.tsx",
-    "./menu/menu-bar-store": "./src/menu/menu-bar-store.ts",
-    "./menu/menu-bar-provider": "./src/menu/menu-bar-provider.tsx",
-    "./menu/menu-arrow": "./src/menu/menu-arrow.tsx",
-    "./hovercard/utils/polygon": "./src/hovercard/utils/polygon.ts",
-    "./hovercard/utils/debug-polygon": "./src/hovercard/utils/debug-polygon.ts",
-    "./hovercard/hovercard": "./src/hovercard/hovercard.tsx",
-    "./hovercard/hovercard-store": "./src/hovercard/hovercard-store.ts",
-    "./hovercard/hovercard-provider": "./src/hovercard/hovercard-provider.tsx",
-    "./hovercard/hovercard-heading": "./src/hovercard/hovercard-heading.tsx",
-    "./hovercard/hovercard-dismiss": "./src/hovercard/hovercard-dismiss.tsx",
-    "./hovercard/hovercard-disclosure": "./src/hovercard/hovercard-disclosure.tsx",
-    "./hovercard/hovercard-description": "./src/hovercard/hovercard-description.tsx",
-    "./hovercard/hovercard-context": "./src/hovercard/hovercard-context.tsx",
-    "./hovercard/hovercard-arrow": "./src/hovercard/hovercard-arrow.tsx",
-    "./hovercard/hovercard-anchor": "./src/hovercard/hovercard-anchor.tsx",
-    "./heading/utils": "./src/heading/utils.ts",
-    "./heading/heading": "./src/heading/heading.tsx",
-    "./heading/heading-level": "./src/heading/heading-level.tsx",
-    "./heading/heading-context": "./src/heading/heading-context.tsx",
-    "./group/group": "./src/group/group.tsx",
-    "./group/group-label": "./src/group/group-label.tsx",
-    "./group/group-label-context": "./src/group/group-label-context.tsx",
-    "./form/form": "./src/form/form.tsx",
-    "./form/form-submit": "./src/form/form-submit.tsx",
-    "./form/form-store": "./src/form/form-store.ts",
-    "./form/form-reset": "./src/form/form-reset.tsx",
-    "./form/form-remove": "./src/form/form-remove.tsx",
-    "./form/form-radio": "./src/form/form-radio.tsx",
-    "./form/form-radio-group": "./src/form/form-radio-group.tsx",
-    "./form/form-push": "./src/form/form-push.tsx",
-    "./form/form-provider": "./src/form/form-provider.tsx",
-    "./form/form-label": "./src/form/form-label.tsx",
-    "./form/form-input": "./src/form/form-input.tsx",
-    "./form/form-group": "./src/form/form-group.tsx",
-    "./form/form-group-label": "./src/form/form-group-label.tsx",
-    "./form/form-field": "./src/form/form-field.tsx",
-    "./form/form-error": "./src/form/form-error.tsx",
-    "./form/form-description": "./src/form/form-description.tsx",
-    "./form/form-control": "./src/form/form-control.tsx",
-    "./form/form-context": "./src/form/form-context.tsx",
-    "./form/form-checkbox": "./src/form/form-checkbox.tsx",
-    "./focusable/focusable": "./src/focusable/focusable.tsx",
-    "./focusable/focusable-context": "./src/focusable/focusable-context.tsx",
-    "./focusable/focusable-container": "./src/focusable/focusable-container.tsx",
-    "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
-    "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
-    "./disclosure/disclosure": "./src/disclosure/disclosure.tsx",
-    "./disclosure/disclosure-store": "./src/disclosure/disclosure-store.ts",
-    "./disclosure/disclosure-provider": "./src/disclosure/disclosure-provider.tsx",
-    "./disclosure/disclosure-context": "./src/disclosure/disclosure-context.tsx",
-    "./disclosure/disclosure-content": "./src/disclosure/disclosure-content.tsx",
-    "./dialog/utils/walk-tree-outside": "./src/dialog/utils/walk-tree-outside.ts",
-    "./dialog/utils/use-root-dialog": "./src/dialog/utils/use-root-dialog.ts",
-    "./dialog/utils/use-previous-mouse-down-ref": "./src/dialog/utils/use-previous-mouse-down-ref.ts",
-    "./dialog/utils/use-prevent-body-scroll": "./src/dialog/utils/use-prevent-body-scroll.ts",
-    "./dialog/utils/use-nested-dialogs": "./src/dialog/utils/use-nested-dialogs.tsx",
-    "./dialog/utils/use-hide-on-interact-outside": "./src/dialog/utils/use-hide-on-interact-outside.ts",
-    "./dialog/utils/supports-inert": "./src/dialog/utils/supports-inert.ts",
-    "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
-    "./dialog/utils/orchestrate": "./src/dialog/utils/orchestrate.ts",
-    "./dialog/utils/mark-tree-outside": "./src/dialog/utils/mark-tree-outside.ts",
-    "./dialog/utils/is-focus-trap": "./src/dialog/utils/is-focus-trap.ts",
-    "./dialog/utils/is-backdrop": "./src/dialog/utils/is-backdrop.ts",
-    "./dialog/utils/disable-tree": "./src/dialog/utils/disable-tree.ts",
-    "./dialog/utils/disable-accessibility-tree-outside": "./src/dialog/utils/disable-accessibility-tree-outside.ts",
-    "./dialog/dialog": "./src/dialog/dialog.tsx",
-    "./dialog/dialog-store": "./src/dialog/dialog-store.ts",
-    "./dialog/dialog-provider": "./src/dialog/dialog-provider.tsx",
-    "./dialog/dialog-heading": "./src/dialog/dialog-heading.tsx",
-    "./dialog/dialog-dismiss": "./src/dialog/dialog-dismiss.tsx",
-    "./dialog/dialog-disclosure": "./src/dialog/dialog-disclosure.tsx",
-    "./dialog/dialog-description": "./src/dialog/dialog-description.tsx",
-    "./dialog/dialog-context": "./src/dialog/dialog-context.tsx",
-    "./dialog/dialog-backdrop": "./src/dialog/dialog-backdrop.tsx",
-    "./composite/utils": "./src/composite/utils.ts",
-    "./composite/composite": "./src/composite/composite.tsx",
-    "./composite/composite-typeahead": "./src/composite/composite-typeahead.tsx",
-    "./composite/composite-store": "./src/composite/composite-store.ts",
-    "./composite/composite-separator": "./src/composite/composite-separator.tsx",
-    "./composite/composite-row": "./src/composite/composite-row.tsx",
-    "./composite/composite-renderer": "./src/composite/composite-renderer.tsx",
-    "./composite/composite-provider": "./src/composite/composite-provider.tsx",
-    "./composite/composite-overflow": "./src/composite/composite-overflow.tsx",
-    "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
-    "./composite/composite-overflow-disclosure": "./src/composite/composite-overflow-disclosure.ts",
-    "./composite/composite-item": "./src/composite/composite-item.tsx",
-    "./composite/composite-item-offscreen": "./src/composite/composite-item-offscreen.tsx",
-    "./composite/composite-input": "./src/composite/composite-input.tsx",
-    "./composite/composite-hover": "./src/composite/composite-hover.tsx",
-    "./composite/composite-group": "./src/composite/composite-group.tsx",
-    "./composite/composite-group-label": "./src/composite/composite-group-label.tsx",
-    "./composite/composite-context": "./src/composite/composite-context.tsx",
-    "./composite/composite-container": "./src/composite/composite-container.tsx",
-    "./command/command": "./src/command/command.tsx",
-    "./combobox/combobox": "./src/combobox/combobox.tsx",
-    "./combobox/combobox-value": "./src/combobox/combobox-value.tsx",
-    "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
-    "./combobox/combobox-separator": "./src/combobox/combobox-separator.tsx",
-    "./combobox/combobox-row": "./src/combobox/combobox-row.tsx",
-    "./combobox/combobox-provider": "./src/combobox/combobox-provider.tsx",
-    "./combobox/combobox-popover": "./src/combobox/combobox-popover.tsx",
-    "./combobox/combobox-list": "./src/combobox/combobox-list.tsx",
-    "./combobox/combobox-label": "./src/combobox/combobox-label.tsx",
-    "./combobox/combobox-item": "./src/combobox/combobox-item.tsx",
-    "./combobox/combobox-item-value": "./src/combobox/combobox-item-value.tsx",
-    "./combobox/combobox-item-offscreen": "./src/combobox/combobox-item-offscreen.tsx",
-    "./combobox/combobox-item-check": "./src/combobox/combobox-item-check.tsx",
-    "./combobox/combobox-group": "./src/combobox/combobox-group.tsx",
-    "./combobox/combobox-group-label": "./src/combobox/combobox-group-label.tsx",
-    "./combobox/combobox-disclosure": "./src/combobox/combobox-disclosure.tsx",
-    "./combobox/combobox-context": "./src/combobox/combobox-context.tsx",
-    "./combobox/combobox-cancel": "./src/combobox/combobox-cancel.tsx",
-    "./collection/collection": "./src/collection/collection.tsx",
-    "./collection/collection-store": "./src/collection/collection-store.ts",
-    "./collection/collection-renderer": "./src/collection/collection-renderer.tsx",
-    "./collection/collection-provider": "./src/collection/collection-provider.tsx",
-    "./collection/collection-item": "./src/collection/collection-item.tsx",
-    "./collection/collection-item-offscreen": "./src/collection/collection-item-offscreen.tsx",
-    "./collection/collection-context": "./src/collection/collection-context.tsx",
-    "./checkbox/checkbox": "./src/checkbox/checkbox.tsx",
-    "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",
-    "./checkbox/checkbox-provider": "./src/checkbox/checkbox-provider.tsx",
-    "./checkbox/checkbox-context": "./src/checkbox/checkbox-context.tsx",
-    "./checkbox/checkbox-checked-context": "./src/checkbox/checkbox-checked-context.tsx",
-    "./checkbox/checkbox-check": "./src/checkbox/checkbox-check.tsx",
-    "./button/button": "./src/button/button.tsx",
+    "./button/button": {
+      "import": {
+        "types": "./dist/esm/button/button.d.ts",
+        "default": "./dist/esm/button/button.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/button/button.d.ts",
+        "default": "./dist/commonjs/button/button.js"
+      }
+    },
+    "./checkbox/checkbox-check": {
+      "import": {
+        "types": "./dist/esm/checkbox/checkbox-check.d.ts",
+        "default": "./dist/esm/checkbox/checkbox-check.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/checkbox/checkbox-check.d.ts",
+        "default": "./dist/commonjs/checkbox/checkbox-check.js"
+      }
+    },
+    "./checkbox/checkbox-checked-context": {
+      "import": {
+        "types": "./dist/esm/checkbox/checkbox-checked-context.d.ts",
+        "default": "./dist/esm/checkbox/checkbox-checked-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/checkbox/checkbox-checked-context.d.ts",
+        "default": "./dist/commonjs/checkbox/checkbox-checked-context.js"
+      }
+    },
+    "./checkbox/checkbox-context": {
+      "import": {
+        "types": "./dist/esm/checkbox/checkbox-context.d.ts",
+        "default": "./dist/esm/checkbox/checkbox-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/checkbox/checkbox-context.d.ts",
+        "default": "./dist/commonjs/checkbox/checkbox-context.js"
+      }
+    },
+    "./checkbox/checkbox-provider": {
+      "import": {
+        "types": "./dist/esm/checkbox/checkbox-provider.d.ts",
+        "default": "./dist/esm/checkbox/checkbox-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/checkbox/checkbox-provider.d.ts",
+        "default": "./dist/commonjs/checkbox/checkbox-provider.js"
+      }
+    },
+    "./checkbox/checkbox-store": {
+      "import": {
+        "types": "./dist/esm/checkbox/checkbox-store.d.ts",
+        "default": "./dist/esm/checkbox/checkbox-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/checkbox/checkbox-store.d.ts",
+        "default": "./dist/commonjs/checkbox/checkbox-store.js"
+      }
+    },
+    "./checkbox/checkbox": {
+      "import": {
+        "types": "./dist/esm/checkbox/checkbox.d.ts",
+        "default": "./dist/esm/checkbox/checkbox.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/checkbox/checkbox.d.ts",
+        "default": "./dist/commonjs/checkbox/checkbox.js"
+      }
+    },
+    "./collection/collection-context": {
+      "import": {
+        "types": "./dist/esm/collection/collection-context.d.ts",
+        "default": "./dist/esm/collection/collection-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/collection/collection-context.d.ts",
+        "default": "./dist/commonjs/collection/collection-context.js"
+      }
+    },
+    "./collection/collection-item-offscreen": {
+      "import": {
+        "types": "./dist/esm/collection/collection-item-offscreen.d.ts",
+        "default": "./dist/esm/collection/collection-item-offscreen.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/collection/collection-item-offscreen.d.ts",
+        "default": "./dist/commonjs/collection/collection-item-offscreen.js"
+      }
+    },
+    "./collection/collection-item": {
+      "import": {
+        "types": "./dist/esm/collection/collection-item.d.ts",
+        "default": "./dist/esm/collection/collection-item.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/collection/collection-item.d.ts",
+        "default": "./dist/commonjs/collection/collection-item.js"
+      }
+    },
+    "./collection/collection-provider": {
+      "import": {
+        "types": "./dist/esm/collection/collection-provider.d.ts",
+        "default": "./dist/esm/collection/collection-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/collection/collection-provider.d.ts",
+        "default": "./dist/commonjs/collection/collection-provider.js"
+      }
+    },
+    "./collection/collection-renderer": {
+      "import": {
+        "types": "./dist/esm/collection/collection-renderer.d.ts",
+        "default": "./dist/esm/collection/collection-renderer.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/collection/collection-renderer.d.ts",
+        "default": "./dist/commonjs/collection/collection-renderer.js"
+      }
+    },
+    "./collection/collection-store": {
+      "import": {
+        "types": "./dist/esm/collection/collection-store.d.ts",
+        "default": "./dist/esm/collection/collection-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/collection/collection-store.d.ts",
+        "default": "./dist/commonjs/collection/collection-store.js"
+      }
+    },
+    "./collection/collection": {
+      "import": {
+        "types": "./dist/esm/collection/collection.d.ts",
+        "default": "./dist/esm/collection/collection.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/collection/collection.d.ts",
+        "default": "./dist/commonjs/collection/collection.js"
+      }
+    },
+    "./combobox/combobox-cancel": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-cancel.d.ts",
+        "default": "./dist/esm/combobox/combobox-cancel.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-cancel.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-cancel.js"
+      }
+    },
+    "./combobox/combobox-context": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-context.d.ts",
+        "default": "./dist/esm/combobox/combobox-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-context.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-context.js"
+      }
+    },
+    "./combobox/combobox-disclosure": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-disclosure.d.ts",
+        "default": "./dist/esm/combobox/combobox-disclosure.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-disclosure.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-disclosure.js"
+      }
+    },
+    "./combobox/combobox-group-label": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-group-label.d.ts",
+        "default": "./dist/esm/combobox/combobox-group-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-group-label.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-group-label.js"
+      }
+    },
+    "./combobox/combobox-group": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-group.d.ts",
+        "default": "./dist/esm/combobox/combobox-group.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-group.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-group.js"
+      }
+    },
+    "./combobox/combobox-item-check": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-item-check.d.ts",
+        "default": "./dist/esm/combobox/combobox-item-check.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-item-check.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-item-check.js"
+      }
+    },
+    "./combobox/combobox-item-offscreen": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-item-offscreen.d.ts",
+        "default": "./dist/esm/combobox/combobox-item-offscreen.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-item-offscreen.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-item-offscreen.js"
+      }
+    },
+    "./combobox/combobox-item-value": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-item-value.d.ts",
+        "default": "./dist/esm/combobox/combobox-item-value.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-item-value.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-item-value.js"
+      }
+    },
+    "./combobox/combobox-item": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-item.d.ts",
+        "default": "./dist/esm/combobox/combobox-item.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-item.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-item.js"
+      }
+    },
+    "./combobox/combobox-label": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-label.d.ts",
+        "default": "./dist/esm/combobox/combobox-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-label.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-label.js"
+      }
+    },
+    "./combobox/combobox-list": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-list.d.ts",
+        "default": "./dist/esm/combobox/combobox-list.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-list.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-list.js"
+      }
+    },
+    "./combobox/combobox-popover": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-popover.d.ts",
+        "default": "./dist/esm/combobox/combobox-popover.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-popover.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-popover.js"
+      }
+    },
+    "./combobox/combobox-provider": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-provider.d.ts",
+        "default": "./dist/esm/combobox/combobox-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-provider.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-provider.js"
+      }
+    },
+    "./combobox/combobox-row": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-row.d.ts",
+        "default": "./dist/esm/combobox/combobox-row.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-row.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-row.js"
+      }
+    },
+    "./combobox/combobox-separator": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-separator.d.ts",
+        "default": "./dist/esm/combobox/combobox-separator.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-separator.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-separator.js"
+      }
+    },
+    "./combobox/combobox-store": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-store.d.ts",
+        "default": "./dist/esm/combobox/combobox-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-store.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-store.js"
+      }
+    },
+    "./combobox/combobox-value": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox-value.d.ts",
+        "default": "./dist/esm/combobox/combobox-value.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox-value.d.ts",
+        "default": "./dist/commonjs/combobox/combobox-value.js"
+      }
+    },
+    "./combobox/combobox": {
+      "import": {
+        "types": "./dist/esm/combobox/combobox.d.ts",
+        "default": "./dist/esm/combobox/combobox.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/combobox/combobox.d.ts",
+        "default": "./dist/commonjs/combobox/combobox.js"
+      }
+    },
+    "./command/command": {
+      "import": {
+        "types": "./dist/esm/command/command.d.ts",
+        "default": "./dist/esm/command/command.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/command/command.d.ts",
+        "default": "./dist/commonjs/command/command.js"
+      }
+    },
+    "./composite/composite-container": {
+      "import": {
+        "types": "./dist/esm/composite/composite-container.d.ts",
+        "default": "./dist/esm/composite/composite-container.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-container.d.ts",
+        "default": "./dist/commonjs/composite/composite-container.js"
+      }
+    },
+    "./composite/composite-context": {
+      "import": {
+        "types": "./dist/esm/composite/composite-context.d.ts",
+        "default": "./dist/esm/composite/composite-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-context.d.ts",
+        "default": "./dist/commonjs/composite/composite-context.js"
+      }
+    },
+    "./composite/composite-group-label": {
+      "import": {
+        "types": "./dist/esm/composite/composite-group-label.d.ts",
+        "default": "./dist/esm/composite/composite-group-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-group-label.d.ts",
+        "default": "./dist/commonjs/composite/composite-group-label.js"
+      }
+    },
+    "./composite/composite-group": {
+      "import": {
+        "types": "./dist/esm/composite/composite-group.d.ts",
+        "default": "./dist/esm/composite/composite-group.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-group.d.ts",
+        "default": "./dist/commonjs/composite/composite-group.js"
+      }
+    },
+    "./composite/composite-hover": {
+      "import": {
+        "types": "./dist/esm/composite/composite-hover.d.ts",
+        "default": "./dist/esm/composite/composite-hover.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-hover.d.ts",
+        "default": "./dist/commonjs/composite/composite-hover.js"
+      }
+    },
+    "./composite/composite-input": {
+      "import": {
+        "types": "./dist/esm/composite/composite-input.d.ts",
+        "default": "./dist/esm/composite/composite-input.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-input.d.ts",
+        "default": "./dist/commonjs/composite/composite-input.js"
+      }
+    },
+    "./composite/composite-item-offscreen": {
+      "import": {
+        "types": "./dist/esm/composite/composite-item-offscreen.d.ts",
+        "default": "./dist/esm/composite/composite-item-offscreen.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-item-offscreen.d.ts",
+        "default": "./dist/commonjs/composite/composite-item-offscreen.js"
+      }
+    },
+    "./composite/composite-item": {
+      "import": {
+        "types": "./dist/esm/composite/composite-item.d.ts",
+        "default": "./dist/esm/composite/composite-item.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-item.d.ts",
+        "default": "./dist/commonjs/composite/composite-item.js"
+      }
+    },
+    "./composite/composite-overflow-disclosure": {
+      "import": {
+        "types": "./dist/esm/composite/composite-overflow-disclosure.d.ts",
+        "default": "./dist/esm/composite/composite-overflow-disclosure.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-overflow-disclosure.d.ts",
+        "default": "./dist/commonjs/composite/composite-overflow-disclosure.js"
+      }
+    },
+    "./composite/composite-overflow-store": {
+      "import": {
+        "types": "./dist/esm/composite/composite-overflow-store.d.ts",
+        "default": "./dist/esm/composite/composite-overflow-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-overflow-store.d.ts",
+        "default": "./dist/commonjs/composite/composite-overflow-store.js"
+      }
+    },
+    "./composite/composite-overflow": {
+      "import": {
+        "types": "./dist/esm/composite/composite-overflow.d.ts",
+        "default": "./dist/esm/composite/composite-overflow.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-overflow.d.ts",
+        "default": "./dist/commonjs/composite/composite-overflow.js"
+      }
+    },
+    "./composite/composite-provider": {
+      "import": {
+        "types": "./dist/esm/composite/composite-provider.d.ts",
+        "default": "./dist/esm/composite/composite-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-provider.d.ts",
+        "default": "./dist/commonjs/composite/composite-provider.js"
+      }
+    },
+    "./composite/composite-renderer": {
+      "import": {
+        "types": "./dist/esm/composite/composite-renderer.d.ts",
+        "default": "./dist/esm/composite/composite-renderer.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-renderer.d.ts",
+        "default": "./dist/commonjs/composite/composite-renderer.js"
+      }
+    },
+    "./composite/composite-row": {
+      "import": {
+        "types": "./dist/esm/composite/composite-row.d.ts",
+        "default": "./dist/esm/composite/composite-row.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-row.d.ts",
+        "default": "./dist/commonjs/composite/composite-row.js"
+      }
+    },
+    "./composite/composite-separator": {
+      "import": {
+        "types": "./dist/esm/composite/composite-separator.d.ts",
+        "default": "./dist/esm/composite/composite-separator.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-separator.d.ts",
+        "default": "./dist/commonjs/composite/composite-separator.js"
+      }
+    },
+    "./composite/composite-store": {
+      "import": {
+        "types": "./dist/esm/composite/composite-store.d.ts",
+        "default": "./dist/esm/composite/composite-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-store.d.ts",
+        "default": "./dist/commonjs/composite/composite-store.js"
+      }
+    },
+    "./composite/composite-typeahead": {
+      "import": {
+        "types": "./dist/esm/composite/composite-typeahead.d.ts",
+        "default": "./dist/esm/composite/composite-typeahead.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite-typeahead.d.ts",
+        "default": "./dist/commonjs/composite/composite-typeahead.js"
+      }
+    },
+    "./composite/composite": {
+      "import": {
+        "types": "./dist/esm/composite/composite.d.ts",
+        "default": "./dist/esm/composite/composite.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/composite.d.ts",
+        "default": "./dist/commonjs/composite/composite.js"
+      }
+    },
+    "./composite/utils": {
+      "import": {
+        "types": "./dist/esm/composite/utils.d.ts",
+        "default": "./dist/esm/composite/utils.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/composite/utils.d.ts",
+        "default": "./dist/commonjs/composite/utils.js"
+      }
+    },
+    "./dialog/dialog-backdrop": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-backdrop.d.ts",
+        "default": "./dist/esm/dialog/dialog-backdrop.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-backdrop.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-backdrop.js"
+      }
+    },
+    "./dialog/dialog-context": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-context.d.ts",
+        "default": "./dist/esm/dialog/dialog-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-context.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-context.js"
+      }
+    },
+    "./dialog/dialog-description": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-description.d.ts",
+        "default": "./dist/esm/dialog/dialog-description.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-description.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-description.js"
+      }
+    },
+    "./dialog/dialog-disclosure": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-disclosure.d.ts",
+        "default": "./dist/esm/dialog/dialog-disclosure.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-disclosure.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-disclosure.js"
+      }
+    },
+    "./dialog/dialog-dismiss": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-dismiss.d.ts",
+        "default": "./dist/esm/dialog/dialog-dismiss.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-dismiss.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-dismiss.js"
+      }
+    },
+    "./dialog/dialog-heading": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-heading.d.ts",
+        "default": "./dist/esm/dialog/dialog-heading.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-heading.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-heading.js"
+      }
+    },
+    "./dialog/dialog-provider": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-provider.d.ts",
+        "default": "./dist/esm/dialog/dialog-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-provider.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-provider.js"
+      }
+    },
+    "./dialog/dialog-store": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog-store.d.ts",
+        "default": "./dist/esm/dialog/dialog-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog-store.d.ts",
+        "default": "./dist/commonjs/dialog/dialog-store.js"
+      }
+    },
+    "./dialog/dialog": {
+      "import": {
+        "types": "./dist/esm/dialog/dialog.d.ts",
+        "default": "./dist/esm/dialog/dialog.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/dialog.d.ts",
+        "default": "./dist/commonjs/dialog/dialog.js"
+      }
+    },
+    "./dialog/utils/disable-accessibility-tree-outside": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/disable-accessibility-tree-outside.d.ts",
+        "default": "./dist/esm/dialog/utils/disable-accessibility-tree-outside.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/disable-accessibility-tree-outside.d.ts",
+        "default": "./dist/commonjs/dialog/utils/disable-accessibility-tree-outside.js"
+      }
+    },
+    "./dialog/utils/disable-tree": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/disable-tree.d.ts",
+        "default": "./dist/esm/dialog/utils/disable-tree.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/disable-tree.d.ts",
+        "default": "./dist/commonjs/dialog/utils/disable-tree.js"
+      }
+    },
+    "./dialog/utils/is-backdrop": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/is-backdrop.d.ts",
+        "default": "./dist/esm/dialog/utils/is-backdrop.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/is-backdrop.d.ts",
+        "default": "./dist/commonjs/dialog/utils/is-backdrop.js"
+      }
+    },
+    "./dialog/utils/is-focus-trap": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/is-focus-trap.d.ts",
+        "default": "./dist/esm/dialog/utils/is-focus-trap.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/is-focus-trap.d.ts",
+        "default": "./dist/commonjs/dialog/utils/is-focus-trap.js"
+      }
+    },
+    "./dialog/utils/mark-tree-outside": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/mark-tree-outside.d.ts",
+        "default": "./dist/esm/dialog/utils/mark-tree-outside.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/mark-tree-outside.d.ts",
+        "default": "./dist/commonjs/dialog/utils/mark-tree-outside.js"
+      }
+    },
+    "./dialog/utils/orchestrate": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/orchestrate.d.ts",
+        "default": "./dist/esm/dialog/utils/orchestrate.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/orchestrate.d.ts",
+        "default": "./dist/commonjs/dialog/utils/orchestrate.js"
+      }
+    },
+    "./dialog/utils/prepend-hidden-dismiss": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/prepend-hidden-dismiss.d.ts",
+        "default": "./dist/esm/dialog/utils/prepend-hidden-dismiss.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/prepend-hidden-dismiss.d.ts",
+        "default": "./dist/commonjs/dialog/utils/prepend-hidden-dismiss.js"
+      }
+    },
+    "./dialog/utils/supports-inert": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/supports-inert.d.ts",
+        "default": "./dist/esm/dialog/utils/supports-inert.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/supports-inert.d.ts",
+        "default": "./dist/commonjs/dialog/utils/supports-inert.js"
+      }
+    },
+    "./dialog/utils/use-hide-on-interact-outside": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/use-hide-on-interact-outside.d.ts",
+        "default": "./dist/esm/dialog/utils/use-hide-on-interact-outside.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/use-hide-on-interact-outside.d.ts",
+        "default": "./dist/commonjs/dialog/utils/use-hide-on-interact-outside.js"
+      }
+    },
+    "./dialog/utils/use-nested-dialogs": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/use-nested-dialogs.d.ts",
+        "default": "./dist/esm/dialog/utils/use-nested-dialogs.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/use-nested-dialogs.d.ts",
+        "default": "./dist/commonjs/dialog/utils/use-nested-dialogs.js"
+      }
+    },
+    "./dialog/utils/use-prevent-body-scroll": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/use-prevent-body-scroll.d.ts",
+        "default": "./dist/esm/dialog/utils/use-prevent-body-scroll.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/use-prevent-body-scroll.d.ts",
+        "default": "./dist/commonjs/dialog/utils/use-prevent-body-scroll.js"
+      }
+    },
+    "./dialog/utils/use-previous-mouse-down-ref": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/use-previous-mouse-down-ref.d.ts",
+        "default": "./dist/esm/dialog/utils/use-previous-mouse-down-ref.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/use-previous-mouse-down-ref.d.ts",
+        "default": "./dist/commonjs/dialog/utils/use-previous-mouse-down-ref.js"
+      }
+    },
+    "./dialog/utils/use-root-dialog": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/use-root-dialog.d.ts",
+        "default": "./dist/esm/dialog/utils/use-root-dialog.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/use-root-dialog.d.ts",
+        "default": "./dist/commonjs/dialog/utils/use-root-dialog.js"
+      }
+    },
+    "./dialog/utils/walk-tree-outside": {
+      "import": {
+        "types": "./dist/esm/dialog/utils/walk-tree-outside.d.ts",
+        "default": "./dist/esm/dialog/utils/walk-tree-outside.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dialog/utils/walk-tree-outside.d.ts",
+        "default": "./dist/commonjs/dialog/utils/walk-tree-outside.js"
+      }
+    },
+    "./disclosure/disclosure-content": {
+      "import": {
+        "types": "./dist/esm/disclosure/disclosure-content.d.ts",
+        "default": "./dist/esm/disclosure/disclosure-content.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/disclosure/disclosure-content.d.ts",
+        "default": "./dist/commonjs/disclosure/disclosure-content.js"
+      }
+    },
+    "./disclosure/disclosure-context": {
+      "import": {
+        "types": "./dist/esm/disclosure/disclosure-context.d.ts",
+        "default": "./dist/esm/disclosure/disclosure-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/disclosure/disclosure-context.d.ts",
+        "default": "./dist/commonjs/disclosure/disclosure-context.js"
+      }
+    },
+    "./disclosure/disclosure-provider": {
+      "import": {
+        "types": "./dist/esm/disclosure/disclosure-provider.d.ts",
+        "default": "./dist/esm/disclosure/disclosure-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/disclosure/disclosure-provider.d.ts",
+        "default": "./dist/commonjs/disclosure/disclosure-provider.js"
+      }
+    },
+    "./disclosure/disclosure-store": {
+      "import": {
+        "types": "./dist/esm/disclosure/disclosure-store.d.ts",
+        "default": "./dist/esm/disclosure/disclosure-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/disclosure/disclosure-store.d.ts",
+        "default": "./dist/commonjs/disclosure/disclosure-store.js"
+      }
+    },
+    "./disclosure/disclosure": {
+      "import": {
+        "types": "./dist/esm/disclosure/disclosure.d.ts",
+        "default": "./dist/esm/disclosure/disclosure.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/disclosure/disclosure.d.ts",
+        "default": "./dist/commonjs/disclosure/disclosure.js"
+      }
+    },
+    "./focus-trap/focus-trap-region": {
+      "import": {
+        "types": "./dist/esm/focus-trap/focus-trap-region.d.ts",
+        "default": "./dist/esm/focus-trap/focus-trap-region.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/focus-trap/focus-trap-region.d.ts",
+        "default": "./dist/commonjs/focus-trap/focus-trap-region.js"
+      }
+    },
+    "./focus-trap/focus-trap": {
+      "import": {
+        "types": "./dist/esm/focus-trap/focus-trap.d.ts",
+        "default": "./dist/esm/focus-trap/focus-trap.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/focus-trap/focus-trap.d.ts",
+        "default": "./dist/commonjs/focus-trap/focus-trap.js"
+      }
+    },
+    "./focusable/focusable-container": {
+      "import": {
+        "types": "./dist/esm/focusable/focusable-container.d.ts",
+        "default": "./dist/esm/focusable/focusable-container.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/focusable/focusable-container.d.ts",
+        "default": "./dist/commonjs/focusable/focusable-container.js"
+      }
+    },
+    "./focusable/focusable-context": {
+      "import": {
+        "types": "./dist/esm/focusable/focusable-context.d.ts",
+        "default": "./dist/esm/focusable/focusable-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/focusable/focusable-context.d.ts",
+        "default": "./dist/commonjs/focusable/focusable-context.js"
+      }
+    },
+    "./focusable/focusable": {
+      "import": {
+        "types": "./dist/esm/focusable/focusable.d.ts",
+        "default": "./dist/esm/focusable/focusable.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/focusable/focusable.d.ts",
+        "default": "./dist/commonjs/focusable/focusable.js"
+      }
+    },
+    "./form/form-checkbox": {
+      "import": {
+        "types": "./dist/esm/form/form-checkbox.d.ts",
+        "default": "./dist/esm/form/form-checkbox.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-checkbox.d.ts",
+        "default": "./dist/commonjs/form/form-checkbox.js"
+      }
+    },
+    "./form/form-context": {
+      "import": {
+        "types": "./dist/esm/form/form-context.d.ts",
+        "default": "./dist/esm/form/form-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-context.d.ts",
+        "default": "./dist/commonjs/form/form-context.js"
+      }
+    },
+    "./form/form-control": {
+      "import": {
+        "types": "./dist/esm/form/form-control.d.ts",
+        "default": "./dist/esm/form/form-control.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-control.d.ts",
+        "default": "./dist/commonjs/form/form-control.js"
+      }
+    },
+    "./form/form-description": {
+      "import": {
+        "types": "./dist/esm/form/form-description.d.ts",
+        "default": "./dist/esm/form/form-description.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-description.d.ts",
+        "default": "./dist/commonjs/form/form-description.js"
+      }
+    },
+    "./form/form-error": {
+      "import": {
+        "types": "./dist/esm/form/form-error.d.ts",
+        "default": "./dist/esm/form/form-error.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-error.d.ts",
+        "default": "./dist/commonjs/form/form-error.js"
+      }
+    },
+    "./form/form-field": {
+      "import": {
+        "types": "./dist/esm/form/form-field.d.ts",
+        "default": "./dist/esm/form/form-field.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-field.d.ts",
+        "default": "./dist/commonjs/form/form-field.js"
+      }
+    },
+    "./form/form-group-label": {
+      "import": {
+        "types": "./dist/esm/form/form-group-label.d.ts",
+        "default": "./dist/esm/form/form-group-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-group-label.d.ts",
+        "default": "./dist/commonjs/form/form-group-label.js"
+      }
+    },
+    "./form/form-group": {
+      "import": {
+        "types": "./dist/esm/form/form-group.d.ts",
+        "default": "./dist/esm/form/form-group.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-group.d.ts",
+        "default": "./dist/commonjs/form/form-group.js"
+      }
+    },
+    "./form/form-input": {
+      "import": {
+        "types": "./dist/esm/form/form-input.d.ts",
+        "default": "./dist/esm/form/form-input.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-input.d.ts",
+        "default": "./dist/commonjs/form/form-input.js"
+      }
+    },
+    "./form/form-label": {
+      "import": {
+        "types": "./dist/esm/form/form-label.d.ts",
+        "default": "./dist/esm/form/form-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-label.d.ts",
+        "default": "./dist/commonjs/form/form-label.js"
+      }
+    },
+    "./form/form-provider": {
+      "import": {
+        "types": "./dist/esm/form/form-provider.d.ts",
+        "default": "./dist/esm/form/form-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-provider.d.ts",
+        "default": "./dist/commonjs/form/form-provider.js"
+      }
+    },
+    "./form/form-push": {
+      "import": {
+        "types": "./dist/esm/form/form-push.d.ts",
+        "default": "./dist/esm/form/form-push.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-push.d.ts",
+        "default": "./dist/commonjs/form/form-push.js"
+      }
+    },
+    "./form/form-radio-group": {
+      "import": {
+        "types": "./dist/esm/form/form-radio-group.d.ts",
+        "default": "./dist/esm/form/form-radio-group.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-radio-group.d.ts",
+        "default": "./dist/commonjs/form/form-radio-group.js"
+      }
+    },
+    "./form/form-radio": {
+      "import": {
+        "types": "./dist/esm/form/form-radio.d.ts",
+        "default": "./dist/esm/form/form-radio.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-radio.d.ts",
+        "default": "./dist/commonjs/form/form-radio.js"
+      }
+    },
+    "./form/form-remove": {
+      "import": {
+        "types": "./dist/esm/form/form-remove.d.ts",
+        "default": "./dist/esm/form/form-remove.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-remove.d.ts",
+        "default": "./dist/commonjs/form/form-remove.js"
+      }
+    },
+    "./form/form-reset": {
+      "import": {
+        "types": "./dist/esm/form/form-reset.d.ts",
+        "default": "./dist/esm/form/form-reset.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-reset.d.ts",
+        "default": "./dist/commonjs/form/form-reset.js"
+      }
+    },
+    "./form/form-store": {
+      "import": {
+        "types": "./dist/esm/form/form-store.d.ts",
+        "default": "./dist/esm/form/form-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-store.d.ts",
+        "default": "./dist/commonjs/form/form-store.js"
+      }
+    },
+    "./form/form-submit": {
+      "import": {
+        "types": "./dist/esm/form/form-submit.d.ts",
+        "default": "./dist/esm/form/form-submit.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form-submit.d.ts",
+        "default": "./dist/commonjs/form/form-submit.js"
+      }
+    },
+    "./form/form": {
+      "import": {
+        "types": "./dist/esm/form/form.d.ts",
+        "default": "./dist/esm/form/form.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/form/form.d.ts",
+        "default": "./dist/commonjs/form/form.js"
+      }
+    },
+    "./group/group-label-context": {
+      "import": {
+        "types": "./dist/esm/group/group-label-context.d.ts",
+        "default": "./dist/esm/group/group-label-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/group/group-label-context.d.ts",
+        "default": "./dist/commonjs/group/group-label-context.js"
+      }
+    },
+    "./group/group-label": {
+      "import": {
+        "types": "./dist/esm/group/group-label.d.ts",
+        "default": "./dist/esm/group/group-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/group/group-label.d.ts",
+        "default": "./dist/commonjs/group/group-label.js"
+      }
+    },
+    "./group/group": {
+      "import": {
+        "types": "./dist/esm/group/group.d.ts",
+        "default": "./dist/esm/group/group.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/group/group.d.ts",
+        "default": "./dist/commonjs/group/group.js"
+      }
+    },
+    "./heading/heading-context": {
+      "import": {
+        "types": "./dist/esm/heading/heading-context.d.ts",
+        "default": "./dist/esm/heading/heading-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/heading/heading-context.d.ts",
+        "default": "./dist/commonjs/heading/heading-context.js"
+      }
+    },
+    "./heading/heading-level": {
+      "import": {
+        "types": "./dist/esm/heading/heading-level.d.ts",
+        "default": "./dist/esm/heading/heading-level.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/heading/heading-level.d.ts",
+        "default": "./dist/commonjs/heading/heading-level.js"
+      }
+    },
+    "./heading/heading": {
+      "import": {
+        "types": "./dist/esm/heading/heading.d.ts",
+        "default": "./dist/esm/heading/heading.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/heading/heading.d.ts",
+        "default": "./dist/commonjs/heading/heading.js"
+      }
+    },
+    "./heading/utils": {
+      "import": {
+        "types": "./dist/esm/heading/utils.d.ts",
+        "default": "./dist/esm/heading/utils.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/heading/utils.d.ts",
+        "default": "./dist/commonjs/heading/utils.js"
+      }
+    },
+    "./hovercard/hovercard-anchor": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-anchor.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-anchor.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-anchor.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-anchor.js"
+      }
+    },
+    "./hovercard/hovercard-arrow": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-arrow.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-arrow.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-arrow.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-arrow.js"
+      }
+    },
+    "./hovercard/hovercard-context": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-context.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-context.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-context.js"
+      }
+    },
+    "./hovercard/hovercard-description": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-description.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-description.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-description.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-description.js"
+      }
+    },
+    "./hovercard/hovercard-disclosure": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-disclosure.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-disclosure.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-disclosure.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-disclosure.js"
+      }
+    },
+    "./hovercard/hovercard-dismiss": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-dismiss.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-dismiss.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-dismiss.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-dismiss.js"
+      }
+    },
+    "./hovercard/hovercard-heading": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-heading.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-heading.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-heading.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-heading.js"
+      }
+    },
+    "./hovercard/hovercard-provider": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-provider.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-provider.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-provider.js"
+      }
+    },
+    "./hovercard/hovercard-store": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard-store.d.ts",
+        "default": "./dist/esm/hovercard/hovercard-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard-store.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard-store.js"
+      }
+    },
+    "./hovercard/hovercard": {
+      "import": {
+        "types": "./dist/esm/hovercard/hovercard.d.ts",
+        "default": "./dist/esm/hovercard/hovercard.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/hovercard.d.ts",
+        "default": "./dist/commonjs/hovercard/hovercard.js"
+      }
+    },
+    "./hovercard/utils/__tests__/polygon-test": {
+      "import": {
+        "types": "./dist/esm/hovercard/utils/__tests__/polygon-test.d.ts",
+        "default": "./dist/esm/hovercard/utils/__tests__/polygon-test.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/utils/__tests__/polygon-test.d.ts",
+        "default": "./dist/commonjs/hovercard/utils/__tests__/polygon-test.js"
+      }
+    },
+    "./hovercard/utils/debug-polygon": {
+      "import": {
+        "types": "./dist/esm/hovercard/utils/debug-polygon.d.ts",
+        "default": "./dist/esm/hovercard/utils/debug-polygon.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/utils/debug-polygon.d.ts",
+        "default": "./dist/commonjs/hovercard/utils/debug-polygon.js"
+      }
+    },
+    "./hovercard/utils/polygon": {
+      "import": {
+        "types": "./dist/esm/hovercard/utils/polygon.d.ts",
+        "default": "./dist/esm/hovercard/utils/polygon.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hovercard/utils/polygon.d.ts",
+        "default": "./dist/commonjs/hovercard/utils/polygon.js"
+      }
+    },
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./menu/menu-arrow": {
+      "import": {
+        "types": "./dist/esm/menu/menu-arrow.d.ts",
+        "default": "./dist/esm/menu/menu-arrow.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-arrow.d.ts",
+        "default": "./dist/commonjs/menu/menu-arrow.js"
+      }
+    },
+    "./menu/menu-bar-provider": {
+      "import": {
+        "types": "./dist/esm/menu/menu-bar-provider.d.ts",
+        "default": "./dist/esm/menu/menu-bar-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-bar-provider.d.ts",
+        "default": "./dist/commonjs/menu/menu-bar-provider.js"
+      }
+    },
+    "./menu/menu-bar-store": {
+      "import": {
+        "types": "./dist/esm/menu/menu-bar-store.d.ts",
+        "default": "./dist/esm/menu/menu-bar-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-bar-store.d.ts",
+        "default": "./dist/commonjs/menu/menu-bar-store.js"
+      }
+    },
+    "./menu/menu-bar": {
+      "import": {
+        "types": "./dist/esm/menu/menu-bar.d.ts",
+        "default": "./dist/esm/menu/menu-bar.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-bar.d.ts",
+        "default": "./dist/commonjs/menu/menu-bar.js"
+      }
+    },
+    "./menu/menu-button-arrow": {
+      "import": {
+        "types": "./dist/esm/menu/menu-button-arrow.d.ts",
+        "default": "./dist/esm/menu/menu-button-arrow.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-button-arrow.d.ts",
+        "default": "./dist/commonjs/menu/menu-button-arrow.js"
+      }
+    },
+    "./menu/menu-button": {
+      "import": {
+        "types": "./dist/esm/menu/menu-button.d.ts",
+        "default": "./dist/esm/menu/menu-button.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-button.d.ts",
+        "default": "./dist/commonjs/menu/menu-button.js"
+      }
+    },
+    "./menu/menu-context": {
+      "import": {
+        "types": "./dist/esm/menu/menu-context.d.ts",
+        "default": "./dist/esm/menu/menu-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-context.d.ts",
+        "default": "./dist/commonjs/menu/menu-context.js"
+      }
+    },
+    "./menu/menu-description": {
+      "import": {
+        "types": "./dist/esm/menu/menu-description.d.ts",
+        "default": "./dist/esm/menu/menu-description.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-description.d.ts",
+        "default": "./dist/commonjs/menu/menu-description.js"
+      }
+    },
+    "./menu/menu-dismiss": {
+      "import": {
+        "types": "./dist/esm/menu/menu-dismiss.d.ts",
+        "default": "./dist/esm/menu/menu-dismiss.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-dismiss.d.ts",
+        "default": "./dist/commonjs/menu/menu-dismiss.js"
+      }
+    },
+    "./menu/menu-group-label": {
+      "import": {
+        "types": "./dist/esm/menu/menu-group-label.d.ts",
+        "default": "./dist/esm/menu/menu-group-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-group-label.d.ts",
+        "default": "./dist/commonjs/menu/menu-group-label.js"
+      }
+    },
+    "./menu/menu-group": {
+      "import": {
+        "types": "./dist/esm/menu/menu-group.d.ts",
+        "default": "./dist/esm/menu/menu-group.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-group.d.ts",
+        "default": "./dist/commonjs/menu/menu-group.js"
+      }
+    },
+    "./menu/menu-heading": {
+      "import": {
+        "types": "./dist/esm/menu/menu-heading.d.ts",
+        "default": "./dist/esm/menu/menu-heading.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-heading.d.ts",
+        "default": "./dist/commonjs/menu/menu-heading.js"
+      }
+    },
+    "./menu/menu-item-check": {
+      "import": {
+        "types": "./dist/esm/menu/menu-item-check.d.ts",
+        "default": "./dist/esm/menu/menu-item-check.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-item-check.d.ts",
+        "default": "./dist/commonjs/menu/menu-item-check.js"
+      }
+    },
+    "./menu/menu-item-checkbox": {
+      "import": {
+        "types": "./dist/esm/menu/menu-item-checkbox.d.ts",
+        "default": "./dist/esm/menu/menu-item-checkbox.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-item-checkbox.d.ts",
+        "default": "./dist/commonjs/menu/menu-item-checkbox.js"
+      }
+    },
+    "./menu/menu-item-radio": {
+      "import": {
+        "types": "./dist/esm/menu/menu-item-radio.d.ts",
+        "default": "./dist/esm/menu/menu-item-radio.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-item-radio.d.ts",
+        "default": "./dist/commonjs/menu/menu-item-radio.js"
+      }
+    },
+    "./menu/menu-item": {
+      "import": {
+        "types": "./dist/esm/menu/menu-item.d.ts",
+        "default": "./dist/esm/menu/menu-item.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-item.d.ts",
+        "default": "./dist/commonjs/menu/menu-item.js"
+      }
+    },
+    "./menu/menu-list": {
+      "import": {
+        "types": "./dist/esm/menu/menu-list.d.ts",
+        "default": "./dist/esm/menu/menu-list.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-list.d.ts",
+        "default": "./dist/commonjs/menu/menu-list.js"
+      }
+    },
+    "./menu/menu-provider": {
+      "import": {
+        "types": "./dist/esm/menu/menu-provider.d.ts",
+        "default": "./dist/esm/menu/menu-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-provider.d.ts",
+        "default": "./dist/commonjs/menu/menu-provider.js"
+      }
+    },
+    "./menu/menu-separator": {
+      "import": {
+        "types": "./dist/esm/menu/menu-separator.d.ts",
+        "default": "./dist/esm/menu/menu-separator.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-separator.d.ts",
+        "default": "./dist/commonjs/menu/menu-separator.js"
+      }
+    },
+    "./menu/menu-store": {
+      "import": {
+        "types": "./dist/esm/menu/menu-store.d.ts",
+        "default": "./dist/esm/menu/menu-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu-store.d.ts",
+        "default": "./dist/commonjs/menu/menu-store.js"
+      }
+    },
+    "./menu/menu": {
+      "import": {
+        "types": "./dist/esm/menu/menu.d.ts",
+        "default": "./dist/esm/menu/menu.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menu/menu.d.ts",
+        "default": "./dist/commonjs/menu/menu.js"
+      }
+    },
+    "./menubar/menubar-context": {
+      "import": {
+        "types": "./dist/esm/menubar/menubar-context.d.ts",
+        "default": "./dist/esm/menubar/menubar-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menubar/menubar-context.d.ts",
+        "default": "./dist/commonjs/menubar/menubar-context.js"
+      }
+    },
+    "./menubar/menubar-provider": {
+      "import": {
+        "types": "./dist/esm/menubar/menubar-provider.d.ts",
+        "default": "./dist/esm/menubar/menubar-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menubar/menubar-provider.d.ts",
+        "default": "./dist/commonjs/menubar/menubar-provider.js"
+      }
+    },
+    "./menubar/menubar-store": {
+      "import": {
+        "types": "./dist/esm/menubar/menubar-store.d.ts",
+        "default": "./dist/esm/menubar/menubar-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menubar/menubar-store.d.ts",
+        "default": "./dist/commonjs/menubar/menubar-store.js"
+      }
+    },
+    "./menubar/menubar": {
+      "import": {
+        "types": "./dist/esm/menubar/menubar.d.ts",
+        "default": "./dist/esm/menubar/menubar.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/menubar/menubar.d.ts",
+        "default": "./dist/commonjs/menubar/menubar.js"
+      }
+    },
+    "./popover/popover-anchor": {
+      "import": {
+        "types": "./dist/esm/popover/popover-anchor.d.ts",
+        "default": "./dist/esm/popover/popover-anchor.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-anchor.d.ts",
+        "default": "./dist/commonjs/popover/popover-anchor.js"
+      }
+    },
+    "./popover/popover-arrow-path": {
+      "import": {
+        "types": "./dist/esm/popover/popover-arrow-path.d.ts",
+        "default": "./dist/esm/popover/popover-arrow-path.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-arrow-path.d.ts",
+        "default": "./dist/commonjs/popover/popover-arrow-path.js"
+      }
+    },
+    "./popover/popover-arrow": {
+      "import": {
+        "types": "./dist/esm/popover/popover-arrow.d.ts",
+        "default": "./dist/esm/popover/popover-arrow.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-arrow.d.ts",
+        "default": "./dist/commonjs/popover/popover-arrow.js"
+      }
+    },
+    "./popover/popover-context": {
+      "import": {
+        "types": "./dist/esm/popover/popover-context.d.ts",
+        "default": "./dist/esm/popover/popover-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-context.d.ts",
+        "default": "./dist/commonjs/popover/popover-context.js"
+      }
+    },
+    "./popover/popover-description": {
+      "import": {
+        "types": "./dist/esm/popover/popover-description.d.ts",
+        "default": "./dist/esm/popover/popover-description.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-description.d.ts",
+        "default": "./dist/commonjs/popover/popover-description.js"
+      }
+    },
+    "./popover/popover-disclosure-arrow": {
+      "import": {
+        "types": "./dist/esm/popover/popover-disclosure-arrow.d.ts",
+        "default": "./dist/esm/popover/popover-disclosure-arrow.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-disclosure-arrow.d.ts",
+        "default": "./dist/commonjs/popover/popover-disclosure-arrow.js"
+      }
+    },
+    "./popover/popover-disclosure": {
+      "import": {
+        "types": "./dist/esm/popover/popover-disclosure.d.ts",
+        "default": "./dist/esm/popover/popover-disclosure.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-disclosure.d.ts",
+        "default": "./dist/commonjs/popover/popover-disclosure.js"
+      }
+    },
+    "./popover/popover-dismiss": {
+      "import": {
+        "types": "./dist/esm/popover/popover-dismiss.d.ts",
+        "default": "./dist/esm/popover/popover-dismiss.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-dismiss.d.ts",
+        "default": "./dist/commonjs/popover/popover-dismiss.js"
+      }
+    },
+    "./popover/popover-heading": {
+      "import": {
+        "types": "./dist/esm/popover/popover-heading.d.ts",
+        "default": "./dist/esm/popover/popover-heading.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-heading.d.ts",
+        "default": "./dist/commonjs/popover/popover-heading.js"
+      }
+    },
+    "./popover/popover-provider": {
+      "import": {
+        "types": "./dist/esm/popover/popover-provider.d.ts",
+        "default": "./dist/esm/popover/popover-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-provider.d.ts",
+        "default": "./dist/commonjs/popover/popover-provider.js"
+      }
+    },
+    "./popover/popover-store": {
+      "import": {
+        "types": "./dist/esm/popover/popover-store.d.ts",
+        "default": "./dist/esm/popover/popover-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover-store.d.ts",
+        "default": "./dist/commonjs/popover/popover-store.js"
+      }
+    },
+    "./popover/popover": {
+      "import": {
+        "types": "./dist/esm/popover/popover.d.ts",
+        "default": "./dist/esm/popover/popover.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/popover/popover.d.ts",
+        "default": "./dist/commonjs/popover/popover.js"
+      }
+    },
+    "./portal/portal-context": {
+      "import": {
+        "types": "./dist/esm/portal/portal-context.d.ts",
+        "default": "./dist/esm/portal/portal-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/portal/portal-context.d.ts",
+        "default": "./dist/commonjs/portal/portal-context.js"
+      }
+    },
+    "./portal/portal": {
+      "import": {
+        "types": "./dist/esm/portal/portal.d.ts",
+        "default": "./dist/esm/portal/portal.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/portal/portal.d.ts",
+        "default": "./dist/commonjs/portal/portal.js"
+      }
+    },
+    "./radio/radio-context": {
+      "import": {
+        "types": "./dist/esm/radio/radio-context.d.ts",
+        "default": "./dist/esm/radio/radio-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/radio/radio-context.d.ts",
+        "default": "./dist/commonjs/radio/radio-context.js"
+      }
+    },
+    "./radio/radio-group": {
+      "import": {
+        "types": "./dist/esm/radio/radio-group.d.ts",
+        "default": "./dist/esm/radio/radio-group.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/radio/radio-group.d.ts",
+        "default": "./dist/commonjs/radio/radio-group.js"
+      }
+    },
+    "./radio/radio-provider": {
+      "import": {
+        "types": "./dist/esm/radio/radio-provider.d.ts",
+        "default": "./dist/esm/radio/radio-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/radio/radio-provider.d.ts",
+        "default": "./dist/commonjs/radio/radio-provider.js"
+      }
+    },
+    "./radio/radio-store": {
+      "import": {
+        "types": "./dist/esm/radio/radio-store.d.ts",
+        "default": "./dist/esm/radio/radio-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/radio/radio-store.d.ts",
+        "default": "./dist/commonjs/radio/radio-store.js"
+      }
+    },
+    "./radio/radio": {
+      "import": {
+        "types": "./dist/esm/radio/radio.d.ts",
+        "default": "./dist/esm/radio/radio.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/radio/radio.d.ts",
+        "default": "./dist/commonjs/radio/radio.js"
+      }
+    },
+    "./role/role": {
+      "import": {
+        "types": "./dist/esm/role/role.d.ts",
+        "default": "./dist/esm/role/role.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/role/role.d.ts",
+        "default": "./dist/commonjs/role/role.js"
+      }
+    },
+    "./select/select-arrow": {
+      "import": {
+        "types": "./dist/esm/select/select-arrow.d.ts",
+        "default": "./dist/esm/select/select-arrow.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-arrow.d.ts",
+        "default": "./dist/commonjs/select/select-arrow.js"
+      }
+    },
+    "./select/select-context": {
+      "import": {
+        "types": "./dist/esm/select/select-context.d.ts",
+        "default": "./dist/esm/select/select-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-context.d.ts",
+        "default": "./dist/commonjs/select/select-context.js"
+      }
+    },
+    "./select/select-dismiss": {
+      "import": {
+        "types": "./dist/esm/select/select-dismiss.d.ts",
+        "default": "./dist/esm/select/select-dismiss.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-dismiss.d.ts",
+        "default": "./dist/commonjs/select/select-dismiss.js"
+      }
+    },
+    "./select/select-group-label": {
+      "import": {
+        "types": "./dist/esm/select/select-group-label.d.ts",
+        "default": "./dist/esm/select/select-group-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-group-label.d.ts",
+        "default": "./dist/commonjs/select/select-group-label.js"
+      }
+    },
+    "./select/select-group": {
+      "import": {
+        "types": "./dist/esm/select/select-group.d.ts",
+        "default": "./dist/esm/select/select-group.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-group.d.ts",
+        "default": "./dist/commonjs/select/select-group.js"
+      }
+    },
+    "./select/select-heading": {
+      "import": {
+        "types": "./dist/esm/select/select-heading.d.ts",
+        "default": "./dist/esm/select/select-heading.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-heading.d.ts",
+        "default": "./dist/commonjs/select/select-heading.js"
+      }
+    },
+    "./select/select-item-check": {
+      "import": {
+        "types": "./dist/esm/select/select-item-check.d.ts",
+        "default": "./dist/esm/select/select-item-check.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-item-check.d.ts",
+        "default": "./dist/commonjs/select/select-item-check.js"
+      }
+    },
+    "./select/select-item-offscreen": {
+      "import": {
+        "types": "./dist/esm/select/select-item-offscreen.d.ts",
+        "default": "./dist/esm/select/select-item-offscreen.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-item-offscreen.d.ts",
+        "default": "./dist/commonjs/select/select-item-offscreen.js"
+      }
+    },
+    "./select/select-item": {
+      "import": {
+        "types": "./dist/esm/select/select-item.d.ts",
+        "default": "./dist/esm/select/select-item.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-item.d.ts",
+        "default": "./dist/commonjs/select/select-item.js"
+      }
+    },
+    "./select/select-label": {
+      "import": {
+        "types": "./dist/esm/select/select-label.d.ts",
+        "default": "./dist/esm/select/select-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-label.d.ts",
+        "default": "./dist/commonjs/select/select-label.js"
+      }
+    },
+    "./select/select-list": {
+      "import": {
+        "types": "./dist/esm/select/select-list.d.ts",
+        "default": "./dist/esm/select/select-list.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-list.d.ts",
+        "default": "./dist/commonjs/select/select-list.js"
+      }
+    },
+    "./select/select-popover": {
+      "import": {
+        "types": "./dist/esm/select/select-popover.d.ts",
+        "default": "./dist/esm/select/select-popover.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-popover.d.ts",
+        "default": "./dist/commonjs/select/select-popover.js"
+      }
+    },
+    "./select/select-provider": {
+      "import": {
+        "types": "./dist/esm/select/select-provider.d.ts",
+        "default": "./dist/esm/select/select-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-provider.d.ts",
+        "default": "./dist/commonjs/select/select-provider.js"
+      }
+    },
+    "./select/select-renderer": {
+      "import": {
+        "types": "./dist/esm/select/select-renderer.d.ts",
+        "default": "./dist/esm/select/select-renderer.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-renderer.d.ts",
+        "default": "./dist/commonjs/select/select-renderer.js"
+      }
+    },
+    "./select/select-row": {
+      "import": {
+        "types": "./dist/esm/select/select-row.d.ts",
+        "default": "./dist/esm/select/select-row.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-row.d.ts",
+        "default": "./dist/commonjs/select/select-row.js"
+      }
+    },
+    "./select/select-separator": {
+      "import": {
+        "types": "./dist/esm/select/select-separator.d.ts",
+        "default": "./dist/esm/select/select-separator.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-separator.d.ts",
+        "default": "./dist/commonjs/select/select-separator.js"
+      }
+    },
+    "./select/select-store": {
+      "import": {
+        "types": "./dist/esm/select/select-store.d.ts",
+        "default": "./dist/esm/select/select-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-store.d.ts",
+        "default": "./dist/commonjs/select/select-store.js"
+      }
+    },
+    "./select/select-value": {
+      "import": {
+        "types": "./dist/esm/select/select-value.d.ts",
+        "default": "./dist/esm/select/select-value.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select-value.d.ts",
+        "default": "./dist/commonjs/select/select-value.js"
+      }
+    },
+    "./select/select": {
+      "import": {
+        "types": "./dist/esm/select/select.d.ts",
+        "default": "./dist/esm/select/select.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select/select.d.ts",
+        "default": "./dist/commonjs/select/select.js"
+      }
+    },
+    "./separator/separator": {
+      "import": {
+        "types": "./dist/esm/separator/separator.d.ts",
+        "default": "./dist/esm/separator/separator.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/separator/separator.d.ts",
+        "default": "./dist/commonjs/separator/separator.js"
+      }
+    },
+    "./tab/tab-context": {
+      "import": {
+        "types": "./dist/esm/tab/tab-context.d.ts",
+        "default": "./dist/esm/tab/tab-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tab/tab-context.d.ts",
+        "default": "./dist/commonjs/tab/tab-context.js"
+      }
+    },
+    "./tab/tab-list": {
+      "import": {
+        "types": "./dist/esm/tab/tab-list.d.ts",
+        "default": "./dist/esm/tab/tab-list.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tab/tab-list.d.ts",
+        "default": "./dist/commonjs/tab/tab-list.js"
+      }
+    },
+    "./tab/tab-panel": {
+      "import": {
+        "types": "./dist/esm/tab/tab-panel.d.ts",
+        "default": "./dist/esm/tab/tab-panel.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tab/tab-panel.d.ts",
+        "default": "./dist/commonjs/tab/tab-panel.js"
+      }
+    },
+    "./tab/tab-provider": {
+      "import": {
+        "types": "./dist/esm/tab/tab-provider.d.ts",
+        "default": "./dist/esm/tab/tab-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tab/tab-provider.d.ts",
+        "default": "./dist/commonjs/tab/tab-provider.js"
+      }
+    },
+    "./tab/tab-store": {
+      "import": {
+        "types": "./dist/esm/tab/tab-store.d.ts",
+        "default": "./dist/esm/tab/tab-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tab/tab-store.d.ts",
+        "default": "./dist/commonjs/tab/tab-store.js"
+      }
+    },
+    "./tab/tab": {
+      "import": {
+        "types": "./dist/esm/tab/tab.d.ts",
+        "default": "./dist/esm/tab/tab.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tab/tab.d.ts",
+        "default": "./dist/commonjs/tab/tab.js"
+      }
+    },
+    "./tag/tag-context": {
+      "import": {
+        "types": "./dist/esm/tag/tag-context.d.ts",
+        "default": "./dist/esm/tag/tag-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-context.d.ts",
+        "default": "./dist/commonjs/tag/tag-context.js"
+      }
+    },
+    "./tag/tag-input": {
+      "import": {
+        "types": "./dist/esm/tag/tag-input.d.ts",
+        "default": "./dist/esm/tag/tag-input.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-input.d.ts",
+        "default": "./dist/commonjs/tag/tag-input.js"
+      }
+    },
+    "./tag/tag-list-label": {
+      "import": {
+        "types": "./dist/esm/tag/tag-list-label.d.ts",
+        "default": "./dist/esm/tag/tag-list-label.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-list-label.d.ts",
+        "default": "./dist/commonjs/tag/tag-list-label.js"
+      }
+    },
+    "./tag/tag-list": {
+      "import": {
+        "types": "./dist/esm/tag/tag-list.d.ts",
+        "default": "./dist/esm/tag/tag-list.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-list.d.ts",
+        "default": "./dist/commonjs/tag/tag-list.js"
+      }
+    },
+    "./tag/tag-provider": {
+      "import": {
+        "types": "./dist/esm/tag/tag-provider.d.ts",
+        "default": "./dist/esm/tag/tag-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-provider.d.ts",
+        "default": "./dist/commonjs/tag/tag-provider.js"
+      }
+    },
+    "./tag/tag-remove": {
+      "import": {
+        "types": "./dist/esm/tag/tag-remove.d.ts",
+        "default": "./dist/esm/tag/tag-remove.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-remove.d.ts",
+        "default": "./dist/commonjs/tag/tag-remove.js"
+      }
+    },
+    "./tag/tag-store": {
+      "import": {
+        "types": "./dist/esm/tag/tag-store.d.ts",
+        "default": "./dist/esm/tag/tag-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-store.d.ts",
+        "default": "./dist/commonjs/tag/tag-store.js"
+      }
+    },
+    "./tag/tag-value": {
+      "import": {
+        "types": "./dist/esm/tag/tag-value.d.ts",
+        "default": "./dist/esm/tag/tag-value.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-value.d.ts",
+        "default": "./dist/commonjs/tag/tag-value.js"
+      }
+    },
+    "./tag/tag-values": {
+      "import": {
+        "types": "./dist/esm/tag/tag-values.d.ts",
+        "default": "./dist/esm/tag/tag-values.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag-values.d.ts",
+        "default": "./dist/commonjs/tag/tag-values.js"
+      }
+    },
+    "./tag/tag": {
+      "import": {
+        "types": "./dist/esm/tag/tag.d.ts",
+        "default": "./dist/esm/tag/tag.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/tag.d.ts",
+        "default": "./dist/commonjs/tag/tag.js"
+      }
+    },
+    "./tag/utils": {
+      "import": {
+        "types": "./dist/esm/tag/utils.d.ts",
+        "default": "./dist/esm/tag/utils.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tag/utils.d.ts",
+        "default": "./dist/commonjs/tag/utils.js"
+      }
+    },
+    "./toolbar/toolbar-container": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar-container.d.ts",
+        "default": "./dist/esm/toolbar/toolbar-container.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar-container.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar-container.js"
+      }
+    },
+    "./toolbar/toolbar-context": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar-context.d.ts",
+        "default": "./dist/esm/toolbar/toolbar-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar-context.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar-context.js"
+      }
+    },
+    "./toolbar/toolbar-input": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar-input.d.ts",
+        "default": "./dist/esm/toolbar/toolbar-input.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar-input.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar-input.js"
+      }
+    },
+    "./toolbar/toolbar-item": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar-item.d.ts",
+        "default": "./dist/esm/toolbar/toolbar-item.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar-item.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar-item.js"
+      }
+    },
+    "./toolbar/toolbar-provider": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar-provider.d.ts",
+        "default": "./dist/esm/toolbar/toolbar-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar-provider.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar-provider.js"
+      }
+    },
+    "./toolbar/toolbar-separator": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar-separator.d.ts",
+        "default": "./dist/esm/toolbar/toolbar-separator.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar-separator.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar-separator.js"
+      }
+    },
+    "./toolbar/toolbar-store": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar-store.d.ts",
+        "default": "./dist/esm/toolbar/toolbar-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar-store.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar-store.js"
+      }
+    },
+    "./toolbar/toolbar": {
+      "import": {
+        "types": "./dist/esm/toolbar/toolbar.d.ts",
+        "default": "./dist/esm/toolbar/toolbar.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/toolbar/toolbar.d.ts",
+        "default": "./dist/commonjs/toolbar/toolbar.js"
+      }
+    },
+    "./tooltip/tooltip-anchor": {
+      "import": {
+        "types": "./dist/esm/tooltip/tooltip-anchor.d.ts",
+        "default": "./dist/esm/tooltip/tooltip-anchor.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tooltip/tooltip-anchor.d.ts",
+        "default": "./dist/commonjs/tooltip/tooltip-anchor.js"
+      }
+    },
+    "./tooltip/tooltip-arrow": {
+      "import": {
+        "types": "./dist/esm/tooltip/tooltip-arrow.d.ts",
+        "default": "./dist/esm/tooltip/tooltip-arrow.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tooltip/tooltip-arrow.d.ts",
+        "default": "./dist/commonjs/tooltip/tooltip-arrow.js"
+      }
+    },
+    "./tooltip/tooltip-context": {
+      "import": {
+        "types": "./dist/esm/tooltip/tooltip-context.d.ts",
+        "default": "./dist/esm/tooltip/tooltip-context.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tooltip/tooltip-context.d.ts",
+        "default": "./dist/commonjs/tooltip/tooltip-context.js"
+      }
+    },
+    "./tooltip/tooltip-provider": {
+      "import": {
+        "types": "./dist/esm/tooltip/tooltip-provider.d.ts",
+        "default": "./dist/esm/tooltip/tooltip-provider.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tooltip/tooltip-provider.d.ts",
+        "default": "./dist/commonjs/tooltip/tooltip-provider.js"
+      }
+    },
+    "./tooltip/tooltip-store": {
+      "import": {
+        "types": "./dist/esm/tooltip/tooltip-store.d.ts",
+        "default": "./dist/esm/tooltip/tooltip-store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tooltip/tooltip-store.d.ts",
+        "default": "./dist/commonjs/tooltip/tooltip-store.js"
+      }
+    },
+    "./tooltip/tooltip": {
+      "import": {
+        "types": "./dist/esm/tooltip/tooltip.d.ts",
+        "default": "./dist/esm/tooltip/tooltip.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tooltip/tooltip.d.ts",
+        "default": "./dist/commonjs/tooltip/tooltip.js"
+      }
+    },
+    "./utils/hooks": {
+      "import": {
+        "types": "./dist/esm/utils/hooks.d.ts",
+        "default": "./dist/esm/utils/hooks.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/hooks.d.ts",
+        "default": "./dist/commonjs/utils/hooks.js"
+      }
+    },
+    "./utils/misc": {
+      "import": {
+        "types": "./dist/esm/utils/misc.d.ts",
+        "default": "./dist/esm/utils/misc.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/misc.d.ts",
+        "default": "./dist/commonjs/utils/misc.js"
+      }
+    },
+    "./utils/store": {
+      "import": {
+        "types": "./dist/esm/utils/store.d.ts",
+        "default": "./dist/esm/utils/store.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/store.d.ts",
+        "default": "./dist/commonjs/utils/store.js"
+      }
+    },
+    "./utils/system": {
+      "import": {
+        "types": "./dist/esm/utils/system.d.ts",
+        "default": "./dist/esm/utils/system.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/system.d.ts",
+        "default": "./dist/commonjs/utils/system.js"
+      }
+    },
+    "./utils/types": {
+      "import": {
+        "types": "./dist/esm/utils/types.d.ts",
+        "default": "./dist/esm/utils/types.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/utils/types.d.ts",
+        "default": "./dist/commonjs/utils/types.js"
+      }
+    },
+    "./visually-hidden/visually-hidden": {
+      "import": {
+        "types": "./dist/esm/visually-hidden/visually-hidden.d.ts",
+        "default": "./dist/esm/visually-hidden/visually-hidden.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/visually-hidden/visually-hidden.d.ts",
+        "default": "./dist/commonjs/visually-hidden/visually-hidden.js"
+      }
+    },
     "./package.json": "./package.json"
   }
 }

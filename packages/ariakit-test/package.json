@@ -6,9 +6,9 @@
   "license": "MIT",
   "homepage": "https://ariakit.org",
   "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
+  "main": "./dist/commonjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/commonjs/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
@@ -49,23 +49,216 @@
     }
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./wait-for": "./src/wait-for.ts",
-    "./type": "./src/type.ts",
-    "./tap": "./src/tap.ts",
-    "./sleep": "./src/sleep.ts",
-    "./select": "./src/select.ts",
-    "./react": "./src/react.tsx",
-    "./query": "./src/query.ts",
-    "./press": "./src/press.ts",
-    "./playwright": "./src/playwright.ts",
-    "./mouse-up": "./src/mouse-up.ts",
-    "./mouse-down": "./src/mouse-down.ts",
-    "./hover": "./src/hover.ts",
-    "./focus": "./src/focus.ts",
-    "./dispatch": "./src/dispatch.ts",
-    "./click": "./src/click.ts",
-    "./blur": "./src/blur.ts",
+    "./__aria-role": {
+      "import": {
+        "types": "./dist/esm/__aria-role.d.ts",
+        "default": "./dist/esm/__aria-role.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/__aria-role.d.ts",
+        "default": "./dist/commonjs/__aria-role.js"
+      }
+    },
+    "./__tests__/blur-test": {
+      "import": {
+        "types": "./dist/esm/__tests__/blur-test.d.ts",
+        "default": "./dist/esm/__tests__/blur-test.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/__tests__/blur-test.d.ts",
+        "default": "./dist/commonjs/__tests__/blur-test.js"
+      }
+    },
+    "./__tests__/use-all-events": {
+      "import": {
+        "types": "./dist/esm/__tests__/use-all-events.d.ts",
+        "default": "./dist/esm/__tests__/use-all-events.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/__tests__/use-all-events.d.ts",
+        "default": "./dist/commonjs/__tests__/use-all-events.js"
+      }
+    },
+    "./__utils": {
+      "import": {
+        "types": "./dist/esm/__utils.d.ts",
+        "default": "./dist/esm/__utils.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/__utils.d.ts",
+        "default": "./dist/commonjs/__utils.js"
+      }
+    },
+    "./blur": {
+      "import": {
+        "types": "./dist/esm/blur.d.ts",
+        "default": "./dist/esm/blur.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/blur.d.ts",
+        "default": "./dist/commonjs/blur.js"
+      }
+    },
+    "./click": {
+      "import": {
+        "types": "./dist/esm/click.d.ts",
+        "default": "./dist/esm/click.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/click.d.ts",
+        "default": "./dist/commonjs/click.js"
+      }
+    },
+    "./dispatch": {
+      "import": {
+        "types": "./dist/esm/dispatch.d.ts",
+        "default": "./dist/esm/dispatch.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/dispatch.d.ts",
+        "default": "./dist/commonjs/dispatch.js"
+      }
+    },
+    "./focus": {
+      "import": {
+        "types": "./dist/esm/focus.d.ts",
+        "default": "./dist/esm/focus.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/focus.d.ts",
+        "default": "./dist/commonjs/focus.js"
+      }
+    },
+    "./hover": {
+      "import": {
+        "types": "./dist/esm/hover.d.ts",
+        "default": "./dist/esm/hover.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/hover.d.ts",
+        "default": "./dist/commonjs/hover.js"
+      }
+    },
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/index.d.ts",
+        "default": "./dist/commonjs/index.js"
+      }
+    },
+    "./mouse-down": {
+      "import": {
+        "types": "./dist/esm/mouse-down.d.ts",
+        "default": "./dist/esm/mouse-down.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/mouse-down.d.ts",
+        "default": "./dist/commonjs/mouse-down.js"
+      }
+    },
+    "./mouse-up": {
+      "import": {
+        "types": "./dist/esm/mouse-up.d.ts",
+        "default": "./dist/esm/mouse-up.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/mouse-up.d.ts",
+        "default": "./dist/commonjs/mouse-up.js"
+      }
+    },
+    "./playwright": {
+      "import": {
+        "types": "./dist/esm/playwright.d.ts",
+        "default": "./dist/esm/playwright.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/playwright.d.ts",
+        "default": "./dist/commonjs/playwright.js"
+      }
+    },
+    "./press": {
+      "import": {
+        "types": "./dist/esm/press.d.ts",
+        "default": "./dist/esm/press.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/press.d.ts",
+        "default": "./dist/commonjs/press.js"
+      }
+    },
+    "./query": {
+      "import": {
+        "types": "./dist/esm/query.d.ts",
+        "default": "./dist/esm/query.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/query.d.ts",
+        "default": "./dist/commonjs/query.js"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/esm/react.d.ts",
+        "default": "./dist/esm/react.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/react.d.ts",
+        "default": "./dist/commonjs/react.js"
+      }
+    },
+    "./select": {
+      "import": {
+        "types": "./dist/esm/select.d.ts",
+        "default": "./dist/esm/select.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/select.d.ts",
+        "default": "./dist/commonjs/select.js"
+      }
+    },
+    "./sleep": {
+      "import": {
+        "types": "./dist/esm/sleep.d.ts",
+        "default": "./dist/esm/sleep.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/sleep.d.ts",
+        "default": "./dist/commonjs/sleep.js"
+      }
+    },
+    "./tap": {
+      "import": {
+        "types": "./dist/esm/tap.d.ts",
+        "default": "./dist/esm/tap.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/tap.d.ts",
+        "default": "./dist/commonjs/tap.js"
+      }
+    },
+    "./type": {
+      "import": {
+        "types": "./dist/esm/type.d.ts",
+        "default": "./dist/esm/type.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/type.d.ts",
+        "default": "./dist/commonjs/type.js"
+      }
+    },
+    "./wait-for": {
+      "import": {
+        "types": "./dist/esm/wait-for.d.ts",
+        "default": "./dist/esm/wait-for.js"
+      },
+      "require": {
+        "types": "./dist/commonjs/wait-for.d.ts",
+        "default": "./dist/commonjs/wait-for.js"
+      }
+    },
     "./package.json": "./package.json"
   }
 }

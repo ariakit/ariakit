@@ -8,6 +8,7 @@ import * as presetReact from "@babel/preset-react";
 // @ts-expect-error
 import * as presetTypescript from "@babel/preset-typescript";
 import * as t from "@babel/types";
+import { findUpSync } from "find-up";
 import { globSync } from "glob";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
@@ -49,8 +50,15 @@ function getPackageName(source) {
 }
 
 /** @param {string} source */
+function findDist(source) {
+  const path = findUpSync("dist", { cwd: source, type: "directory" });
+  return path ?? source;
+}
+
+/** @param {string} source */
 function getPackageVersion(source) {
-  const result = packageCache.get(source) || readPackageUpSync({ cwd: source });
+  const result =
+    packageCache.get(source) || readPackageUpSync({ cwd: findDist(source) });
   if (!result) return "latest";
   packageCache.set(source, result);
   const { version } = result.packageJson;

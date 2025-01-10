@@ -10,17 +10,7 @@
     "outDir": "./dist/",
     "paths": {
       "@/*": ["./*"]
-    }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mts",
-    "**/*.cts",
-    "**/*.js",
-    "**/*.cjs",
-    "**/*.mjs",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": ["node_modules", ".next"]
+    },
+    "allowImportingTsExtensions": true
+  }
 }
