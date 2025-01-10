@@ -74,8 +74,8 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: plus-test-results
           path: test-results
           retention-days: 30

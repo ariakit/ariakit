@@ -671,7 +671,8 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * prop.
    *
    * Live examples:
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * - [Textarea with inline

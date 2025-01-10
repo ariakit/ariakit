@@ -31,6 +31,9 @@ export default defineConfig({
       ...configDefaults.exclude,
       ...(isReact17 ? excludeFromReact17 : []),
     ],
+    browser: {
+      name: "chromium",
+    },
     css: {
       include: includeWithStyles,
     },

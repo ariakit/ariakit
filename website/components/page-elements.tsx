@@ -568,7 +568,7 @@ export function PageImage({
   ...props
 }: PageImageProps) {
   const className = twJoin(
-    "overflow-hidden rounded-lg data-[large]:max-w-[--size-lg] data-[wide]:max-w-[--size-xl] md:rounded-xl data-[wide]:md:rounded-2xl",
+    "overflow-hidden rounded-lg max-w-[--size-md] data-[large]:max-w-[--size-lg] data-[wide]:max-w-[--size-xl] md:rounded-xl data-[wide]:md:rounded-2xl",
     props.className,
   );
   return (

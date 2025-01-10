@@ -492,6 +492,8 @@ export interface CompositeStoreState<
    *
    * Live examples:
    * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusLoop: boolean | Orientation;
@@ -508,6 +510,10 @@ export interface CompositeStoreState<
    *   matches the value of `focusWrap`, it'll wrap between the last item in the
    *   last row or column and the first item in the first row or column and
    *   vice-versa.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusWrap: boolean | Orientation;
@@ -516,6 +522,10 @@ export interface CompositeStoreState<
    *
    * If enabled, moving up or down when there's no next item or when the next
    * item is disabled will shift to the item right before it.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusShift: boolean;
