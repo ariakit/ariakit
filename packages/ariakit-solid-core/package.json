@@ -31,11 +31,7 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "solid",
-    "core"
-  ],
+  "keywords": ["ariakit", "solid", "core"],
   "dependencies": {
     "@ariakit/core": "0.4.14",
     "@solid-primitives/props": "3.1.11",
