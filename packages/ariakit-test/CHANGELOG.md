@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.4.8
+
+- Fixed the package for running in an SSR environment.
+
 ## 0.4.7
 
 - Updated dependencies: `@ariakit/core@0.4.14`
