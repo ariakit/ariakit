@@ -100,7 +100,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: Type check
-        run: npm run tsc
+        run: npm run typecheck
 
   build:
     name: Build packages

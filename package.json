@@ -41,6 +41,7 @@
     "test-android-debug": "npm run test-android -- --ui",
     "coverage": "npm test -- --coverage",
     "postcoverage": "open-cli coverage/index.html",
+    "typecheck": "npm run typecheck -ws --if-present",
     "lint": "biome check .",
     "lint-fix": "biome check --write .",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
