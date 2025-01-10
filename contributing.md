@@ -65,7 +65,7 @@ node -v
 npm -v
 ```
 
-If the versions are not correct or you don't have Node.js or npm installed, download them from https://nodejs.org.
+If the versions are not correct or you don't have Node.js or npm installed, download them from <https://nodejs.org>.
 
 Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js and npm versions. Once in the project's root directory, run the following command in your terminal:
 
@@ -101,7 +101,7 @@ npm run dev
 
 > If you're on Windows, we recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or [Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit).
 
-Now open http://localhost:3000 in your browser to see the project's site.
+Now open <http://localhost:3000> in your browser to see the project's site.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -115,8 +115,8 @@ To make a new component, create a file with the following contents:
 
 ````tsx
 import type { ElementType } from "react";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.jsx";
+import type { Options, Props } from "../utils/types.js";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -190,7 +190,7 @@ export default function Example() {
 }
 ```
 
-Now open http://localhost:3000/examples/my-component to see the example in action.
+Now open <http://localhost:3000/examples/my-component> to see the example in action.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -229,7 +229,7 @@ export default function Example() {
 }
 ```
 
-Now open http://localhost:3000/examples/my-component to see the example with the styles applied.
+Now open <http://localhost:3000/examples/my-component> to see the example with the styles applied.
 
 You'll notice that the transpiled CSS file has been also added to editor's files so people can easily edit it directly in the browser. You can also use it to see the output CSS while applying Tailwind classes.
 
@@ -304,7 +304,7 @@ We can `@import` CSS files from other examples. You'll usually import the styles
 }
 ```
 
-Now open http://localhost:3000/examples/my-component-custom-prop to see the example with the custom prop applied.
+Now open <http://localhost:3000/examples/my-component-custom-prop> to see the example with the custom prop applied.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -333,7 +333,7 @@ Finally, we must update the `index.ts` file to export the component:
 
 ```ts
 // ...
-export * from "./my-component.ts";
+export * from "./my-component.js";
 // ...
 ```
 
@@ -393,7 +393,7 @@ This is my component.
 <a href="../examples/my-component/index.tsx" data-playground>Example</a>
 ```
 
-Now open http://localhost:3000/components/my-component to see the component documentation.
+Now open <http://localhost:3000/components/my-component> to see the component documentation.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -401,7 +401,7 @@ Now open http://localhost:3000/components/my-component to see the component docu
 
 ## Writing documentation for other examples
 
-Unlike default examples, other examples will be primarily accessed through their own URLs (for example: http://localhost:3000/examples/my-component-custom-prop). To write documentation for them, we can create a `readme.md` file in the example's directory and follow the same convention as for the component's markdown file.
+Unlike default examples, other examples will be primarily accessed through their own URLs (for example: <http://localhost:3000/examples/my-component-custom-prop>). To write documentation for them, we can create a `readme.md` file in the example's directory and follow the same convention as for the component's markdown file.
 
 `examples/my-component-custom-prop/readme.md`
 
@@ -423,7 +423,7 @@ Note that we're passing the `customProp` prop to the component:
 ```
 ````
 
-Now open http://localhost:3000/examples/my-component-custom-prop to see the example documentation.
+Now open <http://localhost:3000/examples/my-component-custom-prop> to see the example documentation.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
