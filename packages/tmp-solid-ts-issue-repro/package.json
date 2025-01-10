@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "dependencies": {
+    "@ariakit/core": "0.4.14",
     "solid-js": "^1.8"
   }
 }
