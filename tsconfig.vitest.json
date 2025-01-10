@@ -3,6 +3,7 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "outDir": "./dist/"
   },
   "include": ["./vitest.setup.ts"]

@@ -5,6 +5,7 @@
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
     "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "incremental": true,
     "isolatedModules": true,
     "outDir": "./dist/",
