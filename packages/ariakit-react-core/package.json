@@ -20,12 +20,14 @@
     "url": "https://github.com/diegohaz"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "lint": "biome check .",
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "prepare": "tshy && biome check . --fix",
+    "lint": "biome check ."
   },
   "keywords": ["ariakit", "react", "core"],
+  "files": ["dist"],
+  "tshy": {
+    "exports": "./src/**"
+  },
   "dependencies": {
     "@ariakit/core": "0.4.14",
     "@floating-ui/dom": "^1.0.0",

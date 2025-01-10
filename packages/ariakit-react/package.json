@@ -24,12 +24,14 @@
     "url": "https://opencollective.com/ariakit"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit",
-    "lint": "biome check .",
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "prepare": "tshy && biome check . --fix",
+    "lint": "biome check ."
   },
   "keywords": ["ariakit", "react", "a11y", "ui", "toolkit", "components"],
+  "files": ["dist"],
+  "tshy": {
+    "exports": "./src/**"
+  },
   "dependencies": {
     "@ariakit/react-core": "0.4.15"
   },
