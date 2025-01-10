@@ -1,0 +1,56 @@
+{
+  "name": "@ariakit/solid",
+  "version": "0.1.0",
+  "description": "Toolkit for building accessible web apps with Solid",
+  "sideEffects": false,
+  "license": "MIT",
+  "homepage": "https://solid.ariakit.org",
+  "type": "module",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid"
+  },
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ariakit"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "build": "node ../../scripts/build/build.js",
+    "clean": "node ../../scripts/build/clean.js"
+  },
+  "keywords": ["ariakit", "solid", "a11y", "ui", "toolkit", "components"],
+  "dependencies": {
+    "@ariakit/solid-core": "0.1.0"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./visually-hidden": "./src/visually-hidden.ts",
+    "./separator": "./src/separator.ts",
+    "./role": "./src/role.ts",
+    "./heading": "./src/heading.ts",
+    "./group": "./src/group.ts",
+    "./focus-trap": "./src/focus-trap.ts",
+    "./as": "./src/as.ts",
+    "./package.json": "./package.json"
+  }
+}
