@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "composite": true,
-    "jsx": "react-jsx",
-    "outDir": "./dist/"
-  },
-  "include": ["./vitest.setup.ts"]
-}

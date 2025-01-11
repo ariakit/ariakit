@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     "allowJs": true,
     "checkJs": true,
     "declaration": true,
@@ -18,6 +20,6 @@
     "strict": true,
     "stripInternal": true,
     "target": "ES2017",
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"]
   }
 }

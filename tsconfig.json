@@ -1,16 +1,13 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "emitDeclarationOnly": true,
-    "outDir": "./dist/"
-  },
+  "files": [],
   "references": [
     { "path": "packages/ariakit-core" },
     { "path": "packages/ariakit-react" },
     { "path": "packages/ariakit-react-core" },
+    { "path": "packages/ariakit-solid" },
+    { "path": "packages/ariakit-solid-core" },
     { "path": "packages/ariakit-test" },
     { "path": "examples" },
-    { "path": "website" },
-    { "path": "./tsconfig.vitest.json" }
+    { "path": "website" }
   ]
 }

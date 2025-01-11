@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": [
+    "generate-images.config.ts",
+    "playwright.config.ts",
+    "vite.config.ts",
+    "vitest.setup.ts"
+  ]
+}

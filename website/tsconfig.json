@@ -1,16 +1,14 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
-    "jsx": "react-jsx",
-    "incremental": true,
+    "rootDir": "src", // TODO: necessary?
     "isolatedModules": true,
-    "outDir": "./dist/",
     "paths": {
       "@/*": ["./*"]
-    },
-    "allowImportingTsExtensions": true
+    }
   }
 }
