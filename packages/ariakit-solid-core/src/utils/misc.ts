@@ -1,3 +1,4 @@
+import type { AnyFunction } from "@ariakit/core/utils/types";
 import { type MaybeAccessor, access } from "@solid-primitives/utils";
 import { type Accessor, type ValidComponent, createUniqueId } from "solid-js";
 
@@ -30,4 +31,21 @@ export function extractTagName(
       (typeof fallback === "string" ? fallback : undefined)
     );
   };
+}
+
+/**
+ * A hook that passes metadata props around without leaking them to the DOM.
+ */
+export function useMetadataProps<T, K extends keyof any>(
+  props: { onLoadedMetadata?: AnyFunction & { [key in K]?: T } },
+  key: K,
+  value: T,
+) {
+  const parent = props.onLoadedMetadata;
+
+  const onLoadedMetadata = () => {
+    return Object.assign(() => {}, { ...parent, [key]: value });
+  };
+
+  return [parent?.[key], { onLoadedMetadata }] as const;
 }

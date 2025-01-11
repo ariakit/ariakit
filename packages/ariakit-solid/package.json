@@ -50,6 +50,7 @@
     "./heading": "./src/heading.ts",
     "./group": "./src/group.ts",
     "./focus-trap": "./src/focus-trap.ts",
+    "./command": "./src/command.ts",
     "./as": "./src/as.ts",
     "./package.json": "./package.json"
   }
