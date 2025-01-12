@@ -12,7 +12,7 @@ import {
   createEffect,
   createSignal,
 } from "solid-js";
-import { useMetadataProps } from "../utils/misc.js";
+import { extractMetadataProps } from "../utils/misc.js";
 import { createRef, mergeProps } from "../utils/reactivity.js";
 import { createHook, createInstance } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
@@ -21,8 +21,45 @@ const TagName = "button" satisfies ValidComponent;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+function isNativeClick(event: KeyboardEvent) {
+  if (!event.isTrusted) return false;
+  // istanbul ignore next: can't test trusted events yet
+  const element = event.currentTarget;
+  if (event.key === "Enter") {
+    return (
+      element !== null &&
+      element instanceof HTMLElement &&
+      (isButton(element) ||
+        element.tagName === "SUMMARY" ||
+        element.tagName === "A")
+    );
+  }
+  if (event.key === " ") {
+    return (
+      element !== null &&
+      element instanceof HTMLElement &&
+      (isButton(element) ||
+        element.tagName === "SUMMARY" ||
+        element.tagName === "INPUT" ||
+        element.tagName === "SELECT")
+    );
+  }
+  return false;
+}
+
 const symbol = Symbol("command");
 
+/**
+ * Returns props to create a `Command` component. If the element is not a native
+ * clickable element (like a button), this hook will return additional props to
+ * make sure it's accessible.
+ * @see https://solid.ariakit.org/components/command
+ * @example
+ * ```jsx
+ * const props = useCommand({ render: <div /> });
+ * <Role {...props}>Accessible button</Role>
+ * ```
+ */
 export const useCommand = createHook<TagName, CommandOptions>(
   function useCommand({ clickOnEnter = true, clickOnSpace = true, ...props }) {
     const ref = createRef<HTMLType>();
@@ -36,7 +73,11 @@ export const useCommand = createHook<TagName, CommandOptions>(
     const [active, setActive] = createSignal(false);
     const activeRef = createRef(false);
     const disabled = disabledFromProps(props);
-    const [isDuplicate, metadataProps] = useMetadataProps(props, symbol, true);
+    const [isDuplicate, metadataProps] = extractMetadataProps(
+      props,
+      symbol,
+      true,
+    );
 
     const onKeyDown: JSX.EventHandlerUnion<HTMLButtonElement, KeyboardEvent> = (
       event,
@@ -61,24 +102,29 @@ export const useCommand = createHook<TagName, CommandOptions>(
       }
 
       if (isEnter || isSpace) {
+        const nativeClick = isNativeClick(event);
         if (isEnter) {
-          event.preventDefault();
-          const { view, ...eventInit } = event;
-          // Fire a click event instead of calling element.click() directly so
-          // we can pass along the modifier state.
-          const click = () => fireClickEvent(element, eventInit);
-          // If this element is a link with target="_blank", Firefox will
-          // block the "popup" if the click event is dispatched synchronously
-          // or in a microtask. Queueing the event asynchronously fixes that.
-          if (isFirefox()) {
-            queueBeforeEvent(element, "keyup", click);
-          } else {
-            queueMicrotask(click);
+          if (!nativeClick) {
+            event.preventDefault();
+            const { view, ...eventInit } = event;
+            // Fire a click event instead of calling element.click() directly so
+            // we can pass along the modifier state.
+            const click = () => fireClickEvent(element, eventInit);
+            // If this element is a link with target="_blank", Firefox will
+            // block the "popup" if the click event is dispatched synchronously
+            // or in a microtask. Queueing the event asynchronously fixes that.
+            if (isFirefox()) {
+              queueBeforeEvent(element, "keyup", click);
+            } else {
+              queueMicrotask(click);
+            }
           }
         } else if (isSpace) {
           activeRef.current = true;
-          event.preventDefault();
-          setActive(true);
+          if (!nativeClick) {
+            event.preventDefault();
+            setActive(true);
+          }
         }
       }
     };
@@ -95,11 +141,13 @@ export const useCommand = createHook<TagName, CommandOptions>(
 
       if (activeRef.current && isSpace) {
         activeRef.current = false;
-        event.preventDefault();
-        setActive(false);
-        const element = event.currentTarget;
-        const { view, ...eventInit } = event;
-        queueMicrotask(() => fireClickEvent(element, eventInit));
+        if (!isNativeClick(event)) {
+          event.preventDefault();
+          setActive(false);
+          const element = event.currentTarget;
+          const { view, ...eventInit } = event;
+          queueMicrotask(() => fireClickEvent(element, eventInit));
+        }
       }
     };
 
@@ -125,6 +173,23 @@ export const useCommand = createHook<TagName, CommandOptions>(
   },
 );
 
+/**
+ * Renders a clickable element, which is a `button` by default, and inherits
+ * features from the [`Focusable`](https://ariakit.org/reference/focusable)
+ * component.
+ *
+ * If the base element isn't a native clickable one, this component will provide
+ * extra attributes and event handlers to ensure accessibility. It can be
+ * activated with the keyboard using the
+ * [`clickOnEnter`](https://solid.ariakit.org/reference/command#clickonenter) and
+ * [`clickOnSpace`](https://solid.ariakit.org/reference/command#clickonspace)
+ * props. Both are set to `true` by default.
+ * @see https://solid.ariakit.org/components/command
+ * @example
+ * ```jsx
+ * <Command>Button</Command>
+ * ```
+ */
 export const Command = function Command(props: CommandProps) {
   const htmlProps = useCommand(props);
   return createInstance(TagName, htmlProps);
