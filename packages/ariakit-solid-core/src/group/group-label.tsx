@@ -4,8 +4,7 @@ import {
   onCleanup,
   useContext,
 } from "solid-js";
-import { createId } from "../utils/misc.ts";
-import { mergeProps, stableAccessor } from "../utils/reactivity.ts";
+import { createId, mergeProps, stableAccessor } from "../utils/misc.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";

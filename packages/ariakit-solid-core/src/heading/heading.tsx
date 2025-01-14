@@ -1,6 +1,5 @@
 import { type ValidComponent, createMemo, useContext } from "solid-js";
-import { extractTagName } from "../utils/misc.ts";
-import { createRef, mergeProps } from "../utils/reactivity.ts";
+import { createRef, extractTagName, mergeProps } from "../utils/misc.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { HeadingContext } from "./heading-context.tsx";
@@ -27,7 +26,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
     const ref = createRef<HTMLType>();
     const level = useContext(HeadingContext) || (() => 1);
     const Element = () => `h${level()}` as const;
-    const tagName = extractTagName(ref.get);
+    const tagName = extractTagName(() => ref.value);
     const isNativeHeading = createMemo(
       () => !!tagName() && /^h\d$/.test(tagName()!),
     );

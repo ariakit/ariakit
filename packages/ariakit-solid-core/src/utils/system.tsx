@@ -1,19 +1,12 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import { type ValidComponent, mergeProps, splitProps } from "solid-js";
+import { type ValidComponent, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import {
   type ExtractPropsWithDefaultsExtractedProps,
   type ExtractPropsWithDefaultsRestProps,
   extractPropsWithDefaults,
-} from "./reactivity.ts";
-import type {
-  HTMLProps,
-  Hook,
-  Options,
-  Props,
-  WrapInstance,
-  WrapInstanceValue,
-} from "./types.ts";
+} from "./misc.ts";
+import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 /**
  * Creates a Solid component instance that supports the `render` and
@@ -45,17 +38,6 @@ export function createInstance(
     }
   }
   return tree();
-}
-
-/**
- * Returns props with an additional `wrapInstance` prop.
- */
-export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
-  props: P & { wrapInstance?: WrapInstance },
-  element: WrapInstanceValue,
-): Q {
-  const wrapInstance = [...(props.wrapInstance ?? []), element];
-  return mergeProps(props, { wrapInstance }) as Q;
 }
 
 /**
