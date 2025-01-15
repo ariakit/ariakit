@@ -1,0 +1,35 @@
+p,
+span,
+button {
+  color: white;
+  display: block;
+
+  &:focus {
+    outline: solid black 2px;
+    outline-offset: 2px;
+  }
+}
+
+p {
+  background-color: green;
+}
+
+span {
+  background-color: red;
+}
+
+button {
+  background-color: blue;
+}
+
+.a::before {
+  content: '[.a]';
+  background: black;
+  margin-right: 1rem;
+}
+
+.b::after {
+  content: '[.b]';
+  background: black;
+  margin-left: 1rem;
+}

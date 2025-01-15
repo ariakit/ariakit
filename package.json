@@ -64,7 +64,7 @@
       "biome check --no-errors-on-unmatched --write"
     ],
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write",
-    "*.css": "stylelint --fix"
+    "*.css": "stylelint --fix lax"
   },
   "overrides": {
     "@wordpress/components": {
