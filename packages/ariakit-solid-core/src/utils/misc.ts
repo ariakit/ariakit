@@ -11,6 +11,20 @@ import {
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
 /**
+ * Sets both a function and "object" ref.
+ */
+export function setRef<T>(
+  ref: ((element: T) => void) | RefObject<T> | undefined,
+  value: T,
+) {
+  if (typeof ref === "function") {
+    ref(value);
+  } else if (ref) {
+    ref.current = value;
+  }
+}
+
+/**
  * Creates a stable accessor. Useful when creating derived accessors that
  * depend on a mutable variable that may change later.
  * @example
