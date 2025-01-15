@@ -168,6 +168,7 @@ export type RefObject<T> = {
  * ```
  */
 export function createRef<T>(): RefObject<T | undefined>;
+export function createRef<T>(initialValue: T | null): RefObject<T | null>;
 export function createRef<T>(initialValue: T): RefObject<T>;
 export function createRef<T>(initialValue?: any): RefObject<T> {
   let value = initialValue;
