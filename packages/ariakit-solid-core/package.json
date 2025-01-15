@@ -35,6 +35,7 @@
   "dependencies": {
     "@ariakit/core": "0.4.14",
     "@solid-primitives/props": "3.1.11",
+    "@solid-primitives/refs": "1.0.8",
     "@solid-primitives/utils": "6.2.3"
   },
   "peerDependencies": {
@@ -48,6 +49,12 @@
     "./utils/misc": "./src/utils/misc.ts",
     "./separator/separator": "./src/separator/separator.tsx",
     "./role/role": "./src/role/role.tsx",
+    "./portal-old/portal": "./src/portal-old/portal.tsx",
+    "./portal-old/portal-context": "./src/portal-old/portal-context.tsx",
+    "./portal/portal": "./src/portal/portal.tsx",
+    "./portal/portal-voby": "./src/portal/portal-voby.tsx",
+    "./portal/portal-solid": "./src/portal/portal-solid.tsx",
+    "./portal/portal-context": "./src/portal/portal-context.tsx",
     "./heading/utils": "./src/heading/utils.ts",
     "./heading/heading": "./src/heading/heading.tsx",
     "./heading/heading-level": "./src/heading/heading-level.tsx",
