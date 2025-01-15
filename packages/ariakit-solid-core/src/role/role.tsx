@@ -72,9 +72,7 @@ export const Role = function Role(props: RoleProps): JSX.Element {
 Object.assign(
   Role,
   elements.reduce((acc, element) => {
-    acc[element] = function Role(
-      props: RoleProps<typeof element>,
-    ): JSX.Element {
+    acc[element] = function Role(props: RoleProps<typeof element>) {
       return createInstance(element, props);
     };
     return acc;

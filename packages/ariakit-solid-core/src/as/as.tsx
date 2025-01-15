@@ -1,6 +1,6 @@
 import type { Component, ComponentProps, JSX, ValidComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { mergeProps } from "../utils/reactivity.ts";
+import { mergeProps } from "../utils/misc.ts";
 
 type AsElements = {
   [K in keyof JSX.IntrinsicElements]: Component<ComponentProps<K>>;
