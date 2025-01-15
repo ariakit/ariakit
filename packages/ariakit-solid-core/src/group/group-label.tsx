@@ -44,6 +44,8 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
       props,
     );
 
+    // [port]: no need to remove undefined values because `mergeProps` handles it.
+    // TODO: verify that the note above is true.
     return props;
   },
 );

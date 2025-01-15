@@ -4,13 +4,9 @@ import { type MaybeAccessor, access } from "@solid-primitives/utils";
 import {
   type Accessor,
   type JSX,
-  type Setter,
-  type ValidComponent,
   mergeProps as _mergeProps,
-  createSignal,
   createUniqueId,
   splitProps,
-  untrack,
 } from "solid-js";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
@@ -86,21 +82,16 @@ export function createId(
  * Returns the tag name by parsing an element.
  * @example
  * function Component(props) {
- *   const [ref, setRef] = createSignal();
- *   const tagName = extractTagName(ref, "button"); // () => "div"
- *   return <div ref={setRef} {...props} />;
+ *   const [element, setElement] = createSignal();
+ *   const tagName = () => extractTagName(element(), "button"); // () => "div"
+ *   return <div ref={setElement} {...props} />;
  * }
  */
 export function extractTagName(
-  element?: MaybeAccessor<HTMLElement | undefined>,
-  fallback?: ValidComponent,
+  element?: HTMLElement | undefined,
+  fallback?: keyof JSX.IntrinsicElements,
 ) {
-  return () => {
-    return (
-      access(element)?.tagName.toLowerCase() ??
-      (typeof fallback === "string" ? fallback : undefined)
-    );
-  };
+  return element?.tagName.toLowerCase() ?? fallback;
 }
 
 /**
@@ -115,80 +106,44 @@ export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
 }
 
 /**
- * A ref object that contains the value getter (`value`) and setter (`set`) as
- * properties for convenience. It also has a `reset` method that can be used to
- * set the value to the initial value that was passed, which is `undefined` by
- * default. The `current` getter can be used to obtain the value without
- * tracking it reactively.
+ * A "ref" object that holds a value, created with the `createRef` function.
+ * It is non-reactive.
  *
- * Created by the `createRef` function.
+ * To bind to a JSX element, pass `ref.bind` to the `ref` prop.
  * @example
+ * ```jsx
  * const ref = createRef();
- * createEffect(() => {
- *   console.log(ref.value);
- * });
- * ref.set(buttonElement);
- * ref.reset();
+ * // access the current value (non-reactive)
+ * console.log(ref.current);
+ * // update the value
+ * ref.current = newValue;
+ * // bind to an element in JSX
+ * <button ref={ref.bind} />
+ * ```
  */
-export type RefStore<T> = {
+export type RefObject<T> = {
   /**
-   * The current value of the ref. It is a reactive getter.
-   *
-   * **Important note**: since this is a getter, TypeScript might reflect the
-   * wrong type in some cases. For example:
-   *
-   * ```ts
-   * const ref = createRef<number>(); // ref.value type: number | undefined
-   * ref.set(1);
-   * console.log(ref.value); // 1
-   * if (ref.value) {
-   *   // ref.value type: number (narrowed by the if statement)
-   *   console.log(ref.value); // 1
-   *   ref.set(undefined);
-   *   // ref.value type: number (wrong!)
-   *   console.log(ref.value); // undefined
-   * }
-   * ```
-   */
-  value: T;
-  /**
-   * The current value of the ref. It is a non-reactive getter, wrapped with
-   * the `untrack` function.
-   *
-   * **Important note**: since this is a getter, TypeScript might reflect the
-   * wrong type in some cases. For example:
-   *
-   * ```ts
-   * const ref = createRef<number>(); // ref.current type: number | undefined
-   * ref.set(1);
-   * console.log(ref.current); // 1
-   * if (ref.current) {
-   *   // ref.current type: number (narrowed by the if statement)
-   *   console.log(ref.current); // 1
-   *   ref.set(undefined);
-   *   // ref.current type: number (wrong!)
-   *   console.log(ref.current); // undefined
-   * }
-   * ```
+   * The current value of the ref. Non-reactive.
    */
   current: T;
   /**
-   * The setter function for the ref.
+   * A setter function that can be passed to the `ref` prop of a JSX element.
+   *
+   * **Do not use this setter directly, use `ref.current = newValue` instead.**
+   * @example
+   * ```jsx
+   * const ref = createRef();
+   * <button ref={ref.bind} />
+   * ```
    */
-  set: Setter<T>;
-  /**
-   * Resets the ref to the initial value that was passed, which is `undefined`
-   * by default.
-   */
-  reset: () => void;
+  bind: (value: T) => void;
 };
 
 /**
- * Creates a ref object that contains the value getter (`value`) and setter
- * (`set`) as properties for convenience. It also has a `reset` method that
- * can be used to set the value to the initial value that was passed,
- * which is `undefined` by default. The `current` getter can be used to obtain
- * the value without tracking it reactively.
+ * Creates a ref object that holds a value. It is non-reactive. Accepts an
+ * initial value as the first argument, which is `undefined` by default.
+ *
+ * To bind to a JSX element, pass `ref.set` to the `ref` prop.
  * @example
  * ```jsx
  * const ref = createRef();
@@ -198,19 +153,20 @@ export type RefStore<T> = {
  * <button ref={ref.set}>Button</button>
  * ```
  */
-export function createRef<T>(): RefStore<T | undefined>;
-export function createRef<T>(initialValue: T): RefStore<T>;
-export function createRef<T>(initialValue?: any): any {
-  const [value, set] = createSignal<T>(initialValue);
+export function createRef<T>(): RefObject<T | undefined>;
+export function createRef<T>(initialValue: T): RefObject<T>;
+export function createRef<T>(initialValue?: any): RefObject<T> {
+  let value = initialValue;
   return {
-    get value() {
-      return value();
-    },
     get current() {
-      return untrack(() => value());
+      return value;
     },
-    set,
-    reset: () => set(initialValue),
+    set current(newValue) {
+      value = newValue;
+    },
+    bind(newValue) {
+      value = newValue;
+    },
   };
 }
 

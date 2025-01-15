@@ -24,16 +24,15 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useHeading = createHook<TagName, HeadingOptions>(
   function useHeading(props) {
     const ref = createRef<HTMLType>();
-    const level = useContext(HeadingContext) || (() => 1);
+    const level = () => useContext(HeadingContext)() || 1;
     const Element = () => `h${level()}` as const;
-    const tagName = extractTagName(() => ref.value);
+    const tagName = () => extractTagName(ref.current, Element());
     const isNativeHeading = createMemo(
       () => !!tagName() && /^h\d$/.test(tagName()!),
     );
 
     props = mergeProps(
       {
-        // TODO: replace with LazyDynamic
         render: Element(),
         get role() {
           return !isNativeHeading() ? "heading" : undefined;
@@ -41,7 +40,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
         get "aria-level"() {
           return !isNativeHeading() ? level() : undefined;
         },
-        ref: ref.set,
+        ref: ref.bind,
       },
       props,
     );

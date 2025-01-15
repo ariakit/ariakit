@@ -21,6 +21,7 @@ export const useSeparator = createHook<TagName, SeparatorOptions>(
     function useSeparator(props, options) {
       props = mergeProps(
         {
+          // [port]: Solid type for `role` is more strict, hence the `as const`.
           role: "separator" as const,
           get "aria-orientation"() {
             return options.orientation;

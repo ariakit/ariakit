@@ -23,11 +23,13 @@ export const useGroup = createHook<TagName, GroupOptions>(
 
     props = wrapInstance(
       props,
+      // TODO: document this pattern in the contributing guide.
       <As component={GroupLabelContext.Provider} value={setLabelId} />,
     );
 
     props = mergeProps(
       {
+        // [port]: Solid type for `role` is more strict, hence the `as const`.
         role: "group" as const,
         get "aria-labelledby"() {
           return labelId();

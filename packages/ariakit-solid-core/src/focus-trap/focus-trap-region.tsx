@@ -58,7 +58,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
       );
     });
 
-    props = mergeProps({ ref: ref.set }, props);
+    props = mergeProps({ ref: ref.bind }, props);
 
     return props;
   }),
