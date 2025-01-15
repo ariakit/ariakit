@@ -126,7 +126,7 @@ props = {
 };
 ```
 
-Then the Solid port should look like this:
+Then the Solid port would need to look like this:
 
 ```jsx
 const [value, setValue] = createSignal(initialValue);
@@ -141,20 +141,20 @@ props = mergeProps({
 });
 ```
 
-This is not necessary for static props.
+However, declaring getters can be a bit cumbersome (and mess with the diff), so there's a special behavior in `mergeProps` that automatically creates these getters for props that follow a specific name pattern (starting with `$`). For example:
+
+```jsx
+props = mergeProps({
+  $exampleProp1: () => value(),
+  // or, when possible:
+  $exampleProp1: value,
+  $exampleProp2: () => props.differentProp,
+});
+```
+
+Getters are not necessary for static props.
 
 > **Note**
->
-> Declaring getters can be a bit cumbersome, so we're considering adding a special behavior to `mergeProps` that automatically creates these getters for props that follow a specific name pattern. For example:
->
-> ```jsx
-> props = mergeProps({
->   $exampleProp1: () => value(),
->   // or, when possible:
->   $exampleProp1: value,
->   $exampleProp2: () => props.differentProp,
-> });
-> ```
 
 ### State/signals
 
@@ -328,9 +328,15 @@ return (
 
 This might require some restructuring of the code to preserve the same behavior while pleasing Solid. A good understanding of Solid's reactivity system is required.
 
+## Special patterns
+
 ### Stable accessors
 
 TODO: document `stableAccessor`.
+
+### Reactive hoisting
+
+TODO: document this. TL;DR in effects and computations, always access reactive values at the top to prevent early returns and other code paths from breaking reactivity.
 
 ## Useful tips
 
