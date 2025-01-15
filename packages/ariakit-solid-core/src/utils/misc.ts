@@ -185,12 +185,31 @@ export function createRef<T>(initialValue?: any): RefObject<T> {
   };
 }
 
+function expandDollarGetters<T extends JSX.HTMLAttributes<any>>(props: T) {
+  for (const key in props) {
+    if (key.startsWith("$")) {
+      const get = props[key] as () => unknown;
+      delete props[key];
+      Object.defineProperty(props, key.substring(1), {
+        get,
+        enumerable: true,
+        configurable: true,
+      });
+    }
+  }
+}
+
+type HTMLAttributesWithDollarGetters<T> = {
+  [K in keyof JSX.HTMLAttributes<T> as `$${K}`]: () => JSX.HTMLAttributes<T>[K];
+};
+
 /**
  * Merges two sets of props.
  */
 export function mergeProps<T extends JSX.HTMLAttributes<any>>(
-  base: T,
+  base: T & HTMLAttributesWithDollarGetters<T>,
   overrides: T,
 ) {
+  expandDollarGetters(base);
   return combineProps([base, overrides], { reverseEventHandlers: true }) as T;
 }

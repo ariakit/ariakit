@@ -31,13 +31,13 @@ export const useGroup = createHook<TagName, GroupOptions>(
       {
         // [port]: Solid type for `role` is more strict, hence the `as const`.
         role: "group" as const,
-        get "aria-labelledby"() {
-          return labelId();
-        },
+        "$aria-labelledby": labelId,
       },
       props,
     );
 
+    // [port]: no need to remove undefined values because `mergeProps` handles it.
+    // TODO: verify that the note above is true. It might actually be because Solid just doesn't render undefined props, but if that's the case it could cause issues with further prop chaining.
     return props;
   },
 );
