@@ -11,6 +11,20 @@ import {
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
 /**
+ * Sets both a function and "object" ref.
+ */
+export function setRef<T>(
+  ref: ((element: T) => void) | RefObject<T> | undefined,
+  value: T,
+) {
+  if (typeof ref === "function") {
+    ref(value);
+  } else if (ref) {
+    ref.current = value;
+  }
+}
+
+/**
  * Creates a stable accessor. Useful when creating derived accessors that
  * depend on a mutable variable that may change later.
  * @example
@@ -154,6 +168,7 @@ export type RefObject<T> = {
  * ```
  */
 export function createRef<T>(): RefObject<T | undefined>;
+export function createRef<T>(initialValue: T | null): RefObject<T | null>;
 export function createRef<T>(initialValue: T): RefObject<T>;
 export function createRef<T>(initialValue?: any): RefObject<T> {
   let value = initialValue;
@@ -170,12 +185,31 @@ export function createRef<T>(initialValue?: any): RefObject<T> {
   };
 }
 
+function expandDollarGetters<T extends JSX.HTMLAttributes<any>>(props: T) {
+  for (const key in props) {
+    if (key.startsWith("$")) {
+      const get = props[key] as () => unknown;
+      delete props[key];
+      Object.defineProperty(props, key.substring(1), {
+        get,
+        enumerable: true,
+        configurable: true,
+      });
+    }
+  }
+}
+
+type HTMLAttributesWithDollarGetters<T> = {
+  [K in keyof JSX.HTMLAttributes<T> as `$${K}`]: () => JSX.HTMLAttributes<T>[K];
+};
+
 /**
  * Merges two sets of props.
  */
 export function mergeProps<T extends JSX.HTMLAttributes<any>>(
-  base: T,
+  base: T & HTMLAttributesWithDollarGetters<T>,
   overrides: T,
 ) {
+  expandDollarGetters(base);
   return combineProps([base, overrides], { reverseEventHandlers: true }) as T;
 }
