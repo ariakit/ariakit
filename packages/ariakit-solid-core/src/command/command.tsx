@@ -12,8 +12,7 @@ import {
   createEffect,
   createSignal,
 } from "solid-js";
-import { extractMetadataProps } from "../utils/misc.js";
-import { createRef, mergeProps } from "../utils/reactivity.js";
+import { createRef, extractMetadataProps, mergeProps } from "../utils/misc.js";
 import { createHook, createInstance } from "../utils/system.js";
 import type { Props } from "../utils/types.js";
 
@@ -152,13 +151,13 @@ export const useCommand = createHook<TagName, CommandOptions>(
     };
 
     props = {
-      "data-active": active || undefined,
+      "data-active": active() ? "true" : "false",
       type: isNativeButton() ? "button" : undefined,
       ...metadataProps,
       ...props,
       ...mergeProps(
         {
-          ref: ref.set,
+          ref: ref.bind,
           onKeyDown,
           onKeyUp,
         },
