@@ -1,0 +1,22 @@
+{
+  "name": "ariakit-solid-playground",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "type": "module",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.4.5",
+    "vite-plugin-solid": "^2.10.2"
+  },
+  "dependencies": {
+    "@ariakit/solid": "0.1.0",
+    "@ariakit/solid-core": "0.1.0",
+    "solid-js": "^1.8.22"
+  }
+}

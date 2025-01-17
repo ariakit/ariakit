@@ -1,5 +1,5 @@
 import type { ValidComponent } from "solid-js";
-import { mergeProps } from "../utils/reactivity.ts";
+import { mergeProps } from "../utils/misc.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.tsx";

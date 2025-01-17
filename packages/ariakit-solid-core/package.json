@@ -44,7 +44,6 @@
     "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
     "./utils/types": "./src/utils/types.ts",
     "./utils/system": "./src/utils/system.tsx",
-    "./utils/reactivity": "./src/utils/reactivity.ts",
     "./utils/misc": "./src/utils/misc.ts",
     "./separator/separator": "./src/separator/separator.tsx",
     "./role/role": "./src/role/role.tsx",
