@@ -3,7 +3,7 @@ import spawn from "cross-spawn";
 import { solidPlugin } from "esbuild-plugin-solid";
 import { glob } from "glob";
 import { build } from "tsup";
-import { cwd, isCore, isReact, isSolid } from "./context.js";
+import { cwd, isFramework, isReact, isSolid } from "./context.js";
 import {
   cleanBuild,
   getCJSDir,
@@ -67,8 +67,30 @@ const builds = /** @type {const} */ ([
 ]);
 
 /** @param {{ format: import("tsup").Format, outDir: string }} options */
-function buildCoreAndReact({ format, outDir }) {
-  if (!isCore && !isReact) return;
+function buildStandard({ format, outDir }) {
+  if (isFramework) return;
+  return build({
+    entry,
+    format,
+    outDir,
+    // dts: true,
+    // tsconfig: "tsconfig.build.json",
+    splitting: true,
+    esbuildOptions(options) {
+      options.chunkNames = "__chunks/[hash]";
+      // TODO: this might not be necessary for anything other than react and react-core
+      if (format === "esm") {
+        options.banner = {
+          js: '"use client";',
+        };
+      }
+    },
+  });
+}
+
+/** @param {{ format: import("tsup").Format, outDir: string }} options */
+function buildReact({ format, outDir }) {
+  if (!isReact) return;
   return build({
     entry,
     format,
@@ -123,7 +145,8 @@ function buildSolidSource() {
 }
 
 await Promise.all([
-  ...builds.map(buildCoreAndReact),
+  ...builds.map(buildStandard),
+  ...builds.map(buildReact),
   ...builds.map(buildSolid),
   buildSolidSource(),
 ]);
