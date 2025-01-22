@@ -6,6 +6,24 @@ This guide is a work in progress and is very incomplete at the moment. If you're
 - Check [the main tracking issue](https://github.com/ariakit/ariakit/issues/4117).
 - Check [this discussion](https://github.com/ariakit/ariakit/discussions/4322).
 
+## Basic tutorial
+
+To get started, it is strongly recommended to follow the instructions in the [main contributing guide](../../contributing.md). This will ensure that the development environment is set up correctly, and will also walk you through the basics of Ariakit React, which is necessary to understand the Solid port.
+
+Then, continue with the following steps.
+
+### Preparing to port a component
+
+Once you've chosen a component to port, the first step is to prepare the file structure.
+
+First, take a look at the component's source in the `ariakit-react-core` package. This is the original React code we're going to port.
+
+The same file structure should be employed in the `ariakit-solid-core` package. We'll copy the original React code into the Solid port, as a starting point.
+
+For example, if we plan on porting the `Button` component, we'll copy the `packages/ariakit-react-core/src/button` directory into `packages/ariakit-solid-core/src/button`.
+
+This will include the `button/button.tsx` file, where the (WIP)
+
 ## Port reference
 
 ### Terminology
@@ -126,7 +144,7 @@ props = {
 };
 ```
 
-Then the Solid port would need to look like this:
+Then the Solid port could look like this:
 
 ```jsx
 const [value, setValue] = createSignal(initialValue);
@@ -141,7 +159,7 @@ props = mergeProps({
 });
 ```
 
-However, declaring getters can be a bit cumbersome (and mess with the diff), so there's a special behavior in `mergeProps` that automatically creates these getters for props that follow a specific name pattern (starting with `$`). For example:
+However, declaring getters can be a bit cumbersome (and mess with the port diff), so there's a special behavior in `mergeProps` that automatically creates these getters for props that follow a specific name pattern (starting with `$`). For example:
 
 ```jsx
 props = mergeProps({
@@ -153,8 +171,6 @@ props = mergeProps({
 ```
 
 Getters are not necessary for static props.
-
-> **Note**
 
 ### State/signals
 
@@ -192,14 +208,11 @@ TODO: document effects.
 
 |            React            |            Solid            |
 | :-------------------------: | :-------------------------: |
-| `useRef<HTMLElement>(null)` | `createRef<HTMLElement>()`  |
+| `useRef<HTMLElement>(null)` | `createRef<HTMLElement>(null)`  |
 |   `useRef(initialValue)`    |  `createRef(initialValue)`  |
 | `console.log(ref.current)`  |      **✅ no change**       |
 |  `ref.current = newValue`   |      **✅ no change**       |
 |   `<button ref={ref} />`    | `<button ref={ref.bind} />` |
-|   `if (ref === null) {}`    | `if (ref === undefined) {}` |
-|        `if (ref) {}`        |      **✅ no change**       |
-|   `ref.current === null`    | `ref.current === undefined` |
 
 <details>
 <summary>Explanation</summary>
@@ -220,38 +233,14 @@ Another similarity is that an initial value can be passed to the `createRef` fun
 const ref = createRef(initialValue);
 ```
 
-However, there are a few differences:
+However, there is an important difference. The ref can't be passed to the `ref` prop of a JSX element directly. Instead, you need to use `ref.bind`.
 
-- No need for `null`. Whenever `null` would be used, use `undefined` instead. The initial value can simply be omitted.
-
-  ```tsx
-  // React - you usually need to pass `null` to `useRef` as initial value:
-  const ref = useRef<HTMLElement>(null);
-  // Solid - you can just omit the initial value:
-  const ref = createRef<HTMLElement>();
-
-  // React - pay attention to checks:
-  if (ref === null) {}
-  // Solid - you should use `undefined` instead:
-  if (ref === undefined) {}
-
-  // "Truthiness" checks are not affected:
-  if (ref) {}
-
-  // React - pay attention when the value is "reset":
-  ref.current = null;
-  // Solid - you should use `undefined` instead:
-  ref.current = undefined;
-  ```
-
-- The ref can't be passed to the `ref` prop of a JSX element directly. Instead, you need to use `ref.bind`.
-
-  ```tsx
-  // React - the ref is passed directly:
-  <button ref={ref} />
-  // Solid - you must pass `ref.bind` instead:
-  <button ref={ref.bind} />
-  ```
+```tsx
+// React - the ref is passed directly:
+<button ref={ref} />
+// Solid - you must pass `ref.bind` instead:
+<button ref={ref.bind} />
+```
 
 </details>
 
@@ -307,6 +296,8 @@ For this reason, instead of receiving the element being wrapped as the first arg
 +))
 ```
 
+## Special patterns
+
 ### JSX branches and early returns
 
 Since React re-runs (re-renders) components and hooks, you can short-circuit to create "branches" in JSX, for example:
@@ -328,8 +319,6 @@ return (
 
 This might require some restructuring of the code to preserve the same behavior while pleasing Solid. A good understanding of Solid's reactivity system is required.
 
-## Special patterns
-
 ### Stable accessors
 
 TODO: document `stableAccessor`.
@@ -342,12 +331,12 @@ TODO: document this. TL;DR in effects and computations, always access reactive v
 
 ### Diff utilities
 
-<!-- TODO: .ts files break this apparently -->
+<!-- TODO: .ts files don't work -->
 
-Here's a shell function that can be helpful to quickly show the diff between the original React code and the Solid port. Must be run from the root of the project.
+Here's a shell function that can be helpful to quickly show the diff between the original React code and the Solid port. Must be run from inside the project directory.
 
 ```sh
-akdiff <relative path in src>
+akdiff <relative path in src without extension>
 ```
 
 For example:
