@@ -22,7 +22,7 @@ The same file structure should be employed in the `ariakit-solid-core` package. 
 
 For example, if we plan on porting the `Button` component, we'll copy the `packages/ariakit-react-core/src/button` directory into `packages/ariakit-solid-core/src/button`.
 
-This will include the `button/button.tsx` file, where the (WIP)
+This will include the `button/button.tsx` file, where the (WIP) test
 
 ## Port reference
 
