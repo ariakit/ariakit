@@ -9,3 +9,4 @@ export const isSolid = ["ariakit-solid", "ariakit-solid-core"].includes(
   dirName,
 );
 export const isTest = ["ariakit-test"].includes(dirName);
+export const isFramework = [isReact, isSolid].includes(true);

@@ -4,7 +4,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "jsx": "react-jsx",
-    "types": ["node", "vitest/globals"],
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"],
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "noEmit": true,
     "skipLibCheck": true,
