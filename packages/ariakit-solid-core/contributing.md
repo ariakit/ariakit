@@ -1,20 +1,19 @@
 # Contributing
 
-This guide is a work in progress and is very incomplete at the moment. If you're interested in contributing:
+Thanks for your interest in contributing! All work is coordinated through the following channels:
 
-* Join the `#ariakit` channel in the [Solid Discord server](https://discord.gg/solidjs).
-* Check [the main tracking issue](https://github.com/ariakit/ariakit/issues/4117).
-* Check [this discussion](https://github.com/ariakit/ariakit/discussions/4322).
+* The `#ariakit` channel in [the Solid Discord server](https://discord.gg/solidjs).
+* [The main tracking issue](https://github.com/ariakit/ariakit/issues/4117).
+* [Ariakit Solid: how to help and general discussion](https://github.com/ariakit/ariakit/discussions/4322).
 
 **Table of contents**
 
 <!-- vscode-markdown-toc -->
 - [Contributing](#contributing)
-  - [IMPORTANT NOTE](#important-note)
   - [Basic tutorial](#basic-tutorial)
-    - [Preparing to port a component](#preparing-to-port-a-component)
+    - [Setting up the component directory](#setting-up-the-component-directory)
     - [Making the component public](#making-the-component-public)
-    - [Editor diffing setup](#editor-diffing-setup)
+    - [Diff editing view](#diff-editing-view)
     - [Solid-ifying the code](#solid-ifying-the-code)
     - [Using the playground](#using-the-playground)
     - [Examples and tests](#examples-and-tests)
@@ -33,12 +32,13 @@ This guide is a work in progress and is very incomplete at the moment. If you're
     - [Context](#context)
     - [JSDoc links](#jsdoc-links)
     - [`useWrapElement`](#usewrapelement)
-  - [Special patterns](#special-patterns)
+  - [Special patterns and quirks](#special-patterns-and-quirks)
     - [JSX branches and early returns](#jsx-branches-and-early-returns)
     - [Stable accessors](#stable-accessors)
     - [Reactive hoisting](#reactive-hoisting)
+    - [Miscellaneous quirks](#miscellaneous-quirks)
   - [Useful tips](#useful-tips)
-    - [Diff utilities](#diff-utilities)
+    - [`akdiff` - a terminal utility that opens a component port diff](#akdiff---a-terminal-utility-that-opens-a-component-port-diff)
       - [Fish](#fish)
       - [Bash/Zsh/Sh](#bashzshsh)
 
@@ -48,23 +48,19 @@ This guide is a work in progress and is very incomplete at the moment. If you're
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-## <a name='IMPORTANTNOTE'></a>IMPORTANT NOTE
-
-While we fully appreciate your intentions to contribute, we're still figuring out the basics. We highly encourage you to get in touch through one of the channels mentioned above before jumping into any work.
-
-There are some important aspects that are still being figured out, and we don't want anyone to get stuck or waste their time if big changes to their contributions are required.
-
-Thanks for your understanding, and for your interest in contributing!
+> **IMPORTANT NOTE**
+>
+> We're still figuring out the basics. We highly encourage you to get in touch through one of the channels mentioned above before jumping into any work.
+>
+> Thanks for your understanding!
 
 ## <a name='Basictutorial'></a>Basic tutorial
 
-To get started, it is strongly recommended to first follow the instructions in the [main contributing guide](../../contributing.md). This will ensure that the development environment is set up correctly, and will also walk you through the basics of Ariakit React, which is necessary to understand the Solid port.
+To get started, go through the [main contributing guide](../../contributing.md). This will ensure that your development environment is set up correctly, and will also walk you through the basics of Ariakit React, which is necessary to understand the Solid port.
 
 Once you're done, continue with the following steps.
 
-### <a name='Preparingtoportacomponent'></a>Preparing to port a component
-
-The first step is to prepare the file structure.
+### <a name='Settingupthecomponentdirectory'></a>Setting up the component directory
 
 First, take a look at the component's source in the `ariakit-react-core` package. This is the original React code we're going to port.
 
@@ -72,7 +68,9 @@ The same file structure should be created in the `ariakit-solid-core` package. W
 
 For example, if we plan on porting the `Button` component, we'll copy the `packages/ariakit-react-core/src/button` directory into `packages/ariakit-solid-core/src/button`.
 
-This will include the `button/button.tsx` file, where `Button` is implemented. In this case, that is the only file in the directory, but other directories may contain more files.
+This will include the `src/button/button.tsx` file, where `Button` is implemented. In this case, that is the only file in the directory, but other directories may contain more files.
+
+Of course, this code is not ready to be used in Solid. We'll get to that in a bit.
 
 ### <a name='Makingthecomponentpublic'></a>Making the component public
 
@@ -80,19 +78,21 @@ The core packages are private and internal, end users do not use them directly. 
 
 Like in the previous step, we can copy the original directory from `ariakit-react` into `ariakit-solid`. In our example, we'll copy the `packages/ariakit-react/src/button` directory into `packages/ariakit-solid/src/button`.
 
-Most of the time, due to the simplicity of the "re-exporting" code, it won't be necessary to tweak it.
+Most of the time, due to the simplicity of the "re-exporting" code, it won't be necessary to tweak it: it will just work in Solid!
 
-### <a name='Editordiffingsetup'></a>Editor diffing setup
+### <a name='Diffeditingview'></a>Diff editing view
 
-While optional, it is a very good idea to work on the port with the help of an editor that supports diffing.
+While optional, it is a very good idea to work on a component port with the help of a diff editing view that simultaneously shows the equivalent React and Solid files, and highlights the differences. Most popular code editors support diffing two arbitrary files in this manner.
 
-Most popular editors support diffing two arbitrary files. It is strongly recommended to use our `akdiff` shell utility to speed up the process: it opens the diff for a component with a simple command. It even supports autocomplete if you're a fish shell user! See the [diff utilities](#diff-utilities) section to set it up.
+It is strongly recommended to use our `akdiff` terminal utility to speed up the process: it opens the diff for a given component in your editor with a simple command. It even supports autocomplete if you're a fish shell user! See the [`akdiff`](#akdiff---a-terminal-utility-that-opens-a-component-port-diff) section to set it up.
 
-One of [the guiding principles](#port-principles) of this port is to minimize any differences between the React and Solid codebases. The diff view helps a ton with this.
+One of [the guiding principles](#port-principles) of this port is to keep differences between the React and Solid codebases as minimal as possible. The diff view helps a ton with this.
 
-A small annoyance that can come up with this approach is that, because of minor differences between the two codebases, the indentation of some lines (after automatic code formatting) may not be the same, causing a lot of extra noise in the diff view.
-
-The simplest way to remedy this is to manually tweak the indentation of the relevant fragments in the React code (for example, the body of a hook or component function) to match the Solid code. Just remember not to commit the changes!
+> **Tip!**
+>
+> A small annoyance that can come up with this approach is that, because of minor differences between the two codebases, the indentation of some parts (after automatic code formatting) may not be the same, causing a lot of extra noise in the diff view.
+>
+> The simplest way to remedy this is to temporarily tweak the indentation of the relevant fragments manually in the React code (for example, the body of a hook or component function) to match the Solid code. Just remember not to commit the changes!
 
 ### <a name='Solid-ifyingthecode'></a>Solid-ifying the code
 
@@ -100,9 +100,9 @@ The simplest way to remedy this is to manually tweak the indentation of the rele
 
 Now we're ready to start transforming the React code into Solid code. In general, porting requires a good understanding of both React and Solid.
 
-For the most part, the process of porting is highly systematic. The [port reference](#port-reference) section provides a straightforward guide to transform most patterns.
+At first, the task might seem daunting. A good way to get familiarized with the process is to look at other, preferably simpler components in a diff view. Some examples of this are `Separator` and `VisuallyHidden`.
 
-There are some trickier situations where deeper changes are required due to more fundamental differences between React and Solid. Some might even be hard to spot, which can lead to incorrect or buggy code. Make sure to consult the [special patterns](#special-patterns) section for more information.
+For the most part, the process of porting is highly systematic. The [port reference](#port-reference) section provides a straightforward guide to transform most patterns. There are some trickier situations where deeper changes are required due to more fundamental differences between React and Solid. Some are even be hard to spot, which can lead to incorrect or buggy code. Make sure to consult the [special patterns and quirks](#special-patterns-and-quirks) section for more information.
 
 Lastly, make sure to follow [the guiding principles](#port-principles), they are very important!
 
@@ -144,7 +144,7 @@ In the big picture, this project is massive. Minimizing diff noise will quickly 
 
 This contributing guide is essential to save time (and headaches) as we make progress. It is also a valuable resource when performing maintenance, like syncing with the React packages.
 
-If you spot a new pattern, or an addition to an existing one, make sure to document it here. Similarly, document any "special patterns" or any context that might be useful to fellow contributors.
+If you spot a new pattern, or an addition to an existing one, make sure to document it here. Similarly, document any "special patterns", quirks, or any context that might be useful to fellow contributors.
 
 Additionally, as a convention, we add code comments that start with `[port]:` wherever anything is not self-evident, like when we are forced to deviate from the original logic or pattern.
 
@@ -428,7 +428,7 @@ For this reason, instead of receiving the element being wrapped as the first arg
 +))
 ```
 
-## <a name='Specialpatterns'></a>Special patterns
+## <a name='Specialpatternsandquirks'></a>Special patterns and quirks
 
 ### <a name='JSXbranchesandearlyreturns'></a>JSX branches and early returns
 
@@ -461,9 +461,13 @@ TODO: document this. TL;DR in effects and computations, always access reactive v
 
 TODO: investigate if worth manually forcing the React linter to detect missing deps in React code, as it would point out values that need to be untracked.
 
+### <a name='Miscellaneousquirks'></a>Miscellaneous quirks
+
+* The types for the `role` prop are more strict in Solid than in React. In React, the `string` type is enough, but that doesn't work in Solid. A quick way to get around this is to use the `as const` syntax if possible. For example: `role="group" as const`.
+
 ## <a name='Usefultips'></a>Useful tips
 
-### <a name='Diffutilities'></a>Diff utilities
+### <a name='akdiff-aterminalutilitythatopensacomponentportdiff'></a>`akdiff` - a terminal utility that opens a component port diff
 
 <!-- TODO: .ts files don't work -->
 
