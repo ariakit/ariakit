@@ -470,6 +470,7 @@ TODO: investigate if worth manually forcing the React linter to detect missing d
 ### <a name='akdiff-aterminalutilitythatopensacomponentportdiff'></a>`akdiff` - a terminal utility that opens a component port diff
 
 <!-- TODO: .ts files don't work -->
+<!-- TODO: add scripts to repo for ease of use -->
 
 Here's a shell function that can be helpful to quickly show the diff between the original React code and the Solid port. Must be run from inside the project directory.
 
