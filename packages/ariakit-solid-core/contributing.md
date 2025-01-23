@@ -2,31 +2,163 @@
 
 This guide is a work in progress and is very incomplete at the moment. If you're interested in contributing:
 
-- Join the `#ariakit` channel in the [Solid Discord server](https://discord.gg/solidjs).
-- Check [the main tracking issue](https://github.com/ariakit/ariakit/issues/4117).
-- Check [this discussion](https://github.com/ariakit/ariakit/discussions/4322).
+* Join the `#ariakit` channel in the [Solid Discord server](https://discord.gg/solidjs).
+* Check [the main tracking issue](https://github.com/ariakit/ariakit/issues/4117).
+* Check [this discussion](https://github.com/ariakit/ariakit/discussions/4322).
 
-## Basic tutorial
+**Table of contents**
 
-To get started, it is strongly recommended to follow the instructions in the [main contributing guide](../../contributing.md). This will ensure that the development environment is set up correctly, and will also walk you through the basics of Ariakit React, which is necessary to understand the Solid port.
+<!-- vscode-markdown-toc -->
+- [Contributing](#contributing)
+  - [IMPORTANT NOTE](#important-note)
+  - [Basic tutorial](#basic-tutorial)
+    - [Preparing to port a component](#preparing-to-port-a-component)
+    - [Making the component public](#making-the-component-public)
+    - [Editor diffing setup](#editor-diffing-setup)
+    - [Solid-ifying the code](#solid-ifying-the-code)
+    - [Using the playground](#using-the-playground)
+    - [Examples and tests](#examples-and-tests)
+  - [Port principles](#port-principles)
+    - [Keep the diff minimal](#keep-the-diff-minimal)
+    - [Document everything](#document-everything)
+  - [Port reference](#port-reference)
+    - [Terminology](#terminology)
+    - [System utilities](#system-utilities)
+    - [TypeScript types](#typescript-types)
+    - [Prop "destructuring" and default values](#prop-destructuring-and-default-values)
+    - [Prop chaining](#prop-chaining)
+    - [State/signals](#statesignals)
+    - [Effects](#effects)
+    - [Refs](#refs)
+    - [Context](#context)
+    - [JSDoc links](#jsdoc-links)
+    - [`useWrapElement`](#usewrapelement)
+  - [Special patterns](#special-patterns)
+    - [JSX branches and early returns](#jsx-branches-and-early-returns)
+    - [Stable accessors](#stable-accessors)
+    - [Reactive hoisting](#reactive-hoisting)
+  - [Useful tips](#useful-tips)
+    - [Diff utilities](#diff-utilities)
+      - [Fish](#fish)
+      - [Bash/Zsh/Sh](#bashzshsh)
 
-Then, continue with the following steps.
+<!-- vscode-markdown-toc-config
+	numbering=false
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
 
-### Preparing to port a component
+## <a name='IMPORTANTNOTE'></a>IMPORTANT NOTE
 
-Once you've chosen a component to port, the first step is to prepare the file structure.
+While we fully appreciate your intentions to contribute, we're still figuring out the basics. We highly encourage you to get in touch through one of the channels mentioned above before jumping into any work.
+
+There are some important aspects that are still being figured out, and we don't want anyone to get stuck or waste their time if big changes to their contributions are required.
+
+Thanks for your understanding, and for your interest in contributing!
+
+## <a name='Basictutorial'></a>Basic tutorial
+
+To get started, it is strongly recommended to first follow the instructions in the [main contributing guide](../../contributing.md). This will ensure that the development environment is set up correctly, and will also walk you through the basics of Ariakit React, which is necessary to understand the Solid port.
+
+Once you're done, continue with the following steps.
+
+### <a name='Preparingtoportacomponent'></a>Preparing to port a component
+
+The first step is to prepare the file structure.
 
 First, take a look at the component's source in the `ariakit-react-core` package. This is the original React code we're going to port.
 
-The same file structure should be employed in the `ariakit-solid-core` package. We'll copy the original React code into the Solid port, as a starting point.
+The same file structure should be created in the `ariakit-solid-core` package. We'll copy the original React code into the Solid port, as a starting point.
 
 For example, if we plan on porting the `Button` component, we'll copy the `packages/ariakit-react-core/src/button` directory into `packages/ariakit-solid-core/src/button`.
 
-This will include the `button/button.tsx` file, where the (WIP) test
+This will include the `button/button.tsx` file, where `Button` is implemented. In this case, that is the only file in the directory, but other directories may contain more files.
 
-## Port reference
+### <a name='Makingthecomponentpublic'></a>Making the component public
 
-### Terminology
+The core packages are private and internal, end users do not use them directly. Instead, they import components from the `ariakit-solid` and `ariakit-react` packages, which re-export them from the core packages for public consumption.
+
+Like in the previous step, we can copy the original directory from `ariakit-react` into `ariakit-solid`. In our example, we'll copy the `packages/ariakit-react/src/button` directory into `packages/ariakit-solid/src/button`.
+
+Most of the time, due to the simplicity of the "re-exporting" code, it won't be necessary to tweak it.
+
+### <a name='Editordiffingsetup'></a>Editor diffing setup
+
+While optional, it is a very good idea to work on the port with the help of an editor that supports diffing.
+
+Most popular editors support diffing two arbitrary files. It is strongly recommended to use our `akdiff` shell utility to speed up the process: it opens the diff for a component with a simple command. It even supports autocomplete if you're a fish shell user! See the [diff utilities](#diff-utilities) section to set it up.
+
+One of [the guiding principles](#port-principles) of this port is to minimize any differences between the React and Solid codebases. The diff view helps a ton with this.
+
+A small annoyance that can come up with this approach is that, because of minor differences between the two codebases, the indentation of some lines (after automatic code formatting) may not be the same, causing a lot of extra noise in the diff view.
+
+The simplest way to remedy this is to manually tweak the indentation of the relevant fragments in the React code (for example, the body of a hook or component function) to match the Solid code. Just remember not to commit the changes!
+
+### <a name='Solid-ifyingthecode'></a>Solid-ifying the code
+
+> _Pun intended._
+
+Now we're ready to start transforming the React code into Solid code. In general, porting requires a good understanding of both React and Solid.
+
+For the most part, the process of porting is highly systematic. The [port reference](#port-reference) section provides a straightforward guide to transform most patterns.
+
+There are some trickier situations where deeper changes are required due to more fundamental differences between React and Solid. Some might even be hard to spot, which can lead to incorrect or buggy code. Make sure to consult the [special patterns](#special-patterns) section for more information.
+
+Lastly, make sure to follow [the guiding principles](#port-principles), they are very important!
+
+### <a name='Usingtheplayground'></a>Using the playground
+
+Unfortunately, we've not yet figured out how to make examples and tests work with the Solid port. For that reason, in the meantime, we've set up a [playground](../ariakit-solid-playground/README.md) where you can import your component and perform some basic, manual testing.
+
+Check [the playground readme](../ariakit-solid-playground/README.md) to learn more.
+
+### <a name='Examplesandtests'></a>Examples and tests
+
+As mentioned above, we're still figuring out how to make examples and tests work with the Solid port.
+
+If you'd like to help in this area, please participate in [this issue](https://github.com/ariakit/ariakit/issues/1854) before going further.
+
+## <a name='Portprinciples'></a>Port principles
+
+This port has a very important goal: to make a Solid version of Ariakit that is **as close as possible** to the original React implementation in terms of API and behavior.
+
+In practice, this means that we only ever want to deviate from the original logic (as in each of the original lines of code) when it is ABSOLUTELY necessary to do so.
+
+While this goal does create some challenges (as opposed to, for example, a looser approach where differences can be introduced more liberally, like re-implementing some parts to better fit the Solid paradigm), there are many upsides to it, including:
+
+* It allows us to leverage Ariakit's full history of research, development, testing, and bug fixing.
+* It reduces duplication of logic. Ariakit components can be quite complex. Two different implementations means twice the chance for bugs and twice the effort to implement new features.
+* It simplifies the maintenance of the port. Syncing updates and bug fixes from React to Solid is much easier.
+
+To make sure we fulfill this goal, we have established the following principles that contributors to the port must follow:
+
+### <a name='Keepthediffminimal'></a>Keep the diff minimal
+
+The diff view is essential to creating and maintaining the port. Keeping this view useful is a top priority.
+
+This means that, in some cases, we'll sacrifice "better code" (e.g. a better way to implement something in a way that's idiomatic to Solid) in favor of a more minimal diff.
+
+In the big picture, this project is massive. Minimizing diff noise will quickly compound in developer hours, which are a valuable resource since we're all volunteers.
+
+### <a name='Documenteverything'></a>Document everything
+
+This contributing guide is essential to save time (and headaches) as we make progress. It is also a valuable resource when performing maintenance, like syncing with the React packages.
+
+If you spot a new pattern, or an addition to an existing one, make sure to document it here. Similarly, document any "special patterns" or any context that might be useful to fellow contributors.
+
+Additionally, as a convention, we add code comments that start with `[port]:` wherever anything is not self-evident, like when we are forced to deviate from the original logic or pattern.
+
+For example:
+
+```diff
+-role: "group",
++// [port]: Solid type for `role` is more strict, hence the `as const`.
++role: "group" as const,
+```
+
+## <a name='Portreference'></a>Port reference
+
+### <a name='Terminology'></a>Terminology
 
 Due to differences between React and Solid, there are some differences in terminology used between both Ariakit flavors.
 
@@ -37,7 +169,7 @@ Due to differences between React and Solid, there are some differences in termin
 <details>
 <summary>Explanation</summary>
 
-- Elements/instances
+* Elements/instances
 
   React has a virtual DOM, which implies the concept of "React elements" (elements in the React tree, **not in the DOM tree**). A React element can be roughly thought of as something that exists "between React components and the DOM". Since Solid has no virtual DOM, "Solid elements" don't exist.
 
@@ -47,7 +179,7 @@ Due to differences between React and Solid, there are some differences in termin
 
 </details>
 
-### System utilities
+### <a name='Systemutilities'></a>System utilities
 
 "System" utilities are foundational utilities that are used to create components and hooks, among other things. Ariakit Solid has, for the most part, analogous utilities to the React ones.
 
@@ -58,7 +190,7 @@ Due to differences between React and Solid, there are some differences in termin
 |     `useWrapElement()`     | `wrapInstance()` (see section below) |
 |     `createElement()`      |          `createInstance()`          |
 
-### TypeScript types
+### <a name='TypeScripttypes'></a>TypeScript types
 
 These replacements make sense most of the time. There might be cases where a different type is more appropriate.
 
@@ -68,7 +200,7 @@ These replacements make sense most of the time. There might be cases where a dif
 |  `ReactNode`  |  `JSX.Element`   |
 |     `FC`      |   `Component`    |
 
-### Prop "destructuring" and default values
+### <a name='Propdestructuringanddefaultvalues'></a>Prop "destructuring" and default values
 
 Solid doesn't support prop destructuring, so the usual React pattern to separate props (for spreading/chaining the rest) and setting defaults doesn't work.
 
@@ -94,7 +226,7 @@ To simply "destructure" without setting a default value, pass `undefined`:
 +withOptions({ enabled: undefined }, function useMyComponent(props, options) {
 ```
 
-### Prop chaining
+### <a name='Propchaining'></a>Prop chaining
 
 Ariakit makes heavy use of the "prop chaining" pattern. Some examples:
 
@@ -172,7 +304,7 @@ props = mergeProps({
 
 Getters are not necessary for static props.
 
-### State/signals
+### <a name='Statesignals'></a>State/signals
 
 |              React               |                  Solid                   |
 | :------------------------------: | :--------------------------------------: |
@@ -200,11 +332,11 @@ Porting code that involves signals requires good understanding of Solid's reacti
 
 </details>
 
-### Effects
+### <a name='Effects'></a>Effects
 
 TODO: document effects.
 
-### Refs
+### <a name='Refs'></a>Refs
 
 |            React            |            Solid            |
 | :-------------------------: | :-------------------------: |
@@ -244,11 +376,11 @@ However, there is an important difference. The ref can't be passed to the `ref` 
 
 </details>
 
-### Context
+### <a name='Context'></a>Context
 
 TODO: document context.
 
-### JSDoc links
+### <a name='JSDoclinks'></a>JSDoc links
 
 For now, add the `solid` subdomain to any links in JSDoc comments (rewrite `ariakit.org` into `solid.ariakit.org`).
 
@@ -277,7 +409,7 @@ export const Button = /* ... */
 
 </details>
 
-### `useWrapElement`
+### <a name='useWrapElement'></a>`useWrapElement`
 
 Use `wrapInstance` instead. The second argument is not a "render function" since Solid doesn't re-render. Instead, it's a function component.
 
@@ -296,9 +428,9 @@ For this reason, instead of receiving the element being wrapped as the first arg
 +))
 ```
 
-## Special patterns
+## <a name='Specialpatterns'></a>Special patterns
 
-### JSX branches and early returns
+### <a name='JSXbranchesandearlyreturns'></a>JSX branches and early returns
 
 Since React re-runs (re-renders) components and hooks, you can short-circuit to create "branches" in JSX, for example:
 
@@ -319,17 +451,19 @@ return (
 
 This might require some restructuring of the code to preserve the same behavior while pleasing Solid. A good understanding of Solid's reactivity system is required.
 
-### Stable accessors
+### <a name='Stableaccessors'></a>Stable accessors
 
 TODO: document `stableAccessor`.
 
-### Reactive hoisting
+### <a name='Reactivehoisting'></a>Reactive hoisting
 
 TODO: document this. TL;DR in effects and computations, always access reactive values at the top to prevent early returns and other code paths from breaking reactivity.
 
-## Useful tips
+TODO: investigate if worth manually forcing the React linter to detect missing deps in React code, as it would point out values that need to be untracked.
 
-### Diff utilities
+## <a name='Usefultips'></a>Useful tips
+
+### <a name='Diffutilities'></a>Diff utilities
 
 <!-- TODO: .ts files don't work -->
 
@@ -356,7 +490,7 @@ You can easily modify the diff command if you wish. For example, to use `git` in
 +git diff --no-index "$file1" "$file2"
 ```
 
-#### Fish
+#### <a name='Fish'></a>Fish
 
 This one even has completions! Put it in `~/.config/fish/functions/akdiff.fish`.
 
@@ -391,7 +525,7 @@ end
 complete -c akdiff -f -a "(__fish_akdiff_complete_files)"
 ```
 
-#### Bash/Zsh/Sh
+#### <a name='BashZshSh'></a>Bash/Zsh/Sh
 
 No fancy completions, but works in most shells.
 
