@@ -62,7 +62,7 @@ export type ExtractPropsWithDefaultsReturn<P, D extends Partial<P>> = [
 
 /**
  * Extracts props from a props object and applies defaults to them. The
- * return value is a tuple of the extracted props and the rest of the props.
+ * return value is a tuple with the extracted props and the rest.
  *
  * To extract a prop without a default, set it to `undefined`.
  * @example
@@ -75,9 +75,12 @@ export function extractPropsWithDefaults<
   P extends AnyObject,
   const D extends Partial<P>,
 >(props: P, defaults: D): ExtractPropsWithDefaultsReturn<P, D> {
-  const [own, rest] = splitProps(props, Object.keys(defaults));
+  const propsWithDefaults = _mergeProps(defaults, props);
+  const [, rest] = splitProps(props, Object.keys(propsWithDefaults));
   return [
-    _mergeProps(defaults, own),
+    // We return the base props to avoid one more layer. The output types
+    // ensure that only the extracted props can be accessed.
+    props,
     rest,
   ] as unknown as ExtractPropsWithDefaultsReturn<P, D>;
 }
