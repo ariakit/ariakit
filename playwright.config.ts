@@ -63,6 +63,7 @@ export default defineConfig({
     {
       name: "plus",
       testMatch: [/website\/tests\/ariakit-plus/],
+      retries: CI ? 3 : 1,
       use: devices["Desktop Chrome"],
     },
   ],
