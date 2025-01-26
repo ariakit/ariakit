@@ -6,6 +6,7 @@ import {
   type ExtractPropsWithDefaultsRestProps,
   extractPropsWithDefaults,
 } from "./misc.ts";
+import { withPropsSink } from "./props.ts";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 /**
@@ -48,7 +49,10 @@ export function createHook<
   T extends ValidComponent,
   P extends AnyObject = EmptyObject,
 >(useProps: (props: Props<T, P>) => HTMLProps<T, P>) {
-  return useProps as Hook<T, P>;
+  const useRole = (props: Props<T, P> = {} as Props<T, P>) => {
+    return withPropsSink(props, useProps);
+  };
+  return useRole as Hook<T, P>;
 }
 
 /**

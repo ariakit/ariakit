@@ -8,6 +8,7 @@ import {
   createUniqueId,
   splitProps,
 } from "solid-js";
+import { chain } from "./props.ts";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
 /**
@@ -119,7 +120,7 @@ export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
   element: WrapInstanceValue,
 ): Q {
   const wrapInstance = [...(props.wrapInstance ?? []), element];
-  return mergeProps(props as any, { wrapInstance }) as Q;
+  return chain(undefined, props as any, { wrapInstance }) as Q;
 }
 
 /**
