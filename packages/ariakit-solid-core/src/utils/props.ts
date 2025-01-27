@@ -44,70 +44,116 @@ const propTraps: ProxyHandler<{
 // ----------
 
 type PropsObject = Record<string | number | symbol, unknown>;
+type Sources = Array<PropsObject>;
+type SinkState = { sources: Sources; sink: unknown; offset: number };
 
-let sources: Array<PropsObject> | undefined;
-let sink: unknown;
+let state: SinkState | undefined;
 
-function ensure<T>(value: T) {
-  if (!value) throw new Error("Missing value");
-  return value;
+function getSinkState() {
+  if (!state) throw new Error("Missing props sink state");
+  return state;
+}
+
+function ensureSource(source?: PropsObject) {
+  if (!source) throw new Error("Missing props source");
+  return source;
+}
+
+function resolvePropValue(
+  sources: Sources,
+  property: string | number | symbol,
+  { from = 0, to = sources.length }: { from?: number; to?: number } = {},
+) {
+  for (let i = from; i < to; i++) {
+    const v = ensureSource(sources[i])[property];
+    if (v !== undefined) return v;
+  }
+  return undefined;
+}
+
+function createAccessor<V = unknown>(property: string) {
+  const frozenState = getSinkState();
+  const frozenN = frozenState.sources.length;
+  const frozenOffset = frozenState.offset;
+  return () =>
+    resolvePropValue(frozenState.sources, property, {
+      from: frozenState.offset - frozenOffset,
+      to: frozenN + frozenState.offset - frozenOffset,
+    }) as V;
 }
 
 function createPropsSink<T>(props: T) {
-  const localSources: Array<PropsObject> = [props as PropsObject];
-  sources = localSources;
-  const isProxy = props && $PROXY in (props as PropsObject);
+  const sources: Array<PropsObject> = [props as PropsObject];
   // TODO: do something different if props is not a proxy
-  const localSink = new Proxy(
+  // const isProxy = props && $PROXY in (props as PropsObject);
+  const sink = new Proxy(
     {
       get(property: string | number | symbol) {
-        for (let i = localSources.length - 1; i >= 0; i--) {
-          const v = ensure(localSources[i])[property];
-          if (v !== undefined) return v;
+        if (typeof property === "string" && property.startsWith("$")) {
+          return createAccessor(property.substring(1));
         }
+        return resolvePropValue(sources, property);
       },
       has(property: string | number | symbol) {
-        for (let i = localSources.length - 1; i >= 0; i--) {
-          if (property in ensure(localSources[i])) return true;
+        for (let i = 0; i < sources.length; i++) {
+          if (property in ensureSource(sources[i])) return true;
         }
         return false;
       },
       keys() {
         const keys = [];
-        for (let i = 0; i < localSources.length; i++)
-          keys.push(...Object.keys(ensure(localSources[i])));
+        for (let i = 0; i < sources.length; i++)
+          keys.push(...Object.keys(ensureSource(sources[i])));
         return [...new Set(keys)];
       },
     },
     propTraps,
   ) as T;
-  sink = localSink;
-  return localSink;
+  state = { sources, sink, offset: 0 };
+  return sink;
 }
 
 function cleanPropsSink() {
-  sources = undefined;
-  sink = undefined;
+  state = undefined;
 }
 
 export function withPropsSink<T>(props: unknown, fn: (sink: any) => T) {
-  const propsSink = createPropsSink(props);
+  if (state) return fn(state.sink);
+  const sink = createPropsSink(props);
   try {
-    return fn(propsSink);
+    return fn(sink);
   } finally {
     cleanPropsSink();
+    // TODO: re-throw error?
   }
 }
 
 // props chain
 // -----------
 
-function expandDollarGetters<T extends JSX.HTMLAttributes<any>>(props: T) {
+function expandGetterShorthands<T extends JSX.HTMLAttributes<any>>(
+  props: T,
+  withPropPassthrough = false,
+) {
   for (const key in props) {
     if (key.startsWith("$")) {
-      const get = props[key] as () => unknown;
+      let get: () => unknown;
+      const property = key.substring(1);
+      if (withPropPassthrough) {
+        const inputGetter = props[key] as (props: unknown) => unknown;
+        const frozenAccessor = createAccessor(key.substring(1));
+        const stubProps = {};
+        Object.defineProperty(stubProps, property, {
+          get: frozenAccessor,
+          enumerable: true,
+          configurable: true,
+        });
+        get = () => inputGetter(stubProps);
+      } else {
+        get = props[key] as () => unknown;
+      }
       delete props[key];
-      Object.defineProperty(props, key.substring(1), {
+      Object.defineProperty(props, property, {
         get,
         enumerable: true,
         configurable: true,
@@ -116,20 +162,38 @@ function expandDollarGetters<T extends JSX.HTMLAttributes<any>>(props: T) {
   }
 }
 
-type HTMLAttributesWithDollarGetters<T> = {
-  [K in keyof JSX.HTMLAttributes<T> as `$${K}`]: () => JSX.HTMLAttributes<T>[K];
+export type PropsSink<T> = T & {
+  [K in keyof T as K extends string ? `$${K}` : never]-?: () => T[K];
+};
+export type UnwrapPropSinkProps<T> = {
+  [K in keyof T as K extends `$${infer _}` ? never : K]: T[K];
 };
 
-export function chain<T extends JSX.HTMLAttributes<any>>(
-  props: (T & HTMLAttributesWithDollarGetters<T>) | undefined,
-  _originalProps: T,
-  overrides?: T & HTMLAttributesWithDollarGetters<T>,
+type WithGetterShorthands<T, P = UnwrapPropSinkProps<T>> = P & {
+  [K in keyof P as K extends string ? `$${K}` : never]?: () => P[K];
+};
+type WithGetterShorthandsWithPassthrough<T, P = UnwrapPropSinkProps<T>> = P & {
+  [K in keyof P as K extends string ? `$${K}` : never]?: (
+    props: Record<K, P[K]>,
+  ) => P[K];
+};
+
+type Compute<T> = {
+  [K in keyof T]: T[K];
+};
+
+export function $<P extends JSX.HTMLAttributes<any>>(
+  _originalProps: P,
+  props?: NoInfer<WithGetterShorthands<P>>,
 ) {
-  if (!sources || !sink) throw new Error("Missing props sources or sink");
+  const sinkState = getSinkState();
   if (props) {
-    expandDollarGetters(props);
-    sources.push(props as PropsObject);
+    expandGetterShorthands(props);
+    sinkState.sources.push(props as PropsObject);
   }
-  if (overrides) sources.unshift(overrides as PropsObject);
-  return sink as T;
+  return (overrides: WithGetterShorthandsWithPassthrough<P>) => {
+    expandGetterShorthands(overrides, true);
+    sinkState.sources.unshift(overrides as PropsObject);
+    sinkState.offset++;
+  };
 }

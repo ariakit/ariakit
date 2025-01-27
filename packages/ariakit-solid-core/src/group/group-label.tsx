@@ -4,7 +4,8 @@ import {
   onCleanup,
   useContext,
 } from "solid-js";
-import { createId, mergeProps, stableAccessor } from "../utils/misc.ts";
+import { createId } from "../utils/misc.ts";
+import { $ } from "../utils/props.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";
@@ -27,23 +28,19 @@ type TagName = typeof TagName;
 export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
   function useGroupLabel(props) {
     const setLabelId = useContext(GroupLabelContext);
-    const id = createId(stableAccessor(props, (p) => p.id));
+    const idProp = props.$id;
+    const id = () => createId(idProp());
 
     createEffect(() => {
       setLabelId?.(id());
       onCleanup(() => setLabelId?.(undefined));
     });
 
-    props = mergeProps(
-      {
-        $id: id,
-        "aria-hidden": true,
-      },
-      props,
-    );
+    $(props, {
+      $id: id,
+      "aria-hidden": true,
+    });
 
-    // [port]: no need to remove undefined values because `mergeProps` handles it.
-    // TODO: verify that the note above is true. It might actually be because Solid just doesn't render undefined props, but if that's the case it could cause issues with further prop chaining.
     return props;
   },
 );

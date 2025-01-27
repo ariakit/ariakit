@@ -2,13 +2,12 @@ import type { AnyObject } from "@ariakit/core/utils/types";
 import { combineProps } from "@solid-primitives/props";
 import { type MaybeAccessor, access } from "@solid-primitives/utils";
 import {
-  type Accessor,
   type JSX,
   mergeProps as _mergeProps,
   createUniqueId,
   splitProps,
 } from "solid-js";
-import { chain } from "./props.ts";
+import { $ } from "./props.ts";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
 /**
@@ -23,22 +22,6 @@ export function setRef<T>(
   } else if (ref) {
     ref.current = value;
   }
-}
-
-/**
- * Creates a stable accessor. Useful when creating derived accessors that
- * depend on a mutable variable that may change later.
- * @example
- * let value = 0;
- * const accessor = stableAccessor(value, (v) => v + 1);
- * value = 100;
- * accessor(); // 1
- */
-export function stableAccessor<T, U>(
-  value: T,
-  callback: (value: T) => U,
-): () => U {
-  return () => callback(value);
 }
 
 // https://github.com/microsoft/TypeScript/issues/31025#issuecomment-484734942
@@ -91,9 +74,9 @@ export function extractPropsWithDefaults<
  */
 export function createId(
   defaultId?: MaybeAccessor<string | undefined>,
-): Accessor<string> {
+): string {
   const id = createUniqueId();
-  return () => access(defaultId) ?? id;
+  return access(defaultId) ?? id;
 }
 
 /**
@@ -118,9 +101,12 @@ export function extractTagName(
 export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
   props: P & { wrapInstance?: WrapInstance },
   element: WrapInstanceValue,
+  _deps: Array<unknown>, // Only here to minimize the diff noise.
 ): Q {
-  const wrapInstance = [...(props.wrapInstance ?? []), element];
-  return chain(undefined, props as any, { wrapInstance }) as Q;
+  // @ts-expect-error - TODO: fix this type?
+  return $(props)({
+    $wrapInstance: (props) => [...(props.wrapInstance ?? []), element],
+  }) as Q;
 }
 
 /**

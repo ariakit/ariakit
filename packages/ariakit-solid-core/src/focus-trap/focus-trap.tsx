@@ -1,5 +1,5 @@
 import type { ValidComponent } from "solid-js";
-import { mergeProps } from "../utils/misc.ts";
+import { $ } from "../utils/props.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.tsx";
@@ -19,22 +19,24 @@ type TagName = typeof TagName;
  */
 export const useFocusTrap = createHook<TagName, FocusTrapOptions>(
   function useFocusTrap(props) {
-    props = mergeProps(
-      {
-        "data-focus-trap": "",
-        tabIndex: 0,
-        "aria-hidden": true,
-        style: {
-          // Prevents unintended scroll jumps.
-          position: "fixed",
-          top: 0,
-          left: 0,
-        },
-      },
-      props,
-    );
+    $(props, {
+      "data-focus-trap": "",
+      tabIndex: 0,
+      "aria-hidden": true,
+    })({
+      $style: (props) => ({
+        // Prevents unintended scroll jumps.
+        position: "fixed",
+        top: 0,
+        left: 0,
+        // TODO: special case this thing? like, automatically transform into object form under the hood in this getter?
+        // @ts-expect-error
+        ...props.style,
+      }),
+    });
 
-    props = useVisuallyHidden(props);
+    // TODO: possible to reduce diff noise?
+    useVisuallyHidden(props);
 
     return props;
   },

@@ -1,5 +1,5 @@
 import type { ValidComponent } from "solid-js";
-import { mergeProps } from "../utils/misc.ts";
+import { $ } from "../utils/props.ts";
 import { createHook, createInstance, withOptions } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
@@ -19,14 +19,11 @@ export const useSeparator = createHook<TagName, SeparatorOptions>(
   withOptions(
     { orientation: "horizontal" },
     function useSeparator(props, options) {
-      props = mergeProps(
-        {
-          // [port]: Solid type for `role` is more strict, hence the `as const`.
-          role: "separator" as const,
-          "$aria-orientation": () => options.orientation,
-        },
-        props,
-      );
+      $(props)({
+        // [port]: Solid type for `role` is more strict, hence the `as const`.
+        role: "separator" as const,
+        "$aria-orientation": () => options.orientation,
+      });
       return props;
     },
   ),
