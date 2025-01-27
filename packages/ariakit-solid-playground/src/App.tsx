@@ -10,6 +10,7 @@ import { Group } from "@ariakit/solid";
 import { GroupLabel } from "@ariakit/solid";
 import { Separator } from "@ariakit/solid";
 import { FocusTrapRegion } from "@ariakit/solid";
+import { Command } from "@ariakit/solid";
 import {
   FocusTrap,
   useFocusTrap,
@@ -162,6 +163,18 @@ const App: Component = () => {
       <h2>Separator</h2>
       <Separator />
       <Separator orientation="vertical" />
+      <Command onClick={() => console.log("[Command] onClick")}>
+        Command
+      </Command>
+      <Command disabled onClick={() => console.log("[Command] onClick")}>
+        Command disabled
+      </Command>
+      <Command
+        onClick={() => console.log("[Command] onClick")}
+        render={<As.div data-test="command-render" />}
+      >
+        Command as div
+      </Command>
       {/* <h2>Portal (declaration)</h2>
       <Portal
         id="test-id"

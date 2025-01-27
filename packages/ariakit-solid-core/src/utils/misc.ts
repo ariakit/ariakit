@@ -213,3 +213,29 @@ export function mergeProps<T extends JSX.HTMLAttributes<any>>(
   expandDollarGetters(base);
   return combineProps([base, overrides], { reverseEventHandlers: true }) as T;
 }
+
+/**
+ * Passes metadata props around without leaking them to the DOM.
+ */
+export function extractMetadataProps<T, K extends keyof any>(
+  props: {
+    onLoadedMetadata?: JSX.HTMLAttributes<any>["onLoadedMetadata"] & {
+      [key in K]?: T;
+    };
+  },
+  key: K,
+  value: T,
+) {
+  const parent = props.onLoadedMetadata;
+
+  const onLoadedMetadata = () => {
+    return Object.assign(() => {}, { ...parent, [key]: value });
+  };
+
+  return [
+    typeof parent === "function"
+      ? parent?.[key]
+      : parent?.[0](key, parent?.[1]),
+    { onLoadedMetadata },
+  ] as const;
+}
