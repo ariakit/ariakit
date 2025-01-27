@@ -12,9 +12,9 @@ import {
   createEffect,
   createSignal,
 } from "solid-js";
-import { createRef, extractMetadataProps, mergeProps } from "../utils/misc.js";
-import { createHook, createInstance } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import { createRef, extractMetadataProps, mergeProps } from "../utils/misc.ts";
+import { createHook, createInstance } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "button" satisfies ValidComponent;
 type TagName = typeof TagName;
@@ -195,7 +195,7 @@ export const Command = function Command(props: CommandProps) {
 };
 
 // TODO: Extends FocusableOptions when it's available
-export interface CommandOptions {
+export interface CommandOptions extends Options {
   /**
    * If set to `true`, pressing the enter key while this element is focused will
    * trigger a click on the element, regardless of whether it's a native button
