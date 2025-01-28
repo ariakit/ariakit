@@ -210,6 +210,7 @@ type WithGetterShorthandsWithPassthrough<T, P = UnwrapPropSinkProps<T>> = P & {
   ) => P[K];
 };
 
+// TODO: idea - overload the sink itself with this function so we can do $props()
 /**
  * TODO: document
  */
@@ -232,18 +233,21 @@ export function $<P extends JSX.HTMLAttributes<any>>(
 type NullablyRequired<T> = { [P in keyof T & keyof any]: T[P] };
 export type ExtractOptionsOptions<
   P,
-  D extends Partial<R>,
-  R = NullablyRequired<P>,
+  O extends Partial<R>,
+  R = NullablyRequired<UnwrapPropSinkProps<P>>,
 > = {
-  -readonly [K in keyof R as Extract<K, keyof D>]: D[K] extends undefined
+  -readonly [K in keyof R as Extract<K, keyof O>]: O[K] extends undefined
     ? R[K]
     : Exclude<R[K], undefined>;
 };
-export type ExtractOptionsProps<P, D extends Partial<P>> = Omit<P, keyof D>;
-export type ExtractOptionsReturn<P, O extends Partial<P>> = [
-  options: ExtractOptionsOptions<P, O>,
-  props: ExtractOptionsProps<P, O>,
-];
+export type ExtractOptionsProps<
+  P,
+  O extends Partial<UnwrapPropSinkProps<P>>,
+> = Omit<P, keyof O>;
+export type ExtractOptionsReturn<
+  P,
+  O extends Partial<UnwrapPropSinkProps<P>>,
+> = [options: ExtractOptionsOptions<P, O>, props: ExtractOptionsProps<P, O>];
 
 /**
  * Extracts options from a props object and applies defaults to them. The
@@ -256,12 +260,12 @@ export type ExtractOptionsReturn<P, O extends Partial<P>> = [
  *   { orientation: "horizontal" },
  * );
  */
-export function extractOptions<P extends AnyObject, const D extends Partial<P>>(
-  _props: P,
-  defaults: D,
-): ExtractOptionsReturn<P, D> {
+export function extractOptions<
+  P extends AnyObject,
+  const O extends Partial<UnwrapPropSinkProps<P>>,
+>(_props: P, options: O): ExtractOptionsReturn<P, O> {
   const { optionSources, optionKeys, sink } = getSinkState();
-  optionSources.push(defaults as PropsObject);
-  for (const key of Object.keys(defaults)) optionKeys.add(key);
-  return [sink, sink] as unknown as ExtractOptionsReturn<P, D>;
+  optionSources.push(options as PropsObject);
+  for (const key of Object.keys(options)) optionKeys.add(key);
+  return [sink, sink] as unknown as ExtractOptionsReturn<P, O>;
 }
