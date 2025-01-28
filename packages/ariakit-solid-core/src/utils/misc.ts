@@ -103,8 +103,7 @@ export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
   element: WrapInstanceValue,
   _deps: Array<unknown>, // Only here to minimize the diff noise.
 ): Q {
-  // @ts-expect-error - TODO: fix this type?
-  return $(props)({
+  return $(props as JSX.HTMLAttributes<any> & { wrapInstance?: WrapInstance })({
     $wrapInstance: (props) => [...(props.wrapInstance ?? []), element],
   }) as Q;
 }

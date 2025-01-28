@@ -1,6 +1,6 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { createComputed, createRoot, createSignal, mergeProps } from "solid-js";
-import { $ } from "../props.ts";
+import { $, extractOptions } from "../props.ts";
 import { createHook as _createHook } from "../system.tsx";
 
 function root(testFn: () => void | Promise<void>) {
@@ -714,18 +714,28 @@ describe("$ (prop chaining)", () => {
     test(
       "defaults",
       root(() => {
-        const [value, setValue] = createSignal<any>(undefined);
+        const [firstValue, setFirstValue] = createSignal<any>(undefined);
+        const [secondValue, setSecondValue] = createSignal<any>(undefined);
         const useHook = createHook(function useHook(props: any) {
           $(props, {
-            $value: value,
+            $value: secondValue,
+          });
+          $(props, {
+            $value: firstValue,
           });
           return props;
         });
         const props = useHook();
 
         expect(props.value).toBe(undefined);
-        setValue("VALUE");
-        expect(props.value).toBe("VALUE");
+        setFirstValue("FIRST");
+        expect(props.value).toBe("FIRST");
+        setSecondValue("SECOND");
+        expect(props.value).toBe("SECOND");
+        setFirstValue(undefined);
+        expect(props.value).toBe("SECOND");
+        setSecondValue(undefined);
+        expect(props.value).toBe(undefined);
       }),
     );
 
@@ -735,14 +745,10 @@ describe("$ (prop chaining)", () => {
         const [value, setValue] = createSignal<any>(undefined);
         const useHook = createHook(function useHook(props: any) {
           $(props)({
-            $value: (props) => {
-              return { ...props.value, second: 2 };
-            },
+            $value: (props) => ({ ...props.value, second: 2 }),
           });
           $(props)({
-            $value: (props) => {
-              return { ...props.value, third: 3 };
-            },
+            $value: (props) => ({ ...props.value, third: 3 }),
           });
           return props;
         });
@@ -759,65 +765,154 @@ describe("$ (prop chaining)", () => {
   });
 });
 
-describe("prop freezing", () => {
-  test(
-    "static input",
-    root(() => {
-      const [override, setOverride] = createSignal<any>(undefined);
-      let a: any;
-      const useHook = createHook(function useHook(props: any) {
-        const aProp = props.$a;
-        a = () => aProp() ?? "FALLBACK";
-        $(props, {
-          get a() {
-            return a();
-          },
-        })({
-          get a() {
-            return override();
-          },
-        });
-        return props;
-      });
-
-      const [value, setValue] = createSignal<any>(undefined);
-      const props = useHook({
+test(
+  "prop freezing",
+  root(() => {
+    const [override, setOverride] = createSignal<any>(undefined);
+    let frozenA: any;
+    const useHook = createHook(function useHook(props: any) {
+      const aProp = props.$a;
+      frozenA = () => aProp() ?? "FALLBACK";
+      $(props, {
         get a() {
-          return value();
+          return frozenA();
+        },
+      })({
+        get a() {
+          return override();
         },
       });
 
       expect(props.a).toBe("FALLBACK");
-      expect(a()).toBe("FALLBACK");
+      expect(frozenA()).toBe("FALLBACK");
 
       setValue("VALUE");
       expect(props.a).toBe("VALUE");
-      expect(a()).toBe("VALUE");
+      expect(frozenA()).toBe("VALUE");
 
       setValue(undefined);
       expect(props.a).toBe("FALLBACK");
-      expect(a()).toBe("FALLBACK");
+      expect(frozenA()).toBe("FALLBACK");
 
       setOverride("OVERRIDE");
       expect(props.a).toBe("OVERRIDE");
-      expect(a()).toBe("FALLBACK");
+      expect(frozenA()).toBe("FALLBACK");
 
       setValue("VALUE");
       expect(props.a).toBe("OVERRIDE");
-      expect(a()).toBe("VALUE");
+      expect(frozenA()).toBe("VALUE");
 
       setOverride(undefined);
       expect(props.a).toBe("VALUE");
-      expect(a()).toBe("VALUE");
+      expect(frozenA()).toBe("VALUE");
+
+      setValue(undefined);
+
+      return props;
+    });
+
+    const [value, setValue] = createSignal<any>(undefined);
+    const props = useHook({
+      get a() {
+        return value();
+      },
+    });
+
+    expect(props.a).toBe("FALLBACK");
+    expect(frozenA()).toBe("FALLBACK");
+
+    setValue("VALUE");
+    expect(props.a).toBe("VALUE");
+    expect(frozenA()).toBe("VALUE");
+
+    setValue(undefined);
+    expect(props.a).toBe("FALLBACK");
+    expect(frozenA()).toBe("FALLBACK");
+
+    setOverride("OVERRIDE");
+    expect(props.a).toBe("OVERRIDE");
+    expect(frozenA()).toBe("FALLBACK");
+
+    setValue("VALUE");
+    expect(props.a).toBe("OVERRIDE");
+    expect(frozenA()).toBe("VALUE");
+
+    setOverride(undefined);
+    expect(props.a).toBe("VALUE");
+    expect(frozenA()).toBe("VALUE");
+  }),
+);
+
+describe("extract options (with defaults)", () => {
+  test(
+    "without shadowed props",
+    root(() => {
+      const [dynamicOption, setDynamicOption] = createSignal<any>(undefined);
+      const [dynamicOptionOuter, setDynamicOptionOuter] =
+        createSignal<any>(undefined);
+
+      const useHook = createHook(function useHook(_props: any) {
+        const [options, props] = extractOptions<any, any>(_props, {
+          staticOption: undefined,
+          staticUndefinedOption: undefined,
+          staticOptionWithDefault: "STATIC WITH DEFAULT",
+          staticOptionWithOverridenDefault: "STATIC WITH OVERRIDEN DEFAULT",
+          get dynamicOption() {
+            return dynamicOption();
+          },
+        });
+
+        expect(options.staticOption).toBe("STATIC OUTER");
+        expect(options.staticUndefinedOption).toBe(undefined);
+        expect(options.staticOptionWithDefault).toBe("STATIC WITH DEFAULT");
+        expect(options.staticOptionWithOverridenDefault).toBe(
+          "STATIC WITH OVERRIDEN DEFAULT OUTER",
+        );
+        expect(options.dynamicOption).toBe(undefined);
+
+        setDynamicOption("DYNAMIC");
+        expect(options.dynamicOption).toBe("DYNAMIC");
+        setDynamicOptionOuter("DYNAMIC OUTER");
+        expect(options.dynamicOption).toBe("DYNAMIC OUTER");
+        setDynamicOption(undefined);
+        expect(options.dynamicOption).toBe("DYNAMIC OUTER");
+        return props;
+      });
+
+      const [dynamicProp, setDynamicProp] = createSignal<any>(undefined);
+      const props = useHook({
+        staticOption: "STATIC OUTER",
+        staticOptionWithOverridenDefault: "STATIC WITH OVERRIDEN DEFAULT OUTER",
+        get dynamicOption() {
+          return dynamicOptionOuter();
+        },
+        staticProp: "STATIC PROP",
+        get dynamicProp() {
+          return dynamicProp();
+        },
+      });
+
+      expect(Object.keys(props).sort()).toEqual(["dynamicProp", "staticProp"]);
+      expect(props.staticProp).toBe("STATIC PROP");
+      expect(props.dynamicProp).toBe(undefined);
+
+      setDynamicProp("DYNAMIC PROP");
+      expect(props.dynamicProp).toBe("DYNAMIC PROP");
     }),
   );
 });
 
 // TODO:
-// - prop splitting
-// - prop splitting with shadowed props
+// - extract options: adjust types
+// - extract options: getter shorthand?
+// - extract options: test IRL
+// - extract options: withOptions or nah?
+// - extract options with shadowed props
 // - optimizations:
 //   - handle when input props are not proxy
-//   - cache static values
+//   - cache/collapse static values
+//     - between sources?
+//     - at end?
+//     - at frozen accessors?
 //   - cache keys
 //   - add memos

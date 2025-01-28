@@ -1,3 +1,4 @@
+import type { AnyObject } from "@ariakit/core/utils/types";
 import { $PROXY, type JSX } from "solid-js";
 
 // prop traps
@@ -45,7 +46,14 @@ const propTraps: ProxyHandler<{
 
 type PropsObject = Record<string | number | symbol, unknown>;
 type Sources = Array<PropsObject>;
-type SinkState = { sources: Sources; sink: unknown; offset: number };
+type SinkState = {
+  isProxy: boolean;
+  sources: Sources;
+  optionSources: Sources;
+  optionKeys: Set<string>;
+  sink: unknown;
+  offset: number;
+};
 
 let state: SinkState | undefined;
 
@@ -59,13 +67,25 @@ function ensureSource(source?: PropsObject) {
   return source;
 }
 
+function resolveSource(
+  { sources, optionSources }: Pick<SinkState, "sources" | "optionSources">,
+  i: number,
+) {
+  return i < sources.length ? sources[i] : optionSources[i - sources.length];
+}
+
 function resolvePropValue(
-  sources: Sources,
+  { sources, optionSources }: Pick<SinkState, "sources" | "optionSources">,
   property: string | number | symbol,
-  { from = 0, to = sources.length }: { from?: number; to?: number } = {},
+  {
+    from = 0,
+    to = sources.length + optionSources.length,
+  }: { from?: number; to?: number } = {},
 ) {
   for (let i = from; i < to; i++) {
-    const v = ensureSource(sources[i])[property];
+    const v = ensureSource(resolveSource({ sources, optionSources }, i))[
+      property
+    ];
     if (v !== undefined) return v;
   }
   return undefined;
@@ -76,23 +96,26 @@ function createAccessor<V = unknown>(property: string) {
   const frozenN = frozenState.sources.length;
   const frozenOffset = frozenState.offset;
   return () =>
-    resolvePropValue(frozenState.sources, property, {
+    resolvePropValue(frozenState, property, {
       from: frozenState.offset - frozenOffset,
       to: frozenN + frozenState.offset - frozenOffset,
     }) as V;
 }
 
 function createPropsSink<T>(props: T) {
+  // TODO: do something different (more optimal) if props is not a proxy
+  // biome-ignore lint/style/useConst: <explanation>
+  let localState: SinkState;
+  const isProxy = props && $PROXY in (props as PropsObject);
   const sources: Array<PropsObject> = [props as PropsObject];
-  // TODO: do something different if props is not a proxy
-  // const isProxy = props && $PROXY in (props as PropsObject);
+  const optionSources: Array<PropsObject> = [];
+  const optionKeys = new Set<string>();
   const sink = new Proxy(
     {
       get(property: string | number | symbol) {
-        if (typeof property === "string" && property.startsWith("$")) {
+        if (typeof property === "string" && property.startsWith("$"))
           return createAccessor(property.substring(1));
-        }
-        return resolvePropValue(sources, property);
+        return resolvePropValue({ sources, optionSources }, property);
       },
       has(property: string | number | symbol) {
         for (let i = 0; i < sources.length; i++) {
@@ -101,15 +124,24 @@ function createPropsSink<T>(props: T) {
         return false;
       },
       keys() {
-        const keys = [];
+        const keys = new Set<string>();
         for (let i = 0; i < sources.length; i++)
-          keys.push(...Object.keys(ensureSource(sources[i])));
+          for (const key of Object.keys(ensureSource(sources[i])))
+            if (!optionKeys.has(key)) keys.add(key);
         return [...new Set(keys)];
       },
     },
     propTraps,
   ) as T;
-  state = { sources, sink, offset: 0 };
+  localState = {
+    isProxy,
+    sources,
+    optionSources,
+    optionKeys,
+    sink,
+    offset: 0,
+  };
+  state = localState;
   return sink;
 }
 
@@ -178,10 +210,9 @@ type WithGetterShorthandsWithPassthrough<T, P = UnwrapPropSinkProps<T>> = P & {
   ) => P[K];
 };
 
-type Compute<T> = {
-  [K in keyof T]: T[K];
-};
-
+/**
+ * TODO: document
+ */
 export function $<P extends JSX.HTMLAttributes<any>>(
   _originalProps: P,
   props?: NoInfer<WithGetterShorthands<P>>,
@@ -196,4 +227,41 @@ export function $<P extends JSX.HTMLAttributes<any>>(
     sinkState.sources.unshift(overrides as PropsObject);
     sinkState.offset++;
   };
+}
+
+type NullablyRequired<T> = { [P in keyof T & keyof any]: T[P] };
+export type ExtractOptionsOptions<
+  P,
+  D extends Partial<R>,
+  R = NullablyRequired<P>,
+> = {
+  -readonly [K in keyof R as Extract<K, keyof D>]: D[K] extends undefined
+    ? R[K]
+    : Exclude<R[K], undefined>;
+};
+export type ExtractOptionsProps<P, D extends Partial<P>> = Omit<P, keyof D>;
+export type ExtractOptionsReturn<P, O extends Partial<P>> = [
+  options: ExtractOptionsOptions<P, O>,
+  props: ExtractOptionsProps<P, O>,
+];
+
+/**
+ * Extracts options from a props object and applies defaults to them. The
+ * return value is a tuple with the extracted options and the rest of the props.
+ *
+ * To extract an option without a default, set it to `undefined`.
+ * @example
+ * const [options, props] = extractOptions(
+ *   originalProps,
+ *   { orientation: "horizontal" },
+ * );
+ */
+export function extractOptions<P extends AnyObject, const D extends Partial<P>>(
+  _props: P,
+  defaults: D,
+): ExtractOptionsReturn<P, D> {
+  const { optionSources, optionKeys, sink } = getSinkState();
+  optionSources.push(defaults as PropsObject);
+  for (const key of Object.keys(defaults)) optionKeys.add(key);
+  return [sink, sink] as unknown as ExtractOptionsReturn<P, D>;
 }
