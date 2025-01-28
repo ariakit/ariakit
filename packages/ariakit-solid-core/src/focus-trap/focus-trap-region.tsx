@@ -2,8 +2,8 @@ import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { mergeRefs } from "@solid-primitives/refs";
 import { Show, type ValidComponent } from "solid-js";
 import { createRef, wrapInstance } from "../utils/misc.ts";
-import { $ } from "../utils/props.ts";
-import { createHook, createInstance, withOptions } from "../utils/system.tsx";
+import { $, extractOptions } from "../utils/props.ts";
+import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusTrap } from "./focus-trap.tsx";
 
@@ -21,7 +21,8 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * ```
  */
 export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
-  withOptions({ enabled: false }, function useFocusTrapRegion(props, options) {
+  function useFocusTrapRegion($props) {
+    const [options, props] = extractOptions($props, { enabled: false });
     const ref = createRef<HTMLType>();
 
     wrapInstance(
@@ -70,7 +71,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
     });
 
     return props;
-  }),
+  },
 );
 
 /**

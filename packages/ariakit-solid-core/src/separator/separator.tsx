@@ -1,6 +1,6 @@
 import type { ValidComponent } from "solid-js";
-import { $ } from "../utils/props.ts";
-import { createHook, createInstance, withOptions } from "../utils/system.tsx";
+import { $, extractOptions } from "../utils/props.ts";
+import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "hr" satisfies ValidComponent;
@@ -16,17 +16,18 @@ type TagName = typeof TagName;
  * ```
  */
 export const useSeparator = createHook<TagName, SeparatorOptions>(
-  withOptions(
-    { orientation: "horizontal" },
-    function useSeparator(props, options) {
-      $(props)({
-        // [port]: Solid type for `role` is more strict, hence the `as const`.
-        role: "separator" as const,
-        "$aria-orientation": () => options.orientation,
-      });
-      return props;
-    },
-  ),
+  function useSeparator($props) {
+    const [options, props] = extractOptions($props, {
+      orientation: "horizontal",
+    });
+    $(props)({
+      // TODO: document pattern and remove comment
+      // [port]: Solid type for `role` is more strict, hence the `as const`.
+      role: "separator" as const,
+      "$aria-orientation": () => options.orientation,
+    });
+    return props;
+  },
 );
 
 /**

@@ -950,7 +950,6 @@ describe("extract options (with defaults)", () => {
 // - extract options: adjust types
 // - extract options: getter shorthand?
 // - extract options: test IRL
-// - extract options: withOptions or nah?
 // - extract options with shadowed props
 // - optimizations:
 //   - handle when input props are not proxy

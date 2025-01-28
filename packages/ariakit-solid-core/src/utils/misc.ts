@@ -1,6 +1,5 @@
-import type { AnyObject } from "@ariakit/core/utils/types";
 import { type MaybeAccessor, access } from "@solid-primitives/utils";
-import { type JSX, createUniqueId, mergeProps, splitProps } from "solid-js";
+import { type JSX, createUniqueId } from "solid-js";
 import { $ } from "./props.ts";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
@@ -16,51 +15,6 @@ export function setRef<T>(
   } else if (ref) {
     ref.current = value;
   }
-}
-
-// https://github.com/microsoft/TypeScript/issues/31025#issuecomment-484734942
-type NullablyRequired<T> = { [P in keyof T & keyof any]: T[P] };
-export type ExtractPropsWithDefaultsExtractedProps<
-  P,
-  D extends Partial<R>,
-  R = NullablyRequired<P>,
-> = {
-  -readonly [K in keyof R as Extract<K, keyof D>]: D[K] extends undefined
-    ? R[K]
-    : Exclude<R[K], undefined>;
-};
-export type ExtractPropsWithDefaultsRestProps<P, D extends Partial<P>> = Omit<
-  P,
-  keyof D
->;
-export type ExtractPropsWithDefaultsReturn<P, D extends Partial<P>> = [
-  ExtractPropsWithDefaultsExtractedProps<P, D>,
-  ExtractPropsWithDefaultsRestProps<P, D>,
-];
-
-/**
- * Extracts props from a props object and applies defaults to them. The
- * return value is a tuple with the extracted props and the rest.
- *
- * To extract a prop without a default, set it to `undefined`.
- * @example
- * const [extractedProps, restProps] = extractPropsWithDefaults(
- *   props,
- *   { orientation: "horizontal" },
- * );
- */
-export function extractPropsWithDefaults<
-  P extends AnyObject,
-  const D extends Partial<P>,
->(props: P, defaults: D): ExtractPropsWithDefaultsReturn<P, D> {
-  const propsWithDefaults = mergeProps(defaults, props);
-  const [, rest] = splitProps(props, Object.keys(propsWithDefaults));
-  return [
-    // We return the base props to avoid one more layer. The output types
-    // ensure that only the extracted props can be accessed.
-    props,
-    rest,
-  ] as unknown as ExtractPropsWithDefaultsReturn<P, D>;
 }
 
 /**
