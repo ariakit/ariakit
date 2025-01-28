@@ -1,12 +1,6 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
-import { combineProps } from "@solid-primitives/props";
 import { type MaybeAccessor, access } from "@solid-primitives/utils";
-import {
-  type JSX,
-  mergeProps as _mergeProps,
-  createUniqueId,
-  splitProps,
-} from "solid-js";
+import { type JSX, createUniqueId, mergeProps, splitProps } from "solid-js";
 import { $ } from "./props.ts";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
@@ -59,7 +53,7 @@ export function extractPropsWithDefaults<
   P extends AnyObject,
   const D extends Partial<P>,
 >(props: P, defaults: D): ExtractPropsWithDefaultsReturn<P, D> {
-  const propsWithDefaults = _mergeProps(defaults, props);
+  const propsWithDefaults = mergeProps(defaults, props);
   const [, rest] = splitProps(props, Object.keys(propsWithDefaults));
   return [
     // We return the base props to avoid one more layer. The output types
@@ -172,33 +166,4 @@ export function createRef<T>(initialValue?: any): RefObject<T> {
       value = newValue;
     },
   };
-}
-
-function expandDollarGetters<T extends JSX.HTMLAttributes<any>>(props: T) {
-  for (const key in props) {
-    if (key.startsWith("$")) {
-      const get = props[key] as () => unknown;
-      delete props[key];
-      Object.defineProperty(props, key.substring(1), {
-        get,
-        enumerable: true,
-        configurable: true,
-      });
-    }
-  }
-}
-
-type HTMLAttributesWithDollarGetters<T> = {
-  [K in keyof JSX.HTMLAttributes<T> as `$${K}`]: () => JSX.HTMLAttributes<T>[K];
-};
-
-/**
- * Merges two sets of props.
- */
-export function mergeProps<T extends JSX.HTMLAttributes<any>>(
-  base: T & HTMLAttributesWithDollarGetters<T>,
-  overrides: T,
-) {
-  expandDollarGetters(base);
-  return combineProps([base, overrides], { reverseEventHandlers: true }) as T;
 }

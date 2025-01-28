@@ -1,6 +1,6 @@
+import { combineProps } from "@solid-primitives/props";
 import type { Component, ComponentProps, JSX, ValidComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { mergeProps } from "../utils/misc.ts";
 
 type AsElements = {
   [K in keyof JSX.IntrinsicElements]: Component<ComponentProps<K>>;
@@ -35,7 +35,7 @@ export const As = new Proxy(
     return ((parentProps: unknown) => (
       // TODO: replace with LazyDynamic
       <Dynamic
-        {...mergeProps(parentProps, props)}
+        {...combineProps([parentProps, props], { reverseEventHandlers: true })}
         component={props.component}
       />
     )) as unknown as JSX.Element;
@@ -47,7 +47,12 @@ export const As = new Proxy(
         component = function AsElement(props: any): JSX.Element {
           return ((parentProps: unknown) => (
             // TODO: replace with LazyDynamic
-            <Dynamic {...mergeProps(parentProps, props)} component={key} />
+            <Dynamic
+              {...combineProps([parentProps, props], {
+                reverseEventHandlers: true,
+              })}
+              component={key}
+            />
           )) as unknown as JSX.Element;
         };
         cache.set(key, component);
