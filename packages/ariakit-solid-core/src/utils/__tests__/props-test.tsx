@@ -847,10 +847,45 @@ describe("extract options (with defaults)", () => {
   test(
     "without shadowed props",
     root(() => {
+      const [nestedDynamicOption, setNestedDynamicOption] =
+        createSignal<any>(undefined);
+      const [nestedDynamicOptionOuter, setNestedDynamicOptionOuter] =
+        createSignal<any>(undefined);
+      const useNestedHook = createHook(function useNestedHook(_props: any) {
+        const [options, props] = extractOptions<any, any>(_props, {
+          nestedStaticOption: undefined,
+          nestedStaticUndefinedOption: undefined,
+          nestedStaticOptionWithDefault: "NESTED STATIC WITH DEFAULT",
+          nestedStaticOptionWithOverridenDefault:
+            "NESTED STATIC WITH OVERRIDEN DEFAULT",
+          get nestedDynamicOption() {
+            return nestedDynamicOption();
+          },
+        });
+
+        expect(options.nestedStaticOption).toBe("NESTED STATIC OUTER");
+        expect(options.nestedStaticUndefinedOption).toBe(undefined);
+        expect(options.nestedStaticOptionWithDefault).toBe(
+          "NESTED STATIC WITH DEFAULT",
+        );
+        expect(options.nestedStaticOptionWithOverridenDefault).toBe(
+          "NESTED STATIC WITH OVERRIDEN DEFAULT OUTER",
+        );
+        expect(options.nestedDynamicOption).toBe(undefined);
+
+        setNestedDynamicOption("NESTED DYNAMIC");
+        expect(options.nestedDynamicOption).toBe("NESTED DYNAMIC");
+        setNestedDynamicOptionOuter("NESTED DYNAMIC OUTER");
+        expect(options.nestedDynamicOption).toBe("NESTED DYNAMIC OUTER");
+        setNestedDynamicOption(undefined);
+        expect(options.nestedDynamicOption).toBe("NESTED DYNAMIC OUTER");
+
+        return props;
+      });
+
       const [dynamicOption, setDynamicOption] = createSignal<any>(undefined);
       const [dynamicOptionOuter, setDynamicOptionOuter] =
         createSignal<any>(undefined);
-
       const useHook = createHook(function useHook(_props: any) {
         const [options, props] = extractOptions<any, any>(_props, {
           staticOption: undefined,
@@ -876,6 +911,9 @@ describe("extract options (with defaults)", () => {
         expect(options.dynamicOption).toBe("DYNAMIC OUTER");
         setDynamicOption(undefined);
         expect(options.dynamicOption).toBe("DYNAMIC OUTER");
+
+        useNestedHook(props);
+
         return props;
       });
 
@@ -885,6 +923,12 @@ describe("extract options (with defaults)", () => {
         staticOptionWithOverridenDefault: "STATIC WITH OVERRIDEN DEFAULT OUTER",
         get dynamicOption() {
           return dynamicOptionOuter();
+        },
+        nestedStaticOption: "NESTED STATIC OUTER",
+        nestedStaticOptionWithOverridenDefault:
+          "NESTED STATIC WITH OVERRIDEN DEFAULT OUTER",
+        get nestedDynamicOption() {
+          return nestedDynamicOptionOuter();
         },
         staticProp: "STATIC PROP",
         get dynamicProp() {
