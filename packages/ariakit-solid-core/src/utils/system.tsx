@@ -1,14 +1,24 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import { type ValidComponent, splitProps } from "solid-js";
+import { type Component, type ValidComponent, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import { type PropsSink, withPropsSink } from "./props.ts";
+import { type PropsSink, withPropsSink } from "./_props.ts";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
+
+/**
+ * **This is an Ariakit Solid stub.** Original docs below.
+ *
+ * The same as `React.forwardRef` but passes the `ref` as a prop and returns a
+ * component with the same generic type.
+ */
+export function forwardRef<T extends Component<any>>(component: T) {
+  return component;
+}
 
 /**
  * Creates a Solid component instance that supports the `render` and
  * `wrapInstance` props.
  */
-export function createInstance(
+export function createElement(
   Component: ValidComponent,
   props: Props<ValidComponent, Options>,
 ) {
@@ -37,8 +47,10 @@ export function createInstance(
 }
 
 /**
+ * **This is an Ariakit Solid stub.** Original docs below.
+ *
  * Creates a component hook that accepts props and returns props so they can be
- * passed to a Solid component.
+ * passed to a React element.
  */
 export function createHook<
   T extends ValidComponent,

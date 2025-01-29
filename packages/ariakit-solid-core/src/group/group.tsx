@@ -1,11 +1,15 @@
-import { type ValidComponent, createSignal } from "solid-js";
-import { wrapInstance } from "../utils/misc.ts";
-import { $ } from "../utils/props.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
+import {
+  type ElementType,
+  removeUndefinedValues,
+  useState,
+} from "../utils/_port.ts";
+import { $ } from "../utils/_props.ts";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";
 
-const TagName = "div" satisfies ValidComponent;
+const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
@@ -19,25 +23,24 @@ type TagName = typeof TagName;
  */
 export const useGroup = createHook<TagName, GroupOptions>(
   function useGroup(props) {
-    const [labelId, setLabelId] = createSignal<string>();
+    const [labelId, setLabelId] = useState<string>();
 
-    props = wrapInstance(
+    props = useWrapElement(
       props,
-      (wrapperProps) => (
+      (element) => (
         <GroupLabelContext.Provider value={setLabelId}>
-          {wrapperProps.children}
+          {element.children}
         </GroupLabelContext.Provider>
       ),
       [],
     );
 
     $(props, {
-      // [port]: Solid type for `role` is more strict, hence the `as const`.
-      role: "group" as const,
+      role: "group",
       "$aria-labelledby": labelId,
     });
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -51,14 +54,14 @@ export const useGroup = createHook<TagName, GroupOptions>(
  * <Group>Group</Group>
  * ```
  */
-export const Group = function Group(props: GroupProps) {
+export const Group = forwardRef(function Group(props: GroupProps) {
   const htmlProps = useGroup(props);
-  return createInstance(TagName, htmlProps);
-};
+  return createElement(TagName, htmlProps);
+});
 
-export type GroupOptions<_T extends ValidComponent = TagName> = Options;
+export type GroupOptions<_T extends ElementType = TagName> = Options;
 
-export type GroupProps<T extends ValidComponent = TagName> = Props<
+export type GroupProps<T extends ElementType = TagName> = Props<
   T,
   GroupOptions<T>
 >;

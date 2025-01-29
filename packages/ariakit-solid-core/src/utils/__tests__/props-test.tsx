@@ -1,6 +1,6 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { createComputed, createRoot, createSignal, mergeProps } from "solid-js";
-import { $, extractOptions } from "../props.ts";
+import { $, $o } from "../_props.ts";
 import { createHook as _createHook } from "../system.tsx";
 
 function root(testFn: () => void | Promise<void>) {
@@ -852,7 +852,7 @@ describe("extract options (with defaults)", () => {
       const [nestedDynamicOptionOuter, setNestedDynamicOptionOuter] =
         createSignal<any>(undefined);
       const useNestedHook = createHook(function useNestedHook(_props: any) {
-        const [options, props] = extractOptions<any, any>(_props, {
+        const [options, props] = $o<any, any>(_props, {
           nestedStaticOption: undefined,
           nestedStaticUndefinedOption: undefined,
           nestedStaticOptionWithDefault: "NESTED STATIC WITH DEFAULT",
@@ -887,7 +887,7 @@ describe("extract options (with defaults)", () => {
       const [dynamicOptionOuter, setDynamicOptionOuter] =
         createSignal<any>(undefined);
       const useHook = createHook(function useHook(_props: any) {
-        const [options, props] = extractOptions<any, any>(_props, {
+        const [options, props] = $o<any, any>(_props, {
           staticOption: undefined,
           staticUndefinedOption: undefined,
           staticOptionWithDefault: "STATIC WITH DEFAULT",

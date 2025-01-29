@@ -1,9 +1,9 @@
-import type { ValidComponent } from "solid-js";
-import { $, extractOptions } from "../utils/props.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
+import type { ElementType } from "../utils/_port.ts";
+import { $, $o } from "../utils/_props.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
-const TagName = "hr" satisfies ValidComponent;
+const TagName = "hr" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
@@ -16,15 +16,11 @@ type TagName = typeof TagName;
  * ```
  */
 export const useSeparator = createHook<TagName, SeparatorOptions>(
-  function useSeparator($props) {
-    const [options, props] = extractOptions($props, {
-      orientation: "horizontal",
-    });
+  function useSeparator(__) {
+    const [_, props] = $o(__, { orientation: "horizontal" });
     $(props)({
-      // TODO: document pattern and remove comment
-      // [port]: Solid type for `role` is more strict, hence the `as const`.
-      role: "separator" as const,
-      "$aria-orientation": () => options.orientation,
+      role: "separator",
+      "$aria-orientation": () => _.orientation,
     });
     return props;
   },
@@ -38,12 +34,12 @@ export const useSeparator = createHook<TagName, SeparatorOptions>(
  * <Separator orientation="horizontal" />
  * ```
  */
-export const Separator = function Separator(props: SeparatorProps) {
+export const Separator = forwardRef(function Separator(props: SeparatorProps) {
   const htmlProps = useSeparator(props);
-  return createInstance(TagName, htmlProps);
-};
+  return createElement(TagName, htmlProps);
+});
 
-export interface SeparatorOptions<_T extends ValidComponent = TagName>
+export interface SeparatorOptions<_T extends ElementType = TagName>
   extends Options {
   /**
    * The orientation of the separator.
@@ -52,7 +48,7 @@ export interface SeparatorOptions<_T extends ValidComponent = TagName>
   orientation?: "horizontal" | "vertical";
 }
 
-export type SeparatorProps<T extends ValidComponent = TagName> = Props<
+export type SeparatorProps<T extends ElementType = TagName> = Props<
   T,
   SeparatorOptions<T>
 >;

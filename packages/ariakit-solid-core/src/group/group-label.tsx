@@ -1,16 +1,16 @@
+import { useContext } from "solid-js";
 import {
-  type ValidComponent,
-  createEffect,
-  onCleanup,
-  useContext,
-} from "solid-js";
-import { createId } from "../utils/misc.ts";
-import { $ } from "../utils/props.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
+  type ElementType,
+  removeUndefinedValues,
+  useEffect,
+} from "../utils/_port.ts";
+import { $ } from "../utils/_props.ts";
+import { useId } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";
 
-const TagName = "div" satisfies ValidComponent;
+const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
@@ -29,11 +29,13 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
   function useGroupLabel(props) {
     const setLabelId = useContext(GroupLabelContext);
     const idProp = props.$id;
-    const id = () => createId(idProp());
+    const id = () => useId(idProp());
 
-    createEffect(() => {
-      setLabelId?.(id());
-      onCleanup(() => setLabelId?.(undefined));
+    useEffect(() => {
+      const $setLabelId = setLabelId;
+      const $id = id();
+      setLabelId?.($id);
+      return () => $setLabelId?.(undefined);
     });
 
     $(props, {
@@ -41,7 +43,7 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
       "aria-hidden": true,
     });
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -57,15 +59,17 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
  * </Group>
  * ```
  */
-export const GroupLabel = function GroupLabel(props: GroupLabelProps) {
+export const GroupLabel = forwardRef(function GroupLabel(
+  props: GroupLabelProps,
+) {
   const htmlProps = useGroupLabel(props);
-  return createInstance(TagName, htmlProps);
-};
+  return createElement(TagName, htmlProps);
+});
 
-export interface GroupLabelOptions<_T extends ValidComponent = TagName>
+export interface GroupLabelOptions<_T extends ElementType = TagName>
   extends Options {}
 
-export type GroupLabelProps<T extends ValidComponent = TagName> = Props<
+export type GroupLabelProps<T extends ElementType = TagName> = Props<
   T,
   GroupLabelOptions<T>
 >;
