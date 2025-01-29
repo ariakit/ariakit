@@ -1,13 +1,12 @@
-import { type Component, createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 
-import "./App.css";
 import { Role } from "@ariakit/solid";
 import { As } from "@ariakit/solid";
 import { VisuallyHidden } from "@ariakit/solid";
 import { HeadingLevel } from "@ariakit/solid";
 import { Heading } from "@ariakit/solid";
-import { Group } from "@ariakit/solid";
-import { GroupLabel } from "@ariakit/solid";
+// import { Group } from "@ariakit/solid";
+// import { GroupLabel } from "@ariakit/solid";
 import { Separator } from "@ariakit/solid";
 import { FocusTrapRegion } from "@ariakit/solid";
 import {
@@ -15,16 +14,7 @@ import {
   useFocusTrap,
 } from "@ariakit/solid-core/focus-trap/focus-trap";
 
-declare module "solid-js" {
-  namespace JSX {
-    interface HTMLAttributes<T> {
-      [key: `data-${string}`]: string;
-    }
-  }
-}
-
-const App: Component = () => {
-  const [dynamic, setDynamic] = createSignal(true);
+export default function Rest() {
   let focusTargetRef!: HTMLButtonElement;
   let focusTarget2Ref!: HTMLButtonElement;
   const [focusTrapRegionEnabled, setFocusTrapRegionEnabled] =
@@ -36,68 +26,6 @@ const App: Component = () => {
   let portalTargetRef!: HTMLDivElement;
   return (
     <div>
-      <h1>LEGEND (color by tag)</h1>
-      <p>p</p>
-      <span>span</span>
-      <button>button</button>
-      <h1>EXAMPLES</h1>
-      <h2>Render with "As"</h2>
-      <Role.span>span</Role.span>
-      <Role.span render={<As.button />}>
-        span (with children) + button
-      </Role.span>
-      <Role.span
-        render={<As.button>span + button (with children)</As.button>}
-      />
-      <Role.span
-        render={
-          <As.button>
-            if you're reading this, it worked (children override)
-          </As.button>
-        }
-      >
-        this shouldn't be visible
-      </Role.span>
-      <Role.span
-        data-test="if you're reading this, it worked"
-        render={
-          <As.button data-test={undefined}>
-            data-test: undefined (inspect me)
-          </As.button>
-        }
-      />
-      <Role.button>button</Role.button>
-      <Role.button render={<As.span>button + span</As.span>} />
-      <h2>Render with "As" - class merging</h2>
-      <Role.button class="a" render={<As.button class="a" />}>
-        (i should have ".a")
-      </Role.button>
-      <Role.button render={<As.button class="b" />}>
-        (i should have ".b")
-      </Role.button>
-      <Role.button class="a" render={<As.button class="b" />}>
-        (i should have ".a" and ".b")
-      </Role.button>
-      <h2>Render with "As" - reactive tag (click to toggle)</h2>
-      <Role.button
-        onClick={() => setDynamic((value) => !value)}
-        render={
-          dynamic() ? <As.span>button + span</As.span> : <As.p>button + p</As.p>
-        }
-      />
-      <h2>Render with function</h2>
-      <Role.div
-        data-test="a"
-        render={(props) => (
-          <button
-            type="button"
-            {...props}
-            data-test={`${props["data-test"]} + b`}
-          />
-        )}
-      >
-        I should be a button with type="button" and data-test="a + b"
-      </Role.div>
       <h2>Visually hidden (inspect)</h2>
       Here: <VisuallyHidden>Hello I'm hidden</VisuallyHidden>
       <h2>Focus trap (tab into it)</h2>
@@ -153,12 +81,13 @@ const App: Component = () => {
         </HeadingLevel>
       </HeadingLevel>
       <h2>Group</h2>
-      <Group>
+      {/* TODO: this is currently broken */}
+      {/* <Group>
         <GroupLabel>Label</GroupLabel>
       </Group>
       <Group>
         <GroupLabel id="my-id">Label with id</GroupLabel>
-      </Group>
+      </Group> */}
       <h2>Separator</h2>
       <Separator />
       <Separator orientation="vertical" />
@@ -217,6 +146,4 @@ const App: Component = () => {
       <button>4</button> */}
     </div>
   );
-};
-
-export default App;
+}
