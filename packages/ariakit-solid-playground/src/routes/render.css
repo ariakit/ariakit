@@ -23,13 +23,13 @@ button {
 }
 
 .a::before {
-  content: '[.a]';
+  content: "[.a]";
   background: black;
   margin-right: 1rem;
 }
 
 .b::after {
-  content: '[.b]';
+  content: "[.b]";
   background: black;
   margin-left: 1rem;
 }
