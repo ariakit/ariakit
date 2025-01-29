@@ -210,7 +210,7 @@ type WithGetterShorthandsWithPassthrough<T, P = UnwrapPropSinkProps<T>> = P & {
   ) => P[K];
 };
 
-// TODO: idea - overload the sink itself with this function so we can do $props()
+// TODO: idea - overload the sink itself with this function so we can do `$props()`
 /**
  * TODO: document
  */

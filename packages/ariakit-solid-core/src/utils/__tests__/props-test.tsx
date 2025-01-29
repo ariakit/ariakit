@@ -845,7 +845,7 @@ test(
 
 describe("extract options (with defaults)", () => {
   test(
-    "without shadowed props",
+    "values are passed through, defaults and overrides are applied",
     root(() => {
       const [nestedDynamicOption, setNestedDynamicOption] =
         createSignal<any>(undefined);
@@ -944,13 +944,36 @@ describe("extract options (with defaults)", () => {
       expect(props.dynamicProp).toBe("DYNAMIC PROP");
     }),
   );
+
+  test(
+    "getter shorthands",
+    root(() => {
+      const [value, setValue] = createSignal<any>(undefined);
+      const [defaultValue, setDefaultValue] = createSignal<any>(undefined);
+      const useHook = createHook(function useHook(props: any) {
+        $(props, {
+          $value: defaultValue,
+        });
+        return props;
+      });
+      const props = useHook({
+        get value() {
+          return value();
+        },
+      });
+      expect(props.value).toBe(undefined);
+      setValue("VALUE");
+      expect(props.value).toBe("VALUE");
+      setDefaultValue("DEFAULT VALUE");
+      expect(props.value).toBe("VALUE");
+      setValue(undefined);
+      expect(props.value).toBe("DEFAULT VALUE");
+    }),
+  );
 });
 
 // TODO:
-// - extract options: adjust types
-// - extract options: getter shorthand?
 // - extract options: test IRL
-// - extract options with shadowed props
 // - optimizations:
 //   - handle when input props are not proxy
 //   - cache/collapse static values
@@ -958,4 +981,4 @@ describe("extract options (with defaults)", () => {
 //     - at end?
 //     - at frozen accessors?
 //   - cache keys
-//   - add memos
+//   - add memos?
