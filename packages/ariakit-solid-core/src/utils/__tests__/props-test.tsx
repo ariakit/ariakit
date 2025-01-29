@@ -897,6 +897,8 @@ describe("extract options (with defaults)", () => {
           },
         });
 
+        useNestedHook(props);
+
         expect(options.staticOption).toBe("STATIC OUTER");
         expect(options.staticUndefinedOption).toBe(undefined);
         expect(options.staticOptionWithDefault).toBe("STATIC WITH DEFAULT");
@@ -911,8 +913,6 @@ describe("extract options (with defaults)", () => {
         expect(options.dynamicOption).toBe("DYNAMIC OUTER");
         setDynamicOption(undefined);
         expect(options.dynamicOption).toBe("DYNAMIC OUTER");
-
-        useNestedHook(props);
 
         return props;
       });
