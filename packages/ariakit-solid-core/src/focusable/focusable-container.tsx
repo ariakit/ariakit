@@ -1,4 +1,5 @@
-import type { ElementType } from "react";
+import type { ElementType } from "../utils/_port.ts";
+import { $o } from "../utils/_props.ts";
 import { useWrapElement } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -19,15 +20,16 @@ type TagName = typeof TagName;
 export const useFocusableContainer = createHook<
   TagName,
   FocusableContainerOptions
->(function useFocusableContainer({ autoFocusOnShow = true, ...props }) {
-  props = useWrapElement(
+>(function useFocusableContainer(__) {
+  const [_, props] = $o(__, { autoFocusOnShow: true });
+  useWrapElement(
     props,
     (element) => (
-      <FocusableContext.Provider value={autoFocusOnShow}>
-        {element}
+      <FocusableContext.Provider value={() => _.autoFocusOnShow}>
+        {element.children}
       </FocusableContext.Provider>
     ),
-    [autoFocusOnShow],
+    [],
   );
 
   return props;

@@ -1,6 +1,6 @@
-import { type Setter, createContext } from "solid-js";
+import { createContext } from "solid-js";
+import type { SetState } from "../utils/_port.ts";
 
 export const GroupLabelContext = createContext<
-  // TODO: document SetState -> Setter
-  Setter<string | undefined> | undefined
+  SetState<string | undefined> | undefined
 >(undefined);

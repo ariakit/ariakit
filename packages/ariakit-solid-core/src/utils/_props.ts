@@ -253,14 +253,17 @@ export type ExtractOptionsReturn<
  * Extracts options from a props object and applies defaults to them. The
  * return value is a tuple with the extracted options and the rest of the props.
  *
- * To extract an option without a default, set it to `undefined`.
+ * To extract an option without setting a default, set it to `undefined`.
  * @example
- * const [options, props] = extractOptions(
- *   originalProps,
- *   { orientation: "horizontal" },
- * );
+ * function useMyComponent(__) {
+ *   const [_, props] = $o(__, { orientation: "horizontal" });
+ *   createEffect(() => {
+ *     console.log(_.orientation);
+ *   });
+ *   // ...
+ * }
  */
-export function extractOptions<
+export function $o<
   P extends AnyObject,
   const O extends Partial<UnwrapPropSinkProps<P>>,
 >(_props: P, options: O): ExtractOptionsReturn<P, O> {

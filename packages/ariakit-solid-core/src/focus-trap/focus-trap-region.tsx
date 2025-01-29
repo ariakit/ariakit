@@ -1,13 +1,17 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
-import { mergeRefs } from "@solid-primitives/refs";
-import { Show, type ValidComponent } from "solid-js";
-import { createRef, wrapInstance } from "../utils/misc.ts";
-import { $, extractOptions } from "../utils/props.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
+import { Show } from "solid-js";
+import {
+  type ElementType,
+  removeUndefinedValues,
+  useRef,
+} from "../utils/_port.ts";
+import { $, $o } from "../utils/_props.ts";
+import { useMergeRefs, useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusTrap } from "./focus-trap.tsx";
 
-const TagName = "div" satisfies ValidComponent;
+const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
@@ -21,20 +25,20 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * ```
  */
 export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
-  function useFocusTrapRegion($props) {
-    const [options, props] = extractOptions($props, { enabled: false });
-    const ref = createRef<HTMLType>();
+  function useFocusTrapRegion(__) {
+    const [_, props] = $o(__, { enabled: false });
+    const ref = useRef<HTMLType>(null);
 
-    wrapInstance(
+    useWrapElement(
       props,
-      (wrapperProps) => {
+      (element) => {
         const renderFocusTrap = () => {
           return (
             // biome-ignore format: [port]
-            <Show when={options.enabled}>
+            <Show when={_.enabled}>
             <FocusTrap
               onFocus={(event) => {
-                // TODO: (react) opportunity to extract into @ariakit/core?
+                // TODO [port]: de-duplicate into @ariakit/core?
                 const container = ref.current;
                 if (!container) return;
                 const tabbables = getAllTabbableIn(container, true);
@@ -58,7 +62,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
         return (
           <>
             {renderFocusTrap()}
-            {wrapperProps.children}
+            {element.children}
             {renderFocusTrap()}
           </>
         );
@@ -67,10 +71,10 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
     );
 
     $(props)({
-      $ref: (props) => mergeRefs(ref.bind, props.ref),
+      $ref: (props) => useMergeRefs(ref.bind, props.ref),
     });
 
-    return props;
+    return removeUndefinedValues(props);
   },
 );
 
@@ -88,14 +92,14 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
  * </FocusTrapRegion>
  * ```
  */
-export const FocusTrapRegion = function FocusTrapRegion(
+export const FocusTrapRegion = forwardRef(function FocusTrapRegion(
   props: FocusTrapRegionProps,
 ) {
   const htmlProps = useFocusTrapRegion(props);
-  return createInstance(TagName, htmlProps);
-};
+  return createElement(TagName, htmlProps);
+});
 
-export interface FocusTrapRegionOptions<_T extends ValidComponent = TagName>
+export interface FocusTrapRegionOptions<_T extends ElementType = TagName>
   extends Options {
   /**
    * If true, it will trap the focus in the region.
@@ -104,7 +108,7 @@ export interface FocusTrapRegionOptions<_T extends ValidComponent = TagName>
   enabled?: boolean;
 }
 
-export type FocusTrapRegionProps<T extends ValidComponent = TagName> = Props<
+export type FocusTrapRegionProps<T extends ElementType = TagName> = Props<
   T,
   FocusTrapRegionOptions<T>
 >;

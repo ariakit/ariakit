@@ -1,9 +1,9 @@
-import type { ValidComponent } from "solid-js";
-import { $ } from "../utils/props.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
+import type { ElementType } from "../utils/_port.ts";
+import { $ } from "../utils/_props.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
-const TagName = "span" satisfies ValidComponent;
+const TagName = "span" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
@@ -32,8 +32,7 @@ export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
         position: "absolute",
         "white-space": "nowrap",
         width: "1px",
-        // TODO: special case this thing? like, automatically transform into object form under the hood in this getter?
-        // @ts-expect-error
+        // @ts-expect-error TODO [port]: figure out what to do with this.
         ...props.style,
       }),
     });
@@ -52,12 +51,17 @@ export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
  * </a>
  * ```
  */
-export function VisuallyHidden(props: VisuallyHiddenProps) {
+export const VisuallyHidden = forwardRef(function VisuallyHidden(
+  props: VisuallyHiddenProps,
+) {
   const htmlProps = useVisuallyHidden(props);
-  return createInstance(TagName, htmlProps);
-}
+  return createElement(TagName, htmlProps);
+});
 
-export interface VisuallyHiddenOptions<_T extends ValidComponent = TagName>
+export interface VisuallyHiddenOptions<_T extends ElementType = TagName>
   extends Options {}
 
-export type VisuallyHiddenProps = Props<TagName, VisuallyHiddenOptions>;
+export type VisuallyHiddenProps<T extends ElementType = TagName> = Props<
+  T,
+  VisuallyHiddenOptions<T>
+>;
