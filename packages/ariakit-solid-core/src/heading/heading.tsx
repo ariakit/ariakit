@@ -1,10 +1,12 @@
+import { mergeRefs } from "@solid-primitives/refs";
 import {
   type ValidComponent,
   createMemo,
   createSignal,
   useContext,
 } from "solid-js";
-import { extractTagName, mergeProps } from "../utils/misc.ts";
+import { extractTagName } from "../utils/misc.ts";
+import { $ } from "../utils/props.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { HeadingContext } from "./heading-context.tsx";
@@ -31,6 +33,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
     // [port]: we use a signal instead of a ref so that `extractTagName` will
     // take effect reactively, even though it doesn't use an effect like in the
     // original version.
+    // TODO: investigate and document why it breaks otherwise.
     const [ref, setRef] = createSignal<HTMLType>();
     const level = () => useContext(HeadingContext)() || 1;
     const Element = () => `h${level()}` as const;
@@ -39,15 +42,13 @@ export const useHeading = createHook<TagName, HeadingOptions>(
       () => !!tagName() && /^h\d$/.test(tagName()!),
     );
 
-    props = mergeProps(
-      {
-        render: Element(),
-        $role: () => (!isNativeHeading() ? "heading" : undefined),
-        "$aria-level": () => (!isNativeHeading() ? level() : undefined),
-        ref: setRef,
-      },
-      props,
-    );
+    $(props, {
+      render: Element(),
+      $role: () => (!isNativeHeading() ? "heading" : undefined),
+      "$aria-level": () => (!isNativeHeading() ? level() : undefined),
+    })({
+      $ref: (props) => mergeRefs(setRef, props.ref),
+    });
 
     return props;
   },

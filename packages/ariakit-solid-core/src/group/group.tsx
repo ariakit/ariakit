@@ -1,6 +1,6 @@
 import { type ValidComponent, createSignal } from "solid-js";
-import { As } from "../as/as.tsx";
-import { mergeProps, wrapInstance } from "../utils/misc.ts";
+import { wrapInstance } from "../utils/misc.ts";
+import { $ } from "../utils/props.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";
@@ -23,21 +23,20 @@ export const useGroup = createHook<TagName, GroupOptions>(
 
     props = wrapInstance(
       props,
-      // TODO: document this pattern in the contributing guide.
-      <As component={GroupLabelContext.Provider} value={setLabelId} />,
+      (wrapperProps) => (
+        <GroupLabelContext.Provider value={setLabelId}>
+          {wrapperProps.children}
+        </GroupLabelContext.Provider>
+      ),
+      [],
     );
 
-    props = mergeProps(
-      {
-        // [port]: Solid type for `role` is more strict, hence the `as const`.
-        role: "group" as const,
-        "$aria-labelledby": labelId,
-      },
-      props,
-    );
+    $(props, {
+      // [port]: Solid type for `role` is more strict, hence the `as const`.
+      role: "group" as const,
+      "$aria-labelledby": labelId,
+    });
 
-    // [port]: no need to remove undefined values because `mergeProps` handles it.
-    // TODO: verify that the note above is true. It might actually be because Solid just doesn't render undefined props, but if that's the case it could cause issues with further prop chaining.
     return props;
   },
 );

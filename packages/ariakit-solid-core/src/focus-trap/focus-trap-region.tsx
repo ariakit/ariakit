@@ -1,7 +1,9 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
+import { mergeRefs } from "@solid-primitives/refs";
 import { Show, type ValidComponent } from "solid-js";
-import { createRef, mergeProps, wrapInstance } from "../utils/misc.ts";
-import { createHook, createInstance, withOptions } from "../utils/system.tsx";
+import { createRef, wrapInstance } from "../utils/misc.ts";
+import { $, extractOptions } from "../utils/props.ts";
+import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusTrap } from "./focus-trap.tsx";
 
@@ -19,13 +21,17 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * ```
  */
 export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
-  withOptions({ enabled: false }, function useFocusTrapRegion(props, options) {
+  function useFocusTrapRegion($props) {
+    const [options, props] = extractOptions($props, { enabled: false });
     const ref = createRef<HTMLType>();
 
-    props = wrapInstance(props, (wrapperProps) => {
-      const renderFocusTrap = () => {
-        return (
-          <Show when={options.enabled}>
+    wrapInstance(
+      props,
+      (wrapperProps) => {
+        const renderFocusTrap = () => {
+          return (
+            // biome-ignore format: [port]
+            <Show when={options.enabled}>
             <FocusTrap
               onFocus={(event) => {
                 // TODO: (react) opportunity to extract into @ariakit/core?
@@ -46,22 +52,26 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
                 }
               }}
             />
-          </Show>
+            </Show>
+          );
+        };
+        return (
+          <>
+            {renderFocusTrap()}
+            {wrapperProps.children}
+            {renderFocusTrap()}
+          </>
         );
-      };
-      return (
-        <>
-          {renderFocusTrap()}
-          {wrapperProps.children}
-          {renderFocusTrap()}
-        </>
-      );
+      },
+      [],
+    );
+
+    $(props)({
+      $ref: (props) => mergeRefs(ref.bind, props.ref),
     });
 
-    props = mergeProps({ ref: ref.bind }, props);
-
     return props;
-  }),
+  },
 );
 
 /**

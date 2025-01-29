@@ -20,11 +20,11 @@ import type { HeadingLevels } from "./utils.ts";
  */
 export function HeadingLevel(props: HeadingLevelProps) {
   const contextLevel = useContext(HeadingContext);
-  const nextLevel = () =>
-    Math.max(
-      Math.min(props.level || contextLevel() + 1, 6),
-      1,
-    ) as HeadingLevels;
+  // biome-ignore format: [port]
+  const nextLevel = () => Math.max(
+    Math.min(props.level || contextLevel() + 1, 6),
+    1,
+  ) as HeadingLevels;
   return (
     <HeadingContext.Provider value={nextLevel}>
       {props.children}

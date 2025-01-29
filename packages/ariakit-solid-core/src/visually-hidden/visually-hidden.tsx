@@ -1,5 +1,5 @@
 import type { ValidComponent } from "solid-js";
-import { mergeProps } from "../utils/misc.ts";
+import { $ } from "../utils/props.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
@@ -21,22 +21,22 @@ type TagName = typeof TagName;
  */
 export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
   function useVisuallyHidden(props) {
-    props = mergeProps(
-      {
-        style: {
-          border: 0,
-          clip: "rect(0 0 0 0)",
-          height: "1px",
-          margin: "-1px",
-          overflow: "hidden",
-          padding: 0,
-          position: "absolute",
-          "white-space": "nowrap",
-          width: "1px",
-        },
-      },
-      props,
-    );
+    $(props)({
+      $style: (props) => ({
+        border: 0,
+        clip: "rect(0 0 0 0)",
+        height: "1px",
+        margin: "-1px",
+        overflow: "hidden",
+        padding: 0,
+        position: "absolute",
+        "white-space": "nowrap",
+        width: "1px",
+        // TODO: special case this thing? like, automatically transform into object form under the hood in this getter?
+        // @ts-expect-error
+        ...props.style,
+      }),
+    });
     return props;
   },
 );
