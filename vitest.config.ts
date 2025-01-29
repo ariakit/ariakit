@@ -1,5 +1,5 @@
 import { version } from "react";
-import solidPlugin from "vite-plugin-solid";
+// import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 
 const excludeFromReact17 = [
@@ -22,7 +22,7 @@ const isReact17 = version.startsWith("17");
 
 export default defineConfig({
   // TODO: this is not working, makes react tests fail for some reason
-  plugins: [solidPlugin({ include: "packages/*solid*/**/*" })],
+  // plugins: [solidPlugin({ include: "packages/*solid*/**/*" })],
   test: {
     globals: true,
     watch: false,
@@ -33,6 +33,7 @@ export default defineConfig({
     exclude: [
       ...configDefaults.exclude,
       ...(isReact17 ? excludeFromReact17 : []),
+      "packages/*solid*/**/*",
     ],
     browser: {
       name: "chromium",
