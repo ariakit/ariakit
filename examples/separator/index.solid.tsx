@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Separator } from "@ariakit/solid";
 import "./style.css";
 
