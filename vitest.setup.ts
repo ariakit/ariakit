@@ -63,8 +63,17 @@ if (version.startsWith("17")) {
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
 type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
 
+// add to globalThis type
+declare global {
+  var loader: AllowedTestLoader;
+}
+
 const TEST_LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
+
+beforeAll(() => {
+  globalThis.loader = TEST_LOADER;
+});
 
 if (!ALLOWED_TEST_LOADERS.includes(TEST_LOADER)) {
   throw new Error(`Invalid loader: ${TEST_LOADER}`);
