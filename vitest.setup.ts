@@ -1,8 +1,15 @@
 import "@testing-library/jest-dom/vitest";
 
-import { render as renderReact } from "@ariakit/test/react";
+import { render as renderReact, sleep } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { Suspense as ReactSuspense, createElement, version } from "react";
+import {
+  Suspense as ReactSuspense,
+  createElement,
+  useEffect,
+  useState,
+  version,
+} from "react";
+import { Show, createEffect, createSignal, onCleanup } from "solid-js";
 import {
   Suspense as SolidSuspense,
   createComponent,
@@ -60,6 +67,9 @@ if (version.startsWith("17")) {
   });
 }
 
+// test loaders
+// ------------
+
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
 type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
 
@@ -85,10 +95,14 @@ async function tryImport(path: string, fallbackPath?: string) {
   );
 }
 
-async function loadReact(example: string) {
+function fixtureName(unit = false) {
+  return unit ? "unit" : "index";
+}
+
+async function loadReact(dir: string, unit: boolean) {
   const { default: comp, failedImport } = await tryImport(
-    `./examples/${example}/index.react.tsx`,
-    `./examples/${example}/index.tsx`,
+    `./examples/${dir}/${fixtureName(unit)}.react.tsx`,
+    `./examples/${dir}/${fixtureName(unit)}.tsx`,
   );
   if (failedImport) return false;
   const element = createElement(ReactSuspense, {
@@ -100,9 +114,9 @@ async function loadReact(example: string) {
   return unmount;
 }
 
-async function loadSolid(example: string) {
+async function loadSolid(dir: string, unit: boolean) {
   const { default: comp, failedImport } = await tryImport(
-    `./examples/${example}/index.solid.tsx`,
+    `./examples/${dir}/${fixtureName(unit)}.solid.tsx`,
   );
   if (failedImport) return false;
   const div = document.createElement("div");
@@ -128,17 +142,126 @@ const LOADERS = {
   solid: loadSolid,
 } satisfies Record<
   AllowedTestLoader,
-  (example: string) => Promise<void | (() => void) | false>
+  (dir: string, unit: boolean) => Promise<void | (() => void) | false>
 >;
 
+// test case utils
+// ---------------
+
+type TestCaseComponent = (props: { name: string; children: any }) => any;
+
+declare global {
+  var testing: {
+    TestCase: TestCaseComponent;
+    loadTestCase: (name: string) => Promise<void>;
+  };
+}
+
+async function loadTestCase(name: string) {
+  (window as any).testCase = name;
+  window.postMessage({ refreshTestCase: true }, "*");
+  await sleep();
+}
+
+switch (TEST_LOADER) {
+  case "react":
+    window.testing = {
+      TestCase({ name, children }) {
+        const [show, setShow] = useState(false);
+        useEffect(() => {
+          const listener = (event: MessageEvent) => {
+            if (event.data.refreshTestCase)
+              setShow((window as any).testCase === name);
+          };
+          window.addEventListener("message", listener);
+          return () => window.removeEventListener("message", listener);
+        }, []);
+        return show ? children : null;
+      },
+      loadTestCase,
+    };
+    break;
+
+  case "solid":
+    window.testing = {
+      TestCase(props) {
+        const [show, setShow] = createSignal(false);
+        createEffect(() => {
+          const listener = (event: MessageEvent) => {
+            if (event.data.refreshTestCase)
+              setShow((window as any).testCase === props.name);
+          };
+          window.addEventListener("message", listener);
+          onCleanup(() => window.removeEventListener("message", listener));
+        });
+        // @ts-expect-error Doesn't matter.
+        return createComponent(Show, {
+          get when() {
+            return show();
+          },
+          get children() {
+            return props.children;
+          },
+        });
+      },
+      loadTestCase,
+    };
+    break;
+
+  default:
+    throw new Error(`Invalid loader: ${TEST_LOADER}`);
+}
+
+// prepare test
+// ------------
+
+/*
+
+Example/test naming conventions:
+
+<example name>/
+  index.<react|solid>.tsx        - example, specified loader
+  index.tsx                      - example, "react" loader (temporary default to facilitate migration)
+  test.ts                        - test that targets the example, runs for each loader
+  test.<react|solid>.ts          - test that targets the example, runs only for the specified loader
+  unit.<react|solid>.tsx         - unit test fixture for the specified loader, doesn't get published as example
+  unit.test.ts                   - test that targets the unit test fixture, runs for each loader
+  unit.test.<react|solid>.ts     - test that targets the unit test fixture, runs only for the specified loader
+
+Note: test files can also be named `test-<browser target>.` instead of `test.` to run with Playwright. Available targets are:
+
+- browser (all desktop browsers)
+- chrome
+- firefox
+- safari
+- mobile (all mobile browsers)
+- ios
+- android
+
+*/
+
+function parseTest(filename?: string) {
+  if (!filename) return false;
+  const match = filename.match(
+    // @ts-expect-error Test runner is not limited by ES2017 target.
+    /examples\/(?<dir>.*)\/(?<unit>unit\.)?test\.((?<loader>react|solid)\.)?ts$/,
+  );
+  if (!match?.groups) return false;
+  const { dir, loader, unit } = match.groups;
+  if (!dir) return false;
+  return {
+    dir,
+    loader: (loader ?? "all") as AllowedTestLoader | "all",
+    unit: Boolean(unit),
+  };
+}
+
 beforeEach(async ({ task, skip }) => {
-  const filename = task.file?.name;
-  if (!filename) return;
-  const match = filename.match(/examples\/(.*)\/test.ts$/);
-  if (!match) return;
-  const [, example] = match;
-  if (!example) return;
-  const result = await LOADERS[TEST_LOADER](example);
+  const parseResult = parseTest(task.file?.name);
+  if (!parseResult) return;
+  const { dir, loader, unit } = parseResult;
+  if (loader !== "all" && loader !== TEST_LOADER) skip();
+  const result = await LOADERS[TEST_LOADER](dir, unit);
   if (result === false) skip();
   return result;
 });
