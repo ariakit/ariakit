@@ -5,7 +5,7 @@ import { getPageName } from "./get-page-name.js";
 import { pathToPosix } from "./path-to-posix.js";
 
 /**
- * Gets the page tree from a file path.
+ * Gets the page content from a file path.
  * @param {string | import("./types.ts").Reference} filename
  */
 export function getPageContent(filename) {

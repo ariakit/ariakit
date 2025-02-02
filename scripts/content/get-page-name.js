@@ -5,7 +5,7 @@ import { PAGE_INDEX_FILE_REGEX } from "./const.js";
 /**
  * Returns the page name from a file path. It's usually the file name, but for
  * index and readme files it's the directory name.
- * @param {string | import("./types.js").Reference} filename
+ * @param {string | import("./types.ts").Reference} filename
  */
 export function getPageName(filename) {
   if (typeof filename !== "string") {

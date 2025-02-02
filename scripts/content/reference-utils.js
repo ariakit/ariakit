@@ -4,7 +4,7 @@ import { FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
 import { getPageName } from "./get-page-name.js";
 
 const project = new Project({
-  tsConfigFilePath: join(process.cwd(), "../tsconfig.json"),
+  tsConfigFilePath: join(process.cwd(), "tsconfig.json"),
 });
 
 /**
