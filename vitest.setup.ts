@@ -1,15 +1,8 @@
 import "@testing-library/jest-dom/vitest";
 
-import { render as renderReact, sleep } from "@ariakit/test/react";
+import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import {
-  Suspense as ReactSuspense,
-  createElement,
-  useEffect,
-  useState,
-  version,
-} from "react";
-import { Show, createEffect, createSignal, onCleanup } from "solid-js";
+import { Suspense as ReactSuspense, createElement, version } from "react";
 import {
   Suspense as SolidSuspense,
   createComponent,
@@ -73,7 +66,6 @@ if (version.startsWith("17")) {
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
 type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
 
-// add to globalThis type
 declare global {
   var loader: AllowedTestLoader;
 }
@@ -145,88 +137,14 @@ const LOADERS = {
   (dir: string, unit: boolean) => Promise<void | (() => void) | false>
 >;
 
-// test case utils
-// ---------------
-
-type TestCaseComponent = (props: { name: string; children: any }) => any;
-
-declare global {
-  var testing: {
-    TestCase: TestCaseComponent;
-    loadTestCase: (name: string) => Promise<void>;
-  };
-}
-
-async function loadTestCase(name: string) {
-  (window as any).testCase = name;
-  window.postMessage({ refreshTestCase: true }, "*");
-  await sleep();
-}
-
-switch (TEST_LOADER) {
-  case "react":
-    window.testing = {
-      TestCase({ name, children }) {
-        const [show, setShow] = useState(false);
-        useEffect(() => {
-          const listener = (event: MessageEvent) => {
-            if (event.data.refreshTestCase)
-              setShow((window as any).testCase === name);
-          };
-          window.addEventListener("message", listener);
-          return () => window.removeEventListener("message", listener);
-        }, []);
-        return show ? children : null;
-      },
-      loadTestCase,
-    };
-    break;
-
-  case "solid":
-    window.testing = {
-      TestCase(props) {
-        const [show, setShow] = createSignal(false);
-        createEffect(() => {
-          const listener = (event: MessageEvent) => {
-            if (event.data.refreshTestCase)
-              setShow((window as any).testCase === props.name);
-          };
-          window.addEventListener("message", listener);
-          onCleanup(() => window.removeEventListener("message", listener));
-        });
-        // @ts-expect-error Doesn't matter.
-        return createComponent(Show, {
-          get when() {
-            return show();
-          },
-          get children() {
-            return props.children;
-          },
-        });
-      },
-      loadTestCase,
-    };
-    break;
-
-  default:
-    throw new Error(`Invalid loader: ${TEST_LOADER}`);
-}
-
-// prepare test
-// ------------
-
 /*
 
 Example/test naming conventions:
 
 <example name>/
-  index.<react|solid>.tsx        - example, specified loader
-  index.tsx                      - example, "react" loader (temporary default to facilitate migration)
-  test.ts                        - test that targets the example, runs for each loader
-  test.<react|solid>.ts          - test that targets the example, runs only for the specified loader
-  unit.<react|solid>.tsx         - unit test fixture for the specified loader, doesn't get published as example
-  unit.test.ts                   - test that targets the unit test fixture, runs for each loader
-  unit.test.<react|solid>.ts     - test that targets the unit test fixture, runs only for the specified loader
+  index.<react|solid>.tsx        - example, the loader is optional and defaults to "react"
+  test.ts                        - test, runs for all loaders
+  test.<react|solid>.ts          - test, runs only for the specified loader
 
 Note: test files can also be named `test-<browser target>.` instead of `test.` to run with Playwright. Available targets are:
 

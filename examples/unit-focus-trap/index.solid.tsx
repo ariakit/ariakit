@@ -1,16 +1,18 @@
-import { FocusTrap } from "@ariakit/react";
-
-const { TestCase } = testing;
+// @ts-nocheck
+import { FocusTrap } from "@ariakit/solid";
 
 export default function Fixture() {
   return (
     <>
-      <TestCase name="trap">
+      <div role="group" aria-label="trap">
+        <button>Start</button>
         <button>Before</button>
         <FocusTrap>Trap</FocusTrap>
         <button>After</button>
-      </TestCase>
-      <TestCase name="redirect">
+      </div>
+
+      <div role="group" aria-label="redirect">
+        <button>Start</button>
         <button>Before</button>
         <FocusTrap
           onFocus={() => document.getElementById("focus-target")?.focus()}
@@ -19,7 +21,7 @@ export default function Fixture() {
         </FocusTrap>
         <button>Skip</button>
         <button id="focus-target">Focus target</button>
-      </TestCase>
+      </div>
     </>
   );
 }
