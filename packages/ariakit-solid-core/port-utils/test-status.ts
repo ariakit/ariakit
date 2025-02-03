@@ -3,7 +3,7 @@
 import { readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 // @ts-expect-error No Bun types for now.
-import { $, color } from "bun";
+import { $ } from "bun";
 import { log, space } from "./shared.ts";
 
 const ROOT_PATH = (await $`git rev-parse --show-toplevel`.text()).trim();
