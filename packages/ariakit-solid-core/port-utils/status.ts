@@ -1,83 +1,25 @@
 // run this: `bun status`
 
-import { readdir } from "node:fs/promises";
-import { resolve } from "node:path";
-// @ts-expect-error No Bun types for now.
-import { $ } from "bun";
-import { log, space } from "./shared.ts";
+import { log, space } from "./lib/log.ts";
+import {
+  type DirStatusMatch,
+  type FileStatusMatch,
+  getDirStatusInfo,
+  getStatusTree,
+} from "./lib/status.ts";
 
-const ROOT_PATH = (await $`git rev-parse --show-toplevel`.text()).trim();
-const REACT_PATH = resolve(ROOT_PATH, "packages/ariakit-react-core/src");
-const SOLID_PATH = resolve(ROOT_PATH, "packages/ariakit-solid-core/src");
+const DIR_INFO = await getDirStatusInfo();
 
-async function getDirs(dir: string) {
-  const dirs = await readdir(dir);
-  return dirs.filter((dir) => !dir.includes("utils") && !dir.includes("."));
-}
-
-const REACT_DIRS = await getDirs(REACT_PATH);
-const SOLID_DIRS = await getDirs(SOLID_PATH);
-
-type FileMatch = "react" | "solid" | "both";
-type Tree = Record<string, Record<string, FileMatch>>;
-
-async function getTree() {
-  const tree: Tree = {};
-  for (const dir of REACT_DIRS) {
-    tree[dir] ??= {};
-    const files = await readdir(resolve(REACT_PATH, dir));
-    for (const file of files) {
-      const fullPath = resolve(REACT_PATH, dir, file);
-      if (fullPath.includes("utils") || fullPath.includes("_")) continue;
-      const cleanFile = file.replace(/\.tsx?$/, "");
-      tree[dir][cleanFile] = "react";
-    }
-  }
-  for (const dir of SOLID_DIRS) {
-    tree[dir] ??= {};
-    const files = await readdir(resolve(SOLID_PATH, dir));
-    for (const file of files) {
-      const fullPath = resolve(SOLID_PATH, dir, file);
-      if (fullPath.includes("utils") || fullPath.includes("_")) continue;
-      const cleanFile = file.replace(/\.tsx?$/, "");
-      const isReactFile = tree[dir][cleanFile] === "react";
-      tree[dir][cleanFile] = isReactFile ? "both" : "solid";
-    }
-  }
-  return tree;
-}
-
-const TREE = await getTree();
-
-type DirMatch = FileMatch | "partial";
-
-function getDirInfo() {
-  const dirInfo: Record<string, DirMatch> = {};
-  const dirs = Object.keys(TREE);
-  for (const dir of dirs) {
-    let match: DirMatch;
-    const dirValue = TREE[dir]!;
-    const values = Object.values(dirValue);
-    if (values.every((v) => v === "both")) match = "both";
-    else if (values.every((v) => v === "react")) match = "react";
-    else if (values.every((v) => v === "solid")) match = "solid";
-    else match = "partial";
-    dirInfo[dir] = match;
-  }
-  return dirInfo;
-}
-
-const DIR_INFO = getDirInfo();
-
-const COLOR_BY_MATCH: Record<DirMatch, string> = {
+const COLOR_BY_MATCH: Record<DirStatusMatch, string> = {
   both: "green",
   partial: "yellow",
   react: "red",
   solid: "blue",
 };
 
-function printPortSummary(depth = 0) {
-  const dirs = Object.keys(TREE).filter((dir) => DIR_INFO[dir] !== "solid");
+async function printPortSummary(depth = 0) {
+  const tree = await getStatusTree();
+  const dirs = Object.keys(tree).filter((dir) => DIR_INFO[dir] !== "solid");
   const totalDirs = dirs.length;
   const totalDirsPorted = dirs.filter((dir) => DIR_INFO[dir] === "both").length;
   const totalDirsPartial = dirs.filter(
@@ -116,7 +58,7 @@ function printPortSummary(depth = 0) {
 
   space();
 
-  const fileMatches = Object.values(TREE).reduce(
+  const fileMatches = Object.values(tree).reduce(
     (acc, dirValue) => {
       for (const file of Object.keys(dirValue)) {
         const fileMatch = dirValue[file]!;
@@ -125,7 +67,7 @@ function printPortSummary(depth = 0) {
       }
       return acc;
     },
-    {} as Record<string, FileMatch>,
+    {} as Record<string, FileStatusMatch>,
   );
   const files = Object.keys(fileMatches);
   const totalFiles = files.length;
@@ -159,13 +101,14 @@ function printPortSummary(depth = 0) {
   );
 }
 
-function printTree(depth = 0) {
-  for (const dir of Object.keys(TREE).sort()) {
+async function printTree(depth = 0) {
+  const tree = await getStatusTree();
+  for (const dir of Object.keys(tree).sort()) {
     const dirMatch = DIR_INFO[dir]!;
     const dirColor = COLOR_BY_MATCH[dirMatch];
     log(dir, dirColor, depth);
     if (dirMatch === "partial") {
-      const dirValue = TREE[dir]!;
+      const dirValue = tree[dir]!;
       for (const file of Object.keys(dirValue).sort()) {
         const fileMatch = dirValue[file]!;
         const fileColor = COLOR_BY_MATCH[fileMatch];
@@ -182,7 +125,7 @@ function printLegend(depth = 0) {
   log("new in Ariakit Solid", COLOR_BY_MATCH.solid, depth);
 }
 
-function print() {
+async function print() {
   space();
   log("> meaning of colors");
   space();
@@ -190,11 +133,11 @@ function print() {
   space();
   log("> port summary");
   space();
-  printPortSummary(1);
+  await printPortSummary(1);
   space();
   log("> ported components");
   space();
-  printTree(1);
+  await printTree(1);
 }
 
-print();
+await print();
