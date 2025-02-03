@@ -60,23 +60,14 @@ if (version.startsWith("17")) {
   });
 }
 
-// test loaders
-// ------------
-
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
 type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
-
 declare global {
   var loader: AllowedTestLoader;
 }
-
 const TEST_LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
-
-beforeAll(() => {
-  globalThis.loader = TEST_LOADER;
-});
-
+globalThis.loader = TEST_LOADER;
 if (!ALLOWED_TEST_LOADERS.includes(TEST_LOADER)) {
   throw new Error(`Invalid loader: ${TEST_LOADER}`);
 }
@@ -87,14 +78,10 @@ async function tryImport(path: string, fallbackPath?: string) {
   );
 }
 
-function fixtureName(unit = false) {
-  return unit ? "unit" : "index";
-}
-
-async function loadReact(dir: string, unit: boolean) {
+async function loadReact(dir: string) {
   const { default: comp, failedImport } = await tryImport(
-    `./examples/${dir}/${fixtureName(unit)}.react.tsx`,
-    `./examples/${dir}/${fixtureName(unit)}.tsx`,
+    `./examples/${dir}/index.react.tsx`,
+    `./examples/${dir}/index.tsx`,
   );
   if (failedImport) return false;
   const element = createElement(ReactSuspense, {
@@ -106,9 +93,9 @@ async function loadReact(dir: string, unit: boolean) {
   return unmount;
 }
 
-async function loadSolid(dir: string, unit: boolean) {
+async function loadSolid(dir: string) {
   const { default: comp, failedImport } = await tryImport(
-    `./examples/${dir}/${fixtureName(unit)}.solid.tsx`,
+    `./examples/${dir}/index.solid.tsx`,
   );
   if (failedImport) return false;
   const div = document.createElement("div");
@@ -134,7 +121,7 @@ const LOADERS = {
   solid: loadSolid,
 } satisfies Record<
   AllowedTestLoader,
-  (dir: string, unit: boolean) => Promise<void | (() => void) | false>
+  (dir: string) => Promise<void | (() => void) | false>
 >;
 
 /*
@@ -162,24 +149,23 @@ function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
     // @ts-expect-error Test runner is not limited by ES2017 target.
-    /examples\/(?<dir>.*)\/(?<unit>unit\.)?test\.((?<loader>react|solid)\.)?ts$/,
+    /examples\/(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
   );
   if (!match?.groups) return false;
-  const { dir, loader, unit } = match.groups;
+  const { dir, loader } = match.groups;
   if (!dir) return false;
   return {
     dir,
     loader: (loader ?? "all") as AllowedTestLoader | "all",
-    unit: Boolean(unit),
   };
 }
 
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
-  const { dir, loader, unit } = parseResult;
+  const { dir, loader } = parseResult;
   if (loader !== "all" && loader !== TEST_LOADER) skip();
-  const result = await LOADERS[TEST_LOADER](dir, unit);
+  const result = await LOADERS[TEST_LOADER](dir);
   if (result === false) skip();
   return result;
 });
