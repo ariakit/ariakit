@@ -1,8 +1,13 @@
 import "@testing-library/jest-dom/vitest";
 
-import { render } from "@ariakit/test/react";
+import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { Suspense, createElement, version } from "react";
+import { Suspense as ReactSuspense, createElement, version } from "react";
+import {
+  Suspense as SolidSuspense,
+  createComponent,
+  render as renderSolid,
+} from "solid-js/web";
 import failOnConsole from "vitest-fail-on-console";
 
 if (!version.startsWith("17")) {
@@ -55,18 +60,112 @@ if (version.startsWith("17")) {
   });
 }
 
-beforeEach(async ({ task }) => {
-  const filename = task.file?.name;
-  if (!filename) return;
-  const match = filename.match(/examples\/(.*)\/test.ts$/);
-  if (!match) return;
-  const [, example] = match;
-  const { default: comp } = await import(`./examples/${example}/index.tsx`);
-  const element = createElement(Suspense, {
+const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
+type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
+declare global {
+  var loader: AllowedTestLoader;
+}
+const TEST_LOADER = (process.env.ARIAKIT_TEST_LOADER ??
+  "react") as AllowedTestLoader;
+globalThis.loader = TEST_LOADER;
+if (!ALLOWED_TEST_LOADERS.includes(TEST_LOADER)) {
+  throw new Error(`Invalid loader: ${TEST_LOADER}`);
+}
+
+async function tryImport(path: string, fallbackPath?: string) {
+  return await import(path).catch(() =>
+    fallbackPath ? import(fallbackPath) : { failedImport: true },
+  );
+}
+
+async function loadReact(dir: string) {
+  const { default: comp, failedImport } = await tryImport(
+    `./examples/${dir}/index.react.tsx`,
+    `./examples/${dir}/index.tsx`,
+  );
+  if (failedImport) return false;
+  const element = createElement(ReactSuspense, {
     fallback: null,
     // biome-ignore lint/correctness/noChildrenProp:
     children: createElement(comp),
   });
-  const { unmount } = await render(element, { strictMode: true });
+  const { unmount } = await renderReact(element, { strictMode: true });
   return unmount;
+}
+
+async function loadSolid(dir: string) {
+  const { default: comp, failedImport } = await tryImport(
+    `./examples/${dir}/index.solid.tsx`,
+  );
+  if (failedImport) return false;
+  const div = document.createElement("div");
+  document.body.appendChild(div);
+  const dispose = renderSolid(
+    () =>
+      createComponent(SolidSuspense, {
+        fallback: null,
+        get children() {
+          return createComponent(comp, {});
+        },
+      }),
+    div,
+  );
+  return () => {
+    dispose();
+    document.body.removeChild(div);
+  };
+}
+
+const LOADERS = {
+  react: loadReact,
+  solid: loadSolid,
+} satisfies Record<
+  AllowedTestLoader,
+  (dir: string) => Promise<void | (() => void) | false>
+>;
+
+/*
+
+Example/test naming conventions:
+
+<example name>/
+  index.<react|solid>.tsx        - example, the loader is optional and defaults to "react"
+  test.ts                        - test, runs for all loaders
+  test.<react|solid>.ts          - test, runs only for the specified loader
+
+Note: test files can also be named `test-<browser target>.` instead of `test.` to run with Playwright. Available targets are:
+
+- browser (all desktop browsers)
+- chrome
+- firefox
+- safari
+- mobile (all mobile browsers)
+- ios
+- android
+
+*/
+
+function parseTest(filename?: string) {
+  if (!filename) return false;
+  const match = filename.match(
+    // @ts-expect-error Test runner is not limited by ES2017 target.
+    /examples\/(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
+  );
+  if (!match?.groups) return false;
+  const { dir, loader } = match.groups;
+  if (!dir) return false;
+  return {
+    dir,
+    loader: (loader ?? "all") as AllowedTestLoader | "all",
+  };
+}
+
+beforeEach(async ({ task, skip }) => {
+  const parseResult = parseTest(task.file?.name);
+  if (!parseResult) return;
+  const { dir, loader } = parseResult;
+  if (loader !== "all" && loader !== TEST_LOADER) skip();
+  const result = await LOADERS[TEST_LOADER](dir);
+  if (result === false) skip();
+  return result;
 });
