@@ -33,5 +33,5 @@
     "**/*.cjs",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules", "coverage", "website", "packages/*solid*"]
+  "exclude": ["node_modules", "coverage", "website", "site", "packages/*solid*"]
 }

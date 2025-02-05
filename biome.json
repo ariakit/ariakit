@@ -10,6 +10,7 @@
     "ignore": [
       "website/.next/**",
       "website/.pages/**",
+      "site/.astro/**",
       "website/**/*.css",
       "examples/**/*.css"
     ]

@@ -25,6 +25,7 @@
     "url": "https://opencollective.com/ariakit"
   },
   "scripts": {
+    "build": "",
     "lint": "biome check ."
   },
   "keywords": ["ariakit", "tailwind", "styles", "css", "a11y", "ui"],
