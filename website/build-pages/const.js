@@ -4,3 +4,4 @@ export const PAGE_FILE_REGEX = new RegExp(
   `(${PAGE_INDEX_FILE_REGEX.source}|\/((?!.*license\.md$).*\.md))$`,
   "i",
 );
+export const PAGE_SOLID_REGEX = /\/[^\/]+\/index\.solid\.[tj]sx?/i;
