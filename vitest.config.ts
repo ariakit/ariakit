@@ -33,7 +33,6 @@ export default defineConfig({
     exclude: [
       ...configDefaults.exclude,
       ...(isReact17 ? excludeFromReact17 : []),
-      "packages/*solid*/**/*",
     ],
     browser: {
       name: "chromium",
