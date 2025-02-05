@@ -13,7 +13,7 @@ Group a set of related controls, reducing the number of tab stops in the keyboar
 
 <div data-tags></div>
 
-<a href="../examples/toolbar/index.tsx" data-playground>Example</a>
+<a href="../examples/toolbar/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

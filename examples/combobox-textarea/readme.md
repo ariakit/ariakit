@@ -18,7 +18,7 @@ Rendering <a href="/components/combobox">Combobox</a> as a textarea element to c
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

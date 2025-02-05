@@ -18,7 +18,7 @@ Combining [Select](/components/select) and [Combobox](/components/combobox) to c
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Related examples
 

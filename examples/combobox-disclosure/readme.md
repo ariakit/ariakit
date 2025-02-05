@@ -15,7 +15,7 @@ Opening and closing a [Combobox](/components/combobox) with the help of a button
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

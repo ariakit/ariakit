@@ -13,7 +13,7 @@ Using the [`HovercardDisclosure`](/reference/hovercard-disclosure) component to 
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Related examples
 

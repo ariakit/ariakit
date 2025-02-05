@@ -13,7 +13,7 @@ Display one panel of content at a time with a tabbed interface. This component i
 
 <div data-tags></div>
 
-<a href="../examples/tab/index.tsx" data-playground>Example</a>
+<a href="../examples/tab/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

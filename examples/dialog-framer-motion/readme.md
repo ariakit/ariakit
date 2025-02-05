@@ -16,7 +16,7 @@ Using <a href="https://www.framer.com/motion/">Framer Motion</a> to add initial 
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

@@ -14,7 +14,7 @@ Submit information with accessible interactive controls in React. Take advantage
 
 <div data-tags></div>
 
-<a href="../examples/form/index.tsx" data-playground>Example</a>
+<a href="../examples/form/index.react.tsx" data-playground>Example</a>
 
 ## API
 

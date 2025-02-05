@@ -15,7 +15,7 @@ Abstracting [Tooltip](/components/tooltip) into a reusable custom component that
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

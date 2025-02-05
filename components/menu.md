@@ -14,7 +14,7 @@ Access a set of commands within a dropdown menu. This component is based on the 
 
 <div data-tags></div>
 
-<a href="../examples/menu/index.tsx" data-playground>Example</a>
+<a href="../examples/menu/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

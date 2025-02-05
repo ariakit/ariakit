@@ -17,7 +17,7 @@ Preventing users from accidentally closing a [`modal`](/reference/dialog#modal) 
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

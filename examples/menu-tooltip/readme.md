@@ -15,7 +15,7 @@ Rendering [Menu](/components/menu) with a [Tooltip](/components/tooltip) that ap
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

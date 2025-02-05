@@ -15,7 +15,7 @@ Select a value from a list of options presented in a dropdown menu, similar to t
 
 <div data-tags></div>
 
-<a href="../examples/select/index.tsx" data-playground>Example</a>
+<a href="../examples/select/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

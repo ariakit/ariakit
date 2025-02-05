@@ -14,4 +14,4 @@ Showing an inline [Popover](/components/popover) when a text is selected. This e
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>

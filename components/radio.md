@@ -14,7 +14,7 @@ Choose one option from a list of choices presented as radio buttons. This compon
 
 <div data-tags></div>
 
-<a href="../examples/radio/index.tsx" data-playground>Example</a>
+<a href="../examples/radio/index.react.tsx" data-playground>Example</a>
 
 ## API
 
