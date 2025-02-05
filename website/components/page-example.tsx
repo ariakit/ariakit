@@ -45,6 +45,12 @@ function getGithubLink(path: string) {
   ).href;
 }
 
+function stripLoader(filename: string) {
+  return filename
+    .replaceAll(/\.(react|solid)\.tsx/g, ".tsx")
+    .replaceAll(/\.(react|solid)\.ts/g, ".ts");
+}
+
 export async function PageExample({
   pageFilename,
   href,
@@ -67,8 +73,8 @@ export async function PageExample({
   const filesKeys = Object.keys(files);
 
   for (const file of filesKeys) {
-    const relativePath = getPathFromExample(file, path);
-    contents[relativePath] = readFileSync(file, "utf8");
+    const relativePath = stripLoader(getPathFromExample(file, path));
+    contents[relativePath] = stripLoader(readFileSync(file, "utf8"));
   }
 
   let css = "";
