@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@plugin "./plugin.js";
+
+@theme {
+  --color-base: #0e0e11;
+  --color-brand: #007acc;
+  --color-accent: #ec4899;
+  --color-accent: #0e0e11;
+  --color-accent-500: #ec4899;
+
+  --layer-contrast: 8;
+}
