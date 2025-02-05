@@ -1,5 +1,4 @@
 import { resolve } from "node:path";
-import page from "@/app/(main)/page.tsx";
 import pagesConfig from "@/build-pages/config.js";
 import { getCSSFilesFromDeps } from "@/build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "@/build-pages/get-example-deps.js";
