@@ -9,6 +9,7 @@ import {
   render as renderSolid,
 } from "solid-js/web";
 import failOnConsole from "vitest-fail-on-console";
+import type { AllowedTestLoader } from "./vitest.config.ts";
 
 if (!version.startsWith("17")) {
   failOnConsole();
@@ -58,18 +59,6 @@ if (version.startsWith("17")) {
     };
     return { ...mocks, ...actual };
   });
-}
-
-const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
-type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
-declare global {
-  var loader: AllowedTestLoader;
-}
-const TEST_LOADER = (process.env.ARIAKIT_TEST_LOADER ??
-  "react") as AllowedTestLoader;
-globalThis.loader = TEST_LOADER;
-if (!ALLOWED_TEST_LOADERS.includes(TEST_LOADER)) {
-  throw new Error(`Invalid loader: ${TEST_LOADER}`);
 }
 
 async function tryImport(path: string) {
@@ -159,12 +148,15 @@ function parseTest(filename?: string) {
   };
 }
 
+const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
+  "react") as AllowedTestLoader;
+
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
   const { dir, loader } = parseResult;
-  if (loader !== "all" && loader !== TEST_LOADER) skip();
-  const result = await LOADERS[TEST_LOADER](dir);
+  if (loader !== "all" && loader !== LOADER) skip();
+  const result = await LOADERS[LOADER](dir);
   if (result === false) skip();
   return result;
 });
