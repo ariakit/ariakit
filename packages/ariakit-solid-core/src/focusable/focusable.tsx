@@ -167,7 +167,7 @@ function useDisableEvent(
 }
 */
 
-// isKeyboardModality should be true by defaault.
+// isKeyboardModality should be true by default.
 let isKeyboardModality = true;
 
 function onGlobalMouseDown(event: MouseEvent) {
@@ -237,7 +237,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
             label.removeEventListener("mouseup", onMouseUp);
           }
         };
-      });
+      }, "[focusable]");
     }
 
     const disabledProp = props.$disabled;
@@ -262,7 +262,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if ($trulyDisabled && $focusVisible) {
         setFocusVisible(false);
       }
-    });
+    }, "[focusable, trulyDisabled, focusVisible]");
 
     // When an element that has focus becomes hidden, it doesn't trigger a blur
     // event so we can't set focusVisible to false there. We observe the element
@@ -283,12 +283,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
       observer.observe(element);
       return () => observer.disconnect();
-    });
+    }, "[focusable, focusVisible]");
 
-    // [port]: there's no direct equivalent in Solid.
-    // TODO [port]: look for internal uses of these events, in case
-    // it breaks something.
     /*
+    // [port]: there's no direct equivalent in Solid.
     // Disable events when the element is disabled.
     const onKeyPressCapture = useDisableEvent(
       props.onKeyPressCapture,
@@ -472,25 +470,23 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     });
 
     $(props, {
-      // @ts-expect-error TODO [port]: fix this type error.
       "$data-focus-visible": () => (_.focusable && focusVisible()) || undefined,
-      // @ts-expect-error TODO [port]: fix this type error.
       "$data-autofocus": () => _.autoFocus || undefined,
       "$aria-disabled": () => disabled() || undefined,
     })({
       $ref: (props) => useMergeRefs(ref.bind, autoFocusRef, props.ref),
       $style: style,
-      $tabIndex: (props) =>
-        getTabIndex(
-          _.focusable,
-          trulyDisabled(),
-          nativeTabbable(),
-          supportsDisabled(),
-          // @ts-expect-error TODO [port]: figure out what to do with this.
-          props.tabIndex,
-        ),
-      $disabled: () =>
-        supportsDisabled() && trulyDisabled() ? true : undefined,
+      // biome-ignore format: [port]
+      $tabIndex: (props) => getTabIndex(
+        _.focusable,
+        trulyDisabled(),
+        nativeTabbable(),
+        supportsDisabled(),
+        // @ts-expect-error TODO [port]: figure out what to do with this.
+        props.tabIndex,
+      ),
+      // biome-ignore format: [port]
+      $disabled: () => supportsDisabled() && trulyDisabled() ? true : undefined,
       // TODO: Test Focusable contentEditable.
       $contentEditable: (props) =>
         disabled() ? undefined : props.contentEditable,
@@ -499,9 +495,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // onMouseDownCapture,
       onMouseDown,
       // TODO [port]: idea - shim `on<Event>Capture` to `on:event={{ capture: true, ... }}`
-      // @ts-expect-error TODO [port]: figure out what to do with this (type-wise).
       "on:keydown": { capture: true, handleEvent: onKeyDownCapture },
-      onFocusCapture,
+      "on:focus": { capture: true, handleEvent: onFocusCapture },
       onBlur,
     });
 
