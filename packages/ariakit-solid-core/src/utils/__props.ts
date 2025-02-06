@@ -1,6 +1,10 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { $PROXY, type JSX } from "solid-js";
 
+export function isPropsProxy(props: unknown) {
+  return Boolean(props && $PROXY in (props as object));
+}
+
 // prop traps
 // ----------
 
@@ -108,10 +112,13 @@ function createPropsSink<T>(props: T) {
   // TODO: do something different (more optimal) if props is not a proxy
   // biome-ignore lint/style/useConst: <explanation>
   let localState: SinkState;
-  const isProxy = props && $PROXY in (props as PropsObject);
+  const isProxy = isPropsProxy(props);
   const sources: Array<PropsObject> = [props as PropsObject];
   const optionSources: Array<PropsObject> = [];
   const optionKeys = new Set<string>();
+  // TODO: how come these are not necessary?????
+  // optionKeys.add("render");
+  // optionKeys.add("wrapInstance");
   const sink = new Proxy(
     {
       get(property: string | number | symbol) {

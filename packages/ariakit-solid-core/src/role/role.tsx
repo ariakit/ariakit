@@ -1,4 +1,4 @@
-import type { ElementType, FC } from "../utils/_port.ts";
+import type { ElementType, FC } from "../utils/__port.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
@@ -68,7 +68,8 @@ export const useRole = createHook<TagName, RoleOptions>(
 export const Role = forwardRef(
   // @ts-expect-error
   function Role(props: RoleProps) {
-    return createElement(TagName, props);
+    const htmlProps = useRole(props);
+    return createElement(TagName, htmlProps);
   },
 ) as FC<RoleProps> & RoleElements;
 

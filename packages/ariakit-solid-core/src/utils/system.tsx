@@ -1,7 +1,7 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import { type Component, type ValidComponent, splitProps } from "solid-js";
-import { Dynamic } from "solid-js/web";
-import { type PropsSink, withPropsSink } from "./_props.ts";
+import { type Component, type ValidComponent, createComponent } from "solid-js";
+import { As } from "./__as.tsx";
+import { type PropsSink, withPropsSink } from "./__props.ts";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 /**
@@ -22,25 +22,26 @@ export function createElement(
   Component: ValidComponent,
   props: Props<ValidComponent, Options>,
 ) {
-  // TODO: consider adding a dev-only runtime check to clarify that
-  // the JSX.Element type is only accepted through `As`, so that
-  // the error is not a vague "value is not a function" error.
-  const [features, rest] = splitProps(props, ["render", "wrapInstance"]);
-  const withRender = () => (
-    // TODO: replace with LazyDynamic
-    <Dynamic
-      {...rest}
-      component={(features.render as ValidComponent) ?? Component}
-    />
-  );
-  let tree = withRender;
-  if (features.wrapInstance) {
-    for (const element of features.wrapInstance) {
+  let tree = () => {
+    const resolvedComponent = (props.render ?? Component) as ValidComponent;
+    let component = resolvedComponent as Component;
+    if (typeof resolvedComponent === "string")
+      component = (As[resolvedComponent] as any)({}) as Component;
+    else if (typeof resolvedComponent !== "function")
+      throw new Error("Invalid render prop value");
+    // TODO: should this be untracked?
+    return component(props);
+  };
+  // TODO: should this be reactive?
+  if (props.wrapInstance) {
+    for (const wrapper of props.wrapInstance) {
       const children = tree;
-      tree = () => (
-        // TODO: replace with LazyDynamic
-        <Dynamic component={element as ValidComponent}>{children()}</Dynamic>
-      );
+      tree = () =>
+        createComponent(wrapper as Component, {
+          get children() {
+            return children();
+          },
+        });
     }
   }
   return tree();
