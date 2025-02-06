@@ -1,6 +1,6 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { createComputed, createRoot, createSignal, mergeProps } from "solid-js";
-import { $, $o } from "../_props.ts";
+import { $, $o } from "../__props.ts";
 import { createHook as _createHook } from "../system.tsx";
 
 function root(testFn: () => void | Promise<void>) {

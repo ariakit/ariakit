@@ -1,7 +1,7 @@
 import { mergeRefs } from "@solid-primitives/refs";
 import { type JSX, createUniqueId } from "solid-js";
-import type { RefObject } from "./_port.ts";
-import { $ } from "./_props.ts";
+import type { RefObject } from "./__port.ts";
+import { $ } from "./__props.ts";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
 export const useMergeRefs = mergeRefs;

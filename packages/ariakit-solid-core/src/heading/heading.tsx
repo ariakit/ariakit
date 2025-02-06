@@ -1,6 +1,6 @@
 import { createSignal, useContext } from "solid-js";
-import { type ElementType, useMemo } from "../utils/_port.ts";
-import { $ } from "../utils/_props.ts";
+import { type ElementType, useMemo } from "../utils/__port.ts";
+import { $ } from "../utils/__props.ts";
 import { useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

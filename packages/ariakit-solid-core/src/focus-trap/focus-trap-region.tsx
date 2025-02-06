@@ -4,8 +4,8 @@ import {
   type ElementType,
   removeUndefinedValues,
   useRef,
-} from "../utils/_port.ts";
-import { $, $o } from "../utils/_props.ts";
+} from "../utils/__port.ts";
+import { $, $o } from "../utils/__props.ts";
 import { useMergeRefs, useWrapElement } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

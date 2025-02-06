@@ -3,8 +3,8 @@ import {
   type ElementType,
   removeUndefinedValues,
   useEffect,
-} from "../utils/_port.ts";
-import { $ } from "../utils/_props.ts";
+} from "../utils/__port.ts";
+import { $ } from "../utils/__props.ts";
 import { useId } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

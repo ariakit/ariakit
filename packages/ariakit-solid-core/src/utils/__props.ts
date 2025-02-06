@@ -56,10 +56,12 @@ type SinkState = {
 };
 
 let state: SinkState | undefined;
+const stateMap = new WeakMap<any, SinkState>();
 
-function getSinkState() {
-  if (!state) throw new Error("Missing props sink state");
-  return state;
+function getSinkState(sinkFallback?: unknown) {
+  const sinkState = state ?? stateMap.get(sinkFallback);
+  if (!sinkState) throw new Error("Missing props sink state");
+  return sinkState;
 }
 
 function ensureSource(source?: PropsObject) {
@@ -142,6 +144,7 @@ function createPropsSink<T>(props: T) {
     offset: 0,
   };
   state = localState;
+  stateMap.set(sink, localState);
   return sink;
 }
 
@@ -218,7 +221,7 @@ export function $<P extends JSX.HTMLAttributes<any>>(
   _originalProps: P,
   props?: NoInfer<WithGetterShorthands<P>>,
 ) {
-  const sinkState = getSinkState();
+  const sinkState = getSinkState(_originalProps);
   if (props) {
     expandGetterShorthands(props);
     sinkState.sources.push(props as PropsObject);
@@ -267,7 +270,7 @@ export function $o<
   P extends AnyObject,
   const O extends Partial<UnwrapPropSinkProps<P>>,
 >(_props: P, options: O): ExtractOptionsReturn<P, O> {
-  const { optionSources, optionKeys, sink } = getSinkState();
+  const { optionSources, optionKeys, sink } = getSinkState(_props);
   optionSources.push(options as PropsObject);
   for (const key of Object.keys(options)) optionKeys.add(key);
   return [sink, sink] as unknown as ExtractOptionsReturn<P, O>;

@@ -1,6 +1,6 @@
 import { useContext } from "solid-js";
-import type { ReactNode } from "../utils/_port.ts";
-import { $o } from "../utils/_props.ts";
+import type { ReactNode } from "../utils/__port.ts";
+import { $o } from "../utils/__props.ts";
 import { HeadingContext } from "./heading-context.tsx";
 import type { HeadingLevels } from "./utils.ts";
 
