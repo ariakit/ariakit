@@ -132,14 +132,16 @@ const tab = useTabContext();
 
     const activeId = tab?.getState().selectedId;
     const options = { activeId, focusLoop: false };
-    const nextId = event.shiftKey ? tab?.previous(options) : tab?.next(options);
+    const nextId = event.shiftKey
+      ? tab?.previous(options)
+      : tab?.next(options);
 
     if (!nextId) return;
 
     event.preventDefault();
     tab?.select(nextId);
   }}
-/>;
+/>
 ```
 
 We need to set the selected tab as the [`activeId`](/reference/tab-provider#activeid) when retrieving previous or next tab IDs, as this information is used to calculate the next tab. The [`focusLoop`](/reference/tab-provider#focusloop) option is set to `false` to allow users to exit the tab list when they reach the last tab. However, when using arrow keys, [`focusLoop`](/reference/tab-provider#focusloop) remains enabled because passing options to the [`next`](/reference/use-tab-store#next) and [`previous`](/reference/use-tab-store#previous) methods doesn't change the original store state.
@@ -202,26 +204,26 @@ In this example, we leverage the second approach to automatically set the [`rowI
 
 1. For the `CommandMenuItem` component, we calculate the [`rowId`](/reference/combobox-item#rowid) using the number of columns, the group, and the item's index:
 
-   ```jsx "rowId"
-   const cols = useContext(CommandMenuGridColsContext);
-   const group = useContext(CommandMenuGroupContext);
-   const rowId = getRowId(cols, props.index, group);
+    ```jsx "rowId"
+    const cols = useContext(CommandMenuGridColsContext);
+    const group = useContext(CommandMenuGroupContext);
+    const rowId = getRowId(cols, props.index, group);
 
-   <ComboboxItem rowId={rowId} />;
-   ```
+    <ComboboxItem rowId={rowId} />
+    ```
 
 2. For the `CommandMenuTab` component, we set [`rowId`](/reference/tab#rowid) if the combobox widget includes any items with a `rowId` prop. Since the tabs are rendered in the same row, this value can remain static:
 
-   ```jsx "rowId" {4}
-   const combobox = useComboboxContext();
-   const isGrid = useStoreState(
-     combobox,
-     (state) => !!state?.items.find((item) => !!item.rowId),
-   );
-   const rowId = isGrid ? "tabs" : undefined;
+    ```jsx "rowId" {4}
+    const combobox = useComboboxContext();
+    const isGrid = useStoreState(
+      combobox,
+      (state) => !!state?.items.find((item) => !!item.rowId),
+    );
+    const rowId = isGrid ? "tabs" : undefined;
 
-   <Tab rowId={rowId} />;
-   ```
+    <Tab rowId={rowId} />
+    ```
 
 ## Related examples
 

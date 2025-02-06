@@ -11,6 +11,7 @@ tags:
 
 Rendering a dropdown [Menu](/components/menu) using the [`MenuItemCheckbox`](/reference/menu-item-checkbox) component with the [`values`](/reference/menu-provider#values) and [`setValues`](/reference/menu-provider#setvalues) props from [`MenuProvider`](/reference/menu-provider) to control the checked items.
 
+
 </div>
 
 <div data-tags></div>
