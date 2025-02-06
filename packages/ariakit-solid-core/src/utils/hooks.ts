@@ -1,5 +1,4 @@
 import { mergeRefs } from "@solid-primitives/refs";
-import { access } from "@solid-primitives/utils";
 import { type JSX, createUniqueId } from "solid-js";
 import type { RefObject } from "./_port.ts";
 import { $ } from "./_props.ts";
@@ -12,7 +11,7 @@ export const useMergeRefs = mergeRefs;
  */
 export function useId(defaultId?: string): string {
   const id = createUniqueId();
-  return access(defaultId) ?? id;
+  return defaultId ?? id;
 }
 
 /**
