@@ -18,7 +18,7 @@ import {
  *
  * In React, it creates a stable callback function. Unnecessary in Solid.
  */
-export function useEvent<T extends AnyFunction>(callback?: T) {
+export function useEvent<T extends AnyFunction>(callback: T) {
   return callback;
 }
 
@@ -38,7 +38,7 @@ export type ElementType = ValidComponent;
 export type SetState<T> = Setter<T>;
 export type ReactNode = JSX.Element;
 // biome-ignore lint/complexity/noBannedTypes: it's the original default.
-export type FC<P = {}> = Component<P>;
+export type FC<P extends Record<string, any> = {}> = Component<P>;
 
 export const useEffect = (fn: () => void | (() => void)) =>
   createEffect(() => {

@@ -57,8 +57,6 @@ export function createHook<
   T extends ValidComponent,
   P extends AnyObject = EmptyObject,
 >(useProps: (props: PropsSink<Props<T, P>>) => HTMLProps<T, P>) {
-  const useRole = (props: Props<T, P> = {} as Props<T, P>) => {
-    return withPropsSink(props, useProps);
-  };
+  const useRole = (props: Props<T, P>) => withPropsSink(props, useProps);
   return useRole as Hook<T, P>;
 }
