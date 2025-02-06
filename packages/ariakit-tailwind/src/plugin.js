@@ -11,6 +11,15 @@ function isInlineThemeReference(value) {
 }
 
 /**
+ * Return the absolute value in CSS.
+ * @param {string} value
+ */
+function abs(value) {
+  return `max(${value}, ${value} * -1)`;
+}
+
+/**
+ * Just to please TypeScript.
  * @typedef {{[key: string]: string | string[] | CssInJs | CssInJs[]}} CssInJs
  * @param {CssInJs} object
  */
@@ -74,12 +83,15 @@ function fromParent(namespace, reset, fn) {
     css[`@container style(${getParityKey()}: ${parity})`] = getCss(parity);
   }
 
+  css[`@container not style(${getParityKey()})`] = getCss("even");
+
   return css;
 }
 
 /** @type {ReturnType<typeof plugin>} */
-const AriakitTailwind = plugin(({ matchUtilities, theme }) => {
+const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
   /**
+   * Returns either the inline value or the CSS variable reference.
    * @param {string} namespace
    * @param {string} token
    * @param {string} [defaultValue]
@@ -90,11 +102,49 @@ const AriakitTailwind = plugin(({ matchUtilities, theme }) => {
     if (isInlineThemeReference(options)) {
       return theme(key, defaultValue);
     }
+    if (defaultValue) {
+      return `var(${key}, ${defaultValue})`;
+    }
     return `var(${key})`;
   }
 
+  function getLayerValues(onlyLevels = false) {
+    const { __CSS_VALUES__, ...colors } = theme("colors");
+    const keys = Object.keys(colors);
+    const maxNonBareLevels = 10;
+    /** @type {Record<string, string>} */
+    const values = {
+      // @ts-expect-error
+      __BARE_VALUE__: ({ value }) => {
+        const { token } = parseColorLevel(value);
+        if (!token) return value;
+        if (!theme("colors")[token]) return;
+        return value;
+      },
+    };
+    // Add non bare level values
+    for (let i = 0; i <= maxNonBareLevels; i++) {
+      values[i] = `${i}`;
+    }
+    // Add non bare color and level values
+    if (!onlyLevels) {
+      for (const key of keys) {
+        const hasTrailingNumber = /-\d+$/.test(key);
+        if (hasTrailingNumber) {
+          values[key] = key;
+          continue;
+        }
+        values[key] = key;
+        for (let i = 1; i <= maxNonBareLevels; i++) {
+          values[`${key}-${i}`] = `${key}-${i}`;
+        }
+      }
+    }
+    return values;
+  }
+
   /** @param {string} [value] */
-  function parseLayerValue(value) {
+  function parseColorLevel(value) {
     if (!value) {
       return { token: undefined, level: "1" };
     }
@@ -109,86 +159,123 @@ const AriakitTailwind = plugin(({ matchUtilities, theme }) => {
     return { token: value.slice(0, -level.length - 1), level };
   }
 
+  /**
+   * @param {string | null | undefined} token
+   * @param {string} level
+   */
+  function getLayerCss(token, level, highlightLevel = level) {
+    const contrastBase = t("layer", "contrast", "8");
+    const contrastUp = t("layer", "contrast-up", contrastBase);
+    const contrastDown = t("layer", "contrast-down", contrastBase);
+    const contrast = level.startsWith("-") ? contrastDown : contrastUp;
+    const l = `calc(max(l, 0.11) + var(--_layer-level) * 0.01 * ${contrast})`;
+    const c = `calc(c - ${abs("var(--_layer-level)")} * 0.0004 * ${contrast})`;
+
+    const textL = `calc((49.44 - l) * infinity)`;
+    const isBgDark = `clamp(0, ${textL}, 1)`;
+    const isBgLight = `clamp(0, 1 - ${textL}, 1)`;
+    const alphaBase = `calc(20% * ${isBgDark} + 15% * ${isBgLight})`;
+    const alphaAdd = `calc(l * 0.5% * ${isBgDark} + (100 - l) * 0.5% * ${isBgLight})`;
+    const alpha = `calc(${alphaBase} + ${alphaAdd})`;
+
+    return css({
+      backgroundColor: `var(--ak-layer)`,
+      "@apply border-(--ak-border) ring-(--ak-border)": {},
+
+      "--ak-border": `lch(from var(--ak-layer) ${textL} c h / ${alpha})`,
+
+      ...(token
+        ? {
+            "--ak-layer-base": `oklch(from ${t("color", token)} ${l} ${c} h)`,
+            "--ak-layer-current": `var(--ak-layer-base)`,
+          }
+        : {
+            "--ak-layer-current": `oklch(from var(--ak-layer-base) ${l} ${c} h)`,
+          }),
+
+      "--ak-layer": `var(--ak-layer-current)`,
+      "--ak-layer-level": level,
+
+      ...fromParent("layer", !!token, ({ key, inherit }) => ({
+        [key("--_layer-level")]: token
+          ? "0"
+          : `calc(${inherit("--_layer-level")} + ${highlightLevel})`,
+        "--_layer-level": token
+          ? level
+          : `calc(${inherit("--_layer-level")} + ${level})`,
+        "--ak-layer-level": `var(${key("--_layer-level")})`,
+      })),
+    });
+  }
+
+  /**
+   * @param {string} level
+   * @param {string | number} threshold
+   * @param {string | number} contrast
+   */
+  function getLayerInvertCss(level, threshold, contrast) {
+    // light: -1, dark: 1
+    const mode = `clamp(-1, (calc(${threshold} * 10) - l * 10) * infinity - 1, 1)`;
+    const l = `calc(l + ${mode} * ${level} * 0.01 * ${contrast})`;
+    return {
+      ...getLayerCss(null, "0", level),
+      "--ak-layer": `oklch(from var(--ak-layer-current) ${l} c h)`,
+    };
+  }
+
+  /** @param {string} level */
+  function getLayerHighlightCss(level) {
+    const threshold = t("layer", "highlight-threshold", "0.92");
+    const contrastBase = t("layer", "highlight-contrast", "8");
+    const contrastUp = t("layer", "highlight-contrast-up", contrastBase);
+    const contrastDown = t("layer", "highlight-contrast-down", contrastBase);
+    const contrast = level.startsWith("-") ? contrastDown : contrastUp;
+    return getLayerInvertCss(level, threshold, contrast);
+  }
+
+  /** @param {string} level */
+  function getLayerHoverCss(level) {
+    const threshold = t("layer", "hover-threshold", "0.5");
+    const contrastBase = t("layer", "hover-contrast", "8");
+    const contrastUp = t("layer", "hover-contrast-up", contrastBase);
+    const contrastDown = t("layer", "hover-contrast-down", contrastBase);
+    const contrast = level.startsWith("-") ? contrastDown : contrastUp;
+    return getLayerInvertCss(level, threshold, contrast);
+  }
+
   matchUtilities(
     {
+      "ak-layer-down": (value) => {
+        const { token, level } = parseColorLevel(value);
+        return getLayerCss(token, `-${level}`);
+      },
       "ak-layer": (value) => {
-        const { token, level } = parseLayerValue(value);
-        const result = css({
-          "--_layer-level": level,
-          "--_layer-bg-l": `calc(max(l, 0.11) + var(--_layer-level) * 0.01 * var(--layer-contrast))`,
-          "--_layer-bg-c": `calc(c - max(0, var(--_layer-level)) * 0.0004 * var(--layer-contrast))`,
-
-          backgroundColor: `var(--ak-layer)`,
-
-          ...(token
-            ? {
-                "--_layer-base-bg": `oklch(from ${t("color", token)} var(--_layer-bg-l) var(--_layer-bg-c) h)`,
-                "--ak-layer": `var(--_layer-base-bg)`,
-              }
-            : {
-                "--ak-layer":
-                  "oklch(from var(--_layer-base-bg) var(--_layer-bg-l) var(--_layer-bg-c) h)",
-              }),
-
-          ...fromParent("layer", !!token, ({ key, inherit }) => ({
-            [key("--_layer-level")]: token
-              ? level
-              : `calc(${inherit("--_layer-level")} + ${level})`,
-            "--_layer-level": `var(${key("--_layer-level")})`,
-          })),
-        });
-
-        console.log(value, result);
-
-        return result;
+        const { token, level } = parseColorLevel(value);
+        return getLayerCss(token, level);
       },
     },
-    {
-      values: {
-        even: "even",
-        accent: "accent",
-        "accent-1": "accent-1",
-        1: "1",
-      },
-    },
+    { values: getLayerValues() },
   );
 
-  // matchUtilities(
-  //   {
-  //     a: (value) => {
-  //       if (value === "lol") {
-  //         return {
-  //           backgroundColor: "red",
-  //         };
-  //       }
-  //       return {
-  //         color: value,
-  //       };
-  //     },
-  //   },
-  //   {
-  //     values: {
-  //       lol: "lol",
-  //       tre: "tre",
-  //     },
-  //   },
-  // );
+  matchUtilities(
+    {
+      "ak-layer-down-hover": (value) => getLayerHoverCss(`-${value}`),
+      "ak-layer-hover": getLayerHoverCss,
+      "ak-layer-down-highlight": (value) => getLayerHighlightCss(`-${value}`),
+      "ak-layer-highlight": getLayerHighlightCss,
+    },
+    { values: getLayerValues(true) },
+  );
 
-  // matchUtilities(
-  //   {
-  //     "text-alpha": (color, { modifier }) => ({
-  //       color: `${color} ${modifier}`,
-  //     }),
-  //   },
-  //   {
-  //     values: {
-  //       __BARE_VALUE__: (value) => value.value,
-  //       1: "1",
-  //       2: "2",
-  //     },
-  //     type: "number",
-  //   },
-  // );
+  addUtilities({
+    ".ak-layer": getLayerCss(null, "1"),
+    ".ak-layer-down": getLayerCss(null, "-1"),
+    ".ak-layer-current": getLayerCss(null, "0"),
+    ".ak-layer-hover": getLayerHoverCss("1"),
+    ".ak-layer-down-hover": getLayerHighlightCss("-1"),
+    ".ak-layer-highlight": getLayerHighlightCss("1"),
+    ".ak-layer-down-highlight": getLayerHighlightCss("-1"),
+  });
 });
 
 export default AriakitTailwind;
