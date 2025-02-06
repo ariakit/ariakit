@@ -75,6 +75,8 @@ export function PageMarkdown({
 }: PageMarkdownProps) {
   const hovercards = new Set<Promise<string | Iterable<string>>>();
 
+  const isSolid = category === "examples" && page?.endsWith("__solid");
+
   if (!content || !file) {
     invariant(category && page);
     const config = pagesConfig.pages.find((page) => page.slug === category);
@@ -85,8 +87,10 @@ export function PageMarkdown({
     if (!content) return null;
   }
 
+  const originalPage = !isSolid ? page : page?.replace("__solid", "");
+
   const pageDetail = category
-    ? pageIndex[category]?.find((item) => item.slug === page)
+    ? pageIndex[category]?.find((item) => item.slug === originalPage)
     : null;
 
   const { content: contentWithoutMatter } = matter(content);
@@ -149,6 +153,7 @@ export function PageMarkdown({
                 {...props}
                 category={category}
                 page={page}
+                // TODO: add " (Solid)" to title?
                 title={pageDetail?.title}
                 tags={pageDetail?.tags}
                 media={pageDetail?.media}
