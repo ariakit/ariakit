@@ -1,6 +1,0 @@
-{
-  "installCommand": "cd ../.. && npm install && cd packages/ariakit-solid-playground",
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev -- --port $PORT",
-  "outputDirectory": "dist"
-}
