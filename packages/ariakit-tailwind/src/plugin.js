@@ -100,7 +100,7 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
    */
   function t(namespace, token, defaultValue) {
     const options = theme(namespace)?.__CSS_VALUES__?.[token];
-    const key = `--${namespace}-${token}`;
+    const key = `--${namespace}${token === "DEFAULT" ? "" : `-${token}`}`;
     if (isInlineThemeReference(options)) {
       return theme(key, defaultValue);
     }
@@ -116,6 +116,7 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
     const maxNonBareLevels = 10;
     /** @type {Record<string, string>} */
     const values = {
+      DEFAULT: "1",
       // @ts-expect-error
       __BARE_VALUE__: ({ value }) => {
         const { token } = parseColorLevel(value);
@@ -203,8 +204,8 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
     const isBgDark = `clamp(0, ${textL}, 1)`;
     const isBgLight = `clamp(0, 1 - ${textL}, 1)`;
 
-    const borderAlphaBase = `calc(20% * ${isBgDark} + 15% * ${isBgLight})`;
-    const borderAlphaAdd = `calc(l * 0.5% * ${isBgDark} + (100 - l) * 0.5% * ${isBgLight})`;
+    const borderAlphaBase = `calc(15% * ${isBgDark} + 15% * ${isBgLight})`;
+    const borderAlphaAdd = `calc(l * 0.1% * ${isBgDark} + (100 - l) * 0.1% * ${isBgLight})`;
     const borderAlpha = `calc(${borderAlphaBase} + ${borderAlphaAdd})`;
 
     const shadowAlpha = `calc(25% + (1 - l) * 25%)`;
@@ -304,6 +305,20 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
 
   matchUtilities(
     {
+      "ak-layer-down-hover": (value) => getLayerHoverCss(`-${value}`),
+      "ak-layer-hover": getLayerHoverCss,
+      "ak-layer-down-highlight": (value) => getLayerHighlightCss(`-${value}`),
+      "ak-layer-highlight": getLayerHighlightCss,
+    },
+    { values: getLayerValues(true) },
+  );
+
+  addUtilities({
+    ".ak-layer-current": getLayerCss(null, "0"),
+  });
+
+  matchUtilities(
+    {
       "ak-layer-mix": (value, { modifier }) => {
         const { token, level } = parseColorLevel(value);
         const parent = "var(--ak-layer-parent)";
@@ -331,25 +346,64 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
     },
   );
 
+  /**
+   * @param {string} radiusKey
+   * @param {string | null} [modifier]
+   * @param {boolean} [force]
+   */
+  function getFrameCss(radiusKey, modifier, force = false) {
+    const radius = t("radius", radiusKey);
+    const padding =
+      modifier ||
+      (radiusKey === "DEFAULT"
+        ? "0px"
+        : theme("spacing")[radiusKey]
+          ? t("spacing", radiusKey)
+          : "0px");
+    return css({
+      padding,
+      borderRadius: radius,
+      ...fromParent("frame", force, ({ provide, inherit }) => ({
+        [provide("--_padding")]: padding,
+        [provide("--_radius")]: radius,
+        borderRadius: force
+          ? radius
+          : `calc(${inherit("--_radius", radius)} - ${inherit("--_padding", "0px")})`,
+      })),
+    });
+  }
+
   matchUtilities(
     {
-      "ak-layer-down-hover": (value) => getLayerHoverCss(`-${value}`),
-      "ak-layer-hover": getLayerHoverCss,
-      "ak-layer-down-highlight": (value) => getLayerHighlightCss(`-${value}`),
-      "ak-layer-highlight": getLayerHighlightCss,
+      "ak-frame-force": (radiusKey, extra) =>
+        getFrameCss(radiusKey, extra.modifier, true),
+      "ak-frame": (radiusKey, extra) => getFrameCss(radiusKey, extra.modifier),
     },
-    { values: getLayerValues(true) },
+    {
+      values: Object.keys(theme("radius")).reduce(
+        (acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          acc[key] = key;
+          return acc;
+        },
+        /** @type {Record<string, string>} */ ({}),
+      ),
+      modifiers: Object.keys(theme("spacing")).reduce(
+        (acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          if (key === "DEFAULT") return acc;
+          const isNumber = /^\d*\.?\d+$/u.test(key);
+          if (isNumber) {
+            acc[key] = `--spacing(${key})`;
+          } else {
+            acc[key] = t("spacing", key);
+          }
+          return acc;
+        },
+        /** @type {Record<string, string>} */ ({}),
+      ),
+    },
   );
-
-  addUtilities({
-    ".ak-layer": getLayerCss(null, "1"),
-    ".ak-layer-down": getLayerCss(null, "-1"),
-    ".ak-layer-current": getLayerCss(null, "0"),
-    ".ak-layer-hover": getLayerHoverCss("1"),
-    ".ak-layer-down-hover": getLayerHighlightCss("-1"),
-    ".ak-layer-highlight": getLayerHighlightCss("1"),
-    ".ak-layer-down-highlight": getLayerHighlightCss("-1"),
-  });
 });
 
 export default AriakitTailwind;

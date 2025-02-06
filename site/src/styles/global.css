@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @import "@ariakit/tailwind";
+
+@theme {
+  --radius-container: var(--radius-xl);
+  --spacing-container: --spacing(1);
+}

@@ -15,6 +15,20 @@
   --layer-contrast: 6;
   --layer-highlight-threshold: 0.92;
   --layer-hover-threshold: 0.5;
+
+  --spacing: 0.25rem;
+  --spacing-px: 1px;
+
+  --radius: 0.25rem;
+  --radius-xs: calc(var(--radius) * 0.5);
+  --radius-sm: calc(var(--radius) * 1);
+  --radius-md: calc(var(--radius) * 1.5);
+  --radius-lg: calc(var(--radius) * 2);
+  --radius-xl: calc(var(--radius) * 3);
+  --radius-2xl: calc(var(--radius) * 4);
+  --radius-3xl: calc(var(--radius) * 6);
+  --radius-4xl: calc(var(--radius) * 8);
+  --radius-full: calc(var(--radius) * infinity);
 }
 
 @theme inline {
