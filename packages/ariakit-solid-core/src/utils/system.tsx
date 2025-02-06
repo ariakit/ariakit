@@ -27,7 +27,7 @@ export function createElement(
   // the error is not a vague "value is not a function" error.
   const [features, rest] = splitProps(props, ["render", "wrapInstance"]);
   const withRender = () => (
-    // TODO: replace with LazyDynamic
+    // TODO: replace with LazyDynamic?
     <Dynamic
       {...rest}
       component={(features.render as ValidComponent) ?? Component}
@@ -38,7 +38,7 @@ export function createElement(
     for (const element of features.wrapInstance) {
       const children = tree;
       tree = () => (
-        // TODO: replace with LazyDynamic
+        // TODO: replace with LazyDynamic?
         <Dynamic component={element as ValidComponent}>{children()}</Dynamic>
       );
     }
@@ -56,8 +56,6 @@ export function createHook<
   T extends ValidComponent,
   P extends AnyObject = EmptyObject,
 >(useProps: (props: PropsSink<Props<T, P>>) => HTMLProps<T, P>) {
-  const useRole = (props: Props<T, P> = {} as Props<T, P>) => {
-    return withPropsSink(props, useProps);
-  };
+  const useRole = (props: Props<T, P>) => withPropsSink(props, useProps);
   return useRole as Hook<T, P>;
 }
