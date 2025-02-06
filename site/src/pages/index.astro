@@ -7,9 +7,9 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <div class="ak-layer-base border-b-2 hover:ak-layer-base-4 p-2">
+  <div class="ak-layer-[#212131] border-b-20 hover:ak-layer-base-4 p-2">
     <div class="ak-layer-highlight p-2">
-      <div class="ak-layer-down p-2">
+      <div class="ak-layer-down text-(--ak-layer-parent) p-2">
         dadsa
       </div>
     </div>
@@ -17,4 +17,17 @@ import Layout from "../layouts/Layout.astro";
   <div class="ak-layer p-2">
     <div class="ak-layer-down p-2">dasdsa</div>
   </div>
+  <div class="ak-layer-gray-50 p-8">
+    <div class="ak-layer-gray-900 p-2 ring rounded-2xl shadow-md">dse2</div>
+  </div>
+  <input type="color" />
 </Layout>
+
+<script>
+  const colorInput = document.querySelector("input[type='color']");
+  colorInput?.addEventListener("input", (event) => {
+    // @ts-expect-error
+    const color = event.target?.value;
+    document.body.style.setProperty("--color-base", color);
+  });
+</script>

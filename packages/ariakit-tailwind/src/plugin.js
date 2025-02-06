@@ -1,3 +1,4 @@
+import colorString from "color-string";
 import plugin from "tailwindcss/plugin";
 
 /**
@@ -42,7 +43,8 @@ function fromParent(namespace, reset, fn) {
   const getParityKey = () => `--_${namespace}-parity`;
 
   /** @param {Parity} parity */
-  const getParity = (parity) => (parity === "even" && !reset ? "odd" : "even");
+  const getNextParity = (parity) =>
+    parity === "even" && !reset ? "odd" : "even";
 
   /**
    * @param {Parity} parity
@@ -57,7 +59,7 @@ function fromParent(namespace, reset, fn) {
    * @returns {Key}
    */
   const createKey = (parity) => (prop) => {
-    return `${prop}-${getParity(parity)}`;
+    return `${prop}-${getNextParity(parity)}`;
   };
 
   /**
@@ -65,7 +67,7 @@ function fromParent(namespace, reset, fn) {
    * @returns {CssInJs}
    */
   const getCss = (parity) => ({
-    [getParityKey()]: getParity(parity),
+    [getParityKey()]: getNextParity(parity),
     ...fn({
       key: createKey(parity),
       inherit: createInherit(parity),
@@ -153,7 +155,7 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
       return { token: value, level: "0" };
     }
     const [level] = matches;
-    if (!level || theme("colors")[value]) {
+    if (!level || theme("colors")[value] || colorString.get(value)) {
       return { token: value, level: "0" };
     }
     return { token: value.slice(0, -level.length - 1), level };
@@ -164,6 +166,12 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
    * @param {string} level
    */
   function getLayerCss(token, level, highlightLevel = level) {
+    const baseColor = token
+      ? theme("colors")[token]
+        ? t("color", token)
+        : token
+      : "var(--ak-layer-base)";
+
     const contrastBase = t("layer", "contrast", "8");
     const contrastUp = t("layer", "contrast-up", contrastBase);
     const contrastDown = t("layer", "contrast-down", contrastBase);
@@ -174,36 +182,53 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
     const textL = `calc((49.44 - l) * infinity)`;
     const isBgDark = `clamp(0, ${textL}, 1)`;
     const isBgLight = `clamp(0, 1 - ${textL}, 1)`;
-    const alphaBase = `calc(20% * ${isBgDark} + 15% * ${isBgLight})`;
-    const alphaAdd = `calc(l * 0.5% * ${isBgDark} + (100 - l) * 0.5% * ${isBgLight})`;
-    const alpha = `calc(${alphaBase} + ${alphaAdd})`;
+
+    const borderAlphaBase = `calc(20% * ${isBgDark} + 15% * ${isBgLight})`;
+    const borderAlphaAdd = `calc(l * 0.5% * ${isBgDark} + (100 - l) * 0.5% * ${isBgLight})`;
+    const borderAlpha = `calc(${borderAlphaBase} + ${borderAlphaAdd})`;
+
+    const shadowAlpha = `calc(25% + (1 - l) * 25%)`;
+
+    /** @param {string} parent */
+    // const mixLayer = (parent) =>
+    //   `color-mix(in oklab, var(--ak-layer), ${parent})`;
 
     return css({
-      backgroundColor: `var(--ak-layer)`,
-      "@apply border-(--ak-border) ring-(--ak-border)": {},
+      backgroundColor: "var(--ak-layer)",
+      color: "var(--ak-text)",
+      "@apply border-(--ak-border) ring-(--ak-border) shadow-(color:--ak-shadow)":
+        {},
 
-      "--ak-border": `lch(from var(--ak-layer) ${textL} c h / ${alpha})`,
+      "--ak-shadow": `oklch(from var(--ak-layer) 0 0 0 / ${shadowAlpha})`,
+      "--ak-border": `lch(from var(--ak-layer) ${textL} c h / ${borderAlpha})`,
+      "--ak-text": `lch(from var(--ak-layer) ${textL} 0 0 / 100%)`,
+      "--ak-layer": `var(--_layer-current)`,
 
       ...(token
         ? {
-            "--ak-layer-base": `oklch(from ${t("color", token)} ${l} ${c} h)`,
-            "--ak-layer-current": `var(--ak-layer-base)`,
+            "--ak-layer-base": `oklch(from ${baseColor} ${l} ${c} h)`,
+            "--_layer-current": `var(--ak-layer-base)`,
           }
         : {
-            "--ak-layer-current": `oklch(from var(--ak-layer-base) ${l} ${c} h)`,
+            "--_layer-current": `oklch(from ${baseColor} ${l} ${c} h)`,
           }),
 
-      "--ak-layer": `var(--ak-layer-current)`,
-      "--ak-layer-level": level,
+      ...fromParent("layer-parent", false, ({ key, inherit }) => ({
+        [key("--_layer-parent")]: "var(--ak-layer)",
+        "--ak-layer-parent": inherit("--_layer-parent"),
+        // "--ak-border": `lch(from ${mixLayer(inherit("--_layer-parent"))} ${textL} c h / ${borderAlpha})`,
+        // "--ak-shadow": `oklch(from ${mixLayer(inherit("--_layer-parent"))} 0 0 0 / ${shadowAlpha})`,
+        // "--ak-shadow": `oklch(from ${inherit("--_layer-parent")} 0 0 0 / ${shadowAlpha})`,
+      })),
 
       ...fromParent("layer", !!token, ({ key, inherit }) => ({
         [key("--_layer-level")]: token
           ? "0"
           : `calc(${inherit("--_layer-level")} + ${highlightLevel})`,
+
         "--_layer-level": token
           ? level
           : `calc(${inherit("--_layer-level")} + ${level})`,
-        "--ak-layer-level": `var(${key("--_layer-level")})`,
       })),
     });
   }
@@ -216,10 +241,11 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
   function getLayerInvertCss(level, threshold, contrast) {
     // light: -1, dark: 1
     const mode = `clamp(-1, (calc(${threshold} * 10) - l * 10) * infinity - 1, 1)`;
-    const l = `calc(l + ${mode} * ${level} * 0.01 * ${contrast})`;
+    const relativeLevel = `calc(${level} * ${mode})`;
+    const l = `calc(l + ${relativeLevel} * 0.01 * ${contrast})`;
     return {
-      ...getLayerCss(null, "0", level),
-      "--ak-layer": `oklch(from var(--ak-layer-current) ${l} c h)`,
+      ...getLayerCss(null, "0", relativeLevel),
+      "--ak-layer": `oklch(from var(--_layer-current) ${l} c h)`,
     };
   }
 

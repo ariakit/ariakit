@@ -6,5 +6,8 @@ export default defineConfig({
   vite: {
     // @ts-expect-error
     plugins: [tailwindcss()],
+    server: {
+      allowedHosts: [".local"],
+    },
   },
 });
