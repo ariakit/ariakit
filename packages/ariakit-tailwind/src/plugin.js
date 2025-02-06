@@ -30,10 +30,9 @@ function css(object) {
 
 /**
  * @typedef {"even" | "odd"} Parity
- * @typedef {(prop: string) => string} Key
+ * @typedef {(prop: string) => string} Provide
  * @typedef {(prop: string, defaultValue?: string) => string} Inherit
- * @typedef {(prop: string, value?: string) => string} Provide
- * @typedef {{ key: Key, inherit: Inherit }} FromParentFnParams
+ * @typedef {{ provide: Provide, inherit: Inherit }} FromParentFnParams
  * @typedef {(params: FromParentFnParams) => CssInJs} FromParentFn
  * @param {string} namespace
  * @param {boolean} reset
@@ -44,6 +43,7 @@ function fromParent(namespace, reset, fn) {
 
   /** @param {Parity} parity */
   const getNextParity = (parity) =>
+    // TODO: Check if this !reset is necessary
     parity === "even" && !reset ? "odd" : "even";
 
   /**
@@ -56,26 +56,26 @@ function fromParent(namespace, reset, fn) {
 
   /**
    * @param {Parity} parity
-   * @returns {Key}
+   * @returns {Provide}
    */
-  const createKey = (parity) => (prop) => {
+  const createProvide = (parity) => (prop) => {
     return `${prop}-${getNextParity(parity)}`;
   };
 
   /**
-   * @param {Parity} parity
+   * @param {Parity} [parity]
    * @returns {CssInJs}
    */
-  const getCss = (parity) => ({
+  const getCss = (parity = "even") => ({
     [getParityKey()]: getNextParity(parity),
     ...fn({
-      key: createKey(parity),
+      provide: createProvide(parity),
       inherit: createInherit(parity),
     }),
   });
 
   if (reset) {
-    return getCss("even");
+    return getCss();
   }
 
   /** @type {CssInJs} */
@@ -85,7 +85,7 @@ function fromParent(namespace, reset, fn) {
     css[`@container style(${getParityKey()}: ${parity})`] = getCss(parity);
   }
 
-  css[`@container not style(${getParityKey()})`] = getCss("even");
+  css[`@container not style(${getParityKey()})`] = getCss();
 
   return css;
 }
@@ -162,22 +162,42 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
   }
 
   /**
+   * @param {string} level
+   * @param {string} computedLevel
+   */
+  function getLayerOkLCH(level, computedLevel) {
+    const isDown = level.startsWith("-");
+
+    const contrastBase = t("layer", "contrast", "8");
+    const contrastUp = t("layer", "contrast-up", contrastBase);
+    const contrastDown = t("layer", "contrast-down", contrastBase);
+    const contrast = isDown ? contrastDown : contrastUp;
+    const l = `calc(max(l, 0.11) + ${computedLevel} * 0.01 * ${contrast})`;
+    const c = `calc(c - ${abs(computedLevel)} * 0.0004 * ${contrast})`;
+    const h = "h";
+    return { l, c, h };
+  }
+
+  /**
    * @param {string | null | undefined} token
    * @param {string} level
+   * @param {string} [highlightLevel]
    */
-  function getLayerCss(token, level, highlightLevel = level) {
+  function getLayerCss(token, level, highlightLevel) {
     const baseColor = token
       ? theme("colors")[token]
         ? t("color", token)
         : token
       : "var(--ak-layer-base)";
 
-    const contrastBase = t("layer", "contrast", "8");
-    const contrastUp = t("layer", "contrast-up", contrastBase);
-    const contrastDown = t("layer", "contrast-down", contrastBase);
-    const contrast = level.startsWith("-") ? contrastDown : contrastUp;
-    const l = `calc(max(l, 0.11) + var(--_layer-level) * 0.01 * ${contrast})`;
-    const c = `calc(c - ${abs("var(--_layer-level)")} * 0.0004 * ${contrast})`;
+    const { l, c, h } = getLayerOkLCH(
+      level,
+      // If the color token is provided, we use the level as is, otherwise we
+      // stack the levels.
+      token ? level : "var(--_layer-level)",
+    );
+
+    const isDown = level.startsWith("-");
 
     const textL = `calc((49.44 - l) * infinity)`;
     const isBgDark = `clamp(0, ${textL}, 1)`;
@@ -189,10 +209,6 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
 
     const shadowAlpha = `calc(25% + (1 - l) * 25%)`;
 
-    /** @param {string} parent */
-    // const mixLayer = (parent) =>
-    //   `color-mix(in oklab, var(--ak-layer), ${parent})`;
-
     return css({
       backgroundColor: "var(--ak-layer)",
       color: "var(--ak-text)",
@@ -202,33 +218,36 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
       "--ak-shadow": `oklch(from var(--ak-layer) 0 0 0 / ${shadowAlpha})`,
       "--ak-border": `lch(from var(--ak-layer) ${textL} c h / ${borderAlpha})`,
       "--ak-text": `lch(from var(--ak-layer) ${textL} 0 0 / 100%)`,
-      "--ak-layer": `var(--_layer-current)`,
+      "--ak-layer": `var(--_layer-original)`,
 
       ...(token
         ? {
-            "--ak-layer-base": `oklch(from ${baseColor} ${l} ${c} h)`,
-            "--_layer-current": `var(--ak-layer-base)`,
+            "--ak-layer-base": `oklch(from ${baseColor} ${l} ${c} ${h})`,
+            "--_layer-original": `var(--ak-layer-base)`,
           }
         : {
-            "--_layer-current": `oklch(from ${baseColor} ${l} ${c} h)`,
+            "--_layer-original": `oklch(from ${baseColor} ${l} ${c} ${h})`,
           }),
 
-      ...fromParent("layer-parent", false, ({ key, inherit }) => ({
-        [key("--_layer-parent")]: "var(--ak-layer)",
-        "--ak-layer-parent": inherit("--_layer-parent"),
-        // "--ak-border": `lch(from ${mixLayer(inherit("--_layer-parent"))} ${textL} c h / ${borderAlpha})`,
-        // "--ak-shadow": `oklch(from ${mixLayer(inherit("--_layer-parent"))} 0 0 0 / ${shadowAlpha})`,
-        // "--ak-shadow": `oklch(from ${inherit("--_layer-parent")} 0 0 0 / ${shadowAlpha})`,
+      ...fromParent("layer", !!token, ({ provide, inherit }) => ({
+        // Provide the current layer level for children
+        [provide("--_layer-level")]: token
+          ? // Reset level for children when using a color token
+            "0"
+          : // If the color token is not provided, continue the level stack
+            `calc(${inherit("--_layer-level")} + ${highlightLevel || level})`,
+        // Provide the current layer level for itself
+        "--_layer-level": `calc(${inherit("--_layer-level")} + ${level})`,
       })),
 
-      ...fromParent("layer", !!token, ({ key, inherit }) => ({
-        [key("--_layer-level")]: token
-          ? "0"
-          : `calc(${inherit("--_layer-level")} + ${highlightLevel})`,
+      ...fromParent("layer-parent", false, ({ provide, inherit }) => ({
+        [provide("--_layer-parent")]: "var(--ak-layer)",
+        "--ak-layer-parent": inherit("--_layer-parent"),
 
-        "--_layer-level": token
-          ? level
-          : `calc(${inherit("--_layer-level")} + ${level})`,
+        ...(!isDown && {
+          "--ak-border": `lch(from ${inherit("--_layer-parent")} ${textL} c h / ${borderAlpha})`,
+          "--ak-shadow": `oklch(from ${inherit("--_layer-parent")} 0 0 0 / ${shadowAlpha})`,
+        }),
       })),
     });
   }
@@ -245,7 +264,7 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
     const l = `calc(l + ${relativeLevel} * 0.01 * ${contrast})`;
     return {
       ...getLayerCss(null, "0", relativeLevel),
-      "--ak-layer": `oklch(from var(--_layer-current) ${l} c h)`,
+      "--ak-layer": `oklch(from var(--_layer-original) ${l} c h)`,
     };
   }
 
@@ -281,6 +300,35 @@ const AriakitTailwind = plugin(({ addUtilities, matchUtilities, theme }) => {
       },
     },
     { values: getLayerValues() },
+  );
+
+  matchUtilities(
+    {
+      "ak-layer-mix": (value, { modifier }) => {
+        const { token, level } = parseColorLevel(value);
+        const parent = "var(--ak-layer-parent)";
+        const baseColor = token
+          ? theme("colors")[token]
+            ? t("color", token)
+            : token
+          : parent;
+        const { l, c, h } = getLayerOkLCH(level, level);
+        const color = `oklch(from ${baseColor} ${l} ${c} ${h})`;
+        const percentage = modifier
+          ? /^\d+$/.test(modifier)
+            ? `${modifier}%`
+            : modifier
+          : "50%";
+        return getLayerCss(
+          `color-mix(in oklab, ${parent}, ${color} ${percentage})`,
+          level,
+        );
+      },
+    },
+    {
+      values: getLayerValues(),
+      modifiers: "any",
+    },
   );
 
   matchUtilities(
