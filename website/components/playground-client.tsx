@@ -315,7 +315,10 @@ export function PlaygroundClient({
                 </TooltipButton>
               )}
             </div>
-            <div className="flex size-full flex-col justify-center overflow-auto p-4 *:mx-auto">
+            <div
+              data-preview-render-target
+              className="flex size-full flex-col justify-center overflow-auto p-4 *:mx-auto"
+            >
               {preview}
             </div>
           </div>
