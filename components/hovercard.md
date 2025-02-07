@@ -13,7 +13,7 @@ Show a <a href="/components/popover">Popover</a> with additional information whe
 
 <div data-tags></div>
 
-<a href="../examples/hovercard/index.tsx" data-playground>Example</a>
+<a href="../examples/hovercard/index.react.tsx" data-playground>Example</a>
 
 ## API
 

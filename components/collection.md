@@ -13,7 +13,7 @@ Track a collection of DOM elements in the exact order they're rendered in the DO
 
 <div data-tags></div>
 
-<a href="../examples/collection/index.tsx" data-playground>Example</a>
+<a href="../examples/collection/index.react.tsx" data-playground>Example</a>
 
 ## API
 
