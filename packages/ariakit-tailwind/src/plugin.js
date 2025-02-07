@@ -257,6 +257,23 @@ const AriakitTailwind = plugin(
         "--_ak-layer-appearance": `lch(from var(--ak-layer) ${textL} 0 0 / 100%)`,
         "--_ak-layer-l": `lch(from var(--ak-layer) round(l, ${100 / lLength}) 0 0 / 100%)`,
 
+        // TODO: ak-layer-constrast-*
+        // ...Array.from(
+        //   { length: lLength + 1 },
+        //   (_, i) => (i / lLength) * 100,
+        // ).reduce((acc, l) => {
+        //   l = Math.round(l);
+        //   const key = `@container style(--_ak-layer-l: lch(${l} 0 0))`;
+        //   if (l === 50) return acc;
+        //   const l2 = l < 50 ? l + 10 : l - 10;
+        //   const lString = l < 50 ? `max(l, ${l2})` : `min(l, ${l2})`;
+        //   const c = l > 50 ? `min(c, 92)` : `c`;
+        //   acc[key] = {
+        //     "--_layer-original": `lch(from ${baseColor} ${lString} ${c} h / 100%)`,
+        //   };
+        //   return acc;
+        // }, css({})),
+
         ...fromParent("layer", !!token, ({ provide, inherit }) => ({
           // Provide the current layer level for children
           [provide("--_layer-level")]: token
@@ -319,30 +336,20 @@ const AriakitTailwind = plugin(
           // const alpha = `clamp(${minAlpha} * 1%, 0%, 100%)`;
 
           return css({
-            // backgroundColor: `oklch(from ${baseColor} var(--_l) c h / 100%)`,
-            // backgroundClip: "text",
-            // color: `lch(from var(--ak-layer) ${textL} 0 0 / ${alpha})`,
-
-            // TODO: Try hwb (w: whiteness)
-
             ...Array.from(
               { length: lLength + 1 },
               (_, i) => (i / lLength) * 100,
             ).reduce((acc, l) => {
+              l = Math.round(l);
               const key = `@container style(--_ak-layer-l: lch(${l} 0 0))`;
-              if (l >= 50 && l <= 55) {
-                // acc[key] = { color: "inherit" };
-              } else {
-                if (l < 50) {
-                  acc[key] = {
-                    color: `lch(from ${baseColor} max(l, ${l + 52}) c h / 100%)`,
-                  };
-                } else {
-                  acc[key] = {
-                    color: `lch(from ${baseColor} min(l, ${l - 52}) c h / 100%)`,
-                  };
-                }
-              }
+              if (l === 50) return acc;
+              const l2 = l < 50 ? l + 53 : l - 53;
+              const lString = l < 50 ? `max(l, ${l2})` : `min(l, ${l2})`;
+              const c = l > 50 ? `min(c, 92)` : `c`;
+              acc[key] = {
+                "--ak-text": `lch(from ${baseColor} ${lString} ${c} h / 100%)`,
+                color: `var(--ak-text)`,
+              };
               return acc;
             }, css({})),
           });
