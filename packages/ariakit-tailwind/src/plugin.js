@@ -255,7 +255,7 @@ const AriakitTailwind = plugin(
 
         // Properties
         "--_ak-layer-appearance": `lch(from var(--ak-layer) ${textL} 0 0 / 100%)`,
-        "--_ak-layer-l": `oklch(from var(--ak-layer) round(l, ${1 / lLength}) 0 0 / 100%)`,
+        "--_ak-layer-l": `lch(from var(--ak-layer) round(l, ${100 / lLength}) 0 0 / 100%)`,
 
         ...fromParent("layer", !!token, ({ provide, inherit }) => ({
           // Provide the current layer level for children
@@ -319,25 +319,29 @@ const AriakitTailwind = plugin(
           // const alpha = `clamp(${minAlpha} * 1%, 0%, 100%)`;
 
           return css({
-            "--_l": "l",
             // backgroundColor: `oklch(from ${baseColor} var(--_l) c h / 100%)`,
-            backgroundClip: "text",
+            // backgroundClip: "text",
             // color: `lch(from var(--ak-layer) ${textL} 0 0 / ${alpha})`,
-            color: `oklch(from ${baseColor} var(--_l) c h / 100%)`,
+
+            // TODO: Try hwb (w: whiteness)
 
             ...Array.from(
               { length: lLength + 1 },
-              (_, i) => i / lLength,
+              (_, i) => (i / lLength) * 100,
             ).reduce((acc, l) => {
-              const step = 0.5;
-              const key = `@container style(--_ak-layer-l: oklch(${l} 0 0))`;
-              if (l >= 0.5 && l <= 0.6) {
-                acc[key] = { color: "inherit" };
+              const key = `@container style(--_ak-layer-l: lch(${l} 0 0))`;
+              if (l >= 50 && l <= 55) {
+                // acc[key] = { color: "inherit" };
               } else {
-                acc[key] = {
-                  "--_l":
-                    l < 0.5 ? `max(l, ${l + step})` : `min(l, ${l - step})`,
-                };
+                if (l < 50) {
+                  acc[key] = {
+                    color: `lch(from ${baseColor} max(l, ${l + 52}) c h / 100%)`,
+                  };
+                } else {
+                  acc[key] = {
+                    color: `lch(from ${baseColor} min(l, ${l - 52}) c h / 100%)`,
+                  };
+                }
               }
               return acc;
             }, css({})),
