@@ -10,9 +10,10 @@
   /* --color-base: #fff; */
   --color-brand: #007acc;
   --color-accent: #ec4899;
-  --color-accent-500: #ec4899;
 
-  --layer-contrast: 8;
+  /* --contrast: 16; */
+  --contrast: 8;
+  /* --contrast-edge: 8; */
   --layer-highlight-threshold: 0.92;
   --layer-hover-threshold: 0.5;
 
