@@ -47,10 +47,7 @@ const TabList = forwardRef<HTMLDivElement, Ariakit.TabListProps>(
       <Ariakit.TabList
         ref={ref}
         {...props}
-        className={clsx(
-          props.className,
-          "ak-tab-list ak-popup-cover -mb-[var(--padding)]",
-        )}
+        className={clsx(props.className, "ak-tab-list ak-popup-cover")}
       />
     );
   },
@@ -62,7 +59,7 @@ const Tab = forwardRef<HTMLButtonElement, Ariakit.TabProps>(
       <Ariakit.Tab
         ref={ref}
         {...props}
-        className={clsx(props.className, "ak-tab ak-tab-default")}
+        className={clsx(props.className, "ak-tab ak-tab-folder")}
       />
     );
   },

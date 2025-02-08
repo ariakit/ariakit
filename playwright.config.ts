@@ -63,18 +63,8 @@ export default defineConfig({
     {
       name: "plus",
       testMatch: [/website\/tests\/ariakit-plus/],
+      retries: CI ? 3 : 1,
       use: devices["Desktop Chrome"],
-    },
-    {
-      name: "vo",
-      testMatch: [/\/test[^\/]*\-vo/],
-      retries: CI ? 4 : 0,
-      timeout: 5 * 60 * 1000, // 5 minutes
-      use: {
-        ...devices["Desktop Safari"],
-        headless: false,
-        launchOptions: { slowMo: 300 },
-      },
     },
   ],
 });

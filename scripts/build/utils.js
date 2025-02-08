@@ -3,6 +3,7 @@ import { join } from "node:path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { rimrafSync } from "rimraf";
+import { isSolid } from "./context.js";
 
 /**
  * @param {string} path
@@ -37,6 +38,7 @@ export function getPackageJson(rootPath, prod = false) {
   const sourceDir = getSourceDir();
   const cjsDir = getCJSDir();
   const esmDir = getESMDir();
+  const solidSourceDir = getSolidSourceDir();
 
   /** @param {string} path */
   const getExports = (path) => {
@@ -45,6 +47,7 @@ export function getPackageJson(rootPath, prod = false) {
     }
     path = removeExt(path).replace(sourcePath, "");
     return {
+      ...(isSolid && { solid: `./${join(solidSourceDir, path)}.jsx` }),
       import: `./${join(esmDir, path)}.js`,
       require: {
         types: `./${join(cjsDir, path)}.d.cts`,
@@ -106,6 +109,10 @@ export function getESMDir() {
 
 export function getCJSDir() {
   return "cjs";
+}
+
+export function getSolidSourceDir() {
+  return "solid";
 }
 
 /**
@@ -181,7 +188,12 @@ export function getProxyFolders(rootPath) {
  * @returns {string[]}
  */
 export function getBuildFolders(rootPath) {
-  return [getCJSDir(), getESMDir(), ...Object.keys(getProxyFolders(rootPath))];
+  return [
+    getCJSDir(),
+    getESMDir(),
+    ...(isSolid ? [getSolidSourceDir()] : []),
+    ...Object.keys(getProxyFolders(rootPath)),
+  ];
 }
 
 /**

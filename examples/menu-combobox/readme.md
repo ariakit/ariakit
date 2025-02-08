@@ -17,7 +17,7 @@ Combining [Menu](/components/menu) and [Combobox](/components/combobox) to creat
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Related examples
 
@@ -27,6 +27,7 @@ Combining [Menu](/components/menu) and [Combobox](/components/combobox) to creat
 - [](/examples/select-combobox)
 - [](/examples/menubar-navigation)
 - [](/examples/combobox-tabs)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/dialog-combobox-command-menu)
 
 </div>

@@ -87,6 +87,8 @@ export interface TabStoreOptions
    * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Select with Combobox and
    *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
   /**

@@ -92,8 +92,11 @@ function writeFiles(buildDir, pages) {
   const examples = [...new Set(sourceFilesWithoutAppDir)];
   const examplesFile = join(buildDir, "examples.js");
 
-  const examplesContents = `import { lazy } from "react";\n\nexport default {\n${examples
-    .map((path) => `  "${path}": lazy(() => import("${pathToImport(path)}"))`)
+  const examplesContents = `// @ts-nocheck\nimport { lazy } from "react";\nimport { lazy as solidLazy } from "solid-js";\n\nexport default {\n${examples
+    .map(
+      (path) =>
+        `  "${path}": ${path.includes(".solid.") ? "solidLazy" : "lazy"}(() => import("${pathToImport(path)}"))`,
+    )
     .join(",\n")}\n};\n`;
 
   writeFileIfNeeded(examplesFile, examplesContents);

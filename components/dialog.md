@@ -13,7 +13,7 @@ Open a new window that can be either [`modal`](/reference/dialog#modal) or non-m
 
 <div data-tags></div>
 
-<a href="../examples/dialog/index.tsx" data-playground>Example</a>
+<a href="../examples/dialog/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

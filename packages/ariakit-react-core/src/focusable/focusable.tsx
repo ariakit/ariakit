@@ -568,6 +568,8 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    *
    * Live examples:
    * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   accessibleWhenDisabled?: boolean;
   /**

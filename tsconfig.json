@@ -4,7 +4,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "jsx": "react-jsx",
-    "types": ["node", "vitest/globals"],
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"],
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "noEmit": true,
     "skipLibCheck": true,
@@ -33,5 +33,11 @@
     "**/*.cjs",
     "**/*.mjs"
   ],
-  "exclude": ["node_modules", "website", "coverage"]
+  "exclude": [
+    "node_modules",
+    "coverage",
+    "website",
+    "packages/*solid*",
+    "examples/**/*.solid.tsx"
+  ]
 }

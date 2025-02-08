@@ -17,7 +17,7 @@ Using plain CSS transitions to slide in and out [`TabPanel`](/reference/tab-pane
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

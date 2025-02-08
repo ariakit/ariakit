@@ -16,7 +16,7 @@ Using <a href="https://www.framer.com/motion/">Framer Motion</a> to add initial 
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -74,7 +74,7 @@ You can learn more about reading state from the store on the [Component stores](
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menubar-navigation)
 
 </div>

@@ -241,6 +241,8 @@ export interface ComboboxStoreState<
    *   Combobox](https://ariakit.org/examples/combobox-multiple)
    * - [Textarea with inline
    *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   value: string;
   /**
@@ -275,7 +277,8 @@ export interface ComboboxStoreState<
    * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * - [Select with Combobox and
    *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */

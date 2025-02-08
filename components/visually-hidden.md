@@ -13,7 +13,7 @@ Hide an element visually but keep it available for screen readers and other assi
 
 <div data-tags></div>
 
-<a href="../examples/visually-hidden/index.tsx" data-playground>Example</a>
+<a href="../examples/visually-hidden/index.react.tsx" data-playground>Example</a>
 
 ## API
 

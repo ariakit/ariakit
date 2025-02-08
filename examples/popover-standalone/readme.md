@@ -14,4 +14,4 @@ Abstracting the [Popover](/components/popover) component so that it can be used 
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>

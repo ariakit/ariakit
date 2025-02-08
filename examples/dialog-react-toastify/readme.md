@@ -14,7 +14,7 @@ Showing notification toasts using libraries like [react-toastify](https://fkhadr
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -43,6 +43,7 @@ Note that the elements returned by this function **must be present in the DOM** 
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
 - [](/examples/dialog-backdrop-scrollable)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/dialog-combobox-command-menu)
 
 </div>

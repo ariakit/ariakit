@@ -20,7 +20,7 @@ This example demonstrates the rendering of a button element. However, if you int
 
 </aside>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

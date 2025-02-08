@@ -255,6 +255,8 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    * - [Select with Combobox and
    *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   tabId?: string | null;
   /**

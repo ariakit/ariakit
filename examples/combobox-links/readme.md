@@ -17,7 +17,7 @@ Using a [Combobox](/components/combobox) with items rendered as links that can b
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -65,7 +65,7 @@ To provide a better user experience, when opening the link in a new tab, the [`C
 - [](/examples/combobox-group)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-tabs)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menubar-navigation)
 
 </div>
