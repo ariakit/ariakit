@@ -157,9 +157,13 @@ const AriakitTailwind = plugin(
         withParent("layer-parent", false, ({ provide, inherit }) => ({
           [provide($._layerParent)]: cssVar($.layer),
           [$.layerParent]: inherit($._layerParent),
-          [$.ring]: ring(inherit($._layerParent)),
-          [$.border]: border(inherit($._layerParent)),
           [$.shadow]: shadow(inherit($._layerParent)),
+          [$.border]: border(
+            `color-mix(in oklab, ${cssVar($.layer)}, ${inherit($._layerParent)})`,
+          ),
+          [$.ring]: ring(
+            `color-mix(in oklab, ${cssVar($.layer)}, ${inherit($._layerParent)})`,
+          ),
         })),
       );
 
@@ -353,28 +357,6 @@ const AriakitTailwind = plugin(
         ),
       },
     );
-
-    // matchUtilities(
-    //   {
-    //     "ak-scroller": (value) => {
-    //       const trackLCH = getLayerOkLCH("-2");
-    //       const track = `oklch(from ${cssVar($.layer)} ${trackLCH.l} ${trackLCH.c} ${trackLCH.h} / 100%)`;
-    //       const thumbLCH = getLayerOkLCH("4");
-    //       const thumb = `oklch(from ${cssVar($.layer)} ${thumbLCH.l} ${thumbLCH.c} ${thumbLCH.h} / 100%)`;
-    //       const result = {
-    //         overflow: "auto",
-    //         scrollbarColor: `${thumb} ${track}`,
-    //       };
-    //       return Object.assign(result, {
-    //         [IN_DARK]: { colorScheme: "dark" },
-    //         [IN_LIGHT]: { colorScheme: "light" },
-    //       });
-    //     },
-    //   },
-    //   {
-    //     values: { DEFAULT: "auto" },
-    //   },
-    // );
 
     matchUtilities(
       {
