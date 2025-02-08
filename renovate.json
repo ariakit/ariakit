@@ -35,6 +35,7 @@
     },
     {
       "matchPackageNames": [
+        "@types/bun",
         "@wordpress/components",
         "cross-env",
         "cross-spawn",
