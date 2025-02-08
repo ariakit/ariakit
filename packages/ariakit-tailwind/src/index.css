@@ -30,16 +30,3 @@
   --radius-4xl: calc(var(--radius) * 8);
   --radius-full: calc(var(--radius) * infinity);
 }
-
-@theme inline {
-  --layer-contrast-up: var(--layer-contrast);
-  --layer-contrast-down: var(--layer-contrast);
-
-  --layer-highlight-contrast: var(--layer-contrast);
-  --layer-highlight-contrast-up: var(--layer-contrast-up);
-  --layer-highlight-contrast-down: var(--layer-contrast-down);
-
-  --layer-hover-contrast: var(--layer-contrast);
-  --layer-hover-contrast-up: var(--layer-contrast-up);
-  --layer-hover-contrast-down: var(--layer-contrast-down);
-}

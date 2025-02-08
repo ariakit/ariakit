@@ -10,7 +10,8 @@ const $ = /** @type {const} */ ({
   frameRadius: "--ak-frame-radius",
   framePadding: "--ak-frame-padding",
   text: "--ak-text",
-  edge: "--ak-edge",
+  ring: "--ak-ring",
+  border: "--ak-border",
   shadow: "--ak-shadow",
 
   _layerL: "--_ak-layer-l",
@@ -58,30 +59,49 @@ const AriakitTailwind = plugin(
         token ? level : cssVar($._layerLevel),
       );
 
-      const isDown = level.startsWith("-");
+      const direction = level.startsWith("-") ? "down" : "up";
+      const edgeContrast = getLayerContrast("edge");
 
       const textL = `calc((49.44 - l) * infinity)`;
       const isBgDark = `clamp(0, ${textL}, 1)`;
       const isBgLight = `clamp(0, 1 - ${textL}, 1)`;
 
-      const borderC = `calc(c * 3)`;
-      const borderAlphaBase = `calc(15% * ${isBgDark} + 15% * ${isBgLight})`;
-      const borderAlphaLAdd = `calc(l * 0.1% * ${isBgDark} + (100 - l) * 0.1% * ${isBgLight})`;
-      const borderAlphaCAdd = `calc(c * 0.2%)`;
-      const borderAlpha = `calc(${borderAlphaBase} + ${borderAlphaLAdd} + ${borderAlphaCAdd})`;
+      const contrastMultiplier = `(${edgeContrast} / 8)`;
+
+      const borderC = `calc(c * 2)`;
+      const borderAlphaBase = `(15% * ${isBgDark} + 15% * ${isBgLight})`;
+      const borderAlphaLAdd = `(l * 0.1% * ${isBgDark} + (100 - l) * 0.1% * ${isBgLight})`;
+      const borderAlphaCAdd = `(c * 0.2% * ${isBgDark} + c * 0.5% * ${isBgLight})`;
+      const borderAlpha = `calc((${borderAlphaBase} + ${borderAlphaLAdd} + ${borderAlphaCAdd}) * ${contrastMultiplier})`;
+
+      const ringC = `calc(c * 2)`;
+      const ringAlphaBase = `(20% * ${isBgDark} + 15% * ${isBgLight})`;
+      const ringAlphaLAdd = `(l * 0.1% * ${isBgDark} + (100 - l) * 0.1% * ${isBgLight})`;
+      const ringAlphaCAdd = `(c * 0.2%)`;
+      const ringAlpha = `calc((${ringAlphaBase} + ${ringAlphaLAdd} + ${ringAlphaCAdd}) * ${contrastMultiplier})`;
 
       const shadowAlpha = `calc(25% + (1 - l) * 25%)`;
+
+      /** @param {string} color */
+      const ring = (color) =>
+        `lch(from ${color} ${textL} ${ringC} h / ${ringAlpha})`;
+      /** @param {string} color */
+      const border = (color) =>
+        `lch(from ${color} ${textL} ${borderC} h / ${borderAlpha})`;
+      /** @param {string} color */
+      const shadow = (color) => `oklch(from ${color} 0 0 0 / ${shadowAlpha})`;
 
       const result = css({
         backgroundColor: cssVar($.layer),
         color: cssVar($.text),
 
-        [$.shadow]: `oklch(from ${cssVar($.layer)} 0 0 0 / ${shadowAlpha})`,
-        [$.edge]: `lch(from ${cssVar($.layer)} ${textL} ${borderC} h / ${borderAlpha})`,
-        [$.text]: `lch(from ${cssVar($.layer)} ${textL} 0 0 / 100%)`,
         [$.layer]: cssVar($._layerOriginal),
+        [$.text]: `lch(from ${cssVar($.layer)} ${textL} 0 0 / 100%)`,
+        [$.ring]: ring(cssVar($.layer)),
+        [$.border]: border(cssVar($.layer)),
+        [$.shadow]: shadow(cssVar($.layer)),
 
-        [`@apply border-(color:${$.edge}) ring-(color:${$.edge}) shadow-(color:${$.shadow})`]:
+        [`@apply border-(color:${$.border}) ring-(color:${$.ring}) shadow-(color:${$.shadow})`]:
           {},
 
         [$._layerAppearance]: `lch(from var(--ak-layer) ${textL} 0 0 / 100%)`,
@@ -104,7 +124,7 @@ const AriakitTailwind = plugin(
 
       Object.assign(
         result,
-        withParent("layer", !!token, ({ provide, inherit }) => ({
+        withParent("layer-level", !!token, ({ provide, inherit }) => ({
           // Provide the current layer level for children
           [provide($._layerLevel)]: token
             ? // Reset level for children when using a color token
@@ -121,11 +141,9 @@ const AriakitTailwind = plugin(
         withParent("layer-parent", false, ({ provide, inherit }) => ({
           [provide($._layerParent)]: cssVar($.layer),
           [$.layerParent]: inherit($._layerParent),
-
-          ...(!isDown && {
-            // "--ak-edge": `lch(from ${inherit(AK_LAYER_PARENT)} ${textL} c h / ${borderAlpha})`,
-            [$.shadow]: `oklch(from ${inherit($._layerParent)} 0 0 0 / ${shadowAlpha})`,
-          }),
+          [$.ring]: ring(inherit($._layerParent)),
+          [$.border]: border(inherit($._layerParent)),
+          [$.shadow]: shadow(inherit($._layerParent)),
         })),
       );
 
@@ -189,20 +207,14 @@ const AriakitTailwind = plugin(
     /** @param {string} level */
     function getLayerHighlightCss(level) {
       const threshold = t("layer", "highlight-threshold", "0.92");
-      const contrastBase = t("layer", "highlight-contrast", "8");
-      const contrastUp = t("layer", "highlight-contrast-up", contrastBase);
-      const contrastDown = t("layer", "highlight-contrast-down", contrastBase);
-      const contrast = level.startsWith("-") ? contrastDown : contrastUp;
+      const contrast = getLayerContrast("highlight");
       return getLayerInvertCss(level, threshold, contrast);
     }
 
     /** @param {string} level */
     function getLayerHoverCss(level) {
       const threshold = t("layer", "hover-threshold", "0.5");
-      const contrastBase = t("layer", "hover-contrast", "8");
-      const contrastUp = t("layer", "hover-contrast-up", contrastBase);
-      const contrastDown = t("layer", "hover-contrast-down", contrastBase);
-      const contrast = level.startsWith("-") ? contrastDown : contrastUp;
+      const contrast = getLayerContrast("hover");
       return getLayerInvertCss(level, threshold, contrast);
     }
 
@@ -325,6 +337,7 @@ const AriakitTailwind = plugin(
      * @param {string} namespace
      * @param {string} token
      * @param {string} [defaultValue]
+     * @returns {string}
      */
     function t(namespace, token, defaultValue) {
       const options = theme(namespace)?.__CSS_VALUES__?.[token];
@@ -351,6 +364,16 @@ const AriakitTailwind = plugin(
         return t(namespace, token);
       }
       return token;
+    }
+
+    /**
+     * @param {string} [token]
+     */
+    function getLayerContrast(token) {
+      const contrastBase = t("layer", "contrast", "8");
+      if (!token) return contrastBase;
+      const contrast = t("layer", `${token}-contrast`, contrastBase);
+      return contrast;
     }
 
     /**
@@ -428,12 +451,9 @@ const AriakitTailwind = plugin(
      * @param {string} computedLevel
      */
     function getLayerOkLCH(level, computedLevel) {
-      const isDown = level.startsWith("-");
+      const direction = level.startsWith("-") ? "down" : "up";
+      const contrast = getLayerContrast(direction);
       const minL = 0.11;
-      const contrastBase = t("layer", "contrast", "8");
-      const contrastUp = t("layer", "contrast-up", contrastBase);
-      const contrastDown = t("layer", "contrast-down", contrastBase);
-      const contrast = isDown ? contrastDown : contrastUp;
       const l = `calc(max(l, ${minL}) + ${computedLevel} * 0.01 * ${contrast})`;
       const c = `calc(c - ${abs(computedLevel)} * 0.0004 * ${contrast})`;
       const h = "h";
