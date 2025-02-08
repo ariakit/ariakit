@@ -18,10 +18,13 @@ import Layout from "../layouts/Layout.astro";
     <div class="ak-layer-down p-2">dasdsa</div>
   </div>
   <div class="ak-layer-base p-8">
-    <div class="ak-frame-xl/2 ak-layer-brand">
-      <div class="ak-text-brand">dsadsa</div>
-      <div class="ak-frame/2 ak-layer-2">
-        <div class="ak-text-2">dse2</div>
+    <div class="ak-frame-xl/1 ak-layer ring grid gap-1">
+      <div class="ak-layer ak-frame-2xl/1 flex gap-1 items-center h-10 border">
+        <div class="ak-layer-down ak-frame-force-full border h-full aspect-square grid place-items-center">A</div>
+        <div class="ak-text-[red]">dsadsa</div>
+      </div>
+      <div class="ak-frame/2 ak-layer shadow-xl ring">
+        <div class="ak-text-brand">dse2</div>
       </div>
     </div>
   </div>
@@ -91,14 +94,21 @@ import Layout from "../layouts/Layout.astro";
     <div class="ak-text-[green]">green</div>
     <div class="ak-text-[yellow]">yellow</div>
   </div>
-  <input type="color" class="mb-10" />
+  <div class="py-20">
+    <input type="color" />
+    <input type="text" class="appearance-auto" placeholder="input" />
+  </div>
 </Layout>
 
 <script>
   const colorInput = document.querySelector("input[type='color']");
+  let ric = 0;
   colorInput?.addEventListener("input", (event) => {
     // @ts-expect-error
     const color = event.target?.value;
-    document.body.style.setProperty("--color-base", color);
+    cancelIdleCallback(ric);
+    ric = requestIdleCallback(() => {
+      document.body.style.setProperty("--color-base", color);
+    })
   });
 </script>
