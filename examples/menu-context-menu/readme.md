@@ -14,4 +14,4 @@ Showing [Menu](/components/menu) when right-clicking on an element using the [`g
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>

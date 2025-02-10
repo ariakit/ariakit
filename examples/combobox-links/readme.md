@@ -17,7 +17,7 @@ Using a [Combobox](/components/combobox) with items rendered as links that can b
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

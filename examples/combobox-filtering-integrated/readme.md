@@ -20,7 +20,7 @@ Filtering options in a [Combobox](/components/combobox) component through an abs
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

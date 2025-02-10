@@ -26,7 +26,7 @@ Using [Menubar](/components/menubar), [Menu](/components/menu), and [Portal](/co
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

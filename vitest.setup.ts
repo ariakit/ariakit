@@ -61,29 +61,28 @@ if (version.startsWith("17")) {
   });
 }
 
-async function tryImport(path: string, fallbackPath?: string) {
-  return await import(path).catch(() =>
-    fallbackPath ? import(fallbackPath) : { failedImport: true },
-  );
+async function tryImport(path: string) {
+  return import(path)
+    .then(({ default: component }) => ({ component, failedImport: false }))
+    .catch(() => ({ component: undefined, failedImport: true }));
 }
 
 async function loadReact(dir: string) {
-  const { default: comp, failedImport } = await tryImport(
+  const { component, failedImport } = await tryImport(
     `./examples/${dir}/index.react.tsx`,
-    `./examples/${dir}/index.tsx`,
   );
   if (failedImport) return false;
   const element = createElement(ReactSuspense, {
     fallback: null,
     // biome-ignore lint/correctness/noChildrenProp:
-    children: createElement(comp),
+    children: createElement(component),
   });
   const { unmount } = await renderReact(element, { strictMode: true });
   return unmount;
 }
 
 async function loadSolid(dir: string) {
-  const { default: comp, failedImport } = await tryImport(
+  const { component, failedImport } = await tryImport(
     `./examples/${dir}/index.solid.tsx`,
   );
   if (failedImport) return false;
@@ -94,7 +93,7 @@ async function loadSolid(dir: string) {
       createComponent(SolidSuspense, {
         fallback: null,
         get children() {
-          return createComponent(comp, {});
+          return createComponent(component, {});
         },
       }),
     div,
