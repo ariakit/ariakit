@@ -1,7 +1,13 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
-import { createComputed, createRoot, createSignal, mergeProps } from "solid-js";
+import {
+  createComponent,
+  createComputed,
+  createRoot,
+  createSignal,
+  mergeProps,
+} from "solid-js";
 import { $, $o } from "../__props.ts";
-import { createHook as _createHook } from "../system.tsx";
+import { createHook as _createHook, createElement } from "../system.tsx";
 
 function root(testFn: () => void | Promise<void>) {
   return () => createRoot(() => testFn());
@@ -971,6 +977,39 @@ describe("extract options (with defaults)", () => {
     }),
   );
 });
+
+test.only(
+  "children has boundary",
+  root(() => {
+    let propsChild: any;
+    const useChild = createHook(function useHook(props: any) {
+      return props;
+    });
+    function Child(props: any) {
+      const htmlProps = useChild(props);
+      propsChild = htmlProps;
+      return createElement("div", htmlProps);
+    }
+
+    let propsParent: any;
+    const useParent = createHook(function useHook(props: any) {
+      return props;
+    });
+    function Parent(props: any) {
+      const htmlProps = useParent(props);
+      propsParent = htmlProps;
+      return createElement("div", htmlProps);
+    }
+
+    createComponent(Parent, {
+      get children() {
+        return createComponent(Child, {});
+      },
+    });
+
+    expect(propsParent).to.not.equal(propsChild);
+  }),
+);
 
 // TODO:
 // - extract options: test IRL
