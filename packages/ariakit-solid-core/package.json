@@ -35,7 +35,8 @@
   "dependencies": {
     "@ariakit/core": "0.4.14",
     "@solid-primitives/props": "3.1.11",
-    "@solid-primitives/refs": "1.1.0"
+    "@solid-primitives/refs": "1.1.0",
+    "@solid-primitives/utils": "6.3.0"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
