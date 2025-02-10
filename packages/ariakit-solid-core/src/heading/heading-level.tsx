@@ -1,6 +1,6 @@
 import { useContext } from "solid-js";
 import type { ReactNode } from "../utils/__port.ts";
-import { $o } from "../utils/__props.ts";
+import { $o, withPropsSink } from "../utils/__props.ts";
 import { HeadingContext } from "./heading-context.tsx";
 import type { HeadingLevels } from "./utils.ts";
 
@@ -20,7 +20,7 @@ import type { HeadingLevels } from "./utils.ts";
  * </HeadingLevel>
  * ```
  */
-export function HeadingLevel(__: HeadingLevelProps) {
+function _HeadingLevel(__: HeadingLevelProps) {
   const [_] = $o(__, { level: undefined, children: undefined });
   const contextLevel = useContext(HeadingContext);
   // biome-ignore format: [port]
@@ -34,6 +34,7 @@ export function HeadingLevel(__: HeadingLevelProps) {
     </HeadingContext.Provider>
   );
 }
+export const HeadingLevel = withPropsSink(_HeadingLevel);
 
 export interface HeadingLevelProps {
   /**
