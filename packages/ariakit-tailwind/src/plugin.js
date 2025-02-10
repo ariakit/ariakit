@@ -7,8 +7,7 @@ const $ = /** @type {const} */ ({
   layer: "--ak-layer",
   layerBase: "--ak-layer-base",
   layerParent: "--ak-layer-parent",
-  frameRadius: "--ak-frame-radius",
-  framePadding: "--ak-frame-padding",
+  // TODO: Maybe this doesn't need to be public API since we have currentColor
   text: "--ak-text",
   ring: "--ak-ring",
   border: "--ak-border",
@@ -18,7 +17,11 @@ const $ = /** @type {const} */ ({
   _layerAppearance: "--_ak-layer-appearance",
   _layerLevel: "--_ak-layer-level",
   _layerParent: "--_ak-layer-parent",
-  _layerOriginal: "--_ak-layer-original",
+  _layerIdle: "--_ak-layer-idle",
+  _frameBorder: "--_ak-frame-border",
+  _frameRadius: "--_ak-frame-radius",
+  _framePadding: "--_ak-frame-padding",
+  _frameCappedPadding: "--_ak-frame-capped-padding",
   _textLevel: "--_ak-text-level",
   _borderAlpha: "--_ak-border-alpha",
   _ringAlpha: "--_ak-ring-alpha",
@@ -39,6 +42,18 @@ const AriakitTailwind = plugin(
         syntax: "'<color>'",
         inherits: "true",
         initialValue: "oklch(100 0 0)",
+      },
+      // TODO: Comment
+      [`@property ${$._frameCappedPadding}`]: {
+        syntax: "'<length>'",
+        inherits: "true",
+        initialValue: "0px",
+      },
+      // TODO: Comment
+      [`@property ${$._frameBorder}`]: {
+        syntax: "'<length>'",
+        inherits: "false",
+        initialValue: "0px",
       },
     });
 
@@ -69,14 +84,15 @@ const AriakitTailwind = plugin(
 
       const contrastMultiplier = `(${edgeContrast} / 6)`;
 
+      // Border shouldn't use alpha. Just find the right color.
       const borderC = `calc(c * 2)`;
-      const borderAlphaBase = `(15% * ${isBgDark} + 15% * ${isBgLight})`;
+      const borderAlphaBase = `(8% * ${isBgDark} + 10% * ${isBgLight})`;
       const borderAlphaLAdd = `(l * 0.1% * ${isBgDark} + (100 - l) * 0.1% * ${isBgLight})`;
       const borderAlphaCAdd = `(c * 0.2% * ${isBgDark} + c * 0.5% * ${isBgLight})`;
       const borderAlpha = `calc((${borderAlphaBase} + ${borderAlphaLAdd} + ${borderAlphaCAdd}) * ${contrastMultiplier})`;
 
       const ringC = `calc(c * 2)`;
-      const ringAlphaBase = `(20% * ${isBgDark} + 15% * ${isBgLight})`;
+      const ringAlphaBase = `(14% * ${isBgDark} + 10% * ${isBgLight})`;
       const ringAlphaLAdd = `(l * 0.1% * ${isBgDark} + (100 - l) * 0.1% * ${isBgLight})`;
       const ringAlphaCAdd = `(c * 0.2%)`;
       const ringAlpha = `calc((${ringAlphaBase} + ${ringAlphaLAdd} + ${ringAlphaCAdd}) * ${contrastMultiplier})`;
@@ -98,14 +114,14 @@ const AriakitTailwind = plugin(
         backgroundColor: cssVar($.layer),
         color: cssVar($.text),
 
-        [$.layer]: cssVar($._layerOriginal),
+        [$.layer]: cssVar($._layerIdle),
         [$.text]: `lch(from ${cssVar($.layer)} ${textL} 0 0 / 100%)`,
         [$.ring]: ring(cssVar($.layer)),
         [$.border]: border(cssVar($.layer)),
         [$.shadow]: shadow(cssVar($.layer)),
 
-        [$._layerAppearance]: `lch(from var(--ak-layer) ${textL} 0 0 / 100%)`,
-        [$._layerL]: `lch(from var(--ak-layer) round(l, ${100 / LIGHTNESS_LEVELS}) 0 0 / 100%)`,
+        [$._layerAppearance]: `lch(from ${cssVar($.layer)} ${textL} 0 0 / 100%)`,
+        [$._layerL]: `lch(from ${cssVar($.layer)} round(l, ${100 / LIGHTNESS_LEVELS}) 0 0 / 100%)`,
 
         [`@apply border-(color:${$.border}) ring-(color:${$.ring}) shadow-(color:${$.shadow})`]:
           {},
@@ -130,11 +146,11 @@ const AriakitTailwind = plugin(
             level === "0"
               ? baseColor
               : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`,
-          [$._layerOriginal]: cssVar($.layerBase),
+          [$._layerIdle]: cssVar($.layerBase),
         });
       } else {
         Object.assign(result, {
-          [$._layerOriginal]: `oklch(from ${baseColor} ${l} ${c} ${h})`,
+          [$._layerIdle]: `oklch(from ${baseColor} ${l} ${c} ${h})`,
         });
       }
 
@@ -154,17 +170,26 @@ const AriakitTailwind = plugin(
 
       Object.assign(
         result,
-        withParent("layer-parent", false, ({ provide, inherit }) => ({
-          [provide($._layerParent)]: cssVar($.layer),
-          [$.layerParent]: inherit($._layerParent),
-          [$.shadow]: shadow(inherit($._layerParent)),
-          [$.border]: border(
-            `color-mix(in oklab, ${cssVar($.layer)}, ${inherit($._layerParent)})`,
-          ),
-          [$.ring]: ring(
-            `color-mix(in oklab, ${cssVar($.layer)}, ${inherit($._layerParent)})`,
-          ),
-        })),
+        withParent("layer-parent", false, ({ provide, inherit }) => {
+          const result = {
+            [provide($._layerParent)]: cssVar($.layer),
+            [$.layerParent]: inherit($._layerParent),
+            [$.shadow]: shadow(cssVar($.layerParent)),
+            [$.border]: border(
+              `color-mix(in oklab, ${cssVar($.layer)}, ${cssVar($.layerParent)})`,
+            ),
+            [$.ring]: ring(
+              `color-mix(in oklab, ${cssVar($.layer)}, ${cssVar($.layerParent)})`,
+            ),
+          };
+          if (level.startsWith("-")) {
+            const { l, c, h } = getLayerOkLCH(level);
+            Object.assign(result, {
+              [$._layerIdle]: `oklch(from ${cssVar($.layerParent)} ${l} ${c} ${h})`,
+            });
+          }
+          return result;
+        }),
       );
 
       return result;
@@ -217,30 +242,28 @@ const AriakitTailwind = plugin(
       const l = `calc(l + ${relativeLevel} * 0.01 * ${contrast})`;
       return {
         ...getLayerCss(null, "0", relativeLevel),
-        [$.layer]: `oklch(from ${cssVar($._layerOriginal)} ${l} c h)`,
+        [$.layer]: `oklch(from ${cssVar($._layerIdle)} ${l} c h)`,
       };
     }
 
     /** @param {string} level */
-    function getLayerHighlightCss(level) {
-      const threshold = t("layer", "highlight-threshold", "0.92");
-      const contrast = getContrastMultiplier("highlight");
+    function getLayerFeatureCss(level) {
+      const threshold = t("layer", "feature-threshold", "0.92");
+      const contrast = getContrastMultiplier("feature");
       return getLayerInvertCss(level, threshold, contrast);
     }
 
     /** @param {string} level */
-    function getLayerHoverCss(level) {
-      const threshold = t("layer", "hover-threshold", "0.5");
-      const contrast = getContrastMultiplier("hover");
+    function getLayerPopCss(level) {
+      const threshold = t("layer", "pop-threshold", "0.5");
+      const contrast = getContrastMultiplier("pop");
       return getLayerInvertCss(level, threshold, contrast);
     }
 
     matchUtilities(
       {
-        "ak-layer-down-hover": (value) => getLayerHoverCss(`-${value}`),
-        "ak-layer-hover": getLayerHoverCss,
-        "ak-layer-down-highlight": (value) => getLayerHighlightCss(`-${value}`),
-        "ak-layer-highlight": getLayerHighlightCss,
+        "ak-layer-pop": getLayerPopCss,
+        "ak-layer-feature": getLayerFeatureCss,
       },
       { values: getLayerValues({ colors: false }) },
     );
@@ -269,6 +292,9 @@ const AriakitTailwind = plugin(
      */
     function getFrameCss(radiusKey, modifier, force = false) {
       const { radius, padding } = getFrameArgs(radiusKey, modifier);
+      const cap = `1rem`;
+      const capPadding = `min(${padding}, ${cap})`;
+
       const result = {
         padding,
         scrollPadding: padding,
@@ -277,13 +303,27 @@ const AriakitTailwind = plugin(
       Object.assign(
         result,
         withParent("frame", force, ({ provide, inherit }) => {
+          const parentRadius = inherit($._frameRadius, radius);
+          const parentPadding = inherit($._framePadding, "0px");
+          const parentBorder = inherit($._frameBorder, "0px");
+          const minRadius = `min(0.25rem, ${radius})`;
+          const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder}))`;
+
           const computedRadius = force
             ? radius
-            : `calc(${inherit($.frameRadius, radius)} - ${inherit($.framePadding, "0px")})`;
+            : `max(${minRadius}, max(${nestedRadius}, 0px))`;
+
           return {
-            [provide($.framePadding)]: padding,
-            [provide($.frameRadius)]: computedRadius,
+            [provide($._framePadding)]: padding,
+            [provide($._frameRadius)]: computedRadius,
+            [provide($._frameBorder)]: cssVar($._frameBorder),
             borderRadius: computedRadius,
+
+            [$._frameCappedPadding]: capPadding,
+            [`@container style(${$._frameCappedPadding}: ${cap})`]: {
+              [provide($._frameRadius)]: radius,
+              borderRadius: radius,
+            },
           };
         }),
       );
@@ -305,14 +345,18 @@ const AriakitTailwind = plugin(
           return Object.assign(
             result,
             withParent("frame", false, ({ provide, inherit }) => {
-              const margin = `calc(${inherit($.framePadding, "0px")} * -1)`;
+              const parentPadding = inherit($._framePadding, "0px");
+              const parentRadius = inherit($._frameRadius, radius);
+              const parentBorder = inherit($._frameBorder, "0px");
+              const margin = `calc(${parentPadding} * -1)`;
               const computedPadding = extra.modifier
                 ? padding
-                : inherit($.framePadding, padding);
-              const computedRadius = inherit($.frameRadius, radius);
+                : inherit($._framePadding, padding);
+              const computedRadius = `calc(${parentRadius} - ${parentBorder})`;
               return css({
-                [provide($.framePadding)]: computedPadding,
-                [provide($.frameRadius)]: computedRadius,
+                [provide($._framePadding)]: computedPadding,
+                [provide($._frameRadius)]: computedRadius,
+                [provide($._frameBorder)]: cssVar($._frameBorder),
                 marginInline: margin,
                 padding: computedPadding,
                 scrollPadding: computedPadding,
@@ -360,6 +404,18 @@ const AriakitTailwind = plugin(
 
     matchUtilities(
       {
+        "ak-frame-border": (value) => {
+          return css({
+            [$._frameBorder]: value,
+            [`@apply border-(length:${$._frameBorder})`]: {},
+          });
+        },
+      },
+      { values: theme("borderWidth") },
+    );
+
+    matchUtilities(
+      {
         "ak-text": (value) => {
           const { token, level } = parseColorLevel(value);
           const { l, c, h } = getLayerOkLCH(cssVar($._textLevel));
@@ -376,7 +432,7 @@ const AriakitTailwind = plugin(
 
           return Object.assign(
             result,
-            withLayerLevel((l) => {
+            withLayerLightness((l) => {
               if (l === 50) return;
               const l2 = l < 50 ? l + 53 : l - 53;
               const lString = l < 50 ? `max(l, ${l2})` : `min(l, ${l2})`;
@@ -533,7 +589,7 @@ const AriakitTailwind = plugin(
       if (!value) {
         return { token: undefined, level: "1" };
       }
-      const matches = value.match(/\d+$/);
+      const matches = value.match(/[\.\d]+$/);
       if (!matches) {
         return { token: value, level: "0" };
       }
@@ -552,7 +608,7 @@ const AriakitTailwind = plugin(
       const contrast = getContrastMultiplier();
       const minL = 0.11;
       const l = `calc(max(l, ${minL}) + ${level} * 0.01 * ${contrast})`;
-      const c = `calc(c - ${abs(level)} * 0.0004 * ${contrast})`;
+      const c = `calc(c - ${level} * 0.0004 * ${contrast})`;
       const h = "h";
       return { l, c, h };
     }
@@ -585,9 +641,9 @@ function isInlineThemeReference(value) {
  * Return the absolute value in CSS.
  * @param {string} value
  */
-function abs(value) {
-  return `max(${value}, ${value} * -1)`;
-}
+// function abs(value) {
+//   return `max(${value}, ${value} * -1)`;
+// }
 
 /**
  * Parses a string value into a percentage.
@@ -626,7 +682,7 @@ function bareValue(fn) {
  * lightness level (0-100).
  * @param {(l: number) => CssInJs | null | undefined} fn
  */
-function withLayerLevel(fn) {
+function withLayerLightness(fn) {
   const levels = Array.from(
     { length: LIGHTNESS_LEVELS + 1 },
     (_, i) => (i / LIGHTNESS_LEVELS) * 100,

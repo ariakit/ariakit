@@ -12,15 +12,16 @@
   --color-accent: #ec4899;
 
   /* --contrast: 16; */
-  --contrast: 8;
+  --contrast: 6;
   /* --contrast-edge: 8; */
-  --layer-highlight-threshold: 0.92;
-  --layer-hover-threshold: 0.5;
+  --layer-feature-threshold: 0.92;
+  --layer-pop-threshold: 0.5;
 
   --spacing: 0.25rem;
   --spacing-px: 1px;
 
   --radius: 0.25rem;
+  --radius-none: 0;
   --radius-xs: calc(var(--radius) * 0.5);
   --radius-sm: calc(var(--radius) * 1);
   --radius-md: calc(var(--radius) * 1.5);

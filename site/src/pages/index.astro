@@ -7,11 +7,12 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <div class="ak-layer-[#fff] border-b-20 hover:ak-layer-3 p-2">
+  <div class="ak-layer-white border-b-20 hover:ak-layer-3 p-2">
+    <div class="ak-frame-xl/2 ak-layer-[#18324A] hover:ak-layer-2">button</div>
     <div class="ak-layer ak-frame-container ring">
       <div class="ak-layer-down ak-frame/2 border">
         dadsa
-        <div class="ak-text-brand">dse2</div>
+        <div class="ak-layer">dse2</div>
       </div>
     </div>
     <div class="ak-layer-base ak-frame-2xl/2 mt-10">
@@ -22,7 +23,28 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
   <div class="ak-layer p-2">
-    <div class="ak-layer-down p-2">dasdsa</div>
+    <input class="w-[200px] mb-5" value="0" type="range" min="0" step="0.25" max="24" oninput="document.body.style.setProperty('--pad', `calc(${this.valueAsNumber} * 1px)`)" />
+    <div class="ak-layer ak-frame-2xl/(--pad,0px) ak-frame-border-8">
+      <button class="ak-layer-brand ak-frame-full/4 py-2 border">Button</button>
+      <div class="ak-frame-cover/2 ak-layer rounded-t-none">cover</div>
+    </div>
+  </div>
+  <div class="not-dark:ak-layer-[#fff] dark:ak-layer-[#1d1d1d] p-10 grid gap-4">
+    <div class="ak-text-[#086fff] underline underline-offset-2">Review Cloudflare fundamentals</div>
+    <div class="ak-layer ak-frame-3xl/2 grid gap-3 border shadow-xl">
+      <div class="flex justify-between items-center ps-4 pe-2 pt-2">
+        <div class="text-xl font-semibold">Recommendations</div>
+        <div class="ak-text-[#086fff] text-sm">Hide</div>
+      </div>
+      <div class="ak-layer-down ak-frame-lg/4 transition-all grid gap-4 border justify-items-start">
+        <div class="grid gap-2">
+          <div class="font-semibold">Speed up your website or application</div>
+          <div class="tracking-tight leading-tight">Turn on recommended image, content, and protocol settings.</div>
+        </div>
+        <input type="text" class="ak-layer-down border ak-frame/2 py-1" />
+        <div class="ak-text-[#086fff] border-current border ak-frame-full/2 py-1 text-sm">Go to speed optimization</div>
+      </div>
+    </div>
   </div>
   <div class="ak-layer-base p-8">
     <div class="ak-frame-xl/1 ak-layer ring shadow-xl overflow-clip">
@@ -77,7 +99,6 @@ import Layout from "../layouts/Layout.astro";
     <div class="ak-text-[#569CD6]">lightblue</div>
     <div class="ak-text-brand">brand</div>
     <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[orange]">orange</div>
     <div class="ak-text-[blue]">blue</div>
     <div class="ak-text-[darkmagenta]">magenta</div>
     <div class="ak-text-[green]">green</div>
@@ -88,7 +109,6 @@ import Layout from "../layouts/Layout.astro";
     <div class="ak-text-[#569CD6]">lightblue</div>
     <div class="ak-text-brand">brand</div>
     <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[orange]">orange</div>
     <div class="ak-text-[blue]">blue</div>
     <div class="ak-text-[darkmagenta]">magenta</div>
     <div class="ak-text-[green]">green</div>
@@ -99,7 +119,6 @@ import Layout from "../layouts/Layout.astro";
     <div class="ak-text-[#569CD6]">lightblue</div>
     <div class="ak-text-brand">brand</div>
     <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[orange]">orange</div>
     <div class="ak-text-[blue]">blue</div>
     <div class="ak-text-[darkmagenta]">magenta</div>
     <div class="ak-text-[green]">green</div>
@@ -110,7 +129,6 @@ import Layout from "../layouts/Layout.astro";
     <div class="ak-text-[#569CD6]">lightblue</div>
     <div class="ak-text-brand">brand</div>
     <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[orange]">orange</div>
     <div class="ak-text-[blue]">blue</div>
     <div class="ak-text-[darkmagenta]">magenta</div>
     <div class="ak-text-[green]">green</div>
@@ -121,7 +139,6 @@ import Layout from "../layouts/Layout.astro";
     <div class="ak-text-[#569CD6]">lightblue</div>
     <div class="ak-text-brand">brand</div>
     <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[orange]">orange</div>
     <div class="ak-text-[blue]">blue</div>
     <div class="ak-text-[darkmagenta]">magenta</div>
     <div class="ak-text-[green]">green</div>
@@ -132,7 +149,6 @@ import Layout from "../layouts/Layout.astro";
     <div class="ak-text-[#569CD6]">lightblue</div>
     <div class="ak-text-brand">brand</div>
     <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[orange]">orange</div>
     <div class="ak-text-[blue]">blue</div>
     <div class="ak-text-[darkmagenta]">magenta</div>
     <div class="ak-text-[green]">green</div>
