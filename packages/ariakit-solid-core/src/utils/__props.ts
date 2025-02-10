@@ -159,18 +159,11 @@ function cleanPropsSink() {
   state = undefined;
 }
 
-export function withPropsSink<F extends (...args: Array<any>) => any>(fn: F): F;
-export function withPropsSink<P>(props: unknown, fn: (sink: any) => P): P;
-export function withPropsSink(
-  propsOrFn: unknown,
-  fn?: (...args: Array<any>) => any,
-): unknown {
-  if (typeof propsOrFn === "function")
-    return (props: any) => withPropsSink(props, propsOrFn as any);
-  if (state) return fn!(state.sink);
-  const sink = createPropsSink(propsOrFn);
+export function withPropsSink<T>(props: unknown, fn: (sink: any) => T) {
+  if (state) return fn(state.sink);
+  const sink = createPropsSink(props);
   try {
-    return fn!(sink);
+    return fn(sink);
   } finally {
     cleanPropsSink();
     // TODO: re-throw error?
