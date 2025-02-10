@@ -4,18 +4,49 @@ import {
   type ComponentProps,
   type JSX,
   type ValidComponent,
+  createMemo,
+  sharedConfig,
   splitProps,
+  untrack,
 } from "solid-js";
-import { Dynamic } from "solid-js/web";
+import { SVGElements, getNextElement, spread } from "solid-js/web";
 import { isPropsProxy } from "./__props.ts";
 
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+function createElement(
+  tagName: string,
+  isSVG = false,
+): HTMLElement | SVGElement {
+  return isSVG
+    ? document.createElementNS(SVG_NAMESPACE, tagName)
+    : document.createElement(tagName);
+}
 // Temporary hack until this lands: https://github.com/solidjs/solid/pull/2422
 export function createDynamic<T extends ValidComponent>(
   component: () => T,
   props: ComponentProps<T>,
-) {
-  // @ts-expect-error This is a temporary hack.
-  return <Dynamic component={component()} {...props} />;
+): JSX.Element {
+  // biome-ignore lint/complexity/noBannedTypes: hack
+  const cached = createMemo<Function | string>(component);
+  return createMemo(() => {
+    const component = cached();
+    switch (typeof component) {
+      case "function":
+        return untrack(() => component(props));
+
+      case "string": {
+        const isSvg = SVGElements.has(component);
+        const el = sharedConfig.context
+          ? getNextElement()
+          : createElement(component, isSvg);
+        spread(el, props, isSvg);
+        return el;
+      }
+
+      default:
+        break;
+    }
+  }) as unknown as JSX.Element;
 }
 
 type AsComponent = <T extends ValidComponent, P = ComponentProps<T>>(
