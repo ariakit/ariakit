@@ -18,6 +18,13 @@ export default function Example() {
           <button>button</button>
         </Group>
       </div>
+
+      <div id="label-id">
+        <Group>
+          <GroupLabel id="my-custom-id">My custom label</GroupLabel>
+          <button>button</button>
+        </Group>
+      </div>
     </>
   );
 }

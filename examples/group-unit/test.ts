@@ -25,3 +25,10 @@ test("uses label from GroupLabel", () => {
 
   expect(qq.group()).toHaveAccessibleName("My custom label");
 });
+
+test("uses label id from GroupLabel", () => {
+  const qq = q.within(document.getElementById("label-id"));
+
+  expect(qq.group()).toHaveAccessibleName("My custom label");
+  expect(qq.group()?.getAttribute("aria-labelledBy")).toBe("my-custom-id");
+});
