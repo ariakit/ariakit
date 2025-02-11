@@ -83,7 +83,33 @@ export default function Fixture() {
 
       <div role="group" aria-label="dynamic-render-as">
         <button onClick={toggleDynamic}>Toggle dynamic</button>
-        <Role render={dynamic() ? <As.p /> : <As.span />}>
+        <Role
+          aria-label="merged2"
+          data-outer
+          data-both="outer"
+          className="outer"
+          style={{ "--outer": "value" } as JSX.CSSProperties}
+          render={
+            dynamic() ? (
+              // TODO: add event listeners
+              <As.p
+                data-p
+                data-inner
+                data-both="inner-p"
+                className="inner-p"
+                style={{ "--inner-p": "value-p" } as JSX.CSSProperties}
+              />
+            ) : (
+              <As.span
+                data-span
+                data-inner
+                data-both="inner-span"
+                className="inner-span"
+                style={{ "--inner-span": "value-span" } as JSX.CSSProperties}
+              />
+            )
+          }
+        >
           Dynamic component render
         </Role>
       </div>
