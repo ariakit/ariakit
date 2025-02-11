@@ -1,7 +1,19 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import { type Component, type ValidComponent, createComponent } from "solid-js";
-import { As } from "./__as.tsx";
-import { type PropsSink, withPropsSink } from "./__props.ts";
+import { combineProps } from "@solid-primitives/props";
+import {
+  type Component,
+  type ComponentProps,
+  type JSX,
+  type ValidComponent,
+  createComponent,
+  createMemo,
+  sharedConfig,
+  splitProps,
+  untrack,
+} from "solid-js";
+import { SVGElements, getNextElement, spread } from "solid-js/web";
+import { extractAs } from "./__as.tsx";
+import { type PropsSink, isPropsProxy, withPropsSink } from "./__props.ts";
 import type { HTMLProps, Hook, Options, Props } from "./types.ts";
 
 /**
@@ -23,14 +35,39 @@ export function createElement(
   props: Props<ValidComponent, Options>,
 ) {
   let tree = () => {
-    const resolvedComponent = (props.render ?? Component) as ValidComponent;
-    let component = resolvedComponent as Component;
-    if (typeof resolvedComponent === "string")
-      component = (As[resolvedComponent] as any)({}) as Component;
-    else if (typeof resolvedComponent !== "function")
-      throw new Error("Invalid render prop value");
-    // TODO: should this be untracked?
-    return component(props);
+    const resolvedComponent = () =>
+      (extractAs(props.render)?.component ??
+        props.render ??
+        Component) as ValidComponent;
+
+    const mergedProps = () => {
+      const asProps = extractAs(props.render)?.props;
+      const propsEmpty =
+        !isPropsProxy(props) && Object.keys(props).length === 0;
+      // This is necessary in nested renders, e.g.
+      // <Component
+      //   render={<As
+      //     component={Role.div}
+      //     render={...}
+      //   />}
+      // />
+      const propsWithoutRender =
+        "render" in props ? splitProps(props, ["render"])[1] : props;
+      return (
+        !propsEmpty && asProps
+          ? // TODO: look into potential combineProps optimizations when none are proxies, etc
+            combineProps([propsWithoutRender, asProps], {
+              reverseEventHandlers: true,
+            })
+          : (asProps ?? props)
+      ) as any;
+    };
+
+    // TODO: how do we keep this reactive?
+    // does it need to be in the first place?
+    const outputProps = mergedProps();
+
+    return createDynamic(resolvedComponent, outputProps);
   };
   // TODO: should this be reactive?
   if (props.wrapInstance) {
@@ -59,4 +96,45 @@ export function createHook<
 >(useProps: (props: PropsSink<Props<T, P>>) => HTMLProps<T, P>) {
   const useRole = (props: Props<T, P>) => withPropsSink(props, useProps);
   return useRole as Hook<T, P>;
+}
+
+// create dynamic
+// --------------
+
+// Temporary hack until this lands: https://github.com/solidjs/solid/pull/2422
+
+const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
+function _createElement(
+  tagName: string,
+  isSVG = false,
+): HTMLElement | SVGElement {
+  return isSVG
+    ? document.createElementNS(SVG_NAMESPACE, tagName)
+    : document.createElement(tagName);
+}
+export function createDynamic<T extends ValidComponent>(
+  component: () => T,
+  props: ComponentProps<T>,
+): JSX.Element {
+  // biome-ignore lint/complexity/noBannedTypes: hack
+  const cached = createMemo<Function | string>(component);
+  return createMemo(() => {
+    const component = cached();
+    switch (typeof component) {
+      case "function":
+        return untrack(() => component(props));
+
+      case "string": {
+        const isSvg = SVGElements.has(component);
+        const el = sharedConfig.context
+          ? getNextElement()
+          : _createElement(component, isSvg);
+        spread(el, props, isSvg);
+        return el;
+      }
+
+      default:
+        break;
+    }
+  }) as unknown as JSX.Element;
 }

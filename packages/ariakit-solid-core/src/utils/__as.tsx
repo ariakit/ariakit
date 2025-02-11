@@ -1,96 +1,65 @@
-import { combineProps } from "@solid-primitives/props";
 import {
   type Component,
   type ComponentProps,
   type JSX,
   type ValidComponent,
-  createMemo,
-  sharedConfig,
   splitProps,
-  untrack,
 } from "solid-js";
-import { SVGElements, getNextElement, spread } from "solid-js/web";
-import { isPropsProxy } from "./__props.ts";
 
-const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
-function createElement(
-  tagName: string,
-  isSVG = false,
-): HTMLElement | SVGElement {
-  return isSVG
-    ? document.createElementNS(SVG_NAMESPACE, tagName)
-    : document.createElement(tagName);
+const $AS = Symbol("ariakit-as");
+// TODO [port]: why does using this change behavior? black magic wtffff
+// try role-unit with and without using it below O.o
+function as(fn: any) {
+  fn[$AS] = true;
+  return fn;
 }
-// Temporary hack until this lands: https://github.com/solidjs/solid/pull/2422
-export function createDynamic<T extends ValidComponent>(
-  component: () => T,
-  props: ComponentProps<T>,
-): JSX.Element {
-  // biome-ignore lint/complexity/noBannedTypes: hack
-  const cached = createMemo<Function | string>(component);
-  return createMemo(() => {
-    const component = cached();
-    switch (typeof component) {
-      case "function":
-        return untrack(() => component(props));
-
-      case "string": {
-        const isSvg = SVGElements.has(component);
-        const el = sharedConfig.context
-          ? getNextElement()
-          : createElement(component, isSvg);
-        spread(el, props, isSvg);
-        return el;
-      }
-
-      default:
-        break;
-    }
-  }) as unknown as JSX.Element;
+type AsSpec = {
+  component: ValidComponent;
+  props: unknown;
+};
+export function extractAs(maybeAs?: any): AsSpec | undefined {
+  if (maybeAs && !($AS in maybeAs)) return;
+  return typeof maybeAs === "function" ? maybeAs() : maybeAs;
 }
+
+// TODO: DRY with role
+const elements = [
+  "a",
+  "button",
+  "details",
+  "dialog",
+  "div",
+  "form",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "header",
+  "img",
+  "input",
+  "label",
+  "li",
+  "nav",
+  "ol",
+  "p",
+  "section",
+  "select",
+  "span",
+  "summary",
+  "textarea",
+  "ul",
+  "svg",
+] as const;
 
 type AsComponent = <T extends ValidComponent, P = ComponentProps<T>>(
   props: AsProps<T, P>,
 ) => JSX.Element;
 
 type AsElements = {
-  [K in keyof JSX.IntrinsicElements | (string & {})]: Component<
-    ComponentProps<K>
-  >;
+  [K in (typeof elements)[number]]: Component<ComponentProps<K>>;
 };
-
-const cache = new Map<string, Component<any>>();
-
-// Note: `props` must contain `props.component`!
-function createAsComponent<T extends ValidComponent>(
-  component: () => T,
-  props: ComponentProps<T>,
-  parentProps: any,
-) {
-  const isParentPropsProxy = isPropsProxy(parentProps);
-  const parentHasProps =
-    isParentPropsProxy || (parentProps && Object.keys(parentProps).length > 0);
-  // This is necessary in nested renders, e.g.
-  // <Component
-  //   render={<As
-  //     component={Role.div}
-  //     render={...}
-  //   />}
-  // />
-  const parentPropsWithoutRender =
-    "render" in parentProps
-      ? splitProps(parentProps, ["render"])[1]
-      : parentProps;
-  const mergedProps = (
-    parentHasProps
-      ? // TODO: look into potential combineProps optimizations when none are proxies, etc
-        combineProps([parentPropsWithoutRender, props], {
-          reverseEventHandlers: true,
-        })
-      : props
-  ) as any;
-  return createDynamic(component, mergedProps);
-}
 
 /**
  * Allows a component to be rendered as a different HTML element or Solid
@@ -110,32 +79,30 @@ function createAsComponent<T extends ValidComponent>(
  * <Role render={<As.button type="button" />} />
  * ```
  */
-export const As = new Proxy(
-  function As(props: any) {
-    return ((parentProps: unknown) =>
-      createAsComponent(
-        () => props.component,
-        props,
-        parentProps,
-      )) as unknown as JSX.Element;
-  } as AsComponent & AsElements,
-  {
-    get: (_, key: keyof JSX.IntrinsicElements) => {
-      let component = cache.get(key);
-      if (!component) {
-        component = function AsElement(props: any) {
-          return ((parentProps: unknown) =>
-            createAsComponent(
-              () => key,
-              props,
-              parentProps,
-            )) as unknown as JSX.Element;
-        };
-        cache.set(key, component);
-      }
-      return component;
+export const As = as(function As(props: any) {
+  // TODO [port]: potentially more efficient with "omit" (Solid 2.0?)
+  const [, rest] = splitProps(props, ["component"]);
+  return {
+    [$AS]: true,
+    get component() {
+      return props.component;
     },
-  },
+    props: rest,
+  } as unknown as JSX.Element;
+}) as AsComponent & AsElements;
+
+Object.assign(
+  As,
+  elements.reduce((acc, element) => {
+    acc[element] = as(function As(props: ComponentProps<typeof element>) {
+      return {
+        [$AS]: true,
+        component: element,
+        props,
+      } as unknown as JSX.Element;
+    });
+    return acc;
+  }, {} as AsElements),
 );
 
 export type AsProps<T extends ValidComponent, P = ComponentProps<T>> = {
