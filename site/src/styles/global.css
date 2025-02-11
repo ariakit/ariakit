@@ -5,3 +5,12 @@
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
 }
+
+* {
+  @variant not-dark {
+    --color-base: #fff;
+  }
+  @variant dark {
+    --color-base: #0e0e11;
+  }
+}

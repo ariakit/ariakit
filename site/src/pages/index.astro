@@ -7,31 +7,32 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout>
-  <div class="ak-layer-white border-b-20 hover:ak-layer-3 p-2">
-    <div class="ak-frame-xl/2 ak-layer-[#18324A] hover:ak-layer-2">button</div>
+  <div class="ak-layer-white border-b-20 hover:ak-layer-10 p-2">
+    <div class="ak-frame-xl/2 ak-layer-primary hover:ak-layer-pop">button</div>
     <div class="ak-layer ak-frame-container ring">
       <div class="ak-layer-down ak-frame/2 border">
         dadsa
         <div class="ak-layer">dse2</div>
       </div>
     </div>
-    <div class="ak-layer-base ak-frame-2xl/2 mt-10">
-      <div class="ak-frame-xl/1 ak-layer-mix-brand">
+    <div class="ak-layer-feature ak-frame-2xl/2 mt-10">
+      <div class="ak-frame-xl/1 ak-layer-mix-primary">
         <div class="ak-frame-cover ak-layer">dsadas</div>
         <input type="text" class="ak-layer-down ak-frame/2 py-1" placeholder="input" />
       </div>
     </div>
   </div>
-  <div class="ak-layer p-2">
-    <input class="w-[200px] mb-5" value="0" type="range" min="0" step="0.25" max="24" oninput="document.body.style.setProperty('--pad', `calc(${this.valueAsNumber} * 1px)`)" />
-    <div class="ak-layer ak-frame-2xl/(--pad,0px) ak-frame-border-8">
-      <button class="ak-layer-brand ak-frame-full/4 py-2 border">Button</button>
-      <div class="ak-frame-cover/2 ak-layer rounded-t-none">cover</div>
+  <div class="ak-layer-canvas p-2">
+    <!-- <input class="w-[200px] mb-5" value="0" type="range" min="0" step="0.25" max="24" oninput="document.body.style.setProperty('--pad', `calc(${this.valueAsNumber} * 1px)`)" /> -->
+    <input class="w-[200px] mb-5" value="0" type="range" min="0" step="0.25" max="3" oninput="document.body.style.setProperty('--contrast', this.valueAsNumber)" />
+    <div class="ak-layer ak-frame-2xl/(--pad,0px) ring">
+      <button class="ak-layer-primary ak-frame-full/4 py-2 border">Button</button>
+      <div class="ak-frame-cover/2 ak-layer-current rounded-t-none border-t">cover</div>
     </div>
   </div>
   <div class="not-dark:ak-layer-[#fff] dark:ak-layer-[#1d1d1d] p-10 grid gap-4">
     <div class="ak-text-[#086fff] underline underline-offset-2">Review Cloudflare fundamentals</div>
-    <div class="ak-layer ak-frame-3xl/2 grid gap-3 border shadow-xl">
+    <div class="ak-layer ak-frame-3xl/2 grid gap-3 border shadow-xl ">
       <div class="flex justify-between items-center ps-4 pe-2 pt-2">
         <div class="text-xl font-semibold">Recommendations</div>
         <div class="ak-text-[#086fff] text-sm">Hide</div>
@@ -46,10 +47,10 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </div>
-  <div class="ak-layer-base p-8">
-    <div class="ak-frame-xl/1 ak-layer ring shadow-xl overflow-clip">
+  <div class="ak-layer-canvas p-8">
+    <div class="ak-frame-xl/1 shadow-xl ak-layer ring overflow-clip">
       <div class="overflow-y-auto ak-frame-cover h-20 grid gap-1">
-        <div class="ak-layer ak-frame-2xl/1 flex gap-1 items-center h-10 border">
+        <div class="ak-layer-3 ak-frame-2xl/1 flex gap-1 items-center h-10 border">
           <div class="ak-layer-down ak-frame-force-full border h-full aspect-square grid place-items-center">A</div>
           <div class="ak-text-[red]">dsadsa</div>
         </div>
@@ -57,13 +58,13 @@ import Layout from "../layouts/Layout.astro";
           <div class="ak-text-opacity">dse2</div>
         </div>
         <div class="ak-frame/2 ak-layer ring">
-          <div class="ak-text-brand">dse2</div>
+          <div class="ak-text-primary">dse2</div>
         </div>
       </div>
     </div>
   </div>
   <div class="ak-layer-cyan-50 p-8">
-    <div class="ak-frame-xl/1 ak-layer ring shadow-xl overflow-clip">
+    <div class="ak-frame-xl/1 shadow-xl ak-layer ring overflow-clip">
       <div class="overflow-y-auto ak-frame-cover h-20 grid gap-1">
         <div class="ak-layer ak-frame-2xl/1 flex gap-1 items-center h-10 border">
           <div class="ak-layer-down ak-frame-force-full border h-full aspect-square grid place-items-center">A</div>
@@ -73,13 +74,13 @@ import Layout from "../layouts/Layout.astro";
           <div class="ak-text-opacity">dse2</div>
         </div>
         <div class="ak-frame/2 ak-layer ring">
-          <div class="ak-text-brand">dse2</div>
+          <div class="ak-text-primary">dse2</div>
         </div>
       </div>
     </div>
   </div>
   <div class="ak-layer-cyan-950 p-8">
-    <div class="ak-frame-xl/1 ak-layer ring shadow-xl overflow-clip">
+    <div class="ak-frame-xl/1 shadow-xl ak-layer ring overflow-clip">
       <div class="overflow-y-auto ak-frame-cover h-20 grid gap-1">
         <div class="ak-layer ak-frame-2xl/1 flex gap-1 items-center h-10 border">
           <div class="ak-layer-down ak-frame-force-full border h-full aspect-square grid place-items-center">A</div>
@@ -89,72 +90,74 @@ import Layout from "../layouts/Layout.astro";
           <div class="ak-text-opacity">dse2</div>
         </div>
         <div class="ak-frame/2 ak-layer ring">
-          <div class="ak-text-brand">dse2</div>
+          <div class="ak-text-primary">dse2</div>
         </div>
       </div>
     </div>
   </div>
-  <div class="ak-layer-brand ak-frame-xl/2 m-2 flex gap-2">
-    <div class="">auto</div>
-    <div class="ak-text-[#569CD6]">lightblue</div>
-    <div class="ak-text-brand">brand</div>
-    <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[blue]">blue</div>
-    <div class="ak-text-[darkmagenta]">magenta</div>
-    <div class="ak-text-[green]">green</div>
-    <div class="ak-text-[yellow]">yellow</div>
+  <div>
+    <div class="ak-layer-primary ak-frame-xl/2 m-2 flex gap-2">
+      <div class="">auto</div>
+      <div class="ak-text-[#569CD6]">lightblue</div>
+      <div class="ak-text-primary">brand</div>
+      <div class="ak-text-[red]">red</div>
+      <div class="ak-text-[blue]">blue</div>
+      <div class="ak-text-[darkmagenta]">magenta</div>
+      <div class="ak-text-[green]">green</div>
+      <div class="ak-text-[yellow]">yellow</div>
+    </div>
+    <div class="ak-layer-[#707070] ak-frame-xl/2 m-2 flex gap-2">
+      <div class="">auto</div>
+      <div class="ak-text-[#569CD6]">lightblue</div>
+      <div class="ak-text-primary">brand</div>
+      <div class="ak-text-[red]">red</div>
+      <div class="ak-text-[blue]">blue</div>
+      <div class="ak-text-[darkmagenta]">magenta</div>
+      <div class="ak-text-[green]">green</div>
+      <div class="ak-text-[yellow]">yellow</div>
+    </div>
+    <div class="ak-layer-[#000000] ak-frame-xl/2 m-2 flex gap-2">
+      <div class="">auto</div>
+      <div class="ak-text-[#569CD6]">lightblue</div>
+      <div class="ak-text-primary">brand</div>
+      <div class="ak-text-[red]">red</div>
+      <div class="ak-text-[blue]">blue</div>
+      <div class="ak-text-[darkmagenta]">magenta</div>
+      <div class="ak-text-[green]">green</div>
+      <div class="ak-text-[yellow]">yellow</div>
+    </div>
+    <div class="ak-layer-secondary ak-frame-xl/2 m-2 flex gap-2">
+      <div class="">auto</div>
+      <div class="ak-text-[#569CD6]">lightblue</div>
+      <div class="ak-text-primary">brand</div>
+      <div class="ak-text-[red]">red</div>
+      <div class="ak-text-[blue]">blue</div>
+      <div class="ak-text-[darkmagenta]">magenta</div>
+      <div class="ak-text-[green]">green</div>
+      <div class="ak-text-[yellow]">yellow</div>
+    </div>
+    <div class="ak-layer-[#fff] ak-frame-xl/2 m-2 flex gap-2">
+      <div class="">auto</div>
+      <div class="ak-text-[#569CD6]">lightblue</div>
+      <div class="ak-text-primary">brand</div>
+      <div class="ak-text-[red]">red</div>
+      <div class="ak-text-[blue]">blue</div>
+      <div class="ak-text-[darkmagenta]">magenta</div>
+      <div class="ak-text-[green]">green</div>
+      <div class="ak-text-[yellow]">yellow</div>
+    </div>
+    <div class="ak-layer-[#808080] ak-frame-xl/2 m-2 flex gap-2">
+      <div class="">auto</div>
+      <div class="ak-text-[#569CD6]">lightblue</div>
+      <div class="ak-text-primary">brand</div>
+      <div class="ak-text-[red]">red</div>
+      <div class="ak-text-[blue]">blue</div>
+      <div class="ak-text-[darkmagenta]">magenta</div>
+      <div class="ak-text-[green]">green</div>
+      <div class="ak-text-[yellow]">yellow</div>
+    </div>
   </div>
-  <div class="ak-layer-[#707070] ak-frame-xl/2 m-2 flex gap-2">
-    <div class="">auto</div>
-    <div class="ak-text-[#569CD6]">lightblue</div>
-    <div class="ak-text-brand">brand</div>
-    <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[blue]">blue</div>
-    <div class="ak-text-[darkmagenta]">magenta</div>
-    <div class="ak-text-[green]">green</div>
-    <div class="ak-text-[yellow]">yellow</div>
-  </div>
-  <div class="ak-layer-[#000000] ak-frame-xl/2 m-2 flex gap-2">
-    <div class="">auto</div>
-    <div class="ak-text-[#569CD6]">lightblue</div>
-    <div class="ak-text-brand">brand</div>
-    <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[blue]">blue</div>
-    <div class="ak-text-[darkmagenta]">magenta</div>
-    <div class="ak-text-[green]">green</div>
-    <div class="ak-text-[yellow]">yellow</div>
-  </div>
-  <div class="ak-layer-accent ak-frame-xl/2 m-2 flex gap-2">
-    <div class="">auto</div>
-    <div class="ak-text-[#569CD6]">lightblue</div>
-    <div class="ak-text-brand">brand</div>
-    <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[blue]">blue</div>
-    <div class="ak-text-[darkmagenta]">magenta</div>
-    <div class="ak-text-[green]">green</div>
-    <div class="ak-text-[yellow]">yellow</div>
-  </div>
-  <div class="ak-layer-[#fff] ak-frame-xl/2 m-2 flex gap-2">
-    <div class="">auto</div>
-    <div class="ak-text-[#569CD6]">lightblue</div>
-    <div class="ak-text-brand">brand</div>
-    <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[blue]">blue</div>
-    <div class="ak-text-[darkmagenta]">magenta</div>
-    <div class="ak-text-[green]">green</div>
-    <div class="ak-text-[yellow]">yellow</div>
-  </div>
-  <div class="ak-layer-[#808080] ak-frame-xl/2 m-2 flex gap-2">
-    <div class="">auto</div>
-    <div class="ak-text-[#569CD6]">lightblue</div>
-    <div class="ak-text-brand">brand</div>
-    <div class="ak-text-[red]">red</div>
-    <div class="ak-text-[blue]">blue</div>
-    <div class="ak-text-[darkmagenta]">magenta</div>
-    <div class="ak-text-[green]">green</div>
-    <div class="ak-text-[yellow]">yellow</div>
-  </div>
-  <div class="py-20">
+  <div class="py-20 pb-100">
     <input type="color" />
     <input type="text" class="appearance-auto" placeholder="input" />
   </div>
@@ -168,7 +171,7 @@ import Layout from "../layouts/Layout.astro";
     const color = event.target?.value;
     cancelIdleCallback(ric);
     ric = requestIdleCallback(() => {
-      document.body.style.setProperty("--color-base", color);
+      document.body.style.setProperty("--color-canvas", color);
     })
   });
 </script>
