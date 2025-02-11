@@ -1,9 +1,9 @@
 import { click, q } from "@ariakit/test";
 
-test("render", async () => {
-  expect(q.group("render")).toMatchInlineSnapshot(`
+test("render as", async () => {
+  expect(q.group("render-as")).toMatchInlineSnapshot(`
     <div
-      aria-label="render"
+      aria-label="render-as"
       role="group"
     >
       <div>
@@ -60,3 +60,18 @@ test("render", async () => {
     `"bottom, middle, top"`,
   );
 });
+
+test("dynamically render as", async () => {
+  // TODO [port]: doesn't work in Solid yet.
+  const qq = q.within(q.group("dynamic-render-as"));
+
+  expect(qq.text("Dynamic component render")?.tagName).toBe("P");
+  await click(qq.button("Toggle dynamic"));
+  expect(qq.text("Dynamic component render")?.tagName).toBe("SPAN");
+  await click(qq.button("Toggle dynamic"));
+  expect(qq.text("Dynamic component render")?.tagName).toBe("P");
+});
+
+// TODO:
+// - test render function
+// - test wrapElement
