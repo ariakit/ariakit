@@ -26,10 +26,10 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
   function useFocusTrapRegion(__) {
-    const [_, props] = $o(__, { enabled: false });
+    let [_, props] = $o(__, { enabled: false });
     const ref = useRef<HTMLType>(null);
 
-    useWrapElement(
+    props = useWrapElement(
       props,
       (element) => {
         const renderFocusTrap = () => {
