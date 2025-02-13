@@ -166,7 +166,7 @@ function useDisableEvent(
   });
 }
 
-// isKeyboardModality should be true by default.
+// isKeyboardModality should be true by defaault.
 let isKeyboardModality = true;
 
 function onGlobalMouseDown(event: MouseEvent) {
@@ -237,14 +237,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       }, [focusable]);
     }
 
-    const disabledProp = props.disabled;
-    const ariaDisabledProp = props["aria-disabled"];
-    const disabled =
-      focusable &&
-      disabledFromProps({
-        disabled: disabledProp,
-        "aria-disabled": ariaDisabledProp,
-      });
+    const disabled = focusable && disabledFromProps(props);
     const trulyDisabled = !!disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 
@@ -338,7 +331,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       event: SyntheticEvent<HTMLType>,
       currentTarget?: HTMLType,
     ) => {
-      console.log("focus visible handled?");
       if (currentTarget) {
         event.currentTarget = currentTarget;
       }
@@ -370,7 +362,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (event.ctrlKey) return;
       if (!isSelfTarget(event)) return;
       const element = event.currentTarget;
-      console.log("handleFocusVisible onKeyDownCapture");
       const applyFocusVisible = () => handleFocusVisible(event, element);
       queueBeforeEvent(element, "focusout", applyFocusVisible);
     });
@@ -378,7 +369,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const onFocusCaptureProp = props.onFocusCapture;
 
     const onFocusCapture = useEvent((event: FocusEvent<HTMLType>) => {
-      console.log("onFocusCapture start");
       onFocusCaptureProp?.(event);
       if (event.defaultPrevented) return;
       if (!focusable) return;
@@ -387,7 +377,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         return;
       }
       const element = event.currentTarget;
-      console.log("handleFocusVisible onFocusCapture");
       const applyFocusVisible = () => handleFocusVisible(event, element);
       if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
         queueBeforeEvent(event.target, "focusout", applyFocusVisible);
@@ -443,14 +432,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       }
       return styleProp;
     }, [trulyDisabled, styleProp]);
-
-    useEffect(() => {
-      console.log({
-        thing: focusable && focusVisible,
-        focusable,
-        focusVisible,
-      });
-    }, [focusable, focusVisible]);
 
     props = {
       "data-focus-visible": (focusable && focusVisible) || undefined,
