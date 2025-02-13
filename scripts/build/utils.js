@@ -56,11 +56,8 @@ export function getPackageJson(rootPath, prod = false) {
     };
   };
 
-  const PRIVATE_REGEXP = /(^_|\/_)/;
-
   const moduleExports = Object.entries(publicFiles).reduce(
     (acc, [name, path]) => {
-      if (PRIVATE_REGEXP.test(name)) return acc;
       if (name === "index") {
         // biome-ignore lint/performance/noAccumulatingSpread: TODO
         return { ".": getExports(path), ...acc };

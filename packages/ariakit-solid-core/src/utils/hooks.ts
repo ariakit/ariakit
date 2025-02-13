@@ -1,7 +1,8 @@
 import { mergeRefs } from "@solid-primitives/refs";
+import { type MaybeAccessor, access } from "@solid-primitives/utils";
 import { type JSX, createUniqueId } from "solid-js";
-import type { RefObject } from "./_port.ts";
-import { $ } from "./_props.ts";
+import type { RefObject } from "./__port.ts";
+import { $ } from "./__props.ts";
 import type { WrapInstance, WrapInstanceValue } from "./types.ts";
 
 export const useMergeRefs = mergeRefs;
@@ -9,9 +10,11 @@ export const useMergeRefs = mergeRefs;
 /**
  * Generates a unique ID. Uses `createUniqueId`.
  */
-export function useId(defaultId?: string): string {
+export function useId(
+  defaultId?: MaybeAccessor<string | undefined>,
+): () => string {
   const id = createUniqueId();
-  return defaultId ?? id;
+  return () => access(defaultId) ?? id;
 }
 
 /**
@@ -37,12 +40,13 @@ export function useTagName(
 /**
  * Returns props with an additional `wrapInstance` prop.
  */
-export function useWrapElement<P, Q = P & { wrapInstance: WrapInstance }>(
-  props: P & { wrapInstance?: WrapInstance },
+export function useWrapElement<P>(
+  props: P,
   element: WrapInstanceValue,
   _deps: Array<unknown>, // Only here to minimize the diff noise.
-): Q {
-  return $(props as JSX.HTMLAttributes<any> & { wrapInstance?: WrapInstance })({
+): P {
+  $(props as JSX.HTMLAttributes<any> & { wrapInstance?: WrapInstance })({
     $wrapInstance: (props) => [...(props.wrapInstance ?? []), element],
-  }) as Q;
+  });
+  return props;
 }

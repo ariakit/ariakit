@@ -22,7 +22,7 @@ Combining [Dialog](/components/dialog), [Tab](/components/tab), and [Combobox](/
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

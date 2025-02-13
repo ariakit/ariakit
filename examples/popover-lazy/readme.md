@@ -16,7 +16,7 @@ Lazy loading [Popover](/components/popover) using [`React.lazy`](https://react.d
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Controlling the popover state
 

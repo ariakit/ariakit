@@ -1,6 +1,10 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { $PROXY, type JSX } from "solid-js";
 
+export function isPropsProxy(props: unknown) {
+  return Boolean(props && $PROXY in (props as object));
+}
+
 // prop traps
 // ----------
 
@@ -50,16 +54,18 @@ type SinkState = {
   isProxy: boolean;
   sources: Sources;
   optionSources: Sources;
-  optionKeys: Set<string>;
+  skipKeys: Set<string>;
   sink: unknown;
   offset: number;
 };
 
 let state: SinkState | undefined;
+const stateMap = new WeakMap<any, SinkState>();
 
-function getSinkState() {
-  if (!state) throw new Error("Missing props sink state");
-  return state;
+function getSinkState(sinkFallback?: unknown) {
+  const sinkState = state ?? stateMap.get(sinkFallback);
+  if (!sinkState) throw new Error("Missing props sink state");
+  return sinkState;
 }
 
 function ensureSource(source?: PropsObject) {
@@ -106,10 +112,12 @@ function createPropsSink<T>(props: T) {
   // TODO: do something different (more optimal) if props is not a proxy
   // biome-ignore lint/style/useConst: <explanation>
   let localState: SinkState;
-  const isProxy = props && $PROXY in (props as PropsObject);
+  const isProxy = isPropsProxy(props);
   const sources: Array<PropsObject> = [props as PropsObject];
   const optionSources: Array<PropsObject> = [];
-  const optionKeys = new Set<string>();
+  const skipKeys = new Set<string>();
+  skipKeys.add("render");
+  skipKeys.add("wrapInstance");
   const sink = new Proxy(
     {
       get(property: string | number | symbol) {
@@ -127,7 +135,7 @@ function createPropsSink<T>(props: T) {
         const keys = new Set<string>();
         for (let i = 0; i < sources.length; i++)
           for (const key of Object.keys(ensureSource(sources[i])))
-            if (!optionKeys.has(key)) keys.add(key);
+            if (!skipKeys.has(key)) keys.add(key);
         return [...new Set(keys)];
       },
     },
@@ -137,11 +145,12 @@ function createPropsSink<T>(props: T) {
     isProxy,
     sources,
     optionSources,
-    optionKeys,
+    skipKeys,
     sink,
     offset: 0,
   };
   state = localState;
+  stateMap.set(sink, localState);
   return sink;
 }
 
@@ -218,7 +227,7 @@ export function $<P extends JSX.HTMLAttributes<any>>(
   _originalProps: P,
   props?: NoInfer<WithGetterShorthands<P>>,
 ) {
-  const sinkState = getSinkState();
+  const sinkState = getSinkState(_originalProps);
   if (props) {
     expandGetterShorthands(props);
     sinkState.sources.push(props as PropsObject);
@@ -267,8 +276,8 @@ export function $o<
   P extends AnyObject,
   const O extends Partial<UnwrapPropSinkProps<P>>,
 >(_props: P, options: O): ExtractOptionsReturn<P, O> {
-  const { optionSources, optionKeys, sink } = getSinkState();
+  const { optionSources, skipKeys, sink } = getSinkState(_props);
   optionSources.push(options as PropsObject);
-  for (const key of Object.keys(options)) optionKeys.add(key);
+  for (const key of Object.keys(options)) skipKeys.add(key);
   return [sink, sink] as unknown as ExtractOptionsReturn<P, O>;
 }

@@ -17,7 +17,7 @@ Abstracting [Menu](/components/menu) into a reusable dropdown menu component tha
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

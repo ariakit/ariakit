@@ -1,5 +1,5 @@
-import type { ElementType } from "../utils/_port.ts";
-import { $ } from "../utils/_props.ts";
+import type { ElementType } from "../utils/__port.ts";
+import { $ } from "../utils/__props.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.tsx";
