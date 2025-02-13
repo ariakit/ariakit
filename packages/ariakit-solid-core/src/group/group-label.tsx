@@ -35,7 +35,7 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
       const $id = id();
       setLabelId?.($id);
       return () => $setLabelId?.(undefined);
-    });
+    }, "[setLabelId, id]");
 
     $(props, {
       $id: id,

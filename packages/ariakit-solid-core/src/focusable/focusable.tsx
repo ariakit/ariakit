@@ -24,8 +24,8 @@ import {
   useMemo,
   useRef,
   useState,
-} from "../utils/_port.ts";
-import { $, $o } from "../utils/_props.ts";
+} from "../utils/__port.ts";
+import { $, $o } from "../utils/__props.ts";
 import { useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -214,7 +214,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (!$focusable) return;
       addGlobalEventListener("mousedown", onGlobalMouseDown, true);
       addGlobalEventListener("keydown", onGlobalKeyDown, true);
-    });
+    }, "[focusable]");
 
     // Safari and Firefox on Apple devices don't focus on checkboxes or radio
     // buttons when their labels are clicked. This effect will make sure the
