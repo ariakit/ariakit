@@ -152,6 +152,7 @@ function getTabIndex(
 }
 
 /*
+TODO [port]: [capture-events]
 function useDisableEvent(
   onEvent?: EventHandler<SyntheticEvent>,
   disabled?: boolean,
@@ -186,6 +187,22 @@ function onGlobalKeyDown(event: KeyboardEvent) {
   if (event.ctrlKey) return;
   if (event.altKey) return;
   isKeyboardModality = true;
+}
+
+// [port]: translation helper
+function $d(props: any) {
+  const disabledProp = props.$disabled;
+  const ariaDisabledProp = props["$aria-disabled"];
+  return () => ({
+    disabled: disabledProp(),
+    "aria-disabled": ariaDisabledProp(),
+  });
+}
+
+// [port]: translation helper
+function $h(target: EventTarget | null) {
+  // TODO [port]: verify that these casts are safe.
+  return target as HTMLType;
 }
 
 /**
@@ -240,14 +257,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       }, "[focusable]");
     }
 
-    const disabledProp = props.$disabled;
-    const ariaDisabledProp = props["$aria-disabled"];
-    const disabled = () =>
-      _.focusable &&
-      disabledFromProps({
-        disabled: disabledProp(),
-        "aria-disabled": ariaDisabledProp(),
-      });
+    const dprops = $d(props);
+    const disabled = () => _.focusable && disabledFromProps(dprops());
     const trulyDisabled = () => !!disabled() && !_.accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 
@@ -286,7 +297,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     }, "[focusable, focusVisible]");
 
     /*
-    // [port]: there's no direct equivalent in Solid.
+    // [port]: [capture-events] there's no direct equivalent in Solid.
     // Disable events when the element is disabled.
     const onKeyPressCapture = useDisableEvent(
       props.onKeyPressCapture,
@@ -306,8 +317,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       onMouseDownProp()?.(event);
       if (event.defaultPrevented) return;
       if (!_.focusable) return;
-      // TODO [port]: verify that these casts are safe.
-      const element = event.currentTarget as HTMLType;
+      const element = $h(event.currentTarget);
       // Safari doesn't focus on buttons on mouse down like other
       // browsers/platforms. Instead, it focuses on the closest focusable ancestor
       // element, which is ultimately the body element. So we make sure to give
@@ -348,14 +358,16 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     });
 
     const handleFocusVisible = (_event: Event, currentTarget?: HTMLType) => {
-      // TODO: does this work? is it the best way to fix this?
+      // TODO [port]: does this work? is it the best way to fix this?
+      // idea: https://stackoverflow.com/a/48265386
+      // idea 2: https://stackoverflow.com/a/20541207
       const event = { ..._event };
       if (currentTarget) {
         // TODO [port]: [ariakit-ask] why????
         event.currentTarget = currentTarget;
       }
       if (!_.focusable) return;
-      const element = event.currentTarget as HTMLType;
+      const element = $h(event.currentTarget);
       if (!element) return;
       // Some extensions like 1password dispatches some keydown events on
       // autofill and immediately moves focus to the next field. That's why we
@@ -382,7 +394,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (event.altKey) return;
       if (event.ctrlKey) return;
       if (!isSelfTarget(event)) return;
-      const element = event.currentTarget as HTMLType;
+      const element = $h(event.currentTarget);
       const applyFocusVisible = () => handleFocusVisible(event, element);
       queueBeforeEvent(element, "focusout", applyFocusVisible);
     });
@@ -398,17 +410,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         setFocusVisible(false);
         return;
       }
-      const element = event.currentTarget as HTMLType;
+      const element = $h(event.currentTarget);
       const applyFocusVisible = () => handleFocusVisible(event, element);
-      if (
-        isKeyboardModality ||
-        isAlwaysFocusVisible(event.target as HTMLType)
-      ) {
-        queueBeforeEvent(
-          event.target as HTMLType,
-          "focusout",
-          applyFocusVisible,
-        );
+      if (isKeyboardModality || isAlwaysFocusVisible($h(event.target))) {
+        queueBeforeEvent($h(event.target), "focusout", applyFocusVisible);
       } else {
         setFocusVisible(false);
       }
@@ -490,6 +495,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // TODO: Test Focusable contentEditable.
       $contentEditable: (props) =>
         disabled() ? undefined : props.contentEditable,
+      // TODO [port]: [capture-events]
       // onKeyPressCapture,
       // onClickCapture,
       // onMouseDownCapture,
