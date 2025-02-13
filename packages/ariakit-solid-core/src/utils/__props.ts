@@ -116,8 +116,7 @@ function createPropsSink<T>(props: T) {
   const sources: Array<PropsObject> = [props as PropsObject];
   const optionSources: Array<PropsObject> = [];
   const optionKeys = new Set<string>();
-  // TODO: how come this is not necessary?????
-  // optionKeys.add("render");
+  optionKeys.add("render");
   optionKeys.add("wrapInstance");
   const sink = new Proxy(
     {

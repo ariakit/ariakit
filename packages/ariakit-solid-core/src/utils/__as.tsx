@@ -18,7 +18,7 @@ type AsSpec = {
   props: unknown;
 };
 export function extractAs(maybeAs?: any): AsSpec | undefined {
-  if (maybeAs && !($AS in maybeAs)) return;
+  if (maybeAs && !maybeAs[$AS]) return;
   return typeof maybeAs === "function" ? maybeAs() : maybeAs;
 }
 
