@@ -62,7 +62,6 @@ test("render as", async () => {
 });
 
 test("dynamically render as", async () => {
-  // TODO [port]: doesn't work in Solid yet.
   const qq = q.within(q.group("dynamic-render-as"));
 
   expect(q.group("dynamic-render-as")).toMatchInlineSnapshot(`
