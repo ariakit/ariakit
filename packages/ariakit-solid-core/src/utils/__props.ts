@@ -54,7 +54,7 @@ type SinkState = {
   isProxy: boolean;
   sources: Sources;
   optionSources: Sources;
-  optionKeys: Set<string>;
+  skipKeys: Set<string>;
   sink: unknown;
   offset: number;
 };
@@ -115,9 +115,9 @@ function createPropsSink<T>(props: T) {
   const isProxy = isPropsProxy(props);
   const sources: Array<PropsObject> = [props as PropsObject];
   const optionSources: Array<PropsObject> = [];
-  const optionKeys = new Set<string>();
-  optionKeys.add("render");
-  optionKeys.add("wrapInstance");
+  const skipKeys = new Set<string>();
+  skipKeys.add("render");
+  skipKeys.add("wrapInstance");
   const sink = new Proxy(
     {
       get(property: string | number | symbol) {
@@ -135,7 +135,7 @@ function createPropsSink<T>(props: T) {
         const keys = new Set<string>();
         for (let i = 0; i < sources.length; i++)
           for (const key of Object.keys(ensureSource(sources[i])))
-            if (!optionKeys.has(key)) keys.add(key);
+            if (!skipKeys.has(key)) keys.add(key);
         return [...new Set(keys)];
       },
     },
@@ -145,7 +145,7 @@ function createPropsSink<T>(props: T) {
     isProxy,
     sources,
     optionSources,
-    optionKeys,
+    skipKeys,
     sink,
     offset: 0,
   };
@@ -276,8 +276,8 @@ export function $o<
   P extends AnyObject,
   const O extends Partial<UnwrapPropSinkProps<P>>,
 >(_props: P, options: O): ExtractOptionsReturn<P, O> {
-  const { optionSources, optionKeys, sink } = getSinkState(_props);
+  const { optionSources, skipKeys, sink } = getSinkState(_props);
   optionSources.push(options as PropsObject);
-  for (const key of Object.keys(options)) optionKeys.add(key);
+  for (const key of Object.keys(options)) skipKeys.add(key);
   return [sink, sink] as unknown as ExtractOptionsReturn<P, O>;
 }
