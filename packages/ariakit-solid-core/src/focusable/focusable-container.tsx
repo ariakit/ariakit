@@ -25,7 +25,7 @@ export const useFocusableContainer = createHook<
   useWrapElement(
     props,
     (element) => (
-      // TODO [port]: does this need to be reactive?
+      // TODO [port]: does this need to be reactive? update: what did i even mean by this lol
       <FocusableContext.Provider value={() => _.autoFocusOnShow}>
         {element.children}
       </FocusableContext.Provider>

@@ -302,7 +302,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const onMouseDownProp = props.$onMouseDown;
 
     const onMouseDown = useEvent((event: MouseEvent) => {
-      // @ts-expect-error TODO [port]: figure out what to do with this.
+      // @ts-expect-error TODO [port]: [event-chain]
       onMouseDownProp()?.(event);
       if (event.defaultPrevented) return;
       if (!_.focusable) return;
@@ -351,7 +351,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // TODO: does this work? is it the best way to fix this?
       const event = { ..._event };
       if (currentTarget) {
-        // TODO [port]: why???
+        // TODO [port]: [ariakit-ask] why????
         event.currentTarget = currentTarget;
       }
       if (!_.focusable) return;
@@ -419,14 +419,14 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     // Note: Can't use onBlurCapture here otherwise it will not work with
     // CompositeItem's with the virtualFocus state set to true.
     const onBlur = useEvent((event: FocusEvent) => {
-      // @ts-expect-error TODO [port]: figure out what to do with this.
+      // @ts-expect-error TODO [port]: [event-chain]
       onBlurProp()?.(event);
       if (!_.focusable) return;
       if (!isFocusEventOutside(event)) return;
       setFocusVisible(false);
     });
 
-    // TODO [port]: handle
+    // TODO [port]: handle - update: what did i mean by this? lol
     const autoFocusOnShow = useContext(FocusableContext);
 
     // TODO [port]: verify if the same applies to Solid.
@@ -443,7 +443,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (!_.focusable) return;
       if (!_.autoFocus) return;
       if (!element) return;
-      if (!autoFocusOnShow) return;
+      if (!autoFocusOnShow()) return;
       // We have to queue focus so other effects and refs can be applied first.
       // See select-animated example.
       queueMicrotask(() => {
@@ -463,7 +463,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       const $trulyDisabled = trulyDisabled();
       const $styleProp = styleProp();
       if ($trulyDisabled) {
-        // @ts-expect-error TODO [port]: figure out what to do with this.
+        // @ts-expect-error TODO [port]: [style-chain].
         return { pointerEvents: "none" as const, ...$styleProp };
       }
       return $styleProp;
@@ -482,7 +482,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         trulyDisabled(),
         nativeTabbable(),
         supportsDisabled(),
-        // @ts-expect-error TODO [port]: figure out what to do with this.
+        // @ts-expect-error TODO [port]: [tab-index]
         props.tabIndex,
       ),
       // biome-ignore format: [port]
@@ -494,7 +494,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // onClickCapture,
       // onMouseDownCapture,
       onMouseDown,
-      // TODO [port]: idea - shim `on<Event>Capture` to `on:event={{ capture: true, ... }}`
+      // TODO [port]: [capture-events] idea - shim `on<Event>Capture` to `on:event={{ capture: true, ... }}`
       "on:keydown": { capture: true, handleEvent: onKeyDownCapture },
       "on:focus": { capture: true, handleEvent: onFocusCapture },
       onBlur,
