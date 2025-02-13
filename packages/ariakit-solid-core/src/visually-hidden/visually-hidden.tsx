@@ -32,7 +32,7 @@ export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
         position: "absolute",
         "white-space": "nowrap",
         width: "1px",
-        // @ts-expect-error TODO [port]: figure out what to do with this.
+        // @ts-expect-error TODO [port]: [style-chain]
         ...props.style,
       }),
     });

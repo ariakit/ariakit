@@ -40,7 +40,7 @@ export type ReactNode = JSX.Element;
 // biome-ignore lint/complexity/noBannedTypes: it's the original default.
 export type FC<P extends Record<string, any> = {}> = Component<P>;
 
-export const useEffect = (fn: () => void | (() => void)) =>
+export const useEffect = (fn: () => void | (() => void), _deps: any) =>
   createEffect(() => {
     const cleanupFn = fn();
     if (cleanupFn) onCleanup(cleanupFn);

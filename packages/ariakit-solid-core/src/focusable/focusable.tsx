@@ -12,22 +12,21 @@ import {
   hasFocus,
   isFocusable,
 } from "@ariakit/core/utils/focus";
-import {
-  disabledFromProps,
-  removeUndefinedValues,
-} from "@ariakit/core/utils/misc";
+import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BivariantCallback } from "@ariakit/core/utils/types";
-import type {
-  ElementType,
-  EventHandler,
-  FocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
-  SyntheticEvent,
-} from "react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.ts";
+import { useContext } from "solid-js";
+import {
+  type ElementType,
+  removeUndefinedValues,
+  useEffect,
+  useEvent,
+  useMemo,
+  useRef,
+  useState,
+} from "../utils/__port.ts";
+import { $, $o } from "../utils/__props.ts";
+import { useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusableContext } from "./focusable-context.tsx";
@@ -152,6 +151,8 @@ function getTabIndex(
   return tabIndexProp || 0;
 }
 
+/*
+TODO [port]: [capture-events]
 function useDisableEvent(
   onEvent?: EventHandler<SyntheticEvent>,
   disabled?: boolean,
@@ -165,6 +166,7 @@ function useDisableEvent(
     }
   });
 }
+*/
 
 // isKeyboardModality should be true by default.
 let isKeyboardModality = true;
@@ -187,9 +189,25 @@ function onGlobalKeyDown(event: KeyboardEvent) {
   isKeyboardModality = true;
 }
 
+// [port]: translation helper
+function $d(props: any) {
+  const disabledProp = props.$disabled;
+  const ariaDisabledProp = props["$aria-disabled"];
+  return () => ({
+    disabled: disabledProp(),
+    "aria-disabled": ariaDisabledProp(),
+  });
+}
+
+// [port]: translation helper
+function $h(target: EventTarget | null) {
+  // TODO [port]: verify that these casts are safe.
+  return target as HTMLType;
+}
+
 /**
  * Returns props to create a `Focusable` component.
- * @see https://ariakit.org/components/focusable
+ * @see https://solid.ariakit.org/components/focusable
  * @example
  * ```jsx
  * const props = useFocusable();
@@ -197,29 +215,31 @@ function onGlobalKeyDown(event: KeyboardEvent) {
  * ```
  */
 export const useFocusable = createHook<TagName, FocusableOptions>(
-  function useFocusable({
-    focusable = true,
-    accessibleWhenDisabled,
-    autoFocus,
-    onFocusVisible,
-    ...props
-  }) {
+  function useFocusable($props) {
+    const [_, props] = $o($props, {
+      focusable: true,
+      accessibleWhenDisabled: undefined,
+      autoFocus: undefined,
+      onFocusVisible: undefined,
+    });
     const ref = useRef<HTMLType>(null);
 
     // Add global event listeners to determine whether the user is using a
     // keyboard to navigate the site or not.
     useEffect(() => {
-      if (!focusable) return;
+      const $focusable = _.focusable;
+      if (!$focusable) return;
       addGlobalEventListener("mousedown", onGlobalMouseDown, true);
       addGlobalEventListener("keydown", onGlobalKeyDown, true);
-    }, [focusable]);
+    }, "[focusable]");
 
     // Safari and Firefox on Apple devices don't focus on checkboxes or radio
     // buttons when their labels are clicked. This effect will make sure the
     // focusable element is focused on label click.
     if (isSafariBrowser) {
       useEffect(() => {
-        if (!focusable) return;
+        const $focusable = _.focusable;
+        if (!$focusable) return;
         const element = ref.current;
         if (!element) return;
         if (!isNativeCheckboxOrRadio(element)) return;
@@ -234,30 +254,36 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
             label.removeEventListener("mouseup", onMouseUp);
           }
         };
-      }, [focusable]);
+      }, "[focusable]");
     }
 
-    const disabled = focusable && disabledFromProps(props);
-    const trulyDisabled = !!disabled && !accessibleWhenDisabled;
+    const dprops = $d(props);
+    const disabled = () => _.focusable && disabledFromProps(dprops());
+    const trulyDisabled = () => !!disabled() && !_.accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 
     // When the focusable element is disabled, it doesn't trigger a blur event
     // so we can't set focusVisible to false there. Instead, we have to do it
     // here by checking the element's disabled attribute.
     useEffect(() => {
-      if (!focusable) return;
-      if (trulyDisabled && focusVisible) {
+      const $focusable = _.focusable;
+      const $trulyDisabled = trulyDisabled();
+      const $focusVisible = focusVisible();
+      if (!$focusable) return;
+      if ($trulyDisabled && $focusVisible) {
         setFocusVisible(false);
       }
-    }, [focusable, trulyDisabled, focusVisible]);
+    }, "[focusable, trulyDisabled, focusVisible]");
 
     // When an element that has focus becomes hidden, it doesn't trigger a blur
     // event so we can't set focusVisible to false there. We observe the element
     // and check if it's still focusable. Otherwise, we set focusVisible to
     // false.
     useEffect(() => {
-      if (!focusable) return;
-      if (!focusVisible) return;
+      const $focusable = _.focusable;
+      const $focusVisible = focusVisible();
+      if (!$focusable) return;
+      if (!$focusVisible) return;
       const element = ref.current;
       if (!element) return;
       if (typeof IntersectionObserver === "undefined") return;
@@ -268,8 +294,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
       observer.observe(element);
       return () => observer.disconnect();
-    }, [focusable, focusVisible]);
+    }, "[focusable, focusVisible]");
 
+    /*
+    // [port]: [capture-events] there's no direct equivalent in Solid.
     // Disable events when the element is disabled.
     const onKeyPressCapture = useDisableEvent(
       props.onKeyPressCapture,
@@ -280,14 +308,16 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       disabled,
     );
     const onClickCapture = useDisableEvent(props.onClickCapture, disabled);
+    */
 
-    const onMouseDownProp = props.onMouseDown;
+    const onMouseDownProp = props.$onMouseDown;
 
-    const onMouseDown = useEvent((event: ReactMouseEvent<HTMLType>) => {
-      onMouseDownProp?.(event);
+    const onMouseDown = useEvent((event: MouseEvent) => {
+      // @ts-expect-error TODO [port]: [event-chain]
+      onMouseDownProp()?.(event);
       if (event.defaultPrevented) return;
-      if (!focusable) return;
-      const element = event.currentTarget;
+      if (!_.focusable) return;
+      const element = $h(event.currentTarget);
       // Safari doesn't focus on buttons on mouse down like other
       // browsers/platforms. Instead, it focuses on the closest focusable ancestor
       // element, which is ultimately the body element. So we make sure to give
@@ -327,21 +357,23 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
     });
 
-    const handleFocusVisible = (
-      event: SyntheticEvent<HTMLType>,
-      currentTarget?: HTMLType,
-    ) => {
+    const handleFocusVisible = (_event: Event, currentTarget?: HTMLType) => {
+      // TODO [port]: does this work? is it the best way to fix this?
+      // idea: https://stackoverflow.com/a/48265386
+      // idea 2: https://stackoverflow.com/a/20541207
+      const event = { ..._event };
       if (currentTarget) {
+        // TODO [port]: [ariakit-ask] why????
         event.currentTarget = currentTarget;
       }
-      if (!focusable) return;
-      const element = event.currentTarget;
+      if (!_.focusable) return;
+      const element = $h(event.currentTarget);
       if (!element) return;
       // Some extensions like 1password dispatches some keydown events on
       // autofill and immediately moves focus to the next field. That's why we
       // need to check if the current element is still focused.
       if (!hasFocus(element)) return;
-      onFocusVisible?.(event);
+      _.onFocusVisible?.(event);
       if (event.defaultPrevented) return;
       // Make sure data-focus-visible is applied visually at the same time as
       // other data attributes like data-active-item. See
@@ -350,54 +382,59 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       setFocusVisible(true);
     };
 
-    const onKeyDownCaptureProp = props.onKeyDownCapture;
+    // [port]: there's no direct equivalent in Solid.
+    // const onKeyDownCaptureProp = props.onKeyDownCapture;
 
-    const onKeyDownCapture = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
-      onKeyDownCaptureProp?.(event);
+    const onKeyDownCapture = useEvent((event: KeyboardEvent) => {
+      // onKeyDownCaptureProp?.(event);
       if (event.defaultPrevented) return;
-      if (!focusable) return;
-      if (focusVisible) return;
+      if (!_.focusable) return;
+      if (focusVisible()) return;
       if (event.metaKey) return;
       if (event.altKey) return;
       if (event.ctrlKey) return;
       if (!isSelfTarget(event)) return;
-      const element = event.currentTarget;
+      const element = $h(event.currentTarget);
       const applyFocusVisible = () => handleFocusVisible(event, element);
       queueBeforeEvent(element, "focusout", applyFocusVisible);
     });
 
-    const onFocusCaptureProp = props.onFocusCapture;
+    // [port]: there's no direct equivalent in Solid.
+    // const onFocusCaptureProp = props.onFocusCapture;
 
-    const onFocusCapture = useEvent((event: FocusEvent<HTMLType>) => {
-      onFocusCaptureProp?.(event);
+    const onFocusCapture = useEvent((event: FocusEvent) => {
+      // onFocusCaptureProp?.(event);
       if (event.defaultPrevented) return;
-      if (!focusable) return;
+      if (!_.focusable) return;
       if (!isSelfTarget(event)) {
         setFocusVisible(false);
         return;
       }
-      const element = event.currentTarget;
+      const element = $h(event.currentTarget);
       const applyFocusVisible = () => handleFocusVisible(event, element);
-      if (isKeyboardModality || isAlwaysFocusVisible(event.target)) {
-        queueBeforeEvent(event.target, "focusout", applyFocusVisible);
+      if (isKeyboardModality || isAlwaysFocusVisible($h(event.target))) {
+        queueBeforeEvent($h(event.target), "focusout", applyFocusVisible);
       } else {
         setFocusVisible(false);
       }
     });
 
-    const onBlurProp = props.onBlur;
+    const onBlurProp = props.$onBlur;
 
     // Note: Can't use onBlurCapture here otherwise it will not work with
     // CompositeItem's with the virtualFocus state set to true.
-    const onBlur = useEvent((event: FocusEvent<HTMLType>) => {
-      onBlurProp?.(event);
-      if (!focusable) return;
+    const onBlur = useEvent((event: FocusEvent) => {
+      // @ts-expect-error TODO [port]: [event-chain]
+      onBlurProp()?.(event);
+      if (!_.focusable) return;
       if (!isFocusEventOutside(event)) return;
       setFocusVisible(false);
     });
 
+    // TODO [port]: handle - update: what did i mean by this? lol
     const autoFocusOnShow = useContext(FocusableContext);
 
+    // TODO [port]: verify if the same applies to Solid.
     // The native autoFocus prop is problematic in many ways. For example, when
     // an element has the native autofocus attribute, the focus event will be
     // triggered before React effects (even layout effects) and before refs are
@@ -408,10 +445,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     // matters. See
     // https://x.com/diegohaz/status/1408180632933388289
     const autoFocusRef = useEvent((element: HTMLElement | null) => {
-      if (!focusable) return;
-      if (!autoFocus) return;
+      if (!_.focusable) return;
+      if (!_.autoFocus) return;
       if (!element) return;
-      if (!autoFocusOnShow) return;
+      if (!autoFocusOnShow()) return;
       // We have to queue focus so other effects and refs can be applied first.
       // See select-animated example.
       queueMicrotask(() => {
@@ -421,43 +458,53 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
     });
 
-    const tagName = useTagName(ref);
-    const nativeTabbable = focusable && isNativeTabbable(tagName);
-    const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
+    const tagName = () => useTagName(ref);
+    const nativeTabbable = () => _.focusable && isNativeTabbable(tagName());
+    const supportsDisabled = () =>
+      _.focusable && supportsDisabledAttribute(tagName());
 
-    const styleProp = props.style;
+    const styleProp = props.$style;
     const style = useMemo(() => {
-      if (trulyDisabled) {
-        return { pointerEvents: "none" as const, ...styleProp };
+      const $trulyDisabled = trulyDisabled();
+      const $styleProp = styleProp();
+      if ($trulyDisabled) {
+        // @ts-expect-error TODO [port]: [style-chain].
+        return { pointerEvents: "none" as const, ...$styleProp };
       }
-      return styleProp;
-    }, [trulyDisabled, styleProp]);
+      return $styleProp;
+    });
 
-    props = {
-      "data-focus-visible": (focusable && focusVisible) || undefined,
-      "data-autofocus": autoFocus || undefined,
-      "aria-disabled": disabled || undefined,
-      ...props,
-      ref: useMergeRefs(ref, autoFocusRef, props.ref),
-      style,
-      tabIndex: getTabIndex(
-        focusable,
-        trulyDisabled,
-        nativeTabbable,
-        supportsDisabled,
+    $(props, {
+      "$data-focus-visible": () => (_.focusable && focusVisible()) || undefined,
+      "$data-autofocus": () => _.autoFocus || undefined,
+      "$aria-disabled": () => disabled() || undefined,
+    })({
+      $ref: (props) => useMergeRefs(ref.bind, autoFocusRef, props.ref),
+      $style: style,
+      // biome-ignore format: [port]
+      $tabIndex: (props) => getTabIndex(
+        _.focusable,
+        trulyDisabled(),
+        nativeTabbable(),
+        supportsDisabled(),
+        // @ts-expect-error TODO [port]: [tab-index]
         props.tabIndex,
       ),
-      disabled: supportsDisabled && trulyDisabled ? true : undefined,
+      // biome-ignore format: [port]
+      $disabled: () => supportsDisabled() && trulyDisabled() ? true : undefined,
       // TODO: Test Focusable contentEditable.
-      contentEditable: disabled ? undefined : props.contentEditable,
-      onKeyPressCapture,
-      onClickCapture,
-      onMouseDownCapture,
+      $contentEditable: (props) =>
+        disabled() ? undefined : props.contentEditable,
+      // TODO [port]: [capture-events]
+      // onKeyPressCapture,
+      // onClickCapture,
+      // onMouseDownCapture,
       onMouseDown,
-      onKeyDownCapture,
-      onFocusCapture,
+      // TODO [port]: [capture-events] idea - shim `on<Event>Capture` to `on:event={{ capture: true, ... }}`
+      "on:keydown": { capture: true, handleEvent: onKeyDownCapture },
+      "on:focus": { capture: true, handleEvent: onFocusCapture },
       onBlur,
-    };
+    });
 
     return removeUndefinedValues(props);
   },
@@ -466,19 +513,19 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
 /**
  * Renders a focusable element. When this element gains keyboard focus, it gets
  * a
- * [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible)
+ * [`data-focus-visible`](https://solid.ariakit.org/guide/styling#data-focus-visible)
  * attribute and triggers the
- * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible)
+ * [`onFocusVisible`](https://solid.ariakit.org/reference/focusable#onfocusvisible)
  * prop.
  *
  * The `Focusable` component supports the
- * [`disabled`](https://ariakit.org/reference/focusable#disabled) prop for all
+ * [`disabled`](https://solid.ariakit.org/reference/focusable#disabled) prop for all
  * elements, even those not supporting the native `disabled` attribute. Disabled
  * elements using the `Focusable` component may be still accessible via keyboard
  * by using the the
- * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled)
+ * [`accessibleWhenDisabled`](https://solid.ariakit.org/reference/focusable#accessiblewhendisabled)
  * prop.
- * @see https://ariakit.org/components/focusable
+ * @see https://solid.ariakit.org/components/focusable
  * @example
  * ```jsx
  * <Focusable>Focusable</Focusable>
@@ -497,20 +544,21 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * that don't support the native `disabled` attribute.
    *
    * This feature can be combined with the
-   * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled)
+   * [`accessibleWhenDisabled`](https://solid.ariakit.org/reference/focusable#accessiblewhendisabled)
    * prop to make disabled elements still accessible via keyboard.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://solid.ariakit.org/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
-   * - [Submenu](https://ariakit.org/examples/menu-nested)
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Context Menu](https://ariakit.org/examples/menu-context-menu)
+   * - [Submenu](https://solid.ariakit.org/examples/menu-nested)
+   * - [Combobox with Tabs](https://solid.ariakit.org/examples/combobox-tabs)
+   * - [Context Menu](https://solid.ariakit.org/examples/menu-context-menu)
    * @default false
    */
   disabled?: boolean;
+  // TODO [port]: adapt to Solid.
   /**
    * Automatically focuses the element upon mounting, similar to the native
    * `autoFocus` prop. This addresses an issue where the element with the native
@@ -518,42 +566,42 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * executed.
    *
    * The `autoFocus` prop can also be used with
-   * [Focusable](https://ariakit.org/components/focusable) elements within a
-   * [Dialog](https://ariakit.org/components/dialog) component, establishing the
+   * [Focusable](https://solid.ariakit.org/components/focusable) elements within a
+   * [Dialog](https://solid.ariakit.org/components/dialog) component, establishing the
    * initial focus as the dialog opens.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://solid.ariakit.org/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
    * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   *   hide](https://solid.ariakit.org/examples/dialog-hide-warning)
    * - [Dialog with React
-   *   Router](https://ariakit.org/examples/dialog-react-router)
-   * - [Nested Dialog](https://ariakit.org/examples/dialog-nested)
+   *   Router](https://solid.ariakit.org/examples/dialog-react-router)
+   * - [Nested Dialog](https://solid.ariakit.org/examples/dialog-nested)
    * @default false
    */
   autoFocus?: boolean;
   /**
-   * Determines if [Focusable](https://ariakit.org/components/focusable)
+   * Determines if [Focusable](https://solid.ariakit.org/components/focusable)
    * features should be active on non-native focusable elements.
    *
    * **Note**: This prop only turns off the additional features provided by the
-   * [`Focusable`](https://ariakit.org/reference/focusable) component.
+   * [`Focusable`](https://solid.ariakit.org/reference/focusable) component.
    * Non-native focusable elements will lose their focusability entirely.
    * However, native focusable elements will retain their inherent focusability,
    * but without added features such as improved
-   * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus),
-   * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled),
-   * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible),
+   * [`autoFocus`](https://solid.ariakit.org/reference/focusable#autofocus),
+   * [`accessibleWhenDisabled`](https://solid.ariakit.org/reference/focusable#accessiblewhendisabled),
+   * [`onFocusVisible`](https://solid.ariakit.org/reference/focusable#onfocusvisible),
    * etc.
    * @default true
    */
   focusable?: boolean;
   /**
    * Indicates whether the element should be focusable even when it is
-   * [`disabled`](https://ariakit.org/reference/focusable#disabled).
+   * [`disabled`](https://solid.ariakit.org/reference/focusable#disabled).
    *
    * This is important when discoverability is a concern. For example:
    *
@@ -567,29 +615,28 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * controls](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#focusabilityofdisabledcontrols).
    *
    * Live examples:
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://solid.ariakit.org/examples/combobox-tabs)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://solid.ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   accessibleWhenDisabled?: boolean;
   /**
    * Custom event handler invoked when the element gains focus through keyboard
    * interaction or a key press occurs while the element is in focus. This is
    * the programmatic equivalent of the
-   * [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible)
+   * [`data-focus-visible`](https://solid.ariakit.org/guide/styling#data-focus-visible)
    * attribute.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://solid.ariakit.org/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
-   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
+   * - [Navigation Menubar](https://solid.ariakit.org/examples/menubar-navigation)
+   * - [Custom Checkbox](https://solid.ariakit.org/examples/checkbox-custom)
    */
-  onFocusVisible?: BivariantCallback<
-    (event: SyntheticEvent<HTMLElement>) => void
-  >;
+  // TODO [port]: is the type hack necessary here too?
+  onFocusVisible?: BivariantCallback<(event: Event) => void>;
 }
 
 export type FocusableProps<T extends ElementType = TagName> = Props<
