@@ -10,7 +10,9 @@ function Textarea(props: TextareaProps) {
     <Role.textarea
       {...props}
       ref={props.ref}
-      render={<Focusable render={props.render || <As.textarea />} />}
+      render={
+        <As component={Focusable} render={props.render || <As.textarea />} />
+      }
     />
   );
 }
