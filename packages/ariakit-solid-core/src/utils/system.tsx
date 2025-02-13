@@ -1,12 +1,14 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import { combineProps } from "@solid-primitives/props";
 import {
+  type Accessor,
   type Component,
   type ComponentProps,
   type JSX,
   type ValidComponent,
   createComponent,
   createMemo,
+  mergeProps,
   sharedConfig,
   splitProps,
   untrack,
@@ -40,7 +42,7 @@ export function createElement(
         props.render ??
         Component) as ValidComponent;
 
-    const mergedProps = () => {
+    const resolvedProps = () => {
       const asProps = extractAs(props.render)?.props;
       const propsEmpty =
         !isPropsProxy(props) && Object.keys(props).length === 0;
@@ -63,11 +65,7 @@ export function createElement(
       ) as any;
     };
 
-    // TODO: how do we keep this reactive?
-    // does it need to be in the first place?
-    const outputProps = mergedProps();
-
-    return createDynamic(resolvedComponent, outputProps);
+    return createDynamic(resolvedComponent, resolvedProps);
   };
   // TODO: should this be reactive?
   if (props.wrapInstance) {
@@ -114,22 +112,23 @@ function _createElement(
 }
 export function createDynamic<T extends ValidComponent>(
   component: () => T,
-  props: ComponentProps<T>,
+  props: ComponentProps<T> | Accessor<ComponentProps<T>>,
 ): JSX.Element {
   // biome-ignore lint/complexity/noBannedTypes: hack
   const cached = createMemo<Function | string>(component);
+  const resolvedProps = typeof props === "function" ? mergeProps(props) : props;
   return createMemo(() => {
     const component = cached();
     switch (typeof component) {
       case "function":
-        return untrack(() => component(props));
+        return untrack(() => component(resolvedProps));
 
       case "string": {
         const isSvg = SVGElements.has(component);
         const el = sharedConfig.context
           ? getNextElement()
           : _createElement(component, isSvg);
-        spread(el, props, isSvg);
+        spread(el, resolvedProps, isSvg);
         return el;
       }
 
