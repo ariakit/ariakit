@@ -12,6 +12,10 @@ export function log(message: string, msgColor?: string, depth = 0) {
   );
 }
 
+export function c(text: string, msgColor?: string) {
+  return (msgColor ? color(msgColor, "ansi") : ANSI_RESET) + text + ANSI_RESET;
+}
+
 export function space() {
   console.log();
 }

@@ -186,3 +186,68 @@ export async function getResolvedDependents(
   const dependents = findDependents(component, tree);
   return resolveDependents(dependents, tree);
 }
+
+export async function getDepCounts(): Promise<Record<string, number>> {
+  const tree = await getDeps();
+  const depCounts: Record<string, number> = {};
+
+  for (const dir of Object.keys(tree)) {
+    for (const file of Object.keys(tree[dir]!)) {
+      const component = `${dir}/${file}`;
+      const deps = tree[dir]![file]!;
+      depCounts[component] = deps.length;
+    }
+  }
+
+  return depCounts;
+}
+
+export async function getResolvedDepCounts(): Promise<Record<string, number>> {
+  const tree = await getResolvedDeps();
+  const resolvedDepCounts: Record<string, number> = {};
+
+  for (const dir of Object.keys(tree)) {
+    for (const file of Object.keys(tree[dir]!)) {
+      const component = `${dir}/${file}`;
+      const deps = tree[dir]![file]!;
+      resolvedDepCounts[component] = deps.length;
+    }
+  }
+
+  return resolvedDepCounts;
+}
+
+export async function getDependentCounts(): Promise<Record<string, number>> {
+  const tree = await getDeps();
+  const dependentCounts: Record<string, number> = {};
+
+  for (const dir of Object.keys(tree)) {
+    for (const file of Object.keys(tree[dir]!)) {
+      const component = `${dir}/${file}`;
+      const dependents = findDependents(component, tree);
+      dependentCounts[component] = dependents.length;
+    }
+  }
+
+  return dependentCounts;
+}
+
+export async function getResolvedDependentCounts(): Promise<
+  Record<string, number>
+> {
+  const tree = await getDeps();
+  const resolvedDependentCounts: Record<string, number> = {};
+
+  for (const dir of Object.keys(tree)) {
+    for (const file of Object.keys(tree[dir]!)) {
+      const component = `${dir}/${file}`;
+      const dependents = resolveDependents(
+        findDependents(component, tree),
+        tree,
+      );
+      resolvedDependentCounts[component] = dependents.length;
+    }
+  }
+
+  return resolvedDependentCounts;
+}
