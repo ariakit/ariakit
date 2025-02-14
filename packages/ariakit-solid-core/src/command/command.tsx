@@ -6,10 +6,10 @@ import {
 } from "@ariakit/core/utils/events";
 import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isFirefox } from "@ariakit/core/utils/platform";
-import type { ValidComponent } from "solid-js";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import {
+  type ElementType,
   useEffect,
   useEvent,
   useMetadataProps,
@@ -47,7 +47,7 @@ function $e<T extends Event>(event: T) {
   return eventInit;
 }
 
-const TagName = "button" satisfies ValidComponent;
+const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
@@ -218,7 +218,7 @@ export const Command = forwardRef(function Command(props: CommandProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface CommandOptions<T extends ValidComponent = TagName>
+export interface CommandOptions<T extends ElementType = TagName>
   extends FocusableOptions<T> {
   /**
    * If set to `true`, pressing the enter key while this element is focused will
@@ -238,7 +238,7 @@ export interface CommandOptions<T extends ValidComponent = TagName>
   clickOnSpace?: boolean;
 }
 
-export type CommandProps<T extends ValidComponent = TagName> = Props<
+export type CommandProps<T extends ElementType = TagName> = Props<
   T,
   CommandOptions<T>
 >;

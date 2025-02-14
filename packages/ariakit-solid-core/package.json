@@ -62,6 +62,7 @@
     "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
     "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
     "./command/command": "./src/command/command.tsx",
+    "./button/button": "./src/button/button.tsx",
     "./as/as": "./src/as/as.tsx",
     "./package.json": "./package.json"
   }
