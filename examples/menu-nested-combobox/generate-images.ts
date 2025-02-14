@@ -3,7 +3,7 @@ import { test } from "@playwright/test";
 import { screenshot } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-nested-combobox", {
+  await page.goto(preview("menu-nested-combobox"), {
     waitUntil: "networkidle",
   });
 });

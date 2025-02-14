@@ -3,7 +3,7 @@ import { test } from "@playwright/test";
 import { screenshot } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-textarea", {
+  await page.goto(preview("combobox-textarea"), {
     waitUntil: "networkidle",
   });
 });

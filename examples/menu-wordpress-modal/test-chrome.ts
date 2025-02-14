@@ -29,7 +29,7 @@ const getAccessibleMenu = (page: Page, name?: string) =>
   getAccessiblePopup(page, "menu", name);
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-wordpress-modal", {
+  await page.goto(preview("menu-wordpress-modal"), {
     waitUntil: "networkidle",
   });
 });

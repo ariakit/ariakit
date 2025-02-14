@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 function query(page: Page) {
   return {
@@ -12,7 +13,7 @@ function query(page: Page) {
 test.describe.configure({ retries: 2 });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-group", { waitUntil: "networkidle" });
+  await page.goto(preview("select-group"), { waitUntil: "networkidle" });
 });
 
 test("scroll into view", async ({ page }) => {

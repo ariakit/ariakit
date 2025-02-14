@@ -1,12 +1,13 @@
 import { query } from "@ariakit/test/playwright";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 const tab1 = "Popular";
 const tab2 = "Recent";
 const tab3 = "Explore";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/tab-panel-animated", { waitUntil: "networkidle" });
+  await page.goto(preview("tab-panel-animated"), { waitUntil: "networkidle" });
 });
 
 test.describe.configure({ retries: 2 });

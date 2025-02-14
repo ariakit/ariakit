@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 const getMenuButton = (page: Page) =>
   page.getByRole("button", { name: "Add block" });
@@ -13,7 +14,7 @@ const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-combobox", { waitUntil: "networkidle" });
+  await page.goto(preview("menu-combobox"), { waitUntil: "networkidle" });
 });
 
 test("auto select first option", async ({ page }) => {

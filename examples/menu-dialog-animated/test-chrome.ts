@@ -34,7 +34,7 @@ const repeat = async (fn: () => unknown, count: number) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-dialog-animated", {
+  await page.goto(preview("menu-dialog-animated"), {
     waitUntil: "networkidle",
   });
 });

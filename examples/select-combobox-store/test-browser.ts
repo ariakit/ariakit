@@ -13,7 +13,7 @@ async function expectSelected(page: Page, name: string) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-combobox-store");
+  await page.goto(preview("select-combobox-store"));
 });
 
 test("auto select first option", async ({ page }) => {

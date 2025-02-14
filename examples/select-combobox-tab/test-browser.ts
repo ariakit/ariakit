@@ -6,7 +6,7 @@ const SELECT_COMBOBOX_TAB = "Select with Combobox and Tab";
 const TAB = [SELECT_TAB, SELECT_COMBOBOX_TAB];
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-combobox-tab");
+  await page.goto(preview("select-combobox-tab"));
 });
 
 for (const label of TAB) {

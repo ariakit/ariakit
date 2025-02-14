@@ -7,7 +7,7 @@ const getHovercard = (page: Page) =>
   page.getByRole("dialog", { name: "Ariakit" });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/hovercard-shadow-dom", {
+  await page.goto(preview("hovercard-shadow-dom"), {
     waitUntil: "networkidle",
   });
 });

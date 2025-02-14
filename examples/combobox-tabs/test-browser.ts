@@ -1,8 +1,9 @@
 import { query } from "@ariakit/test/playwright";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-tabs", { waitUntil: "networkidle" });
+  await page.goto(preview("combobox-tabs"), { waitUntil: "networkidle" });
 });
 
 test("https://github.com/ariakit/ariakit/issues/3941", async ({ page }) => {

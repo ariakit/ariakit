@@ -11,7 +11,7 @@ const getNotifications = (page: Page | Locator) =>
   page.getByRole("alert").filter({ hasText: "Hello!" });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-react-toastify", {
+  await page.goto(preview("dialog-react-toastify"), {
     waitUntil: "networkidle",
   });
 });

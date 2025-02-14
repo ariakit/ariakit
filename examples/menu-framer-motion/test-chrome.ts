@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 const getMenuButton = (page: Page) =>
   page.getByRole("button", { name: "Options" });
@@ -7,7 +8,7 @@ const getMenuButton = (page: Page) =>
 const getMenu = (page: Page) => page.getByRole("menu");
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-framer-motion", { waitUntil: "networkidle" });
+  await page.goto(preview("menu-framer-motion"), { waitUntil: "networkidle" });
 });
 
 test("show/hide with click", async ({ page }) => {

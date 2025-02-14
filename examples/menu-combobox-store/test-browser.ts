@@ -13,7 +13,7 @@ const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-combobox-store", {
+  await page.goto(preview("menu-combobox-store"), {
     waitUntil: "networkidle",
   });
 });

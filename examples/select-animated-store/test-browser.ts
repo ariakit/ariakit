@@ -11,7 +11,7 @@ const createTransition = (duration = 100) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-animated-store", {
+  await page.goto(preview("select-animated-store"), {
     waitUntil: "networkidle",
   });
 });

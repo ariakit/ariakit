@@ -1,6 +1,7 @@
 import { query } from "@ariakit/test/playwright";
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 async function copy(page: Page, text: string) {
   await page.evaluate((text) => navigator.clipboard.writeText(text), text);
@@ -18,7 +19,7 @@ async function tags(page: Page) {
 }
 
 test.beforeEach(async ({ page, context }) => {
-  await page.goto("/previews/tag", { waitUntil: "networkidle" });
+  await page.goto(preview("tag"), { waitUntil: "networkidle" });
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 });
 

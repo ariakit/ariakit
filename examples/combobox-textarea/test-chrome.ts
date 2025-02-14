@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-textarea", { waitUntil: "networkidle" });
+  await page.goto(preview("combobox-textarea"), { waitUntil: "networkidle" });
 });
 
 test("popover is positioned correctly", async ({ page }) => {

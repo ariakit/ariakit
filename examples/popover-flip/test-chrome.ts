@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/popover-flip", { waitUntil: "networkidle" });
+  await page.goto(preview("popover-flip"), { waitUntil: "networkidle" });
 });
 
 test("popover flip", async ({ page }) => {

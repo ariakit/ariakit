@@ -7,7 +7,7 @@ function getWrapper(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/disclosure-animated", {
+  await page.goto(preview("disclosure-animated"), {
     waitUntil: "networkidle",
   });
 });

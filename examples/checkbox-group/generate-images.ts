@@ -1,9 +1,9 @@
 import { query } from "@ariakit/test/playwright";
 import { test } from "@playwright/test";
-import { screenshot } from "../test-utils.ts";
+import { preview, screenshot } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/checkbox-group", { waitUntil: "networkidle" });
+  await page.goto(preview("checkbox-group"), { waitUntil: "networkidle" });
 });
 
 test("generate images", async ({ page }) => {

@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 function query(locator: Page | Locator) {
   return {
@@ -11,7 +12,7 @@ function query(locator: Page | Locator) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-multiple", { waitUntil: "networkidle" });
+  await page.goto(preview("combobox-multiple"), { waitUntil: "networkidle" });
 });
 
 test("scroll offscreen item into view after selecting it", async ({ page }) => {

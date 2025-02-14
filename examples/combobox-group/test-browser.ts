@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 const getCombobox = (page: Page) => page.getByPlaceholder("e.g., Apple");
 const getPopover = (page: Page) => page.getByRole("listbox");
@@ -16,7 +17,7 @@ function getSelectionValue(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-group", { waitUntil: "networkidle" });
+  await page.goto(preview("combobox-group"), { waitUntil: "networkidle" });
 });
 
 test("maintain completion string while typing", async ({ page }) => {

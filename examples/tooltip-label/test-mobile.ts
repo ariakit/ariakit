@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/tooltip-label", { waitUntil: "networkidle" });
+  await page.goto(preview("tooltip-label"), { waitUntil: "networkidle" });
 });
 
 test("tooltip does not appear on mobile click", async ({ page }) => {

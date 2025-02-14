@@ -6,7 +6,7 @@ const getSelect = (page: Page) =>
 const getList = (page: Page) => page.getByRole("listbox");
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/form-select");
+  await page.goto(preview("form-select"));
 });
 
 test("show/hide with click", async ({ page }) => {

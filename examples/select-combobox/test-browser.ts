@@ -16,7 +16,7 @@ async function expectSelected(page: Page, name: string) {
 }
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-combobox");
+  await page.goto(preview("select-combobox"));
 });
 
 test("auto select first option", async ({ page }) => {

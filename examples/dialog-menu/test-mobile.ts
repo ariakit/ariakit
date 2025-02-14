@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-menu", { waitUntil: "networkidle" });
+  await page.goto(preview("dialog-menu"), { waitUntil: "networkidle" });
 });
 
 test("menu closes when tapping dialog", async ({ page }) => {

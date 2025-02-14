@@ -505,9 +505,10 @@ Let's create an end-to-end test for our example:
 
 ```ts
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/my-component");
+  await page.goto(preview("my-component"));
 });
 
 test("my component", async ({ page }) => {
