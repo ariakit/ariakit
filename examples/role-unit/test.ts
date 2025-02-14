@@ -135,3 +135,4 @@ test("dynamically render as", async () => {
 // - make dynamic props work in Solid
 // - test render function
 // - test wrapElement
+// - test with components (e.g. Button)
