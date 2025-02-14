@@ -1,17 +1,11 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getAnchor = (page: Page) =>
   page.getByRole("link", { name: "@ariakitjs" });
 const getHovercard = (page: Page) =>
   page.getByRole("dialog", { name: "Ariakit" });
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("hovercard-shadow-dom"), {
-    waitUntil: "networkidle",
-  });
-});
 
 test("https://github.com/ariakit/ariakit/issues/2983", async ({ page }) => {
   await getAnchor(page).hover();

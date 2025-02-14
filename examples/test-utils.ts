@@ -8,11 +8,25 @@ import { test as base } from "@playwright/test";
 import type { Locator, Page, PageScreenshotOptions } from "@playwright/test";
 import type { AllowedTestLoader } from "../vitest.config.ts";
 
+const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
+  "react") as AllowedTestLoader;
+
+export function preview(name: string) {
+  switch (LOADER) {
+    case "react":
+      return `/previews/${name}`;
+    case "solid":
+      return `/previews/${name}__solid`;
+    default:
+      throw new Error(`Unknown test loader: ${LOADER}`);
+  }
+}
+
 export const test = base.extend<{ forEachTest: void }>({
   forEachTest: [
     async ({ page }, use, testInfo) => {
       const name = basename(dirname(testInfo.file));
-      await page.goto(`/previews/${name}`, { waitUntil: "networkidle" });
+      await page.goto(preview(name), { waitUntil: "networkidle" });
       await use();
     },
     { auto: true },
@@ -151,19 +165,5 @@ export async function screenshot({
       omitBackground: true,
       style,
     });
-  }
-}
-
-const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
-  "react") as AllowedTestLoader;
-
-export function preview(name: string) {
-  switch (LOADER) {
-    case "react":
-      return `/previews/${name}`;
-    case "solid":
-      return `/previews/${name}__solid`;
-    default:
-      throw new Error(`Unknown test loader: ${LOADER}`);
   }
 }

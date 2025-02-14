@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getDialog = (page: Page) => page.getByRole("dialog", { name: "Success" });
 const getButton = (page: Page, name: string) =>
@@ -14,10 +14,6 @@ const createTransition = (duration = 100) => {
   };
   return isPending;
 };
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("dialog-animated"), { waitUntil: "networkidle" });
-});
 
 test("show/hide", async ({ page }) => {
   await expect(getDialog(page)).not.toBeVisible();

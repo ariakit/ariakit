@@ -1,15 +1,11 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getButton = (page: Page | Locator, name: string) =>
   page.getByRole("button", { name });
 const getPopover = (page: Page | Locator) =>
   page.getByRole("dialog", { name: "Team meeting" });
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("popover-standalone"), { waitUntil: "networkidle" });
-});
 
 test("do not scroll when opening the popover", async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 600 });

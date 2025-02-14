@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getMenuButton = (locator: Page | Locator, count: number | string = "") =>
   locator.getByRole("button", {
@@ -33,12 +33,6 @@ const getError = (locator: Page | Locator) => locator.getByText("Please fill");
 const repeat = async (fn: () => unknown, count: number) => {
   await [...new Array(count)].reduce((p) => p.then(fn), Promise.resolve());
 };
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("menu-dialog-animated"), {
-    waitUntil: "networkidle",
-  });
-});
 
 test("interact with menu", async ({ page }) => {
   await getMenuButton(page).click();

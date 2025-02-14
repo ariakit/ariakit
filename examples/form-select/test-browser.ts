@@ -1,14 +1,10 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getSelect = (page: Page) =>
   page.getByRole("combobox", { name: "Favorite fruit" });
 const getList = (page: Page) => page.getByRole("listbox");
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("form-select"));
-});
 
 test("show/hide with click", async ({ page }) => {
   await getSelect(page).click();

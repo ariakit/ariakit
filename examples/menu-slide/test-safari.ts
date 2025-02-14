@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getMenuButton = (locator: Page | Locator) =>
   locator.getByRole("button", { name: "Options" });
@@ -16,10 +16,6 @@ const getMenuItem = (
   name: string,
   role = "menuitem",
 ) => locator.locator(`role=${role}[name='${name}']`);
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("menu-slide"), { waitUntil: "networkidle" });
-});
 
 test("hide with wheel", async ({ page }) => {
   await getMenuButton(page).click();

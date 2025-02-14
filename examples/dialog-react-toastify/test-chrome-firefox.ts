@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getButton = (page: Page | Locator, name: string) =>
   page.getByRole("button", { name });
@@ -10,12 +10,6 @@ const getDialog = (page: Page | Locator, name: string) =>
 
 const getNotifications = (page: Page | Locator) =>
   page.getByRole("alert").filter({ hasText: "Hello!" });
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("dialog-react-toastify"), {
-    waitUntil: "networkidle",
-  });
-});
 
 test("show notification", async ({ page }) => {
   await expect(getNotifications(page)).toHaveCount(0);

@@ -1,12 +1,5 @@
 import { query } from "@ariakit/test/playwright";
-import { test } from "@playwright/test";
-import { preview, screenshot } from "../test-utils.ts";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("menu-nested-combobox"), {
-    waitUntil: "networkidle",
-  });
-});
+import { screenshot, test } from "../test-utils.ts";
 
 test("generate images", async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 800 });

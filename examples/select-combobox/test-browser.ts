@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getPopover = (page: Page) =>
   page.getByRole("dialog", { name: "Favorite fruit" });
@@ -15,10 +15,6 @@ async function expectSelected(page: Page, name: string) {
   await expect(getOption(page, name)).toBeInViewport();
   await expect(getOption(page, name)).toHaveAttribute("data-active-item");
 }
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("select-combobox"));
-});
 
 test("auto select first option", async ({ page }) => {
   await getButton(page).click();

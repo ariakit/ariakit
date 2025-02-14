@@ -1,6 +1,6 @@
 import { query } from "@ariakit/test/playwright";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const createTransition = (duration = 100) => {
   const then = performance.now();
@@ -10,12 +10,6 @@ const createTransition = (duration = 100) => {
   };
   return isPending;
 };
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("select-animated-store"), {
-    waitUntil: "networkidle",
-  });
-});
 
 test("show/hide", async ({ page }) => {
   const q = query(page);

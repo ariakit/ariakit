@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getButton = (page: Page) =>
   page.getByRole("combobox", { name: "Favorite fruit" });
@@ -12,10 +12,6 @@ async function expectSelected(page: Page, name: string) {
   await expect(getOption(page, name)).toBeInViewport();
   await expect(getOption(page, name)).toHaveAttribute("data-active-item");
 }
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("select-combobox-store"));
-});
 
 test("auto select first option", async ({ page }) => {
   await getButton(page).click();

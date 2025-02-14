@@ -1,14 +1,10 @@
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { test } from "../test-utils.ts";
 
 const getPopover = (page: Page) => page.getByRole("dialog");
 const getButton = (locator: Page | Locator, name?: string) =>
   locator.getByRole("button", { name, exact: true });
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("popover-responsive"), { waitUntil: "networkidle" });
-});
 
 test("popover responsive", async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 480 });

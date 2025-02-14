@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 function query(locator: Page | Locator) {
   return {
@@ -10,10 +10,6 @@ function query(locator: Page | Locator) {
       locator.getByRole("option", { name, exact: true }),
   };
 }
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("combobox-multiple"), { waitUntil: "networkidle" });
-});
 
 test("scroll offscreen item into view after selecting it", async ({ page }) => {
   const q = query(page);

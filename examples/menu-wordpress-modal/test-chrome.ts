@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 type PopupRole = "dialog" | "menu" | "tooltip";
 
@@ -28,12 +28,6 @@ const getAccessibleTooltip = (page: Page, name?: string) =>
 const getMenu = (page: Page, name?: string) => getPopup(page, "menu", name);
 const getAccessibleMenu = (page: Page, name?: string) =>
   getAccessiblePopup(page, "menu", name);
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("menu-wordpress-modal"), {
-    waitUntil: "networkidle",
-  });
-});
 
 for (const menuitem of [
   "Nested",
