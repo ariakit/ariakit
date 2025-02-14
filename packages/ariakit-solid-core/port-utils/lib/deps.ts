@@ -152,7 +152,9 @@ function groupDeps(tree: Tree): GroupedTree {
     groupedTree[dir] ??= [];
     for (const file of Object.keys(tree[dir]!)) {
       const deps = tree[dir]![file]!;
-      groupedTree[dir].push(...deps.map((dep) => dep.split("/")[0]!));
+      groupedTree[dir].push(
+        ...deps.map((dep) => dep.split("/")[0]!).filter((dep) => dep !== dir),
+      );
     }
     groupedTree[dir] = [...new Set(groupedTree[dir])];
   }

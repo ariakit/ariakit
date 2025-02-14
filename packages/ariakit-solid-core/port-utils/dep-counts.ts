@@ -19,7 +19,7 @@ import {
   getUnlockedComponents,
 } from "./lib/deps.ts";
 import { c, log, space } from "./lib/log.ts";
-import { getFlatStatusTree } from "./lib/status.ts";
+import { getFlatStatusTree, getGroupedFlatStatusTree } from "./lib/status.ts";
 
 async function printDepCounts(
   resolved = false,
@@ -29,6 +29,7 @@ async function printDepCounts(
   grouped = false,
 ) {
   const flatStatusTree = await getFlatStatusTree();
+  const groupedFlatStatusTree = await getGroupedFlatStatusTree();
   const depCounts = resolved
     ? await getResolvedDepCounts(grouped)
     : await getDepCounts(grouped);
@@ -72,10 +73,14 @@ async function printDepCounts(
     const deps = grouped
       ? allDeps[component]!
       : (allDeps[component.split("/")[0]!]! as any)[component.split("/")[1]!]!;
-    const portedDepCount = deps.filter(
-      (dep: any) => flatStatusTree[dep] === "both",
+    const portedDepCount = deps.filter((dep: any) =>
+      grouped
+        ? groupedFlatStatusTree[dep] === "both"
+        : flatStatusTree[dep] === "both",
     ).length;
-    const status = flatStatusTree[component];
+    const status = grouped
+      ? groupedFlatStatusTree[component]
+      : flatStatusTree[component];
     const paddedComponent = component.padEnd(maxComponentLength, " ");
     if (count === 0) {
       log(
