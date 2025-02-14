@@ -504,12 +504,8 @@ Let's create an end-to-end test for our example:
 `examples/my-component/test-chrome.ts`
 
 ```ts
-import { expect, test } from "@playwright/test";
-import { preview } from "../test-utils.ts";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto(preview("my-component"));
-});
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 test("my component", async ({ page }) => {
   const element = await page.getByText("My component");

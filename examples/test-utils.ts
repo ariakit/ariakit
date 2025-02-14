@@ -1,4 +1,5 @@
-import { basename, dirname } from "node:path";
+import fs from "node:fs";
+import { basename, dirname, resolve } from "node:path";
 import {
   getTextboxSelection,
   getTextboxValue,
@@ -25,7 +26,14 @@ export function preview(name: string) {
 export const test = base.extend<{ forEachTest: void }>({
   forEachTest: [
     async ({ page }, use, testInfo) => {
-      const name = basename(dirname(testInfo.file));
+      const examplePath = dirname(testInfo.file);
+      const isWebsitePath = examplePath.includes("website/app");
+      const name = basename(examplePath);
+      const exampleExists = isWebsitePath
+        ? LOADER === "react" // for now, assume all website examples are React
+        : fs.existsSync(resolve(examplePath, `index.${LOADER}.tsx`));
+      if (!exampleExists) return testInfo.skip();
+
       await page.goto(preview(name), { waitUntil: "networkidle" });
       await use();
     },
