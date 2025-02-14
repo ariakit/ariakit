@@ -5,15 +5,26 @@
 import { parseArgs } from "node:util";
 // @ts-expect-error No Bun types for now.
 import Bun from "bun";
-import { getDeps, getResolvedDeps } from "./lib/deps.ts";
+import {
+  getDeps,
+  getGroupedDeps,
+  getGroupedResolvedDeps,
+  getResolvedDeps,
+} from "./lib/deps.ts";
 import { log, space } from "./lib/log.ts";
-import { getFlatStatusTree } from "./lib/status.ts";
+import { getFlatStatusTree, getGroupedFlatStatusTree } from "./lib/status.ts";
 
-async function printDeps(component: string, resolved = false) {
-  const flatStatusTree = await getFlatStatusTree();
-  const deps = resolved
-    ? await getResolvedDeps(component)
-    : await getDeps(component);
+async function printDeps(component: string, resolved = false, grouped = false) {
+  const flatStatusTree = grouped
+    ? await getGroupedFlatStatusTree()
+    : await getFlatStatusTree();
+  const deps = grouped
+    ? resolved
+      ? await getGroupedResolvedDeps(component)
+      : await getGroupedDeps(component)
+    : resolved
+      ? await getResolvedDeps(component)
+      : await getDeps(component);
 
   const totalDeps = deps.length;
   const portedDepCount = deps.filter(
@@ -48,10 +59,16 @@ async function print() {
   const component = positionals[2];
   if (!component) throw new Error("Component is required");
 
+  const grouped = !component.includes("/");
+  const labels = Object.entries({ resolved })
+    .filter(([, value]) => value)
+    .map(([key]) => key);
+  const hasLabels = labels.length > 0;
+
   space();
-  log(`> ${component} deps${resolved ? " (resolved)" : ""}`);
+  log(`> ${component} deps${hasLabels ? ` (${labels.join(", ")})` : ""}`);
   space();
-  await printDeps(component, resolved);
+  await printDeps(component, resolved, grouped);
 }
 
 await print();

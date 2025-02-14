@@ -5,15 +5,30 @@
 import { parseArgs } from "node:util";
 // @ts-expect-error No Bun types for now.
 import Bun from "bun";
-import { getDependents, getResolvedDependents } from "./lib/deps.ts";
+import {
+  getDependents,
+  getGroupedDependents,
+  getResolvedDependents,
+  getResolvedGroupedDependents,
+} from "./lib/deps.ts";
 import { log, space } from "./lib/log.ts";
-import { getFlatStatusTree } from "./lib/status.ts";
+import { getFlatStatusTree, getGroupedFlatStatusTree } from "./lib/status.ts";
 
-async function printDependents(component: string, resolved = false) {
-  const flatStatusTree = await getFlatStatusTree();
-  const dependents = resolved
-    ? await getResolvedDependents(component)
-    : await getDependents(component);
+async function printDependents(
+  component: string,
+  resolved = false,
+  grouped = false,
+) {
+  const flatStatusTree = grouped
+    ? await getGroupedFlatStatusTree()
+    : await getFlatStatusTree();
+  const dependents = grouped
+    ? resolved
+      ? await getResolvedGroupedDependents(component)
+      : await getGroupedDependents(component)
+    : resolved
+      ? await getResolvedDependents(component)
+      : await getDependents(component);
 
   const totalDependents = dependents.length;
   const portedDependentCount = dependents.filter(
@@ -52,10 +67,16 @@ async function print() {
   const component = positionals[2];
   if (!component) throw new Error("Component is required");
 
+  const grouped = !component.includes("/");
+  const labels = Object.entries({ resolved })
+    .filter(([, value]) => value)
+    .map(([key]) => key);
+  const hasLabels = labels.length > 0;
+
   space();
-  log(`> ${component} dependents${resolved ? " (resolved)" : ""}`);
+  log(`> ${component} dependents${hasLabels ? ` (${labels.join(", ")})` : ""}`);
   space();
-  await printDependents(component, resolved);
+  await printDependents(component, resolved, grouped);
 }
 
 await print();

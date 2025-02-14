@@ -14,6 +14,7 @@ async function getDirs(dir: string) {
 
 export type FileStatusMatch = "react" | "solid" | "both";
 export type StatusTree = Record<string, Record<string, FileStatusMatch>>;
+export type GroupedStatusTree = Record<string, FileStatusMatch>;
 
 let CACHED_TREE: StatusTree | undefined = undefined;
 
@@ -48,6 +49,21 @@ export async function getStatusTree(): Promise<StatusTree> {
   return tree;
 }
 
+export async function getGroupedStatusTree(): Promise<GroupedStatusTree> {
+  const tree = await getStatusTree();
+  const groupedTree: GroupedStatusTree = {};
+  for (const dir of Object.keys(tree)) {
+    let match: FileStatusMatch;
+    const dirValue = tree[dir]!;
+    const values = Object.values(dirValue);
+    if (values.every((v) => v === "both")) match = "both";
+    else if (values.every((v) => v === "react")) match = "react";
+    else match = "solid";
+    groupedTree[dir] = match;
+  }
+  return groupedTree;
+}
+
 type FlatStatusTree = Record<string, FileStatusMatch>;
 
 export async function getFlatStatusTree(): Promise<FlatStatusTree> {
@@ -56,6 +72,15 @@ export async function getFlatStatusTree(): Promise<FlatStatusTree> {
   for (const dir of Object.keys(tree))
     for (const file of Object.keys(tree[dir]!))
       flatTree[`${dir}/${file}`] = tree[dir]![file]!;
+  return flatTree;
+}
+
+type GroupedFlatStatusTree = Record<string, FileStatusMatch>;
+
+export async function getGroupedFlatStatusTree(): Promise<GroupedFlatStatusTree> {
+  const tree = await getGroupedStatusTree();
+  const flatTree: GroupedFlatStatusTree = {};
+  for (const dir of Object.keys(tree)) flatTree[dir] = tree[dir]!;
   return flatTree;
 }
 

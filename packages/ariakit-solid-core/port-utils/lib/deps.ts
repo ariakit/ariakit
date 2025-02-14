@@ -209,6 +209,18 @@ function findDependents(component: string, tree: Tree) {
   return Array.from(dependents);
 }
 
+function findGroupedDependents(component: string, groupedTree: GroupedTree) {
+  const dependents = new Set<string>();
+
+  for (const dir of Object.keys(groupedTree)) {
+    if (groupedTree[dir]!.includes(component)) {
+      if (dir !== component) dependents.add(dir);
+    }
+  }
+
+  return Array.from(dependents);
+}
+
 function resolveDependents(dependents: Array<string>, tree: Tree) {
   const outDependents = new Set(dependents);
   const stack = [...dependents];
@@ -227,9 +239,37 @@ function resolveDependents(dependents: Array<string>, tree: Tree) {
   return Array.from(outDependents);
 }
 
+function resolveGroupedDependents(
+  dependents: Array<string>,
+  groupedTree: GroupedTree,
+) {
+  const outDependents = new Set(dependents);
+  const stack = [...dependents];
+
+  while (stack.length) {
+    const dependent = stack.pop()!;
+    const nestedDependents = findGroupedDependents(dependent, groupedTree);
+    for (const nestedDependent of nestedDependents) {
+      if (!outDependents.has(nestedDependent)) {
+        outDependents.add(nestedDependent);
+        stack.push(nestedDependent);
+      }
+    }
+  }
+
+  return Array.from(outDependents);
+}
+
 export async function getDependents(component: string): Promise<Array<string>> {
   const tree = await getDeps();
   return findDependents(component, tree);
+}
+
+export async function getGroupedDependents(
+  component: string,
+): Promise<Array<string>> {
+  const groupedTree = await getGroupedDeps();
+  return findGroupedDependents(component, groupedTree);
 }
 
 export async function getResolvedDependents(
@@ -240,44 +280,100 @@ export async function getResolvedDependents(
   return resolveDependents(dependents, tree);
 }
 
-export async function getDepCounts(): Promise<Record<string, number>> {
-  const tree = await getDeps();
+export async function getResolvedGroupedDependents(
+  component: string,
+): Promise<Array<string>> {
+  const groupedTree = await getGroupedResolvedDeps();
+  const dependents = findGroupedDependents(component, groupedTree);
+  return resolveGroupedDependents(dependents, groupedTree);
+}
+
+export async function getDepCounts(
+  grouped = false,
+): Promise<Record<string, number>> {
+  if (!grouped) {
+    const tree = await getDeps();
+    const depCounts: Record<string, number> = {};
+
+    for (const dir of Object.keys(tree)) {
+      for (const file of Object.keys(tree[dir]!)) {
+        const component = `${dir}/${file}`;
+        const deps = tree[dir]![file]!;
+        depCounts[component] = deps.length;
+      }
+    }
+
+    return depCounts;
+  }
+
+  const groupedTree = await getGroupedDeps();
   const depCounts: Record<string, number> = {};
 
-  for (const dir of Object.keys(tree)) {
-    for (const file of Object.keys(tree[dir]!)) {
-      const component = `${dir}/${file}`;
-      const deps = tree[dir]![file]!;
-      depCounts[component] = deps.length;
+  for (const dir of Object.keys(groupedTree)) {
+    for (const component of groupedTree[dir]!) {
+      const deps = groupedTree[dir]!.length;
+      depCounts[component] = deps;
     }
   }
 
   return depCounts;
 }
 
-export async function getResolvedDepCounts(): Promise<Record<string, number>> {
-  const tree = await getResolvedDeps();
+export async function getResolvedDepCounts(
+  grouped = false,
+): Promise<Record<string, number>> {
+  if (!grouped) {
+    const tree = await getResolvedDeps();
+    const resolvedDepCounts: Record<string, number> = {};
+
+    for (const dir of Object.keys(tree)) {
+      for (const file of Object.keys(tree[dir]!)) {
+        const component = `${dir}/${file}`;
+        const deps = tree[dir]![file]!;
+        resolvedDepCounts[component] = deps.length;
+      }
+    }
+
+    return resolvedDepCounts;
+  }
+
+  const groupedTree = await getGroupedResolvedDeps();
   const resolvedDepCounts: Record<string, number> = {};
 
-  for (const dir of Object.keys(tree)) {
-    for (const file of Object.keys(tree[dir]!)) {
-      const component = `${dir}/${file}`;
-      const deps = tree[dir]![file]!;
-      resolvedDepCounts[component] = deps.length;
+  for (const dir of Object.keys(groupedTree)) {
+    for (const component of groupedTree[dir]!) {
+      const deps = groupedTree[dir]!.length;
+      resolvedDepCounts[component] = deps;
     }
   }
 
   return resolvedDepCounts;
 }
 
-export async function getDependentCounts(): Promise<Record<string, number>> {
-  const tree = await getDeps();
+export async function getDependentCounts(
+  grouped = false,
+): Promise<Record<string, number>> {
+  if (!grouped) {
+    const tree = await getDeps();
+    const dependentCounts: Record<string, number> = {};
+
+    for (const dir of Object.keys(tree)) {
+      for (const file of Object.keys(tree[dir]!)) {
+        const component = `${dir}/${file}`;
+        const dependents = findDependents(component, tree);
+        dependentCounts[component] = dependents.length;
+      }
+    }
+
+    return dependentCounts;
+  }
+
+  const groupedTree = await getGroupedDeps();
   const dependentCounts: Record<string, number> = {};
 
-  for (const dir of Object.keys(tree)) {
-    for (const file of Object.keys(tree[dir]!)) {
-      const component = `${dir}/${file}`;
-      const dependents = findDependents(component, tree);
+  for (const dir of Object.keys(groupedTree)) {
+    for (const component of groupedTree[dir]!) {
+      const dependents = findGroupedDependents(component, groupedTree);
       dependentCounts[component] = dependents.length;
     }
   }
@@ -285,19 +381,33 @@ export async function getDependentCounts(): Promise<Record<string, number>> {
   return dependentCounts;
 }
 
-export async function getResolvedDependentCounts(): Promise<
-  Record<string, number>
-> {
-  const tree = await getDeps();
+export async function getResolvedDependentCounts(
+  grouped = false,
+): Promise<Record<string, number>> {
+  if (!grouped) {
+    const tree = await getDeps();
+    const resolvedDependentCounts: Record<string, number> = {};
+
+    for (const dir of Object.keys(tree)) {
+      for (const file of Object.keys(tree[dir]!)) {
+        const component = `${dir}/${file}`;
+        const dependents = resolveDependents(
+          findDependents(component, tree),
+          tree,
+        );
+        resolvedDependentCounts[component] = dependents.length;
+      }
+    }
+
+    return resolvedDependentCounts;
+  }
+
+  const groupedTree = await getGroupedResolvedDeps();
   const resolvedDependentCounts: Record<string, number> = {};
 
-  for (const dir of Object.keys(tree)) {
-    for (const file of Object.keys(tree[dir]!)) {
-      const component = `${dir}/${file}`;
-      const dependents = resolveDependents(
-        findDependents(component, tree),
-        tree,
-      );
+  for (const dir of Object.keys(groupedTree)) {
+    for (const component of groupedTree[dir]!) {
+      const dependents = findGroupedDependents(component, groupedTree);
       resolvedDependentCounts[component] = dependents.length;
     }
   }
@@ -305,21 +415,43 @@ export async function getResolvedDependentCounts(): Promise<
   return resolvedDependentCounts;
 }
 
-export async function getUnlockedComponents(): Promise<Array<string>> {
-  const tree = await getDeps();
+export async function getUnlockedComponents(
+  grouped = false,
+): Promise<Array<string>> {
+  if (!grouped) {
+    const tree = await getDeps();
+    const flatStatusTree = await getFlatStatusTree();
+    const unlockedComponents: Array<string> = [];
+
+    for (const dir of Object.keys(tree)) {
+      for (const file of Object.keys(tree[dir]!)) {
+        const component = `${dir}/${file}`;
+        const deps = tree[dir]![file]!;
+        const isPorted = flatStatusTree[component] === "both";
+        const allDepsPorted = deps.every(
+          (dep) => flatStatusTree[dep] === "both",
+        );
+
+        if (!isPorted && allDepsPorted) {
+          unlockedComponents.push(component);
+        }
+      }
+    }
+
+    return unlockedComponents;
+  }
+
+  const groupedTree = await getGroupedDeps();
   const flatStatusTree = await getFlatStatusTree();
   const unlockedComponents: Array<string> = [];
 
-  for (const dir of Object.keys(tree)) {
-    for (const file of Object.keys(tree[dir]!)) {
-      const component = `${dir}/${file}`;
-      const deps = tree[dir]![file]!;
-      const isPorted = flatStatusTree[component] === "both";
-      const allDepsPorted = deps.every((dep) => flatStatusTree[dep] === "both");
+  for (const component of Object.keys(groupedTree)) {
+    const allDepsPorted = groupedTree[component]!.every(
+      (dep) => flatStatusTree[dep] === "both",
+    );
 
-      if (!isPorted && allDepsPorted) {
-        unlockedComponents.push(component);
-      }
+    if (!allDepsPorted) {
+      unlockedComponents.push(component);
     }
   }
 
