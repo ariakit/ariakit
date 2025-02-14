@@ -2,6 +2,7 @@ import { readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 // @ts-expect-error No Bun types for now.
 import Bun, { $ } from "bun";
+import { getFlatStatusTree } from "./status.ts";
 
 const ROOT_PATH = (await $`git rev-parse --show-toplevel`.text()).trim();
 const SRC_PATH = resolve(ROOT_PATH, "packages/ariakit-react-core/src");
@@ -250,4 +251,25 @@ export async function getResolvedDependentCounts(): Promise<
   }
 
   return resolvedDependentCounts;
+}
+
+export async function getUnlockedComponents(): Promise<Array<string>> {
+  const tree = await getDeps();
+  const flatStatusTree = await getFlatStatusTree();
+  const unlockedComponents: Array<string> = [];
+
+  for (const dir of Object.keys(tree)) {
+    for (const file of Object.keys(tree[dir]!)) {
+      const component = `${dir}/${file}`;
+      const deps = tree[dir]![file]!;
+      const isPorted = flatStatusTree[component] === "both";
+      const allDepsPorted = deps.every((dep) => flatStatusTree[dep] === "both");
+
+      if (!isPorted && allDepsPorted) {
+        unlockedComponents.push(component);
+      }
+    }
+  }
+
+  return unlockedComponents;
 }
