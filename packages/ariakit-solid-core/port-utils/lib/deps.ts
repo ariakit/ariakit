@@ -2,7 +2,7 @@ import { readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 // @ts-expect-error No Bun types for now.
 import Bun, { $ } from "bun";
-import { getFlatStatusTree } from "./status.ts";
+import { getFlatStatusTree, getGroupedFlatStatusTree } from "./status.ts";
 
 const ROOT_PATH = (await $`git rev-parse --show-toplevel`.text()).trim();
 const SRC_PATH = resolve(ROOT_PATH, "packages/ariakit-react-core/src");
@@ -309,11 +309,8 @@ export async function getDepCounts(
   const groupedTree = await getGroupedDeps();
   const depCounts: Record<string, number> = {};
 
-  for (const dir of Object.keys(groupedTree)) {
-    for (const component of groupedTree[dir]!) {
-      const deps = groupedTree[dir]!.length;
-      depCounts[component] = deps;
-    }
+  for (const [component, deps] of Object.entries(groupedTree)) {
+    depCounts[component] = deps.length;
   }
 
   return depCounts;
@@ -340,11 +337,8 @@ export async function getResolvedDepCounts(
   const groupedTree = await getGroupedResolvedDeps();
   const resolvedDepCounts: Record<string, number> = {};
 
-  for (const dir of Object.keys(groupedTree)) {
-    for (const component of groupedTree[dir]!) {
-      const deps = groupedTree[dir]!.length;
-      resolvedDepCounts[component] = deps;
-    }
+  for (const [component, deps] of Object.entries(groupedTree)) {
+    resolvedDepCounts[component] = deps.length;
   }
 
   return resolvedDepCounts;
@@ -442,15 +436,16 @@ export async function getUnlockedComponents(
   }
 
   const groupedTree = await getGroupedDeps();
-  const flatStatusTree = await getFlatStatusTree();
+  const groupedFlatStatusTree = await getGroupedFlatStatusTree();
   const unlockedComponents: Array<string> = [];
 
   for (const component of Object.keys(groupedTree)) {
+    const isPorted = groupedFlatStatusTree[component] === "both";
     const allDepsPorted = groupedTree[component]!.every(
-      (dep) => flatStatusTree[dep] === "both",
+      (dep) => groupedFlatStatusTree[dep] === "both",
     );
 
-    if (!allDepsPorted) {
+    if (!isPorted && allDepsPorted) {
       unlockedComponents.push(component);
     }
   }

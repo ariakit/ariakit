@@ -4,6 +4,7 @@
 // --ascending (-a): sort by dep count in ascending order
 // --descending (-d): sort by dep count in descending order
 // --unlocked (-u): show only unlocked components
+// --grouped (-g): show grouped dependency counts
 
 import { parseArgs } from "node:util";
 // @ts-expect-error No Bun types for now.
@@ -11,6 +12,8 @@ import Bun from "bun";
 import {
   getDepCounts,
   getDeps,
+  getGroupedDeps,
+  getGroupedResolvedDeps,
   getResolvedDepCounts,
   getResolvedDeps,
   getUnlockedComponents,
@@ -23,19 +26,31 @@ async function printDepCounts(
   ascending = false,
   descending = false,
   unlocked = false,
+  grouped = false,
 ) {
   const flatStatusTree = await getFlatStatusTree();
   const depCounts = resolved
-    ? await getResolvedDepCounts()
-    : await getDepCounts();
-  const allDeps = resolved ? await getResolvedDeps() : await getDeps();
+    ? await getResolvedDepCounts(grouped)
+    : await getDepCounts(grouped);
+  const allDeps = resolved
+    ? grouped
+      ? await getGroupedResolvedDeps()
+      : await getResolvedDeps()
+    : grouped
+      ? await getGroupedDeps()
+      : await getDeps();
 
   let components = Object.keys(depCounts);
   if (unlocked) {
-    const unlockedComponents = await getUnlockedComponents();
+    const unlockedComponents = await getUnlockedComponents(grouped);
     components = components.filter((component) =>
       unlockedComponents.includes(component),
     );
+  }
+
+  if (components.length === 0) {
+    log("no matching components", "yellow");
+    return;
   }
 
   const sortedComponents = components.sort((a, b) => {
@@ -54,7 +69,9 @@ async function printDepCounts(
 
   for (const component of sortedComponents) {
     const count = depCounts[component];
-    const deps = allDeps[component.split("/")[0]!]![component.split("/")[1]!]!;
+    const deps = grouped
+      ? allDeps[component]!
+      : (allDeps[component.split("/")[0]!]! as any)[component.split("/")[1]!]!;
     const portedDepCount = deps.filter(
       (dep: any) => flatStatusTree[dep] === "both",
     ).length;
@@ -84,7 +101,7 @@ async function printDepCounts(
 
 async function print() {
   const {
-    values: { resolved, ascending, descending, unlocked },
+    values: { resolved, ascending, descending, unlocked, grouped },
   } = parseArgs({
     args: Bun.argv,
     options: {
@@ -92,6 +109,7 @@ async function print() {
       ascending: { type: "boolean", short: "a", default: false },
       descending: { type: "boolean", short: "d", default: false },
       unlocked: { type: "boolean", short: "u", default: false },
+      grouped: { type: "boolean", short: "g", default: false },
     },
     strict: true,
     allowPositionals: true,
@@ -99,10 +117,10 @@ async function print() {
 
   space();
   log(
-    `> Dependency counts (ported/total${resolved ? ", resolved" : ""}${unlocked ? ", unlocked" : ""})`,
+    `> Dependency counts (ported/total${resolved ? ", resolved" : ""}${unlocked ? ", unlocked" : ""}${grouped ? ", grouped" : ""})`,
   );
   space();
-  await printDepCounts(resolved, ascending, descending, unlocked);
+  await printDepCounts(resolved, ascending, descending, unlocked, grouped);
 }
 
 await print();
