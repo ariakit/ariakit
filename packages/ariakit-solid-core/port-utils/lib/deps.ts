@@ -95,6 +95,39 @@ function resolveDeps(deps: Array<string>, tree: Tree) {
   return Array.from(outDeps);
 }
 
+function findDependents(component: string, tree: Tree) {
+  const dependents = new Set<string>();
+
+  for (const dir of Object.keys(tree)) {
+    for (const file of Object.keys(tree[dir]!)) {
+      const deps = tree[dir]![file]!;
+      if (deps.includes(component)) {
+        dependents.add(`${dir}/${file}`);
+      }
+    }
+  }
+
+  return Array.from(dependents);
+}
+
+function resolveDependents(dependents: Array<string>, tree: Tree) {
+  const outDependents = new Set(dependents);
+  const stack = [...dependents];
+
+  while (stack.length) {
+    const dependent = stack.pop()!;
+    const nestedDependents = findDependents(dependent, tree);
+    for (const nestedDependent of nestedDependents) {
+      if (!outDependents.has(nestedDependent)) {
+        outDependents.add(nestedDependent);
+        stack.push(nestedDependent);
+      }
+    }
+  }
+
+  return Array.from(outDependents);
+}
+
 let CACHED_TREE: Tree | undefined = undefined;
 
 export async function getDeps(): Promise<Tree>;
@@ -139,4 +172,17 @@ export async function getResolvedDeps(component?: string) {
   }
   if (CACHED_RESOLVED_TREE) return findDeps(component, CACHED_RESOLVED_TREE);
   return resolveDeps(findDeps(component, tree), tree);
+}
+
+export async function getDependents(component: string): Promise<Array<string>> {
+  const tree = await getDeps();
+  return findDependents(component, tree);
+}
+
+export async function getResolvedDependents(
+  component: string,
+): Promise<Array<string>> {
+  const tree = await getDeps();
+  const dependents = findDependents(component, tree);
+  return resolveDependents(dependents, tree);
 }
