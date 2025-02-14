@@ -31,6 +31,27 @@ import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
+// [port]: translation helper
+function $d(props: any) {
+  // TODO [port]: idea - utility that creates a props object with a subset of "frozen" props
+  const disabledProp = props.$disabled;
+  const ariaDisabledProp = props["$aria-disabled"];
+  return {
+    get disabled() {
+      return disabledProp();
+    },
+    get "aria-disabled"() {
+      return ariaDisabledProp();
+    },
+  };
+}
+
+// [port]: translation helper
+function $h(target: EventTarget | null) {
+  // TODO [port]: verify that these casts are safe.
+  return target as HTMLType;
+}
+
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
@@ -189,22 +210,6 @@ function onGlobalKeyDown(event: KeyboardEvent) {
   isKeyboardModality = true;
 }
 
-// [port]: translation helper
-function $d(props: any) {
-  const disabledProp = props.$disabled;
-  const ariaDisabledProp = props["$aria-disabled"];
-  return () => ({
-    disabled: disabledProp(),
-    "aria-disabled": ariaDisabledProp(),
-  });
-}
-
-// [port]: translation helper
-function $h(target: EventTarget | null) {
-  // TODO [port]: verify that these casts are safe.
-  return target as HTMLType;
-}
-
 /**
  * Returns props to create a `Focusable` component.
  * @see https://solid.ariakit.org/components/focusable
@@ -258,7 +263,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     }
 
     const dprops = $d(props);
-    const disabled = () => _.focusable && disabledFromProps(dprops());
+    const disabled = () => _.focusable && disabledFromProps(dprops);
     const trulyDisabled = () => !!disabled() && !_.accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 

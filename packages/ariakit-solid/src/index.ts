@@ -1,4 +1,5 @@
 export * from "./as.ts";
+export * from "./command.ts";
 export * from "./focus-trap.ts";
 export * from "./focusable.ts";
 export * from "./group.ts";
