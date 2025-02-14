@@ -172,8 +172,7 @@ function getTabIndex(
   return tabIndexProp || 0;
 }
 
-/*
-TODO [port]: [capture-events]
+/* TODO [port]: [capture-events]
 function useDisableEvent(
   onEvent?: EventHandler<SyntheticEvent>,
   disabled?: boolean,
@@ -186,8 +185,7 @@ function useDisableEvent(
       event.preventDefault();
     }
   });
-}
-*/
+} */
 
 // isKeyboardModality should be true by default.
 let isKeyboardModality = true;
