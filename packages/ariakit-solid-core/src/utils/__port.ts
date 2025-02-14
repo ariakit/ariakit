@@ -189,3 +189,22 @@ export function useRef<T>(
     },
   };
 }
+
+// to reorganize
+// -------------
+
+/**
+ * A hook that passes metadata props around without leaking them to the DOM.
+ */
+export function useMetadataProps<T, K extends keyof any>(
+  props: { _metadataProps?: AnyFunction & { [key in K]?: T } },
+  key: K,
+  value: T,
+) {
+  const parent = () => props._metadataProps;
+  const $_metadataProps = createMemo(() => {
+    return Object.assign(() => {}, { ...parent(), [key]: value });
+  });
+
+  return [() => parent()?.[key], () => ({ $_metadataProps })] as const;
+}

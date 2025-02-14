@@ -1,6 +1,14 @@
 import type { AnyObject } from "@ariakit/core/utils/types";
 import { $PROXY, type JSX } from "solid-js";
 
+const SKIP_KEYS = [
+  // See `useMetadataProps`
+  "_metadataProps",
+  // See `createElement`
+  "render",
+  "wrapInstance",
+];
+
 export function isPropsProxy(props: unknown) {
   return Boolean(props && $PROXY in (props as object));
 }
@@ -115,9 +123,7 @@ function createPropsSink<T>(props: T) {
   const isProxy = isPropsProxy(props);
   const sources: Array<PropsObject> = [props as PropsObject];
   const optionSources: Array<PropsObject> = [];
-  const skipKeys = new Set<string>();
-  skipKeys.add("render");
-  skipKeys.add("wrapInstance");
+  const skipKeys = new Set<string>(SKIP_KEYS);
   const sink = new Proxy(
     {
       get(property: string | number | symbol) {
