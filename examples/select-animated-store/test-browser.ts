@@ -1,5 +1,6 @@
 import { query } from "@ariakit/test/playwright";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 const createTransition = (duration = 100) => {
   const then = performance.now();

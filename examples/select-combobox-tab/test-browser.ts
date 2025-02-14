@@ -1,5 +1,6 @@
 import { query } from "@ariakit/test/playwright";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 const SELECT_TAB = "Select with Tab";
 const SELECT_COMBOBOX_TAB = "Select with Combobox and Tab";

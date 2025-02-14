@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 const getMenuButton = (page: Page) =>
   page.getByRole("button", { name: "Add block" });

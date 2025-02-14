@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
+import { preview } from "../test-utils.ts";
 
 const getButton = (page: Page) =>
   page.getByRole("combobox", { name: "Favorite fruit" });
