@@ -1,6 +1,7 @@
 import { query } from "@ariakit/test/playwright";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 async function copy(page: Page, text: string) {
   await page.evaluate((text) => navigator.clipboard.writeText(text), text);
@@ -17,8 +18,7 @@ async function tags(page: Page) {
   return Promise.all(options.map((el) => el.textContent()));
 }
 
-test.beforeEach(async ({ page, context }) => {
-  await page.goto("/previews/tag", { waitUntil: "networkidle" });
+test.beforeEach(async ({ context }) => {
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 });
 

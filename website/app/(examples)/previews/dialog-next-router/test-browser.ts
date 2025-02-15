@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../../../../../examples/test-utils.ts";
 
 const getDialog = (page: Page) => page.getByRole("dialog", { name: "Login" });
 
@@ -7,10 +8,6 @@ const getLink = (page: Page) => page.getByRole("link", { name: "Login" });
 
 const getInput = (page: Page, name: string) =>
   page.getByRole("textbox", { name });
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-next-router", { waitUntil: "networkidle" });
-});
 
 test("show/hide", async ({ page }) => {
   // Open with click
