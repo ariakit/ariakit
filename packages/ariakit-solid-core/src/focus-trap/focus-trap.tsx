@@ -29,8 +29,7 @@ export const useFocusTrap = createHook<TagName, FocusTrapOptions>(
         position: "fixed",
         top: 0,
         left: 0,
-        // TODO [port]: [style-chain]
-        // @ts-expect-error
+        // @ts-expect-error TODO [port]: [style-chain]
         ...props.style,
       }),
     });

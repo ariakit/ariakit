@@ -22,7 +22,7 @@ export function useId(
  * @example
  * function Component(props) {
  *   const ref = createRef(null);
- *   const tagName = () => extractTagName(ref, "button"); // () => "div"
+ *   const tagName = () => useTagName(ref, "button"); // () => "div"
  *   return <div ref={ref.bind} {...props} />;
  * }
  */
@@ -43,7 +43,7 @@ export function useTagName(
 export function useWrapElement<P>(
   props: P,
   element: WrapInstanceValue,
-  _deps: Array<unknown>, // Only here to minimize the diff noise.
+  _deps: string, // Only here to minimize the diff noise.
 ): P {
   $(props as JSX.HTMLAttributes<any> & { wrapInstance?: WrapInstance })({
     $wrapInstance: (props) => [...(props.wrapInstance ?? []), element],

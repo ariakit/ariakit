@@ -218,8 +218,8 @@ function onGlobalKeyDown(event: KeyboardEvent) {
  * ```
  */
 export const useFocusable = createHook<TagName, FocusableOptions>(
-  function useFocusable($props) {
-    const [_, props] = $o($props, {
+  function useFocusable(__) {
+    const [_, props] = $o(__, {
       focusable: true,
       accessibleWhenDisabled: undefined,
       autoFocus: undefined,
