@@ -1,5 +1,6 @@
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 function query(locator: Page | Locator) {
   return {
@@ -7,10 +8,6 @@ function query(locator: Page | Locator) {
     menuitem: (name: string) => locator.getByRole("menuitem", { name }),
   };
 }
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menubar", { waitUntil: "networkidle" });
-});
 
 test("re-open submenu and shift-tab back to the parent menu", async ({
   page,

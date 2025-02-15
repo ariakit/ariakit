@@ -87,8 +87,8 @@ const symbol = Symbol("command");
  * ```
  */
 export const useCommand = createHook<TagName, CommandOptions>(
-  function useCommand($props) {
-    const [_, props] = $o($props, { clickOnEnter: true, clickOnSpace: true });
+  function useCommand(__) {
+    const [_, props] = $o(__, { clickOnEnter: true, clickOnSpace: true });
     const ref = useRef<HTMLType>(null);
     const [isNativeButton, setIsNativeButton] = useState(false);
 

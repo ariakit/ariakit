@@ -30,7 +30,7 @@ export const useFocusableContainer = createHook<
         {element.children}
       </FocusableContext.Provider>
     ),
-    [],
+    "[autoFocusOnShow]",
   );
 
   return props;

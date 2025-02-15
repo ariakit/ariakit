@@ -67,7 +67,7 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
           </>
         );
       },
-      [],
+      "[enabled]",
     );
 
     $(props)({

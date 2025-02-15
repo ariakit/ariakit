@@ -1,6 +1,7 @@
 import { contains } from "./dom.ts";
 import { isApple } from "./platform.ts";
 
+// TODO: rename/revamp to be more generic and not tied to React.
 /**
  * Returns `true` if `event` has been fired within a React Portal element.
  */
@@ -191,6 +192,7 @@ export function queueBeforeEvent(
     cancelTimer();
     callback();
   };
+  // TODO: can this be made more generic instead of React-specific?
   // By listening to the event in the capture phase, we make sure the callback
   // is fired before the respective React events.
   element.addEventListener(type, callSync, { once: true, capture: true });
