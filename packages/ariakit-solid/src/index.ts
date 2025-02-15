@@ -8,4 +8,5 @@ export * from "./group.ts";
 export * from "./heading.ts";
 export * from "./role.ts";
 export * from "./separator.ts";
+export * from "./store.ts";
 export * from "./visually-hidden.ts";

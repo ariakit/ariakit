@@ -45,6 +45,7 @@
     "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
     "./utils/types": "./src/utils/types.ts",
     "./utils/system": "./src/utils/system.tsx",
+    "./utils/store": "./src/utils/store.tsx",
     "./utils/misc": "./src/utils/misc.ts",
     "./utils/hooks": "./src/utils/hooks.ts",
     "./separator/separator": "./src/separator/separator.tsx",

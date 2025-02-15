@@ -45,6 +45,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./visually-hidden": "./src/visually-hidden.ts",
+    "./store": "./src/store.ts",
     "./separator": "./src/separator.ts",
     "./role": "./src/role.ts",
     "./heading": "./src/heading.ts",
