@@ -9,9 +9,9 @@ type TagName = typeof TagName;
  * Hook for creating the visual indicator of a progress bar.
  * @see https://ariakit.org/components/progress
  * @example
- * ```jsx
+ * ```tsx
  * const props = useProgressIndicator({ value: 60, min: 0, max: 100 });
- * <Role {...props} />
+ * <ProgressIndicator {...props} />
  * ```
  */
 export const useProgressIndicator = createHook<
@@ -23,29 +23,24 @@ export const useProgressIndicator = createHook<
   max = 100,
   ...props
 }) {
-  const percentage =
-    value !== null ? ((value - min) / (max - min)) * 100 : null;
+  const percentage = value !== null ? ((value - min) / (max - min)) * 100 : 100;
 
-  props = {
+  return {
     className: "progress-indicator",
     style: {
-      width: value !== null ? `${percentage}%` : "100%",
-      backgroundColor: "var(--progress-indicator-bg, #0d6efd)",
-      animation:
-        value === null ? "indeterminate 1.5s infinite linear" : undefined,
+      transform: `scaleX(${percentage / 100})`,
     },
     "data-indeterminate": value === null ? "true" : undefined,
+    "aria-hidden": "true", // This ensures the indicator itself is ignored by screen readers
     ...props,
   };
-
-  return props;
 });
 
 /**
  * Visual indicator component for the progress bar.
  * @see https://ariakit.org/components/progress
  * @example
- * ```jsx
+ * ```tsx
  * <ProgressIndicator value={60} min={0} max={100} />
  * ```
  */
