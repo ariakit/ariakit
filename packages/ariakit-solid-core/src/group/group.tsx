@@ -32,7 +32,7 @@ export const useGroup = createHook<TagName, GroupOptions>(
           {element.children}
         </GroupLabelContext.Provider>
       ),
-      [],
+      "[]",
     );
 
     $(props, {
