@@ -27,36 +27,24 @@ export const useProgressRoot = createHook<TagName, ProgressRootOptions>(
     label,
     ...props
   }) {
-    if (value !== null) {
-      if (value < min) value = min;
-      if (value > max) value = max;
-    }
-
-    if (max <= min) {
-      console.warn("Progress max value must be greater than min value");
-      max = min + 1;
-    }
-
     const percentage =
       value !== null ? ((value - min) / (max - min)) * 100 : null;
 
-    props = {
+    return {
       role: "progressbar",
       "aria-valuemin": min,
       "aria-valuemax": max,
       "aria-label": label,
       "aria-live": "polite",
+      ...(value !== null && {
+        "aria-valuenow": value,
+        "aria-valuetext": label
+          ? `${label}: ${Math.round(percentage!)}%`
+          : `${Math.round(percentage!)}%`,
+      }),
+      className: "progress-root",
       ...props,
     };
-
-    if (value !== null) {
-      props["aria-valuenow"] = value;
-      props["aria-valuetext"] = label
-        ? `${label}: ${Math.round(percentage!)}%`
-        : `${Math.round(percentage!)}%`;
-    }
-
-    return props;
   },
 );
 
