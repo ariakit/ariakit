@@ -25,3 +25,4 @@ export * from "./tab.ts";
 export * from "./toolbar.ts";
 export * from "./tooltip.ts";
 export * from "./visually-hidden.ts";
+export * from "./progress.ts";
