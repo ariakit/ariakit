@@ -6,11 +6,11 @@
   --spacing-container: --spacing(1);
 }
 
-* {
-  @variant not-dark {
-    --color-base: #fff;
-  }
-  @variant dark {
-    --color-base: #0e0e11;
+html,
+body {
+  --color-canvas: #f1f1f1;
+
+  @media (prefers-color-scheme: dark) {
+    --color-canvas: #0e0e11;
   }
 }

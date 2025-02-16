@@ -9,6 +9,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "tailwindcss": "4.0.3"
+    "tailwindcss": "4.0.6"
   }
 }
