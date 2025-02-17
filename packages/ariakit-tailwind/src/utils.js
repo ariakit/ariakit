@@ -35,7 +35,6 @@ export const vars = /** @type {const} */ ({
   shadow: "--ak-shadow",
 
   // Private API
-  _layerCurrent: "--_ak-layer-current",
   _layerBase: "--_ak-layer-base",
   _layerL: "--_ak-layer-l",
   _layerAppearance: "--_ak-layer-appearance",
@@ -46,8 +45,6 @@ export const vars = /** @type {const} */ ({
   _framePadding: "--_ak-frame-padding",
   _frameCappedPadding: "--_ak-frame-capped-padding",
   _textLevel: "--_ak-text-level",
-  _borderAlpha: "--_ak-border-alpha",
-  _ringAlpha: "--_ak-ring-alpha",
 
   _safeOkL: "--_ak-safe-okl",
   _textContrastOkL: "--_ak-text-contrast-okl",
@@ -89,14 +86,9 @@ export const properties = css({
     inherits: "true",
     initialValue: "oklch(0 0 0 / 15%)",
   },
-  [`@property ${vars._layerCurrent}`]: {
+  [`@property ${vars._layerBase}`]: {
     syntax: "'*'",
     inherits: "false",
-  },
-  [`@property ${vars._layerBase}`]: {
-    syntax: "'<color>'",
-    inherits: "false",
-    initialValue: "oklch(1 0 0)",
   },
   [`@property ${vars._layerIdle}`]: {
     syntax: "'<color>'",
@@ -226,7 +218,7 @@ export function colorMix(colorA, colorB) {
 /**
  * @param {string} color
  */
-export function flipBlackWhite(color) {
+export function textColor(color) {
   return `oklch(from ${color} ${prop(vars._textContrastOkL)} 0 0 / 100%)`;
 }
 
