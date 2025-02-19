@@ -21,6 +21,9 @@
         devShells.default =
           pkgs.mkShell {
             inherit system nativeBuildInputs;
+            # opt out of nextjs telemetry
+            # https://nextjs.org/telemetry
+            NEXT_TELEMETRY_DISABLED = 1;
           };
       }
     );
