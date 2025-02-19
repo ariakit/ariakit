@@ -1,4 +1,10 @@
 export const LIGHTNESS_LEVELS = 20;
+export const SCHEME_THRESHOLD_L = 56.27;
+export const SCHEME_THRESHOLD_OKL = 0.623;
+
+// Text contrast within the OkLCH and LCH color spaces
+export const TEXT_CONTRAST_OKL = `calc((${SCHEME_THRESHOLD_OKL} - l) * infinity)`;
+export const TEXT_CONTRAST_L = `calc((${SCHEME_THRESHOLD_L} - l) * infinity)`;
 
 // Adjusts the lightness of a color based on its hue and chroma in the OkLCH
 // color space.
@@ -11,13 +17,11 @@ const LB_HUE_RAD = `(h * pi / 180)`;
 const LB_HUE_COMPONENT = `(0.035 * cos(${LB_HUE_RAD}))`;
 const LA = `(${LA_BASE} + ${T} * (-0.005 + ${LA_HUE_COMPONENT}))`;
 const LB = `(${LB_BASE} + ${T} * (0.03 + ${LB_HUE_COMPONENT}))`;
-const FORBIDDEN_L = `clamp(0, (l - ${LA}) * (${LB} - l) * infinity, 1)`;
-const MID_L = `clamp(0, (l - (${LA} + ${LB}) / 2) * infinity, 1)`;
-const SAFE_L = `calc(l * (1 - ${FORBIDDEN_L}) + (${LA} * (1 - ${MID_L}) + ${LB} * ${MID_L}) * ${FORBIDDEN_L})`;
-
-// Text contrast within the OkLCH and LCH color spaces
-const TEXT_CONTRAST_OKL = `calc((0.623 - l) * infinity)`;
-const TEXT_CONTRAST_L = `calc((56.27 - l) * infinity)`;
+const L_DIRECTION = `clamp(0, (l - (${LA} + ${LB}) / 2) * infinity, 1)`;
+const L_FORBIDDEN_RANGE = `clamp(0, (l - ${0.56}) * (${LB} - l) * infinity, 1)`;
+const SAFE_L = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + (${LA} * (1 - ${L_DIRECTION}) + ${LB} * ${L_DIRECTION}) * ${L_FORBIDDEN_RANGE})`;
+const SAFE_L_UP = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + ${LB} * ${L_FORBIDDEN_RANGE})`;
+const SAFE_L_DOWN = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + ${LA} * ${L_FORBIDDEN_RANGE})`;
 
 // Light/dark detection (0-1) within the OkLCH and LCH color spaces
 const IS_DARK_OKL = `clamp(0, ${TEXT_CONTRAST_OKL}, 1)`;
@@ -37,6 +41,7 @@ export const vars = /** @type {const} */ ({
   // Private API
   _layerBase: "--_ak-layer-base",
   _layerL: "--_ak-layer-l",
+  _layerOkL: "--_ak-layer-okl",
   _layerAppearance: "--_ak-layer-appearance",
   _layerParent: "--_ak-layer-parent",
   _layerIdle: "--_ak-layer-idle",
@@ -47,6 +52,10 @@ export const vars = /** @type {const} */ ({
   _textLevel: "--_ak-text-level",
 
   _safeOkL: "--_ak-safe-okl",
+  _safeOkLUp: "--_ak-safe-okl-up",
+  _safeOkLDown: "--_ak-safe-okl-down",
+  _safeOkLA: "--_ak-safe-okla",
+  _safeOkLB: "--_ak-safe-oklb",
   _textContrastOkL: "--_ak-text-contrast-okl",
   _textContrastL: "--_ak-text-contrast-l",
   _darkOkL: "--_ak-dark-okl",
@@ -105,7 +114,13 @@ export const properties = css({
   [`@property ${vars._layerL}`]: {
     syntax: "'<color>'",
     inherits: "true",
-    initialValue: "oklch(100 0 0)",
+    initialValue: "lch(100 0 0)",
+  },
+  // The rounded ok lightness value of the layer (0-1)
+  [`@property ${vars._layerOkL}`]: {
+    syntax: "'<color>'",
+    inherits: "true",
+    initialValue: "oklch(1 0 0)",
   },
   // TODO: Comment
   [`@property ${vars._frameCappedPadding}`]: {
@@ -124,6 +139,29 @@ export const properties = css({
     syntax: "'*'",
     inherits: "false",
     initialValue: SAFE_L,
+  },
+  // TODO: Comment
+  [`@property ${vars._safeOkLUp}`]: {
+    syntax: "'*'",
+    inherits: "false",
+    initialValue: SAFE_L_UP,
+  },
+  [`@property ${vars._safeOkLDown}`]: {
+    syntax: "'*'",
+    inherits: "false",
+    initialValue: SAFE_L_DOWN,
+  },
+  // TODO: Comment
+  [`@property ${vars._safeOkLA}`]: {
+    syntax: "'*'",
+    inherits: "false",
+    initialValue: LA,
+  },
+  // TODO: Comment
+  [`@property ${vars._safeOkLB}`]: {
+    syntax: "'*'",
+    inherits: "false",
+    initialValue: LB,
   },
   [`@property ${vars._textContrastOkL}`]: {
     syntax: "'*'",
@@ -192,16 +230,16 @@ export function sign(value) {
 }
 
 /**
- * @param {string} [light]
- * @param {string} [dark]
+ * @param {string | number} [light]
+ * @param {string | number} [dark]
  */
 export function oklchLightDark(light, dark) {
   return `((${light} * ${prop(vars._lightOkL)}) + (${dark} * ${prop(vars._darkOkL)}))`;
 }
 
 /**
- * @param {string} [light]
- * @param {string} [dark]
+ * @param {string | number} [light]
+ * @param {string | number} [dark]
  */
 export function lchLightDark(light, dark) {
   return `((${light} * ${prop(vars._lightL)}) + (${dark} * ${prop(vars._darkL)}))`;
@@ -282,7 +320,7 @@ export function getLayerOkLCH(level, contrast = "0") {
  * lightness level (0-100).
  * @param {(l: number) => CssInJs | null | undefined} fn
  */
-export function withParentLightness(fn) {
+export function withParentL(fn) {
   const levels = Array.from(
     { length: LIGHTNESS_LEVELS + 1 },
     (_, i) => (i / LIGHTNESS_LEVELS) * 100,
@@ -290,6 +328,24 @@ export function withParentLightness(fn) {
   return levels.reduce((acc, l) => {
     l = Math.round(l);
     const query = `@container style(${vars._layerL}: lch(${l} 0 0))`;
+    const result = fn(l);
+    if (!result) return acc;
+    Object.assign(acc, { [query]: result });
+    return acc;
+  }, css());
+}
+/**
+ * Returns CSS that enables a child to apply CSS based on the parent's layer ok
+ * lightness level (0-1).
+ * @param {(l: number) => CssInJs | null | undefined} fn
+ */
+export function withParentOkL(fn) {
+  const levels = Array.from(
+    { length: LIGHTNESS_LEVELS + 1 },
+    (_, i) => i / LIGHTNESS_LEVELS,
+  );
+  return levels.reduce((acc, l) => {
+    const query = `@container style(${vars._layerOkL}: oklch(${l} 0 0))`;
     const result = fn(l);
     if (!result) return acc;
     Object.assign(acc, { [query]: result });
