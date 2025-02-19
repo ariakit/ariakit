@@ -56,5 +56,8 @@ export default defineConfig({
     coverage: {
       include: ["packages"],
     },
+    benchmark: {
+      include: ["**/*bench.{ts,tsx}", `**/*bench.${LOADER}.{ts,tsx}`],
+    },
   },
 });

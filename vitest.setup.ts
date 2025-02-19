@@ -104,7 +104,7 @@ async function loadSolid(dir: string) {
   };
 }
 
-const LOADERS = {
+export const LOADERS = {
   react: loadReact,
   solid: loadSolid,
 } satisfies Record<
@@ -148,7 +148,7 @@ function parseTest(filename?: string) {
   };
 }
 
-const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
+export const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
 beforeEach(async ({ task, skip }) => {

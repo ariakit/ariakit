@@ -265,6 +265,52 @@ npm test watch my-component
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
+## Benchmarking the example
+
+Benchmarks provide us an opportunity to compare performance of examples between commits and frameworks.
+
+1. Create file called `bench.ts` in the example folder.
+1. Create the benchmarking test utility, which provides important setup.
+1. Copy paste your test.
+1. Remove assertions.
+
+> If you have a setup/teardown required for the test,
+> add it as the second parameter in the benchmark constructor.
+
+```ts
+import { focus, press, q } from "@ariakit/test";
+import { createBenchmarker } from "../benchmark.ts";
+
+function setup() {
+  // setup here
+  return teardown() {
+    // teardown here.
+  }
+}
+
+const test = createBenchmarker(__dirname, setup);
+
+test("correctly traps focus", async () => {
+  const qq = q.within(q.group("trap"));
+
+  await focus(qq.text("Start"));
+  await press.Tab();
+  await press.Tab();
+  await press.Tab();
+});
+
+test("correctly redirects focus", async () => {
+  const qq = q.within(q.group("redirect"));
+
+  await focus(qq.text("Start"));
+  await press.Tab();
+  await press.Tab();
+  await press.ShiftTab();
+  await press.ShiftTab();
+});
+
+```
+
 ## Writing another example
 
 A component may have multiple examples besides the default one. This is useful when you want to show a component in different contexts and props.
