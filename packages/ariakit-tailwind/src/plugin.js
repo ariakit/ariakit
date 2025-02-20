@@ -132,6 +132,21 @@ const AriakitTailwind = plugin(
     }
 
     /**
+     * Returns the layer's computed LCH values based on the provided level.
+     * @param {string} level
+     */
+    // @ts-expect-error
+    function getLayerLCH(level) {
+      const minL = `min(2, ${level})`;
+      const lMultiplier = 5;
+      const cMultiplier = 0.00055;
+      const l = `max(0, max(l, ${minL}) + ${level} * ${lMultiplier})`;
+      const c = `max(0, c - ${level} * ${cMultiplier})`;
+      const h = "h";
+      return { l, c, h };
+    }
+
+    /**
      * @param {string} color
      * @param {boolean} isDown
      * @param {"light" | "dark"} [scheme]
@@ -193,7 +208,7 @@ const AriakitTailwind = plugin(
       const border = (color) => {
         const lBase = oklchLightDark("-0.08", "0.087");
         const lContrast = `(${oklchLightDark("-0.09", "0.165")} * ${contrast})`;
-        const l = `max(0, l + ${lBase} + ${lContrast})`;
+        const l = `max(0, max(l, 0.16) + ${lBase} + ${lContrast})`;
         return `oklch(from ${color} ${l} c h / 100%)`;
       };
 
@@ -289,15 +304,15 @@ const AriakitTailwind = plugin(
                   ? baseColor
                   : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
               const colorWithContrastL = `oklch(from ${colorWithLevel} ${contrastLString} c h / 100%)`;
-              const colorWithSafeL = `oklch(from ${colorWithContrastL} ${prop(isDark ? vars._safeOkLUp : vars._safeOkLDown)} c h)`;
               const colorWithContrast = getLayerContrastColor(
-                colorWithSafeL,
+                colorWithContrastL,
                 false,
                 isDark ? "light" : "dark",
               );
+              const colorWithSafeL = `oklch(from ${colorWithContrast} ${prop(isDark ? vars._safeOkLUp : vars._safeOkLDown)} c h)`;
               return {
-                [vars._layerIdle]: colorWithContrast,
-                [vars._layerBase]: colorWithContrast,
+                [vars._layerIdle]: colorWithSafeL,
+                [vars._layerBase]: colorWithSafeL,
               };
             }),
           );
@@ -375,6 +390,44 @@ const AriakitTailwind = plugin(
         },
       },
       { values: getLayerValues({ downLevels: false }) },
+    );
+
+    matchUtilities(
+      {
+        "ak-edge": (value, { modifier }) => {
+          const { token, level } = parseColorLevel(value);
+          const baseColor = tv(
+            "color",
+            value === "current" ? null : token,
+            prop(vars.layer),
+          );
+          const contrast = getContrast();
+
+          const ringLLight = `min(l - 0.1, ${level} * 0.15 - ${contrast} * 0.15)`;
+          const ringLDark = `max(max(l, 0.13) + 0.13, 1 - ${level} * 0.1 + ${contrast} * 0.1)`;
+          const ringC = `calc(c * 2)`;
+          const ringAlphaBase = `((${modifier || 10} + ${oklchLightDark("0", "4")}) * 1%)`;
+          const ringAlphaLAdd = oklchLightDark("(1 - l) * 0.1%", "l * 0.1%");
+          const ringAlphaCAdd = `(c * 50%)`;
+          const ringContrastAdd = `(12% * ${contrast})`;
+          const ringAlpha = `calc(${ringAlphaBase} + ${ringAlphaLAdd} + ${ringAlphaCAdd} + ${ringContrastAdd})`;
+
+          return {
+            "--tw-ring-color": prop(vars.ring),
+            borderColor: prop(vars.border),
+            [vars.ring]: `oklch(from ${baseColor} ${ringLLight} ${ringC} h / ${ringAlpha})`,
+            [vars.border]: `oklch(from ${baseColor} ${ringLLight} ${ringC} h / ${ringAlpha})`,
+            [IN_DARK]: {
+              [vars.ring]: `oklch(from ${baseColor} ${ringLDark} ${ringC} h / ${ringAlpha})`,
+              [vars.border]: `oklch(from ${baseColor} ${ringLDark} ${ringC} h / ${ringAlpha})`,
+            },
+          };
+        },
+      },
+      {
+        values: getLayerValues({ downLevels: false, DEFAULT: "current" }),
+        modifiers: "any",
+      },
     );
 
     /**
@@ -528,7 +581,7 @@ const AriakitTailwind = plugin(
         "ak-text": (value, { modifier }) => {
           if (value === "current") {
             const percentage = toPercent(modifier, "0%");
-            const baseAlpha = lchLightDark(53.6, 45.7);
+            const baseAlpha = lchLightDark(53.6, 53.6);
             const lAdd = lchLightDark(`(100 - l) * 0.85`, `l * 1.08`);
             const cAdd = `(c * 0.036)`;
             const contrastAdd = `(20 * ${getContrast()})`;
@@ -561,7 +614,7 @@ const AriakitTailwind = plugin(
                 return;
               const isDark = parentL < SCHEME_THRESHOLD_L;
               const t = isDark ? 1 : -1;
-              const multiplier = `(max(53, ${modifier || 70}) * ${t})`;
+              const multiplier = `(max(53, ${modifier || 75}) * ${t})`;
               const l = `calc(${parentL} + ${multiplier} + (20 * ${contrast} * ${t}))`;
               const lString = isDark ? `max(l, ${l})` : `min(l, ${l})`;
               const c = isDark ? `c` : `min(c, 92)`;

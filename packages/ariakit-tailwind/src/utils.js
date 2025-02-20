@@ -193,6 +193,10 @@ export const properties = css({
     inherits: "false",
     initialValue: IS_LIGHT_L,
   },
+  [`@property ${vars._textLevel}`]: {
+    syntax: "'*'",
+    inherits: "false",
+  },
 });
 
 /**
