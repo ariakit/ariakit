@@ -177,11 +177,11 @@ const AriakitTailwind = plugin(
      * Returns the current layer's css.
      */
     function getCurrentLayerCss() {
-      return css({
+      return css(getEdgeCss(prop(vars.layer), undefined, undefined, true), {
         backgroundColor: prop(vars.layer),
-        borderColor: prop(vars.border),
+        borderColor: prop(vars.border, prop(vars.layerBorder)),
         color: prop(vars.text),
-        "--tw-ring-color": prop(vars.ring),
+        "--tw-ring-color": prop(vars.ring, prop(vars.layerRing)),
         "--tw-shadow-color": prop(vars.shadow),
       });
     }
@@ -189,43 +189,20 @@ const AriakitTailwind = plugin(
     /**
      * @param {string | null | undefined} [token]
      * @param {string} [level]
+     * @param {boolean} [parent]
      */
-    function getLayerCss(token, level = "0", contrast = getContrast()) {
+    function getLayerCss(token, level = "0", parent = false) {
       const baseColor = tv("color", token);
       const { l, c, h } = getLayerOkLCH(level);
       const isDown = level.startsWith("-") && !token;
-
-      const ringC = `calc(c * 2)`;
-      const ringAlphaBase = lchLightDark("10%", "14%");
-      const ringAlphaLAdd = lchLightDark("(100 - l) * 0.1%", "l * 0.1%");
-      const ringAlphaCAdd = `(c * 0.2%)`;
-      const ringContrastAdd = `(12% * ${contrast})`;
-      const ringAlpha = `calc((${ringAlphaBase} + ${ringAlphaLAdd} + ${ringAlphaCAdd}) + ${ringContrastAdd})`;
-
       const shadowAlpha = `calc(10% + (1 - l) * 2 * 25%)`;
-
-      /** @param {string} color */
-      const border = (color) => {
-        const lBase = oklchLightDark("-0.08", "0.087");
-        const lContrast = `(${oklchLightDark("-0.09", "0.165")} * ${contrast})`;
-        const l = `max(0, max(l, 0.16) + ${lBase} + ${lContrast})`;
-        return `oklch(from ${color} ${l} c h / 100%)`;
-      };
-
-      /** @param {string} color */
-      const ring = (color) =>
-        `lch(from ${color} ${prop(vars._textContrastL)} ${ringC} h / ${ringAlpha})`;
 
       /** @param {string} color */
       const shadow = (color) => `oklch(from ${color} 0 0 0 / ${shadowAlpha})`;
 
-      const result = css({
-        ...getCurrentLayerCss(),
-
+      const result = css(getCurrentLayerCss(), {
         [vars.layer]: prop(vars._layerIdle),
         [vars.text]: textColor(prop(vars.layer)),
-        [vars.ring]: ring(prop(vars.layer)),
-        [vars.border]: border(prop(vars.layer)),
         [vars.shadow]: shadow(prop(vars.layer)),
 
         [vars._layerAppearance]: textColor(prop(vars.layer)),
@@ -258,14 +235,29 @@ const AriakitTailwind = plugin(
       Object.assign(
         result,
         withContext("layer-parent", false, ({ provide, inherit }) => {
-          const layerParent = prop(vars.layerParent);
+          const layerParent = prop(vars.layerParent, "canvas");
           const result = {
             [provide(vars._layerParent)]: prop(vars.layer),
-            [vars.layerParent]: inherit(vars._layerParent),
             [vars.shadow]: shadow(layerParent),
-            [vars.border]: border(colorMix(prop(vars.layer), layerParent)),
-            [vars.ring]: ring(colorMix(prop(vars.layer), layerParent)),
           };
+          if (parent) {
+            Object.assign(result, {
+              [vars._layerIdle]: layerParent,
+            });
+          } else {
+            Object.assign(
+              result,
+              getEdgeCss(
+                colorMix(prop(vars.layer), layerParent),
+                undefined,
+                null,
+                true,
+              ),
+              {
+                [vars.layerParent]: inherit(vars._layerParent),
+              },
+            );
+          }
           return result;
         }),
       );
@@ -323,6 +315,10 @@ const AriakitTailwind = plugin(
 
     addUtilities({
       ".ak-layer-current": getCurrentLayerCss(),
+      ".ak-layer-parent": {
+        ...getCurrentLayerCss(),
+        [`@container style(${vars.layerParent})`]: getLayerCss(null, "0", true),
+      },
     });
 
     matchUtilities(
@@ -392,6 +388,36 @@ const AriakitTailwind = plugin(
       { values: getLayerValues({ downLevels: false }) },
     );
 
+    /**
+     * @param {string} color
+     * @param {string} [level]
+     * @param {string | null} [modifier]
+     * @param {boolean} [soft]
+     */
+    function getEdgeCss(color, level = "0", modifier = null, soft = false) {
+      const contrast = getContrast();
+      const alphaModifier = modifier || 5;
+      const lLight = `min(l - 0.1, ${level} * 0.15 - ${contrast} * 0.15)`;
+      const lDark = `max(max(l, 0.13) + 0.13, 1 - ${level} * 0.1 + ${contrast} * 0.1)`;
+      const c = `calc(c * 2)`;
+      const alphaBase = `((${alphaModifier} + 5) * 1%)`;
+      const alphaLAdd = oklchLightDark("(1 - l) * 0.1%", "l * 0.1%");
+      const alphaCAdd = `(c * 50%)`;
+      const contrastAdd = `(12% * ${contrast})`;
+      const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${alphaCAdd} + ${contrastAdd})`;
+      const finalColor = `oklch(from ${color} var(--l) ${c} h / ${alpha})`;
+      return {
+        "--tw-ring-color": prop(vars.ring, prop(vars.layerRing)),
+        "--l": lLight,
+        borderColor: prop(vars.border, prop(vars.layerBorder)),
+        [soft ? vars.layerRing : vars.ring]: finalColor,
+        [soft ? vars.layerBorder : vars.border]: finalColor,
+        [IN_DARK]: {
+          "--l": lDark,
+        },
+      };
+    }
+
     matchUtilities(
       {
         "ak-edge": (value, { modifier }) => {
@@ -401,33 +427,95 @@ const AriakitTailwind = plugin(
             value === "current" ? null : token,
             prop(vars.layer),
           );
-          const contrast = getContrast();
-
-          const ringLLight = `min(l - 0.1, ${level} * 0.15 - ${contrast} * 0.15)`;
-          const ringLDark = `max(max(l, 0.13) + 0.13, 1 - ${level} * 0.1 + ${contrast} * 0.1)`;
-          const ringC = `calc(c * 2)`;
-          const ringAlphaBase = `((${modifier || 10} + ${oklchLightDark("0", "4")}) * 1%)`;
-          const ringAlphaLAdd = oklchLightDark("(1 - l) * 0.1%", "l * 0.1%");
-          const ringAlphaCAdd = `(c * 50%)`;
-          const ringContrastAdd = `(12% * ${contrast})`;
-          const ringAlpha = `calc(${ringAlphaBase} + ${ringAlphaLAdd} + ${ringAlphaCAdd} + ${ringContrastAdd})`;
-
-          return {
-            "--tw-ring-color": prop(vars.ring),
-            borderColor: prop(vars.border),
-            [vars.ring]: `oklch(from ${baseColor} ${ringLLight} ${ringC} h / ${ringAlpha})`,
-            [vars.border]: `oklch(from ${baseColor} ${ringLLight} ${ringC} h / ${ringAlpha})`,
-            [IN_DARK]: {
-              [vars.ring]: `oklch(from ${baseColor} ${ringLDark} ${ringC} h / ${ringAlpha})`,
-              [vars.border]: `oklch(from ${baseColor} ${ringLDark} ${ringC} h / ${ringAlpha})`,
-            },
-          };
+          return getEdgeCss(baseColor, level, modifier);
         },
       },
       {
         values: getLayerValues({ downLevels: false, DEFAULT: "current" }),
         modifiers: "any",
       },
+    );
+
+    matchUtilities(
+      {
+        "ak-edge-contrast": (value) => {
+          const { token, level } = parseColorLevel(value);
+          const baseColor = tv(
+            "color",
+            token,
+            prop(vars.layerParent, prop(vars.layer)),
+          );
+          const { l, c, h } = getLayerOkLCH(oklchLightDark(`-${level}`, level));
+
+          return Object.assign(
+            withParentOkL((parentL) => {
+              const isDark = parentL < SCHEME_THRESHOLD_OKL;
+              const t = isDark ? 1 : -1.2;
+              const contrastL = `(${Math.max(parentL, 0.15)} + ${t} * 0.3)`;
+              const contrastLString = isDark
+                ? `max(l, ${contrastL})`
+                : `min(l, ${contrastL})`;
+              const colorWithLevel =
+                level === "0"
+                  ? baseColor
+                  : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
+              const colorWithContrastL = `oklch(from ${colorWithLevel} ${contrastLString} c h / 100%)`;
+              const colorWithContrast = getLayerContrastColor(
+                colorWithContrastL,
+                false,
+                isDark ? "light" : "dark",
+              );
+              return {
+                "--tw-ring-color": prop(vars.ring),
+                borderColor: prop(vars.border),
+                [vars.ring]: colorWithContrast,
+                [vars.border]: colorWithContrast,
+              };
+            }),
+          );
+        },
+      },
+      {
+        values: getLayerValues({ downLevels: false, DEFAULT: "0" }),
+      },
+    );
+
+    // TODO: Abstract this logic (used in ak-layer-contrast and partly on
+    // ak-edge-contrast)
+    matchUtilities(
+      {
+        "ak-outline": (value) => {
+          const { token, level } = parseColorLevel(value);
+          const baseColor = tv("color", token, prop(vars.layerParent));
+          const { l, c, h } = getLayerOkLCH(level);
+
+          return Object.assign(
+            withParentOkL((parentL) => {
+              const isDark = parentL < SCHEME_THRESHOLD_OKL;
+              const t = isDark ? 1 : -1;
+              const contrastL = `(${Math.max(parentL, 0.15)} + ${t * 0.3})`;
+              const contrastLString = isDark
+                ? `max(l, ${contrastL})`
+                : `min(l, ${contrastL})`;
+              const colorWithLevel =
+                level === "0"
+                  ? baseColor
+                  : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
+              const colorWithContrastL = `oklch(from ${colorWithLevel} ${contrastLString} c h / 100%)`;
+              const colorWithContrast = getLayerContrastColor(
+                colorWithContrastL,
+                false,
+                isDark ? "light" : "dark",
+              );
+              const colorWithSafeL = `oklch(from ${colorWithContrast} ${prop(isDark ? vars._safeOkLUp : vars._safeOkLDown)} c h)`;
+              return {
+                outlineColor: colorWithSafeL,
+              };
+            }),
+          );
+        },
+      },
+      { values: getLayerValues({ DEFAULT: "0" }) },
     );
 
     /**
@@ -658,6 +746,20 @@ const AriakitTailwind = plugin(
     /**
      * Returns either t(namespace, token) or the inline defaultValue if the
      * token is not provided.
+     * @overload
+     * @param {string} namespace
+     * @param {string} token
+     * @returns {string}
+     * @overload
+     * @param {string} namespace
+     * @param {string | null | undefined} token
+     * @param {string} defaultValue
+     * @returns {string}
+     * @overload
+     * @param {string} namespace
+     * @param {string | null | undefined} token
+     * @param {string} [defaultValue]
+     * @returns {string | undefined}
      * @param {string} namespace
      * @param {string | null | undefined} token
      * @param {string} [defaultValue]

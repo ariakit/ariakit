@@ -37,6 +37,8 @@ export const vars = /** @type {const} */ ({
   ring: "--ak-ring",
   border: "--ak-border",
   shadow: "--ak-shadow",
+  layerRing: "--ak-layer-ring",
+  layerBorder: "--ak-layer-border",
 
   // Private API
   _layerBase: "--_ak-layer-base",
@@ -71,21 +73,12 @@ export const properties = css({
     initialValue: "oklch(1 0 0)",
   },
   [`@property ${vars.layerParent}`]: {
-    syntax: "'<color>'",
+    // syntax: "'<color>'",
+    syntax: "'*'",
     inherits: "true",
-    initialValue: "oklch(1 0 0)",
+    // initialValue: "oklch(1 0 0)",
   },
   [`@property ${vars.text}`]: {
-    syntax: "'<color>'",
-    inherits: "true",
-    initialValue: "oklch(0 0 0)",
-  },
-  [`@property ${vars.ring}`]: {
-    syntax: "'<color>'",
-    inherits: "true",
-    initialValue: "oklch(0 0 0)",
-  },
-  [`@property ${vars.border}`]: {
     syntax: "'<color>'",
     inherits: "true",
     initialValue: "oklch(0 0 0)",
@@ -95,6 +88,22 @@ export const properties = css({
     inherits: "true",
     initialValue: "oklch(0 0 0 / 15%)",
   },
+  [`@property ${vars.ring}`]: {
+    syntax: "'*'",
+    inherits: "true",
+  },
+  [`@property ${vars.border}`]: {
+    syntax: "'*'",
+    inherits: "true",
+  },
+  [`@property ${vars.layerRing}`]: {
+    syntax: "'*'",
+    inherits: "true",
+  },
+  [`@property ${vars.layerBorder}`]: {
+    syntax: "'*'",
+    inherits: "true",
+  },
   [`@property ${vars._layerBase}`]: {
     syntax: "'*'",
     inherits: "false",
@@ -102,7 +111,7 @@ export const properties = css({
   [`@property ${vars._layerIdle}`]: {
     syntax: "'<color>'",
     inherits: "false",
-    initialValue: "oklch(100 0 0)",
+    initialValue: "oklch(1 0 0)",
   },
   // Whether the layer is dark (oklch(1 0 0)) or light (oklch(0 0 0))
   [`@property ${vars._layerAppearance}`]: {
@@ -277,10 +286,10 @@ export function toPercent(value, defaultValue = "100%") {
 /**
  * Just to please TypeScript.
  * @typedef {{[key: string]: string | string[] | CssInJs | CssInJs[]}} CssInJs
- * @param {CssInJs} [object]
+ * @param {CssInJs[]} objects
  */
-export function css(object = {}) {
-  return object;
+export function css(...objects) {
+  return Object.assign({}, ...objects);
 }
 
 /**

@@ -2,15 +2,89 @@
 @import "@ariakit/tailwind";
 
 @theme {
+  --color-canvas: #f1f1f1;
+  --color-primary: #007acc;
+  --color-secondary: #ec4899;
+
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
+
+  --radius-field: var(--radius-lg);
+  --spacing-field: --spacing(2);
 }
 
-html,
-body {
-  --color-canvas: #f1f1f1;
-
+:root {
   @media (prefers-color-scheme: dark) {
     --color-canvas: #0e0e11;
+  }
+}
+
+body {
+  @apply ak-layer-canvas antialiased;
+
+  @variant selection {
+    @apply ak-layer-contrast-primary;
+  }
+}
+
+/** ak-focusable **/
+
+@utility ak-focusable.idle {
+  @apply ak-outline-primary outline-offset-1;
+}
+
+@utility ak-focusable.focus-visible {
+  @apply outline-2;
+}
+
+@utility ak-focusable {
+  @apply ak-focusable.idle;
+
+  @variant focus-visible {
+    @apply ak-focusable.focus-visible;
+  }
+}
+
+/** ak-input **/
+
+@utility ak-input.idle {
+  @apply ak-edge-contrast ak-frame-field ak-focusable.idle cursor-text border px-3 -outline-offset-1;
+
+  @variant ak-light {
+    @apply ak-layer-canvas-10;
+  }
+
+  @variant ak-dark {
+    @apply ak-layer-parent;
+  }
+
+  input {
+    @apply outline-none;
+  }
+
+  &::placeholder,
+  ::placeholder {
+    @apply ak-text/0;
+  }
+}
+
+@utility ak-input.hover {
+  @apply ak-layer-pop-[0.5];
+}
+
+@utility ak-input.focus-visible {
+  @apply ak-focusable.focus-visible;
+}
+
+@utility ak-input {
+  @apply ak-input.idle;
+
+  @variant hover {
+    @apply ak-input.hover;
+  }
+
+  &:focus-visible,
+  &:has(:focus-visible) {
+    @apply ak-input.focus-visible;
   }
 }

@@ -3,23 +3,9 @@
 @plugin "./plugin.js";
 
 @theme {
-  --color-canvas: #0e0e11;
-  /* --color-canvas: #ddd; */
-  /* --color-canvas: #e0e0e0; */
-  /* --color-canvas: #efefef; */
-  /* --color-canvas: #fff; */
-  --color-primary: #007acc;
-  --color-secondary: #ec4899;
-
-  /* --contrast: 16; */
   --contrast: 0;
-  /* --contrast-edge: 8; */
-  --layer-feature-threshold: 0.95;
-  --layer-pop-threshold: 0.5;
-
   --spacing: 0.25rem;
   --spacing-px: 1px;
-
   --radius: 0.25rem;
 }
 
@@ -34,4 +20,10 @@
   --radius-3xl: calc(var(--radius) * 6);
   --radius-4xl: calc(var(--radius) * 8);
   --radius-full: calc(var(--radius) * infinity);
+}
+
+:root {
+  @variant contrast-more {
+    --contrast: 3;
+  }
 }
