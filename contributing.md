@@ -281,8 +281,9 @@ To add benchmark specific test, follow these steps.
 ```ts
 // perf.ts
 import { focus, press, q } from "@ariakit/test";
+import { bench } from "vitest";
 
-test("correctly traps focus", async () => {
+bench("correctly traps focus", async () => {
   const qq = q.within(q.group("trap"));
 
   await focus(qq.text("Start"));
@@ -291,7 +292,7 @@ test("correctly traps focus", async () => {
   await press.Tab();
 });
 
-test("correctly redirects focus", async () => {
+bench("correctly redirects focus", async () => {
   const qq = q.within(q.group("redirect"));
 
   await focus(qq.text("Start"));
