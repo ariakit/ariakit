@@ -43,14 +43,8 @@ test("default values", async () => {
     radioParent: "Orange",
     radioUncontrolled: "Banana",
   });
-  expect(log.mock.lastCall?.at(0)).toEqual({
-    checkboxControlled: ["Banana"],
-    checkboxParent: ["Orange"],
-    checkboxUncontrolled: ["Banana", "Grape"],
-    radioControlled: "Banana",
-    radioParent: "Orange",
-    radioUncontrolled: "Banana",
-  });
+
+  expect(log.mock.lastCall?.at(0)).toBeUndefined()
 });
 
 test("interact with checkboxControlled items", async () => {

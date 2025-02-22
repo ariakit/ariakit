@@ -1,16 +1,16 @@
 import { click, press, q, type } from "@ariakit/test";
 
-function setup() {
+beforeEach(() => {
   const externalButton = document.createElement("button");
   externalButton.textContent = "External button";
   document.body.append(externalButton);
+
   return () => {
     externalButton.remove();
   };
-}
+})
 
 test("show/hide cancel button", async () => {
-  const cleanup = setup();
   await click(q.combobox("Favorite fruit"));
   expect(q.combobox("Search...")).toHaveFocus();
   expect(q.button("Clear input")).toHaveAttribute("data-visible");
@@ -37,11 +37,9 @@ test("show/hide cancel button", async () => {
   await press.Tab();
   await press.Tab();
   expect(q.dialog()).not.toBeInTheDocument();
-  cleanup();
 });
 
 test("show focus-within styles", async () => {
-  const cleanup = setup();
   expect(q.group()).not.toHaveClass("focus-within");
   await press.Tab();
   expect(q.group()).toHaveClass("focus-within");
@@ -53,5 +51,4 @@ test("show focus-within styles", async () => {
   await press.Tab();
   await press.Tab();
   expect(q.group()).not.toHaveClass("focus-within");
-  cleanup();
 });
