@@ -54,7 +54,7 @@ export default defineConfig({
       include: ["packages"],
     },
     benchmark: {
-      include: ["**/*bench.{ts,tsx}", `**/*bench.${LOADER}.{ts,tsx}`],
+      include: ["**/*{test,perf}.{ts,tsx}", `**/*{test,perf}.${LOADER}.{ts,tsx}`],
     },
   },
 });
