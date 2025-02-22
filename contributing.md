@@ -12,13 +12,14 @@ This guide is intended to help you get started with contributing to the project.
 6. [Creating the default example](#creating-the-default-example)
 7. [Styling the example](#styling-the-example)
 8. [Testing the example](#testing-the-example)
-9. [Writing another example](#writing-another-example)
-10. [Importing styles from other examples](#importing-styles-from-other-examples)
-11. [Promoting the component](#promoting-the-component)
-12. [Updating the examples to import from `@ariakit/react`](#updating-the-examples-to-import-from-ariakitreact)
-13. [Writing the component documentation](#writing-the-component-documentation)
-14. [Writing documentation for other examples](#writing-documentation-for-other-examples)
-15. [Submitting a pull request](#submitting-a-pull-request)
+9. [Benchmarking the example](#benchmarking-the-example)
+10. [Writing another example](#writing-another-example)
+11. [Importing styles from other examples](#importing-styles-from-other-examples)
+12. [Promoting the component](#promoting-the-component)
+13. [Updating the examples to import from `@ariakit/react`](#updating-the-examples-to-import-from-ariakitreact)
+14. [Writing the component documentation](#writing-the-component-documentation)
+15. [Writing documentation for other examples](#writing-documentation-for-other-examples)
+16. [Submitting a pull request](#submitting-a-pull-request)
 
 ## Advanced tutorial
 
@@ -269,26 +270,17 @@ npm test watch my-component
 
 Benchmarks provide us an opportunity to compare performance of examples between commits and frameworks.
 
-1. Create file called `bench.ts` in the example folder.
-1. Create the benchmarking test utility, which provides important setup.
-1. Copy paste your test.
-1. Remove assertions.
+By default, all non-browser tests can be run in benchmark mode with the script `npm run test:benchmark`.
 
-> If you have a setup/teardown required for the test,
-> add it as the second parameter in the benchmark constructor.
+To add benchmark specific test, follow these steps.
+
+1. Create file called `perf.ts` in the example folder.
+2. Create the benchmarking test utility, which provides important setup.
+3. Ensure there are no assertions.
 
 ```ts
+// perf.ts
 import { focus, press, q } from "@ariakit/test";
-import { createBenchmarker } from "../benchmark.ts";
-
-function setup() {
-  // setup here
-  return teardown() {
-    // teardown here.
-  }
-}
-
-const test = createBenchmarker(__dirname, setup);
 
 test("correctly traps focus", async () => {
   const qq = q.within(q.group("trap"));
