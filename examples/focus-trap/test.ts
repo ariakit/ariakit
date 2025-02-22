@@ -1,6 +1,6 @@
 import { click, press, q } from "@ariakit/test";
 
-function setup() {
+beforeEach(() => {
   const before = document.createElement("div");
   before.tabIndex = 0;
   before.textContent = "Before";
@@ -12,10 +12,9 @@ function setup() {
     before.remove();
     after.remove();
   };
-}
+})
 
 test("correctly traps focus", async () => {
-  const cleanup = setup();
   await press.Tab();
   expect(q.text("Before")).toHaveFocus();
   await press.Tab();
@@ -30,11 +29,9 @@ test("correctly traps focus", async () => {
   expect(q.checkbox()).toHaveFocus();
   await press.ShiftTab();
   expect(q.text("Before")).not.toHaveFocus();
-  cleanup();
 });
 
 test("correctly releases focus", async () => {
-  const cleanup = setup();
   // First, disabling focus trap
   await click(q.labeled("Trap focus"));
   expect(q.checkbox()).toHaveFocus();
@@ -48,5 +45,4 @@ test("correctly releases focus", async () => {
   expect(q.checkbox()).toHaveFocus();
   await press.ShiftTab();
   expect(q.text("Before")).toHaveFocus();
-  cleanup();
 });

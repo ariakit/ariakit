@@ -50,9 +50,6 @@ export default defineConfig({
     css: {
       include: includeWithStyles,
     },
-    sequence: {
-      hooks: "parallel",
-    },
     coverage: {
       include: ["packages"],
     },
