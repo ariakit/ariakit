@@ -81,12 +81,9 @@ render(() => <App />, document.getElementById("root")!);
 
 ## Core Team
 
-- [Diego Haz](https://x.com/diegohaz)
-- [Ben Rodri](https://x.com/benrodrs)
-
-## Ariakit Solid maintainers
-
-- [Dani Guardiola](https://x.com/daniguardio_la)
+- [Diego Haz](https://bsky.app/profile/haz.dev)
+- [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
+- [Dani Guardiola](https://bsky.app/profile/dio.la)
 
 ## Attribution
 

@@ -1,11 +1,6 @@
 import { query } from "@ariakit/test/playwright";
-import { expect, test } from "@playwright/test";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-input-email", {
-    waitUntil: "networkidle",
-  });
-});
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 test("combobox should not throw when input type=email", async ({ page }) => {
   const q = query(page);

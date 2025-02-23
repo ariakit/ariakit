@@ -9,6 +9,7 @@ import {
   render as renderSolid,
 } from "solid-js/web";
 import failOnConsole from "vitest-fail-on-console";
+import type { AllowedTestLoader } from "./vitest.config.ts";
 
 if (!version.startsWith("17")) {
   failOnConsole();
@@ -60,41 +61,28 @@ if (version.startsWith("17")) {
   });
 }
 
-const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
-type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
-declare global {
-  var loader: AllowedTestLoader;
-}
-const TEST_LOADER = (process.env.ARIAKIT_TEST_LOADER ??
-  "react") as AllowedTestLoader;
-globalThis.loader = TEST_LOADER;
-if (!ALLOWED_TEST_LOADERS.includes(TEST_LOADER)) {
-  throw new Error(`Invalid loader: ${TEST_LOADER}`);
-}
-
-async function tryImport(path: string, fallbackPath?: string) {
-  return await import(path).catch(() =>
-    fallbackPath ? import(fallbackPath) : { failedImport: true },
-  );
+async function tryImport(path: string) {
+  return import(path)
+    .then(({ default: component }) => ({ component, failedImport: false }))
+    .catch(() => ({ component: undefined, failedImport: true }));
 }
 
 async function loadReact(dir: string) {
-  const { default: comp, failedImport } = await tryImport(
+  const { component, failedImport } = await tryImport(
     `./examples/${dir}/index.react.tsx`,
-    `./examples/${dir}/index.tsx`,
   );
   if (failedImport) return false;
   const element = createElement(ReactSuspense, {
     fallback: null,
     // biome-ignore lint/correctness/noChildrenProp:
-    children: createElement(comp),
+    children: createElement(component),
   });
   const { unmount } = await renderReact(element, { strictMode: true });
   return unmount;
 }
 
 async function loadSolid(dir: string) {
-  const { default: comp, failedImport } = await tryImport(
+  const { component, failedImport } = await tryImport(
     `./examples/${dir}/index.solid.tsx`,
   );
   if (failedImport) return false;
@@ -105,7 +93,7 @@ async function loadSolid(dir: string) {
       createComponent(SolidSuspense, {
         fallback: null,
         get children() {
-          return createComponent(comp, {});
+          return createComponent(component, {});
         },
       }),
     div,
@@ -160,12 +148,15 @@ function parseTest(filename?: string) {
   };
 }
 
+const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
+  "react") as AllowedTestLoader;
+
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
   const { dir, loader } = parseResult;
-  if (loader !== "all" && loader !== TEST_LOADER) skip();
-  const result = await LOADERS[TEST_LOADER](dir);
+  if (loader !== "all" && loader !== LOADER) skip();
+  const result = await LOADERS[LOADER](dir);
   if (result === false) skip();
   return result;
 });

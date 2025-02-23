@@ -15,4 +15,4 @@ Using the [`FormRadioGroup`](/reference/form-radio-group) and [`FormRadio`](/ref
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>

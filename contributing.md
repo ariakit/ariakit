@@ -180,7 +180,7 @@ The development workflow on this project is entirely based on examples. You can 
 
 Let's create a default example for our component:
 
-`examples/my-component/index.tsx`
+`examples/my-component/index.react.tsx`
 
 ```tsx
 import { MyComponent } from "@ariakit/react-core/my-component/my-component";
@@ -216,9 +216,9 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 }
 ```
 
-Now we need to import the CSS file on the example's `index.tsx` file and add the class name to the respective elements:
+Now we need to import the CSS file on the example's `index.react.tsx` file and add the class name to the respective elements:
 
-`examples/my-component/index.tsx`
+`examples/my-component/index.react.tsx`
 
 ```tsx
 import "./style.css";
@@ -273,7 +273,7 @@ A component may have multiple examples besides the default one. This is useful w
 
 Let's create another example for our component:
 
-`examples/my-component-custom-prop/index.tsx`
+`examples/my-component-custom-prop/index.react.tsx`
 
 ```tsx
 import "./style.css";
@@ -345,7 +345,7 @@ export * from "./my-component.ts";
 
 Now that we've promoted our component to the `@ariakit/react` package, we need to update the import declarations on the examples:
 
-`examples/my-component/index.tsx`
+`examples/my-component/index.react.tsx`
 
 ```tsx
 import "./style.css";
@@ -356,7 +356,7 @@ export default function Example() {
 }
 ```
 
-`examples/my-component-custom-prop/index.tsx`
+`examples/my-component-custom-prop/index.react.tsx`
 
 ```tsx
 import "./style.css";
@@ -390,7 +390,7 @@ This is my component.
 
 </div>
 
-<a href="../examples/my-component/index.tsx" data-playground>Example</a>
+<a href="../examples/my-component/index.react.tsx" data-playground>Example</a>
 ```
 
 Now open http://localhost:3000/components/my-component to see the component documentation.
@@ -504,11 +504,8 @@ Let's create an end-to-end test for our example:
 `examples/my-component/test-chrome.ts`
 
 ```ts
-import { expect, test } from "@playwright/test";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/my-component");
-});
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 test("my component", async ({ page }) => {
   const element = await page.getByText("My component");

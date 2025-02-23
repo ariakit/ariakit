@@ -13,7 +13,7 @@ Click with a mouse or keyboard to trigger an action. This abstract component is 
 
 <div data-tags></div>
 
-<a href="../examples/command/index.tsx" data-playground>Example</a>
+<a href="../examples/command/index.react.tsx" data-playground>Example</a>
 
 ## API
 

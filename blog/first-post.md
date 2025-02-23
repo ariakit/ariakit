@@ -2,4 +2,4 @@
 
 Test
 
-<a href="../examples/button/index.tsx" data-playground>Example</a>
+<a href="../examples/button/index.react.tsx" data-playground>Example</a>

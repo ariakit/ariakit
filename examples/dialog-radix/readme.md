@@ -25,7 +25,7 @@ In a real application, you may want to provide a simpler API to streamline usage
 
 </aside>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
