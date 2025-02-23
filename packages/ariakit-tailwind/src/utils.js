@@ -39,6 +39,7 @@ export const vars = /** @type {const} */ ({
   shadow: "--ak-shadow",
   layerRing: "--ak-layer-ring",
   layerBorder: "--ak-layer-border",
+  frameRadius: "--ak-frame-radius",
 
   // Private API
   _layerBase: "--_ak-layer-base",
@@ -47,8 +48,8 @@ export const vars = /** @type {const} */ ({
   _layerAppearance: "--_ak-layer-appearance",
   _layerParent: "--_ak-layer-parent",
   _layerIdle: "--_ak-layer-idle",
-  _frameBorder: "--_ak-frame-border",
   _frameRadius: "--_ak-frame-radius",
+  _frameBorder: "--_ak-frame-border",
   _framePadding: "--_ak-frame-padding",
   _frameCappedPadding: "--_ak-frame-capped-padding",
   _textLevel: "--_ak-text-level",
@@ -103,6 +104,11 @@ export const properties = css({
   [`@property ${vars.layerBorder}`]: {
     syntax: "'*'",
     inherits: "true",
+  },
+  [`@property ${vars.frameRadius}`]: {
+    syntax: "'<length>'",
+    inherits: "true",
+    initialValue: "0px",
   },
   [`@property ${vars._layerBase}`]: {
     syntax: "'*'",

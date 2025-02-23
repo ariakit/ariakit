@@ -9,59 +9,48 @@
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
 
-  --radius-field: var(--radius-lg);
+  --radius-field: var(--radius-xl);
   --spacing-field: --spacing(2);
 }
 
 :root {
-  @media (prefers-color-scheme: dark) {
+  @variant dark {
     --color-canvas: #0e0e11;
   }
 }
 
 body {
   @apply ak-layer-canvas antialiased;
-
-  @variant selection {
-    @apply ak-layer-contrast-primary;
-  }
 }
 
 /** ak-focusable **/
 
 @utility ak-focusable.idle {
-  @apply ak-outline-primary outline-offset-1;
+  @apply ak-outline-primary;
 }
 
-@utility ak-focusable.focus-visible {
+@utility ak-focusable.focus {
   @apply outline-2;
 }
 
 @utility ak-focusable {
-  @apply ak-focusable.idle;
-
-  @variant focus-visible {
-    @apply ak-focusable.focus-visible;
-  }
+  @apply ak-focusable.idle focus-visible:ak-focusable.focus;
 }
 
 /** ak-input **/
 
 @utility ak-input.idle {
-  @apply ak-edge-contrast ak-frame-field ak-focusable.idle cursor-text border px-3 -outline-offset-1;
-
+  @apply ak-edge-contrast ak-frame-field ak-frame-border ak-focusable.idle;
+  @apply cursor-text px-3 -outline-offset-1 transition-[background-color];
   @variant ak-light {
     @apply ak-layer-canvas-10;
   }
-
   @variant ak-dark {
-    @apply ak-layer-parent;
+    @apply not-hover:not-focus-within:ak-layer-down;
   }
-
   input {
     @apply outline-none;
   }
-
   &::placeholder,
   ::placeholder {
     @apply ak-text/0;
@@ -69,22 +58,24 @@ body {
 }
 
 @utility ak-input.hover {
-  @apply ak-layer-pop-[0.5];
+  @variant ak-light {
+    @apply ak-layer-pop-[0.5];
+  }
+  @variant ak-dark {
+    @apply ak-layer-current;
+  }
 }
 
-@utility ak-input.focus-visible {
-  @apply ak-focusable.focus-visible;
+@utility ak-input.focus {
+  @apply ak-focusable.focus;
+  @variant ak-light {
+    @apply ak-layer-canvas-10;
+  }
+  @variant ak-dark {
+    @apply ak-layer-current;
+  }
 }
 
 @utility ak-input {
-  @apply ak-input.idle;
-
-  @variant hover {
-    @apply ak-input.hover;
-  }
-
-  &:focus-visible,
-  &:has(:focus-visible) {
-    @apply ak-input.focus-visible;
-  }
+  @apply ak-input.idle hover:ak-input.hover focus-within:ak-input.focus;
 }

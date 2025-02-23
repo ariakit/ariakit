@@ -189,9 +189,8 @@ const AriakitTailwind = plugin(
     /**
      * @param {string | null | undefined} [token]
      * @param {string} [level]
-     * @param {boolean} [parent]
      */
-    function getLayerCss(token, level = "0", parent = false) {
+    function getLayerCss(token, level = "0") {
       const baseColor = tv("color", token);
       const { l, c, h } = getLayerOkLCH(level);
       const isDown = level.startsWith("-") && !token;
@@ -239,26 +238,17 @@ const AriakitTailwind = plugin(
           const result = {
             [provide(vars._layerParent)]: prop(vars.layer),
             [vars.shadow]: shadow(layerParent),
+            [vars.layerParent]: inherit(vars._layerParent),
           };
-          if (parent) {
-            Object.assign(result, {
-              [vars._layerIdle]: layerParent,
-            });
-          } else {
-            Object.assign(
-              result,
-              getEdgeCss(
-                colorMix(prop(vars.layer), layerParent),
-                undefined,
-                null,
-                true,
-              ),
-              {
-                [vars.layerParent]: inherit(vars._layerParent),
-              },
-            );
-          }
-          return result;
+          return Object.assign(
+            result,
+            getEdgeCss(
+              colorMix(prop(vars.layer), layerParent),
+              undefined,
+              null,
+              true,
+            ),
+          );
         }),
       );
 
@@ -315,10 +305,6 @@ const AriakitTailwind = plugin(
 
     addUtilities({
       ".ak-layer-current": getCurrentLayerCss(),
-      ".ak-layer-parent": {
-        ...getCurrentLayerCss(),
-        [`@container style(${vars.layerParent})`]: getLayerCss(null, "0", true),
-      },
     });
 
     matchUtilities(
@@ -408,6 +394,7 @@ const AriakitTailwind = plugin(
       const finalColor = `oklch(from ${color} var(--l) ${c} h / ${alpha})`;
       return {
         "--tw-ring-color": prop(vars.ring, prop(vars.layerRing)),
+        // TODO: Rename this variable
         "--l": lLight,
         borderColor: prop(vars.border, prop(vars.layerBorder)),
         [soft ? vars.layerRing : vars.ring]: finalColor,
@@ -432,6 +419,46 @@ const AriakitTailwind = plugin(
       },
       {
         values: getLayerValues({ downLevels: false, DEFAULT: "current" }),
+        modifiers: "any",
+      },
+    );
+
+    matchUtilities(
+      {
+        // TODO: Maybe abstract this
+        "ak-edge-shadow": (value, { modifier }) => {
+          const { level } = parseColorLevel(value);
+          const color = prop(vars.layer);
+          const contrast = getContrast();
+          const alphaModifier = modifier || 10;
+          const lLight = `min(l - 0.1, ${level} * 0.15 - ${contrast} * 0.15)`;
+          const lDark = `max(max(l, 0.13) + 0.13, 1 - ${level} * 0.1 + ${contrast} * 0.1)`;
+          const alphaBase = `((${alphaModifier} + 100 - l * 100) * 1%)`;
+          const alphaLAdd = oklchLightDark("(1 - l) * 0.1%", "l * 0.1%");
+          // const alphaCAdd = `(c * 50%)`;
+          const contrastAdd = `(12% * ${contrast})`;
+          const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${contrastAdd})`;
+          const finalColor = `oklch(from ${color} var(--l) 0 0 / ${alpha})`;
+          return {
+            "--tw-ring-color": prop(vars.ring, prop(vars.layerRing)),
+            // TODO: Rename this variable
+            "--l": lLight,
+            borderColor: prop(vars.border, prop(vars.layerBorder)),
+            [vars.ring]: finalColor,
+            [vars.border]: finalColor,
+            ...withParentL((l) => {
+              if (l !== 0) return;
+              return { "--l": lDark };
+            }),
+          };
+        },
+      },
+      {
+        values: getLayerValues({
+          downLevels: false,
+          colors: false,
+          DEFAULT: "0",
+        }),
         modifiers: "any",
       },
     );
@@ -567,11 +594,13 @@ const AriakitTailwind = plugin(
             [provide(vars._framePadding)]: padding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
+            [vars.frameRadius]: computedRadius,
             borderRadius: computedRadius,
 
             [vars._frameCappedPadding]: capPadding,
             [`@container style(${vars._frameCappedPadding}: ${cap})`]: {
               [provide(vars._frameRadius)]: radius,
+              [vars.frameRadius]: radius,
               borderRadius: radius,
             },
           };
