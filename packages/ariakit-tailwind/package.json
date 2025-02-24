@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/tailwind",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Tailwind CSS utilities for building accessible web apps",
   "sideEffects": false,
   "license": "MIT",
@@ -28,7 +28,14 @@
     "build": "",
     "lint": "biome check ."
   },
-  "keywords": ["ariakit", "tailwind", "styles", "css", "a11y", "ui"],
+  "keywords": [
+    "ariakit",
+    "tailwind",
+    "styles",
+    "css",
+    "a11y",
+    "ui"
+  ],
   "dependencies": {
     "color-string": "^1.9.1"
   },
