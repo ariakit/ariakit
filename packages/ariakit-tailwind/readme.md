@@ -38,9 +38,6 @@ Ariakit Tailwind is framework and library agnostic, requiring only Tailwind CSS 
    }
    ```
 
-   > [!NOTE]
-   > Any `--color-*` variable will be automatically available to `ak-layer` and other Ariakit color utilities. See the [Theming](#theming) section for more information.
-
 ## Theming
 
 Ariakit Tailwind integrates seamlessly with Tailwind's theming system. You can define custom colors, radii, and spacing values that are automatically available to Ariakit utilities:
