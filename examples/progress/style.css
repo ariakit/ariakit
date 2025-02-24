@@ -2,87 +2,53 @@
   @apply flex flex-col gap-2 p-4 bg-gray-100 rounded-lg border border-gray-900 shadow-md w-full max-w-md text-gray-900;
 }
 
-/* Progress Label (Centered Text) */
-.progress-label {
-  @apply text-center font-medium;
+.progress-root {
+  @apply relative w-full;
 }
 
-/* Progress Root (Container for the Progress Bar) */
-.progress-root {
-  @apply relative overflow-hidden bg-gray-300 rounded-full w-full max-w-lg h-8 border border-gray-800 text-black;
+.progress-header {
+  @apply flex justify-center items-center gap-2 mb-2;
+}
 
-  /* Fix overflow clipping in Safari */
+.progress-label {
+  @apply text-sm font-medium text-gray-900;
+}
+
+.progress-value {
+  @apply text-sm font-medium text-gray-900;
+}
+
+.progress-track {
+  @apply w-full bg-gray-500 rounded-full h-8 relative overflow-hidden border border-gray-900;
+
   transform: translateZ(0);
 }
 
-/* Progress Track (Background of the progress bar) */
-.progress-track {
-  @apply w-full bg-gray-500 rounded-full h-full; /* Light Mode: Darker gray for contrast */
-}
-
-/* Progress Indicator (Filling of the progress bar) */
 .progress-indicator {
-  background-color: #2AA8FF; /* Custom Light Mode Blue */
-  @apply h-full rounded-full transition-transform duration-500 ease-in-out origin-left;
+  @apply absolute left-0 top-0 h-full;
+
+  background-color: #2AA8FF;
+  border-radius: 9999px;
+  transition: width 0.5s ease-in-out;
 }
 
 /* 🔹 Dark Mode Adjustments */
 .dark .progress-container {
-  @apply bg-gray-900 text-white border-white shadow-md;
+  @apply bg-gray-900 text-white border-white;
 }
 
 .dark .progress-label {
   @apply text-center text-white;
 }
 
-.dark .progress-root {
-  @apply bg-gray-800 border-white text-white;
+.dark .progress-value {
+  @apply text-center text-white;
 }
 
 .dark .progress-track {
-  @apply bg-gray-800; /* Darker track for better contrast */
+  @apply bg-gray-900 border border-white;
 }
 
 .dark .progress-indicator {
-  background-color: #1B6DB0; /* Improved blue for WCAG contrast */
-}
-
-/* Clean UI - Remove unnecessary shadows */
-.progress-root, .progress-track, .progress-indicator {
-  box-shadow: none;
-}
-
-/* Optional: Inner shadow for better definition */
-.progress-root {
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / 30%);
-}
-
-/* WCAG Contrast Ratios */
-
-/*
- * Light Mode:
- * Background: bg-gray-300 (#D1D5DB)
- * Progress Track: bg-gray-500 (#6B7280) - Improved contrast
- * Foreground (Blue): #2AA8FF (AA Compliant)
- *
- * Dark Mode:
- * Background: bg-gray-800 (#1F2937)
- * Progress Track: bg-gray-800 (#1F2937) - Improved contrast
- * Foreground (Blue): #1B6DB0 (AAA Compliant)
- */
-
-/* Indeterminate Animation */
-[data-indeterminate="true"] {
-  background-color: #2AA8FF;
-  animation: indeterminate 1.5s infinite linear;
-}
-
-@keyframes indeterminate {
-  0% {
-    transform: translateX(-100%) scaleX(1);
-  }
-
-  100% {
-    transform: translateX(100%) scaleX(1);
-  }
+  background-color: #1B6DB0;
 }

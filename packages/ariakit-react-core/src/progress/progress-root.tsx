@@ -1,101 +1,50 @@
-import type { ElementType } from "react";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
+import { createContext, createElement, forwardRef, useContext } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
+import { useId } from "react";
 
-const TagName = "div" satisfies ElementType;
-type TagName = typeof TagName;
+interface ProgressRootOptions {
+  value: number;
+  min?: number;
+  max?: number;
+  children?: ReactNode;
+}
 
-/**
- * Hook for creating an accessible progress bar component.
- * @see https://ariakit.org/components/progress
- * @example
- * ```jsx
- * const props = useProgressRoot({
- *   value: 60,
- *   min: 0,
- *   max: 100,
- *   label: "Upload Progress"
- * });
- * <Role {...props} />
- * ```
- */
-export const useProgressRoot = createHook<TagName, ProgressRootOptions>(
-  function useProgressRoot({
-    value = null,
-    min = 0,
-    max = 100,
-    label,
-    ...props
-  }) {
-    const percentage =
-      value !== null ? ((value - min) / (max - min)) * 100 : null;
+function useProgressRoot({
+  value,
+  min = 0,
+  max = 100,
+  ...props
+}: ProgressRootOptions) {
+  const labelId = useId();
 
-    return {
-      role: "progressbar",
-      "aria-valuemin": min,
-      "aria-valuemax": max,
-      "aria-label": label,
-      "aria-live": "polite",
-      ...(value !== null && {
-        "aria-valuenow": value,
-        "aria-valuetext": label
-          ? `${label}: ${Math.round(percentage!)}%`
-          : `${Math.round(percentage!)}%`,
-      }),
-      className: "progress-root",
-      ...props,
-    };
+  return {
+    role: "progressbar",
+    "aria-valuemin": min,
+    "aria-valuemax": max,
+    "aria-valuenow": value,
+    "aria-valuetext": `${value}%`,
+    "aria-labelledby": labelId,
+    className: "progress-root",
+    ...props,
+  };
+}
+
+export const ProgressRootContext = createContext<{ labelId?: string }>({});
+
+export type ProgressRootProps = ProgressRootOptions &
+  HTMLAttributes<HTMLDivElement>;
+
+export const ProgressRoot = forwardRef<HTMLDivElement, ProgressRootProps>(
+  function ProgressRoot({ children, ...props }, ref) {
+    const htmlProps = useProgressRoot(props);
+    const labelId = htmlProps["aria-labelledby"];
+
+    return createElement(
+      ProgressRootContext.Provider,
+      { value: { labelId } },
+      createElement("div", { ...htmlProps, ref }, children),
+    );
   },
 );
 
-/**
- * Accessible progress bar component.
- * @see https://ariakit.org/components/progress
- * @example
- * ```jsx
- * <ProgressRoot
- *   value={60}
- *   min={0}
- *   max={100}
- *   label="Upload Progress"
- * />
- * ```
- */
-export const ProgressRoot = forwardRef(function ProgressRoot(
-  props: ProgressRootProps,
-) {
-  const htmlProps = useProgressRoot(props);
-  return createElement(TagName, htmlProps);
-});
-
-export interface ProgressRootOptions<_T extends ElementType = TagName>
-  extends Options {
-  /**
-   * Current progress value. If null, indicates an indeterminate state.
-   * @example
-   * // Determinate state
-   * value={75}
-   * // Indeterminate state
-   * value={null}
-   */
-  value?: number | null;
-  /**
-   * Minimum value for the progress bar.
-   * @default 0
-   */
-  min?: number;
-  /**
-   * Maximum value for the progress bar.
-   * @default 100
-   */
-  max?: number;
-  /**
-   * Accessible label for screen readers.
-   */
-  label?: string;
-}
-
-export type ProgressRootProps<T extends ElementType = TagName> = Props<
-  T,
-  ProgressRootOptions<T>
->;
+export const useProgressRootContext = () => useContext(ProgressRootContext);

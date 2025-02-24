@@ -99,6 +99,7 @@
     "./radio/radio-provider": "./src/radio/radio-provider.tsx",
     "./radio/radio-group": "./src/radio/radio-group.tsx",
     "./radio/radio-context": "./src/radio/radio-context.tsx",
+    "./progress/progress-value": "./src/progress/progress-value.tsx",
     "./progress/progress-track": "./src/progress/progress-track.tsx",
     "./progress/progress-root": "./src/progress/progress-root.tsx",
     "./progress/progress-label": "./src/progress/progress-label.tsx",
