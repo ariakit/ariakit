@@ -1,0 +1,81 @@
+@import "tailwindcss";
+@import "@ariakit/tailwind";
+
+@theme {
+  --color-canvas: #f1f1f1;
+  --color-primary: #007acc;
+  --color-secondary: #ec4899;
+
+  --radius-container: var(--radius-xl);
+  --spacing-container: --spacing(1);
+
+  --radius-field: var(--radius-xl);
+  --spacing-field: --spacing(2);
+}
+
+:root {
+  @variant dark {
+    --color-canvas: #0e0e11;
+  }
+}
+
+body {
+  @apply ak-layer-canvas antialiased;
+}
+
+/** ak-focusable **/
+
+@utility ak-focusable.idle {
+  @apply ak-outline-primary;
+}
+
+@utility ak-focusable.focus {
+  @apply outline-2;
+}
+
+@utility ak-focusable {
+  @apply ak-focusable.idle focus-visible:ak-focusable.focus;
+}
+
+/** ak-input **/
+
+@utility ak-input.idle {
+  @apply ak-edge-contrast ak-frame-field ak-frame-border ak-focusable.idle;
+  @apply cursor-text px-3 -outline-offset-1 transition-[background-color];
+  @variant ak-light {
+    @apply ak-layer-canvas-10;
+  }
+  @variant ak-dark {
+    @apply not-hover:not-focus-within:ak-layer-down;
+  }
+  input {
+    @apply outline-none;
+  }
+  &::placeholder,
+  ::placeholder {
+    @apply ak-text/0;
+  }
+}
+
+@utility ak-input.hover {
+  @variant ak-light {
+    @apply ak-layer-pop-[0.5];
+  }
+  @variant ak-dark {
+    @apply ak-layer-current;
+  }
+}
+
+@utility ak-input.focus {
+  @apply ak-focusable.focus;
+  @variant ak-light {
+    @apply ak-layer-canvas-10;
+  }
+  @variant ak-dark {
+    @apply ak-layer-current;
+  }
+}
+
+@utility ak-input {
+  @apply ak-input.idle hover:ak-input.hover focus-within:ak-input.focus;
+}
