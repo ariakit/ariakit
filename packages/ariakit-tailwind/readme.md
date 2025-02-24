@@ -108,233 +108,154 @@ Layers define edge and shadow colors. Display them using Tailwind utilities like
 
 Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors.
 
-### `ak-layer-<number>`
+| Utility                                   | Description                                                          |
+| ----------------------------------------- | -------------------------------------------------------------------- |
+| `ak-layer`                                | Lightens the layer color (equialent to `ak-layer-1`).                |
+| `ak-layer-<number>`                       | Adjusts lightness levels relative to the parent layer (default `1`). |
+| `ak-layer-down`                           | Darkens the layer color (equivalent to `ak-layer-down-1`).           |
+| `ak-layer-down-<number>`                  | Specifies darkness levels (default `1`).                             |
+| `ak-layer-<color>`                        | Applies specific color.                                              |
+| `ak-layer-<color>-<number>`               | Controls color lightness (default `0`).                              |
+| `ak-layer-<color>-down-<number>`          | Adjusts color darkness (default `0`).                                |
+| `ak-layer-contrast`                       | Automatically adapts color for parent layer contrast.                |
+| `ak-layer-contrast-<number>`              | Adjusts contrast color lightness.                                    |
+| `ak-layer-contrast-down-<number>`         | Controls contrast color darkness.                                    |
+| `ak-layer-contrast-<color>`               | Automatically adapts specific color for parent layer contrast.       |
+| `ak-layer-contrast-<color>-<number>`      | Adjusts contrast color lightness.                                    |
+| `ak-layer-contrast-<color>-down-<number>` | Controls contrast color darkness.                                    |
+| `ak-layer-mix-<color>`                    | Blends color with parent layer.                                      |
+| `ak-layer-mix-<color>/<number>`           | Blends color with parent layer at a specific ratio (default `50`).   |
+| `ak-layer-mix-<color>-<number>`           | Adjusts mix color lightness (can be combined with mix ratios).       |
+| `ak-layer-mix-<color>-down-<number>`      | Controls mix color darkness (can be combined with mix ratios).       |
+| `ak-layer-pop`                            | Reverses tone for hover effects.                                     |
+| `ak-layer-pop-<number>`                   | Adjusts pop intensity.                                               |
+| `ak-layer-pop-<color>`                    | Provides color-specific pop effects.                                 |
+| `ak-layer-pop-<color>-<number>`           | Customizes color pop intensity.                                      |
+| `ak-layer-pop-vivid`                      | Adjusts both lightness and saturation for a vivid tone shift.        |
+| `ak-layer-pop-vivid-<number>`             | Controls the strength of the vivid effect.                           |
+| `ak-layer-pop-vivid-<color>`              | Provides color-specific vivid effects.                               |
+| `ak-layer-pop-vivid-<color>-<number>`     | Adjusts vivid color intensity.                                       |
+| `ak-layer-feature`                        | Highlights important elements.                                       |
+| `ak-layer-feature-<number>`               | Adjusts feature intensity.                                           |
+| `ak-layer-feature-<color>`                | Provides color-specific feature effects.                             |
+| `ak-layer-feature-<color>-<number>`       | Customizes feature color intensity.                                  |
 
-Adjust lightness levels relative to the parent layer (default `1`, same as `ak-layer`):
+## `ak-text`
 
-```html
-<div class="ak-layer-2">Slightly lighter canvas tone</div>
-```
-
-### `ak-layer-down`
-
-Darken elements with `ak-layer-down`:
-
-```html
-<div class="ak-layer-down">Subtly darker canvas tone</div>
-```
-
-### `ak-layer-down-<number>`
-
-Specify darkness levels (default `1`, equivalent to `ak-layer-down`):
-
-```html
-<div class="ak-layer-down-2">Slightly darker canvas tone</div>
-```
-
-### `ak-layer-<color>`
-
-Apply specific colors that automatically meet accessibility standards:
-
-```html
-<div class="ak-layer-blue-500">Blue</div>
-<div class="ak-layer-primary">Primary</div>
-```
-
-### `ak-layer-<color>-<number>`
-
-Control color lightness (default `0`):
-
-```html
-<div class="ak-layer-primary-1">Slightly lighter primary</div>
-```
-
-> [!WARNING]
-> Requires custom colors without numeric suffixes in theme definitions.
-
-### `ak-layer-<color>-down-<number>`
-
-Adjust color darkness (default `0`):
+With `ak-text` utilities, text colors and opacity automatically adjust for readability based on their parent layer.
 
 ```html
-<div class="ak-layer-primary-down-1">Slightly darker primary</div>
-```
-
-### `ak-layer-contrast`
-
-Automatically adapt background colors for parent layer contrast:
-
-```html
-<div class="ak-layer-contrast">Contrast color</div>
-```
-
-### `ak-layer-contrast-<number>`
-
-Adjust contrast lightness:
-
-```html
-<div class="ak-layer-contrast-2">Slightly lighter contrast color</div>
-```
-
-### `ak-layer-contrast-down-<number>`
-
-Control contrast darkness:
-
-```html
-<div class="ak-layer-contrast-down-2">Slightly darker contrast color</div>
-```
-
-### `ak-layer-contrast-<color>`
-
-Set color-adaptive contrast:
-
-```html
-<div class="ak-layer-contrast-blue-500">Blue</div>
-<div class="ak-layer-contrast-primary">Primary</div>
-```
-
-### `ak-layer-contrast-<color>-<number>`
-
-Adjust contrast color lightness:
-
-```html
-<div class="ak-layer-contrast-primary-2">Slightly lighter primary contrast</div>
-```
-
-### `ak-layer-contrast-<color>-down-<number>`
-
-Control contrast color darkness:
-
-```html
-<div class="ak-layer-contrast-primary-down-2">
-  Slightly darker primary contrast
+<div class="ak-layer-canvas ak-text/60">
+  This text will be 60% opaque if supported. Otherwise, Ariakit will adjust it
+  for better readability.
 </div>
 ```
 
-### `ak-layer-mix`
+> [!WARNING]
+> When specifying a color, elements with the `ak-text-<color>` class must be children of an element with an `ak-layer-*` class.
+>
+> ```html
+> <!-- ❌ -->
+> <div class="ak-layer-canvas ak-text-primary">Primary text color</div>
+> ```
+>
+> ```html
+> <!-- ✅ -->
+> <div class="ak-layer-canvas">
+>   <div class="ak-text-primary">Primary text color</div>
+> </div>
+> ```
 
-Blend colors with parent layers (default 50% mix):
+| Utility                    | Description                                                  |
+| -------------------------- | ------------------------------------------------------------ |
+| `ak-text/<number>`         | Adjusts text opacity.                                        |
+| `ak-text-<color>`          | Applies specific color.                                      |
+| `ak-text-<color>/<number>` | Adjusts the amount of white/black (default `75`).            |
+| `ak-text-<color>-<number>` | Applies specific color tone (can be combined with modifier). |
 
-### `ak-layer-mix-<color>`
+## `ak-edge`
 
-Color blending examples:
-
-```html
-<div class="ak-layer-mix-blue-500">50% blue mix</div>
-<div class="ak-layer-mix-primary/25">25% primary mix</div>
-```
-
-### `ak-layer-mix-<color>-<number>`
-
-Adjust mix color lightness:
-
-```html
-<div class="ak-layer-mix-primary-2/25">25% primary-2 mix</div>
-```
-
-### `ak-layer-mix-<color>-down-<number>`
-
-Control mix color darkness:
-
-```html
-<div class="ak-layer-mix-primary-down-2/25">25% primary-down-2 mix</div>
-```
-
-### `ak-layer-pop`
-
-Reverse tone for hover effects:
+`ak-edge` utilities define border and ring colors on top of [`ak-layer`](#ak-layer).
 
 ```html
-<button class="ak-layer-primary hover:ak-layer-pop">Button</button>
+<div class="ak-layer-canvas ak-edge/10 border">Border</div>
+<div class="ak-layer-canvas ak-edge/10 ring">Ring</div>
 ```
 
-### `ak-layer-pop-<number>`
+| Utility                             | Description                                                           |
+| ----------------------------------- | --------------------------------------------------------------------- |
+| `ak-edge/<number>`                  | Adjusts edge base opacity (default `5`).                              |
+| `ak-edge-<number>`                  | Adjusts edge color lightness (default `0`).                           |
+| `ak-edge-<color>`                   | Applies specific color.                                               |
+| `ak-edge-<color>-<number>`          | Adjusts edge color lightness.                                         |
+| `ak-edge-contrast`                  | Automatically adapts color for parent layer contrast.                 |
+| `ak-edge-contrast-<number>`         | Adjusts contrast color lightness (default `0`).                       |
+| `ak-edge-contrast-<color>`          | Automatically adapts specific color for parent layer contrast.        |
+| `ak-edge-contrast-<color>-<number>` | Adjusts contrast color lightness (default `0`).                       |
+| `ak-edge-shadow`                    | Applies dark edge color even if parent layer is dark (but not black). |
+| `ak-edge-shadow/<number>`           | Adjusts dark edge color base opacity (default `10`).                  |
+| `ak-edge-shadow-<number>`           | Adjusts dark edge color lightness.                                    |
 
-Adjust pop intensity:
+## `ak-frame`
+
+`ak-frame` utilities define border radii and padding relative to their parent frame. When no parent frame exists, it uses the provided value as an absolute measurement.
 
 ```html
-<div class="ak-layer-pop-2">Stronger tone shift</div>
+<!-- rounded-xl p-1 -->
+<div class="ak-frame-xl/1">
+  <!-- rounded-lg (adjusted based on parent) p-4 -->
+  <div class="ak-frame-2xl/4"></div>
+</div>
 ```
 
-### `ak-layer-pop-<color>`
-
-Color-specific pop effects:
+To apply a specific radius regardless of the parent frame, use the `ak-frame-force` utility:
 
 ```html
-<button class="ak-layer-pop-primary">Primary button</button>
+<!-- rounded-xl p-1 -->
+<div class="ak-frame-xl/1">
+  <!-- rounded-xl p-4 -->
+  <div class="ak-frame-force-xl/4"></div>
+</div>
 ```
 
-### `ak-layer-pop-<color>-<number>`
+> [!WARNING]
+> Border sizes must be factored into radius calculations. Always use `ak-frame-border` instead of Tailwind's `border` utility for proper integration:
+>
+> ```html
+> <!-- ❌ -->
+> <div class="ak-frame-xl/1 border">Border</div>
+> ```
+>
+> ```html
+> <!-- ✅ -->
+> <div class="ak-frame-xl/1 ak-frame-border">Border</div>
+> ```
 
-Customize color pop intensity:
+If you define custom `--radius-*` and `--spacing-*` variables, you can use them directly in `ak-frame` utilities. Use the same name to omit the padding part of the utility:
+
+```css
+@theme {
+  --radius-container: var(--radius-xl);
+  --spacing-container: --spacing(1);
+}
+```
 
 ```html
-<button class="ak-layer-pop-primary-2">Enhanced primary effect</button>
+<!-- rounded-xl p-1 (same as ak-frame-container/container or ak-frame-xl/1) -->
+<div class="ak-frame-container"></div>
 ```
 
-### `ak-layer-pop-vivid`
-
-Adjust both lightness and saturation:
-
-```html
-<div class="ak-layer-pop-vivid">Vivid tone shift</div>
-```
-
-### `ak-layer-pop-vivid-<number>`
-
-Control vivid effect strength:
-
-```html
-<div class="ak-layer-pop-vivid-2">Stronger vivid effect</div>
-```
-
-### `ak-layer-pop-vivid-<color>`
-
-Color-specific vivid effects:
-
-```html
-<button class="ak-layer-pop-vivid-primary">Vivid primary button</button>
-```
-
-### `ak-layer-pop-vivid-<color>-<number>`
-
-Adjust vivid color intensity:
-
-```html
-<button class="ak-layer-pop-vivid-primary-2">Enhanced vivid primary</button>
-```
-
-### `ak-layer-feature`
-
-Highlight important elements:
-
-```html
-<div class="ak-layer-feature">Feature</div>
-```
-
-### `ak-layer-feature-<number>`
-
-Adjust feature intensity:
-
-```html
-<div class="ak-layer-feature-2">Stronger feature</div>
-```
-
-### `ak-layer-feature-<color>`
-
-Color-specific feature effects:
-
-```html
-<div class="ak-layer-feature-primary">Primary feature</div>
-```
-
-### `ak-layer-feature-<color>-<number>`
-
-Customize feature color intensity:
-
-```html
-<div class="ak-layer-feature-primary-2">Enhanced primary feature</div>
-```
+| Utility                            | Description                                                                |
+| ---------------------------------- | -------------------------------------------------------------------------- |
+| `ak-frame`                         | Applies border radius and padding (relative to parent frame).              |
+| `ak-frame-<length>`                | Sets specific border radius when no parent frame is present.               |
+| `ak-frame-<length>/<length>`       | Applies specific border radius (without parent frame) and padding.         |
+| `ak-frame-cover`                   | Covers parent frame padding with a negative margin.                        |
+| `ak-frame-cover-<length>`          | Covers parent padding and sets specific radius (no parent).                |
+| `ak-frame-cover-<length>/<length>` | Covers parent padding and applies specific radius (no parent) and padding. |
+| `ak-frame-force-<length>`          | Forces specific border radius, overriding parent frame settings.           |
+| `ak-frame-force-<length>/<length>` | Forces specific radius and padding, ignoring parent frame.                 |
+| `ak-frame-border`                  | Applies border width that influences nested element radius calculations.   |
 
 ## Core Team
 
