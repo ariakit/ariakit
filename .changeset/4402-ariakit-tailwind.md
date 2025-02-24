@@ -1,5 +1,5 @@
 ---
-"@ariakit/tailwind": patch
+"@ariakit/tailwind": minor
 ---
 
 Initial version.
