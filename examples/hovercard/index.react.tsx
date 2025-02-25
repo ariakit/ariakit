@@ -6,10 +6,10 @@ export default function Example() {
     <div className="wrapper">
       <Ariakit.HovercardProvider>
         <Ariakit.HovercardAnchor
-          href="https://x.com/ariakitjs"
+          href="https://bsky.app/profile/ariakit.org"
           className="anchor"
         >
-          @ariakitjs
+          @ariakit.org
         </Ariakit.HovercardAnchor>
         <Ariakit.Hovercard gutter={16} className="hovercard">
           <img
@@ -20,8 +20,14 @@ export default function Example() {
           <Ariakit.HovercardHeading className="username">
             Ariakit
           </Ariakit.HovercardHeading>
-          <p>Toolkit for building accessible web apps with React.</p>
-          <a href="https://x.com/ariakitjs" className="button primary flat">
+          <p>
+            Toolkit with accessible components, styles, and examples for your
+            next web app.
+          </p>
+          <a
+            href="https://bsky.app/profile/ariakit.org"
+            className="button primary flat"
+          >
             Follow
           </a>
         </Ariakit.Hovercard>
