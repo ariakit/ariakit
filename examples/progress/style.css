@@ -1,3 +1,5 @@
+/* Light Mode Adjustments */
+
 .progress-container {
   @apply flex flex-col gap-2 p-4 bg-gray-100 rounded-lg border border-gray-900 shadow-md w-full max-w-md text-gray-900;
 }
@@ -19,20 +21,17 @@
 }
 
 .progress-track {
-  @apply w-full bg-gray-500 rounded-full h-8 relative overflow-hidden border border-gray-900;
+  @apply w-full bg-gray-200 rounded-full h-8 relative overflow-hidden border border-black;
 
   transform: translateZ(0);
 }
 
 .progress-indicator {
-  @apply absolute left-0 top-0 h-full;
-
-  background-color: #2AA8FF;
-  border-radius: 9999px;
-  transition: width 0.5s ease-in-out;
+  @apply absolute left-0 top-0 h-full rounded-full transition-all duration-500 ease-in-out bg-blue-600;
 }
 
-/* 🔹 Dark Mode Adjustments */
+/* Dark Mode Adjustments */
+
 .dark .progress-container {
   @apply bg-gray-900 text-white border-white;
 }
@@ -50,5 +49,5 @@
 }
 
 .dark .progress-indicator {
-  background-color: #1B6DB0;
+  @apply bg-blue-700;
 }

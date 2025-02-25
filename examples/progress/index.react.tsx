@@ -3,11 +3,14 @@ import * as Ariakit from "@ariakit/react";
 import { useEffect, useState } from "react";
 
 export default function ProgressExample() {
-  const [progress, setProgress] = useState(30);
+  const min = 0;
+  const max = 100;
+  const step = 10;
+  const [progress, setProgress] = useState(40);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setProgress((p) => (p >= 100 ? 10 : p + 10));
+      setProgress((p) => (p >= max ? min : p + step));
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -25,13 +28,14 @@ export default function ProgressExample() {
             Uploading:
           </Ariakit.ProgressLabel>
           <Ariakit.ProgressValue value={progress} className="progress-value">
-            {" "}
-            {progress}%{" "}
+            {progress}%
           </Ariakit.ProgressValue>
         </div>
         <Ariakit.ProgressTrack className="progress-track">
           <Ariakit.ProgressIndicator
             value={progress}
+            min={0}
+            max={100}
             className="progress-indicator"
           />
         </Ariakit.ProgressTrack>
