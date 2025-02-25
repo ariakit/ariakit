@@ -13,7 +13,7 @@ export default function Example() {
         </Ariakit.HovercardAnchor>
         <Ariakit.Hovercard gutter={16} className="hovercard">
           <img
-            src="https://pbs.twimg.com/profile_images/1547936373243490306/dSn6Am0o_400x400.jpg"
+            src="https://cdn.bsky.app/img/avatar/plain/did:plc:ohupqrl6r2hphjt64xvgysef/bafkreif7utqn7zmg64ot5iwbslvoxqf5dkgzepaqa75afqud645xxkoonu@jpeg"
             alt="Ariakit"
             className="avatar"
           />
