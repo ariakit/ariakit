@@ -27,8 +27,12 @@
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/ariakit/ariakit?style=social">
   </a>
   &nbsp;
-  <a href="https://x.com/ariakitjs">
-    <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg">
+  <a href="https://bsky.app/profile/ariakit.org">
+    <img alt="Follow Ariakit on Bluesky" src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff">
+  </a>
+  &nbsp;
+  <a href="https://discord.gg/WyHvnXsvMs">
+    <img alt="Join the Ariakit Discord server" src="https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white">
   </a>
 </div>
 
