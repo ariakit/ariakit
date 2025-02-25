@@ -1,3 +1,5 @@
+import react from "@astrojs/react";
+import solid from "@astrojs/solid-js";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
@@ -10,4 +12,9 @@ export default defineConfig({
       allowedHosts: [".local"],
     },
   },
+
+  integrations: [
+    react({ include: ["**/*.react.{jsx,tsx}"] }),
+    solid({ include: ["**/*.solid.{jsx,tsx}"] }),
+  ],
 });

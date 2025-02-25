@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "..",
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "include": ["**/*.react.tsx", "../packages/*react*/**/*"]
+}

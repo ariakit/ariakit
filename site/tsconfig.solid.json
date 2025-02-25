@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.solid.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "..",
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true
+  },
+  "include": ["**/*.solid.tsx", "../packages/*solid*/**/*"]
+}
