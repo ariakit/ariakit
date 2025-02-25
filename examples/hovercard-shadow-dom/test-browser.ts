@@ -3,7 +3,7 @@ import { expect } from "@playwright/test";
 import { test } from "../test-utils.ts";
 
 const getAnchor = (page: Page) =>
-  page.getByRole("link", { name: "@ariakitjs" });
+  page.getByRole("link", { name: "@ariakit.org" });
 const getHovercard = (page: Page) =>
   page.getByRole("dialog", { name: "Ariakit" });
 

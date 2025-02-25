@@ -16,8 +16,8 @@ export default function Example() {
             if (open) setCount(count + 1);
           }}
         >
-          <Ariakit.HovercardAnchor href="https://x.com/ariakitjs">
-            @ariakitjs
+          <Ariakit.HovercardAnchor href="https://bsky.app/profile/ariakit.org">
+            @ariakit.org
           </Ariakit.HovercardAnchor>
           <Ariakit.Hovercard gutter={16}>
             <Ariakit.HovercardHeading>Ariakit</Ariakit.HovercardHeading>

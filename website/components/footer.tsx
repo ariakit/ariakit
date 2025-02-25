@@ -30,6 +30,7 @@ const links = [
     title: "Community",
     links: [
       { title: "Bluesky", href: "https://bsky.app/profile/ariakit.org" },
+      { title: "Discord", href: "https://discord.gg/WyHvnXsvMs" },
       { title: "GitHub", href: "https://github.com/ariakit/ariakit" },
       {
         title: "Discussions",

@@ -20,6 +20,11 @@ const links = [
     children: "Instagram",
     target: "_blank",
   },
+  {
+    href: "https://discord.gg/WyHvnXsvMs",
+    children: "Discord",
+    target: "_blank",
+  },
   { href: "https://ariakit.org", children: "Ariakit.org" },
 ];
 
@@ -42,7 +47,7 @@ export default function Example() {
     >
       <Ariakit.ComboboxLabel className="label">Links</Ariakit.ComboboxLabel>
       <Ariakit.Combobox
-        placeholder="e.g., Twitter"
+        placeholder="e.g., Bluesky"
         className="combobox"
         autoSelect
       />

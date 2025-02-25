@@ -13,13 +13,13 @@ const hoverOutside = async () => {
 
 test("show hovercard on hover after timeout", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
-  await hover(q.link("@ariakitjs"));
+  await hover(q.link("@ariakit.org"));
   expect(q.dialog()).not.toBeInTheDocument();
   await waitForHovercardToShow();
 });
 
 test("hide hovercard on hover outside after timeout", async () => {
-  await hover(q.link("@ariakitjs"));
+  await hover(q.link("@ariakit.org"));
   await waitForHovercardToShow();
   await hoverOutside();
   expect(q.dialog()).toBeVisible();
@@ -27,7 +27,7 @@ test("hide hovercard on hover outside after timeout", async () => {
 });
 
 test("keep hovercard open when it has focus", async () => {
-  await hover(q.link("@ariakitjs"));
+  await hover(q.link("@ariakit.org"));
   await waitForHovercardToShow();
   await click(q.dialog());
   await hoverOutside();
@@ -36,11 +36,11 @@ test("keep hovercard open when it has focus", async () => {
 });
 
 test("keep hovercard open when hovering out and in quickly", async () => {
-  await hover(q.link("@ariakitjs"));
+  await hover(q.link("@ariakit.org"));
   await waitForHovercardToShow();
   await hoverOutside();
   await sleep(200);
-  await hover(q.link("@ariakitjs"));
+  await hover(q.link("@ariakit.org"));
   expect(q.dialog()).toBeVisible();
   await hoverOutside();
   await sleep(200);
@@ -50,19 +50,19 @@ test("keep hovercard open when hovering out and in quickly", async () => {
 });
 
 test("hide unfocused hovercard on escape", async () => {
-  await hover(q.link("@ariakitjs"));
+  await hover(q.link("@ariakit.org"));
   await waitForHovercardToShow();
   await sleep();
   await press.Escape();
   expect(q.dialog()).not.toBeInTheDocument();
-  expect(q.link("@ariakitjs")).not.toHaveFocus();
+  expect(q.link("@ariakit.org")).not.toHaveFocus();
 });
 
 test("hide focused hovercard on escape", async () => {
-  await hover(q.link("@ariakitjs"));
+  await hover(q.link("@ariakit.org"));
   await waitForHovercardToShow();
   await click(q.dialog());
   await press.Escape();
   expect(q.dialog()).not.toBeInTheDocument();
-  expect(q.link("@ariakitjs")).toHaveFocus();
+  expect(q.link("@ariakit.org")).toHaveFocus();
 });
