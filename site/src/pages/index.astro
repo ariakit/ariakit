@@ -1,4 +1,6 @@
 ---
+import ReactExample from "site/examples/separator/index.react.tsx";
+import SolidExample from "site/examples/separator/index.solid.tsx";
 import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
 
@@ -8,4 +10,6 @@ import Layout from "../layouts/Layout.astro";
 
 <Layout>
   <Welcome />
+  <ReactExample client:load />
+  <SolidExample client:load />
 </Layout>

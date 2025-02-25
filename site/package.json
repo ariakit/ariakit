@@ -8,6 +8,9 @@
     "preview": "astro preview --host",
     "astro": "astro"
   },
+  "exports": {
+    "./*": "./*"
+  },
   "dependencies": {
     "@astrojs/react": "4.2.0",
     "@astrojs/solid-js": "5.0.4",
