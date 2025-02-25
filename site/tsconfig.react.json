@@ -6,8 +6,9 @@
     "composite": true,
     "noEmit": false,
     "emitDeclarationOnly": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "jsxImportSource": "react"
   },
-  "include": ["**/*.react.tsx", "../packages/*react*/**/*"]
+  "include": ["**/*.react.*"],
+  "exclude": ["dist", "node_modules"]
 }

@@ -1,11 +1,14 @@
 {
-  "extends": "../tsconfig.solid.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "..",
     "composite": true,
     "noEmit": false,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   },
-  "include": ["**/*.solid.tsx", "../packages/*solid*/**/*"]
+  "include": ["**/*.solid.*"],
+  "exclude": ["dist", "node_modules"]
 }
