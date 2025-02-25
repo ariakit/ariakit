@@ -6,27 +6,21 @@
 
 This guide is intended to help you get started with contributing to the project. By following these steps — **which should take no more than 30 minutes** —, you will understand the development process and workflow.
 
-- [Contributing](#contributing)
-  - [Basic tutorial](#basic-tutorial)
-  - [Advanced tutorial](#advanced-tutorial)
-  - [Cloning the repository](#cloning-the-repository)
-  - [Installing Node.js and npm](#installing-nodejs-and-npm)
-  - [Installing dependencies](#installing-dependencies)
-  - [Starting the development server](#starting-the-development-server)
-  - [Creating a component](#creating-a-component)
-  - [Creating the default example](#creating-the-default-example)
-  - [Styling the example](#styling-the-example)
-  - [Testing the example](#testing-the-example)
-  - [Writing another example](#writing-another-example)
-  - [Importing styles from other examples](#importing-styles-from-other-examples)
-  - [Promoting the component](#promoting-the-component)
-  - [Updating the examples to import from `@ariakit/react`](#updating-the-examples-to-import-from-ariakitreact)
-  - [Writing the component documentation](#writing-the-component-documentation)
-  - [Writing documentation for other examples](#writing-documentation-for-other-examples)
-  - [Submitting a pull request](#submitting-a-pull-request)
-  - [Versioning](#versioning)
-  - [Running with React 17](#running-with-react-17)
-  - [Writing end-to-end tests](#writing-end-to-end-tests)
+1. [Cloning the repository](#cloning-the-repository)
+2. [Installing Node.js and npm](#installing-nodejs-and-npm)
+3. [Installing dependencies](#installing-dependencies)
+4. [Starting the development server](#starting-the-development-server)
+5. [Creating a component](#creating-a-component)
+6. [Creating the default example](#creating-the-default-example)
+7. [Styling the example](#styling-the-example)
+8. [Testing the example](#testing-the-example)
+9. [Writing another example](#writing-another-example)
+10. [Importing styles from other examples](#importing-styles-from-other-examples)
+11. [Promoting the component](#promoting-the-component)
+12. [Updating the examples to import from `@ariakit/react`](#updating-the-examples-to-import-from-ariakitreact)
+13. [Writing the component documentation](#writing-the-component-documentation)
+14. [Writing documentation for other examples](#writing-documentation-for-other-examples)
+15. [Submitting a pull request](#submitting-a-pull-request)
 
 ## Advanced tutorial
 
@@ -73,7 +67,7 @@ node -v
 npm -v
 ```
 
-If the versions are not correct or you don't have Node.js or npm installed, download them from <https://nodejs.org>.
+If the versions are not correct or you don't have Node.js or npm installed, download them from https://nodejs.org.
 
 Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js and npm versions. Once in the project's root directory, run the following command in your terminal:
 
@@ -109,7 +103,7 @@ npm run dev
 
 > If you're on Windows, we recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or [Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit).
 
-Now open <http://localhost:3000> in your browser to see the project's site.
+Now open http://localhost:3000 in your browser to see the project's site.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -198,7 +192,7 @@ export default function Example() {
 }
 ```
 
-Now open <http://localhost:3000/examples/my-component> to see the example in action.
+Now open http://localhost:3000/examples/my-component to see the example in action.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -237,7 +231,7 @@ export default function Example() {
 }
 ```
 
-Now open <http://localhost:3000/examples/my-component> to see the example with the styles applied.
+Now open http://localhost:3000/examples/my-component to see the example with the styles applied.
 
 You'll notice that the transpiled CSS file has been also added to editor's files so people can easily edit it directly in the browser. You can also use it to see the output CSS while applying Tailwind classes.
 
@@ -312,7 +306,7 @@ We can `@import` CSS files from other examples. You'll usually import the styles
 }
 ```
 
-Now open <http://localhost:3000/examples/my-component-custom-prop> to see the example with the custom prop applied.
+Now open http://localhost:3000/examples/my-component-custom-prop to see the example with the custom prop applied.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -401,7 +395,7 @@ This is my component.
 <a href="../examples/my-component/index.react.tsx" data-playground>Example</a>
 ```
 
-Now open <http://localhost:3000/components/my-component> to see the component documentation.
+Now open http://localhost:3000/components/my-component to see the component documentation.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -409,7 +403,7 @@ Now open <http://localhost:3000/components/my-component> to see the component do
 
 ## Writing documentation for other examples
 
-Unlike default examples, other examples will be primarily accessed through their own URLs (for example: <http://localhost:3000/examples/my-component-custom-prop>). To write documentation for them, we can create a `readme.md` file in the example's directory and follow the same convention as for the component's markdown file.
+Unlike default examples, other examples will be primarily accessed through their own URLs (for example: http://localhost:3000/examples/my-component-custom-prop). To write documentation for them, we can create a `readme.md` file in the example's directory and follow the same convention as for the component's markdown file.
 
 `examples/my-component-custom-prop/readme.md`
 
@@ -431,7 +425,7 @@ Note that we're passing the `customProp` prop to the component:
 ```
 ````
 
-Now open <http://localhost:3000/examples/my-component-custom-prop> to see the example documentation.
+Now open http://localhost:3000/examples/my-component-custom-prop to see the example documentation.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
