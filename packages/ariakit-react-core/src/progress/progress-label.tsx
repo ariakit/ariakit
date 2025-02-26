@@ -14,6 +14,7 @@ function useProgressLabel({ children, id, ...props }: ProgressLabelOptions) {
   return {
     id: id || contextLabelId,
     "data-progress-label": true,
+    "aria-hidden": "true", // Added: Hides this element from the accessibility tree as it is referenced via aria-labelledby
     className: "progress-label",
     children,
     ...props,
