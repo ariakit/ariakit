@@ -91,11 +91,11 @@ export const properties = css({
   },
   [`@property ${vars.ring}`]: {
     syntax: "'*'",
-    inherits: "true",
+    inherits: "false",
   },
   [`@property ${vars.border}`]: {
     syntax: "'*'",
-    inherits: "true",
+    inherits: "false",
   },
   [`@property ${vars.layerRing}`]: {
     syntax: "'*'",
@@ -370,54 +370,4 @@ export function withParentOkL(fn) {
     Object.assign(acc, { [query]: result });
     return acc;
   }, css());
-}
-
-/**
- * Returns CSS that enables a child to inherit CSS variables from its parent.
- * @typedef {"even" | "odd"} Parity
- * @typedef {(prop: (typeof vars)[keyof typeof vars]) => string} Provide
- * @typedef {(prop: (typeof vars)[keyof typeof vars], defaultValue?: string) =>
- * string} Inherit
- * @typedef {{ opposite: Provide, provide: Provide, inherit: Inherit }}
- * WithParentFnParams
- * @typedef {(params: WithParentFnParams) => CssInJs} WithParentFn
- * @param {string} id
- * @param {boolean} reset
- * @param {WithParentFn} fn
- */
-export function withContext(id, reset, fn) {
-  const getParityKey = () => `--_ak-${id}-parity`;
-
-  /** @param {Parity} parity */
-  const getNextParity = (parity) =>
-    // TODO: Check if this !reset is necessary (it is, hover:ak-layer-10)
-    parity === "even" && !reset ? "odd" : "even";
-
-  /**
-   * @param {Parity} [parity]
-   * @returns {CssInJs}
-   */
-  const getCss = (parity = "even") => ({
-    [getParityKey()]: getNextParity(parity),
-    ...fn({
-      opposite: (prop) => `${prop}-${parity === "even" ? "odd" : "even"}`,
-      provide: (prop) => `${prop}-${getNextParity(parity)}`,
-      inherit: (prop, defaultValue) =>
-        `var(${prop}-${parity}${defaultValue ? `, ${defaultValue}` : ""})`,
-    }),
-  });
-
-  if (reset) {
-    return getCss();
-  }
-
-  const result = css();
-
-  for (const parity of /** @type {Parity[]} */ (["even", "odd"])) {
-    result[`@container style(${getParityKey()}: ${parity})`] = getCss(parity);
-  }
-
-  result[`@container not style(${getParityKey()})`] = getCss();
-
-  return result;
 }

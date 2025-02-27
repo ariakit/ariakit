@@ -16,7 +16,6 @@ import {
   textColor,
   toPercent,
   vars,
-  withContext,
   withParentL,
   withParentOkL,
 } from "./utils.js";
@@ -550,7 +549,7 @@ const AriakitTailwind = plugin(
      * @param {string | null} [modifier]
      */
     function getFrameArgs(radiusKey, modifier) {
-      const radius = t("radius", radiusKey);
+      const radius = tv("radius", radiusKey, radiusKey);
       const padding =
         modifier ||
         (radiusKey === "DEFAULT"
@@ -583,7 +582,7 @@ const AriakitTailwind = plugin(
           const parentRadius = inherit(vars._frameRadius, radius);
           const parentPadding = inherit(vars._framePadding, "0px");
           const parentBorder = inherit(vars._frameBorder, "0px");
-          const minRadius = `min(0.25rem, ${radius})`;
+          const minRadius = `min(0.125rem, ${radius})`;
           const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder}))`;
 
           const computedRadius = force
@@ -828,6 +827,65 @@ const AriakitTailwind = plugin(
     function getContrast() {
       const contrastBase = t("contrast", "DEFAULT", "0");
       return `max(0, ${contrastBase})`;
+    }
+
+    /**
+     * Returns CSS that enables a child to inherit CSS variables from its parent.
+     * @typedef {"even" | "odd"} Parity
+     * @typedef {(prop: (typeof vars)[keyof typeof vars]) => string} Provide
+     * @typedef {(prop: (typeof vars)[keyof typeof vars], defaultValue?: string) =>
+     * string} Inherit
+     * @typedef {{ opposite: Provide, provide: Provide, inherit: Inherit }}
+     * WithParentFnParams
+     * @typedef {(params: WithParentFnParams) => import("./utils.js").CssInJs} WithParentFn
+     * @param {string} id
+     * @param {boolean} reset
+     * @param {WithParentFn} fn
+     */
+    function withContext(id, reset, fn) {
+      const getParityKey = () => `--_ak-${id}-parity`;
+
+      addBase({
+        [`@property ${getParityKey()}`]: {
+          syntax: "'even | odd | none'",
+          inherits: "true",
+          initialValue: "none",
+        },
+      });
+
+      /** @param {Parity} parity */
+      const getNextParity = (parity) =>
+        // TODO: Check if this !reset is necessary (it is, hover:ak-layer-10)
+        parity === "even" && !reset ? "odd" : "even";
+
+      /**
+       * @param {Parity} [parity]
+       * @returns {import("./utils.js").CssInJs}
+       */
+      const getCss = (parity = "even") => ({
+        [getParityKey()]: getNextParity(parity),
+        ...fn({
+          opposite: (prop) => `${prop}-${parity === "even" ? "odd" : "even"}`,
+          provide: (prop) => `${prop}-${getNextParity(parity)}`,
+          inherit: (prop, defaultValue) =>
+            `var(${prop}-${parity}${defaultValue ? `, ${defaultValue}` : ""})`,
+        }),
+      });
+
+      if (reset) {
+        return getCss();
+      }
+
+      const result = css();
+
+      for (const parity of /** @type {Parity[]} */ (["even", "odd"])) {
+        result[`@container style(${getParityKey()}: ${parity})`] =
+          getCss(parity);
+      }
+
+      result[`@container style(${getParityKey()}: none)`] = getCss();
+
+      return result;
     }
   },
 );
