@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev --host",
-    "tsc": "astro check && tsc -b",
+    "tsc": "astro check && tsc -b src",
     "build": "astro build",
     "preview": "astro preview --host",
     "astro": "astro"
@@ -16,6 +16,6 @@
     "@astrojs/check": "0.9.4",
     "@astrojs/react": "4.2.0",
     "@astrojs/solid-js": "5.0.4",
-    "tailwindcss": "4.0.7"
+    "tailwindcss": "4.0.9"
   }
 }

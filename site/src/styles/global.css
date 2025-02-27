@@ -25,22 +25,22 @@ body {
 
 /** ak-focusable **/
 
-@utility ak-focusable.idle {
+@utility ak-focusable_idle {
   @apply ak-outline-primary;
 }
 
-@utility ak-focusable.focus {
+@utility ak-focusable_focus {
   @apply outline-2;
 }
 
 @utility ak-focusable {
-  @apply ak-focusable.idle focus-visible:ak-focusable.focus;
+  @apply ak-focusable_idle focus-visible:ak-focusable_focus;
 }
 
 /** ak-input **/
 
-@utility ak-input.idle {
-  @apply ak-edge-contrast ak-frame-field ak-frame-border ak-focusable.idle;
+@utility ak-input_idle {
+  @apply ak-edge-contrast ak-frame-field ak-frame-border ak-focusable_idle;
   @apply cursor-text px-3 -outline-offset-1 transition-[background-color];
   @variant ak-light {
     @apply ak-layer-canvas-10;
@@ -57,7 +57,7 @@ body {
   }
 }
 
-@utility ak-input.hover {
+@utility ak-input_hover {
   @variant ak-light {
     @apply ak-layer-pop-[0.5];
   }
@@ -66,8 +66,8 @@ body {
   }
 }
 
-@utility ak-input.focus {
-  @apply ak-focusable.focus;
+@utility ak-input_focus {
+  @apply ak-focusable_focus;
   @variant ak-light {
     @apply ak-layer-canvas-10;
   }
@@ -77,5 +77,19 @@ body {
 }
 
 @utility ak-input {
-  @apply ak-input.idle hover:ak-input.hover focus-within:ak-input.focus;
+  @apply ak-input_idle hover:ak-input_hover focus-within:ak-input_focus;
+}
+
+/** ak-prose **/
+
+@utility ak-prose {
+  @apply ak-text/80;
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
 }
