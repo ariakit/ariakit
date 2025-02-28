@@ -1,0 +1,42 @@
+{
+  "name": "@ariakit/tailwind",
+  "version": "0.1.1",
+  "description": "Tailwind CSS utilities for building accessible web apps",
+  "sideEffects": false,
+  "license": "MIT",
+  "homepage": "https://ariakit.org/styles",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.css",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-tailwind"
+  },
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ariakit"
+  },
+  "scripts": {
+    "build": "",
+    "lint": "biome check ."
+  },
+  "keywords": ["ariakit", "tailwind", "styles", "css", "a11y", "ui"],
+  "dependencies": {
+    "color-string": "^1.9.1"
+  },
+  "devDependencies": {
+    "@types/color-string": "^1.5.5",
+    "tailwindcss": "4.0.9"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4.0.3"
+  }
+}

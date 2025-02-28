@@ -5,11 +5,11 @@ test.describe.configure({ retries: process.env.CI ? 2 : 1 });
 
 test("https://github.com/ariakit/ariakit/issues/1662", async ({ page }) => {
   const q = query(page);
-  await q.link("@ariakitjs").hover();
+  await q.link("@ariakit.org").hover();
   await expect(q.dialog("Ariakit")).toBeVisible();
   await page.mouse.move(0, 0);
   await expect(q.dialog("Ariakit")).not.toBeVisible();
-  await q.link("@ariakitjs").hover();
+  await q.link("@ariakit.org").hover();
   await expect(q.dialog("Ariakit")).toBeVisible();
   await page.mouse.wheel(0, 300);
   await page.waitForTimeout(600);

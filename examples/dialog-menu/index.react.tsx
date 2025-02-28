@@ -27,7 +27,7 @@ export default function Example() {
         <Ariakit.MenuProvider>
           <Ariakit.MenuButton className="button">Share</Ariakit.MenuButton>
           <Ariakit.Menu portal className="menu">
-            <Ariakit.MenuItem className="menu-item">Twitter</Ariakit.MenuItem>
+            <Ariakit.MenuItem className="menu-item">Bluesky</Ariakit.MenuItem>
             <Ariakit.MenuItem className="menu-item">Facebook</Ariakit.MenuItem>
             <Ariakit.MenuItem className="menu-item">Email</Ariakit.MenuItem>
           </Ariakit.Menu>

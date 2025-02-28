@@ -7,4 +7,5 @@ Change logs are organized by package:
 - [@ariakit/react-core](packages/ariakit-react-core/CHANGELOG.md)
 - [@ariakit/solid](packages/ariakit-solid/CHANGELOG.md)
 - [@ariakit/solid-core](packages/ariakit-solid-core/CHANGELOG.md)
+- [@ariakit/tailwind](packages/ariakit-tailwind/CHANGELOG.md)
 - [@ariakit/test](packages/ariakit-test/CHANGELOG.md)
