@@ -1,0 +1,60 @@
+---
+import { getEntry } from "astro:content";
+import { render } from "astro:content";
+import { getCollection } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import Layout from "../../../layouts/Layout.astro";
+
+// Create getStaticPaths
+export const getStaticPaths = (async () => {
+  // Get all examples from the content collection
+  const examples = await getCollection("examples");
+
+  const paths = examples.flatMap((example) =>
+    example.data.frameworks.map((framework) => ({
+      params: {
+        framework,
+        example: example.id,
+      },
+    }))
+  );
+
+  return paths;
+}) satisfies GetStaticPaths;
+
+// Get the dynamic route parameters
+const { framework, example } = Astro.params;
+
+Astro.locals.framework = framework;
+
+// Get the example from the content collection
+const entry = await getEntry("examples", `${example}`);
+
+// If example doesn't exist, redirect to 404
+if (!entry) {
+  return Astro.redirect("/404");
+}
+
+const examples = await getCollection("examples");
+
+// Get the rendered content
+const { Content } = await render(entry);
+---
+
+<Layout title={entry.data.title || example}>
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">{entry.data.title || example}</h1>
+    <div class="ak-prose">
+      <Content framework={framework} />
+    </div>
+  </div>
+  {
+    examples.flatMap((example) =>
+      example.data.frameworks.map((framework) => (
+        <a href={`/${framework}/examples/${example.id}`}>
+          {framework}/{example.data.title}
+        </a>
+      ))
+    )
+  }
+</Layout>
