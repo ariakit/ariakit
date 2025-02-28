@@ -47,6 +47,8 @@ Text label describing what the progress bar represents:
 - `children` (required): The label content
 - `id`: Optional custom ID (auto-generated if not provided)
 
+The label is visually displayed but marked with `aria-hidden="true"` since it's already associated with the progress bar through `aria-labelledby`. This prevents duplicate announcements while ensuring screen reader users receive the appropriate context.
+
 ### ProgressValue
 
 Displays the numerical value of the progress:
