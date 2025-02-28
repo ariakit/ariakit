@@ -56,6 +56,7 @@
     "./menubar": "./src/menubar.ts",
     "./popover": "./src/popover.ts",
     "./portal": "./src/portal.ts",
+    "./progress": "./src/progress.ts",
     "./radio": "./src/radio.ts",
     "./role": "./src/role.ts",
     "./select": "./src/select.ts",

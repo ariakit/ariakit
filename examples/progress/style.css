@@ -1,0 +1,63 @@
+/* Light Mode Adjustments */
+
+.progress-container {
+  @apply flex flex-col gap-2 p-4 bg-gray-100 rounded-lg border border-gray-900 shadow-md w-full max-w-md text-gray-900;
+}
+
+.progress-root {
+  @apply relative w-full;
+}
+
+.progress-header {
+  @apply flex justify-center items-center gap-2 mb-2;
+}
+
+.progress-label {
+  @apply text-sm font-medium text-gray-900;
+}
+
+.progress-value {
+  @apply text-sm font-medium text-gray-900;
+}
+
+.progress-track {
+  @apply w-full bg-gray-200 rounded-full h-8 relative overflow-hidden border border-black;
+
+  transform: translateZ(0);
+}
+
+.progress-indicator {
+  @apply absolute left-0 top-0 h-full rounded-full transition-all duration-500 ease-in-out bg-blue-600;
+}
+
+/*
+ * NOTE: If using the enhanced accessibility version of the Progress component
+ * with status announcements, the following sr-only class needs to be uncommented:
+ *
+ * .sr-only {
+ *   @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+ *   clip: rect(0, 0, 0, 0);
+ * }
+ */
+
+/* Dark Mode Adjustments */
+
+.dark .progress-container {
+  @apply bg-gray-900 text-white border-white;
+}
+
+.dark .progress-label {
+  @apply text-center text-white;
+}
+
+.dark .progress-value {
+  @apply text-center text-white;
+}
+
+.dark .progress-track {
+  @apply bg-gray-900 border border-white;
+}
+
+.dark .progress-indicator {
+  @apply bg-blue-700;
+}
