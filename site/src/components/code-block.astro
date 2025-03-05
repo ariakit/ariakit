@@ -1,0 +1,137 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import {
+  codeToTokens,
+  type BundledLanguage,
+  type CodeToTokensOptions,
+} from "shiki";
+import { CopyToClipboard } from "./copy-to-clipboard.react";
+
+interface Props extends HTMLAttributes<"div"> {
+  code: string;
+  lang?: CodeToTokensOptions<BundledLanguage>["lang"];
+  lineNumbers?: boolean;
+  highlightLines?: number[];
+  highlightTokens?: (string | readonly [string, number[]])[];
+}
+
+const {
+  code,
+  lang,
+  lineNumbers = false,
+  highlightLines = [],
+  highlightTokens = [],
+  ...htmlProps
+} = Astro.props;
+
+const { tokens } = await codeToTokens(code.trimEnd(), {
+  lang,
+  theme: "dark-plus",
+});
+
+const tokensSeen: Record<string, number> = {};
+
+function isHighlighted(i: number) {
+  return highlightLines.includes(i + 1);
+}
+
+function splitContent(content: string) {
+  const tokens = content.split(/([^\s"']+)/);
+  return tokens.flatMap((token) => {
+    const highlightToken = highlightTokens.some((t) => {
+      const [word, indexes] = Array.isArray(t) ? t : [t];
+      if (token !== word) return false;
+      if (!indexes) return token === word;
+      if (tokensSeen[word] === undefined) {
+        tokensSeen[word] = 0;
+      }
+      const index = tokensSeen[word]++;
+      return indexes.includes(index);
+    });
+    return { content: token, highlightToken };
+  });
+}
+---
+
+<div
+  class:list={[
+    "ak-layer ak-frame-border relative ak-frame-container text-sm/[1.8] overflow-clip ak-tabs",
+    htmlProps.class,
+  ]}
+  {...htmlProps}
+>
+  <div class="ak-tab-list [:where(&>*)]:ak-tab-folder_idle">
+    <div class="ak-tab-folder_selected">
+      <div>selected</div>
+    </div>
+    <div class="ak-tab-folder_hover">
+      <div>hover</div>
+    </div>
+    <div class="">
+      <div>idle</div>
+    </div>
+    <div class="ak-tab-folder_focus">
+      <div>focus</div>
+    </div>
+    <div class="ak-tab-folder_selected ak-tab-folder_focus">
+      <div>selected focus</div>
+    </div>
+    <div class="">
+      <div>idle</div>
+    </div>
+    <div class="ak-tab-folder_selected ak-tab-folder_hover">
+      <div>selected hover</div>
+    </div>
+    <div class="">
+      <div>idle</div>
+    </div>
+    <div class="ak-tab-folder" aria-selected="true" tabindex="0">
+      <div>ak-tab-folder</div>
+    </div>
+    <div class="ak-tab-folder" tabindex="0">
+      <div>ak-tab-folder</div>
+    </div>
+  </div>
+  <div
+    tabindex="0"
+    class="ak-tab-panel group ak-frame/0 outline-none relative grid scheme-light rounded-t-none ak-dark:scheme-dark"
+  >
+    <pre
+      class:list={[
+        "grid ak-frame/0 py-4 overflow-auto *:first:*:ps-4 *:first:*:data-highlight:ak-edge/20 *:first:*:data-highlight:shadow-(color:--ak-border) *:first:*:data-highlight:shadow-[inset_0.175rem_0]",
+        lineNumbers && "grid-cols-[max-content_1fr]",
+      ]}>{lineNumbers && (
+        <div aria-hidden class="grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50">{
+          tokens.map((_, i) => {
+          const highlightLine = isHighlighted(i);
+            return <span data-highlight={highlightLine || undefined} class:list={["pe-4", highlightLine && "ak-layer-pop"]}>{i + 1}</span>;
+          })}</div>
+      )}<code>{
+        tokens.map((line, i) => {
+          const highlightLine = isHighlighted(i);
+          const hasContent = line.some((token) => token.content);
+          return (
+            <div data-highlight={highlightLine || undefined} class:list={["pe-14", highlightLine && "ak-layer-pop"]}>{
+              !hasContent ? "\n" :
+              line.flatMap((token) => splitContent(token.content).map(({ content, highlightToken }) => {
+                return <span style={`color: ${token.color}`}>{content || ""}</span>;
+                const el = <span style={`--color:${token.color}`} class="relative ak-text-(--color)/50 ak-light:ak-text-(--color)/65">{content || ""}</span>;
+                if (!highlightToken) return el;
+                return (
+                  <span style={`--color:${token.color}`} class="ak-text-(--color)/50 ak-light:ak-text-(--color)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20 ring rounded px-[0.5ch] py-0.5">{el}</span>
+                );
+              }))}</div>
+          );
+        })
+      }</code></pre>
+    <!-- <CopyToClipboard
+      client:load
+      text={code}
+      className="absolute top-2 end-2 [@media(hover:hover)]:not-group-hover:not-focus:not-group-focus:sr-only"
+    /> -->
+    <div
+      class="absolute inset-0 rounded-t-none ak-frame pointer-events-none z-1 group-focus-visible:outline-2 ak-outline-primary -outline-offset-3"
+    >
+    </div>
+  </div>
+</div>

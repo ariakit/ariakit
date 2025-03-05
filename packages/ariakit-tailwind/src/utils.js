@@ -8,7 +8,7 @@ export const TEXT_CONTRAST_L = `calc((${SCHEME_THRESHOLD_L} - l) * infinity)`;
 
 // Adjusts the lightness of a color based on its hue and chroma in the OkLCH
 // color space.
-const LA_BASE = 0.56;
+const LA_BASE = 0.561;
 const LB_BASE = 0.72;
 const T = `(c / 0.4)`;
 const LA_HUE_RAD = `((h + 45) * pi / 180)`;
@@ -18,7 +18,7 @@ const LB_HUE_COMPONENT = `(0.035 * cos(${LB_HUE_RAD}))`;
 const LA = `(${LA_BASE} + ${T} * (-0.005 + ${LA_HUE_COMPONENT}))`;
 const LB = `(${LB_BASE} + ${T} * (0.03 + ${LB_HUE_COMPONENT}))`;
 const L_DIRECTION = `clamp(0, (l - (${LA} + ${LB}) / 2) * infinity, 1)`;
-const L_FORBIDDEN_RANGE = `clamp(0, (l - ${0.56}) * (${LB} - l) * infinity, 1)`;
+const L_FORBIDDEN_RANGE = `clamp(0, (l - ${LA}) * (${LB} - l) * infinity, 1)`;
 const SAFE_L = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + (${LA} * (1 - ${L_DIRECTION}) + ${LB} * ${L_DIRECTION}) * ${L_FORBIDDEN_RANGE})`;
 const SAFE_L_UP = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + ${LB} * ${L_FORBIDDEN_RANGE})`;
 const SAFE_L_DOWN = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + ${LA} * ${L_FORBIDDEN_RANGE})`;
@@ -40,6 +40,9 @@ export const vars = /** @type {const} */ ({
   layerRing: "--ak-layer-ring",
   layerBorder: "--ak-layer-border",
   frameRadius: "--ak-frame-radius",
+  frameBorder: "--ak-frame-border",
+  framePadding: "--ak-frame-padding",
+  frameMargin: "--ak-frame-margin",
 
   // Private API
   _layerBase: "--_ak-layer-base",
@@ -68,16 +71,14 @@ export const vars = /** @type {const} */ ({
 });
 
 export const properties = css({
-  [`@property ${vars.layer}`]: {
-    syntax: "'<color>'",
-    inherits: "true",
-    initialValue: "oklch(1 0 0)",
-  },
+  // [`@property ${vars.layer}`]: {
+  //   syntax: "'<color>'",
+  //   inherits: "true",
+  //   initialValue: "oklch(1 0 0)",
+  // },
   [`@property ${vars.layerParent}`]: {
-    // syntax: "'<color>'",
     syntax: "'*'",
     inherits: "true",
-    // initialValue: "oklch(1 0 0)",
   },
   [`@property ${vars.text}`]: {
     syntax: "'<color>'",
@@ -110,15 +111,30 @@ export const properties = css({
     inherits: "true",
     initialValue: "0px",
   },
+  [`@property ${vars.frameBorder}`]: {
+    syntax: "'<length>'",
+    inherits: "false",
+    initialValue: "0px",
+  },
+  [`@property ${vars.framePadding}`]: {
+    syntax: "'<length>'",
+    inherits: "true",
+    initialValue: "0px",
+  },
+  [`@property ${vars.frameMargin}`]: {
+    syntax: "'<length>'",
+    inherits: "false",
+    initialValue: "0px",
+  },
   [`@property ${vars._layerBase}`]: {
     syntax: "'*'",
     inherits: "false",
   },
-  [`@property ${vars._layerIdle}`]: {
-    syntax: "'<color>'",
-    inherits: "false",
-    initialValue: "oklch(1 0 0)",
-  },
+  // [`@property ${vars._layerIdle}`]: {
+  //   syntax: "'<color>'",
+  //   inherits: "false",
+  //   initialValue: "oklch(1 0 0)",
+  // },
   // Whether the layer is dark (oklch(1 0 0)) or light (oklch(0 0 0))
   [`@property ${vars._layerAppearance}`]: {
     syntax: "'<color>'",
@@ -131,12 +147,12 @@ export const properties = css({
     inherits: "true",
     initialValue: "lch(100 0 0)",
   },
-  // The rounded ok lightness value of the layer (0-1)
-  [`@property ${vars._layerOkL}`]: {
-    syntax: "'<color>'",
-    inherits: "true",
-    initialValue: "oklch(1 0 0)",
-  },
+  // // The rounded ok lightness value of the layer (0-1)
+  // [`@property ${vars._layerOkL}`]: {
+  //   syntax: "'<color>'",
+  //   inherits: "true",
+  //   initialValue: "oklch(1 0 0)",
+  // },
   // TODO: Comment
   [`@property ${vars._frameCappedPadding}`]: {
     syntax: "'<length>'",

@@ -2,7 +2,7 @@
 @import "@ariakit/tailwind";
 
 @theme {
-  --color-canvas: #f1f1f1;
+  --color-canvas: #fcfdfd;
   --color-primary: #007acc;
   --color-secondary: #ec4899;
 
@@ -19,28 +19,34 @@
   }
 }
 
+html,
+body {
+  @apply min-h-screen;
+}
+
 body {
   @apply ak-layer-canvas antialiased;
 }
 
-/** ak-focusable **/
+/** ak-clickable **/
 
-@utility ak-focusable_idle {
-  @apply ak-outline-primary;
+@utility ak-clickable_idle {
+  @apply block cursor-default select-none;
 }
 
-@utility ak-focusable_focus {
-  @apply outline-2;
+@utility ak-clickable_active {
+  padding-block: calc(var(--ak-frame-padding) + 1px)
+    calc(var(--ak-frame-padding) - 1px) !important;
 }
 
-@utility ak-focusable {
-  @apply ak-focusable_idle focus-visible:ak-focusable_focus;
+@utility ak-clickable {
+  @apply ak-clickable_idle active:ak-clickable_active;
 }
 
 /** ak-input **/
 
 @utility ak-input_idle {
-  @apply ak-edge-contrast ak-frame-field ak-frame-border ak-focusable_idle;
+  @apply ak-edge-contrast ak-frame-field ak-frame-border;
   @apply cursor-text px-3 -outline-offset-1 transition-[background-color];
   @variant ak-light {
     @apply ak-layer-canvas-10;
@@ -67,7 +73,7 @@ body {
 }
 
 @utility ak-input_focus {
-  @apply ak-focusable_focus;
+  @apply ak-outline-primary outline-2;
   @variant ak-light {
     @apply ak-layer-canvas-10;
   }
@@ -78,6 +84,121 @@ body {
 
 @utility ak-input {
   @apply ak-input_idle hover:ak-input_hover focus-within:ak-input_focus;
+}
+
+/** ak-tab **/
+
+@property --ak-tab-border-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@utility ak-tabs {
+  --ak-tab-border-width: var(--ak-frame-border, 1px);
+  --ak-tab-border-color: var(--ak-border, var(--ak-layer-border, transparent));
+  --ak-tab-bg: var(--ak-layer);
+}
+
+@utility ak-tab-list {
+  @apply ak-frame-bleed/(--ak-tab-list-p,0px) ak-layer-down;
+  @apply -mb-(--ak-tab-border-width) relative flex items-center overflow-x-auto rounded-b-none pb-0;
+  scrollbar-width: none;
+}
+
+@utility ak-tab-list-p-* {
+  @apply ak-tab-list;
+  --ak-tab-list-p: --spacing(--value(number, [number]));
+  --ak-tab-list-p: --value([length]);
+}
+
+@utility ak-tab-panel {
+  @apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-cover;
+  @apply border-(--ak-tab-border-color) relative overflow-y-auto rounded-t-none border-x-0 border-b-0;
+}
+
+@utility ak-tab_idle {
+  @apply ak-clickable_idle ak-text/70;
+  @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap;
+}
+
+@utility ak-tab-folder_idle {
+  @apply ak-tab_idle ak-frame/1 ak-frame-border-(--ak-tab-border-width);
+  @apply border-x-0 border-b-0 border-transparent;
+  padding-block-end: calc(var(--ak-tab-border-width) + --spacing(1)) !important;
+  > * {
+    @apply ak-frame/1;
+    @apply flex items-center gap-1.5 whitespace-nowrap px-2;
+  }
+}
+
+@utility ak-tab-folder_hover {
+  > * {
+    @apply ak-layer-pop;
+  }
+}
+
+@utility ak-tab-folder_focus {
+  @apply outline-none;
+  > * {
+    @apply ak-layer-contrast-primary;
+  }
+}
+
+@utility ak-tab-folder_active {
+  > * {
+    @apply ak-clickable_active;
+  }
+}
+
+@utility ak-tab-folder_selected {
+  @apply ak-layer-(--ak-tab-bg) ak-text/100;
+  @apply border-x-(length:--ak-tab-border-width) z-2 p-(--ak-frame-padding) border-(--ak-tab-border-color) rounded-b-none !border-b-0;
+
+  &::after,
+  &::before {
+    @apply absolute bottom-0 bg-no-repeat content-[''];
+
+    --ak-tab-smoothness: min(0.2px, var(--ak-tab-border-width));
+
+    --ak-tab-inner: var(--ak-frame-radius);
+    --ak-tab-inner-border: calc(var(--ak-tab-inner) - var(--ak-tab-smoothness));
+    --ak-tab-inner-bg: calc(var(--ak-tab-inner) + var(--ak-tab-smoothness));
+
+    --ak-tab-outer: calc(var(--ak-tab-inner) - var(--ak-tab-border-width));
+    --ak-tab-outer-border: calc(var(--ak-tab-outer) + var(--ak-tab-smoothness));
+    --ak-tab-outer-bg: calc(var(--ak-tab-outer) - var(--ak-tab-smoothness));
+
+    --ak-tab-transparent: transparent var(--ak-tab-outer-bg);
+    --ak-tab-border: var(--ak-tab-border-color) var(--ak-tab-outer-border),
+      var(--ak-tab-border-color) var(--ak-tab-inner-border);
+    --ak-tab-bg: var(--ak-layer) var(--ak-tab-inner-bg);
+
+    --ak-tab-gradient: var(--ak-tab-transparent), var(--ak-tab-border),
+      var(--ak-tab-bg);
+    --ak-tab-backdrop: transparent var(--ak-tab-outer),
+      var(--ak-layer) var(--ak-tab-outer-border);
+
+    height: var(--ak-frame-radius);
+    width: var(--ak-frame-radius);
+  }
+
+  &::before {
+    right: 100%;
+    background-image: radial-gradient(circle at 0 0, var(--ak-tab-gradient)),
+      radial-gradient(circle at 0 0, var(--ak-tab-backdrop));
+  }
+
+  &::after {
+    left: 100%;
+    background-position: 100%, 100%;
+    background-image: radial-gradient(circle at 100% 0, var(--ak-tab-gradient)),
+      radial-gradient(circle at 100% 0, var(--ak-tab-backdrop));
+  }
+}
+
+@utility ak-tab-folder {
+  @apply ak-tab-folder_idle hover:not-aria-selected:ak-tab-folder_hover focus-visible:ak-tab-folder_focus aria-selected:ak-tab-folder_selected active:ak-tab-folder_active;
 }
 
 /** ak-prose **/
@@ -91,5 +212,11 @@ body {
 
   h2 {
     @apply text-2xl;
+  }
+}
+
+@utility ak-code {
+  .pl-k {
+    @apply ak-text-purple-500;
   }
 }

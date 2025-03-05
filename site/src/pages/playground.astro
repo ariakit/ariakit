@@ -1,0 +1,35 @@
+---
+import CanvasColorPicker from "../components/canvas-color-picker.astro";
+import Layout from "../layouts/Layout.astro";
+import { Playground as PlaygroundClient } from "../components/playground.react.tsx";
+import CodeBlock from "../components/code-block.astro";
+import example from "../examples/separator/index.react.tsx?raw";
+import Icon from "../icons/icon.astro";
+---
+
+<Layout>
+  <Icon name="check" />
+  <PlaygroundClient client:load>
+    <CodeBlock lang="tsx" code={example} />
+    <CodeBlock lang="tsx" code={example} lineNumbers />
+    <CodeBlock
+      lang="tsx"
+      code={example}
+      highlightLines={[3]}
+      highlightTokens={["orientation", "Example"]}
+    />
+    <CodeBlock
+      lang="tsx"
+      code={"dssdsa"}
+      lineNumbers
+      highlightLines={[3]}
+      highlightTokens={[
+        "Separator",
+        "Example",
+        "ak-layer-current",
+        "@ariakit/react",
+      ]}
+    />
+  </PlaygroundClient>
+  <CanvasColorPicker />
+</Layout>

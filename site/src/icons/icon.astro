@@ -1,0 +1,25 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import * as icons from "./icons.ts";
+
+interface Props extends HTMLAttributes<"svg"> {
+  name: keyof typeof icons;
+}
+
+const hasLabel =
+  Astro.props["aria-label"] !== undefined ||
+  Astro.props["aria-labelledby"] !== undefined;
+
+const { name, ...props } = Astro.props;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  width="1em"
+  height="1em"
+  aria-hidden={!hasLabel || undefined}
+  stroke="currentColor"
+  fill="none"
+  {...props}
+  set:html={icons[name]}
+/>

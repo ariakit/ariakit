@@ -22,7 +22,14 @@ import {
 
 /** @type {ReturnType<typeof plugin>} */
 const AriakitTailwind = plugin(
-  ({ addBase, addVariant, addUtilities, matchUtilities, theme }) => {
+  ({
+    addBase,
+    addVariant,
+    addUtilities,
+    // matchUtilities: matchUtilities2,
+    matchUtilities,
+    theme,
+  }) => {
     addBase(properties);
 
     const IN_DARK = `@container style(${vars._layerAppearance}: oklch(1 0 0))`;
@@ -382,8 +389,8 @@ const AriakitTailwind = plugin(
     function getEdgeCss(color, level = "0", modifier = null, soft = false) {
       const contrast = getContrast();
       const alphaModifier = modifier || 5;
-      const lLight = `min(l - 0.1, ${level} * 0.15 - ${contrast} * 0.15)`;
-      const lDark = `max(max(l, 0.13) + 0.13, 1 - ${level} * 0.1 + ${contrast} * 0.1)`;
+      const lLight = `min(l, ${level} * 0.15 - ${contrast} * 0.15)`;
+      const lDark = `max(max(l, 0.13), 1 - ${level} * 0.1 + ${contrast} * 0.1)`;
       const c = `calc(c * 2)`;
       const alphaBase = `((${alphaModifier} + 5) * 1%)`;
       const alphaLAdd = oklchLightDark("(1 - l) * 0.1%", "l * 0.1%");
@@ -572,6 +579,7 @@ const AriakitTailwind = plugin(
       const capPadding = `min(${padding}, ${cap})`;
 
       const result = {
+        [vars.framePadding]: padding,
         padding,
         scrollPadding: padding,
         borderRadius: radius,
@@ -614,6 +622,7 @@ const AriakitTailwind = plugin(
         "ak-frame-cover": (radiusKey, extra) => {
           const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
           const result = {
+            [vars.framePadding]: padding,
             padding,
             scrollPadding: padding,
             borderRadius: radius,
@@ -635,6 +644,49 @@ const AriakitTailwind = plugin(
                 [provide(vars._framePadding)]: computedPadding,
                 [provide(vars._frameRadius)]: computedRadius,
                 [provide(vars._frameBorder)]: prop(vars._frameBorder),
+                [vars.frameMargin]: margin,
+                [vars.framePadding]: computedPadding,
+                marginInline: margin,
+                padding: computedPadding,
+                scrollPadding: computedPadding,
+                borderRadius: computedRadius,
+                "&:first-child": {
+                  marginBlockStart: margin,
+                },
+                "&:not(:has(~ *:not([hidden])))": {
+                  marginBlockEnd: margin,
+                },
+              });
+            }),
+          );
+        },
+        "ak-frame-bleed": (radiusKey, extra) => {
+          const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
+          const result = {
+            [vars.framePadding]: padding,
+            padding,
+            scrollPadding: padding,
+            borderRadius: radius,
+            [IN_DARK]: { colorScheme: "dark" },
+            [IN_LIGHT]: { colorScheme: "light" },
+          };
+          return Object.assign(
+            result,
+            withContext("frame", false, ({ provide, inherit }) => {
+              const parentPadding = inherit(vars._framePadding, "0px");
+              const parentRadius = inherit(vars._frameRadius, radius);
+              const parentBorder = inherit(vars._frameBorder, "0px");
+              const margin = `calc((${parentPadding} + ${parentBorder}) * -1)`;
+              const computedPadding = extra.modifier
+                ? padding
+                : inherit(vars._framePadding, padding);
+              const computedRadius = parentRadius;
+              return css({
+                [provide(vars._framePadding)]: computedPadding,
+                [provide(vars._frameRadius)]: computedRadius,
+                [provide(vars._frameBorder)]: prop(vars._frameBorder),
+                [vars.frameMargin]: margin,
+                [vars.framePadding]: computedPadding,
                 marginInline: margin,
                 padding: computedPadding,
                 scrollPadding: computedPadding,
@@ -685,6 +737,7 @@ const AriakitTailwind = plugin(
         "ak-frame-border": (value) => {
           return css({
             [vars._frameBorder]: value,
+            [vars.frameBorder]: value,
             borderWidth: prop(vars._frameBorder),
           });
         },

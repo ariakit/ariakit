@@ -356,7 +356,7 @@ export async function CodeBlock({
         <code
           className={twJoin(type !== "definition" && "w-full", "grid h-max")}
         >
-          {lightTokens.map(renderLine("block dark:hidden"))}
+          {lightTokens.map(renderLine("block dar  k:hidden"))}
           {darkTokens.map(renderLine("hidden dark:block"))}
           <div
             className={twJoin(

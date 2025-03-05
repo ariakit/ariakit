@@ -1,0 +1,17 @@
+<input type="color" />
+
+<script>
+  const input = document.querySelector("input");
+  let ric = 0;
+  input?.addEventListener("input", () => {
+    const callback = () => {
+      document.documentElement.style.setProperty("--color-canvas", input.value);
+    };
+    if ("requestIdleCallback" in window) {
+      cancelIdleCallback(ric);
+      ric = requestIdleCallback(callback);
+    } else {
+      callback();
+    }
+  });
+</script>
