@@ -1,6 +1,4 @@
-import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { title } from "node:process";
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 

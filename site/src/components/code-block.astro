@@ -114,7 +114,7 @@ function splitContent(content: string) {
             <div data-highlight={highlightLine || undefined} class:list={["pe-14", highlightLine && "ak-layer-pop"]}>{
               !hasContent ? "\n" :
               line.flatMap((token) => splitContent(token.content).map(({ content, highlightToken }) => {
-                return <span style={`color: ${token.color}`}>{content || ""}</span>;
+                // return <span style={`color: ${token.color}`}>{content || ""}</span>;
                 const el = <span style={`--color:${token.color}`} class="relative ak-text-(--color)/50 ak-light:ak-text-(--color)/65">{content || ""}</span>;
                 if (!highlightToken) return el;
                 return (
@@ -124,11 +124,11 @@ function splitContent(content: string) {
           );
         })
       }</code></pre>
-    <!-- <CopyToClipboard
+    <CopyToClipboard
       client:load
       text={code}
       className="absolute top-2 end-2 [@media(hover:hover)]:not-group-hover:not-focus:not-group-focus:sr-only"
-    /> -->
+    />
     <div
       class="absolute inset-0 rounded-t-none ak-frame pointer-events-none z-1 group-focus-visible:outline-2 ak-outline-primary -outline-offset-3"
     >

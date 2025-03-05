@@ -10,5 +10,5 @@
     "jsxImportSource": "solid-js"
   },
   "include": ["**/*.solid.tsx", "**/*.ts"],
-  "exclude": []
+  "exclude": ["content.config.ts"]
 }

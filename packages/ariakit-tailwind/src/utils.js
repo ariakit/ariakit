@@ -71,11 +71,11 @@ export const vars = /** @type {const} */ ({
 });
 
 export const properties = css({
-  // [`@property ${vars.layer}`]: {
-  //   syntax: "'<color>'",
-  //   inherits: "true",
-  //   initialValue: "oklch(1 0 0)",
-  // },
+  [`@property ${vars.layer}`]: {
+    syntax: "'<color>'",
+    inherits: "true",
+    initialValue: "oklch(1 0 0)",
+  },
   [`@property ${vars.layerParent}`]: {
     syntax: "'*'",
     inherits: "true",
@@ -130,11 +130,11 @@ export const properties = css({
     syntax: "'*'",
     inherits: "false",
   },
-  // [`@property ${vars._layerIdle}`]: {
-  //   syntax: "'<color>'",
-  //   inherits: "false",
-  //   initialValue: "oklch(1 0 0)",
-  // },
+  [`@property ${vars._layerIdle}`]: {
+    syntax: "'<color>'",
+    inherits: "false",
+    initialValue: "oklch(1 0 0)",
+  },
   // Whether the layer is dark (oklch(1 0 0)) or light (oklch(0 0 0))
   [`@property ${vars._layerAppearance}`]: {
     syntax: "'<color>'",
@@ -147,12 +147,12 @@ export const properties = css({
     inherits: "true",
     initialValue: "lch(100 0 0)",
   },
-  // // The rounded ok lightness value of the layer (0-1)
-  // [`@property ${vars._layerOkL}`]: {
-  //   syntax: "'<color>'",
-  //   inherits: "true",
-  //   initialValue: "oklch(1 0 0)",
-  // },
+  // The rounded ok lightness value of the layer (0-1)
+  [`@property ${vars._layerOkL}`]: {
+    syntax: "'<color>'",
+    inherits: "true",
+    initialValue: "oklch(1 0 0)",
+  },
   // TODO: Comment
   [`@property ${vars._frameCappedPadding}`]: {
     syntax: "'<length>'",
