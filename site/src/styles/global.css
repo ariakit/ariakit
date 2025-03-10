@@ -285,7 +285,7 @@ body {
   @apply border-x-(length:--ak-tab-border-width) z-2 !border-(--ak-tab-border-color) !rounded-b-none !border-b-0;
 
   > * {
-    @apply px-2;
+    @apply !px-2;
   }
 
   &::after,

@@ -1,0 +1,21 @@
+---
+import type { CodeBlockProps } from "./code-block.types.ts";
+import { CodeBlockTabs as CodeBlockTabsReact } from "./code-block-tabs.react.tsx";
+import CodeBlockContainer from "./code-block-container.astro";
+import CodeBlockContent from "./code-block-content.astro";
+
+interface Props {
+  tabs: CodeBlockProps[];
+}
+
+const { tabs } = Astro.props;
+
+const [firstTab, ...rest] = tabs;
+---
+
+<CodeBlockContainer code={firstTab.code} maxLines={firstTab.maxLines}>
+  <CodeBlockTabsReact client:visible tabs={tabs}>
+    {firstTab && <CodeBlockContent slot="code" {...firstTab} />}
+    {rest.map((tab) => <CodeBlockContent {...tab} />)}
+  </CodeBlockTabsReact>
+</CodeBlockContainer>

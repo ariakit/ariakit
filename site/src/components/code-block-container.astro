@@ -1,0 +1,104 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Icon from "../icons/icon.astro";
+
+interface Props extends Omit<HTMLAttributes<"div">, "lang"> {
+  code: string;
+  maxLines?: number;
+}
+
+const { code, maxLines = 17, ...htmlProps } = Astro.props;
+
+const lineCount = code.trimEnd().split("\n").length;
+const collapsible = lineCount > maxLines;
+---
+
+<div
+  class:list={["flex flex-col isolate scroll-my-2", htmlProps.class]}
+  {...htmlProps}
+>
+  <div
+    class:list={[
+      "ak-layer group peer ak-frame-border relative ak-frame-container/0 overflow-clip ak-tabs flex flex-col",
+      "scroll-my-2",
+    ]}
+    data-collapsible={collapsible || undefined}
+    data-collapsed={collapsible || undefined}
+  >
+    <slot />
+  </div>
+  {
+    collapsible && (
+      <div class="sticky bottom-2 my-2 peer-data-collapsed:hidden grid justify-center">
+        <button
+          data-collapse
+          is="code-block-collapse"
+          class="ak-button ak-layer h-9 text-sm/[1.5rem] border ak-dark:shadow"
+        >
+          Collapse code
+          <Icon class="text-base" name="chevronUp" />
+        </button>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  class CodeBlockPre extends HTMLPreElement {
+    constructor() {
+      super();
+      this.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          const collapsible = this.closest("[data-collapsible]");
+          collapse(collapsible);
+        }
+      });
+    }
+  }
+
+  class CodeBlockExpand extends HTMLButtonElement {
+    constructor() {
+      super();
+      this.addEventListener("click", () => {
+        const wrapper = this.closest("*:has([data-collapsible])");
+        const collapsible = this.closest("[data-collapsible]");
+        collapsible?.removeAttribute("data-collapsed");
+        const pre = collapsible?.querySelector("pre");
+        if (!pre) return;
+        pre.inert = false;
+        pre.focus({ preventScroll: true });
+        wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    }
+  }
+
+  class CodeBlockCollapse extends HTMLButtonElement {
+    constructor() {
+      super();
+      this.addEventListener("click", () => {
+        const wrapper = this.closest("*:has([data-collapsible])");
+        const collapsible = wrapper?.querySelector("[data-collapsible]");
+        collapse(collapsible);
+      });
+    }
+  }
+
+  customElements.define("code-block-pre", CodeBlockPre, { extends: "pre" });
+  customElements.define("code-block-expand", CodeBlockExpand, {
+    extends: "button",
+  });
+  customElements.define("code-block-collapse", CodeBlockCollapse, {
+    extends: "button",
+  });
+
+  function collapse(collapsible?: Element | null) {
+    collapsible?.setAttribute("data-collapsed", "true");
+    const expandButton =
+      collapsible?.querySelector<HTMLElement>("[data-expand]");
+    expandButton?.focus({ preventScroll: true });
+    collapsible?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const pre = collapsible?.querySelector("pre");
+    if (!pre) return;
+    pre.inert = true;
+  }
+</script>

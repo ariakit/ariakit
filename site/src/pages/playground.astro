@@ -3,10 +3,64 @@ import CanvasColorPicker from "../components/canvas-color-picker.astro";
 import Layout from "../layouts/Layout.astro";
 import { Playground as PlaygroundClient } from "../components/playground.react.tsx";
 import CodeBlock from "../components/code-block.astro";
+import CodeBlockTabs from "../components/code-block-tabs.astro";
 import example from "../components/copy-to-clipboard.react?raw";
+
+const jsCode = `console.log("Hello from JavaScript!");
+const message = "This is a JavaScript example";
+alert(message);
+
+function greet(name) {
+  return "Hello, " + name + "!";
+}
+console.log(greet("World"));`;
+
+const pyCode = `print("Hello from Python!")
+message = "This is a Python example"
+print(message)`;
+
+const tsCode = `interface Example {
+  name: string;
+  value: number;
+}
+
+const example: Example = {
+  name: "TypeScript",
+  value: 42
+};
+
+console.log(example);`;
 ---
 
 <Layout>
+  <CodeBlockTabs
+    tabs={[
+      {
+        code: tsCode,
+        filename: "example.ts",
+        filenameIcon: "react",
+        lang: "ts",
+        lineNumbers: true,
+        maxLines: 5,
+      },
+      {
+        code: jsCode,
+        filename: "example.js",
+        filenameIcon: "npm",
+        lang: "js",
+        lineNumbers: true,
+        maxLines: 5,
+      },
+      {
+        code: pyCode,
+        filename: "example.py",
+        lang: "python",
+        lineNumbers: true,
+        highlightLines: [1, 2, 3, 4],
+        maxLines: 5,
+      },
+    ]}
+  />
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
     <button class="ak-button ak-layer">button</button>
     <button class="ak-button ak-layer" disabled>button</button>

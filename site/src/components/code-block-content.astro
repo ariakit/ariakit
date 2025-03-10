@@ -1,0 +1,129 @@
+---
+import type { ComponentProps, HTMLAttributes } from "astro/types";
+import {
+  codeToTokens,
+  type BundledLanguage,
+  type CodeToTokensOptions,
+} from "shiki";
+import { CopyToClipboard } from "./copy-to-clipboard.react";
+import { extname } from "node:path";
+import Icon from "../icons/icon.astro";
+import CodeBlockContainer from "./code-block-container.astro";
+import CodeBlockExpand from "./code-block-expand.astro";
+
+type Lang = CodeToTokensOptions<BundledLanguage>["lang"];
+
+interface Props extends HTMLAttributes<"div"> {
+  code: string;
+  maxLines?: number;
+  filename?: string;
+  filenameIcon?: ComponentProps<typeof Icon>["name"];
+  showFilename?: boolean;
+  lang?: Lang;
+  lineNumbers?: boolean;
+  highlightLines?: number[];
+  highlightTokens?: (string | readonly [string, number[]])[];
+}
+
+const {
+  code,
+  filename,
+  filenameIcon,
+  lang = filename ? (extname(filename).replace(".", "") as Lang) : "text",
+  showFilename,
+  maxLines = 17,
+  lineNumbers = false,
+  highlightLines = [],
+  highlightTokens = [],
+  ...htmlProps
+} = Astro.props;
+
+const { tokens } = await codeToTokens(code.trimEnd(), {
+  lang,
+  themes: {
+    light: "light-plus",
+    dark: "dark-plus",
+  },
+});
+
+const lineCount = tokens.length;
+const collapsible = lineCount > maxLines;
+const tokensSeen: Record<string, number> = {};
+
+function isHighlighted(i: number) {
+  return highlightLines.includes(i + 1);
+}
+
+function splitContent(content: string) {
+  const tokens = content.split(/([^\s"']+)/);
+  return tokens.flatMap((token) => {
+    const highlightToken = highlightTokens.some((t) => {
+      const [word, indexes] = Array.isArray(t) ? t : [t];
+      if (token !== word) return false;
+      if (!indexes) return token === word;
+      if (!(word in tokensSeen)) {
+        tokensSeen[word] = 0;
+      }
+      const index = tokensSeen[word]++;
+      return indexes.includes(index);
+    });
+    return { content: token, highlightToken };
+  });
+}
+---
+
+<div
+  data-filename={filename}
+  class:list={[
+    "ak-frame-cover/0 relative grid overflow-hidden",
+    "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
+    "not-in-[.ak-tab-panel]:ak-tab-panel",
+  ]}
+>
+  <div
+    class="absolute top-0 end-0 ak-frame-cover/1.5 z-2 pointer-events-none size-max"
+  >
+    <CopyToClipboard
+      client:visible
+      text={code}
+      data-single-line={lineCount === 1 || undefined}
+      className="ring pointer-events-auto [@media(hover:hover)]:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
+    />
+  </div>
+  <pre
+    is="code-block-pre"
+    tabindex="0"
+    inert={collapsible}
+    style={`--max-lines:${maxLines}; --line-height:1.8em;`}
+    class:list={[
+      "grid text-sm/(--line-height) ak-frame-cover/0 outline-none not-in-data-collapsed:overflow-auto *:*:ps-4 **:data-highlight:ak-edge/20 **:data-highlight:shadow-(color:--ak-border) **:data-highlight:shadow-[inset_0.175rem_0]",
+      "max-h-[min(calc(100svh-12rem),60rem)] in-data-collapsed:max-h-[calc((var(--max-lines)+1)*var(--line-height))]",
+      lineNumbers && "sm:grid-cols-[max-content_1fr]",
+      lineCount === 1 ? "h-12 items-center" : "py-4",
+    ]}>{lineNumbers && (
+        <div aria-hidden class="max-sm:hidden -me-4 grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50">{
+          tokens.map((_, i) => {
+            const highlightLine = isHighlighted(i);
+            return <span data-highlight={highlightLine || undefined} class:list={["pe-4", highlightLine && "ak-layer-pop"]}>{i + 1}</span>;
+          })}</div>
+      )}<code>{
+        tokens.map((line, i) => {
+          const highlightLine = isHighlighted(i);
+          const hasContent = line.some((token) => token.content);
+          return (
+            <div data-highlight={highlightLine || undefined} class:list={["pe-14", highlightLine && "ak-layer-pop", i > maxLines && "in-data-collapsed:hidden"]}>{
+              !hasContent ? "\n" :
+              line.flatMap((token) => splitContent(token.content).map(({ content, highlightToken }) => {
+                const dark = token.htmlStyle?.["--shiki-dark"] || token.color;
+                const light = token.htmlStyle?.color || token.color;
+                const el = <span style={`--dark:${dark}; --light:${light}`} class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65">{content || ""}</span>;
+                if (!highlightToken) return el;
+                return (
+                  <span style={`--dark:${dark}; --light:${light}`} class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20 ring rounded px-[0.5ch] py-0.5">{el}</span>
+                );
+              }))}</div>
+          );
+        })
+      }</code></pre>
+  {collapsible && <CodeBlockExpand />}
+</div>
