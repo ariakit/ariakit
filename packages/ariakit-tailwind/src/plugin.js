@@ -655,6 +655,7 @@ const AriakitTailwind = plugin(
                 [provide(vars._frameBorder)]: prop(vars._frameBorder),
                 [vars.frameMargin]: margin,
                 [vars.framePadding]: computedPadding,
+                [vars.frameRadius]: computedRadius,
                 marginInline: margin,
                 padding: computedPadding,
                 scrollPadding: computedPadding,
@@ -664,7 +665,7 @@ const AriakitTailwind = plugin(
                   borderStartStartRadius: computedRadius,
                   borderStartEndRadius: computedRadius,
                 },
-                "&:not(:has(~ *:not([hidden])))": {
+                "&:not(:has(~ *:not([hidden],template)))": {
                   marginBlockEnd: margin,
                   borderEndStartRadius: computedRadius,
                   borderEndEndRadius: computedRadius,
@@ -704,6 +705,7 @@ const AriakitTailwind = plugin(
                 [provide(vars._frameBorder)]: prop(vars._frameBorder),
                 [vars.frameMargin]: margin,
                 [vars.framePadding]: computedPadding,
+                [vars.frameRadius]: computedRadius,
                 marginInline: margin,
                 padding: computedPadding,
                 scrollPadding: computedPadding,
@@ -713,7 +715,7 @@ const AriakitTailwind = plugin(
                   borderStartStartRadius: computedRadius,
                   borderStartEndRadius: computedRadius,
                 },
-                "&:not(:has(~ *:not([hidden])))": {
+                "&:not(:has(~ *:not([hidden],template)))": {
                   marginBlockEnd: margin,
                   borderEndStartRadius: computedRadius,
                   borderEndEndRadius: computedRadius,
