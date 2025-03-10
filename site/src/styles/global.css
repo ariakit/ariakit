@@ -133,73 +133,42 @@ body {
 
 @utility ak-button-classic_idle {
   @apply ak-button_idle;
-  @apply inset-shadow-[var(--ak-button-shadow),var(--ak-button-highlight)] bg-clip-padding;
+  @apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-gradient-to-b from-50% bg-clip-padding;
 
   --ak-button-min-l: 0.25;
   --ak-button-max-l: 1;
-
   --ak-button-bg-dark: oklch(
     from var(--ak-layer)
       clamp(var(--ak-button-min-l), l - 0.05, var(--ak-button-max-l)) c h
   );
-
   --ak-button-bg-light: oklch(
     from var(--ak-layer) max(var(--ak-button-min-l) + 0.05, l + 0.05) c h
   );
-
   --ak-button-shadow-color: oklch(
-    from var(--ak-button-bg-dark) calc(l - 0.2 * l) c h
+    from var(--ak-button-bg-dark) calc(l - 0.15) c h
   );
-
   --ak-button-shadow: 0 -0.5px 0.5px 1px var(--ak-button-shadow-color);
-
-  --ak-button-highlight: inset 0 2px 0.5px
+  --ak-button-highlight: 0 2px 0.5px
     oklch(from var(--ak-button-bg-dark) calc(l + 0.2) calc(c / 2) h);
 
-  background-image: linear-gradient(
-    to bottom,
-    oklch(from var(--ak-layer) calc(l - 0.1) c h) 20%,
-    oklch(from var(--ak-layer) max(l, 0.4) c h)
-  );
-
-  background-image: linear-gradient(
-    to bottom,
-    var(--ak-button-bg-dark) 50%,
-    var(--ak-button-bg-light)
-  );
+  --ak-button-inset-shadow: var(--ak-button-shadow),
+    inset var(--ak-button-highlight);
 
   @variant ak-dark {
     --ak-button-min-l: 0.15;
     --ak-button-max-l: 0.85;
-
     --ak-button-bg-dark: oklch(
       from var(--ak-layer)
         clamp(var(--ak-button-min-l), l - 0.2 * c, var(--ak-button-max-l)) c h
     );
-
-    --ak-button-bg-light: oklch(
-      from var(--ak-layer) max(var(--ak-button-min-l) + 0.02, l + 0.05) c h
-    );
-
-    --ak-button-shadow-color: oklch(
-      from var(--ak-button-bg-dark) calc(l - 0.2 * l) c h
-    );
-
     --ak-button-shadow: 0 -1px 0.5px var(--ak-button-shadow-color);
-
-    --ak-button-highlight: inset 0 1px 0.5px
+    --ak-button-highlight: 0 1px 0.5px
       oklch(from var(--ak-button-bg-dark) calc(l + 0.1) c h);
-
-    background-image: linear-gradient(
-      to bottom,
-      var(--ak-button-bg-dark) 50%,
-      var(--ak-button-bg-light)
-    );
   }
 }
 
 @utility ak-button-classic_hover {
-  @apply ak-button_hover ak-light:ak-edge-4/100;
+  @apply ak-button_hover;
 
   --ak-button-min-l: 0.35;
   --ak-button-max-l: 1;
@@ -216,39 +185,21 @@ body {
 
 @utility ak-button-classic_active {
   @apply ak-button_active;
+  @apply from-(--ak-button-bg-dark-active) to-(--ak-button-bg-light-active) from-60%;
 
-  --ak-button-bg-dark-2: oklch(from var(--ak-button-bg-dark) l c h);
-
-  --ak-button-bg-light-2: oklch(
+  --ak-button-bg-dark-active: oklch(from var(--ak-button-bg-dark) l c h);
+  --ak-button-bg-light-active: oklch(
     from var(--ak-button-bg-dark) calc(l + 0.02) c h
   );
-
   --ak-button-shadow: 0 1px 0.5px 1px var(--ak-button-shadow-color);
-
-  --ak-button-highlight: inset 0 1px 1px 2px transparent;
-
-  background-image: linear-gradient(
-    to bottom,
-    var(--ak-button-bg-dark-2) 60%,
-    var(--ak-button-bg-light-2)
-  );
+  --ak-button-highlight: 0 0 transparent;
 
   @variant ak-dark {
-    --ak-button-bg-dark-2: oklch(
+    --ak-button-bg-dark-active: oklch(
       from var(--ak-button-bg-dark) calc(l - 0.02) c h
     );
-
-    --ak-button-bg-light-2: oklch(from var(--ak-button-bg-dark) l c h);
-
+    --ak-button-bg-light-active: oklch(from var(--ak-button-bg-dark) l c h);
     --ak-button-shadow: 0 1px 0.5px var(--ak-button-shadow-color);
-
-    --ak-button-highlight: inset 0 -1.5px 0.5px 0.5px transparent;
-
-    background-image: linear-gradient(
-      to bottom,
-      var(--ak-button-bg-dark-2) 60%,
-      var(--ak-button-bg-light-2)
-    );
   }
 }
 
