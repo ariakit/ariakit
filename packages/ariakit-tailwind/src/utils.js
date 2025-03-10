@@ -132,7 +132,7 @@ export const properties = css({
   },
   [`@property ${vars._layerIdle}`]: {
     syntax: "'<color>'",
-    inherits: "false",
+    inherits: "true",
     initialValue: "oklch(1 0 0)",
   },
   // Whether the layer is dark (oklch(1 0 0)) or light (oklch(0 0 0))

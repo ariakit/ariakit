@@ -12,19 +12,19 @@ function Tabs({ tabList, ...props }: TabsProps) {
       className="ak-tabs ak-layer ak-frame-container ak-frame-border overflow-clip"
     >
       <Role className="ak-tab-list" render={tabList}>
-        <div className="ak-tab-folder_idle !ak-tab-folder_selected">
+        <div className="ak-tab-folder_idle [&&]:ak-tab-folder_selected">
           <div>selected</div>
         </div>
-        <div className="ak-tab-folder_idle !ak-tab-folder_hover">
+        <div className="ak-tab-folder_idle [&&]:ak-tab-folder_hover">
           <div>hover</div>
         </div>
         <div className="ak-tab-folder_idle">
           <div>idle</div>
         </div>
-        <div className="ak-tab-folder_idle !ak-tab-folder_focus">
+        <div className="ak-tab-folder_idle [&&]:ak-tab-folder_focus">
           <div>focus</div>
         </div>
-        <div className="ak-tab-folder_idle !ak-tab-folder_selected !ak-tab-folder_focus">
+        <div className="ak-tab-folder_idle [&&]:ak-tab-folder_selected [&]:ak-tab-folder_focus">
           <div>selected focus</div>
         </div>
         <button className="ak-tab-folder" tabIndex={0}>
@@ -48,7 +48,7 @@ function Tabs({ tabList, ...props }: TabsProps) {
 
 export function Playground({ children }: PropsWithChildren) {
   return (
-    <div className="p-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <Tabs />
       <Tabs render={<div className="ak-frame-border-4" />} />
       <Tabs tabList={<div className="ak-tab-list-p-1" />} />

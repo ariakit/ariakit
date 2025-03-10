@@ -9,17 +9,18 @@ export interface IconProps extends ComponentProps<"svg"> {
 export function Icon({ name, ...props }: IconProps) {
   const hasLabel =
     props["aria-label"] !== undefined || props["aria-labelledby"] !== undefined;
+  const { html, viewBox = "0 0 24 24" } = icons[name];
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox={viewBox}
       width="1em"
       height="1em"
       aria-hidden={!hasLabel || undefined}
       stroke="currentColor"
       fill="none"
       {...props}
-      dangerouslySetInnerHTML={{ __html: icons[name] }}
-      className={cn("stroke-[1.5] ak-dark:stroke-1", props.className)}
+      dangerouslySetInnerHTML={{ __html: html }}
+      className={cn("base:stroke-[1.5] base:ak-dark:stroke-1", props.className)}
     />
   );
 }

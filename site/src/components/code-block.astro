@@ -1,15 +1,23 @@
 ---
-import type { HTMLAttributes } from "astro/types";
+import type { ComponentProps, HTMLAttributes } from "astro/types";
 import {
   codeToTokens,
   type BundledLanguage,
   type CodeToTokensOptions,
 } from "shiki";
 import { CopyToClipboard } from "./copy-to-clipboard.react";
+import { extname } from "node:path";
+import Icon from "../icons/icon.astro";
+
+type Lang = CodeToTokensOptions<BundledLanguage>["lang"];
 
 interface Props extends HTMLAttributes<"div"> {
   code: string;
-  lang?: CodeToTokensOptions<BundledLanguage>["lang"];
+  filename?: string;
+  filenameIcon?: ComponentProps<typeof Icon>["name"];
+  showFilename?: boolean;
+  lang?: Lang;
+  maxLines?: number;
   lineNumbers?: boolean;
   highlightLines?: number[];
   highlightTokens?: (string | readonly [string, number[]])[];
@@ -17,7 +25,11 @@ interface Props extends HTMLAttributes<"div"> {
 
 const {
   code,
-  lang,
+  filename,
+  filenameIcon,
+  lang = filename ? (extname(filename).replace(".", "") as Lang) : "text",
+  showFilename,
+  maxLines = 17,
   lineNumbers = false,
   highlightLines = [],
   highlightTokens = [],
@@ -26,9 +38,14 @@ const {
 
 const { tokens } = await codeToTokens(code.trimEnd(), {
   lang,
-  theme: "dark-plus",
+  themes: {
+    light: "light-plus",
+    dark: "dark-plus",
+  },
 });
 
+const lineCount = tokens.length;
+const collapsible = lineCount > maxLines;
 const tokensSeen: Record<string, number> = {};
 
 function isHighlighted(i: number) {
@@ -42,7 +59,7 @@ function splitContent(content: string) {
       const [word, indexes] = Array.isArray(t) ? t : [t];
       if (token !== word) return false;
       if (!indexes) return token === word;
-      if (tokensSeen[word] === undefined) {
+      if (!(word in tokensSeen)) {
         tokensSeen[word] = 0;
       }
       const index = tokensSeen[word]++;
@@ -54,56 +71,61 @@ function splitContent(content: string) {
 ---
 
 <div
-  class:list={[
-    "ak-layer ak-frame-border relative ak-frame-container text-sm/[1.8] overflow-clip ak-tabs",
-    htmlProps.class,
-  ]}
+  class:list={["flex flex-col isolate scroll-my-2", htmlProps.class]}
   {...htmlProps}
 >
-  <div class="ak-tab-list [:where(&>*)]:ak-tab-folder_idle">
-    <div class="ak-tab-folder_selected">
-      <div>selected</div>
-    </div>
-    <div class="ak-tab-folder_hover">
-      <div>hover</div>
-    </div>
-    <div class="">
-      <div>idle</div>
-    </div>
-    <div class="ak-tab-folder_focus">
-      <div>focus</div>
-    </div>
-    <div class="ak-tab-folder_selected ak-tab-folder_focus">
-      <div>selected focus</div>
-    </div>
-    <div class="">
-      <div>idle</div>
-    </div>
-    <div class="ak-tab-folder_selected ak-tab-folder_hover">
-      <div>selected hover</div>
-    </div>
-    <div class="">
-      <div>idle</div>
-    </div>
-    <div class="ak-tab-folder" aria-selected="true" tabindex="0">
-      <div>ak-tab-folder</div>
-    </div>
-    <div class="ak-tab-folder" tabindex="0">
-      <div>ak-tab-folder</div>
-    </div>
-  </div>
   <div
-    tabindex="0"
-    class="ak-tab-panel group ak-frame/0 outline-none relative grid scheme-light rounded-t-none ak-dark:scheme-dark"
+    class:list={[
+      "ak-layer group peer ak-frame-border relative ak-frame-container/0 overflow-hidden ak-tabs flex flex-col",
+      "scroll-my-2",
+    ]}
+    data-collapsible={collapsible || undefined}
+    data-collapsed={collapsible || undefined}
   >
-    <pre
+    {
+      showFilename && (
+        <div class="ak-tab-list text-sm">
+          <div class="base:ak-tab-folder_idle ak-tab-folder_selected select-auto cursor-auto">
+            <div class="py-1">
+              {filenameIcon && <Icon name={filenameIcon} />}
+              {filename}
+            </div>
+          </div>
+        </div>
+      )
+    }
+    <div
       class:list={[
-        "grid ak-frame/0 py-4 overflow-auto *:first:*:ps-4 *:first:*:data-highlight:ak-edge/20 *:first:*:data-highlight:shadow-(color:--ak-border) *:first:*:data-highlight:shadow-[inset_0.175rem_0]",
-        lineNumbers && "grid-cols-[max-content_1fr]",
-      ]}>{lineNumbers && (
-        <div aria-hidden class="grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50">{
+        "ak-frame-bleed/0 relative grid overflow-hidden",
+        "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
+        "ak-tab-panel",
+      ]}
+    >
+      <div
+        class:list={[
+          "absolute top-0 end-0 ak-frame-cover/1.5 z-2 pointer-events-none size-max",
+        ]}
+      >
+        <CopyToClipboard
+          client:visible
+          text={code}
+          data-single-line={lineCount === 1 || undefined}
+          className="ring pointer-events-auto [@media(hover:hover)]:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
+        />
+      </div>
+      <pre
+        tabindex="0"
+        inert={collapsible}
+        style={`--max-lines:${maxLines}; --line-height:1.8em;`}
+        class:list={[
+          "grid text-sm/(--line-height) ak-frame-cover/0 outline-none not-group-data-collapsed:overflow-auto *:*:ps-4 **:data-highlight:ak-edge/20 **:data-highlight:shadow-(color:--ak-border) **:data-highlight:shadow-[inset_0.175rem_0]",
+          "max-h-[min(calc(100svh-12rem),60rem)] group-data-collapsed:max-h-[calc((var(--max-lines)+1)*var(--line-height))]",
+          lineNumbers && "sm:grid-cols-[max-content_1fr]",
+          lineCount === 1 ? "h-12 items-center" : "py-4",
+        ]}>{lineNumbers && (
+        <div aria-hidden class="max-sm:hidden -me-4 grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50">{
           tokens.map((_, i) => {
-          const highlightLine = isHighlighted(i);
+            const highlightLine = isHighlighted(i);
             return <span data-highlight={highlightLine || undefined} class:list={["pe-4", highlightLine && "ak-layer-pop"]}>{i + 1}</span>;
           })}</div>
       )}<code>{
@@ -111,27 +133,94 @@ function splitContent(content: string) {
           const highlightLine = isHighlighted(i);
           const hasContent = line.some((token) => token.content);
           return (
-            <div data-highlight={highlightLine || undefined} class:list={["pe-14", highlightLine && "ak-layer-pop"]}>{
+            <div data-highlight={highlightLine || undefined} class:list={["pe-14", highlightLine && "ak-layer-pop", i > maxLines && "group-data-collapsed:hidden"]}>{
               !hasContent ? "\n" :
               line.flatMap((token) => splitContent(token.content).map(({ content, highlightToken }) => {
-                // return <span style={`color: ${token.color}`}>{content || ""}</span>;
-                const el = <span style={`--color:${token.color}`} class="relative ak-text-(--color)/50 ak-light:ak-text-(--color)/65">{content || ""}</span>;
+                const dark = token.htmlStyle?.["--shiki-dark"] || token.color;
+                const light = token.htmlStyle?.color || token.color;
+                const el = <span style={`--dark:${dark}; --light:${light}`} class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65">{content || ""}</span>;
                 if (!highlightToken) return el;
                 return (
-                  <span style={`--color:${token.color}`} class="ak-text-(--color)/50 ak-light:ak-text-(--color)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20 ring rounded px-[0.5ch] py-0.5">{el}</span>
+                  <span style={`--dark:${dark}; --light:${light}`} class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20 ring rounded px-[0.5ch] py-0.5">{el}</span>
                 );
               }))}</div>
           );
         })
       }</code></pre>
-    <CopyToClipboard
-      client:load
-      text={code}
-      className="absolute top-2 end-2 [@media(hover:hover)]:not-group-hover:not-focus:not-group-focus:sr-only"
-    />
-    <div
-      class="absolute inset-0 rounded-t-none ak-frame pointer-events-none z-1 group-focus-visible:outline-2 ak-outline-primary -outline-offset-3"
-    >
+      {
+        collapsible && (
+          <button
+            data-expand
+            class="absolute group/expand grid outline-none not-group-data-collapsed:hidden ak-frame-cover/4 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-8rem)] to-[calc(100%-0.5rem)] to-(--ak-layer) z-1 justify-center items-end"
+          >
+            <div class="ak-button h-9 ak-layer-current text-sm/[1.5rem] border shadow group-hover/expand:ak-button_hover hover:ak-layer-pop-[1.5] group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
+              Expand {filename && <span class="sr-only">{filename} </span>}code
+              <Icon class="text-base" name="chevronDown" />
+            </div>
+          </button>
+        )
+      }
     </div>
   </div>
+  {
+    collapsible && (
+      <div class="sticky bottom-2 my-2 peer-data-collapsed:hidden grid justify-center">
+        <button
+          data-collapse
+          class="ak-button ak-layer h-9 text-sm/[1.5rem] border shadow"
+        >
+          Collapse {filename && <span class="sr-only">{filename} </span>}code
+          <Icon class="text-base" name="chevronUp" />
+        </button>
+      </div>
+    )
+  }
 </div>
+
+<script>
+  const pres = document.querySelectorAll<HTMLElement>("[data-collapsible] pre");
+  const expandButtons = document.querySelectorAll<HTMLElement>("[data-expand]");
+  const collapseButtons =
+    document.querySelectorAll<HTMLElement>("[data-collapse]");
+
+  function collapse(collapsible?: Element | null) {
+    collapsible?.setAttribute("data-collapsed", "true");
+    const expandButton =
+      collapsible?.querySelector<HTMLElement>("[data-expand]");
+    expandButton?.focus({ preventScroll: true });
+    collapsible?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const pre = collapsible?.querySelector("pre");
+    if (!pre) return;
+    pre.inert = true;
+  }
+
+  pres.forEach((pre) => {
+    pre.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        const collapsible = pre.closest("[data-collapsible]");
+        collapse(collapsible);
+      }
+    });
+  });
+
+  expandButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const wrapper = button.closest("*:has([data-collapsible])");
+      const collapsible = button.closest("[data-collapsible]");
+      collapsible?.removeAttribute("data-collapsed");
+      const pre = collapsible?.querySelector("pre");
+      if (!pre) return;
+      pre.inert = false;
+      pre.focus({ preventScroll: true });
+      wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  });
+
+  collapseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const wrapper = button.closest("*:has([data-collapsible])");
+      const collapsible = wrapper?.querySelector("[data-collapsible]");
+      collapse(collapsible);
+    });
+  });
+</script>

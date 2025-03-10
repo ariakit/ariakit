@@ -1,4 +1,10 @@
-import { Tooltip, TooltipAnchor, TooltipProvider } from "@ariakit/react";
+import {
+  Tooltip,
+  TooltipAnchor,
+  TooltipProvider,
+  useStoreState,
+  useTooltipStore,
+} from "@ariakit/react";
 import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "../icons/icon.react.tsx";
@@ -12,21 +18,22 @@ export function CopyToClipboard({
   children,
   ...props
 }: CopyToClipboardProps) {
+  const tooltip = useTooltipStore();
+  const open = useStoreState(tooltip, "open");
   const [state, setState] = useState<"idle" | "copying" | "copied">("idle");
-
-  const icon = state === "idle" ? "copy" : "check";
 
   useEffect(() => {
     if (state !== "copied") return;
-    const timeout = setTimeout(() => setState("idle"), 1000);
+    const timeout = setTimeout(() => setState("idle"), 1500);
     return () => clearTimeout(timeout);
   }, [state]);
 
   return (
-    <TooltipProvider>
+    <TooltipProvider store={tooltip}>
       <TooltipAnchor
+        data-open={open || undefined}
         render={<button {...props} />}
-        className="ak-layer-current hover:ak-layer-pop ak-frame-lg/2.5"
+        className="ak-button ak-button-square ak-layer-current size-9"
         onClick={async () => {
           if (state !== "idle") return;
           await navigator.clipboard.writeText(text);
@@ -34,10 +41,21 @@ export function CopyToClipboard({
         }}
       >
         <span className="sr-only">Copy to clipboard</span>
-        <Icon name={icon} className="text-[1.25rem]" />
+        {state === "copied" ? (
+          <Icon
+            key="check"
+            name="check"
+            className="stroke-[1.5] [stroke-dasharray:1em] starting:[stroke-dashoffset:1em] [stroke-dashoffset:0] transition-[stroke-dashoffset] duration-350"
+          />
+        ) : (
+          <Icon key="copy" name="copy" />
+        )}
       </TooltipAnchor>
-      <Tooltip className="ak-layer z-10 text-sm ak-frame-lg/1 px-2 ring shadow">
-        {state === "idle" ? "Copy to clipboard" : "Copied"}
+      <Tooltip
+        unmountOnHide
+        className="ak-layer z-10 text-sm ak-frame-lg/1 px-2 ring shadow-md"
+      >
+        {state === "idle" ? "Copy" : "Copied"}
       </Tooltip>
     </TooltipProvider>
   );

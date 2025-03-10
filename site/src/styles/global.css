@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "@ariakit/tailwind";
 
+@custom-variant base {
+  @layer base {
+    @slot;
+  }
+}
+
 @theme {
   --color-canvas: #fcfdfd;
   --color-primary: #007acc;
@@ -9,7 +15,7 @@
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
 
-  --radius-field: var(--radius-xl);
+  --radius-field: var(--radius-lg);
   --spacing-field: --spacing(2);
 }
 
@@ -25,22 +31,25 @@ body {
 }
 
 body {
-  @apply ak-layer-canvas antialiased;
+  @apply ak-layer-canvas ak-frame/4 antialiased;
 }
 
-/** ak-clickable **/
+/** ak-command **/
 
-@utility ak-clickable_idle {
-  @apply block cursor-default select-none;
+@utility ak-command_idle {
+  @apply relative block cursor-default select-none;
 }
 
-@utility ak-clickable_active {
-  padding-block: calc(var(--ak-frame-padding) + 1px)
-    calc(var(--ak-frame-padding) - 1px) !important;
+@utility ak-command_touch-target {
+  @apply -translate-1/2 absolute left-1/2 top-1/2 size-full min-h-12 min-w-12 content-[''] [@media(pointer:fine)]:hidden;
 }
 
-@utility ak-clickable {
-  @apply ak-clickable_idle active:ak-clickable_active;
+@utility ak-command_active {
+  @apply scale-x-98 scale-y-96 origin-bottom;
+}
+
+@utility ak-command {
+  @apply ak-command_idle active:ak-command_active before:ak-command_touch-target;
 }
 
 /** ak-input **/
@@ -86,6 +95,171 @@ body {
   @apply ak-input_idle hover:ak-input_hover focus-within:ak-input_focus;
 }
 
+/** ak-button **/
+
+@utility ak-button_idle {
+  @apply ak-command_idle ak-layer ak-outline-primary ak-frame-field;
+  @apply flex items-center justify-center gap-1 whitespace-nowrap px-[calc(var(--ak-frame-padding)+--spacing(1))] text-base font-[calc(500+50*var(--contrast))];
+
+  &::before {
+    @apply ak-command_touch-target;
+  }
+}
+
+@utility ak-button_hover {
+  @apply ak-layer-pop;
+}
+
+@utility ak-button_focus {
+  @apply outline-2;
+}
+
+@utility ak-button_active {
+  @apply ak-command_active;
+}
+
+@utility ak-button_disabled {
+  @apply ak-text/50 ak-layer-mix/20;
+  @apply inset-shadow-none bg-none shadow-none;
+}
+
+@utility ak-button {
+  @apply ak-button_idle hover:ak-button_hover focus-visible:ak-button_focus active:not-disabled:not-aria-disabled:ak-button_active aria-disabled:ak-button_disabled disabled:ak-button_disabled;
+}
+
+@utility ak-button-square {
+  @apply p-(--ak-frame-padding) aspect-square;
+}
+
+@utility ak-button-classic_idle {
+  @apply ak-button_idle;
+  @apply inset-shadow-[var(--ak-button-shadow),var(--ak-button-highlight)] bg-clip-padding;
+
+  --ak-button-min-l: 0.25;
+  --ak-button-max-l: 1;
+
+  --ak-button-bg-dark: oklch(
+    from var(--ak-layer)
+      clamp(var(--ak-button-min-l), l - 0.05, var(--ak-button-max-l)) c h
+  );
+
+  --ak-button-bg-light: oklch(
+    from var(--ak-layer) max(var(--ak-button-min-l) + 0.05, l + 0.05) c h
+  );
+
+  --ak-button-shadow-color: oklch(
+    from var(--ak-button-bg-dark) calc(l - 0.2 * l) c h
+  );
+
+  --ak-button-shadow: 0 -0.5px 0.5px 1px var(--ak-button-shadow-color);
+
+  --ak-button-highlight: inset 0 2px 0.5px
+    oklch(from var(--ak-button-bg-dark) calc(l + 0.2) calc(c / 2) h);
+
+  background-image: linear-gradient(
+    to bottom,
+    oklch(from var(--ak-layer) calc(l - 0.1) c h) 20%,
+    oklch(from var(--ak-layer) max(l, 0.4) c h)
+  );
+
+  background-image: linear-gradient(
+    to bottom,
+    var(--ak-button-bg-dark) 50%,
+    var(--ak-button-bg-light)
+  );
+
+  @variant ak-dark {
+    --ak-button-min-l: 0.15;
+    --ak-button-max-l: 0.85;
+
+    --ak-button-bg-dark: oklch(
+      from var(--ak-layer)
+        clamp(var(--ak-button-min-l), l - 0.2 * c, var(--ak-button-max-l)) c h
+    );
+
+    --ak-button-bg-light: oklch(
+      from var(--ak-layer) max(var(--ak-button-min-l) + 0.02, l + 0.05) c h
+    );
+
+    --ak-button-shadow-color: oklch(
+      from var(--ak-button-bg-dark) calc(l - 0.2 * l) c h
+    );
+
+    --ak-button-shadow: 0 -1px 0.5px var(--ak-button-shadow-color);
+
+    --ak-button-highlight: inset 0 1px 0.5px
+      oklch(from var(--ak-button-bg-dark) calc(l + 0.1) c h);
+
+    background-image: linear-gradient(
+      to bottom,
+      var(--ak-button-bg-dark) 50%,
+      var(--ak-button-bg-light)
+    );
+  }
+}
+
+@utility ak-button-classic_hover {
+  @apply ak-button_hover ak-light:ak-edge-4/100;
+
+  --ak-button-min-l: 0.35;
+  --ak-button-max-l: 1;
+
+  @variant ak-dark {
+    --ak-button-min-l: 0.25;
+    --ak-button-max-l: 0.75;
+  }
+}
+
+@utility ak-button-classic_focus {
+  @apply ak-button_focus outline-offset-1;
+}
+
+@utility ak-button-classic_active {
+  @apply ak-button_active;
+
+  --ak-button-bg-dark-2: oklch(from var(--ak-button-bg-dark) l c h);
+
+  --ak-button-bg-light-2: oklch(
+    from var(--ak-button-bg-dark) calc(l + 0.02) c h
+  );
+
+  --ak-button-shadow: 0 1px 0.5px 1px var(--ak-button-shadow-color);
+
+  --ak-button-highlight: inset 0 1px 1px 2px transparent;
+
+  background-image: linear-gradient(
+    to bottom,
+    var(--ak-button-bg-dark-2) 60%,
+    var(--ak-button-bg-light-2)
+  );
+
+  @variant ak-dark {
+    --ak-button-bg-dark-2: oklch(
+      from var(--ak-button-bg-dark) calc(l - 0.02) c h
+    );
+
+    --ak-button-bg-light-2: oklch(from var(--ak-button-bg-dark) l c h);
+
+    --ak-button-shadow: 0 1px 0.5px var(--ak-button-shadow-color);
+
+    --ak-button-highlight: inset 0 -1.5px 0.5px 0.5px transparent;
+
+    background-image: linear-gradient(
+      to bottom,
+      var(--ak-button-bg-dark-2) 60%,
+      var(--ak-button-bg-light-2)
+    );
+  }
+}
+
+@utility ak-button-classic_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-button-classic {
+  @apply ak-button-classic_idle hover:ak-button-classic_hover focus-visible:ak-button-classic_focus active:not-disabled:not-aria-disabled:ak-button-classic_active disabled:ak-button-classic_disabled;
+}
+
 /** ak-tab **/
 
 @property --ak-tab-border-width {
@@ -101,8 +275,8 @@ body {
 }
 
 @utility ak-tab-list {
-  @apply ak-frame-bleed/(--ak-tab-list-p,0px) ak-layer-down;
-  @apply -mb-(--ak-tab-border-width) relative flex items-center overflow-x-auto rounded-b-none pb-0;
+  @apply ak-frame-bleed ak-layer-down;
+  @apply -mb-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip !pb-0;
   scrollbar-width: none;
 }
 
@@ -113,22 +287,26 @@ body {
 }
 
 @utility ak-tab-panel {
-  @apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-cover;
-  @apply border-(--ak-tab-border-color) relative overflow-y-auto rounded-t-none border-x-0 border-b-0;
+  @apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-bleed;
+  @apply !border-(--ak-tab-border-color) relative;
 }
 
 @utility ak-tab_idle {
-  @apply ak-clickable_idle ak-text/70;
+  @apply ak-command_idle ak-text/70;
   @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap;
 }
 
 @utility ak-tab-folder_idle {
-  @apply ak-tab_idle ak-frame/1 ak-frame-border-(--ak-tab-border-width);
+  @apply ak-tab_idle ak-frame-container ak-frame-border-(--ak-tab-border-width);
   @apply border-x-0 border-b-0 border-transparent;
-  padding-block-end: calc(var(--ak-tab-border-width) + --spacing(1)) !important;
+  padding-block-end: calc(
+    var(--ak-tab-border-width) + var(--ak-frame-padding)
+  ) !important;
+
   > * {
-    @apply ak-frame/1;
-    @apply flex items-center gap-1.5 whitespace-nowrap px-2;
+    @apply max-sm:ak-frame/2 sm:ak-frame/1;
+    @apply flex items-center gap-1.5 whitespace-nowrap !px-[calc(var(--ak-tab-border-width)+--spacing(2))];
+    @apply before:ak-command_touch-target;
   }
 }
 
@@ -147,13 +325,17 @@ body {
 
 @utility ak-tab-folder_active {
   > * {
-    @apply ak-clickable_active;
+    @apply ak-command_active;
   }
 }
 
 @utility ak-tab-folder_selected {
   @apply ak-layer-(--ak-tab-bg) ak-text/100;
-  @apply border-x-(length:--ak-tab-border-width) z-2 p-(--ak-frame-padding) border-(--ak-tab-border-color) rounded-b-none !border-b-0;
+  @apply border-x-(length:--ak-tab-border-width) z-2 !border-(--ak-tab-border-color) !rounded-b-none !border-b-0;
+
+  > * {
+    @apply px-2;
+  }
 
   &::after,
   &::before {
@@ -212,11 +394,5 @@ body {
 
   h2 {
     @apply text-2xl;
-  }
-}
-
-@utility ak-code {
-  .pl-k {
-    @apply ak-text-purple-500;
   }
 }

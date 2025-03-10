@@ -1,17 +1,24 @@
-<input type="color" />
+<input type="color" data-canvas-color-picker />
 
 <script>
-  const input = document.querySelector("input");
+  const inputs = document.querySelectorAll<HTMLInputElement>(
+    "[data-canvas-color-picker]"
+  );
   let ric = 0;
-  input?.addEventListener("input", () => {
-    const callback = () => {
-      document.documentElement.style.setProperty("--color-canvas", input.value);
-    };
-    if ("requestIdleCallback" in window) {
-      cancelIdleCallback(ric);
-      ric = requestIdleCallback(callback);
-    } else {
-      callback();
-    }
-  });
+  inputs?.forEach((input) =>
+    input.addEventListener("input", () => {
+      const setCanvasColor = () => {
+        document.documentElement.style.setProperty(
+          "--color-canvas",
+          input.value
+        );
+      };
+      if ("requestIdleCallback" in window) {
+        cancelIdleCallback(ric);
+        ric = requestIdleCallback(setCanvasColor);
+      } else {
+        setCanvasColor();
+      }
+    })
+  );
 </script>
