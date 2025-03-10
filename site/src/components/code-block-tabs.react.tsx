@@ -1,5 +1,5 @@
 import * as ak from "@ariakit/react";
-import { type CSSProperties, useEffect, useId, useRef } from "react";
+import { useId } from "react";
 import { Icon } from "../icons/icon.react.tsx";
 import type { CodeBlockProps } from "./code-block.types.ts";
 
