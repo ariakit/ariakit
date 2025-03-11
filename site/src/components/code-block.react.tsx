@@ -35,6 +35,7 @@ export function CodeBlockTabPanel({
     <ak.TabPanel
       unmountOnHide={!isOpen}
       alwaysVisible
+      focusable={false}
       store={store || ak.useTabStore()}
       {...props}
       className={cn("ak-frame-bleed/0", props.className)}
@@ -88,6 +89,7 @@ export function CodeBlockContainer({
   const defaultTabId = tabs?.length
     ? getTabId(idPrefix, tabs[0]?.filename)
     : undefined;
+  const [isCollapsed, setIsCollapsed] = useState(collapsible);
 
   const tabStore = ak.useTabStore({ defaultSelectedId: defaultTabId });
 
@@ -99,25 +101,28 @@ export function CodeBlockContainer({
   }, [tabStore, storeId]);
 
   const collapse = () => {
-    const collapsible = wrapperRef.current?.querySelector("[data-collapsible]");
-    collapsible?.setAttribute("data-collapsed", "true");
-    const expandButton =
-      collapsible?.querySelector<HTMLElement>("[data-expand]");
-    expandButton?.focus({ preventScroll: true });
-    collapsible?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    const pre = collapsible?.querySelector("pre");
-    if (!pre) return;
-    pre.inert = true;
+    setIsCollapsed(true);
+    requestAnimationFrame(() => {
+      const expandButton =
+        wrapperRef.current?.querySelector<HTMLElement>("[data-expand]");
+      expandButton?.focus({ preventScroll: true });
+      wrapperRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    });
   };
 
   const expand = () => {
-    const wrapper = wrapperRef.current?.querySelector("[data-collapsible]");
-    wrapper?.removeAttribute("data-collapsed");
-    const pre = wrapper?.querySelector("pre");
-    if (!pre) return;
-    pre.inert = false;
-    pre.focus({ preventScroll: true });
-    wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    setIsCollapsed(false);
+    requestAnimationFrame(() => {
+      const pre = wrapperRef.current?.querySelector("pre");
+      pre?.focus({ preventScroll: true });
+      wrapperRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    });
   };
 
   useEffect(() => {
@@ -151,9 +156,11 @@ export function CodeBlockContainer({
         />
       </div>
       <pre
-        // @ts-expect-error
-        inert={collapsible ? "" : undefined}
-        tabIndex={-1}
+        // @ts-expect-error - inert property is not yet in TypeScript DOM types
+        inert={isCollapsed ? "" : undefined}
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: TODO
+        tabIndex={0}
+        aria-hidden={isCollapsed}
         style={
           {
             "--max-lines": maxLines,
@@ -162,18 +169,19 @@ export function CodeBlockContainer({
         }
         className={cn(
           "whitespace-normal",
-          "text-sm/(--line-height) ak-frame-cover/0 outline-none not-in-data-collapsed:overflow-auto",
-          "max-h-[min(calc(100svh-12rem),60rem)] in-data-collapsed:max-h-[calc((var(--max-lines)+1)*var(--line-height))]",
+          "text-sm/(--line-height) ak-frame-cover/0 outline-none",
+          !isCollapsed && "overflow-auto max-h-[min(calc(100svh-12rem),60rem)]",
+          isCollapsed && "max-h-[calc(var(--max-lines)*var(--line-height))]",
         )}
       >
         {children}
       </pre>
-      {collapsible && (
+      {collapsible && isCollapsed && (
         <button
           data-expand
           onClick={expand}
           className={cn(
-            "absolute group/expand grid outline-none not-in-data-collapsed:hidden ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-8rem)] to-[calc(100%-0.5rem)] to-(--ak-layer) z-1 justify-center items-end",
+            "absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-8rem)] to-[calc(100%-0.5rem)] to-(--ak-layer) z-1 justify-center items-end",
           )}
         >
           <div className="ak-button h-9 ak-light:ak-layer-down ak-dark:ak-layer text-sm/[1.5rem] group-hover/expand:ak-button_hover hover:ak-layer-pop-[1.5] group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
@@ -194,7 +202,7 @@ export function CodeBlockContainer({
       <div
         className="ak-layer group peer ak-frame-border relative ak-frame-container/0 overflow-clip ak-tabs flex flex-col scroll-my-2"
         data-collapsible={collapsible || undefined}
-        data-collapsed={collapsible || undefined}
+        data-collapsed={isCollapsed || undefined}
       >
         {tabs ? (
           <ak.TabProvider store={tabStore}>
@@ -232,8 +240,8 @@ export function CodeBlockContainer({
           </>
         )}
       </div>
-      {collapsible && (
-        <div className="sticky bottom-2 my-2 peer-data-collapsed:hidden grid justify-center">
+      {collapsible && !isCollapsed && (
+        <div className="sticky bottom-2 my-2 grid justify-center">
           <button
             onClick={collapse}
             className="ak-button ak-layer border h-9 text-sm/[1.5rem]"
