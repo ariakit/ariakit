@@ -1,12 +1,6 @@
 @import "tailwindcss";
 @import "@ariakit/tailwind";
 
-@custom-variant base {
-  @layer base {
-    @slot;
-  }
-}
-
 @theme {
   --color-canvas: #fcfdfd;
   --color-primary: #007acc;
@@ -32,6 +26,12 @@ body {
 
 body {
   @apply ak-layer-canvas ak-frame/4 antialiased;
+}
+
+@custom-variant base {
+  @layer base {
+    @slot;
+  }
 }
 
 /** ak-command **/
@@ -137,12 +137,25 @@ body {
 
   --ak-button-min-l: 0.25;
   --ak-button-max-l: 1;
+  --ak-button-bg-dark-l: l - 0.03 - 0.2 * c;
+  --ak-button-bg-light-l: l + 0.03 + 0.2 * c;
   --ak-button-bg-dark: oklch(
     from var(--ak-layer)
-      clamp(var(--ak-button-min-l), l - 0.05, var(--ak-button-max-l)) c h
+      clamp(
+        var(--ak-button-min-l),
+        var(--ak-button-bg-dark-l),
+        var(--ak-button-max-l)
+      )
+      c h
   );
   --ak-button-bg-light: oklch(
-    from var(--ak-layer) max(var(--ak-button-min-l) + 0.05, l + 0.05) c h
+    from var(--ak-layer)
+      clamp(
+        var(--ak-button-min-l),
+        var(--ak-button-bg-light-l),
+        var(--ak-button-max-l)
+      )
+      c h
   );
   --ak-button-shadow-color: oklch(
     from var(--ak-button-bg-dark) calc(l - 0.15) c h
@@ -150,17 +163,14 @@ body {
   --ak-button-shadow: 0 -0.5px 0.5px 1px var(--ak-button-shadow-color);
   --ak-button-highlight: 0 2px 0.5px
     oklch(from var(--ak-button-bg-dark) calc(l + 0.2) calc(c / 2) h);
-
   --ak-button-inset-shadow: var(--ak-button-shadow),
     inset var(--ak-button-highlight);
 
   @variant ak-dark {
     --ak-button-min-l: 0.15;
     --ak-button-max-l: 0.85;
-    --ak-button-bg-dark: oklch(
-      from var(--ak-layer)
-        clamp(var(--ak-button-min-l), l - 0.2 * c, var(--ak-button-max-l)) c h
-    );
+    --ak-button-bg-dark-l: l - 0.3 * c;
+    --ak-button-bg-light-l: l + 0.02 + 0.2 * c;
     --ak-button-shadow: 0 -1px 0.5px var(--ak-button-shadow-color);
     --ak-button-highlight: 0 1px 0.5px
       oklch(from var(--ak-button-bg-dark) calc(l + 0.1) c h);
@@ -227,14 +237,8 @@ body {
 
 @utility ak-tab-list {
   @apply ak-frame-bleed ak-layer-down;
-  @apply -mb-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip !pb-0;
+  @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip !pb-0;
   scrollbar-width: none;
-}
-
-@utility ak-tab-list-p-* {
-  @apply ak-tab-list;
-  --ak-tab-list-p: --spacing(--value(number, [number]));
-  --ak-tab-list-p: --value([length]);
 }
 
 @utility ak-tab-panel {
@@ -249,14 +253,14 @@ body {
 
 @utility ak-tab-folder_idle {
   @apply ak-tab_idle ak-frame-container ak-frame-border-(--ak-tab-border-width);
-  @apply border-x-0 border-b-0 border-transparent;
+  @apply border-(length:--ak-tab-border-width) !border-b-0 border-transparent;
   padding-block-end: calc(
     var(--ak-tab-border-width) + var(--ak-frame-padding)
   ) !important;
 
   > * {
-    @apply max-sm:ak-frame/2 sm:ak-frame/1;
-    @apply flex items-center gap-1.5 whitespace-nowrap !px-[calc(var(--ak-tab-border-width)+--spacing(2))];
+    @apply max-sm:ak-frame/2 sm:ak-frame/1 h-full;
+    @apply flex items-center gap-1.5 whitespace-nowrap !px-2;
     @apply before:ak-command_touch-target;
   }
 }
@@ -282,11 +286,7 @@ body {
 
 @utility ak-tab-folder_selected {
   @apply ak-layer-(--ak-tab-bg) ak-text/100;
-  @apply border-x-(length:--ak-tab-border-width) z-2 !border-(--ak-tab-border-color) !rounded-b-none !border-b-0;
-
-  > * {
-    @apply !px-2;
-  }
+  @apply z-2 !border-(--ak-tab-border-color) !rounded-b-none;
 
   &::after,
   &::before {

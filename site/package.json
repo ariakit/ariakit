@@ -6,7 +6,7 @@
     "dev": "astro dev --host",
     "tsc": "astro check && tsc -b src",
     "build": "astro build",
-    "preview": "astro preview --host",
+    "preview": "wrangler pages dev",
     "astro": "astro"
   },
   "exports": {
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@astrojs/check": "0.9.4",
+    "@astrojs/cloudflare": "12.2.3",
     "@astrojs/react": "4.2.0",
     "@astrojs/solid-js": "5.0.4",
     "shiki": "3.1.0",

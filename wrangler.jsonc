@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "compatibility_date": "2025-03-11",
+  "pages_build_output_dir": "site/dist",
+  "build": {
+    "command": "npm run build -w site"
+  },
+  "dev": {
+    "ip": "0.0.0.0",
+    "port": 4321
+  }
+}
