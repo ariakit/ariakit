@@ -1,24 +1,93 @@
-<input type="color" data-canvas-color-picker />
+<style>
+  @reference "../styles/global.css";
+
+  .test,
+  .test2 {
+    appearance: none;
+    overscroll-behavior: contain;
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      @apply ak-layer-contrast-primary ak-frame h-9 w-6;
+    }
+  }
+  .test {
+    background: linear-gradient(
+      in oklab to right,
+      oklch(0 0.05 var(--hue, 0)),
+      oklch(1 0.05 var(--hue, 0))
+    );
+  }
+  .test2 {
+    background: linear-gradient(
+      in oklab to right,
+      oklch(clamp(0.15, var(--saturation, 0.15), 0.85) 0.1 0),
+      oklch(clamp(0.15, var(--saturation, 0.15), 0.85) 0.1 60),
+      oklch(clamp(0.15, var(--saturation, 0.15), 0.85) 0.1 120),
+      oklch(clamp(0.15, var(--saturation, 0.15), 0.85) 0.1 180),
+      oklch(clamp(0.15, var(--saturation, 0.15), 0.85) 0.1 240),
+      oklch(clamp(0.15, var(--saturation, 0.15), 0.85) 0.1 360)
+    );
+  }
+</style>
+
+<input
+  data-saturation
+  type="range"
+  min="0"
+  max="1"
+  step="0.01"
+  class="test h-10 w-100 ak-layer ak-edge/20 ak-frame-container ring"
+/>
+
+<input
+  data-hue
+  type="range"
+  min="0"
+  max="360"
+  step="1"
+  class="test2 h-10 w-100 ak-layer ak-edge/20 ak-frame-container ring"
+/>
 
 <script>
-  const inputs = document.querySelectorAll<HTMLInputElement>(
-    "[data-canvas-color-picker]"
-  );
-  let ric = 0;
-  inputs?.forEach((input) =>
-    input.addEventListener("input", () => {
-      const setCanvasColor = () => {
-        document.documentElement.style.setProperty(
-          "--color-canvas",
-          input.value
-        );
-      };
-      if ("requestIdleCallback" in window) {
-        cancelIdleCallback(ric);
-        ric = requestIdleCallback(setCanvasColor);
-      } else {
-        setCanvasColor();
-      }
-    })
-  );
+  import { onIdle } from "../lib/on-idle";
+
+  const saturationInputs =
+    document.querySelectorAll<HTMLInputElement>("[data-saturation]");
+  const hueInputs = document.querySelectorAll<HTMLInputElement>("[data-hue]");
+
+  let cancelIdle = () => {};
+
+  function setProperty(property: string, value: string) {
+    document.body.style.setProperty(property, value);
+    if (property === "--saturation") {
+      document.body.style.setProperty(
+        "--color-canvas",
+        `oklch(var(--saturation, 0.15) 0.01 var(--hue, 0))`
+      );
+    } else if (property === "--hue") {
+      document.body.style.setProperty(
+        "--color-canvas",
+        `oklch(var(--saturation, 0.15) 0.01 var(--hue, 0))`
+      );
+    }
+  }
+
+  saturationInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      cancelIdle();
+      cancelIdle = onIdle(() => {
+        setProperty("--saturation", input.value);
+      });
+    });
+  });
+
+  hueInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      cancelIdle();
+      cancelIdle = onIdle(() => {
+        setProperty("--hue", input.value);
+      });
+    });
+  });
 </script>

@@ -1,8 +1,8 @@
 ---
 import CanvasColorPicker from "../components/canvas-color-picker.astro";
+import CodeBlock from "../components/code-block.astro";
 import Layout from "../layouts/Layout.astro";
 import { Playground as PlaygroundClient } from "../components/playground.react.tsx";
-import CodeBlock from "../components/code-block.astro";
 import CodeBlockTabs from "../components/code-block-tabs.astro";
 import example from "../components/copy-to-clipboard.react?raw";
 
@@ -33,6 +33,8 @@ console.log(example);`;
 ---
 
 <Layout>
+  <CanvasColorPicker />
+
   <CodeBlockTabs
     tabs={[
       {
@@ -240,5 +242,4 @@ console.log(example);`;
       ]}
     />
   </PlaygroundClient>
-  <CanvasColorPicker />
 </Layout>
