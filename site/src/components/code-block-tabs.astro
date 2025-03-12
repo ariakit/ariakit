@@ -1,5 +1,5 @@
 ---
-import type { CodeBlockProps } from "./code-block.types.ts";
+import type { CodeBlockTabProps } from "./code-block.types.ts";
 import {
   CodeBlockTabs as CodeBlock,
   CodeBlockTabPanel,
@@ -7,7 +7,7 @@ import {
 import CodeBlockContent from "./code-block-content.astro";
 
 interface Props {
-  tabs: CodeBlockProps[];
+  tabs: CodeBlockTabProps[];
 }
 
 const { tabs } = Astro.props;

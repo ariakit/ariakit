@@ -10,7 +10,7 @@ import {
 } from "react";
 import { Icon } from "../icons/icon.react.tsx";
 import { cn } from "../lib/cn.ts";
-import type { CodeBlockProps } from "./code-block.types.ts";
+import type { CodeBlockProps, CodeBlockTabProps } from "./code-block.types.ts";
 import { CopyToClipboard } from "./copy-to-clipboard.react.tsx";
 
 const tabStores = createStore({ stores: {} as Record<string, ak.TabStore> });
@@ -26,27 +26,6 @@ function getTabId(prefix: string, filename?: string) {
 //   return filename;
 // }
 
-export interface PanelProps {
-  storeId: string;
-  filename?: string;
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}
-
-export function CodeBlockTabPanel({
-  storeId,
-  filename,
-  defaultOpen = false,
-  children,
-}: PanelProps) {
-  const store = ak.useStoreState(tabStores, (state) => state.stores[storeId]);
-  const open = ak.useStoreState(store, (state) => {
-    if (!state) return defaultOpen;
-    return state.selectedId === getTabId(storeId, filename);
-  });
-  return <>{open && children}</>;
-}
-
 function SingleTabPanel(props: ak.TabPanelProps) {
   const store = ak.useTabContext();
   const tabId = ak.useStoreState(
@@ -56,10 +35,31 @@ function SingleTabPanel(props: ak.TabPanelProps) {
   return <ak.TabPanel focusable={false} {...props} tabId={tabId} />;
 }
 
+export interface PanelProps {
+  storeId: string;
+  children: React.ReactNode;
+  filename: string;
+  defaultOpen?: boolean;
+}
+
+export function CodeBlockTabPanel({
+  storeId,
+  children,
+  filename,
+  defaultOpen = false,
+}: PanelProps) {
+  const store = ak.useStoreState(tabStores, (state) => state.stores[storeId]);
+  const open = ak.useStoreState(store, (state) => {
+    if (!state) return defaultOpen;
+    return state.selectedId === getTabId(storeId, filename);
+  });
+  return <>{open && children}</>;
+}
+
 export interface CodeBlockTabsProps
   extends Omit<ComponentProps<"div">, "lang"> {
   storeId: string;
-  tabs: CodeBlockProps[];
+  tabs: CodeBlockTabProps[];
 }
 
 export function CodeBlockTabs({ storeId, tabs, ...props }: CodeBlockTabsProps) {
@@ -92,9 +92,9 @@ export function CodeBlockTabs({ storeId, tabs, ...props }: CodeBlockTabsProps) {
 
 interface Props extends Omit<ComponentProps<"div">, "lang">, CodeBlockProps {
   storeId?: string;
-  showFilename?: boolean;
   tabStore?: ak.TabStore;
-  tabs?: CodeBlockProps[];
+  showFilename?: boolean;
+  tabs?: CodeBlockTabProps[];
 }
 
 export function CodeBlock({
@@ -105,7 +105,7 @@ export function CodeBlock({
   filename,
   filenameIcon,
   showFilename,
-  lineNumbers = false,
+  lineNumbers,
   tabs,
   highlightLines,
   highlightTokens,
@@ -113,6 +113,8 @@ export function CodeBlock({
   ...props
 }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const expandButtonRef = useRef<HTMLButtonElement>(null);
+  const preRef = useRef<HTMLPreElement>(null);
   const lineCount = code.trimEnd().split("\n").length;
   const collapsible = maxLines !== undefined && lineCount > maxLines;
   const [_collapsed, setCollapsed] = useState(true);
@@ -121,33 +123,27 @@ export function CodeBlock({
   const collapse = () => {
     setCollapsed(true);
     requestAnimationFrame(() => {
-      const expandButton =
-        wrapperRef.current?.querySelector<HTMLElement>("[data-expand]");
+      const wrapper = wrapperRef.current;
+      const expandButton = expandButtonRef.current;
       expandButton?.focus({ preventScroll: true });
-      wrapperRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
+      wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   };
 
   const expand = () => {
     setCollapsed(false);
     requestAnimationFrame(() => {
-      const pre = wrapperRef.current?.querySelector("pre");
+      const wrapper = wrapperRef.current;
+      const pre = preRef.current;
       pre?.focus({ preventScroll: true });
-      wrapperRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
+      wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   };
 
   const content = (
     <div
       className={cn(
-        "ak-tab-panel",
-        "ak-frame-bleed/0 relative grid overflow-hidden",
+        "ak-tab-panel ak-frame-bleed/0 relative grid overflow-hidden",
         "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
       )}
     >
@@ -155,12 +151,13 @@ export function CodeBlock({
         <CopyToClipboard
           text={code}
           data-single-line={lineCount === 1 || undefined}
-          className="pointer-events-auto "
+          className="pointer-events-auto [@media(hover:hover)]:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
         />
       </div>
       <pre
         // @ts-expect-error - inert property is not yet in TypeScript DOM types
         inert={collapsed ? "" : undefined}
+        ref={preRef}
         aria-hidden={collapsed}
         tabIndex={-1}
         onKeyDown={(event) => {
@@ -169,10 +166,7 @@ export function CodeBlock({
           }
         }}
         style={
-          {
-            "--max-lines": maxLines,
-            "--line-height": "1.8em",
-          } as CSSProperties
+          { "--max-lines": maxLines, "--line-height": "1.8em" } as CSSProperties
         }
         className={cn(
           "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",
@@ -187,11 +181,9 @@ export function CodeBlock({
       </pre>
       {collapsible && collapsed && (
         <button
-          data-expand
+          ref={expandButtonRef}
           onClick={expand}
-          className={cn(
-            "absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-8rem)] to-[calc(100%-0.5rem)] to-(--ak-layer) z-1 justify-center items-end",
-          )}
+          className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-8rem)] to-[calc(100%-0.5rem)] to-(--ak-layer) z-1 justify-center items-end"
         >
           <div className="ak-button h-9 ak-light:ak-layer-down ak-dark:ak-layer text-sm/[1.5rem] group-hover/expand:ak-button_hover hover:ak-layer-pop-[1.5] group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
             Expand code

@@ -14,3 +14,7 @@ export interface CodeBlockProps {
   highlightLines?: number[];
   highlightTokens?: (string | readonly [string, number[]])[];
 }
+
+export interface CodeBlockTabProps extends CodeBlockProps {
+  filename: string;
+}

@@ -38,7 +38,7 @@ export function CopyToClipboard({
       <TooltipAnchor
         data-open={open || undefined}
         render={<button {...props} />}
-        className="ak-button ak-button-square ak-layer-current size-9"
+        className="ak-button ak-button-square ak-layer-feature size-9"
         onClick={async () => {
           if (state !== "idle") return;
           await navigator.clipboard.writeText(text);
@@ -58,7 +58,7 @@ export function CopyToClipboard({
       </TooltipAnchor>
       <Tooltip
         unmountOnHide
-        portal={false}
+        preserveTabOrder={false}
         className="ak-layer z-10 text-sm ak-frame-lg/1 px-2 ring shadow-md"
       >
         {state === "idle" ? "Copy" : "Copied"}

@@ -15,7 +15,7 @@
 
 :root {
   @variant dark {
-    --color-canvas: #0e0e11;
+    --color-canvas: oklch(16.52% 0.0062 285.7);
   }
 }
 

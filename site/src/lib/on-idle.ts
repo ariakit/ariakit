@@ -1,4 +1,4 @@
-export function onIdle(callback: () => void, timeout = 500) {
+export function onIdle(callback: () => void, timeout = 1) {
   if (typeof requestIdleCallback !== "undefined") {
     const handle = requestIdleCallback(callback, { timeout });
     return () => cancelIdleCallback(handle);
