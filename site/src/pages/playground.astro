@@ -43,7 +43,7 @@ console.log(example);`;
         filenameIcon: "react",
         lang: "ts",
         lineNumbers: true,
-        maxLines: 5,
+        maxLines: 20,
       },
       {
         code: jsCode,
@@ -223,7 +223,13 @@ console.log(example);`;
       showFilename
       code={example}
     />
-    <CodeBlock lang="tsx" code={example} highlightLines={[3]} lineNumbers />
+    <CodeBlock
+      lang="tsx"
+      code={example}
+      highlightLines={[3]}
+      lineNumbers
+      maxLines={17}
+    />
     <CodeBlock
       lang="tsx"
       code={example}

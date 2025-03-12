@@ -1,10 +1,9 @@
+import { invariant } from "@ariakit/core/utils/misc";
 import { createStore } from "@ariakit/core/utils/store";
 import * as ak from "@ariakit/react";
-import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import {
   type CSSProperties,
   type ComponentProps,
-  type HTMLAttributes,
   useEffect,
   useRef,
   useState,
@@ -15,47 +14,6 @@ import type { CodeBlockProps } from "./code-block.types.ts";
 import { CopyToClipboard } from "./copy-to-clipboard.react.tsx";
 
 const tabStores = createStore({ stores: {} as Record<string, ak.TabStore> });
-
-export interface TabPanelProps extends ak.TabPanelProps {
-  storeId: string;
-  defaultOpen?: boolean;
-}
-
-export function CodeBlockTabPanel({
-  storeId,
-  defaultOpen,
-  ...props
-}: TabPanelProps) {
-  const store = ak.useStoreState(tabStores, (state) => state.stores[storeId]);
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  useSafeLayoutEffect(() => {
-    setIsOpen(false);
-  }, []);
-  return (
-    <ak.TabPanel
-      unmountOnHide={!isOpen}
-      alwaysVisible
-      focusable={false}
-      store={store || ak.useTabStore()}
-      {...props}
-      className={cn("ak-frame-bleed/0", props.className)}
-    />
-  );
-}
-
-interface Props extends Omit<HTMLAttributes<HTMLDivElement>, "lang"> {
-  storeId: string;
-  code: string;
-  codeString?: string;
-  maxLines?: number;
-  children?: React.ReactNode;
-  filename?: string;
-  filenameIcon?: ComponentProps<typeof Icon>["name"];
-  showFilename?: boolean;
-  lineNumbers?: boolean;
-  highlightLines?: number[];
-  tabs?: CodeBlockProps[];
-}
 
 function getTabId(prefix: string, filename?: string) {
   if (!filename) return prefix;
@@ -68,11 +26,81 @@ function getTabId(prefix: string, filename?: string) {
 //   return filename;
 // }
 
-export function CodeBlockContainer({
+export interface PanelProps {
+  storeId: string;
+  filename?: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}
+
+export function CodeBlockTabPanel({
+  storeId,
+  filename,
+  defaultOpen = false,
+  children,
+}: PanelProps) {
+  const store = ak.useStoreState(tabStores, (state) => state.stores[storeId]);
+  const open = ak.useStoreState(store, (state) => {
+    if (!state) return defaultOpen;
+    return state.selectedId === getTabId(storeId, filename);
+  });
+  return <>{open && children}</>;
+}
+
+function SingleTabPanel(props: ak.TabPanelProps) {
+  const store = ak.useTabContext();
+  const tabId = ak.useStoreState(
+    store,
+    (state) => props.tabId ?? state?.selectedId,
+  );
+  return <ak.TabPanel focusable={false} {...props} tabId={tabId} />;
+}
+
+export interface CodeBlockTabsProps
+  extends Omit<ComponentProps<"div">, "lang"> {
+  storeId: string;
+  tabs: CodeBlockProps[];
+}
+
+export function CodeBlockTabs({ storeId, tabs, ...props }: CodeBlockTabsProps) {
+  const [firstTab] = tabs;
+  invariant(firstTab, "At least one tab is required");
+
+  const defaultTabId = getTabId(storeId, firstTab.filename);
+  const tabStore = ak.useTabStore({ defaultSelectedId: defaultTabId });
+  const selectedTabId = ak.useStoreState(tabStore, "selectedId");
+
+  const selectedTab = tabs.find(
+    (tab) => getTabId(storeId, tab.filename) === selectedTabId,
+  );
+  invariant(selectedTab, "Selected tab not found");
+
+  useEffect(() => {
+    if (!storeId) return;
+    tabStores.setState("stores", (stores) => ({
+      ...stores,
+      [storeId]: tabStore,
+    }));
+  }, [tabStore, storeId]);
+
+  return (
+    <ak.TabProvider store={tabStore}>
+      <CodeBlock {...props} storeId={storeId} tabs={tabs} {...selectedTab} />
+    </ak.TabProvider>
+  );
+}
+
+interface Props extends Omit<ComponentProps<"div">, "lang">, CodeBlockProps {
+  storeId?: string;
+  showFilename?: boolean;
+  tabStore?: ak.TabStore;
+  tabs?: CodeBlockProps[];
+}
+
+export function CodeBlock({
   storeId,
   code,
-  codeString,
-  maxLines = 17,
+  maxLines,
   children,
   className,
   filename,
@@ -80,28 +108,18 @@ export function CodeBlockContainer({
   showFilename,
   lineNumbers = false,
   tabs,
+  highlightLines,
+  highlightTokens,
   ...props
 }: Props) {
-  const lineCount = code.trimEnd().split("\n").length;
-  const collapsible = lineCount > maxLines;
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const idPrefix = storeId;
-  const defaultTabId = tabs?.length
-    ? getTabId(idPrefix, tabs[0]?.filename)
-    : undefined;
-  const [isCollapsed, setIsCollapsed] = useState(collapsible);
-
-  const tabStore = ak.useTabStore({ defaultSelectedId: defaultTabId });
-
-  useEffect(() => {
-    tabStores.setState("stores", (stores) => ({
-      ...stores,
-      [storeId]: tabStore,
-    }));
-  }, [tabStore, storeId]);
+  const lineCount = code.trimEnd().split("\n").length;
+  const collapsible = maxLines !== undefined && lineCount > maxLines;
+  const [_collapsed, setCollapsed] = useState(true);
+  const collapsed = collapsible && _collapsed;
 
   const collapse = () => {
-    setIsCollapsed(true);
+    setCollapsed(true);
     requestAnimationFrame(() => {
       const expandButton =
         wrapperRef.current?.querySelector<HTMLElement>("[data-expand]");
@@ -114,7 +132,7 @@ export function CodeBlockContainer({
   };
 
   const expand = () => {
-    setIsCollapsed(false);
+    setCollapsed(false);
     requestAnimationFrame(() => {
       const pre = wrapperRef.current?.querySelector("pre");
       pre?.focus({ preventScroll: true });
@@ -128,20 +146,17 @@ export function CodeBlockContainer({
   useEffect(() => {
     const pre = wrapperRef.current?.querySelector("pre");
     if (!pre) return;
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         collapse();
       }
     };
-
     pre.addEventListener("keydown", handleKeyDown);
     return () => pre.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const content = (
     <div
-      data-filename={filename}
       className={cn(
         "ak-tab-panel",
         "ak-frame-bleed/0 relative grid overflow-hidden",
@@ -152,15 +167,14 @@ export function CodeBlockContainer({
         <CopyToClipboard
           text={code}
           data-single-line={lineCount === 1 || undefined}
-          className="pointer-events-auto [@media(hover:hover)]:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
+          className="pointer-events-auto "
         />
       </div>
       <pre
         // @ts-expect-error - inert property is not yet in TypeScript DOM types
-        inert={isCollapsed ? "" : undefined}
-        // biome-ignore lint/a11y/noNoninteractiveTabindex: TODO
-        tabIndex={0}
-        aria-hidden={isCollapsed}
+        inert={collapsed ? "" : undefined}
+        aria-hidden={collapsed}
+        tabIndex={-1}
         style={
           {
             "--max-lines": maxLines,
@@ -168,15 +182,17 @@ export function CodeBlockContainer({
           } as CSSProperties
         }
         className={cn(
-          "whitespace-normal",
-          "text-sm/(--line-height) ak-frame-cover/0 outline-none",
-          !isCollapsed && "overflow-auto max-h-[min(calc(100svh-12rem),60rem)]",
-          isCollapsed && "max-h-[calc(var(--max-lines)*var(--line-height))]",
+          "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",
+          collapsible &&
+            !collapsed &&
+            "overflow-auto max-h-[min(calc(100svh-12rem),60rem)]",
+          collapsed && "max-h-[calc(var(--max-lines)*var(--line-height))]",
+          lineCount === 1 ? "h-12 grid items-center" : "py-4",
         )}
       >
         {children}
       </pre>
-      {collapsible && isCollapsed && (
+      {collapsible && collapsed && (
         <button
           data-expand
           onClick={expand}
@@ -202,16 +218,16 @@ export function CodeBlockContainer({
       <div
         className="ak-layer group peer ak-frame-border relative ak-frame-container/0 overflow-clip ak-tabs flex flex-col scroll-my-2"
         data-collapsible={collapsible || undefined}
-        data-collapsed={isCollapsed || undefined}
+        data-collapsed={collapsed || undefined}
       >
-        {tabs ? (
-          <ak.TabProvider store={tabStore}>
+        {tabs && storeId ? (
+          <>
             <ak.TabList className="ak-tab-list">
               {tabs.map((tabItem, index) => (
                 <ak.Tab
-                  key={index}
-                  className="ak-tab-folder data-focus-visible:ak-tab-folder_focus sm:h-10 text-sm"
-                  id={getTabId(idPrefix, tabItem.filename)}
+                  key={tabItem.filename || index}
+                  className="ak-tab-folder data-focus-visible:ak-tab-folder_focus h-12 sm:h-10 text-sm"
+                  id={getTabId(storeId, tabItem.filename)}
                 >
                   <div>
                     {tabItem.filenameIcon && (
@@ -222,8 +238,8 @@ export function CodeBlockContainer({
                 </ak.Tab>
               ))}
             </ak.TabList>
-            {content}
-          </ak.TabProvider>
+            <SingleTabPanel render={content} />
+          </>
         ) : (
           <>
             {showFilename && (
@@ -240,7 +256,7 @@ export function CodeBlockContainer({
           </>
         )}
       </div>
-      {collapsible && !isCollapsed && (
+      {collapsible && !collapsed && (
         <div className="sticky bottom-2 my-2 grid justify-center">
           <button
             onClick={collapse}

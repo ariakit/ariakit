@@ -29,7 +29,7 @@ export function CopyToClipboard({
   }, [state]);
 
   return (
-    <TooltipProvider store={tooltip}>
+    <TooltipProvider store={tooltip} placement="left">
       <TooltipAnchor
         data-open={open || undefined}
         render={<button {...props} />}
@@ -53,6 +53,7 @@ export function CopyToClipboard({
       </TooltipAnchor>
       <Tooltip
         unmountOnHide
+        portal={false}
         className="ak-layer z-10 text-sm ak-frame-lg/1 px-2 ring shadow-md"
       >
         {state === "idle" ? "Copy" : "Copied"}

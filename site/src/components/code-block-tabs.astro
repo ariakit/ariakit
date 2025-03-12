@@ -1,6 +1,9 @@
 ---
 import type { CodeBlockProps } from "./code-block.types.ts";
-import { CodeBlockContainer, CodeBlockTabPanel } from "./code-block.react.tsx";
+import {
+  CodeBlockTabs as CodeBlock,
+  CodeBlockTabPanel,
+} from "./code-block.react.tsx";
 import CodeBlockContent from "./code-block-content.astro";
 
 interface Props {
@@ -9,28 +12,20 @@ interface Props {
 
 const { tabs } = Astro.props;
 
-const [firstTab] = tabs;
-
-// Random id
 const storeId = `code-block-tabs-${Math.random().toString(36).substring(2, 15)}`;
 ---
 
-<CodeBlockContainer
-  client:visible
-  {tabs}
-  code={firstTab.code}
-  maxLines={firstTab.maxLines}
-  storeId={storeId}
->
+<CodeBlock client:visible storeId={storeId} {tabs}>
   {
     tabs.map((tab, index) => (
       <CodeBlockTabPanel
-        client:visible
+        client:load
         storeId={storeId}
+        filename={tab.filename}
         defaultOpen={index === 0}
       >
         <CodeBlockContent {...tab} />
       </CodeBlockTabPanel>
     ))
   }
-</CodeBlockContainer>
+</CodeBlock>
