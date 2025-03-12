@@ -1,3 +1,4 @@
+// @ts-nocheck Revisit this after we merge the site folder into root
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
