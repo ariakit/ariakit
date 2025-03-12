@@ -97,9 +97,10 @@ function splitContent(content: string) {
                 : line.flatMap((token) =>
                     splitContent(token.content).map(
                       ({ content, highlightToken }) => {
-                        const dark =
-                          token.htmlStyle?.["--shiki-dark"] || token.color;
-                        const light = token.htmlStyle?.color || token.color;
+                        // TODO: Fix this when we merge site to root
+                        const style = token.htmlStyle as any;
+                        const dark = style?.["--shiki-dark"] || token.color;
+                        const light = style?.color || token.color;
                         const el = (
                           <span
                             style={`--dark:${dark}; --light:${light}`}
