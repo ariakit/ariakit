@@ -10,10 +10,11 @@ import {
 } from "react";
 import { Icon } from "../icons/icon.react.tsx";
 import { cn } from "../lib/cn.ts";
+import { onIdle } from "../lib/on-idle.ts";
 import type { CodeBlockProps, CodeBlockTabProps } from "./code-block.types.ts";
 import { CopyToClipboard } from "./copy-to-clipboard.react.tsx";
 
-const tabStores = createStore({ stores: {} as Record<string, ak.TabStore> });
+const openTabs = createStore<{ tabs: Record<string, string> }>({ tabs: {} });
 
 function getTabId(prefix: string, filename?: string) {
   if (!filename) return prefix;
@@ -48,10 +49,10 @@ export function CodeBlockTabPanel({
   filename,
   defaultOpen = false,
 }: PanelProps) {
-  const store = ak.useStoreState(tabStores, (state) => state.stores[storeId]);
-  const open = ak.useStoreState(store, (state) => {
-    if (!state) return defaultOpen;
-    return state.selectedId === getTabId(storeId, filename);
+  const open = ak.useStoreState(openTabs, (state) => {
+    const tab = state.tabs[storeId];
+    if (!tab) return defaultOpen;
+    return tab === filename;
   });
   return <>{open && children}</>;
 }
@@ -74,14 +75,17 @@ export function CodeBlockTabs({ storeId, tabs, ...props }: CodeBlockTabsProps) {
     (tab) => getTabId(storeId, tab.filename) === selectedTabId,
   );
   invariant(selectedTab, "Selected tab not found");
+  const filename = selectedTab.filename;
 
   useEffect(() => {
     if (!storeId) return;
-    tabStores.setState("stores", (stores) => ({
-      ...stores,
-      [storeId]: tabStore,
-    }));
-  }, [tabStore, storeId]);
+    return onIdle(() => {
+      openTabs.setState("tabs", (tabs) => ({
+        ...tabs,
+        [storeId]: filename,
+      }));
+    });
+  }, [storeId, filename]);
 
   return (
     <ak.TabProvider store={tabStore}>
@@ -223,7 +227,11 @@ export function CodeBlock({
                 </ak.Tab>
               ))}
             </ak.TabList>
-            <SingleTabPanel render={content} />
+            <SingleTabPanel
+              scrollRestoration
+              scrollElement={preRef}
+              render={content}
+            />
           </>
         ) : (
           <>
