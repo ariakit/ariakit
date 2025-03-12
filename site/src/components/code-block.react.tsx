@@ -102,7 +102,6 @@ export function CodeBlock({
   code,
   maxLines,
   children,
-  className,
   filename,
   filenameIcon,
   showFilename,
@@ -110,6 +109,7 @@ export function CodeBlock({
   tabs,
   highlightLines,
   highlightTokens,
+  lang,
   ...props
 }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -143,18 +143,6 @@ export function CodeBlock({
     });
   };
 
-  useEffect(() => {
-    const pre = wrapperRef.current?.querySelector("pre");
-    if (!pre) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        collapse();
-      }
-    };
-    pre.addEventListener("keydown", handleKeyDown);
-    return () => pre.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
   const content = (
     <div
       className={cn(
@@ -175,6 +163,11 @@ export function CodeBlock({
         inert={collapsed ? "" : undefined}
         aria-hidden={collapsed}
         tabIndex={-1}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            collapse();
+          }
+        }}
         style={
           {
             "--max-lines": maxLines,
@@ -211,9 +204,9 @@ export function CodeBlock({
 
   return (
     <div
-      ref={wrapperRef}
-      className={cn("flex flex-col isolate scroll-my-2", className)}
       {...props}
+      ref={wrapperRef}
+      className={cn("flex flex-col isolate scroll-my-2", props.className)}
     >
       <div
         className="ak-layer group peer ak-frame-border relative ak-frame-container/0 overflow-clip ak-tabs flex flex-col scroll-my-2"
@@ -256,17 +249,19 @@ export function CodeBlock({
           </>
         )}
       </div>
-      {collapsible && !collapsed && (
-        <div className="sticky bottom-2 my-2 grid justify-center">
-          <button
-            onClick={collapse}
-            className="ak-button ak-layer border h-9 text-sm/[1.5rem]"
-          >
-            Collapse code
-            <Icon className="text-base" name="chevronUp" />
-          </button>
-        </div>
-      )}
+      <div>
+        {collapsible && !collapsed && (
+          <div className="sticky bottom-2 my-2 grid justify-center">
+            <button
+              onClick={collapse}
+              className="ak-button ak-layer border h-9 text-sm/[1.5rem]"
+            >
+              Collapse code
+              <Icon className="text-base" name="chevronUp" />
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

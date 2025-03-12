@@ -28,6 +28,11 @@ export function CopyToClipboard({
     return () => clearTimeout(timeout);
   }, [state]);
 
+  // Reset state when text changes
+  useEffect(() => {
+    setState("idle");
+  }, [text]);
+
   return (
     <TooltipProvider store={tooltip} placement="left">
       <TooltipAnchor
