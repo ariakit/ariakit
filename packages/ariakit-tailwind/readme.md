@@ -242,17 +242,34 @@ If you define custom `--radius-*` and `--spacing-*` variables, you can use them 
 <div class="ak-frame-container"></div>
 ```
 
-| Utility                            | Description                                                                |
-| ---------------------------------- | -------------------------------------------------------------------------- |
-| `ak-frame`                         | Applies border radius and padding (relative to parent frame).              |
-| `ak-frame-<length>`                | Sets specific border radius when no parent frame is present.               |
-| `ak-frame-<length>/<length>`       | Applies specific border radius (without parent frame) and padding.         |
-| `ak-frame-cover`                   | Covers parent frame padding with a negative margin.                        |
-| `ak-frame-cover-<length>`          | Covers parent padding and sets specific radius (no parent).                |
-| `ak-frame-cover-<length>/<length>` | Covers parent padding and applies specific radius (no parent) and padding. |
-| `ak-frame-force-<length>`          | Forces specific border radius, overriding parent frame settings.           |
-| `ak-frame-force-<length>/<length>` | Forces specific radius and padding, ignoring parent frame.                 |
-| `ak-frame-border`                  | Applies border width that influences nested element radius calculations.   |
+| Utility                               | Description                                                                |
+| ------------------------------------- | -------------------------------------------------------------------------- |
+| `ak-frame`                            | Applies border radius and padding (relative to parent frame).              |
+| `ak-frame-<length>`                   | Sets specific border radius when no parent frame is present.               |
+| `ak-frame-<length>/<length>`          | Applies specific border radius (without parent frame) and padding.         |
+| `ak-frame-border`                     | Applies border width that influences nested element radius calculations.   |
+| `ak-frame-cover`                      | Covers parent frame padding with a negative margin.                        |
+| `ak-frame-cover-<length>`             | Covers parent padding and sets specific radius (no parent).                |
+| `ak-frame-cover-<length>/<length>`    | Covers parent padding and applies specific radius (no parent) and padding. |
+| `ak-frame-overflow`                   | Clips content to the frame's border radius.                                |
+| `ak-frame-overflow-<length>`          | Clips content and sets specific radius (no parent).                        |
+| `ak-frame-overflow-<length>/<length>` | Clips content and applies specific radius (no parent) and padding.         |
+| `ak-frame-force-<length>`             | Forces specific border radius, overriding parent frame settings.           |
+| `ak-frame-force-<length>/<length>`    | Forces specific radius and padding, ignoring parent frame.                 |
+
+## `ak-light` and `ak-dark`
+
+The `ak-light` and `ak-dark` variants allow you to conditionally apply styles based on the parent layer's appearance:
+
+```html
+<div class="ak-layer-canvas">
+  <!-- Styles will only apply when parent layer is light -->
+  <div class="ak-light:ak-layer-2">Light mode only</div>
+
+  <!-- Styles will only apply when parent layer is dark -->
+  <div class="ak-dark:ak-layer-2">Dark mode only</div>
+</div>
+```
 
 ## Core Team
 
