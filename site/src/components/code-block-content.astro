@@ -1,0 +1,130 @@
+---
+import { type BundledLanguage, type CodeToTokensOptions } from "shiki";
+import { highlighter } from "../lib/shiki.ts";
+import type { CodeBlockProps } from "./code-block.types";
+
+type Lang = CodeToTokensOptions<BundledLanguage>["lang"];
+
+interface Props extends CodeBlockProps {}
+
+const {
+  code,
+  filename,
+  lang = filename ? (filename.split(".").pop() as Lang) : "text",
+  maxLines,
+  lineNumbers = false,
+  highlightLines = [],
+  highlightTokens = [],
+} = Astro.props;
+
+const { tokens } = highlighter.codeToTokens(code.trim(), {
+  lang,
+  themes: {
+    light: "light-plus",
+    dark: "dark-plus",
+  },
+});
+
+const tokensSeen: Record<string, number> = {};
+
+function isHighlighted(i: number) {
+  return highlightLines.includes(i + 1);
+}
+
+function splitContent(content: string) {
+  const tokens = content.split(/([^\s"']+)/);
+  return tokens.flatMap((token) => {
+    const highlightToken = highlightTokens.some((t) => {
+      const [word, indexes] = Array.isArray(t) ? t : [t];
+      if (token !== word) return false;
+      if (!indexes) return token === word;
+      if (!(word in tokensSeen)) {
+        tokensSeen[word] = 0;
+      }
+      const index = tokensSeen[word]++;
+      return indexes.includes(index);
+    });
+    return { content: token, highlightToken };
+  });
+}
+---
+
+<Fragment>
+  <div
+    class:list={[
+      "grid whitespace-pre *:*:ps-4 **:data-highlight:ak-edge/20 **:data-highlight:shadow-(color:--ak-border) **:data-highlight:shadow-[inset_0.175rem_0]",
+      lineNumbers && "sm:grid-cols-[max-content_1fr]",
+    ]}
+  >
+    {
+      lineNumbers && (
+        <div
+          aria-hidden
+          class="max-sm:hidden -me-2 grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50"
+        >
+          {tokens.map((_, i) => {
+            const highlightLine = isHighlighted(i);
+            return (
+              <span
+                data-highlight={highlightLine || undefined}
+                class:list={["pe-4", { "ak-layer-pop": highlightLine }]}
+              >
+                {i + 1}
+              </span>
+            );
+          })}
+        </div>
+      )
+    }
+    <code>
+      {
+        tokens.map((line, i) => {
+          const highlightLine = isHighlighted(i);
+          const hasContent = line.some((token) => token.content);
+          return (
+            <div
+              data-highlight={highlightLine || undefined}
+              class:list={[
+                "pe-14",
+                highlightLine && "ak-layer-pop",
+                maxLines !== undefined &&
+                  i > maxLines &&
+                  "in-data-collapsed:hidden",
+              ]}
+            >
+              {!hasContent
+                ? "\n"
+                : line.flatMap((token) =>
+                    splitContent(token.content).map(
+                      ({ content, highlightToken }) => {
+                        // TODO: Fix this after we merge the site folder into root
+                        const style = token.htmlStyle as any;
+                        const dark = style?.["--shiki-dark"] || token.color;
+                        const light = style?.color || token.color;
+                        const el = (
+                          <span
+                            style={`--dark:${dark}; --light:${light}`}
+                            class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
+                          >
+                            {content || ""}
+                          </span>
+                        );
+                        if (!highlightToken) return el;
+                        return (
+                          <span
+                            style={`--dark:${dark}; --light:${light}`}
+                            class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20 ring rounded px-[0.5ch] py-0.5"
+                          >
+                            {el}
+                          </span>
+                        );
+                      }
+                    )
+                  )}
+            </div>
+          );
+        })
+      }</code
+    >
+  </div>
+</Fragment>

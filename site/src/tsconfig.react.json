@@ -9,6 +9,6 @@
     "jsx": "preserve",
     "jsxImportSource": "react"
   },
-  "include": ["**/*.react.*"],
-  "exclude": []
+  "include": ["**/*.react.tsx", "**/*.ts"],
+  "exclude": ["content.config.ts"]
 }

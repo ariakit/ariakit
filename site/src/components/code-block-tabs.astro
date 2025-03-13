@@ -1,0 +1,35 @@
+---
+import type { CodeBlockTabProps } from "./code-block.types.ts";
+import CodeBlockContent from "./code-block-content.astro";
+import {
+  CodeBlockTabs as CodeBlock,
+  CodeBlockTabPanel,
+} from "./code-block.react.tsx";
+import type { ComponentProps } from "astro/types";
+
+interface Props extends Omit<ComponentProps<typeof CodeBlock>, "storeId"> {}
+
+const { tabs, persistTabKey } = Astro.props;
+
+const storeId = `code-block-tabs-${Math.random().toString(36).substring(2, 15)}`;
+---
+
+<CodeBlock
+  client:visible
+  storeId={storeId}
+  tabs={tabs}
+  persistTabKey={persistTabKey}
+>
+  {
+    tabs.map((tab, index) => (
+      <CodeBlockTabPanel
+        client:load
+        storeId={storeId}
+        filename={tab.filename}
+        defaultOpen={index === 0}
+      >
+        <CodeBlockContent {...tab} />
+      </CodeBlockTabPanel>
+    ))
+  }
+</CodeBlock>
