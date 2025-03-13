@@ -732,7 +732,7 @@ const AriakitTailwind = plugin(
       {
         "ak-text": (value, { modifier }) => {
           if (value === "current") {
-            const percentage = toPercent(modifier, "0%");
+            const percentage = toPercent(modifier, "100%");
             const baseAlpha = lchLightDark(53.6, 53.6);
             const lAdd = lchLightDark(`(100 - l) * 0.85`, `l * 1.08`);
             const cAdd = `(c * 0.036)`;
