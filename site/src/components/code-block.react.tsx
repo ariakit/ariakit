@@ -1,6 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
-import { createStore } from "@ariakit/core/utils/store";
 import * as ak from "@ariakit/react";
+import { Store, useStore } from "@tanstack/react-store";
 import {
   type CSSProperties,
   type ComponentProps,
@@ -8,24 +8,26 @@ import {
   useRef,
   useState,
 } from "react";
+import useLocalStorageState from "use-local-storage-state";
 import { Icon } from "../icons/icon.react.tsx";
 import { cn } from "../lib/cn.ts";
 import { onIdle } from "../lib/on-idle.ts";
+import { useHydrated } from "../lib/use-hydrated.ts";
 import type { CodeBlockProps, CodeBlockTabProps } from "./code-block.types.ts";
 import { CopyToClipboard } from "./copy-to-clipboard.react.tsx";
 
-const openTabs = createStore<{ tabs: Record<string, string> }>({ tabs: {} });
+const openTabs = new Store<Record<string, string>>({});
 
 function getTabId(prefix: string, filename?: string) {
   if (!filename) return prefix;
   return `${prefix}/${filename}`;
 }
 
-// function getFilename(id?: string | null) {
-//   if (!id) return;
-//   const [, filename] = id.split(/\/(.*)/);
-//   return filename;
-// }
+function getFilename(id?: string | null) {
+  if (!id) return;
+  const [, filename] = id.split(/\/(.*)/);
+  return filename;
+}
 
 function SingleTabPanel(props: ak.TabPanelProps) {
   const store = ak.useTabContext();
@@ -49,11 +51,14 @@ export function CodeBlockTabPanel({
   filename,
   defaultOpen = false,
 }: PanelProps) {
-  const open = ak.useStoreState(openTabs, (state) => {
-    const tab = state.tabs[storeId];
-    if (!tab) return defaultOpen;
+  const hydrated = useHydrated();
+
+  const open = useStore(openTabs, (state) => {
+    const tab = state[storeId];
+    if (!tab || !hydrated) return defaultOpen;
     return tab === filename;
   });
+
   return <>{open && children}</>;
 }
 
@@ -61,14 +66,32 @@ export interface CodeBlockTabsProps
   extends Omit<ComponentProps<"div">, "lang"> {
   storeId: string;
   tabs: CodeBlockTabProps[];
+  persistTabKey?: string;
 }
 
-export function CodeBlockTabs({ storeId, tabs, ...props }: CodeBlockTabsProps) {
+export function CodeBlockTabs({
+  storeId,
+  tabs,
+  persistTabKey,
+  ...props
+}: CodeBlockTabsProps) {
   const [firstTab] = tabs;
   invariant(firstTab, "At least one tab is required");
 
-  const defaultTabId = getTabId(storeId, firstTab.filename);
-  const tabStore = ak.useTabStore({ defaultSelectedId: defaultTabId });
+  const canPersist = persistTabKey !== undefined;
+  const [persistedFilename = firstTab.filename, setPersistedFilename] =
+    useLocalStorageState<string | undefined>(
+      persistTabKey ?? "code-block-tabs",
+    );
+
+  const defaultTabId = getTabId(storeId, persistedFilename);
+  const tabStore = ak.useTabStore({
+    defaultSelectedId: defaultTabId,
+    ...(canPersist && {
+      selectedId: getTabId(storeId, persistedFilename),
+      setSelectedId: (id) => setPersistedFilename(getFilename(id)),
+    }),
+  });
   const selectedTabId = ak.useStoreState(tabStore, "selectedId");
 
   const selectedTab = tabs.find(
@@ -80,7 +103,7 @@ export function CodeBlockTabs({ storeId, tabs, ...props }: CodeBlockTabsProps) {
   useEffect(() => {
     if (!storeId) return;
     return onIdle(() => {
-      openTabs.setState("tabs", (tabs) => ({
+      openTabs.setState((tabs) => ({
         ...tabs,
         [storeId]: filename,
       }));

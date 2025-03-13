@@ -40,7 +40,7 @@ console.log(example);`;
       {
         code: tsCode,
         filename: "example.ts",
-        filenameIcon: "react",
+        filenameIcon: "ts",
         lang: "ts",
         lineNumbers: true,
         maxLines: 20,
@@ -48,7 +48,7 @@ console.log(example);`;
       {
         code: jsCode,
         filename: "example.js",
-        filenameIcon: "npm",
+        filenameIcon: "js",
         lang: "js",
         lineNumbers: true,
         maxLines: 5,
@@ -57,6 +57,7 @@ console.log(example);`;
         code: pyCode,
         filename: "example.py",
         lang: "python",
+        filenameIcon: "tailwind",
         lineNumbers: true,
         highlightLines: [1, 2, 3, 4],
         maxLines: 5,
@@ -83,6 +84,7 @@ console.log(example);`;
       disabled
     </div>
   </div>
+
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
     <button class="ak-button ak-layer-contrast">button</button>
     <button class="ak-button-classic ak-layer-contrast">button</button>
@@ -216,6 +218,37 @@ console.log(example);`;
     <div class="base:ak-button_idle ak-button_active">active</div>
     <div class="base:ak-button_idle ak-button_disabled">disabled</div>
   </div>
+
+  <CodeBlockTabs
+    persistTabKey="package-manager"
+    tabs={[
+      {
+        filename: "npm",
+        filenameIcon: "npm",
+        lang: "bash",
+        code: "npm install @ariakit/tailwind",
+      },
+      {
+        filename: "pnpm",
+        filenameIcon: "pnpm",
+        lang: "bash",
+        code: "pnpm add @ariakit/tailwind",
+      },
+      {
+        filename: "yarn",
+        filenameIcon: "yarn",
+        lang: "bash",
+        code: "yarn add @ariakit/tailwind",
+      },
+      {
+        filename: "bun",
+        filenameIcon: "bun",
+        lang: "bash",
+        code: "bun add @ariakit/tailwind",
+      },
+    ]}
+  />
+
   <PlaygroundClient client:load>
     <CodeBlock
       filename="file.tsx"
