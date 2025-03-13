@@ -236,13 +236,13 @@ body {
 }
 
 @utility ak-tab-list {
-  @apply ak-frame-bleed ak-layer-down;
+  @apply ak-frame-overflow ak-layer-down;
   @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip !pb-0;
   scrollbar-width: none;
 }
 
 @utility ak-tab-panel {
-  @apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-bleed;
+  @apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-cover;
   @apply !border-(--ak-tab-border-color) relative;
 }
 

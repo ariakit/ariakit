@@ -170,7 +170,7 @@ export function CodeBlock({
   const content = (
     <div
       className={cn(
-        "ak-tab-panel ak-frame-bleed/0 relative grid overflow-hidden",
+        "ak-tab-panel ak-frame-cover/0 relative grid overflow-hidden",
         "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
       )}
     >

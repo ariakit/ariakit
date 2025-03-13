@@ -643,7 +643,7 @@ const AriakitTailwind = plugin(
               const parentPadding = inherit(vars._framePadding, "0px");
               const parentRadius = inherit(vars._frameRadius, radius);
               const parentBorder = inherit(vars._frameBorder, "0px");
-              const margin = `calc(${parentPadding} * -1)`;
+              const margin = `calc((${parentPadding} + ${prop(vars.frameBorder)}) * -1)`;
               const computedPadding = extra.modifier
                 ? padding
                 : inherit(vars._framePadding, padding);
@@ -652,7 +652,7 @@ const AriakitTailwind = plugin(
                 [vars._frameCappedPadding]: capPadding,
                 [provide(vars._framePadding)]: computedPadding,
                 [provide(vars._frameRadius)]: computedRadius,
-                [provide(vars._frameBorder)]: prop(vars._frameBorder),
+                [provide(vars._frameBorder)]: prop(vars.frameBorder),
                 [vars.frameMargin]: margin,
                 [vars.framePadding]: computedPadding,
                 [vars.frameRadius]: computedRadius,
@@ -674,7 +674,7 @@ const AriakitTailwind = plugin(
             }),
           );
         },
-        "ak-frame-bleed": (radiusKey, extra) => {
+        "ak-frame-overflow": (radiusKey, extra) => {
           const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
           const cap = `1rem`;
           const capPadding = `min(${padding}, ${cap})`;
@@ -761,7 +761,7 @@ const AriakitTailwind = plugin(
           return css({
             [vars._frameBorder]: value,
             [vars.frameBorder]: value,
-            borderWidth: prop(vars._frameBorder),
+            borderWidth: prop(vars.frameBorder),
           });
         },
       },
