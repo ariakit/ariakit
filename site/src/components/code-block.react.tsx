@@ -238,7 +238,7 @@ export function CodeBlock({
               {tabs.map((tabItem, index) => (
                 <ak.Tab
                   key={tabItem.filename || index}
-                  className="ak-tab-folder data-focus-visible:ak-tab-folder_focus h-12 sm:h-10 text-sm"
+                  className="ak-tab-folder data-focus-visible:ak-tab-folder_focus h-12 sm:h-10 [contain:block-size] text-sm"
                   id={getTabId(storeId, tabItem.filename)}
                 >
                   <div>

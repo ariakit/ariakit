@@ -1,4 +1,4 @@
-export const LIGHTNESS_LEVELS = 20;
+export const LIGHTNESS_LEVELS = 10;
 export const SCHEME_THRESHOLD_L = 56.27;
 export const SCHEME_THRESHOLD_OKL = 0.623;
 

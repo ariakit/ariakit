@@ -31,6 +31,10 @@ function isHighlighted(i: number) {
   return highlightLines.includes(i + 1);
 }
 
+function isCollapsed(lineIndex: number) {
+  return maxLines !== undefined && lineIndex > maxLines;
+}
+
 function splitContent(content: string) {
   const tokens = content.split(/([^\s"']+)/);
   return tokens.flatMap((token) => {
@@ -85,11 +89,9 @@ function splitContent(content: string) {
             <div
               data-highlight={highlightLine || undefined}
               class:list={[
-                "pe-14",
+                "pe-14 [content-visibility:auto] h-[calc(var(--line-height))]",
                 highlightLine && "ak-layer-pop",
-                maxLines !== undefined &&
-                  i > maxLines &&
-                  "in-data-collapsed:hidden",
+                isCollapsed(i) && "in-data-collapsed:hidden",
               ]}
             >
               {!hasContent

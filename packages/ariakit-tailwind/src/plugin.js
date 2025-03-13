@@ -315,9 +315,17 @@ const AriakitTailwind = plugin(
           const { l, c, h } = getLayerOkLCH(level);
           const color = `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
           const percentage = toPercent(modifier, "50%");
+          const mixColor = `color-mix(in oklab, ${prop(vars.layerParent)}, ${color} ${percentage})`;
+          if (token) {
+            return {
+              ...getLayerCss(token),
+              [vars._layerIdle]: mixColor,
+              [vars._layerBase]: mixColor,
+            };
+          }
           return {
-            ...(token ? getLayerCss(token) : getCurrentLayerCss()),
-            [vars.layer]: `color-mix(in oklab, ${prop(vars.layerParent)}, ${color} ${percentage})`,
+            ...getCurrentLayerCss(),
+            [vars.layer]: mixColor,
           };
         },
       },
