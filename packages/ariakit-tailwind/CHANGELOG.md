@@ -1,5 +1,11 @@
 # @ariakit/tailwind
 
+## 0.1.3
+
+- Improved performance.
+- Fixed `ak-layer-mix-<color> hover:ak-layer-pop` combination.
+- Adjusted the base alpha value for `ak-text/<number>` on dark layers.
+
 ## 0.1.2
 
 ### New `ak-frame-overflow` utility
