@@ -488,7 +488,7 @@ const AriakitTailwind = plugin(
             withParentOkL((parentL) => {
               const isDark = parentL < SCHEME_THRESHOLD_OKL;
               const t = isDark ? 1 : -1.2;
-              const contrastL = `(${Math.max(parentL, 0.15)} + ${t} * 0.3)`;
+              const contrastL = `(${Math.max(parentL, 0.15)} + ${t * 0.3})`;
               const contrastLString = isDark
                 ? `max(l, ${contrastL})`
                 : `min(l, ${contrastL})`;
@@ -621,109 +621,76 @@ const AriakitTailwind = plugin(
       return result;
     }
 
+    /**
+     * Creates frame CSS for cover/overflow variants
+     * @param {string} radiusKey
+     * @param {{ modifier: string | null }} extra
+     * @param {boolean} useSelfBorder Whether to use the current frame's border (true for cover) or parent border (false for overflow)
+     */
+    function getFrameStretchCss(radiusKey, extra, useSelfBorder) {
+      const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
+      const cap = `1rem`;
+      const capPadding = `min(${padding}, ${cap})`;
+
+      const result = {
+        [vars.framePadding]: padding,
+        padding,
+        scrollPadding: padding,
+        borderRadius: radius,
+        [IN_DARK]: { colorScheme: "dark" },
+        [IN_LIGHT]: { colorScheme: "light" },
+      };
+
+      return Object.assign(
+        result,
+        withContext("frame", false, ({ provide, inherit }) => {
+          const parentPadding = inherit(vars._framePadding, "0px");
+          const parentRadius = inherit(vars._frameRadius, radius);
+          const parentBorder = inherit(vars._frameBorder, "0px");
+          const borderForMargin = useSelfBorder
+            ? prop(vars.frameBorder)
+            : parentBorder;
+          const margin = `calc((${parentPadding} + ${borderForMargin}) * -1)`;
+          const computedPadding = extra.modifier
+            ? padding
+            : inherit(vars._framePadding, padding);
+          const computedRadius = useSelfBorder
+            ? `calc(${parentRadius} - ${parentBorder})`
+            : parentRadius;
+
+          return css({
+            [vars._frameCappedPadding]: capPadding,
+            [provide(vars._framePadding)]: computedPadding,
+            [provide(vars._frameRadius)]: computedRadius,
+            [provide(vars._frameBorder)]: prop(vars._frameBorder),
+            [vars.frameMargin]: margin,
+            [vars.framePadding]: computedPadding,
+            [vars.frameRadius]: computedRadius,
+            marginInline: margin,
+            padding: computedPadding,
+            scrollPadding: computedPadding,
+            borderRadius: "0",
+            "&:first-child": {
+              marginBlockStart: margin,
+              borderStartStartRadius: computedRadius,
+              borderStartEndRadius: computedRadius,
+            },
+            "&:not(:has(~ *:not([hidden],template)))": {
+              marginBlockEnd: margin,
+              borderEndStartRadius: computedRadius,
+              borderEndEndRadius: computedRadius,
+            },
+          });
+        }),
+      );
+    }
+
     matchUtilities(
       {
-        // TODO: Abstract this
-        "ak-frame-cover": (radiusKey, extra) => {
-          const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
-          const cap = `1rem`;
-          const capPadding = `min(${padding}, ${cap})`;
-
-          const result = {
-            [vars.framePadding]: padding,
-            padding,
-            scrollPadding: padding,
-            borderRadius: radius,
-            [IN_DARK]: { colorScheme: "dark" },
-            [IN_LIGHT]: { colorScheme: "light" },
-          };
-          return Object.assign(
-            result,
-            withContext("frame", false, ({ provide, inherit }) => {
-              const parentPadding = inherit(vars._framePadding, "0px");
-              const parentRadius = inherit(vars._frameRadius, radius);
-              const parentBorder = inherit(vars._frameBorder, "0px");
-              const margin = `calc((${parentPadding} + ${prop(vars.frameBorder)}) * -1)`;
-              const computedPadding = extra.modifier
-                ? padding
-                : inherit(vars._framePadding, padding);
-              const computedRadius = `calc(${parentRadius} - ${parentBorder})`;
-              return css({
-                [vars._frameCappedPadding]: capPadding,
-                [provide(vars._framePadding)]: computedPadding,
-                [provide(vars._frameRadius)]: computedRadius,
-                [provide(vars._frameBorder)]: prop(vars.frameBorder),
-                [vars.frameMargin]: margin,
-                [vars.framePadding]: computedPadding,
-                [vars.frameRadius]: computedRadius,
-                marginInline: margin,
-                padding: computedPadding,
-                scrollPadding: computedPadding,
-                borderRadius: "0",
-                "&:first-child": {
-                  marginBlockStart: margin,
-                  borderStartStartRadius: computedRadius,
-                  borderStartEndRadius: computedRadius,
-                },
-                "&:not(:has(~ *:not([hidden],template)))": {
-                  marginBlockEnd: margin,
-                  borderEndStartRadius: computedRadius,
-                  borderEndEndRadius: computedRadius,
-                },
-              });
-            }),
-          );
-        },
-        "ak-frame-overflow": (radiusKey, extra) => {
-          const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
-          const cap = `1rem`;
-          const capPadding = `min(${padding}, ${cap})`;
-
-          const result = {
-            [vars.framePadding]: padding,
-            padding,
-            scrollPadding: padding,
-            borderRadius: radius,
-            [IN_DARK]: { colorScheme: "dark" },
-            [IN_LIGHT]: { colorScheme: "light" },
-          };
-          return Object.assign(
-            result,
-            withContext("frame", false, ({ provide, inherit }) => {
-              const parentPadding = inherit(vars._framePadding, "0px");
-              const parentRadius = inherit(vars._frameRadius, radius);
-              const parentBorder = inherit(vars._frameBorder, "0px");
-              const margin = `calc((${parentPadding} + ${parentBorder}) * -1)`;
-              const computedPadding = extra.modifier
-                ? padding
-                : inherit(vars._framePadding, padding);
-              const computedRadius = parentRadius;
-              return css({
-                [vars._frameCappedPadding]: capPadding,
-                [provide(vars._framePadding)]: computedPadding,
-                [provide(vars._frameRadius)]: computedRadius,
-                [provide(vars._frameBorder)]: prop(vars._frameBorder),
-                [vars.frameMargin]: margin,
-                [vars.framePadding]: computedPadding,
-                [vars.frameRadius]: computedRadius,
-                marginInline: margin,
-                padding: computedPadding,
-                scrollPadding: computedPadding,
-                borderRadius: "0",
-                "&:first-child": {
-                  marginBlockStart: margin,
-                  borderStartStartRadius: computedRadius,
-                  borderStartEndRadius: computedRadius,
-                },
-                "&:not(:has(~ *:not([hidden],template)))": {
-                  marginBlockEnd: margin,
-                  borderEndStartRadius: computedRadius,
-                  borderEndEndRadius: computedRadius,
-                },
-              });
-            }),
-          );
-        },
+        "ak-frame-cover": (radiusKey, extra) =>
+          getFrameStretchCss(radiusKey, extra, true),
+        "ak-frame-overflow": (radiusKey, extra) =>
+          getFrameStretchCss(radiusKey, extra, false),
         "ak-frame-force": (radiusKey, extra) =>
           getFrameCss(radiusKey, extra.modifier, true),
         "ak-frame": (radiusKey, extra) =>
