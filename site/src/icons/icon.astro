@@ -11,7 +11,7 @@ const hasLabel =
   Astro.props["aria-labelledby"] !== undefined;
 
 const { name, ...props } = Astro.props;
-const { html, viewBox = "0 0 24 24" } = icons[name];
+const { html, stroke, fill, viewBox = "0 0 24 24" } = icons[name];
 ---
 
 <svg
@@ -20,7 +20,7 @@ const { html, viewBox = "0 0 24 24" } = icons[name];
   width="1em"
   height="1em"
   aria-hidden={!hasLabel || undefined}
-  stroke="currentColor"
-  fill="none"
+  {stroke}
+  {fill}
   set:html={html}
 />
