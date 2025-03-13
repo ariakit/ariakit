@@ -22,14 +22,7 @@ import {
 
 /** @type {ReturnType<typeof plugin>} */
 const AriakitTailwind = plugin(
-  ({
-    addBase,
-    addVariant,
-    addUtilities,
-    // matchUtilities: matchUtilities2,
-    matchUtilities,
-    theme,
-  }) => {
+  ({ addBase, addVariant, addUtilities, matchUtilities, theme }) => {
     addBase(properties);
 
     const IN_DARK = `@container style(${vars._layerAppearance}: oklch(1 0 0))`;
