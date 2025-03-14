@@ -193,7 +193,10 @@ export function CodeBlock({
           }
         }}
         style={
-          { "--max-lines": maxLines, "--line-height": "1.8em" } as CSSProperties
+          {
+            "--max-lines": maxLines,
+            "--line-height": "1.75em",
+          } as CSSProperties
         }
         className={cn(
           "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",

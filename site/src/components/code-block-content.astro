@@ -89,7 +89,7 @@ function splitContent(content: string) {
             <div
               data-highlight={highlightLine || undefined}
               class:list={[
-                "pe-14 [content-visibility:auto] h-[calc(var(--line-height))]",
+                "pe-14 [content-visibility:auto] h-(--line-height)",
                 highlightLine && "ak-layer-pop",
                 isCollapsed(i) && "in-data-collapsed:hidden",
               ]}
