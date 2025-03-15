@@ -11,6 +11,7 @@
       "website/.next/**",
       "website/.pages/**",
       "site/.astro/**",
+      "site/.types/**",
       "**/*.astro",
       "**/*.css"
     ]
