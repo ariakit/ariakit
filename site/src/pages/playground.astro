@@ -5,31 +5,6 @@ import Layout from "../layouts/Layout.astro";
 import { Playground as PlaygroundClient } from "../components/playground.react.tsx";
 import CodeBlockTabs from "../components/code-block-tabs.astro";
 import example from "../components/copy-code.react?raw";
-
-const jsCode = `console.log("Hello from JavaScript!");
-const message = "This is a JavaScript example";
-alert(message);
-
-function greet(name) {
-  return "Hello, " + name + "!";
-}
-console.log(greet("World"));`;
-
-const pyCode = `print("Hello from Python!")
-message = "This is a Python example"
-print(message)`;
-
-const tsCode = `interface Example {
-  name: string;
-  value: number;
-}
-
-const example: Example = {
-  name: "TypeScript",
-  value: 42
-};
-
-console.log(example);`;
 ---
 
 <Layout>

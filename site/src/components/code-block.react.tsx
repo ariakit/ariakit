@@ -18,6 +18,7 @@ import type {
   CodeBlockTabProps,
 } from "./code-block.types.ts";
 import { CopyCode } from "./copy-code.react.tsx";
+import { Tooltip } from "./tooltip.react.tsx";
 
 const openTabs = new Store<Record<string, string>>({});
 
@@ -184,8 +185,6 @@ export function CodeBlock({
       <div className="absolute top-0 end-0 ak-frame-cover/1.5 z-2 pointer-events-none size-max">
         <CopyCode
           text={code}
-          label="Copy code"
-          tooltipLabel="Copy code"
           data-single-line={lineCount === 1 || undefined}
           className="pointer-events-auto [@media(hover:hover)]:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
         />
@@ -282,18 +281,12 @@ export function CodeBlock({
                     <Icon name="sparks" className="text-lg" />
                     <span className="max-sm:sr-only">Copy AI prompt</span>
                   </button>
-                  <ak.TooltipProvider>
-                    <ak.TooltipAnchor
-                      className="ak-button ak-button-square h-full"
-                      render={<button />}
-                    >
+                  <Tooltip title="Edit code">
+                    <button className="ak-button ak-button-square h-full">
                       <Icon name="edit" className="text-lg" />
                       <span className="sr-only">Edit code</span>
-                    </ak.TooltipAnchor>
-                    <ak.Tooltip unmountOnHide className="ak-tooltip">
-                      Edit code
-                    </ak.Tooltip>
-                  </ak.TooltipProvider>
+                    </button>
+                  </Tooltip>
                 </div>
               )}
             </div>

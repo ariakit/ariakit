@@ -1,29 +1,22 @@
-import {
-  Tooltip,
-  TooltipAnchor,
-  TooltipProvider,
-  useStoreState,
-  useTooltipStore,
-} from "@ariakit/react";
 import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "../icons/icon.react.tsx";
+import { cn } from "../lib/cn.ts";
+import { Tooltip } from "./tooltip.react.tsx";
 
 interface CopyCodeProps extends ComponentProps<"button"> {
   text: string;
   label?: string;
-  tooltipLabel?: string;
+  title?: string;
 }
 
 export function CopyCode({
   text,
   children,
-  label = "Copy",
-  tooltipLabel = label,
+  label = "Copy code",
+  title = label,
   ...props
 }: CopyCodeProps) {
-  const tooltip = useTooltipStore();
-  const open = useStoreState(tooltip, "open");
   const [state, setState] = useState<"idle" | "copying" | "copied">("idle");
 
   useEffect(() => {
@@ -38,12 +31,16 @@ export function CopyCode({
   }, [text]);
 
   return (
-    <TooltipProvider store={tooltip} placement="left">
-      <TooltipAnchor
-        data-open={open || undefined}
-        render={<button {...props} />}
-        className="ak-button ak-button-square ak-layer-feature size-9"
-        onClick={async () => {
+    <Tooltip title={state === "idle" ? title : "Copied"} placement="left">
+      <button
+        {...props}
+        className={cn(
+          "ak-button ak-button-square ak-layer-feature size-9",
+          props.className,
+        )}
+        onClick={async (event) => {
+          props.onClick?.(event);
+          if (event.defaultPrevented) return;
           if (state !== "idle") return;
           await navigator.clipboard.writeText(text);
           setState("copied");
@@ -59,10 +56,7 @@ export function CopyCode({
           <Icon key="copy" name="copy" />
         )}
         <span className="sr-only">{label}</span>
-      </TooltipAnchor>
-      <Tooltip unmountOnHide className="ak-tooltip">
-        {state === "idle" ? tooltipLabel : "Copied"}
-      </Tooltip>
-    </TooltipProvider>
+      </button>
+    </Tooltip>
   );
 }
