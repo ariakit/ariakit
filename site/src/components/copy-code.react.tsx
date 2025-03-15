@@ -9,15 +9,19 @@ import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "../icons/icon.react.tsx";
 
-interface CopyToClipboardProps extends ComponentProps<"button"> {
+interface CopyCodeProps extends ComponentProps<"button"> {
   text: string;
+  label?: string;
+  tooltipLabel?: string;
 }
 
-export function CopyToClipboard({
+export function CopyCode({
   text,
   children,
+  label = "Copy",
+  tooltipLabel = label,
   ...props
-}: CopyToClipboardProps) {
+}: CopyCodeProps) {
   const tooltip = useTooltipStore();
   const open = useStoreState(tooltip, "open");
   const [state, setState] = useState<"idle" | "copying" | "copied">("idle");
@@ -45,7 +49,6 @@ export function CopyToClipboard({
           setState("copied");
         }}
       >
-        <span className="sr-only">Copy to clipboard</span>
         {state === "copied" ? (
           <Icon
             key="check"
@@ -55,13 +58,10 @@ export function CopyToClipboard({
         ) : (
           <Icon key="copy" name="copy" />
         )}
+        <span className="sr-only">{label}</span>
       </TooltipAnchor>
-      <Tooltip
-        unmountOnHide
-        preserveTabOrder={false}
-        className="ak-layer z-10 text-sm ak-frame-lg/1 px-2 ring shadow-md"
-      >
-        {state === "idle" ? "Copy" : "Copied"}
+      <Tooltip unmountOnHide className="ak-tooltip">
+        {state === "idle" ? tooltipLabel : "Copied"}
       </Tooltip>
     </TooltipProvider>
   );

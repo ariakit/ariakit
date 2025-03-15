@@ -13,8 +13,11 @@ import { Icon } from "../icons/icon.react.tsx";
 import { cn } from "../lib/cn.ts";
 import { onIdle } from "../lib/on-idle.ts";
 import { useHydrated } from "../lib/use-hydrated.ts";
-import type { CodeBlockProps, CodeBlockTabProps } from "./code-block.types.ts";
-import { CopyToClipboard } from "./copy-to-clipboard.react.tsx";
+import type {
+  CodeBlockProps as CodeBlockBaseProps,
+  CodeBlockTabProps,
+} from "./code-block.types.ts";
+import { CopyCode } from "./copy-code.react.tsx";
 
 const openTabs = new Store<Record<string, string>>({});
 
@@ -63,9 +66,8 @@ export function CodeBlockTabPanel({
 }
 
 export interface CodeBlockTabsProps
-  extends Omit<ComponentProps<"div">, "lang"> {
-  storeId: string;
-  tabs: CodeBlockTabProps[];
+  extends Omit<CodeBlockProps, "code" | "storeId" | "tabs">,
+    Required<Pick<CodeBlockProps, "storeId" | "tabs">> {
   persistTabKey?: string;
 }
 
@@ -117,28 +119,32 @@ export function CodeBlockTabs({
   );
 }
 
-interface Props extends Omit<ComponentProps<"div">, "lang">, CodeBlockProps {
+export interface CodeBlockProps
+  extends Omit<ComponentProps<"div">, "lang">,
+    CodeBlockBaseProps {
   storeId?: string;
+  tabs?: CodeBlockTabProps[];
+  aiPrompt?: string;
   tabStore?: ak.TabStore;
   showFilename?: boolean;
-  tabs?: CodeBlockTabProps[];
 }
 
 export function CodeBlock({
-  storeId,
   code,
+  lang,
+  lineNumbers,
   maxLines,
-  children,
+  highlightLines,
+  highlightTokens,
+  storeId,
   filename,
   filenameIcon,
   showFilename,
-  lineNumbers,
+  aiPrompt,
   tabs,
-  highlightLines,
-  highlightTokens,
-  lang,
+  children,
   ...props
-}: Props) {
+}: CodeBlockProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const expandButtonRef = useRef<HTMLButtonElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
@@ -146,6 +152,7 @@ export function CodeBlock({
   const collapsible = maxLines !== undefined && lineCount > maxLines;
   const [_collapsed, setCollapsed] = useState(true);
   const collapsed = collapsible && _collapsed;
+  const hasToolbar = !!aiPrompt;
 
   const collapse = () => {
     setCollapsed(true);
@@ -175,8 +182,10 @@ export function CodeBlock({
       )}
     >
       <div className="absolute top-0 end-0 ak-frame-cover/1.5 z-2 pointer-events-none size-max">
-        <CopyToClipboard
+        <CopyCode
           text={code}
+          label="Copy code"
+          tooltipLabel="Copy code"
           data-single-line={lineCount === 1 || undefined}
           className="pointer-events-auto [@media(hover:hover)]:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
         />
@@ -231,28 +240,63 @@ export function CodeBlock({
       className={cn("flex flex-col isolate scroll-my-2", props.className)}
     >
       <div
-        className="ak-layer group peer ak-frame-border relative ak-frame-container/0 overflow-clip ak-tabs flex flex-col scroll-my-2"
+        className={cn(
+          "ak-layer group peer ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
+          hasToolbar && "sm:ak-frame-playground",
+        )}
         data-collapsible={collapsible || undefined}
         data-collapsed={collapsed || undefined}
       >
         {tabs && storeId ? (
           <>
-            <ak.TabList className="ak-tab-list">
-              {tabs.map((tabItem, index) => (
-                <ak.Tab
-                  key={tabItem.filename || index}
-                  className="ak-tab-folder data-focus-visible:ak-tab-folder_focus h-12 sm:h-10 [contain:block-size] text-sm"
-                  id={getTabId(storeId, tabItem.filename)}
-                >
-                  <div>
-                    {tabItem.filenameIcon && (
-                      <Icon name={tabItem.filenameIcon} />
-                    )}
-                    {tabItem.filename || tabItem.lang}
-                  </div>
-                </ak.Tab>
-              ))}
-            </ak.TabList>
+            <div
+              className={cn(
+                "ak-layer-down grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
+                hasToolbar && "[--height:--spacing(12)]",
+              )}
+            >
+              <ak.TabList
+                className={cn(
+                  "ak-tab-list ak-layer-(--ak-layer-parent) !rounded-b-none",
+                  hasToolbar && "sm:ak-frame-overflow/1",
+                )}
+              >
+                {tabs.map((tabItem, index) => (
+                  <ak.Tab
+                    key={tabItem.filename || index}
+                    className="ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm"
+                    id={getTabId(storeId, tabItem.filename)}
+                  >
+                    <div>
+                      {tabItem.filenameIcon && (
+                        <Icon name={tabItem.filenameIcon} />
+                      )}
+                      {tabItem.filename || tabItem.lang}
+                    </div>
+                  </ak.Tab>
+                ))}
+              </ak.TabList>
+              {hasToolbar && (
+                <div className="ak-frame/1 h-(--height) flex gap-1">
+                  <button className="ak-button sm:text-sm max-sm:ak-button-square ak-text/80">
+                    <Icon name="sparks" className="text-lg" />
+                    <span className="max-sm:sr-only">Copy AI prompt</span>
+                  </button>
+                  <ak.TooltipProvider>
+                    <ak.TooltipAnchor
+                      className="ak-button ak-button-square h-full"
+                      render={<button />}
+                    >
+                      <Icon name="edit" className="text-lg" />
+                      <span className="sr-only">Edit code</span>
+                    </ak.TooltipAnchor>
+                    <ak.Tooltip unmountOnHide className="ak-tooltip">
+                      Edit code
+                    </ak.Tooltip>
+                  </ak.TooltipProvider>
+                </div>
+              )}
+            </div>
             <SingleTabPanel
               scrollRestoration
               scrollElement={preRef}

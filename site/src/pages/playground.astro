@@ -4,7 +4,7 @@ import CodeBlock from "../components/code-block.astro";
 import Layout from "../layouts/Layout.astro";
 import { Playground as PlaygroundClient } from "../components/playground.react.tsx";
 import CodeBlockTabs from "../components/code-block-tabs.astro";
-import example from "../components/copy-to-clipboard.react?raw";
+import example from "../components/copy-code.react?raw";
 
 const jsCode = `console.log("Hello from JavaScript!");
 const message = "This is a JavaScript example";
@@ -35,40 +35,44 @@ console.log(example);`;
 <Layout>
   <CanvasColorPicker />
 
-  <div class="ak-frame-field ak-layer-mix-primary/20 hover:ak-layer-pop-vivid">
-    Pop
-  </div>
-  <div class="ak-frame-field ak-layer hover:ak-layer-pop">Pop</div>
+  <div class="my-20">
+    <CodeBlockTabs
+      aiPrompt="test"
+      tabs={[
+        {
+          filename: "index.tsx",
+          filenameIcon: "react",
+          lineNumbers: true,
+          maxLines: 17,
+          code: `import { useState } from "react";
 
-  <CodeBlockTabs
-    tabs={[
-      {
-        code: tsCode,
-        filename: "example.ts",
-        filenameIcon: "ts",
-        lang: "ts",
-        lineNumbers: true,
-        maxLines: 20,
-      },
-      {
-        code: jsCode,
-        filename: "example.js",
-        filenameIcon: "js",
-        lang: "js",
-        lineNumbers: true,
-        maxLines: 5,
-      },
-      {
-        code: pyCode,
-        filename: "example.py",
-        lang: "python",
-        filenameIcon: "tailwind",
-        lineNumbers: true,
-        highlightLines: [1, 2, 3, 4],
-        maxLines: 5,
-      },
-    ]}
-  />
+function App() {
+  const [count, setCount] = useState(0);
+  return <div>Hello World</div>;
+}
+
+export default App;`,
+        },
+        {
+          filename: "component.jsx",
+          filenameIcon: "js",
+          lineNumbers: true,
+          maxLines: 17,
+          code: `export default function Component() {
+  return <div>Hello World</div>;
+}`,
+        },
+        {
+          filename: "styles.css",
+          filenameIcon: "tailwind",
+          lineNumbers: true,
+          maxLines: 17,
+          code: `@import "tailwindcss";
+@import "@ariakit/tailwind";`,
+        },
+      ]}
+    />
+  </div>
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
     <button class="ak-button ak-layer">button</button>
     <button class="ak-button ak-layer" disabled>button</button>

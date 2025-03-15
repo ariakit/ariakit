@@ -1,25 +1,20 @@
 ---
-import type { CodeBlockTabProps } from "./code-block.types.ts";
 import CodeBlockContent from "./code-block-content.astro";
 import {
-  CodeBlockTabs as CodeBlock,
+  CodeBlockTabs as CodeBlockTabsReact,
   CodeBlockTabPanel,
 } from "./code-block.react.tsx";
 import type { ComponentProps } from "astro/types";
 
-interface Props extends Omit<ComponentProps<typeof CodeBlock>, "storeId"> {}
+interface Props
+  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "storeId"> {}
 
-const { tabs, persistTabKey } = Astro.props;
+const { tabs, ...props } = Astro.props;
 
 const storeId = `code-block-tabs-${Math.random().toString(36).substring(2, 15)}`;
 ---
 
-<CodeBlock
-  client:visible
-  storeId={storeId}
-  tabs={tabs}
-  persistTabKey={persistTabKey}
->
+<CodeBlockTabsReact client:visible {storeId} {tabs} {...props}>
   {
     tabs.map((tab, index) => (
       <CodeBlockTabPanel
@@ -32,4 +27,4 @@ const storeId = `code-block-tabs-${Math.random().toString(36).substring(2, 15)}`
       </CodeBlockTabPanel>
     ))
   }
-</CodeBlock>
+</CodeBlockTabsReact>
