@@ -9,6 +9,9 @@
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
 
+  --radius-playground: calc(var(--radius) * 3.5);
+  --spacing-playground: --spacing(0);
+
   --radius-field: var(--radius-lg);
   --spacing-field: --spacing(2);
 }
@@ -50,6 +53,12 @@ body {
 
 @utility ak-command {
   @apply ak-command_idle active:ak-command_active before:ak-command_touch-target;
+}
+
+/** ak-tooltip **/
+
+@utility ak-tooltip {
+  @apply ak-layer ak-frame-lg/1 z-10 px-2 text-sm ring shadow-md;
 }
 
 /** ak-input **/
@@ -98,8 +107,8 @@ body {
 /** ak-button **/
 
 @utility ak-button_idle {
-  @apply ak-command_idle ak-layer ak-outline-primary ak-frame-field;
-  @apply flex items-center justify-center gap-1 whitespace-nowrap px-[calc(var(--ak-frame-padding)+--spacing(1))] text-base font-[calc(500+50*var(--contrast))];
+  @apply ak-command_idle ak-outline-primary ak-frame-field;
+  @apply flex items-center justify-center gap-1 whitespace-nowrap px-[calc(var(--ak-frame-padding)+--spacing(1))] font-[calc(500+50*var(--contrast))];
 
   &::before {
     @apply ak-command_touch-target;
@@ -239,6 +248,16 @@ body {
   @apply ak-frame-overflow ak-layer-down;
   @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip !pb-0;
   scrollbar-width: none;
+
+  &::after {
+    @apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) pointer-events-none sticky h-full w-8 flex-none bg-gradient-to-l to-transparent bg-clip-padding content-[''];
+  }
+
+  &:dir(rtl) {
+    &::after {
+      @apply bg-gradient-to-r;
+    }
+  }
 }
 
 @utility ak-tab-panel {
@@ -249,6 +268,10 @@ body {
 @utility ak-tab_idle {
   @apply ak-command_idle ak-text/70;
   @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap;
+
+  &:not(:last-child)::after {
+    @apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r content-[''];
+  }
 }
 
 @utility ak-tab-folder_idle {
@@ -266,6 +289,12 @@ body {
 }
 
 @utility ak-tab-folder_hover {
+  &:not(:last-child)::after {
+    @apply border-transparent;
+  }
+  :has(+ &)::after {
+    @apply border-transparent;
+  }
   > * {
     @apply ak-layer-pop;
   }
@@ -273,6 +302,12 @@ body {
 
 @utility ak-tab-folder_focus {
   @apply outline-none;
+  &:not(:last-child)::after {
+    @apply border-transparent;
+  }
+  :has(+ &)::after {
+    @apply border-transparent;
+  }
   > * {
     @apply ak-layer-contrast-primary;
   }
@@ -290,7 +325,7 @@ body {
 
   &::after,
   &::before {
-    @apply absolute bottom-0 bg-no-repeat content-[''];
+    @apply pointer-events-none absolute bottom-0 border-none bg-no-repeat content-[''];
 
     --ak-tab-smoothness: min(0.2px, var(--ak-tab-border-width));
 
