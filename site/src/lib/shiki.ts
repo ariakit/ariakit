@@ -16,6 +16,7 @@ export const highlighter = await createHighlighterCore({
     import("@shikijs/langs/html"),
     import("@shikijs/langs/bash"),
     import("@shikijs/langs/python"),
+    import("@shikijs/langs/jsx"),
   ],
   engine: createOnigurumaEngine(
     // @ts-expect-error
