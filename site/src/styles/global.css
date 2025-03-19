@@ -126,7 +126,7 @@ body {
 
 @utility ak-input_hover {
   @variant ak-light {
-    @apply ak-layer-pop-[0.5];
+    @apply ak-layer-hover-[0.5];
   }
   @variant ak-dark {
     @apply ak-layer-current;
@@ -159,7 +159,7 @@ body {
 }
 
 @utility ak-button_hover {
-  @apply ak-layer-pop;
+  @apply ak-layer-hover;
 }
 
 @utility ak-button_focus {
@@ -337,7 +337,7 @@ body {
     @apply border-transparent;
   }
   > * {
-    @apply ak-layer-pop;
+    @apply ak-layer-hover;
   }
 }
 

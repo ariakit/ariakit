@@ -12,10 +12,10 @@ export function PlaceholderText({
   weight = "normal",
 }: PlaceholderTextProps) {
   const weightMap = {
-    light: "ak-layer-pop-parent",
-    normal: "ak-layer-pop-parent-2",
-    medium: "ak-layer-pop-parent-4",
-    bold: "ak-layer-pop-parent-6",
+    light: "ak-layer-pop",
+    normal: "ak-layer-pop-2",
+    medium: "ak-layer-pop-4",
+    bold: "ak-layer-pop-6",
   };
   return (
     <div

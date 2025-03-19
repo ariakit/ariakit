@@ -350,14 +350,14 @@ const AriakitTailwind = plugin(
 
     matchUtilities(
       {
-        "ak-layer-pop": (value) => {
+        "ak-layer-hover": (value) => {
           const { token, level } = parseColorLevel(value);
           return {
             ...(token ? getLayerCss(token) : getCurrentLayerCss()),
             [vars.layer]: `oklch(from ${prop(vars._layerIdle)} ${getLayerPopOkL(level)} c h)`,
           };
         },
-        "ak-layer-pop-vivid": (value) => {
+        "ak-layer-hover-vivid": (value) => {
           const { token, level } = parseColorLevel(value);
           const c = `clamp(0, c + 0.1 * ${level}, 0.4)`;
           const colorBase = `oklch(from ${prop(vars._layerIdle)} l ${c} h)`;
@@ -386,7 +386,7 @@ const AriakitTailwind = plugin(
 
     matchUtilities(
       {
-        "ak-layer-pop-parent": (value) => {
+        "ak-layer-pop": (value) => {
           const { token, level } = parseColorLevel(value);
           return {
             ...getLayerCss(token || prop(vars.layerParent)),
