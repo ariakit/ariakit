@@ -181,6 +181,12 @@ export function CodeBlock({
         "ak-tab-panel ak-frame-cover/0 relative grid overflow-hidden",
         "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
       )}
+      style={
+        {
+          "--max-lines": maxLines,
+          "--line-height": "1.75em",
+        } as CSSProperties
+      }
     >
       <div className="absolute top-0 end-0 ak-frame-cover/1.5 z-2 pointer-events-none size-max">
         <CopyCode
@@ -200,12 +206,6 @@ export function CodeBlock({
             collapse();
           }
         }}
-        style={
-          {
-            "--max-lines": maxLines,
-            "--line-height": "1.75em",
-          } as CSSProperties
-        }
         className={cn(
           "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",
           collapsible &&
@@ -221,7 +221,7 @@ export function CodeBlock({
         <button
           ref={expandButtonRef}
           onClick={expand}
-          className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-8rem)] to-[calc(100%-0.5rem)] to-(--ak-layer) z-1 justify-center items-end"
+          className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-var(--line-height)*8)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-1 justify-center items-end"
         >
           <div className="ak-button h-9 ak-layer-pop text-sm/[1.5rem] hover:ak-layer-hover group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
             Expand code
@@ -240,7 +240,7 @@ export function CodeBlock({
     >
       <div
         className={cn(
-          "ak-layer group peer ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
+          "ak-layer group peer ak-light:ak-edge/8 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
           hasToolbar && "sm:ak-frame-playground",
         )}
         data-collapsible={collapsible || undefined}
