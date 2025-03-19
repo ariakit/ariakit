@@ -126,7 +126,7 @@ body {
 
 @utility ak-input_hover {
   @variant ak-light {
-    @apply ak-layer-hover-[0.5];
+    @apply ak-layer-hover-0.5;
   }
   @variant ak-dark {
     @apply ak-layer-current;

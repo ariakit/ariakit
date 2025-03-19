@@ -250,7 +250,7 @@ export function CodeBlock({
           <>
             <div
               className={cn(
-                "ak-layer-down ak-light:ak-layer-[down-0.5] grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
+                "ak-layer-down ak-light:ak-layer-down-0.5 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
                 hasToolbar && "[--height:--spacing(12)]",
               )}
             >
@@ -299,7 +299,7 @@ export function CodeBlock({
         ) : (
           <>
             {showFilename && (
-              <div className="ak-tab-list ak-light:ak-layer-[down-0.5] text-sm">
+              <div className="ak-tab-list ak-light:ak-layer-down-0.5 text-sm">
                 <div className="base:ak-tab-folder_idle ak-tab-folder_selected select-auto cursor-auto">
                   <div className="py-1">
                     {filenameIcon && <Icon name={filenameIcon} />}
