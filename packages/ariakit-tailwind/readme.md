@@ -255,6 +255,8 @@ If you define custom `--radius-*` and `--spacing-*` variables, you can use them 
 | `ak-frame-cover`                      | Covers parent frame padding with a negative margin.                        |
 | `ak-frame-cover-<length>`             | Covers parent padding and sets specific radius (no parent).                |
 | `ak-frame-cover-<length>/<length>`    | Covers parent padding and applies specific radius (no parent) and padding. |
+| `ak-frame-cover-start`                | Applies top edge styles of frame-cover (for manual control).               |
+| `ak-frame-cover-end`                  | Applies bottom edge styles of frame-cover (for manual control).            |
 | `ak-frame-overflow`                   | Clips content to the frame's border radius.                                |
 | `ak-frame-overflow-<length>`          | Clips content and sets specific radius (no parent).                        |
 | `ak-frame-overflow-<length>/<length>` | Clips content and applies specific radius (no parent) and padding.         |

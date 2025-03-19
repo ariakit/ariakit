@@ -635,10 +635,47 @@ const AriakitTailwind = plugin(
     }
 
     /**
+     * Creates frame CSS for edge styles (start or end)
+     * @param {"start" | "end"} position Whether to style the start or end edge
+     * @param {string} margin The margin value to apply
+     * @param {string} radius The radius value to apply
+     * @returns {import("./utils.js").CssInJs}
+     */
+    function createFrameEdgeStyles(position, margin, radius) {
+      if (position === "start") {
+        return {
+          marginBlockStart: margin,
+          borderStartStartRadius: radius,
+          borderStartEndRadius: radius,
+        };
+      }
+      return {
+        marginBlockEnd: margin,
+        borderEndStartRadius: radius,
+        borderEndEndRadius: radius,
+      };
+    }
+
+    /**
+     * Creates the frame cover edge styles for start or end edges
+     * @param {"start" | "end"} position Whether to style the start or end edge
+     */
+    function getFrameCoverEdgeStyles(position) {
+      return withContext("frame", false, ({ inherit }) => {
+        const parentPadding = inherit(vars._framePadding, "0px");
+        const parentRadius = inherit(vars._frameRadius, "0px");
+        const borderForMargin = prop(vars.frameBorder);
+        const margin = `calc((${parentPadding} + ${borderForMargin}) * -1)`;
+        return createFrameEdgeStyles(position, margin, parentRadius);
+      });
+    }
+
+    /**
      * Creates frame CSS for cover/overflow variants
      * @param {string} radiusKey
      * @param {{ modifier: string | null }} extra
-     * @param {boolean} useSelfBorder Whether to use the current frame's border (true for cover) or parent border (false for overflow)
+     * @param {boolean} useSelfBorder Whether to use the current frame's border
+     * (true for cover) or parent border (false for overflow)
      */
     function getFrameStretchCss(radiusKey, extra, useSelfBorder) {
       const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
@@ -683,16 +720,16 @@ const AriakitTailwind = plugin(
             padding: computedPadding,
             scrollPadding: computedPadding,
             borderRadius: "0",
-            "&:first-child": {
-              marginBlockStart: margin,
-              borderStartStartRadius: computedRadius,
-              borderStartEndRadius: computedRadius,
-            },
-            "&:not(:has(~ *:not([hidden],template)))": {
-              marginBlockEnd: margin,
-              borderEndStartRadius: computedRadius,
-              borderEndEndRadius: computedRadius,
-            },
+            "&:first-child": createFrameEdgeStyles(
+              "start",
+              margin,
+              computedRadius,
+            ),
+            "&:not(:has(~ *:not([hidden],template)))": createFrameEdgeStyles(
+              "end",
+              margin,
+              computedRadius,
+            ),
           });
         }),
       );
@@ -734,6 +771,11 @@ const AriakitTailwind = plugin(
         ),
       },
     );
+
+    addUtilities({
+      ".ak-frame-cover-start": getFrameCoverEdgeStyles("start"),
+      ".ak-frame-cover-end": getFrameCoverEdgeStyles("end"),
+    });
 
     matchUtilities(
       {
