@@ -1,0 +1,18 @@
+---
+import { invariant } from "@ariakit/core/utils/misc";
+import { PreviewBlock as PreviewBlockReact } from "./preview-block.react.tsx";
+import { Thumbnail } from "../examples/popover/thumb.react.tsx";
+
+interface Props {
+  example: string;
+}
+
+const { framework } = Astro.locals;
+const { example }: Props = Astro.props;
+
+invariant(framework, "Framework is required");
+---
+
+<PreviewBlockReact client:visible framework={framework} example={example}>
+  <Thumbnail slot="fallback" />
+</PreviewBlockReact>

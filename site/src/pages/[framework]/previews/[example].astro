@@ -1,0 +1,46 @@
+---
+import { getEntry } from "astro:content";
+import { render } from "astro:content";
+import { getCollection } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import Layout from "../../../layouts/Layout.astro";
+
+// Create getStaticPaths
+export const getStaticPaths = (async () => {
+  // Get all examples from the content collection
+  const previews = await getCollection("previews");
+
+  const paths = previews.flatMap((preview) =>
+    preview.data.frameworks.map((framework) => ({
+      params: {
+        framework,
+        example: preview.id,
+      },
+    }))
+  );
+
+  return paths;
+}) satisfies GetStaticPaths;
+
+// Get the dynamic route parameters
+const { framework, example } = Astro.params;
+
+Astro.locals.framework = framework;
+
+// Get the example from the content collection
+const entry = await getEntry("previews", `${example}`);
+
+// If example doesn't exist, redirect to 404
+if (!entry) {
+  return Astro.redirect("/404");
+}
+
+// Get the rendered content
+const { Content } = await render(entry);
+---
+
+<Layout>
+  <div class="flex items-center justify-center">
+    <Content framework={framework} />
+  </div>
+</Layout>

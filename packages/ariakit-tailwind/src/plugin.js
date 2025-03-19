@@ -340,6 +340,7 @@ const AriakitTailwind = plugin(
       const la = prop(vars._safeOkLA);
       const lb = prop(vars._safeOkLB);
       const lMultiplier = `(0.06 + c * 0.3)`;
+      // TODO: We can abstract this into a non-inheritable variable
       const popL = `(
         (1 - 2 * clamp(0, (l - (${la} - ${lMultiplier})) * 1e6, 1)) * clamp(0, (${la} - l) * 1e6 + 1, 1) +
         (1 - 2 * clamp(0, (l - (${lb} + ${lMultiplier})) * 1e6, 1)) * clamp(0, (l - ${lb}) * 1e6 + 1, 1)
@@ -381,6 +382,19 @@ const AriakitTailwind = plugin(
         },
       },
       { values: getLayerValues({ downLevels: false }) },
+    );
+
+    matchUtilities(
+      {
+        "ak-layer-pop-parent": (value) => {
+          const { token, level } = parseColorLevel(value);
+          return {
+            ...getLayerCss(token || prop(vars.layerParent)),
+            [vars._layerIdle]: `oklch(from ${prop(vars._layerBase)} ${getLayerPopOkL(level)} c h)`,
+          };
+        },
+      },
+      { values: getLayerValues({ colors: false, downLevels: false }) },
     );
 
     /**

@@ -223,7 +223,7 @@ export function CodeBlock({
           onClick={expand}
           className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-8rem)] to-[calc(100%-0.5rem)] to-(--ak-layer) z-1 justify-center items-end"
         >
-          <div className="ak-button h-9 ak-light:ak-layer-down ak-dark:ak-layer text-sm/[1.5rem] group-hover/expand:ak-button_hover hover:ak-layer-pop-[1.5] group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
+          <div className="ak-button h-9 ak-layer-pop-parent text-sm/[1.5rem] hover:ak-layer-pop group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
             Expand code
             <Icon className="text-base" name="chevronDown" />
           </div>
@@ -250,7 +250,7 @@ export function CodeBlock({
           <>
             <div
               className={cn(
-                "ak-layer-down grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
+                "ak-layer-down ak-light:ak-layer-[down-0.5] grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
                 hasToolbar && "[--height:--spacing(12)]",
               )}
             >
@@ -299,7 +299,7 @@ export function CodeBlock({
         ) : (
           <>
             {showFilename && (
-              <div className="ak-tab-list text-sm">
+              <div className="ak-tab-list ak-light:ak-layer-[down-0.5] text-sm">
                 <div className="base:ak-tab-folder_idle ak-tab-folder_selected select-auto cursor-auto">
                   <div className="py-1">
                     {filenameIcon && <Icon name={filenameIcon} />}
@@ -312,9 +312,9 @@ export function CodeBlock({
           </>
         )}
       </div>
-      <div>
+      <div className="sticky bottom-2 my-2">
         {collapsible && !collapsed && (
-          <div className="sticky bottom-2 my-2 grid justify-center">
+          <div className="grid justify-center">
             <button
               onClick={collapse}
               className="ak-button ak-layer border h-9 text-sm/[1.5rem]"

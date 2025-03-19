@@ -1,0 +1,15 @@
+---
+title: Separator
+frameworks:
+  - react
+  - solid
+---
+
+import Preview from "../../components/preview.astro";
+import ReactExample from "./index.react.tsx";
+import SolidExample from "./index.solid.tsx";
+
+<Preview>
+  <ReactExample client:load slot="react" />
+  <SolidExample client:load slot="solid" />
+</Preview>

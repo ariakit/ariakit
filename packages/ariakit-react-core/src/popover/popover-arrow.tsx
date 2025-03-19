@@ -1,7 +1,7 @@
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -63,6 +63,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
       (state) => state.currentPlacement.split("-")[0] as BasePlacement,
     );
 
+    const maskId = useId();
     const style = useComputedStyle(store);
     const fill = style?.getPropertyValue("background-color") || "none";
     const stroke = style?.getPropertyValue(`border-${dir}-color`) || "none";
@@ -74,12 +75,22 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
       () => (
         <svg display="block" viewBox="0 0 30 30">
           <g transform={transform}>
-            <path fill="none" d={POPOVER_ARROW_PATH} />
+            <path fill="none" d={POPOVER_ARROW_PATH} mask={`url(#${maskId})`} />
             <path stroke="none" d={POPOVER_ARROW_PATH} />
+            <mask id={maskId} maskUnits="userSpaceOnUse">
+              <rect
+                x="-15"
+                y="0"
+                width="60"
+                height="30"
+                fill="white"
+                stroke="black"
+              />
+            </mask>
           </g>
         </svg>
       ),
-      [transform],
+      [transform, maskId],
     );
 
     props = {

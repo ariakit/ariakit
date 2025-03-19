@@ -5,7 +5,7 @@ import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 export const highlighter = await createHighlighterCore({
   themes: [
     import("@shikijs/themes/dark-plus"),
-    import("@shikijs/themes/light-plus"),
+    import("@shikijs/themes/github-light"),
   ],
   langs: [
     import("@shikijs/langs/javascript"),

@@ -2,18 +2,24 @@
 @import "@ariakit/tailwind";
 
 @theme {
-  --color-canvas: #fcfdfd;
-  --color-primary: #007acc;
-  --color-secondary: #ec4899;
+  --color-canvas: oklch(99.33% 0.0011 197.14);
+  --color-primary: oklch(56.7% 0.154556 248.5156);
+  --color-secondary: oklch(65.59% 0.2118 354.31);
 
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
+
+  --radius-dialog: var(--radius-2xl);
+  --spacing-dialog: --spacing(4);
 
   --radius-playground: calc(var(--radius) * 3.5);
   --spacing-playground: --spacing(0);
 
   --radius-field: var(--radius-lg);
   --spacing-field: --spacing(2);
+
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 :root {
@@ -24,11 +30,15 @@
 
 html,
 body {
-  @apply min-h-screen;
+  @apply font-sans min-h-screen;
 }
 
 body {
   @apply ak-layer-canvas ak-frame/4 antialiased;
+
+  [data-iframe] & {
+    @apply ak-layer-canvas-down-0.3;
+  }
 }
 
 @custom-variant base {
@@ -40,7 +50,7 @@ body {
 /** ak-command **/
 
 @utility ak-command_idle {
-  @apply relative block cursor-default select-none;
+  @apply not-[a&]:cursor-default relative block select-none;
 }
 
 @utility ak-command_touch-target {
@@ -59,6 +69,39 @@ body {
 
 @utility ak-tooltip {
   @apply ak-layer ak-frame-lg/1 z-10 px-2 text-sm ring shadow-md;
+}
+
+/** ak-popover **/
+
+@utility ak-popover_idle {
+  --ak-popover-ring-color: var(--ak-ring, var(--ak-layer-ring));
+  transition-property: overlay, display, scale, opacity;
+  @apply ak-layer ak-frame-force-dialog;
+  @apply transition-discrete z-10 ring shadow-xl;
+}
+
+@utility ak-popover_open {
+  @apply starting:scale-95 starting:opacity-0 duration-500;
+  /* https://easingwizard.com */
+  @apply ease-[linear(0,_0.008_1.1%,_0.031_2.2%,_0.129_4.8%,_0.257_7.2%,_0.671_14.2%,_0.789_16.5%,_0.881_18.6%,_0.957_20.7%,_1.019_22.9%,_1.063_25.1%,_1.094_27.4%,_1.114_30.7%,_1.112_34.5%,_1.018_49.9%,_0.99_59.1%,_1)];
+}
+
+@utility ak-popover_closed {
+  @apply duration-250 scale-95 opacity-0;
+}
+
+@utility ak-popover {
+  @apply ak-popover_idle;
+  &:is(dialog, [popover]) {
+    @apply open:ak-popover_open not-open:ak-popover_closed;
+  }
+}
+
+@utility ak-popover-arrow {
+  svg&,
+  svg {
+    @apply fill-(--ak-layer) stroke-(--ak-popover-ring-color) stroke-2;
+  }
 }
 
 /** ak-input **/
@@ -141,13 +184,13 @@ body {
 }
 
 @utility ak-button-classic_idle {
-  @apply ak-button_idle;
+  @apply ak-button_idle ak-layer;
   @apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-gradient-to-b from-50% bg-clip-padding;
 
   --ak-button-min-l: 0.25;
   --ak-button-max-l: 1;
-  --ak-button-bg-dark-l: l - 0.03 - 0.2 * c;
-  --ak-button-bg-light-l: l + 0.03 + 0.2 * c;
+  --ak-button-bg-dark-l: l - 0.02 - 0.1 * c;
+  --ak-button-bg-light-l: l + 0.01;
   --ak-button-bg-dark: oklch(
     from var(--ak-layer)
       clamp(
@@ -178,10 +221,8 @@ body {
   @variant ak-dark {
     --ak-button-min-l: 0.15;
     --ak-button-max-l: 0.85;
-    --ak-button-bg-dark-l: l - 0.3 * c;
-    --ak-button-bg-light-l: l + 0.02 + 0.2 * c;
-    --ak-button-shadow: 0 -1px 0.5px var(--ak-button-shadow-color);
-    --ak-button-highlight: 0 1px 0.5px
+    --ak-button-bg-dark-l: l;
+    --ak-button-highlight: 0 1.5px 0.5px
       oklch(from var(--ak-button-bg-dark) calc(l + 0.1) c h);
   }
 }
@@ -374,11 +415,15 @@ body {
 @utility ak-prose {
   @apply ak-text/80;
 
-  h1 {
+  :where(h1) {
     @apply text-3xl;
   }
 
-  h2 {
+  :where(h2) {
     @apply text-2xl;
+  }
+
+  :where(h3) {
+    @apply text-xl;
   }
 }

@@ -8,6 +8,9 @@ import { defineConfig } from "astro/config";
 // https://astro.build/config
 export default defineConfig({
   srcDir: "src",
+  devToolbar: {
+    enabled: false,
+  },
   adapter: cloudflare({
     imageService: "cloudflare",
   }),

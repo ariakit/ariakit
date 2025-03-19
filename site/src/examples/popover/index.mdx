@@ -1,0 +1,39 @@
+---
+title: Popover
+frameworks:
+  - react
+---
+
+# {frontmatter.title}
+
+Description {props.framework}
+
+import DefaultPreview from "./preview.mdx";
+import PreviewBlock from "../../components/preview-block.astro";
+
+<PreviewBlock example="popover">
+  <DefaultPreview />
+</PreviewBlock>
+
+<br />
+
+import CodeBlock from "../../components/code-block.astro";
+import CodeBlockTabs from "../../components/code-block-tabs.astro";
+import code from "./index.react?raw";
+
+<CodeBlockTabs
+  maxLines={17}
+  aiPrompt="Add a new tab with the code for the popover component"
+  tabs={[
+    {
+      filename: "index.tsx",
+      filenameIcon: "react",
+      code,
+    },
+    {
+      filename: "styles.css",
+      filenameIcon: "tailwind",
+      code: `@import "tailwindcss";`,
+    },
+  ]}
+/>
