@@ -81,16 +81,21 @@ const AriakitTailwind = plugin(
             }
           }
         }
-        Object.assign(
-          values,
-          bareValue(({ value }) => {
-            const { token } = parseColorLevel(value);
-            if (!token) return;
-            if (!theme("colors")[token]) return;
-            return value;
-          }),
-        );
       }
+
+      Object.assign(
+        values,
+        bareValue(({ value }) => {
+          const { token, level } = parseColorLevel(value);
+          if (token && !colors) return;
+          if (!token && level === "0") return;
+          if (token && !theme("colors")[token]) return;
+          if (level && level !== "0" && !levels) return;
+          if (level.startsWith("-") && !downLevels) return;
+          return value;
+        }),
+      );
+
       return values;
     }
 
