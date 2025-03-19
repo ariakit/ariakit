@@ -23,17 +23,21 @@ import code from "./index.react?raw";
 
 <CodeBlockTabs
   maxLines={17}
+  lineNumbers
   aiPrompt="Add a new tab with the code for the popover component"
   tabs={[
     {
       filename: "index.tsx",
       filenameIcon: "react",
+      lineNumbers: true,
       code,
     },
     {
       filename: "styles.css",
       filenameIcon: "tailwind",
-      code: `@import "tailwindcss";`,
+      lineNumbers: true,
+      code: `@import "tailwindcss";
+@import "@ariakit/tailwind";`,
     },
   ]}
 />
