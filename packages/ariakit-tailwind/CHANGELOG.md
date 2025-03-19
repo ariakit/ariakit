@@ -1,5 +1,16 @@
 # @ariakit/tailwind
 
+## 0.1.4
+
+### `ak-layer-pop` and `ak-layer-hover`
+
+The old `ak-layer-pop` behavior has been renamed to `ak-layer-hover` to better reflect its purpose. Now, `ak-layer-pop` works like the other `ak-layer-*` utilities, allowing you to combine `ak-layer-pop hover:ak-layer-hover`.
+
+### Other updates
+
+- Improved `ak-layer-*` utilities to accept bare values such as `ak-layer-0.5`.
+- Added `ak-frame-cover-start` and `ak-frame-cover-end` utilities to ensure the top and bottom cover edges are correctly applied when they aren't automatically detected.
+
 ## 0.1.3
 
 - Improved performance.
