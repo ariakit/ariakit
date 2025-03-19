@@ -81,16 +81,21 @@ const AriakitTailwind = plugin(
             }
           }
         }
-        Object.assign(
-          values,
-          bareValue(({ value }) => {
-            const { token } = parseColorLevel(value);
-            if (!token) return;
-            if (!theme("colors")[token]) return;
-            return value;
-          }),
-        );
       }
+
+      Object.assign(
+        values,
+        bareValue(({ value }) => {
+          const { token, level } = parseColorLevel(value);
+          if (token && !colors) return;
+          if (!token && level === "0") return;
+          if (token && !theme("colors")[token]) return;
+          if (level && level !== "0" && !levels) return;
+          if (level.startsWith("-") && !downLevels) return;
+          return value;
+        }),
+      );
+
       return values;
     }
 
@@ -337,26 +342,19 @@ const AriakitTailwind = plugin(
      */
     function getLayerPopOkL(level) {
       const l = `max(l, min(0.13, ${level}))`;
-      const la = prop(vars._safeOkLA);
-      const lb = prop(vars._safeOkLB);
-      const lMultiplier = `(0.06 + c * 0.3)`;
-      const popL = `(
-        (1 - 2 * clamp(0, (l - (${la} - ${lMultiplier})) * 1e6, 1)) * clamp(0, (${la} - l) * 1e6 + 1, 1) +
-        (1 - 2 * clamp(0, (l - (${lb} + ${lMultiplier})) * 1e6, 1)) * clamp(0, (l - ${lb}) * 1e6 + 1, 1)
-      )`;
-      return `calc(${l} + ${lMultiplier} * ${level} * ${popL})`;
+      return `calc(${l} + ${level} * ${prop(vars._popOkL)})`;
     }
 
     matchUtilities(
       {
-        "ak-layer-pop": (value) => {
+        "ak-layer-hover": (value) => {
           const { token, level } = parseColorLevel(value);
           return {
             ...(token ? getLayerCss(token) : getCurrentLayerCss()),
             [vars.layer]: `oklch(from ${prop(vars._layerIdle)} ${getLayerPopOkL(level)} c h)`,
           };
         },
-        "ak-layer-pop-vivid": (value) => {
+        "ak-layer-hover-vivid": (value) => {
           const { token, level } = parseColorLevel(value);
           const c = `clamp(0, c + 0.1 * ${level}, 0.4)`;
           const colorBase = `oklch(from ${prop(vars._layerIdle)} l ${c} h)`;
@@ -378,6 +376,20 @@ const AriakitTailwind = plugin(
             }),
           );
           return result;
+        },
+      },
+      { values: getLayerValues({ downLevels: false }) },
+    );
+
+    matchUtilities(
+      {
+        "ak-layer-pop": (value) => {
+          const { token, level } = parseColorLevel(value);
+          const color = tv("color", token, prop(vars.layerParent));
+          return {
+            ...getLayerCss(color),
+            [vars._layerIdle]: `oklch(from ${prop(vars._layerBase)} ${getLayerPopOkL(level)} c h)`,
+          };
         },
       },
       { values: getLayerValues({ downLevels: false }) },
@@ -623,10 +635,47 @@ const AriakitTailwind = plugin(
     }
 
     /**
+     * Creates frame CSS for edge styles (start or end)
+     * @param {"start" | "end"} position Whether to style the start or end edge
+     * @param {string} margin The margin value to apply
+     * @param {string} radius The radius value to apply
+     * @returns {import("./utils.js").CssInJs}
+     */
+    function createFrameEdgeStyles(position, margin, radius) {
+      if (position === "start") {
+        return {
+          marginBlockStart: margin,
+          borderStartStartRadius: radius,
+          borderStartEndRadius: radius,
+        };
+      }
+      return {
+        marginBlockEnd: margin,
+        borderEndStartRadius: radius,
+        borderEndEndRadius: radius,
+      };
+    }
+
+    /**
+     * Creates the frame cover edge styles for start or end edges
+     * @param {"start" | "end"} position Whether to style the start or end edge
+     */
+    function getFrameCoverEdgeStyles(position) {
+      return withContext("frame", false, ({ inherit }) => {
+        const parentPadding = inherit(vars._framePadding, "0px");
+        const parentRadius = inherit(vars._frameRadius, "0px");
+        const borderForMargin = prop(vars.frameBorder);
+        const margin = `calc((${parentPadding} + ${borderForMargin}) * -1)`;
+        return createFrameEdgeStyles(position, margin, parentRadius);
+      });
+    }
+
+    /**
      * Creates frame CSS for cover/overflow variants
      * @param {string} radiusKey
      * @param {{ modifier: string | null }} extra
-     * @param {boolean} useSelfBorder Whether to use the current frame's border (true for cover) or parent border (false for overflow)
+     * @param {boolean} useSelfBorder Whether to use the current frame's border
+     * (true for cover) or parent border (false for overflow)
      */
     function getFrameStretchCss(radiusKey, extra, useSelfBorder) {
       const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
@@ -671,16 +720,16 @@ const AriakitTailwind = plugin(
             padding: computedPadding,
             scrollPadding: computedPadding,
             borderRadius: "0",
-            "&:first-child": {
-              marginBlockStart: margin,
-              borderStartStartRadius: computedRadius,
-              borderStartEndRadius: computedRadius,
-            },
-            "&:not(:has(~ *:not([hidden],template)))": {
-              marginBlockEnd: margin,
-              borderEndStartRadius: computedRadius,
-              borderEndEndRadius: computedRadius,
-            },
+            "&:first-child": createFrameEdgeStyles(
+              "start",
+              margin,
+              computedRadius,
+            ),
+            "&:not(:has(~ *:not([hidden],template)))": createFrameEdgeStyles(
+              "end",
+              margin,
+              computedRadius,
+            ),
           });
         }),
       );
@@ -722,6 +771,11 @@ const AriakitTailwind = plugin(
         ),
       },
     );
+
+    addUtilities({
+      ".ak-frame-cover-start": getFrameCoverEdgeStyles("start"),
+      ".ak-frame-cover-end": getFrameCoverEdgeStyles("end"),
+    });
 
     matchUtilities(
       {

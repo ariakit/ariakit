@@ -23,6 +23,13 @@ const SAFE_L = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + (${LA} * (1 - ${L_DIRECTIO
 const SAFE_L_UP = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + ${LB} * ${L_FORBIDDEN_RANGE})`;
 const SAFE_L_DOWN = `calc(l * (1 - ${L_FORBIDDEN_RANGE}) + ${LA} * ${L_FORBIDDEN_RANGE})`;
 
+// OkL value for ak-layer-pop and ak-layer-hover utilities
+const POP_OKL_MULTIPLIER = `(0.06 + c * 0.3)`;
+const POP_OKL = `calc(${POP_OKL_MULTIPLIER} * (
+  (1 - 2 * clamp(0, (l - (${LA} - ${POP_OKL_MULTIPLIER})) * 1e6, 1)) * clamp(0, (${LA} - l) * 1e6 + 1, 1) +
+  (1 - 2 * clamp(0, (l - (${LB} + ${POP_OKL_MULTIPLIER})) * 1e6, 1)) * clamp(0, (l - ${LB}) * 1e6 + 1, 1)
+))`;
+
 // Light/dark detection (0-1) within the OkLCH and LCH color spaces
 const IS_DARK_OKL = `clamp(0, ${TEXT_CONTRAST_OKL}, 1)`;
 const IS_LIGHT_OKL = `clamp(0, 1 - ${TEXT_CONTRAST_OKL}, 1)`;
@@ -60,8 +67,7 @@ export const vars = /** @type {const} */ ({
   _safeOkL: "--_ak-safe-okl",
   _safeOkLUp: "--_ak-safe-okl-up",
   _safeOkLDown: "--_ak-safe-okl-down",
-  _safeOkLA: "--_ak-safe-okla",
-  _safeOkLB: "--_ak-safe-oklb",
+  _popOkL: "--_ak-pop-okl",
   _textContrastOkL: "--_ak-text-contrast-okl",
   _textContrastL: "--_ak-text-contrast-l",
   _darkOkL: "--_ak-dark-okl",
@@ -182,17 +188,11 @@ export const properties = css({
     inherits: "false",
     initialValue: SAFE_L_DOWN,
   },
-  // TODO: Comment
-  [`@property ${vars._safeOkLA}`]: {
+  // OkL value for ak-layer-pop and ak-layer-hover utilities
+  [`@property ${vars._popOkL}`]: {
     syntax: "'*'",
     inherits: "false",
-    initialValue: LA,
-  },
-  // TODO: Comment
-  [`@property ${vars._safeOkLB}`]: {
-    syntax: "'*'",
-    inherits: "false",
-    initialValue: LB,
+    initialValue: POP_OKL,
   },
   [`@property ${vars._textContrastOkL}`]: {
     syntax: "'*'",

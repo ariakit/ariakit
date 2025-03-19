@@ -105,37 +105,41 @@ Layers define edge and shadow colors. Display them using Tailwind utilities like
 
 Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors.
 
-| Utility                                   | Description                                                          |
-| ----------------------------------------- | -------------------------------------------------------------------- |
-| `ak-layer`                                | Lightens the layer color (equialent to `ak-layer-1`).                |
-| `ak-layer-<number>`                       | Adjusts lightness levels relative to the parent layer (default `1`). |
-| `ak-layer-down`                           | Darkens the layer color (equivalent to `ak-layer-down-1`).           |
-| `ak-layer-down-<number>`                  | Specifies darkness levels (default `1`).                             |
-| `ak-layer-<color>`                        | Applies specific color.                                              |
-| `ak-layer-<color>-<number>`               | Controls color lightness (default `0`).                              |
-| `ak-layer-<color>-down-<number>`          | Adjusts color darkness (default `0`).                                |
-| `ak-layer-contrast`                       | Automatically adapts color for parent layer contrast.                |
-| `ak-layer-contrast-<number>`              | Adjusts contrast color lightness.                                    |
-| `ak-layer-contrast-down-<number>`         | Controls contrast color darkness.                                    |
-| `ak-layer-contrast-<color>`               | Automatically adapts specific color for parent layer contrast.       |
-| `ak-layer-contrast-<color>-<number>`      | Adjusts contrast color lightness.                                    |
-| `ak-layer-contrast-<color>-down-<number>` | Controls contrast color darkness.                                    |
-| `ak-layer-mix-<color>`                    | Blends color with parent layer.                                      |
-| `ak-layer-mix-<color>/<number>`           | Blends color with parent layer at a specific ratio (default `50`).   |
-| `ak-layer-mix-<color>-<number>`           | Adjusts mix color lightness (can be combined with mix ratios).       |
-| `ak-layer-mix-<color>-down-<number>`      | Controls mix color darkness (can be combined with mix ratios).       |
-| `ak-layer-pop`                            | Reverses tone for hover effects.                                     |
-| `ak-layer-pop-<number>`                   | Adjusts pop intensity.                                               |
-| `ak-layer-pop-<color>`                    | Provides color-specific pop effects.                                 |
-| `ak-layer-pop-<color>-<number>`           | Customizes color pop intensity.                                      |
-| `ak-layer-pop-vivid`                      | Adjusts both lightness and saturation for a vivid tone shift.        |
-| `ak-layer-pop-vivid-<number>`             | Controls the strength of the vivid effect.                           |
-| `ak-layer-pop-vivid-<color>`              | Provides color-specific vivid effects.                               |
-| `ak-layer-pop-vivid-<color>-<number>`     | Adjusts vivid color intensity.                                       |
-| `ak-layer-feature`                        | Highlights important elements.                                       |
-| `ak-layer-feature-<number>`               | Adjusts feature intensity.                                           |
-| `ak-layer-feature-<color>`                | Provides color-specific feature effects.                             |
-| `ak-layer-feature-<color>-<number>`       | Customizes feature color intensity.                                  |
+| Utility                                   | Description                                                            |
+| ----------------------------------------- | ---------------------------------------------------------------------- |
+| `ak-layer`                                | Lightens the layer color (equivalent to `ak-layer-1`).                 |
+| `ak-layer-<number>`                       | Adjusts lightness levels relative to the parent layer (default `1`).   |
+| `ak-layer-down`                           | Darkens the layer color (equivalent to `ak-layer-down-1`).             |
+| `ak-layer-down-<number>`                  | Specifies darkness levels (default `1`).                               |
+| `ak-layer-<color>`                        | Applies specific color.                                                |
+| `ak-layer-<color>-<number>`               | Controls color lightness (default `0`).                                |
+| `ak-layer-<color>-down-<number>`          | Adjusts color darkness (default `0`).                                  |
+| `ak-layer-pop`                            | Inverts tone of the layer (darker on light, lighter on dark).          |
+| `ak-layer-pop-<number>`                   | Adjusts pop intensity (default `1`).                                   |
+| `ak-layer-pop-<color>`                    | Applies pop effect to a specific color rather than the parent layer.   |
+| `ak-layer-pop-<color>-<number>`           | Customizes color pop intensity.                                        |
+| `ak-layer-contrast`                       | Automatically adapts color for parent layer contrast.                  |
+| `ak-layer-contrast-<number>`              | Adjusts contrast color lightness.                                      |
+| `ak-layer-contrast-down-<number>`         | Controls contrast color darkness.                                      |
+| `ak-layer-contrast-<color>`               | Automatically adapts specific color for parent layer contrast.         |
+| `ak-layer-contrast-<color>-<number>`      | Adjusts contrast color lightness.                                      |
+| `ak-layer-contrast-<color>-down-<number>` | Controls contrast color darkness.                                      |
+| `ak-layer-mix-<color>`                    | Blends color with parent layer.                                        |
+| `ak-layer-mix-<color>/<number>`           | Blends color with parent layer at a specific ratio (default `50`).     |
+| `ak-layer-mix-<color>-<number>`           | Adjusts mix color lightness (can be combined with mix ratios).         |
+| `ak-layer-mix-<color>-down-<number>`      | Controls mix color darkness (can be combined with mix ratios).         |
+| `ak-layer-hover`                          | Inverts tone of the layer (darker on light, lighter on dark).          |
+| `ak-layer-hover-<number>`                 | Adjusts hover intensity (default `1`).                                 |
+| `ak-layer-hover-<color>`                  | Applies hover effect to a specific color rather than the parent layer. |
+| `ak-layer-hover-<color>-<number>`         | Customizes color hover intensity.                                      |
+| `ak-layer-hover-vivid`                    | Adjusts both lightness and saturation for a vivid tone shift.          |
+| `ak-layer-hover-vivid-<number>`           | Controls the strength of the vivid effect.                             |
+| `ak-layer-hover-vivid-<color>`            | Provides color-specific vivid effects.                                 |
+| `ak-layer-hover-vivid-<color>-<number>`   | Adjusts vivid color intensity.                                         |
+| `ak-layer-feature`                        | Highlights important elements.                                         |
+| `ak-layer-feature-<number>`               | Adjusts feature intensity.                                             |
+| `ak-layer-feature-<color>`                | Provides color-specific feature effects.                               |
+| `ak-layer-feature-<color>-<number>`       | Customizes feature color intensity.                                    |
 
 ## `ak-text`
 
@@ -251,6 +255,8 @@ If you define custom `--radius-*` and `--spacing-*` variables, you can use them 
 | `ak-frame-cover`                      | Covers parent frame padding with a negative margin.                        |
 | `ak-frame-cover-<length>`             | Covers parent padding and sets specific radius (no parent).                |
 | `ak-frame-cover-<length>/<length>`    | Covers parent padding and applies specific radius (no parent) and padding. |
+| `ak-frame-cover-start`                | Applies top edge styles of frame-cover (for manual control).               |
+| `ak-frame-cover-end`                  | Applies bottom edge styles of frame-cover (for manual control).            |
 | `ak-frame-overflow`                   | Clips content to the frame's border radius.                                |
 | `ak-frame-overflow-<length>`          | Clips content and sets specific radius (no parent).                        |
 | `ak-frame-overflow-<length>/<length>` | Clips content and applies specific radius (no parent) and padding.         |
