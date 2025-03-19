@@ -55,7 +55,6 @@ export function PreviewBlock({
           // Dialog exists and is not hidden, proceed with positioning
           raf = requestAnimationFrame(() => {
             const bottom = dialog.getBoundingClientRect().bottom;
-            console.log(bottom);
             if (bottom == null) return;
             const totalHeight = iframe.contentWindow?.innerHeight;
             if (totalHeight == null) return;
