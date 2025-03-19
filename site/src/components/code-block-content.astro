@@ -36,7 +36,7 @@ function isCollapsed(lineIndex: number) {
 }
 
 function splitContent(content: string) {
-  const tokens = content.split(/([^\s"']+)/);
+  const tokens = content.split(/([^:\(\)\s"']+)/);
   return tokens.flatMap((token) => {
     const highlightToken = highlightTokens.some((t) => {
       const [word, indexes] = Array.isArray(t) ? t : [t];
