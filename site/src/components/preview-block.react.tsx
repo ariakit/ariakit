@@ -25,7 +25,8 @@ export function PreviewBlock({
   useEffect(() => {
     const iframe = iframeRef.current;
     if (!iframe) return;
-    let timeoutId: NodeJS.Timeout | null = null;
+    let timeout = 0;
+    let raf = 0;
 
     const onLoad = () => {
       const doc = iframe.contentDocument;
@@ -40,19 +41,19 @@ export function PreviewBlock({
         button.click();
 
         // Wait for the dialog to be visible
-        timeoutId = setTimeout(() => {
+        timeout = window.setTimeout(() => {
           const dialog = doc.querySelector<HTMLDialogElement>("[data-dialog]");
           if (!dialog || dialog.hasAttribute("hidden")) {
             // If dialog doesn't exist yet or is hidden, try again after a short
             // delay
             doc.body.inert = false;
-            timeoutId = setTimeout(clickButtonAndCheckDialog, 84);
+            timeout = window.setTimeout(clickButtonAndCheckDialog, 84);
             return;
           }
           dialog.style.setProperty("transition", "none", "important");
-          // Dialog exists and is not hidden, proceed with positioning
 
-          requestAnimationFrame(() => {
+          // Dialog exists and is not hidden, proceed with positioning
+          raf = requestAnimationFrame(() => {
             const bottom = dialog.getBoundingClientRect().bottom;
             console.log(bottom);
             if (bottom == null) return;
@@ -61,12 +62,13 @@ export function PreviewBlock({
             const paddingTop = `calc(${totalHeight - bottom}px / 2)`;
             doc.body.style.paddingTop = paddingTop;
             button.click();
+
             // Wait for the dialog to be stable (no more transitions)
-            requestAnimationFrame(() => {
+            raf = requestAnimationFrame(() => {
               dialog.style.removeProperty("transition");
               button.click();
               setLoaded(true);
-              timeoutId = setTimeout(() => {
+              timeout = window.setTimeout(() => {
                 doc.body.inert = false;
               }, 42);
             });
@@ -82,9 +84,8 @@ export function PreviewBlock({
     iframe.src = previewUrl;
 
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+      clearTimeout(timeout);
+      cancelAnimationFrame(raf);
       iframe.removeEventListener("load", onLoad);
     };
   }, [previewUrl]);
