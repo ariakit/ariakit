@@ -337,15 +337,7 @@ const AriakitTailwind = plugin(
      */
     function getLayerPopOkL(level) {
       const l = `max(l, min(0.13, ${level}))`;
-      const la = prop(vars._safeOkLA);
-      const lb = prop(vars._safeOkLB);
-      const lMultiplier = `(0.06 + c * 0.3)`;
-      // TODO: We can abstract this into a non-inheritable variable
-      const popL = `(
-        (1 - 2 * clamp(0, (l - (${la} - ${lMultiplier})) * 1e6, 1)) * clamp(0, (${la} - l) * 1e6 + 1, 1) +
-        (1 - 2 * clamp(0, (l - (${lb} + ${lMultiplier})) * 1e6, 1)) * clamp(0, (l - ${lb}) * 1e6 + 1, 1)
-      )`;
-      return `calc(${l} + ${lMultiplier} * ${level} * ${popL})`;
+      return `calc(${l} + ${level} * ${prop(vars._popOkL)})`;
     }
 
     matchUtilities(
@@ -388,13 +380,14 @@ const AriakitTailwind = plugin(
       {
         "ak-layer-pop": (value) => {
           const { token, level } = parseColorLevel(value);
+          const color = tv("color", token, prop(vars.layerParent));
           return {
-            ...getLayerCss(token || prop(vars.layerParent)),
+            ...getLayerCss(color),
             [vars._layerIdle]: `oklch(from ${prop(vars._layerBase)} ${getLayerPopOkL(level)} c h)`,
           };
         },
       },
-      { values: getLayerValues({ colors: false, downLevels: false }) },
+      { values: getLayerValues({ downLevels: false }) },
     );
 
     /**
