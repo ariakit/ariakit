@@ -115,7 +115,7 @@
     "@vitest/browser": "2.1.8",
     "@vitest/coverage-c8": "0.33.0",
     "@wordpress/components": "29.1.1",
-    "astro": "5.5.2",
+    "astro": "5.5.3",
     "autoprefixer": "10.4.20",
     "babel-loader": "9.2.1",
     "babel-plugin-transform-rewrite-imports": "1.5.3",
