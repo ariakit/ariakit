@@ -240,7 +240,7 @@ export function CodeBlock({
     >
       <div
         className={cn(
-          "ak-layer group peer ak-light:ak-edge/8 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
+          "ak-layer group peer @container ak-light:ak-edge/8 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
           hasToolbar && "sm:ak-frame-playground",
         )}
         data-collapsible={collapsible || undefined}
@@ -260,6 +260,15 @@ export function CodeBlock({
                   hasToolbar && "sm:ak-frame-overflow/1",
                 )}
               >
+                <ak.Tab
+                  className="ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm"
+                  id={getTabId(storeId, "Preview")}
+                >
+                  <div>
+                    <Icon name="preview" />
+                    Preview
+                  </div>
+                </ak.Tab>
                 {tabs.map((tabItem, index) => (
                   <ak.Tab
                     key={tabItem.filename || index}
@@ -277,9 +286,9 @@ export function CodeBlock({
               </ak.TabList>
               {hasToolbar && (
                 <div className="ak-frame/1 h-(--height) flex gap-1">
-                  <button className="ak-button sm:text-sm max-sm:ak-button-square ak-text/80">
+                  <button className="ak-button @xl:text-sm @max-xl:ak-button-square ak-text/80">
                     <Icon name="sparks" className="text-lg" />
-                    <span className="max-sm:sr-only">Copy AI prompt</span>
+                    <span className="@max-xl:sr-only">Copy AI prompt</span>
                   </button>
                   <Tooltip title="Edit code">
                     <button className="ak-button ak-button-square h-full">
