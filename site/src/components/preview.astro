@@ -1,0 +1,22 @@
+---
+interface Props {
+  framework?: string;
+}
+
+const { framework = Astro.locals.framework } = Astro.props;
+---
+
+<div>
+  {framework === "react" && <slot name="react" />}
+  {framework === "solid" && <slot name="solid" />}
+  {framework === "vue" && <slot name="vue" />}
+  {framework === "svelte" && <slot name="svelte" />}
+</div>
+
+<style>
+  div {
+    > astro-island {
+      display: block;
+    }
+  }
+</style>

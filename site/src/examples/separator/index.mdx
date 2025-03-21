@@ -9,14 +9,9 @@ frameworks:
 
 Description {props.framework}
 
-import { Show } from "solid-js";
-import ReactExample from "./index.react.tsx";
-import SolidExample from "./index.solid.tsx";
+import DefaultPreview from "./preview.mdx";
+import PreviewBlock from "../../components/preview-block.astro";
 
-<Show when={props.framework === "react"}>
-  <ReactExample client:load />
-</Show>
-
-<Show when={props.framework === "solid"}>
-  <SolidExample client:load />
-</Show>
+<PreviewBlock example="separator">
+  <DefaultPreview />
+</PreviewBlock>

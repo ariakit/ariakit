@@ -8,13 +8,13 @@ import Layout from "../../../layouts/Layout.astro";
 // Create getStaticPaths
 export const getStaticPaths = (async () => {
   // Get all examples from the content collection
-  const examples = await getCollection("examples");
+  const previews = await getCollection("previews");
 
-  const paths = examples.flatMap((example) =>
-    example.data.frameworks.map((framework) => ({
+  const paths = previews.flatMap((preview) =>
+    preview.data.frameworks.map((framework) => ({
       params: {
         framework,
-        example: example.id,
+        example: preview.id,
       },
     }))
   );
@@ -28,33 +28,19 @@ const { framework, example } = Astro.params;
 Astro.locals.framework = framework;
 
 // Get the example from the content collection
-const entry = await getEntry("examples", `${example}`);
+const entry = await getEntry("previews", `${example}`);
 
 // If example doesn't exist, redirect to 404
 if (!entry) {
   return Astro.redirect("/404");
 }
 
-const examples = await getCollection("examples");
-
 // Get the rendered content
 const { Content } = await render(entry);
 ---
 
-<Layout title={entry.data.title || example}>
-  <div class="px-3 sm:px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">{entry.data.title || example}</h1>
-    <div class="ak-prose">
-      <Content framework={framework} />
-    </div>
+<Layout>
+  <div class="flex items-center justify-center">
+    <Content framework={framework} />
   </div>
-  {
-    examples.flatMap((example) =>
-      example.data.frameworks.map((framework) => (
-        <a href={`/${framework}/examples/${example.id}`}>
-          {framework}/{example.data.title}
-        </a>
-      ))
-    )
-  }
 </Layout>
