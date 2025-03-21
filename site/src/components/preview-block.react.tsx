@@ -90,7 +90,20 @@ export function PreviewBlock({
   }, [previewUrl]);
 
   return (
-    <div className="ak-layer-canvas-down-0.3 ak-frame-container/0 relative border overflow-clip h-100">
+    <div className="ak-layer-canvas-down-0.3 ak-frame-container/0 relative border overflow-clip h-117">
+      <div className="absolute z-1 top-0 end-0 ak-frame-container/1 flex justify-end">
+        <Tooltip title="Open preview in new tab">
+          <a
+            href={previewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ak-button ak-button-square size-10 text-lg"
+          >
+            <span className="sr-only">Open preview in new tab</span>
+            <Icon name="newWindow" />
+          </a>
+        </Tooltip>
+      </div>
       <iframe
         ref={iframeRef}
         width="100%"
@@ -104,19 +117,6 @@ export function PreviewBlock({
           </div>
         </div>
       )}
-      <div className="absolute top-0 end-0 ak-frame-container/1 flex justify-end">
-        <Tooltip title="Open preview in new tab">
-          <a
-            href={previewUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ak-button ak-button-square size-10 text-lg"
-          >
-            <span className="sr-only">Open preview in new tab</span>
-            <Icon name="newWindow" />
-          </a>
-        </Tooltip>
-      </div>
     </div>
   );
 }
