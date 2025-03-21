@@ -35,7 +35,7 @@ export function CopyCode({
       <button
         {...props}
         className={cn(
-          "ak-button ak-button-square ak-layer-feature size-9",
+          "ak-button ak-button-square ak-layer-pop size-9",
           props.className,
         )}
         onClick={async (event) => {
