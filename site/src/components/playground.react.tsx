@@ -1,17 +1,17 @@
-import { Role, type RoleProps } from "@ariakit/react";
+import * as ak from "@ariakit/react";
 import type { PropsWithChildren } from "react";
 
-interface TabsProps extends RoleProps {
-  tabList?: RoleProps["render"];
+interface TabsProps extends ak.RoleProps {
+  tabList?: ak.RoleProps["render"];
 }
 
 function Tabs({ tabList, ...props }: TabsProps) {
   return (
-    <Role
+    <ak.Role
       {...props}
       className="ak-tabs ak-layer ak-frame-container ak-frame-border overflow-clip"
     >
-      <Role className="ak-tab-list" render={tabList}>
+      <ak.Role className="ak-tab-list" render={tabList}>
         <div className="ak-tab-folder_idle [&&]:ak-tab-folder_selected">
           <div>selected</div>
         </div>
@@ -33,7 +33,7 @@ function Tabs({ tabList, ...props }: TabsProps) {
         <button className="ak-tab-folder" aria-selected="true" tabIndex={0}>
           <div>default selected</div>
         </button>
-      </Role>
+      </ak.Role>
       <div className="ak-tab-panel">
         <p className="ak-frame/2">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo sed
@@ -42,13 +42,13 @@ function Tabs({ tabList, ...props }: TabsProps) {
           eligendi. Provident, est nam!
         </p>
       </div>
-    </Role>
+    </ak.Role>
   );
 }
 
 export function Playground({ children }: PropsWithChildren) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 m-2">
       <Tabs />
       <Tabs render={<div className="ak-frame-border-4" />} />
       <Tabs tabList={<div className="ak-tab-list-p-1" />} />
