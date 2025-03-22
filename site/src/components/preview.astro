@@ -12,11 +12,3 @@ const { framework = Astro.locals.framework } = Astro.props;
   {framework === "vue" && <slot name="vue" />}
   {framework === "svelte" && <slot name="svelte" />}
 </div>
-
-<style>
-  div {
-    > astro-island {
-      display: block;
-    }
-  }
-</style>
