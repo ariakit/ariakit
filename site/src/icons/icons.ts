@@ -84,7 +84,14 @@ export const preview: Icon = {
   viewBox: "0 0 24 24",
   stroke: "currentColor",
   fill: "none",
-  html: `<g><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></g>`,
+  html: `<path d="M21.79 10.993a11.36 11.36 0 0 0-3.992-5.002a10.53 10.53 0 0 0-11.596 0a11.3 11.3 0 0 0-3.992 5.002a2.6 2.6 0 0 0-.21 1c.004.343.072.683.2 1a11.3 11.3 0 0 0 3.992 5.003a9.57 9.57 0 0 0 5.768 1.75h.3a9.67 9.67 0 0 0 5.538-1.73a11.3 11.3 0 0 0 3.992-5.002a2.55 2.55 0 0 0 .21-1a2.7 2.7 0 0 0-.21-1.021m-9.77 4.782a3.75 3.75 0 0 1-3.474-2.315a3.77 3.77 0 0 1 .807-4.103a3.75 3.75 0 0 1 6.41 2.656a3.76 3.76 0 0 1-1.107 2.674a3.74 3.74 0 0 1-2.676 1.088z"/>`,
+};
+
+export const code: Icon = {
+  viewBox: "0 0 24 24",
+  stroke: "currentColor",
+  fill: "none",
+  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />`,
 };
 
 export const chevronUp: Icon = {
