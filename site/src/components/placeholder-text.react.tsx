@@ -19,6 +19,7 @@ export function PlaceholderText({
   };
   return (
     <div
+      aria-hidden
       className={cn(
         layer ?? weightMap[weight],
         "!text-transparent !bg-transparent select-none px-2 ak-frame",
