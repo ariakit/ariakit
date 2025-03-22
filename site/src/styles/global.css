@@ -16,10 +16,16 @@
   --spacing-playground: --spacing(0);
 
   --radius-field: var(--radius-lg);
-  --spacing-field: --spacing(2);
+  --spacing-field: --spacing(3);
 
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+astro-island,
+astro-slot,
+astro-static-slot {
+  display: block !important;
 }
 
 :root {
@@ -147,7 +153,7 @@ body {
 
 @utility ak-button_idle {
   @apply ak-command_idle ak-outline-primary ak-frame-field;
-  @apply flex items-center justify-center gap-1 whitespace-nowrap px-[calc(var(--ak-frame-padding)+--spacing(1))] font-[calc(500+50*var(--contrast))];
+  @apply flex items-center justify-center gap-1.5 whitespace-nowrap font-[calc(500+50*var(--contrast))] leading-[1em];
 }
 
 @utility ak-button_hover {
@@ -172,7 +178,7 @@ body {
 }
 
 @utility ak-button-square {
-  @apply p-(--ak-frame-padding) aspect-square;
+  @apply aspect-square p-0;
 }
 
 @utility ak-button-classic_idle {
@@ -263,6 +269,67 @@ body {
   @apply ak-button-classic_idle hover:ak-button-classic_hover focus-visible:ak-button-classic_focus active:not-disabled:not-aria-disabled:ak-button-classic_active disabled:ak-button-classic_disabled;
 }
 
+/** ak-segmented **/
+
+@utility ak-segmented {
+  @apply ak-frame-container ak-layer-down;
+  @apply gap-(--ak-frame-padding) flex;
+  --ak-segmented-padding: var(--ak-frame-padding);
+}
+
+@utility ak-segmented-button_idle {
+  @apply ak-button_idle;
+  @apply relative font-normal;
+  input[type="radio"] {
+    @apply sr-only;
+  }
+  &:not(:last-child)::after {
+    @apply ak-layer-current;
+    @apply absolute -end-[calc(var(--ak-segmented-padding)/2+1px)] h-1/2 border-r bg-transparent content-[''];
+  }
+  &:has(+ * :checked)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_selected {
+  @apply ak-layer-2 ak-edge/0 z-1 ak-light:shadow ring;
+  &:not(:last-child)::after {
+    @apply content-none;
+  }
+  :has(+ &)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_hover {
+  @apply ak-button_hover;
+  &:not(:last-child)::after {
+    @apply content-none;
+  }
+  :has(+ &)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-segmented-button_active {
+  @apply ak-button_active;
+}
+
+@utility ak-segmented-button_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-segmented-button {
+  @apply ak-segmented-button_idle hover:ak-segmented-button_hover active:not-disabled:not-aria-disabled:ak-segmented-button_active disabled:ak-segmented-button_disabled;
+  @apply focus-visible:ak-segmented-button_focus has-focus-visible:ak-segmented-button_focus;
+  @apply aria-selected:ak-segmented-button_selected aria-checked:ak-segmented-button_selected has-checked:ak-segmented-button_selected;
+}
+
 /** ak-tab **/
 
 @property --ak-tab-border-width {
@@ -300,11 +367,7 @@ body {
 
 @utility ak-tab_idle {
   @apply ak-command_idle ak-text/70;
-  @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap;
-
-  &:not(:last-child)::after {
-    @apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r content-[''];
-  }
+  @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap leading-[1em];
 }
 
 @utility ak-tab-folder_idle {
@@ -313,10 +376,15 @@ body {
   padding-block-end: calc(
     var(--ak-tab-border-width) + var(--ak-frame-padding)
   ) !important;
+  --ak-tab-folder-padding: var(--ak-frame-padding);
+
+  &:not(:last-child)::after {
+    @apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r content-[''];
+  }
 
   > * {
-    @apply max-sm:ak-frame/2 sm:ak-frame/1 h-full;
-    @apply flex items-center gap-1.5 whitespace-nowrap !px-2;
+    @apply ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))];
+    @apply flex h-full items-center gap-1.5 whitespace-nowrap;
   }
 }
 
