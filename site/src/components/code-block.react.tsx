@@ -4,6 +4,7 @@ import { Store, useStore } from "@tanstack/react-store";
 import {
   type CSSProperties,
   type ComponentProps,
+  type KeyboardEvent,
   useEffect,
   useRef,
   useState,
@@ -31,6 +32,90 @@ function getFilename(id?: string | null) {
   if (!id) return;
   const [, filename] = id.split(/\/(.*)/);
   return filename;
+}
+
+interface UseCollapsibleProps {
+  collapsible: boolean;
+}
+
+function useCollapsible<T extends HTMLElement>({
+  collapsible,
+}: UseCollapsibleProps) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const expandButtonRef = useRef<HTMLButtonElement>(null);
+  const scrollableRef = useRef<T>(null);
+  const [_collapsed, setCollapsed] = useState(true);
+  const collapsed = collapsible && _collapsed;
+
+  const collapse = () => {
+    setCollapsed(true);
+    requestAnimationFrame(() => {
+      const wrapper = wrapperRef.current;
+      const expandButton = expandButtonRef.current;
+      expandButton?.focus({ preventScroll: true });
+      wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  };
+
+  const expand = () => {
+    setCollapsed(false);
+    requestAnimationFrame(() => {
+      const wrapper = wrapperRef.current;
+      const scrollable = scrollableRef.current;
+      scrollable?.focus({ preventScroll: true });
+      wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  };
+
+  const scrollableProps = {
+    ref: scrollableRef,
+    inert: collapsed ? "" : undefined,
+    ariaHidden: collapsed,
+    tabIndex: -1,
+    onKeyDown: (event: KeyboardEvent<T>) => {
+      if (event.key === "Escape") {
+        collapse();
+      }
+    },
+  };
+
+  const expandButton =
+    collapsible && collapsed ? (
+      <button
+        ref={expandButtonRef}
+        onClick={expand}
+        className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-var(--line-height)*8)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-1 justify-center items-end"
+      >
+        <div className="ak-button h-9 ak-layer-pop text-sm/[1.5rem] hover:ak-layer-hover group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
+          Expand code
+          <Icon className="text-base" name="chevronDown" />
+        </div>
+      </button>
+    ) : null;
+
+  const collapseButton = (
+    <div className="sticky bottom-2 my-2">
+      {collapsible && !collapsed && (
+        <div className="grid justify-center">
+          <button
+            onClick={collapse}
+            className="ak-button ak-layer border h-9 text-sm/[1.5rem]"
+          >
+            Collapse code
+            <Icon className="text-base" name="chevronUp" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  return {
+    wrapperRef,
+    collapsed,
+    expandButton,
+    scrollableProps,
+    collapseButton,
+  };
 }
 
 function SingleTabPanel(props: ak.TabPanelProps) {
@@ -70,6 +155,7 @@ export interface CodeBlockTabsProps
   extends Omit<CodeBlockProps, "code" | "storeId" | "tabs">,
     Required<Pick<CodeBlockProps, "storeId" | "tabs">> {
   persistTabKey?: string;
+  onPreviewClick?: () => void;
 }
 
 export function CodeBlockTabs({
@@ -100,11 +186,12 @@ export function CodeBlockTabs({
   const selectedTab = tabs.find(
     (tab) => getTabId(storeId, tab.filename) === selectedTabId,
   );
-  invariant(selectedTab, "Selected tab not found");
-  const filename = selectedTab.filename;
+  // invariant(selectedTab, "Selected tab not found");
+  const filename = selectedTab?.filename;
 
   useEffect(() => {
     if (!storeId) return;
+    if (!filename) return;
     return onIdle(() => {
       openTabs.setState((tabs) => ({
         ...tabs,
@@ -115,7 +202,13 @@ export function CodeBlockTabs({
 
   return (
     <ak.TabProvider store={tabStore}>
-      <CodeBlock {...props} storeId={storeId} tabs={tabs} {...selectedTab} />
+      <CodeBlock
+        {...props}
+        storeId={storeId}
+        tabs={tabs}
+        code=""
+        {...selectedTab}
+      />
     </ak.TabProvider>
   );
 }
@@ -128,6 +221,7 @@ export interface CodeBlockProps
   aiPrompt?: string;
   tabStore?: ak.TabStore;
   showFilename?: boolean;
+  onPreviewClick?: () => void;
 }
 
 export function CodeBlock({
@@ -144,36 +238,19 @@ export function CodeBlock({
   aiPrompt,
   tabs,
   children,
+  onPreviewClick,
   ...props
 }: CodeBlockProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const expandButtonRef = useRef<HTMLButtonElement>(null);
-  const preRef = useRef<HTMLPreElement>(null);
   const lineCount = code.trimEnd().split("\n").length;
   const collapsible = maxLines !== undefined && lineCount > maxLines;
-  const [_collapsed, setCollapsed] = useState(true);
-  const collapsed = collapsible && _collapsed;
+  const {
+    collapsed,
+    wrapperRef,
+    scrollableProps,
+    expandButton,
+    collapseButton,
+  } = useCollapsible<HTMLPreElement>({ collapsible });
   const hasToolbar = !!aiPrompt;
-
-  const collapse = () => {
-    setCollapsed(true);
-    requestAnimationFrame(() => {
-      const wrapper = wrapperRef.current;
-      const expandButton = expandButtonRef.current;
-      expandButton?.focus({ preventScroll: true });
-      wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-  };
-
-  const expand = () => {
-    setCollapsed(false);
-    requestAnimationFrame(() => {
-      const wrapper = wrapperRef.current;
-      const pre = preRef.current;
-      pre?.focus({ preventScroll: true });
-      wrapper?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    });
-  };
 
   const content = (
     <div
@@ -196,16 +273,7 @@ export function CodeBlock({
         />
       </div>
       <pre
-        // @ts-expect-error - inert property is not yet in TypeScript DOM types
-        inert={collapsed ? "" : undefined}
-        ref={preRef}
-        aria-hidden={collapsed}
-        tabIndex={-1}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            collapse();
-          }
-        }}
+        {...scrollableProps}
         className={cn(
           "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",
           collapsible &&
@@ -217,18 +285,7 @@ export function CodeBlock({
       >
         {children}
       </pre>
-      {collapsible && collapsed && (
-        <button
-          ref={expandButtonRef}
-          onClick={expand}
-          className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-var(--line-height)*8)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-1 justify-center items-end"
-        >
-          <div className="ak-button h-9 ak-layer-pop text-sm/[1.5rem] hover:ak-layer-hover group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
-            Expand code
-            <Icon className="text-base" name="chevronDown" />
-          </div>
-        </button>
-      )}
+      {expandButton}
     </div>
   );
 
@@ -240,7 +297,7 @@ export function CodeBlock({
     >
       <div
         className={cn(
-          "ak-layer group peer @container ak-light:ak-edge/8 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
+          "ak-layer group peer @container ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
           hasToolbar && "sm:ak-frame-playground",
         )}
         data-collapsible={collapsible || undefined}
@@ -260,15 +317,18 @@ export function CodeBlock({
                   hasToolbar && "sm:ak-frame-overflow/1",
                 )}
               >
-                <ak.Tab
-                  className="ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm"
-                  id={getTabId(storeId, "Preview")}
-                >
-                  <div>
-                    <Icon name="preview" />
-                    Preview
-                  </div>
-                </ak.Tab>
+                {onPreviewClick && (
+                  <ak.Tab
+                    className="ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm"
+                    id={getTabId(storeId, "Preview")}
+                    onClick={onPreviewClick}
+                  >
+                    <div>
+                      <Icon name="preview" />
+                      Preview
+                    </div>
+                  </ak.Tab>
+                )}
                 {tabs.map((tabItem, index) => (
                   <ak.Tab
                     key={tabItem.filename || index}
@@ -286,7 +346,7 @@ export function CodeBlock({
               </ak.TabList>
               {hasToolbar && (
                 <div className="ak-frame/1 h-(--height) flex gap-1">
-                  <button className="ak-button @xl:text-sm @max-xl:ak-button-square ak-text/80">
+                  <button className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80">
                     <Icon name="sparks" className="text-lg" />
                     <span className="@max-xl:sr-only">Copy AI prompt</span>
                   </button>
@@ -301,7 +361,7 @@ export function CodeBlock({
             </div>
             <SingleTabPanel
               scrollRestoration
-              scrollElement={preRef}
+              scrollElement={scrollableProps.ref}
               render={content}
             />
           </>
@@ -321,19 +381,7 @@ export function CodeBlock({
           </>
         )}
       </div>
-      <div className="sticky bottom-2 my-2">
-        {collapsible && !collapsed && (
-          <div className="grid justify-center">
-            <button
-              onClick={collapse}
-              className="ak-button ak-layer border h-9 text-sm/[1.5rem]"
-            >
-              Collapse code
-              <Icon className="text-base" name="chevronUp" />
-            </button>
-          </div>
-        )}
-      </div>
+      {collapseButton}
     </div>
   );
 }
