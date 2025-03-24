@@ -13,8 +13,9 @@ export interface DepInfo {
 }
 
 // Custom plugin to extract dependencies using Vite's module graph
-export function depsRawPlugin(): Plugin {
-  const virtualModuleId = /\?deps-raw$/;
+export function dataPlugin(): Plugin {
+  const queryString = "?data";
+  const queryStringRegex = new RegExp(`\\${queryString}$`);
   // Track processed modules to avoid infinite recursion
   const processedModules = new Set<string>();
   // Cache for package information to avoid repeated lookups
@@ -62,34 +63,33 @@ export function depsRawPlugin(): Plugin {
    */
   function removeFrameworkSuffixes(filePath: string): string {
     return filePath
+      .replace(/\.preact\.(tsx|jsx|ts|js)$/, ".$1")
       .replace(/\.react\.(tsx|jsx|ts|js)$/, ".$1")
       .replace(/\.solid\.(tsx|jsx|ts|js)$/, ".$1");
   }
 
   return {
-    name: "vite-plugin-deps-raw",
+    name: "vite-plugin-data",
 
     resolveId(id, importer) {
-      if (id.match(virtualModuleId)) {
-        const realId = id.replace(virtualModuleId, "");
-        const resolvedPath = path.resolve(path.dirname(importer || ""), realId);
-        return `${resolvedPath}?deps-raw`;
-      }
-      return null;
+      if (!id.match(queryStringRegex)) return null;
+      const realId = id.replace(queryStringRegex, "");
+      const resolvedPath = path.resolve(path.dirname(importer || ""), realId);
+      return `${resolvedPath}${queryString}`;
     },
 
     async transform(code, id) {
-      if (!id.endsWith("?deps-raw")) return code;
+      if (!id.endsWith(queryString)) return code;
       return null;
     },
 
     async load(id) {
-      if (!id.endsWith("?deps-raw")) return null;
+      if (!id.endsWith(queryString)) return null;
 
       // Reset the processed modules set for each new request
       processedModules.clear();
 
-      const realId = id.replace(/\?deps-raw$/, "");
+      const realId = id.replace(queryStringRegex, "");
 
       /**
        * Extract dependency information from a file and all its imports
@@ -188,6 +188,13 @@ export function depsRawPlugin(): Plugin {
           if (filename.includes(".solid.tsx")) {
             if (!dependencies["solid-js"]) {
               dependencies["solid-js"] = await resolveAndGetVersion("solid-js");
+            }
+          }
+
+          // Add Preact dependencies for .preact.tsx files
+          if (filename.includes(".preact.tsx")) {
+            if (!dependencies.preact) {
+              dependencies.preact = await resolveAndGetVersion("preact");
             }
           }
         };
