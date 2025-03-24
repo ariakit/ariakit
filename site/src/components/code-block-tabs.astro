@@ -9,12 +9,12 @@ import type { ComponentProps } from "astro/types";
 interface Props
   extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "storeId"> {}
 
-const { tabs, ...props } = Astro.props;
+const { tabs, lineNumbers = true, maxLines = 17, ...props } = Astro.props;
 
 const storeId = `code-block-tabs-${Math.random().toString(36).substring(2, 15)}`;
 ---
 
-<CodeBlockTabsReact client:visible {storeId} {tabs} {...props}>
+<CodeBlockTabsReact client:visible {storeId} {tabs} {maxLines} {...props}>
   {
     tabs.map((tab, index) => (
       <CodeBlockTabPanel
@@ -23,7 +23,7 @@ const storeId = `code-block-tabs-${Math.random().toString(36).substring(2, 15)}`
         filename={tab.filename}
         defaultOpen={index === 0}
       >
-        <CodeBlockContent {...tab} />
+        <CodeBlockContent {lineNumbers} {...tab} />
       </CodeBlockTabPanel>
     ))
   }
