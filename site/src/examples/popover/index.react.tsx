@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { Testa } from "./testa.react.tsx";
 
 export default function Example() {
   return (
@@ -18,6 +19,7 @@ export default function Example() {
           <ak.Button className="ak-button-classic">Accept</ak.Button>
         </div>
       </ak.Popover>
+      <Testa />
     </ak.PopoverProvider>
   );
 }
