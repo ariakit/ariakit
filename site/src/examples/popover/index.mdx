@@ -8,36 +8,15 @@ frameworks:
 
 Description {props.framework}
 
-import DefaultPreview from "./preview.mdx";
-import PreviewBlock from "../../components/preview-block.astro";
-
-<PreviewBlock example="popover">
-  <DefaultPreview />
-</PreviewBlock>
-
-<br />
-
 import CodeBlock from "../../components/code-block.astro";
 import CodeBlockTabs from "../../components/code-block-tabs.astro";
-import code from "./index.react?raw";
+import data from "./index.react.tsx?deps-raw";
 
 <CodeBlockTabs
-  maxLines={17}
-  lineNumbers
   aiPrompt="Add a new tab with the code for the popover component"
-  tabs={[
-    {
-      filename: "index.tsx",
-      filenameIcon: "react",
-      lineNumbers: true,
-      code,
-    },
-    {
-      filename: "styles.css",
-      filenameIcon: "tailwind",
-      lineNumbers: true,
-      code: `@import "tailwindcss";
-@import "@ariakit/tailwind";`,
-    },
-  ]}
+  preview
+  tabs={Object.entries(data.files).map(([filename, code]) => ({
+    filename,
+    code,
+  }))}
 />
