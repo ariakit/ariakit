@@ -9,9 +9,14 @@ frameworks:
 
 Description {props.framework}
 
-import DefaultPreview from "./preview.mdx";
-import PreviewBlock from "../../components/preview-block.astro";
+import CodeBlockTabs from "../../components/code-block-tabs.astro";
+import data from "./index.react.tsx?deps-raw";
 
-<PreviewBlock example="separator">
-  <DefaultPreview />
-</PreviewBlock>
+<CodeBlockTabs
+  aiPrompt="Add a new tab with the code for the popover component"
+  preview
+  tabs={Object.entries(data.files).map(([filename, code]) => ({
+    filename,
+    code,
+  }))}
+/>
