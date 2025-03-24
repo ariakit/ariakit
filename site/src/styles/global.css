@@ -233,7 +233,7 @@ body {
 
   @variant ak-dark {
     --ak-button-min-l: 0.25;
-    --ak-button-max-l: 0.75;
+    --ak-button-max-l: 1;
   }
 }
 
