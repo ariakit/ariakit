@@ -71,7 +71,10 @@ function splitContent(content: string) {
             return (
               <span
                 data-highlight={highlightLine || undefined}
-                class:list={["pe-4", { "ak-layer-pop": highlightLine }]}
+                class:list={[
+                  "pe-4 h-(--line-height)",
+                  { "ak-layer-pop": highlightLine },
+                ]}
               >
                 {i + 1}
               </span>
