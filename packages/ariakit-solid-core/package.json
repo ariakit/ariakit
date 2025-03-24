@@ -34,7 +34,7 @@
   "keywords": ["ariakit", "solid", "core"],
   "dependencies": {
     "@ariakit/core": "0.4.14",
-    "@solid-primitives/props": "3.1.11",
+    "@solid-primitives/props": "3.2.0",
     "@solid-primitives/utils": "6.2.3"
   },
   "peerDependencies": {
