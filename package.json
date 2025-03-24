@@ -97,7 +97,7 @@
     "@tanstack/react-store": "0.7.0",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
-    "@testing-library/react": "16.1.0",
+    "@testing-library/react": "16.2.0",
     "@types/babel__core": "7.20.5",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",
