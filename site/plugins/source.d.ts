@@ -1,6 +1,6 @@
-import type { DepInfo } from "./source-plugin.ts";
+import type { Source } from "./source-plugin.ts";
 
 declare module "*?source" {
-  const content: DepInfo;
+  const content: Source;
   export default content;
 }

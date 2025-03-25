@@ -6,7 +6,7 @@ import resolveFrom from "resolve-from";
 import ts from "typescript";
 import type { Plugin } from "vite";
 
-export interface DepInfo {
+export interface Source {
   files: Record<string, string>;
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
@@ -94,7 +94,7 @@ export function sourcePlugin(): Plugin {
       /**
        * Extract dependency information from a file and all its imports
        */
-      const extractDependencyInfo = async (): Promise<DepInfo> => {
+      const extractDependencyInfo = async (): Promise<Source> => {
         const files: Record<string, string> = {};
         const dependencies: Record<string, string> = {};
         const devDependencies: Record<string, string> = {};
