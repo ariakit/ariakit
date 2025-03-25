@@ -162,7 +162,7 @@
     "postcss-import": "16.1.0",
     "postcss-merge-selectors": "0.0.6",
     "postcss-prettify": "0.3.4",
-    "prettier": "3.4.2",
+    "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "0.6.11",
     "purgecss": "7.0.2",
     "react": "18.3.1",
