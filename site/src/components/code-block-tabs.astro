@@ -5,18 +5,42 @@ import {
   CodeBlockTabPanel,
 } from "./code-block.react.tsx";
 import type { ComponentProps } from "astro/types";
+import type { Source } from "../../plugins/source-plugin.ts";
 
 interface Props
-  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "storeId"> {}
+  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "storeId"> {
+  source?: Source;
+}
 
-const { tabs, lineNumbers = true, maxLines = 17, ...props } = Astro.props;
+const {
+  source,
+  tabs,
+  lineNumbers = true,
+  maxLines = 17,
+  ...props
+} = Astro.props;
 
 const storeId = `code-block-tabs-${Math.random().toString(36).substring(2, 15)}`;
+
+const tabsFromSource = source
+  ? Object.entries(source.files).map(([filename, code]) => ({
+      filename,
+      code,
+    }))
+  : [];
+
+const finalTabs = tabs || tabsFromSource;
 ---
 
-<CodeBlockTabsReact client:visible {storeId} {tabs} {maxLines} {...props}>
+<CodeBlockTabsReact
+  client:visible
+  {storeId}
+  {maxLines}
+  tabs={finalTabs}
+  {...props}
+>
   {
-    tabs.map((tab, index) => (
+    finalTabs.map((tab, index) => (
       <CodeBlockTabPanel
         client:load
         storeId={storeId}
