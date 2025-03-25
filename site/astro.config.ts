@@ -4,7 +4,7 @@ import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import { dataPlugin } from "./plugins/data-plugin.ts";
+import { sourcePlugin } from "./plugins/source-plugin.ts";
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,7 +18,7 @@ export default defineConfig({
 
   vite: {
     // @ts-expect-error
-    plugins: [tailwindcss(), dataPlugin()],
+    plugins: [tailwindcss(), sourcePlugin()],
   },
 
   integrations: [

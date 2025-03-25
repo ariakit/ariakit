@@ -13,8 +13,8 @@ export interface DepInfo {
 }
 
 // Custom plugin to extract dependencies using Vite's module graph
-export function dataPlugin(): Plugin {
-  const queryString = "?data";
+export function sourcePlugin(): Plugin {
+  const queryString = "?source";
   const queryStringRegex = new RegExp(`\\${queryString}$`);
   // Track processed modules to avoid infinite recursion
   const processedModules = new Set<string>();
@@ -69,7 +69,7 @@ export function dataPlugin(): Plugin {
   }
 
   return {
-    name: "vite-plugin-data",
+    name: "vite-plugin-source",
 
     resolveId(id, importer) {
       if (!id.match(queryStringRegex)) return null;
