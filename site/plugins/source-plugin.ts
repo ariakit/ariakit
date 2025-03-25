@@ -181,8 +181,9 @@ async function processFile(
   if (processedModules.has(id)) return;
   processedModules.add(id);
 
-  let content = await fs.promises.readFile(id, "utf-8");
+  const content = await fs.promises.readFile(id, "utf-8");
   const filename = normalizeFilename(getRelativePath(baseDir, id));
+  source.files[filename] = content;
 
   await addFrameworkDependencies(context, id, source);
 
@@ -190,7 +191,10 @@ async function processFile(
 
   for (const importPath of imports) {
     const normalizedImportPath = normalizeImportPath(importPath);
-    content = content.replaceAll(importPath, normalizedImportPath);
+    source.files[filename] = source.files[filename].replaceAll(
+      importPath,
+      normalizedImportPath,
+    );
 
     const resolved = await resolveImport(context, importPath, id);
     if (!resolved) continue;
@@ -208,8 +212,6 @@ async function processFile(
       );
     }
   }
-
-  source.files[filename] = content;
 }
 
 /**
