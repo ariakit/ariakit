@@ -1,7 +1,5 @@
 import fs from "node:fs";
-import { basename, dirname, relative, resolve } from "node:path";
-import type { ImportDeclaration, ImportExpression, Node } from "estree";
-import { visit } from "estree-util-visit";
+import { basename, dirname, relative } from "node:path";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
 import type { PluginContext } from "rollup";
@@ -58,14 +56,14 @@ function removeFrameworkSuffixes(filePath: string) {
  * Remove framework-specific suffixes and replace ../ with ./
  */
 function normalizeImportPath(importPath: string) {
-  return removeFrameworkSuffixes(importPath).replace(/^\.\.\//, "./");
+  return removeFrameworkSuffixes(importPath).replace(/^(\.\.\/)+/, "./");
 }
 
 /**
  * Remove framework-specific suffixes and leading ./ or ../
  */
 function normalizeFilename(filename: string) {
-  return removeFrameworkSuffixes(filename).replace(/^\.\.?\//, "");
+  return removeFrameworkSuffixes(filename).replace(/^(\.\.\/)+/, "");
 }
 
 /**
@@ -77,20 +75,20 @@ function getRelativePath(baseDir: string, filePath: string) {
 }
 
 /**
- * Check if a node is an import declaration or import expression
+ * Get all import paths from a string
  */
-function isImport(node: Node): node is ImportDeclaration | ImportExpression {
-  return node.type === "ImportDeclaration" || node.type === "ImportExpression";
-}
+function getImportPaths(content: string) {
+  const importExportRegex =
+    /(?:import|export)\s*(?:[^'"]*?\s+from\s+|\(\s*)?["']([^'"]+)["']/g;
 
-/**
- * Get the import path from an import declaration or import expression
- */
-function getImportPath(node: Node) {
-  if (!isImport(node)) return;
-  if (node.source.type !== "Literal") return;
-  if (typeof node.source.value !== "string") return;
-  return node.source.value;
+  const paths = new Set<string>();
+  let match: RegExpExecArray | null;
+
+  while ((match = importExportRegex.exec(content)) !== null) {
+    paths.add(match[1]);
+  }
+
+  return paths;
 }
 
 /**
@@ -183,26 +181,20 @@ async function processFile(
   if (processedModules.has(id)) return;
   processedModules.add(id);
 
-  const content = await fs.promises.readFile(id, "utf-8");
+  let content = await fs.promises.readFile(id, "utf-8");
   const filename = normalizeFilename(getRelativePath(baseDir, id));
-  source.files[filename] = content;
 
   await addFrameworkDependencies(context, id, source);
 
-  const ast = context.parse(content, { jsx: /[jt]sx?$/.test(filename) });
-  const imports: string[] = [];
-
-  visit(ast, (node) => {
-    const importPath = getImportPath(node);
-    if (!importPath) return;
-    const normalizedImportPath = normalizeImportPath(importPath);
-    imports.push(importPath);
-    source.files[filename] = content.replace(importPath, normalizedImportPath);
-  });
+  const imports = getImportPaths(content);
 
   for (const importPath of imports) {
+    const normalizedImportPath = normalizeImportPath(importPath);
+    content = content.replaceAll(importPath, normalizedImportPath);
+
     const resolved = await resolveImport(context, importPath, id);
     if (!resolved) continue;
+
     if (resolved.external) {
       await addDependency(context, source, importPath, id, resolved);
     } else if (!processedModules.has(resolved.id)) {
@@ -216,6 +208,8 @@ async function processFile(
       );
     }
   }
+
+  source.files[filename] = content;
 }
 
 /**
