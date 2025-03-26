@@ -202,7 +202,7 @@
     "vite-plugin-solid": "2.11.0",
     "vitest": "2.1.9",
     "vitest-fail-on-console": "0.7.1",
-    "webpack": "5.97.1",
+    "webpack": "5.98.0",
     "wrangler": "3.114.2",
     "zod": "3.24.2"
   }
