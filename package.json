@@ -117,7 +117,7 @@
     "@wordpress/components": "29.6.0",
     "astro": "5.5.4",
     "autoprefixer": "10.4.21",
-    "babel-loader": "9.2.1",
+    "babel-loader": "10.0.0",
     "babel-plugin-transform-rewrite-imports": "1.5.3",
     "babel-preset-solid": "1.9.5",
     "babylon": "6.18.0",
