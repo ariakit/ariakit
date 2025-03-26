@@ -131,7 +131,7 @@
     "dotenv": "16.4.7",
     "esbuild-plugin-solid": "0.6.0",
     "fast-fuzzy": "1.12.0",
-    "framer-motion": "11.18.2",
+    "framer-motion": "12.6.2",
     "fs-extra": "11.3.0",
     "geist": "1.3.0",
     "glob": "11.0.1",
