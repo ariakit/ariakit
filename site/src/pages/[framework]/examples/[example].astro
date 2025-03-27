@@ -42,19 +42,23 @@ const { Content } = await render(entry);
 ---
 
 <Layout title={entry.data.title || example}>
-  <div class="px-3 sm:px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">{entry.data.title || example}</h1>
-    <div class="ak-prose">
-      <Content framework={framework} />
+  <main
+    class="w-full max-w-[95rem] mx-auto [&_:is(h1,h2,h3)]:max-w-[80rem] [&_:is(h1,h2,h3)]:mx-auto"
+  >
+    <div class="px-3 sm:px-4 py-8">
+      <h1 class="text-3xl font-bold mb-6">{entry.data.title || example}</h1>
+      <div class="ak-prose">
+        <Content framework={framework} />
+      </div>
     </div>
-  </div>
-  {
-    examples.flatMap((example) =>
-      example.data.frameworks.map((framework) => (
-        <a href={`/${framework}/examples/${example.id}`}>
-          {framework}/{example.data.title}
-        </a>
-      ))
-    )
-  }
+    {
+      examples.flatMap((example) =>
+        example.data.frameworks.map((framework) => (
+          <a href={`/${framework}/examples/${example.id}`}>
+            {framework}/{example.data.title}
+          </a>
+        ))
+      )
+    }
+  </main>
 </Layout>
