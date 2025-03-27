@@ -1,3 +1,3 @@
-export function Testa() {
+export function Foo() {
   return <button>Testa</button>;
 }
