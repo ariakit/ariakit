@@ -11,7 +11,14 @@ const hasLabel =
   Astro.props["aria-labelledby"] !== undefined;
 
 const { name, ...props } = Astro.props;
-const { html, stroke, fill, viewBox = "0 0 24 24" } = icons[name];
+const { html, stroke, replaceId, fill, viewBox = "0 0 24 24" } = icons[name];
+
+let content = html;
+
+if (replaceId) {
+  const randomId = Math.random().toString(36).substring(2, 15);
+  content = content.replace(/<replace-id-(\d+)>/g, `${randomId}$1`);
+}
 ---
 
 <svg
@@ -22,5 +29,6 @@ const { html, stroke, fill, viewBox = "0 0 24 24" } = icons[name];
   aria-hidden={!hasLabel || undefined}
   {stroke}
   {fill}
-  set:html={html}
+  set:html={content}
+  class:list={["base:stroke-[1.5] base:ak-dark:stroke-1", props.class]}
 />
