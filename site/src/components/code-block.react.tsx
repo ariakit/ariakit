@@ -1,20 +1,16 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import * as ak from "@ariakit/react";
-import { Store, useStore } from "@tanstack/react-store";
+import clsx from "clsx";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { Thumbnail } from "../examples/popover/thumb.react.tsx";
 import { Icon } from "../icons/icon.react.tsx";
-import { cn } from "../lib/cn.ts";
-import { useHydrated } from "../lib/use-hydrated.ts";
 import type {
   CodeBlockProps as CodeBlockBaseProps,
-  CodeBlockTabProps,
+  CodeBlockTabProps as CodeBlockTabBaseProps,
 } from "./code-block.types.ts";
 import { CopyCode } from "./copy-code.react.tsx";
 import { Tooltip } from "./tooltip.react.tsx";
-
-const openTabs = new Store<Record<string, string>>({});
 
 function getTabId(prefix: string, filename?: string) {
   if (!filename) return prefix;
@@ -77,7 +73,7 @@ function useCollapsible<T extends HTMLElement>({
       <button
         ref={expandButtonRef}
         onClick={expand}
-        className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-var(--line-height)*8)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-1 justify-center items-end"
+        className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-var(--line-height)*8)] ak-light:from-[calc(100%-var(--line-height)*4)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-1 justify-center items-end"
       >
         <div className="ak-button h-9 ak-layer-pop text-sm/[1.5rem] hover:ak-layer-hover group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
           Expand code
@@ -87,7 +83,9 @@ function useCollapsible<T extends HTMLElement>({
     ) : null;
 
   const collapseButton = (
-    <div className="sticky bottom-2 my-2">
+    <div
+      className={clsx("sticky bottom-2", collapsible && !collapsed && "my-2")}
+    >
       {collapsible && !collapsed && (
         <div className="grid justify-center">
           <button
@@ -118,30 +116,6 @@ function SingleTabPanel(props: ak.TabPanelProps) {
     (state) => props.tabId ?? state?.selectedId,
   );
   return <ak.TabPanel focusable={false} {...props} tabId={tabId} />;
-}
-
-export interface PanelProps {
-  storeId: string;
-  children: React.ReactNode;
-  filename: string;
-  defaultOpen?: boolean;
-}
-
-export function CodeBlockTabPanel({
-  storeId,
-  children,
-  filename,
-  defaultOpen = false,
-}: PanelProps) {
-  const hydrated = useHydrated();
-
-  const open = useStore(openTabs, (state) => {
-    const tab = state[storeId];
-    if (!tab || !hydrated) return defaultOpen;
-    return tab === filename;
-  });
-
-  return <>{open && children}</>;
 }
 
 export interface CodeBlockProps
@@ -179,7 +153,7 @@ export function CodeBlock({
 
   const defaultContent = (
     <div
-      className={cn(
+      className={clsx(
         "ak-tab-panel ak-frame-cover/0 relative grid overflow-hidden",
         "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
       )}
@@ -199,7 +173,7 @@ export function CodeBlock({
       </div>
       <pre
         {...scrollableProps}
-        className={cn(
+        className={clsx(
           "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",
           collapsible &&
             !collapsed &&
@@ -222,12 +196,10 @@ export function CodeBlock({
     <div
       {...props}
       ref={wrapperRef}
-      className={cn("flex flex-col isolate scroll-my-2", props.className)}
+      className={clsx("flex flex-col isolate scroll-my-2", props.className)}
     >
       <div
-        className={cn(
-          "ak-layer group peer @container ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
-        )}
+        className="ak-layer group peer ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2"
         data-collapsible={collapsible || undefined}
         data-collapsed={collapsed || undefined}
       >
@@ -251,7 +223,38 @@ export function CodeBlock({
   );
 }
 
-export interface CodeBlockTabsProps
+interface CodeBlockTabProps extends ak.TabProps {
+  isPreview: boolean;
+  fullscreenPreview?: boolean;
+}
+
+function CodeBlockTab({
+  isPreview,
+  fullscreenPreview,
+  children,
+  ...props
+}: CodeBlockTabProps) {
+  return (
+    <ak.Tab
+      {...props}
+      className={clsx(
+        isPreview
+          ? [
+              "ak-segmented-button aria-selected:ak-edge/8 aria-selected:ak-light:ak-edge/12 aria-selected:ak-layer-pop aria-selected:shadow-none",
+              fullscreenPreview
+                ? "aria-selected:ak-layer-down aria-selected:ak-light:ak-edge/0 px-2 not-aria-selected:px-3"
+                : "px-1.5 not-aria-selected:px-2.5 not-aria-selected:sm:px-3 sm:px-2",
+            ]
+          : "ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm",
+        props.className,
+      )}
+    >
+      {isPreview ? children : <div>{children}</div>}
+    </ak.Tab>
+  );
+}
+
+export interface CodeBlockTabsProps2
   extends Omit<
     CodeBlockProps,
     | "code"
@@ -263,33 +266,55 @@ export interface CodeBlockTabsProps
     | "filenameIcon"
     | "topbar"
   > {
-  storeId: string;
-  tabs: CodeBlockTabProps[];
+  tabs: CodeBlockTabBaseProps[];
   persistTabKey?: string;
   preview?: boolean;
   aiPrompt?: string;
+  edit?: boolean;
+  fullscreenPreview?: boolean;
+  slot0?: React.ReactElement;
+  slot1?: React.ReactElement;
+  slot2?: React.ReactElement;
+  slot3?: React.ReactElement;
+  slot4?: React.ReactElement;
+  slot5?: React.ReactElement;
+  slot6?: React.ReactElement;
+  slot7?: React.ReactElement;
 }
 
-export function CodeBlockTabs({
-  storeId,
+export function CodeBlockTabs2({
   tabs,
   persistTabKey,
   aiPrompt,
   preview,
+  fullscreenPreview,
+  edit,
+  slot0,
+  slot1,
+  slot2,
+  slot3,
+  slot4,
+  slot5,
+  slot6,
+  slot7,
   ...props
-}: CodeBlockTabsProps) {
+}: CodeBlockTabsProps2) {
+  const storeId = React.useId();
+  const slots = [slot0, slot1, slot2, slot3, slot4, slot5, slot6, slot7];
+
   const [firstTab] = tabs;
   invariant(firstTab, "At least one tab is required");
 
   const [loaded, setLoaded] = React.useState(false);
 
+  fullscreenPreview = preview && fullscreenPreview;
+
   const canPersist = persistTabKey !== undefined;
-  const [
-    persistedFilename = preview ? "preview" : firstTab.filename,
-    setPersistedFilename,
-  ] = useLocalStorageState<string | undefined>(
-    persistTabKey ?? "code-block-tabs",
-  );
+  const defaultFilename = preview ? "preview" : firstTab.filename;
+  const [persistedFilename = defaultFilename, setPersistedFilename] =
+    useLocalStorageState<string | undefined>(
+      persistTabKey ?? "code-block-tabs",
+    );
 
   const defaultTabId = getTabId(storeId, persistedFilename);
   const tabStore = ak.useTabStore({
@@ -300,103 +325,109 @@ export function CodeBlockTabs({
     }),
   });
   const selectedTabId = ak.useStoreState(tabStore, "selectedId");
-  const isPreview = selectedTabId === getTabId(storeId, "preview");
+  const isPreviewSelected = selectedTabId === getTabId(storeId, "preview");
 
   const selectedTab = tabs.find(
     (tab) => getTabId(storeId, tab.filename) === selectedTabId,
   );
-  const filename = selectedTab?.filename;
-  const hasToolbar = !!aiPrompt;
-
-  React.useEffect(() => {
-    if (!storeId) return;
-    if (!filename) return;
-    openTabs.setState((tabs) => ({ ...tabs, [storeId]: filename }));
-  }, [storeId, filename]);
+  const selectedSlot = slots.find(
+    (_, index) => getTabId(storeId, tabs[index]?.filename) === selectedTabId,
+  );
+  const previewUrl = `/react/previews/popover`;
+  const hasToolbar = !!aiPrompt || edit;
 
   const renderTopbar = () => (
     <div
-      className={cn(
-        isPreview &&
-          "absolute z-1 inset-0 bottom-auto ak-frame-container/1 pointer-events-none *:pointer-events-auto flex items-start",
-        !isPreview &&
-          "ak-layer-down ak-light:ak-layer-down-0.5 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
+      className={clsx(
         hasToolbar && "[--height:--spacing(12)]",
+        isPreviewSelected
+          ? [
+              "flex items-start",
+              fullscreenPreview
+                ? "ak-layer ak-frame-cover/1"
+                : "absolute z-1 inset-0 bottom-auto ak-frame-container/1 pointer-events-none *:pointer-events-auto",
+            ]
+          : "ak-layer-down ak-light:ak-layer-down-0.5 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
       )}
     >
       <ak.TabList
-        className={cn(
-          !isPreview &&
-            "ak-tab-list ak-layer-(--ak-layer-parent) !rounded-b-none",
-          !isPreview && hasToolbar && "sm:ak-frame-overflow/1",
-          isPreview &&
-            "ak-segmented ak-layer-(--ak-layer-parent) text-sm max-sm:ak-frame-container/0.5 h-10 sm:h-[calc(--spacing(10)+var(--ak-frame-padding))]",
+        className={clsx(
+          isPreviewSelected
+            ? [
+                "ak-segmented ak-layer-(--ak-layer-parent) text-sm h-10 gap-1",
+                fullscreenPreview
+                  ? "ak-frame-container/0"
+                  : "max-sm:ak-frame-container/0.5 sm:h-[calc(--spacing(10)+var(--ak-frame-padding))]",
+              ]
+            : [
+                "ak-tab-list ak-layer-(--ak-layer-parent) !rounded-b-none",
+                hasToolbar && !fullscreenPreview && "sm:ak-frame-overflow/1",
+              ],
         )}
       >
         {preview && (
-          <ak.Tab
-            className={cn(
-              !isPreview &&
-                "ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm",
-              isPreview &&
-                "ak-segmented-button aria-selected:ak-edge/10 not-aria-selected:px-4 not-aria-selected:sm:px-3 px-1.5 sm:px-2",
-            )}
+          <CodeBlockTab
             id={getTabId(storeId, "preview")}
+            isPreview={isPreviewSelected}
+            fullscreenPreview={fullscreenPreview}
           >
-            {isPreview ? (
-              <>
-                <Icon name="preview" />
-                Preview
-              </>
-            ) : (
-              <div>
-                <Icon name="preview" />
-                Preview
-              </div>
-            )}
-          </ak.Tab>
+            <Icon name="preview" />
+            Preview
+          </CodeBlockTab>
         )}
-        {tabs.map((tabItem, index) => {
-          if (isPreview && index > 0) return null;
+        {tabs.map((tab, index) => {
+          if (isPreviewSelected && index > 0) return null;
+          const filenameIcon = isPreviewSelected ? "code" : tab.filenameIcon;
+          const filename = isPreviewSelected
+            ? "Code"
+            : tab.filename || tab.lang;
           return (
-            <ak.Tab
-              key={tabItem.filename || index}
-              data-key={tabItem.filename || index}
-              className={cn(
-                !isPreview &&
-                  "ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm",
-                isPreview &&
-                  "ak-segmented-button aria-selected:ak-edge/10 not-aria-selected:px-4 not-aria-selected:sm:px-3 px-1.5 sm:px-2",
-              )}
-              id={getTabId(storeId, tabItem.filename)}
+            <CodeBlockTab
+              key={tab.filename}
+              id={getTabId(storeId, tab.filename)}
+              isPreview={isPreviewSelected}
+              fullscreenPreview={fullscreenPreview}
             >
-              {isPreview ? (
-                <>
-                  <Icon name="code" />
-                  Code
-                </>
-              ) : (
-                <div>
-                  {tabItem.filenameIcon && <Icon name={tabItem.filenameIcon} />}
-                  {tabItem.filename || tabItem.lang}
-                </div>
+              {filenameIcon && (
+                <Icon
+                  name={filenameIcon}
+                  className={!isPreviewSelected ? "max-sm:hidden" : ""}
+                />
               )}
-            </ak.Tab>
+              {filename}
+            </CodeBlockTab>
           );
         })}
       </ak.TabList>
       {hasToolbar && (
         <div className="ms-auto ak-frame-cover/1 ak-frame-cover-start ak-frame-cover-end h-(--height) flex gap-1">
-          <button className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80">
-            <Icon name="sparks" className="text-lg" />
-            <span className="@max-xl:sr-only">Copy AI prompt</span>
-          </button>
-          <Tooltip title="Edit code">
-            <button className="ak-button ak-button-square h-full">
-              <Icon name="edit" className="text-lg" />
-              <span className="sr-only">Edit code</span>
+          {aiPrompt && (
+            <button className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80">
+              <Icon name="sparks" className="text-lg" />
+              <span className="@max-xl:sr-only">Copy AI prompt</span>
             </button>
-          </Tooltip>
+          )}
+          {edit && (
+            <Tooltip title="Edit code">
+              <button className="ak-button ak-button-square h-full">
+                <Icon name="edit" className="text-lg" />
+                <span className="sr-only">Edit code</span>
+              </button>
+            </Tooltip>
+          )}
+          {previewUrl && preview && (
+            <Tooltip title="Open preview in new tab">
+              <a
+                href={previewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ak-button ak-button-square h-full"
+              >
+                <Icon name="newWindow" className="text-lg" />
+                <span className="sr-only">Open preview in new tab</span>
+              </a>
+            </Tooltip>
+          )}
         </div>
       )}
     </div>
@@ -404,54 +435,99 @@ export function CodeBlockTabs({
 
   return (
     <ak.TabProvider store={tabStore}>
-      <div className="relative">
-        <CodeBlock
-          {...props}
-          {...selectedTab}
-          className={cn(
-            isPreview && "*:ak-layer-down-0.3 *:ak-dark:ak-edge/13",
-          )}
-          code={selectedTab?.code || ""}
-          topbar={renderTopbar()}
-          renderContent={(content) => {
-            return (
-              <>
-                {preview && (isPreview || loaded) && (
-                  <ak.TabPanel
-                    focusable={false}
-                    scrollRestoration
-                    scrollElement={(panel) => {
-                      const iframe = panel.querySelector("iframe");
-                      return iframe?.contentDocument?.documentElement || null;
-                    }}
-                    tabId={getTabId(storeId, "preview")}
-                    render={
-                      preview ? (
-                        <div className="ak-tab-panel ak-frame-cover-start">
-                          <PreviewBlock
-                            example="popover"
-                            framework="react"
-                            fallback={<Thumbnail />}
-                            onLoad={() => setLoaded(true)}
-                          />
-                        </div>
-                      ) : undefined
-                    }
-                  />
-                )}
-                {!isPreview && (
-                  <SingleTabPanel
-                    scrollRestoration
-                    scrollElement={(panel) => panel.querySelector("pre")}
-                    render={content}
-                  />
-                )}
-              </>
-            );
-          }}
-        />
-      </div>
+      <CodeBlock
+        {...props}
+        {...selectedTab}
+        topbar={renderTopbar()}
+        code={selectedTab?.code || ""}
+        className={clsx(
+          isPreviewSelected && "*:ak-layer-down-0.15 *:ak-dark:ak-edge/13",
+          props.className,
+        )}
+        renderContent={(content) => {
+          return (
+            <>
+              {preview && (isPreviewSelected || loaded) && (
+                <ak.TabPanel
+                  tabId={getTabId(storeId, "preview")}
+                  focusable={false}
+                  scrollRestoration
+                  scrollElement={(panel) => {
+                    const iframe = panel.querySelector("iframe");
+                    return iframe?.contentDocument?.documentElement || null;
+                  }}
+                  render={
+                    <div
+                      className={clsx(
+                        "ak-tab-panel",
+                        !fullscreenPreview && "ak-frame-cover-start",
+                      )}
+                    >
+                      <PreviewBlock
+                        example="popover"
+                        framework="react"
+                        fallback={<Thumbnail />}
+                        onLoad={() => setLoaded(true)}
+                      />
+                    </div>
+                  }
+                />
+              )}
+              {!isPreviewSelected && (
+                <SingleTabPanel
+                  scrollRestoration
+                  scrollElement={(panel) => panel.querySelector("pre")}
+                  render={content}
+                />
+              )}
+            </>
+          );
+        }}
+      >
+        {selectedSlot}
+      </CodeBlock>
     </ak.TabProvider>
+  );
+}
+
+export interface CodeBlockTabsProps extends CodeBlockTabsProps2 {}
+
+export function CodeBlockTabs(props: CodeBlockTabsProps) {
+  return (
+    <div className="@container">
+      <div className="grid grid-cols-2 gap-4 @max-[72rem]:grid-cols-1">
+        <CodeBlockTabs2
+          {...props}
+          preview={false}
+          className={props.preview ? "@max-[72rem]:hidden" : ""}
+        />
+        {props.preview && (
+          <CodeBlockTabs2 {...props} className="@[72rem]:hidden" />
+        )}
+        {props.preview && (
+          <div className="relative ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 overflow-clip ak-layer-down-0.15 ak-dark:ak-edge/13 @max-[72rem]:hidden">
+            <div className="ak-frame-cover/1 absolute top-0 end-0 z-1">
+              <Tooltip title="Open preview in new tab">
+                <a
+                  href="/react/previews/popover"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ak-button ak-button-square sm:h-10 h-9"
+                >
+                  <Icon name="newWindow" className="text-lg" />
+                  <span className="sr-only">Open preview in new tab</span>
+                </a>
+              </Tooltip>
+            </div>
+            <PreviewBlock
+              example="popover"
+              framework="react"
+              fallback={<Thumbnail />}
+            />
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -478,6 +554,7 @@ export function PreviewBlock({
   }, [previewUrl]);
 
   React.useEffect(() => {
+    // if (loaded) return;
     const iframe = iframeRef.current;
     if (!iframe) return;
     let timeout = 0;
@@ -486,9 +563,9 @@ export function PreviewBlock({
     const onLoad = () => {
       const doc = iframe.contentDocument;
       if (!doc) return;
-      doc.documentElement.dataset.iframe = "true";
 
       const clickButtonAndCheckDialog = () => {
+        doc.documentElement.dataset.iframe = "true";
         doc.body.inert = true;
         doc.body.style.paddingTop = "0px";
         const button = doc.querySelector("button");
@@ -501,7 +578,8 @@ export function PreviewBlock({
           if (!dialog || dialog.hasAttribute("hidden")) {
             // If dialog doesn't exist yet or is hidden, try again after a short
             // delay
-            doc.body.inert = false;
+            // doc.body.inert = false;
+
             timeout = window.setTimeout(clickButtonAndCheckDialog, 84);
             return;
           }
@@ -515,18 +593,30 @@ export function PreviewBlock({
             if (totalHeight == null) return;
             const paddingTop = `calc(${totalHeight - bottom}px / 2)`;
             doc.body.style.paddingTop = paddingTop;
-            button.click();
+            doc.body.style.display = "none";
+            dialog.style.removeProperty("transition");
+
+            // button.click();
+
+            setLoaded(true);
+            onLoadProp?.();
+            raf = requestAnimationFrame(() => {
+              doc.body.style.removeProperty("display");
+            });
+            timeout = window.setTimeout(() => {
+              doc.body.inert = false;
+            }, 42);
 
             // Wait for the dialog to be stable (no more transitions)
-            raf = requestAnimationFrame(() => {
-              dialog.style.removeProperty("transition");
-              button.click();
-              setLoaded(true);
-              onLoadProp?.();
-              timeout = window.setTimeout(() => {
-                doc.body.inert = false;
-              }, 42);
-            });
+            // raf = requestAnimationFrame(() => {
+            //   dialog.style.removeProperty("transition");
+            //   button.click();
+            //   setLoaded(true);
+            //   onLoadProp?.();
+            //   timeout = window.setTimeout(() => {
+            //     doc.body.inert = false;
+            //   }, 42);
+            // });
           });
         }, 42);
       };
@@ -536,18 +626,40 @@ export function PreviewBlock({
     };
 
     iframe.addEventListener("load", onLoad);
-    iframe.src = previewUrl;
+    // iframe.src = previewUrl;
+
+    // intersection observer
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          if (!iframe.src.endsWith(previewUrl)) {
+            iframe.src = previewUrl;
+          } else {
+            setLoaded(true);
+            onLoadProp?.();
+          }
+        } else {
+          setLoaded(false);
+          // iframe.src = "";
+        }
+      },
+      {
+        rootMargin: "100%",
+      },
+    );
+    observer.observe(iframe);
 
     return () => {
       clearTimeout(timeout);
       cancelAnimationFrame(raf);
       iframe.removeEventListener("load", onLoad);
+      observer.disconnect();
     };
   }, [previewUrl]);
 
   return (
     <>
-      <div className="relative h-117">
+      <div className="relative h-116">
         <iframe
           ref={iframeRef}
           width="100%"
@@ -562,74 +674,6 @@ export function PreviewBlock({
           </div>
         )}
       </div>
-      {/* <div
-        className={cn(
-          "ak-layer-canvas-down-0.3 ak-frame-playground/0 relative ak-frame-border overflow-clip h-117",
-          "hidden",
-        )}
-      >
-        <div className="absolute z-1 inset-0 bottom-auto ak-frame-container/1 pointer-events-none *:pointer-events-auto flex items-start">
-          <ak.TabProvider
-            defaultSelectedId={mode}
-            setSelectedId={(id) =>
-              setMode(id === "preview" ? "preview" : "code")
-            }
-          >
-            <ak.TabList className="ak-segmented text-sm max-sm:ak-frame-container/0.5 h-10 sm:h-[calc(--spacing(10)+var(--ak-frame-padding))]">
-              <ak.Tab
-                id="preview"
-                className="ak-segmented-button not-aria-selected:px-4 not-aria-selected:sm:px-3 px-1.5 sm:px-2"
-              >
-                <Icon name="preview" />
-                Preview
-              </ak.Tab>
-              <ak.Tab
-                id="code"
-                className="ak-segmented-button not-aria-selected:px-4 not-aria-selected:sm:px-3 px-1.5 sm:px-2"
-              >
-                <Icon name="code" />
-                Code
-              </ak.Tab>
-            </ak.TabList>
-          </ak.TabProvider>
-          <div className="ms-auto flex gap-1 h-10">
-            <button className="ak-button sm:text-sm max-sm:ak-button-square h-full ak-text/80">
-              <Icon name="sparks" className="text-lg" />
-              <span className="max-sm:sr-only">Copy AI prompt</span>
-            </button>
-            <Tooltip title="Edit code">
-              <button className="ak-button ak-button-square h-full">
-                <Icon name="edit" className="text-lg" />
-                <span className="sr-only">Edit code</span>
-              </button>
-            </Tooltip>
-            <Tooltip title="Open preview in new tab">
-              <a
-                href={previewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ak-button ak-button-square h-full text-lg"
-              >
-                <Icon name="newWindow" />
-                <span className="sr-only">Open preview in new tab</span>
-              </a>
-            </Tooltip>
-          </div>
-        </div>
-        <iframe
-          ref={iframeRef}
-          width="100%"
-          height="100%"
-          title={`Preview of ${example}`}
-        />
-        {!loaded && (
-          <div className="absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center justify-center">
-            <div className="opacity-50">
-              <div className="animate-pulse">{fallback}</div>
-            </div>
-          </div>
-        )}
-      </div> */}
     </>
   );
 }
