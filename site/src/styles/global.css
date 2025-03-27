@@ -43,7 +43,7 @@ body {
   @apply ak-layer-canvas antialiased;
 
   [data-iframe] & {
-    @apply ak-layer-canvas-down-0.3;
+    @apply ak-layer-canvas-down-0.15;
   }
 }
 
