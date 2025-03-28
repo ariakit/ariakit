@@ -4,9 +4,11 @@ import { CodeBlockTabs as CodeBlockTabsReact } from "./code-block.react.tsx";
 import type { ComponentProps } from "astro/types";
 import type { Source } from "../../plugins/source-plugin.ts";
 import type { CodeBlockTabProps } from "./code-block.types";
+import { getLangFromFilename } from "../lib/shiki.ts";
+import * as icons from "../icons/icons.ts";
 
 interface Props
-  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "storeId"> {
+  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "framework"> {
   source?: Source;
 }
 
@@ -20,11 +22,25 @@ const {
 
 const { framework } = Astro.locals;
 
+function hasIcon(name: string): name is keyof typeof icons {
+  return name in icons;
+}
+
+function isTsxFramework(
+  framework: string
+): framework is "react" | "solid" | "preact" {
+  return ["react", "solid", "preact"].includes(framework);
+}
+
 const tabsFromSource = source
   ? Object.entries(source.files).map(([filename, code]) => {
-      const filenameIcon = filename.endsWith(".tsx")
-        ? (framework as CodeBlockTabProps["filenameIcon"])
-        : undefined;
+      const lang = getLangFromFilename(filename);
+      const filenameIcon =
+        lang === "tsx" && framework && isTsxFramework(framework)
+          ? framework
+          : hasIcon(lang)
+            ? lang
+            : undefined;
       return {
         code,
         filename,
@@ -36,7 +52,7 @@ const tabsFromSource = source
 const tabs = tabsFromProps || tabsFromSource;
 ---
 
-<CodeBlockTabsReact client:visible {tabs} {maxLines} {...props}>
+<CodeBlockTabsReact client:visible {framework} {tabs} {maxLines} {...props}>
   {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
   {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
   {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}

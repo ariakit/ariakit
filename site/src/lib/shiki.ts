@@ -1,4 +1,5 @@
 // @ts-nocheck Revisit this after we merge the site folder into root
+import type { BundledLanguage, CodeToTokensOptions } from "shiki";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
@@ -23,3 +24,8 @@ export const highlighter = await createHighlighterCore({
     import("shiki/onig.wasm"),
   ),
 });
+
+export function getLangFromFilename(filename: string) {
+  const extension = filename.split(".").pop();
+  return extension as BundledLanguage;
+}

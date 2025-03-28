@@ -1,16 +1,13 @@
 ---
-import { type BundledLanguage, type CodeToTokensOptions } from "shiki";
-import { highlighter } from "../lib/shiki.ts";
+import { getLangFromFilename, highlighter } from "../lib/shiki.ts";
 import type { CodeBlockProps } from "./code-block.types";
-
-type Lang = CodeToTokensOptions<BundledLanguage>["lang"];
 
 interface Props extends CodeBlockProps {}
 
 const {
   code,
   filename,
-  lang = filename ? (filename.split(".").pop() as Lang) : "text",
+  lang = filename ? getLangFromFilename(filename) : "text",
   maxLines,
   lineNumbers = false,
   highlightLines = [],
