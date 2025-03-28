@@ -41,10 +41,6 @@ body {
 
 body {
   @apply ak-layer-canvas antialiased;
-
-  [data-iframe] & {
-    @apply ak-layer-canvas-down-0.15;
-  }
 }
 
 @custom-variant base {
@@ -279,7 +275,7 @@ body {
 
 @utility ak-segmented-button_idle {
   @apply ak-button_idle;
-  @apply relative font-normal;
+  @apply relative font-medium;
   input[type="radio"] {
     @apply sr-only;
   }
