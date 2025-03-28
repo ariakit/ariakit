@@ -1,6 +1,6 @@
 ---
 interface Props {
-  framework?: string;
+  framework?: typeof Astro.locals.framework;
 }
 
 const { framework = Astro.locals.framework } = Astro.props;
