@@ -1,16 +1,14 @@
 ---
+import "@fontsource-variable/inter";
+import "../../../styles/global.css";
 import { getEntry } from "astro:content";
 import { render } from "astro:content";
 import { getCollection } from "astro:content";
 import type { GetStaticPaths } from "astro";
-import Layout from "../../../layouts/Layout.astro";
 
-// Create getStaticPaths
 export const getStaticPaths = (async () => {
-  // Get all examples from the content collection
   const previews = await getCollection("previews");
-
-  const paths = previews.flatMap((preview) =>
+  return previews.flatMap((preview) =>
     preview.data.frameworks.map((framework) => ({
       params: {
         framework,
@@ -18,29 +16,32 @@ export const getStaticPaths = (async () => {
       },
     }))
   );
-
-  return paths;
 }) satisfies GetStaticPaths;
 
-// Get the dynamic route parameters
 const { framework, example } = Astro.params;
 
 Astro.locals.framework = framework;
 
-// Get the example from the content collection
-const entry = await getEntry("previews", `${example}`);
+const entry = await getEntry("previews", example);
 
-// If example doesn't exist, redirect to 404
 if (!entry) {
-  return Astro.redirect("/404");
+  return Astro.rewrite("/404");
 }
 
-// Get the rendered content
 const { Content } = await render(entry);
 ---
 
-<Layout>
-  <div class="flex items-center justify-center">
-    <Content framework={framework} />
-  </div>
-</Layout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Ariakit</title>
+  </head>
+  <body class="grid not-data-iframe:items-center">
+    <div class="mx-auto">
+      <Content framework={framework} />
+    </div>
+  </body>
+</html>
