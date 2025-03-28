@@ -1,6 +1,6 @@
-import type { ComponentProps } from "react";
+import clsx from "clsx";
+import type { CSSProperties, ComponentProps } from "react";
 import { useId } from "react";
-import { cn } from "../lib/cn.ts";
 import * as icons from "./icons.ts";
 
 export interface IconProps extends ComponentProps<"svg"> {
@@ -11,7 +11,15 @@ export function Icon({ name, ...props }: IconProps) {
   const id = useId();
   const hasLabel =
     props["aria-label"] !== undefined || props["aria-labelledby"] !== undefined;
-  const { html, stroke, replaceId, fill, viewBox = "0 0 24 24" } = icons[name];
+
+  const {
+    html,
+    stroke,
+    replaceId,
+    fill,
+    size = 24,
+    strokeWidth = 1.5,
+  } = icons[name];
 
   let content = html;
 
@@ -21,15 +29,19 @@ export function Icon({ name, ...props }: IconProps) {
 
   return (
     <svg
-      viewBox={viewBox}
+      viewBox={`0 0 ${size} ${size}`}
       width="1em"
       height="1em"
-      aria-hidden={!hasLabel || undefined}
-      stroke={stroke}
       fill={fill}
-      {...props}
+      stroke={stroke}
+      aria-hidden={!hasLabel || undefined}
       dangerouslySetInnerHTML={{ __html: content }}
-      className={cn("base:stroke-[1.5] base:ak-dark:stroke-1", props.className)}
+      {...props}
+      style={{ "--stroke-width": strokeWidth, ...props.style } as CSSProperties}
+      className={clsx(
+        "base:stroke-(length:--stroke-width) base:ak-dark:stroke-[calc(var(--stroke-width)/1.25)]",
+        props.className,
+      )}
     />
   );
 }
