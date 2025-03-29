@@ -1,5 +1,5 @@
 declare namespace App {
   interface Locals {
-    framework?: string;
+    framework?: "react" | "solid" | "svelte" | "vue" | "preact";
   }
 }

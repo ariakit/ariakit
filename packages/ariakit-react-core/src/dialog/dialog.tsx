@@ -352,6 +352,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // Safari doesn't scroll to the element on focus, so we have to do it
       // manually here.
       if (!isSafariBrowser) return;
+      if (!isElementFocusable) return;
       element.scrollIntoView({ block: "nearest", inline: "nearest" });
     });
   }, [

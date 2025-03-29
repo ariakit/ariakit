@@ -185,7 +185,7 @@ With `ak-text` utilities, text colors and opacity automatically adjust for reada
 
 | Utility                             | Description                                                           |
 | ----------------------------------- | --------------------------------------------------------------------- |
-| `ak-edge/<number>`                  | Adjusts edge base opacity (default `5`).                              |
+| `ak-edge/<number>`                  | Adjusts edge base opacity (default `10`).                             |
 | `ak-edge-<number>`                  | Adjusts edge color lightness (default `0`).                           |
 | `ak-edge-<color>`                   | Applies specific color.                                               |
 | `ak-edge-<color>-<number>`          | Adjusts edge color lightness.                                         |

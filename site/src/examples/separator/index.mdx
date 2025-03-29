@@ -9,14 +9,12 @@ frameworks:
 
 Description {props.framework}
 
-import { Show } from "solid-js";
-import ReactExample from "./index.react.tsx";
-import SolidExample from "./index.solid.tsx";
+import CodeBlockTabs from "../../components/code-block-tabs.astro";
+import source from "./index.react.tsx?source";
 
-<Show when={props.framework === "react"}>
-  <ReactExample client:load />
-</Show>
-
-<Show when={props.framework === "solid"}>
-  <SolidExample client:load />
-</Show>
+<CodeBlockTabs
+  aiPrompt="Add a new tab with the code for the popover component"
+  source={source}
+  preview
+  edit
+/>

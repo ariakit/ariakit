@@ -35,7 +35,7 @@ export function CopyCode({
       <button
         {...props}
         className={cn(
-          "ak-button ak-button-square ak-layer-feature size-9",
+          "ak-button ak-button-square ak-layer-pop size-9",
           props.className,
         )}
         onClick={async (event) => {
@@ -50,7 +50,7 @@ export function CopyCode({
           <Icon
             key="check"
             name="check"
-            className="stroke-[1.5] [stroke-dasharray:1em] starting:[stroke-dashoffset:1em] [stroke-dashoffset:0] transition-[stroke-dashoffset] duration-350"
+            className="[stroke-dasharray:1em] starting:[stroke-dashoffset:1em] [stroke-dashoffset:0] transition-[stroke-dashoffset] duration-350"
           />
         ) : (
           <Icon key="copy" name="copy" />
