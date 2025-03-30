@@ -26,6 +26,7 @@ export const getStaticPaths = (async () => {
 const { framework, example } = Astro.params;
 
 Astro.locals.framework = framework;
+Astro.locals.example = example;
 
 // Get the example from the content collection
 const entry = await getEntry("examples", `${example}`);

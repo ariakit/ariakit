@@ -21,6 +21,7 @@ export const getStaticPaths = (async () => {
 const { framework, example } = Astro.params;
 
 Astro.locals.framework = framework;
+Astro.locals.example = example;
 
 const entry = await getEntry("previews", example);
 
@@ -32,14 +33,14 @@ const { Content } = await render(entry);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" style="min-height: 200vh;">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Ariakit</title>
   </head>
-  <body class="grid not-data-iframe:items-center">
+  <body class="grid items-center">
     <div class="mx-auto">
       <Content framework={framework} />
     </div>
