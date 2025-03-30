@@ -1,4 +1,4 @@
-import { cn } from "../lib/cn.ts";
+import clsx from "clsx";
 
 export interface PlaceholderTextProps {
   children: string;
@@ -20,7 +20,7 @@ export function PlaceholderText({
   return (
     <div
       aria-hidden
-      className={cn(
+      className={clsx(
         layer ?? weightMap[weight],
         "!text-transparent !bg-transparent select-none px-2 ak-frame",
       )}
