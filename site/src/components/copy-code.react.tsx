@@ -1,7 +1,7 @@
+import clsx from "clsx";
 import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "../icons/icon.react.tsx";
-import { cn } from "../lib/cn.ts";
 import { Tooltip } from "./tooltip.react.tsx";
 
 interface CopyCodeProps extends ComponentProps<"button"> {
@@ -31,10 +31,14 @@ export function CopyCode({
   }, [text]);
 
   return (
-    <Tooltip title={state === "idle" ? title : "Copied"} placement="left">
+    <Tooltip
+      title={state === "idle" ? title : "Copied"}
+      placement="left"
+      className="not-data-open:transition-none"
+    >
       <button
         {...props}
-        className={cn(
+        className={clsx(
           "ak-button ak-button-square ak-layer-pop size-9",
           props.className,
         )}
