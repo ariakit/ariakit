@@ -84,16 +84,18 @@ export const copyAi: Icon = {
 
 export const edit: Icon = {
   size: 24,
-  stroke: "currentColor",
-  fill: "none",
-  html: `<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />`,
+  html: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19.09 14.441v4.44a2.37 2.37 0 0 1-2.369 2.369H5.12a2.37 2.37 0 0 1-2.369-2.383V7.279a2.356 2.356 0 0 1 2.37-2.37H9.56"/><path d="M6.835 15.803v-2.165c.002-.357.144-.7.395-.953l9.532-9.532a1.36 1.36 0 0 1 1.934 0l2.151 2.151a1.36 1.36 0 0 1 0 1.934l-9.532 9.532a1.36 1.36 0 0 1-.953.395H8.197a1.36 1.36 0 0 1-1.362-1.362M19.09 8.995l-4.085-4.086"/></g>`,
+};
+
+export const shadcn: Icon = {
+  size: 256,
+  strokeWidth: 20,
+  html: `<path fill="none" stroke="currentColor" stroke-linecap="round" d="M208 128l-80 80M192 40L40 192"/>`,
 };
 
 export const newWindow: Icon = {
   size: 24,
-  stroke: "currentColor",
-  fill: "none",
-  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />`,
+  html: `<g fill="none" stroke="currentColor" stroke-linecap="round"><path stroke-linejoin="round" d="M21 3h-6m6 0l-9 9m9-9v6"/><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></g>`,
 };
 
 export const preview: Icon = {
