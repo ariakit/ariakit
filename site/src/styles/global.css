@@ -9,6 +9,9 @@
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
 
+  --radius-tooltip: var(--radius-lg);
+  --spacing-tooltip: --spacing(1);
+
   --radius-dialog: var(--radius-2xl);
   --spacing-dialog: --spacing(4);
 
@@ -63,18 +66,12 @@ body {
   @apply ak-command_idle active:ak-command_active;
 }
 
-/** ak-tooltip **/
-
-@utility ak-tooltip {
-  @apply ak-layer ak-frame-lg/1 z-10 px-2 text-sm ring shadow-md;
-}
-
 /** ak-popover **/
 
 @utility ak-popover_idle {
   --ak-popover-ring-color: var(--ak-ring, var(--ak-layer-ring));
   transition-property: overlay, display, scale, opacity;
-  @apply ak-layer ak-frame-force-dialog;
+  @apply ak-layer-canvas-1 ak-frame-force-dialog;
   @apply transition-discrete z-10 ring shadow-xl;
 }
 
@@ -99,6 +96,36 @@ body {
   svg&,
   svg {
     @apply fill-(--ak-layer) stroke-(--ak-popover-ring-color) stroke-2;
+  }
+}
+
+/** ak-tooltip **/
+
+@utility ak-tooltip_idle {
+  @apply ak-popover_idle ak-frame-force-tooltip;
+  @apply px-2 text-sm shadow-md;
+}
+
+@utility ak-tooltip_open {
+  @apply ak-popover_open;
+}
+
+@utility ak-tooltip_closed {
+  @apply ak-popover_closed;
+}
+
+@utility ak-tooltip {
+  @apply ak-tooltip_idle;
+  &:is(dialog, [popover]) {
+    @apply open:ak-tooltip_open not-open:ak-tooltip_closed;
+  }
+}
+
+@utility ak-tooltip-arrow {
+  @apply ak-popover-arrow;
+  svg&,
+  svg {
+    @apply stroke-4;
   }
 }
 
@@ -274,7 +301,7 @@ body {
 }
 
 @utility ak-segmented-button_idle {
-  @apply ak-button_idle;
+  @apply ak-button_idle ak-text/70;
   @apply relative font-medium;
   input[type="radio"] {
     @apply sr-only;
@@ -289,7 +316,8 @@ body {
 }
 
 @utility ak-segmented-button_selected {
-  @apply ak-layer-2 ak-edge/0 z-1 ak-light:shadow ring;
+  @apply ak-layer-2 ak-edge/0;
+  @apply z-1 ak-light:shadow ring;
   &:not(:last-child)::after {
     @apply content-none;
   }
@@ -363,7 +391,7 @@ body {
 
 @utility ak-tab_idle {
   @apply ak-command_idle ak-text/70;
-  @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap leading-[1em];
+  @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap font-medium leading-[1em];
 }
 
 @utility ak-tab-folder_idle {
