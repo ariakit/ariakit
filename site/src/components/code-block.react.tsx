@@ -5,6 +5,7 @@ import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { Thumbnail } from "../examples/popover/thumb.react.tsx";
 import { Icon } from "../icons/icon.react.tsx";
+import type { Framework } from "../lib/types.ts";
 import { useControllableState } from "../lib/use-controllable-state.ts";
 import type {
   CodeBlockProps as CodeBlockBaseProps,
@@ -173,7 +174,7 @@ function CodeBlockTab({
       className={clsx(
         isPreviewSelected
           ? [
-              "ak-segmented-button aria-selected:ak-edge/8 aria-selected:ak-light:ak-edge/12 aria-selected:ak-layer-pop aria-selected:shadow-none",
+              "ak-segmented-button aria-selected:ak-edge/8 aria-selected:ak-layer-pop aria-selected:shadow-none",
               fullPreview
                 ? "aria-selected:ak-layer-down aria-selected:ak-light:ak-edge/0 px-2 not-aria-selected:px-3"
                 : "px-1.5 not-aria-selected:px-2.5 not-aria-selected:sm:px-3 sm:px-2",
@@ -202,19 +203,17 @@ export interface CodeBlockTabsProps2
     > {
   tabs: CodeBlockTabBaseProps[];
   persistTabKey?: string;
-  framework?: string;
+  framework?: Framework;
   example?: string;
   preview?: boolean | "full";
-  aiPrompt?: string;
+  ai?: boolean;
+  cli?: boolean;
   edit?: boolean;
   slot0?: React.ReactElement;
   slot1?: React.ReactElement;
   slot2?: React.ReactElement;
   slot3?: React.ReactElement;
   slot4?: React.ReactElement;
-  slot5?: React.ReactElement;
-  slot6?: React.ReactElement;
-  slot7?: React.ReactElement;
 }
 
 export function CodeBlockTabs2({
@@ -224,21 +223,20 @@ export function CodeBlockTabs2({
   fallback,
   clickAndWait,
   persistTabKey,
-  aiPrompt,
-  preview: previewProp,
+  ai,
+  cli,
   edit,
+  preview: previewProp,
   slot0,
   slot1,
   slot2,
   slot3,
   slot4,
-  slot5,
-  slot6,
-  slot7,
+  children,
   ...props
 }: CodeBlockTabsProps2) {
   const storeId = React.useId();
-  const slots = [slot0, slot1, slot2, slot3, slot4, slot5, slot6, slot7];
+  const slots = [slot0, slot1, slot2, slot3, slot4];
 
   const [firstTab] = tabs;
   invariant(firstTab, "At least one tab is required");
@@ -248,7 +246,7 @@ export function CodeBlockTabs2({
   const preview = getPreviewValue(framework, example, previewProp);
   const previewUrl = getPreviewUrl(framework, example, preview);
   const fullPreview = preview === "full";
-  const hasToolbar = !!aiPrompt || !!previewUrl || edit;
+  const hasToolbar = !!ai || !!cli || !!previewUrl || edit;
 
   const canPersist = persistTabKey !== undefined;
   const defaultFilename = preview ? "preview" : firstTab.filename;
@@ -340,14 +338,38 @@ export function CodeBlockTabs2({
       </ak.TabList>
       {hasToolbar && (
         <div className="ms-auto ak-frame-cover/1 ak-frame-cover-start ak-frame-cover-end h-(--height) flex gap-1">
-          {aiPrompt && (
-            <button className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80">
-              <Icon name="copyAi" className="text-lg" />
-              <span className="@max-xl:sr-only">Copy AI prompt</span>
-            </button>
+          {ai && (
+            <Tooltip plus title="Copy prompt for AI agents">
+              <button
+                className={clsx(
+                  "ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80",
+                  preview &&
+                    !isPreviewSelected &&
+                    "ak-button-square ak-text-sm",
+                )}
+              >
+                <Icon name="copyAi" className="text-lg" />
+                <span
+                  className={clsx(
+                    "@max-xl:sr-only",
+                    preview && !isPreviewSelected && "sr-only",
+                  )}
+                >
+                  Copy AI prompt
+                </span>
+              </button>
+            </Tooltip>
+          )}
+          {cli && (
+            <Tooltip plus title="Copy shadcn CLI command">
+              <button className="ak-button ak-button-square h-full">
+                <Icon name="shadcn" className="text-lg" />
+                <span className="sr-only">Copy shadcn CLI command</span>
+              </button>
+            </Tooltip>
           )}
           {edit && (
-            <Tooltip title="Edit code">
+            <Tooltip plus title="Edit code">
               <button className="ak-button ak-button-square h-full">
                 <Icon name="edit" className="text-lg" />
                 <span className="sr-only">Edit code</span>
@@ -403,13 +425,21 @@ export function CodeBlockTabs2({
                         !fullPreview && "ak-frame-cover-start",
                       )}
                     >
-                      <CodeBlockPreviewIframe
-                        previewUrl={previewUrl}
-                        fallback={fallback || <Thumbnail />}
-                        clickAndWait={clickAndWait}
-                        loaded={loaded}
-                        setLoaded={setLoaded}
-                      />
+                      {children ? (
+                        <div className="min-h-[29.1rem] grid items-center">
+                          <div className="mx-auto ak-frame-cover/4 pt-12">
+                            {children}
+                          </div>
+                        </div>
+                      ) : (
+                        <CodeBlockPreviewIframe
+                          previewUrl={previewUrl}
+                          fallback={fallback || <Thumbnail />}
+                          clickAndWait={clickAndWait}
+                          loaded={loaded}
+                          setLoaded={setLoaded}
+                        />
+                      )}
                     </div>
                   }
                 />
@@ -463,19 +493,57 @@ export function CodeBlockPreviewIframe({
     let timeout = 0;
     let raf = 0;
 
+    const triggerSelector =
+      typeof clickAndWait === "string" ? clickAndWait : "button";
+
+    const scrollToCenter = (
+      doc = iframe.contentDocument,
+      button = doc?.querySelector<HTMLButtonElement>(triggerSelector),
+      popup = doc?.querySelector<HTMLElement>("[data-dialog]"),
+    ) => {
+      if (!doc || !button) return;
+      const { top, bottom: buttonBottom } = button.getBoundingClientRect();
+      const { bottom = buttonBottom } = popup?.getBoundingClientRect() || {};
+      const iframeHeight = iframe.contentWindow?.innerHeight;
+      if (top == null || bottom == null || iframeHeight == null) return;
+      const scrollTop = doc.documentElement.scrollTop || 0;
+      // Scroll the iframe to center the combined element
+      doc.documentElement.scrollTo({
+        top: scrollTop - (iframeHeight - bottom - top) / 2,
+      });
+    };
+
+    const setDataFocus = (event: FocusEvent) => {
+      const html = iframe.contentDocument?.documentElement;
+      if (!html) return;
+      if (event.type === "focus") {
+        html.setAttribute("data-focus", "true");
+      } else {
+        html.removeAttribute("data-focus");
+      }
+    };
+
     const onLoad = () => {
-      if (!clickAndWait) return setLoaded(true);
-      const triggerSelector =
-        typeof clickAndWait === "string" ? clickAndWait : "button";
       const doc = iframe.contentDocument;
       if (!doc) return;
+      const html = doc.documentElement;
       // Make the iframe inert so we can interact with it without moving focus
-      doc.body.inert = true;
-      doc.body.dataset.iframe = "true";
       doc.body.classList.add("!ak-layer-canvas-down-0.15");
+      html.classList.add("scheme-light", "dark:scheme-dark");
+      html.classList.add("[scrollbar-gutter:stable_both-edges]");
+      html.classList.add("not-data-focus:overflow-hidden");
+
+      iframe.contentWindow?.addEventListener("focus", setDataFocus);
+      iframe.contentWindow?.addEventListener("blur", setDataFocus);
+
+      if (!clickAndWait) return setLoaded(true);
+      doc.body.inert = true;
 
       const button = doc.querySelector<HTMLButtonElement>(triggerSelector);
       if (!button) return setLoaded(true);
+
+      const { top } = button.getBoundingClientRect();
+      html.scrollTo({ top });
 
       const clickAndWaitForPopup = () => {
         const eventInit = { bubbles: true, cancelable: true };
@@ -498,12 +566,7 @@ export function CodeBlockPreviewIframe({
           popup.style.setProperty("transition", "none", "important");
           raf = requestAnimationFrame(() => {
             setLoaded(true);
-            const { bottom } = popup.getBoundingClientRect();
-            const iframeHeight = iframe.contentWindow?.innerHeight;
-            if (bottom == null || iframeHeight == null) return;
-            // Calculate the padding top to center the popup
-            const paddingTop = `calc(${iframeHeight - bottom}px / 2)`;
-            doc.body.style.paddingTop = paddingTop;
+            scrollToCenter(doc, button, popup);
             // Reset the transition
             popup.style.removeProperty("transition");
             // Toggle the iframe visibility to trigger the transition when it's
@@ -527,11 +590,12 @@ export function CodeBlockPreviewIframe({
       ([entry]) => {
         if (!entry?.isIntersecting) return;
         if (iframe.src.endsWith(previewUrl)) {
+          scrollToCenter();
           return setLoaded(true);
         }
         iframe.src = previewUrl;
       },
-      { rootMargin: "100%" },
+      { rootMargin: "50%" },
     );
     observer.observe(iframe);
 
@@ -544,7 +608,7 @@ export function CodeBlockPreviewIframe({
   }, [previewUrl, clickAndWait]);
 
   return (
-    <div className="relative h-full min-h-116">
+    <div className="relative h-full" onMouseDownCapture={console.log}>
       <iframe ref={iframeRef} width="100%" height="100%" title="Preview" />
       {!loaded && (
         <div className="absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center justify-center">
@@ -598,7 +662,7 @@ export function CodeBlockTabs(props: CodeBlockTabsProps) {
             <CodeBlockPreviewIframe
               previewUrl={previewUrl}
               clickAndWait={props.clickAndWait}
-              fallback={<Thumbnail />}
+              fallback={props.fallback || <Thumbnail />}
             />
           </div>
         )}

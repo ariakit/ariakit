@@ -10,11 +10,8 @@ frameworks:
 Description {props.framework}
 
 import CodeBlockTabs from "../../components/code-block-tabs.astro";
-import source from "./index.react.tsx?source";
+import Preview, { source } from "./preview.mdx";
 
-<CodeBlockTabs
-  aiPrompt="Add a new tab with the code for the popover component"
-  source={source}
-  preview
-  edit
-/>
+<CodeBlockTabs ai cli edit source={source}>
+  <Preview />
+</CodeBlockTabs>

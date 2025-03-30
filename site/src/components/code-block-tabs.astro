@@ -6,21 +6,21 @@ import type { Source } from "../../plugins/source-plugin.ts";
 import type { CodeBlockTabProps } from "./code-block.types";
 import { getLangFromFilename } from "../lib/shiki.ts";
 import * as icons from "../icons/icons.ts";
+import type { Framework } from "../lib/types.ts";
 
-interface Props
-  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "framework"> {
-  source?: Source;
+interface Props extends ComponentProps<typeof CodeBlockTabsReact> {
+  source?: Source | Record<Framework, Source>;
 }
 
 const {
-  source,
-  tabs: tabsFromProps,
+  source: sourceProp,
+  tabs: tabsProp,
   lineNumbers = true,
   maxLines = 17,
+  framework = Astro.locals.framework,
+  example = Astro.locals.example,
   ...props
 } = Astro.props;
-
-const { framework } = Astro.locals;
 
 function hasIcon(name: string): name is keyof typeof icons {
   return name in icons;
@@ -31,6 +31,15 @@ function isTsxFramework(
 ): framework is "react" | "solid" | "preact" {
   return ["react", "solid", "preact"].includes(framework);
 }
+
+function getSource(source: typeof sourceProp) {
+  if (!source) return;
+  if ("files" in source) return source;
+  if (!framework) return;
+  return source[framework];
+}
+
+const source = getSource(sourceProp);
 
 const tabsFromSource = source
   ? Object.entries(source.files).map(([filename, code]) => {
@@ -49,16 +58,21 @@ const tabsFromSource = source
     })
   : [];
 
-const tabs = tabsFromProps || tabsFromSource;
+const tabs = tabsProp || tabsFromSource;
 ---
 
-<CodeBlockTabsReact client:visible {framework} {tabs} {maxLines} {...props}>
+<CodeBlockTabsReact
+  client:visible={{ rootMargin: "50%" }}
+  {framework}
+  {example}
+  {tabs}
+  {maxLines}
+  {...props}
+>
+  <slot />
   {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
   {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
   {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}
   {tabs[3] && <CodeBlockContent slot="slot3" {lineNumbers} {...tabs[3]} />}
   {tabs[4] && <CodeBlockContent slot="slot4" {lineNumbers} {...tabs[4]} />}
-  {tabs[5] && <CodeBlockContent slot="slot5" {lineNumbers} {...tabs[5]} />}
-  {tabs[6] && <CodeBlockContent slot="slot6" {lineNumbers} {...tabs[6]} />}
-  {tabs[7] && <CodeBlockContent slot="slot7" {lineNumbers} {...tabs[7]} />}
 </CodeBlockTabsReact>
