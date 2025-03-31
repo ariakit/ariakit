@@ -15,12 +15,12 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
         <ak.ComboboxPopover
           portal
           gutter={8}
-          overflowPadding={24}
+          overflowPadding={16}
           className={clsx(
-            "max-h-[min(var(--popover-available-height),20rem)] w-[calc(var(--popover-anchor-width)+var(--ak-frame-padding)*2)] overflow-clip ak-frame-force-container flex flex-col ak-popover data-open:ak-popover_open not-data-open:ak-popover_closed origin-(--popover-transform-origin)",
+            "ak-popover data-open:ak-popover_open not-data-open:ak-popover_closed ak-frame-force-container max-h-[min(var(--popover-available-height),20rem)] w-[calc(var(--popover-anchor-width)+var(--ak-frame-padding)*2)] overflow-clip flex flex-col origin-(--popover-transform-origin)",
           )}
         >
-          <div className="ak-frame-cover/1 overflow-auto">{children}</div>
+          <div className="ak-popover-scroll">{children}</div>
         </ak.ComboboxPopover>
       </ak.ComboboxProvider>
     );
