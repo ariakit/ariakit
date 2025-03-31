@@ -92,6 +92,10 @@ body {
   }
 }
 
+@utility ak-popover-scroll {
+  @apply ak-frame-cover overflow-auto overscroll-contain;
+}
+
 @utility ak-popover-arrow {
   svg&,
   svg {
@@ -175,7 +179,7 @@ body {
 /** ak-option **/
 
 @utility ak-option_idle {
-  @apply ak-frame-field/2 ak-command_idle sm:py-1.5;
+  @apply ak-frame-field/2 ak-command_idle;
 }
 
 @utility ak-option_hover {
@@ -392,7 +396,7 @@ body {
 
 @utility ak-tab-list {
   @apply ak-frame-overflow ak-layer-down;
-  @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip !pb-0;
+  @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain !pb-0;
   scrollbar-width: none;
 
   &::after {
