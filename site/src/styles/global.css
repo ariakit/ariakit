@@ -133,7 +133,7 @@ body {
 
 @utility ak-input_idle {
   @apply ak-edge-contrast ak-frame-field ak-frame-border;
-  @apply cursor-text px-3 -outline-offset-1 transition-[background-color];
+  @apply max-w-full cursor-text leading-[1em] -outline-offset-1 transition-[background-color];
   @variant ak-light {
     @apply ak-layer-canvas-10;
   }
@@ -170,6 +170,28 @@ body {
 
 @utility ak-input {
   @apply ak-input_idle hover:ak-input_hover focus-within:ak-input_focus;
+}
+
+/** ak-option **/
+
+@utility ak-option_idle {
+  @apply ak-frame-field/2 ak-command_idle sm:py-1.5;
+}
+
+@utility ak-option_hover {
+  @apply ak-layer-hover;
+}
+
+@utility ak-option_focus {
+  @apply ak-layer-contrast-primary;
+}
+
+@utility ak-option_active {
+  @apply ak-command_active;
+}
+
+@utility ak-option {
+  @apply ak-option_idle hover:ak-option_hover focus-visible:ak-option_focus active:ak-option_active;
 }
 
 /** ak-button **/
