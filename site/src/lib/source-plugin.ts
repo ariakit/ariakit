@@ -5,12 +5,7 @@ import resolveFrom from "resolve-from";
 import type { PluginContext } from "rollup";
 import ts from "typescript";
 import type { Plugin } from "vite";
-
-export interface Source {
-  files: Record<string, string>;
-  dependencies: Record<string, string>;
-  devDependencies: Record<string, string>;
-}
+import type { Source } from "./types.ts";
 
 // Cache for package information to avoid repeated lookups
 const packageCache = new Map<string, any>();
@@ -85,7 +80,9 @@ function getImportPaths(content: string) {
   let match: RegExpExecArray | null;
 
   while ((match = importExportRegex.exec(content)) !== null) {
-    paths.add(match[1]);
+    if (match[1]) {
+      paths.add(match[1]);
+    }
   }
 
   return paths;
@@ -180,6 +177,7 @@ async function processFile(
   // Skip if already processed to avoid circular dependencies
   if (processedModules.has(id)) return;
   processedModules.add(id);
+  context.addWatchFile(id);
 
   const content = await fs.promises.readFile(id, "utf-8");
   const filename = normalizeFilename(getRelativePath(baseDir, id));
@@ -218,7 +216,7 @@ async function processFile(
  * Custom plugin to extract source code and dependencies using Vite's module
  * graph
  */
-export function sourcePlugin(): Plugin {
+export function sourcePlugin(root?: string): Plugin {
   const queryString = "?source";
 
   return {
@@ -229,6 +227,7 @@ export function sourcePlugin(): Plugin {
       const realId = id.replace(queryString, "");
 
       const source: Source = {
+        name: dirname(id).replace(root ?? "", ""),
         files: {},
         dependencies: {},
         devDependencies: {},

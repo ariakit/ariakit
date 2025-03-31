@@ -1,10 +1,11 @@
+import { join } from "node:path";
 import cloudflare from "@astrojs/cloudflare";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import { sourcePlugin } from "./plugins/source-plugin.ts";
+import { sourcePlugin } from "./src/lib/source-plugin.ts";
 
 // https://astro.build/config
 export default defineConfig({
@@ -17,8 +18,12 @@ export default defineConfig({
   }),
 
   vite: {
-    // @ts-expect-error
-    plugins: [tailwindcss(), sourcePlugin()],
+    plugins: [
+      // @ts-expect-error
+      tailwindcss(),
+      // @ts-expect-error
+      sourcePlugin(join(import.meta.dirname, "src/examples/")),
+    ],
   },
 
   integrations: [
