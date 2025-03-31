@@ -1,0 +1,24 @@
+---
+title: Combobox Group
+frameworks:
+  - react
+---
+
+# {frontmatter.title}
+
+import CodeBlockTabs from "../../components/code-block-tabs.astro";
+import Preview, { source } from "./preview.mdx";
+
+<CodeBlockTabs source={source} clickAndWait>
+  <Preview />
+</CodeBlockTabs>
+
+## Variants
+
+import P1, { source as s1 } from "./with-variant/preview.mdx";
+
+<div className="grid grid-cols-[repeat(auto-fill,minmax(min(31rem,100%),1fr))] gap-4">
+  <CodeBlockTabs source={s1} clickAndWait>
+    <P1 />
+  </CodeBlockTabs>
+</div>
