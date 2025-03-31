@@ -12,7 +12,7 @@ const frameworks = z.union([
 
 const examples = defineCollection({
   loader: glob({
-    pattern: "**/index.mdx",
+    pattern: "*/index.mdx",
     base: join(import.meta.dirname, "examples"),
   }),
   schema: z.object({
@@ -30,6 +30,7 @@ const previews = defineCollection({
     },
   }),
   schema: z.object({
+    title: z.string().optional(),
     frameworks: z.array(frameworks),
   }),
 });
