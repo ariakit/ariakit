@@ -30,6 +30,10 @@ if (!entry) {
 }
 
 const { Content } = await render(entry);
+
+const title = entry.data.title
+  ? `Preview ${entry.data.title} - Ariakit`
+  : "Ariakit";
 ---
 
 <!doctype html>
@@ -38,11 +42,12 @@ const { Content } = await render(entry);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Ariakit</title>
+    <title>{title}</title>
   </head>
-  <body class="grid items-center">
-    <div class="mx-auto">
-      <Content framework={framework} />
+
+  <body class="grid content-center items-center">
+    <div class="mx-auto max-w-screen p-4">
+      <Content {framework} />
     </div>
   </body>
 </html>
