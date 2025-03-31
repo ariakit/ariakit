@@ -7,8 +7,10 @@ import type { CodeBlockTabProps } from "./code-block.types";
 import { getLangFromFilename } from "../lib/shiki.ts";
 import * as icons from "../icons/icons.ts";
 import type { Framework } from "../lib/types.ts";
+import { importThumbnail } from "../lib/import-thumbnail.ts";
 
-interface Props extends ComponentProps<typeof CodeBlockTabsReact> {
+interface Props
+  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "source"> {
   source?: Source | Record<Framework, Source>;
 }
 
@@ -18,7 +20,7 @@ const {
   lineNumbers = true,
   maxLines = 17,
   framework = Astro.locals.framework,
-  example = Astro.locals.example,
+  example: exampleProp,
   ...props
 } = Astro.props;
 
@@ -59,17 +61,24 @@ const tabsFromSource = source
   : [];
 
 const tabs = tabsProp || tabsFromSource;
+const example = exampleProp ?? source?.name ?? Astro.locals.example;
+
+const Fallback = example
+  ? (await importThumbnail(example))?.default
+  : undefined;
 ---
 
 <CodeBlockTabsReact
   client:visible={{ rootMargin: "50%" }}
-  {framework}
-  {example}
   {tabs}
+  {source}
   {maxLines}
+  {framework}
+  example={example}
   {...props}
 >
   <slot />
+  {Fallback && <Fallback slot="fallback" />}
   {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
   {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
   {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}
