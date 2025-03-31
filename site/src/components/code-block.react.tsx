@@ -111,7 +111,8 @@ export function CodeBlock({
         className={clsx(
           "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",
           "[font-size-adjust:0.55]",
-          expanded && "overflow-auto max-h-[min(calc(100svh-12rem),60rem)]",
+          expanded &&
+            "overflow-auto overscroll-contain max-h-[min(calc(100svh-12rem),60rem)]",
           collapsed && "max-h-[calc(var(--max-lines)*var(--line-height))]",
           lineCount === 1 ? "h-12 grid items-center" : "py-4",
         )}
@@ -189,7 +190,10 @@ function CodeBlockTab({
 }
 
 export interface CodeBlockTabsProps2
-  extends Pick<CodeBlockPreviewIframeProps, "fallback" | "clickAndWait">,
+  extends Pick<
+      CodeBlockPreviewIframeProps,
+      "fallback" | "clickAndWait" | "scrollTop"
+    >,
     Omit<
       CodeBlockProps,
       | "code"
@@ -229,6 +233,7 @@ export function CodeBlockTabs2({
   cli = !!source,
   edit = !!source,
   preview: previewProp,
+  scrollTop,
   slot0,
   slot1,
   slot2,
@@ -440,6 +445,7 @@ export function CodeBlockTabs2({
                           clickAndWait={clickAndWait}
                           loaded={loaded}
                           setLoaded={setLoaded}
+                          scrollTop={scrollTop}
                         />
                       )}
                     </div>
@@ -467,6 +473,7 @@ export interface CodeBlockPreviewIframeProps {
   previewUrl: string;
   fallback?: React.ReactNode;
   clickAndWait?: boolean | string;
+  scrollTop?: number;
   loaded?: boolean;
   setLoaded?: (loaded: boolean) => void;
 }
@@ -477,6 +484,7 @@ export function CodeBlockPreviewIframe({
   clickAndWait,
   loaded: loadedProp,
   setLoaded: setLoadedProp,
+  scrollTop,
 }: CodeBlockPreviewIframeProps) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useControllableState(
@@ -498,20 +506,25 @@ export function CodeBlockPreviewIframe({
     const triggerSelector =
       typeof clickAndWait === "string" ? clickAndWait : "input, button";
 
-    const scrollToCenter = (
+    const scroll = (
       doc = iframe.contentDocument,
       button = doc?.querySelector<HTMLButtonElement>(triggerSelector),
       popup = doc?.querySelector<HTMLElement>("[data-dialog]"),
     ) => {
-      if (!doc || !button) return;
+      if (!doc) return;
+      if (scrollTop) {
+        doc.documentElement.scrollTo({ top: scrollTop });
+        return;
+      }
+      if (!button) return;
       const { top, bottom: buttonBottom } = button.getBoundingClientRect();
       const { bottom = buttonBottom } = popup?.getBoundingClientRect() || {};
       const iframeHeight = iframe.contentWindow?.innerHeight;
       if (top == null || bottom == null || iframeHeight == null) return;
-      const scrollTop = doc.documentElement.scrollTop || 0;
+      const currentScrollTop = doc.documentElement.scrollTop || 0;
       // Scroll the iframe to center the combined element
       doc.documentElement.scrollTo({
-        top: scrollTop - (iframeHeight - bottom - top) / 2,
+        top: currentScrollTop - (iframeHeight - bottom - top) / 2,
       });
     };
 
@@ -568,7 +581,7 @@ export function CodeBlockPreviewIframe({
           popup.style.setProperty("transition", "none", "important");
           raf = requestAnimationFrame(() => {
             setLoaded(true);
-            scrollToCenter(doc, button, popup);
+            scroll(doc, button, popup);
             // Reset the transition
             popup.style.removeProperty("transition");
             // Toggle the iframe visibility to trigger the transition when it's
@@ -592,7 +605,7 @@ export function CodeBlockPreviewIframe({
       ([entry]) => {
         if (!entry?.isIntersecting) return;
         if (iframe.src.endsWith(previewUrl)) {
-          scrollToCenter();
+          scroll();
           return setLoaded(true);
         }
         iframe.src = previewUrl;
@@ -607,13 +620,23 @@ export function CodeBlockPreviewIframe({
       cancelAnimationFrame(raf);
       iframe.removeEventListener("load", onLoad);
     };
-  }, [previewUrl, clickAndWait]);
+  }, [previewUrl, clickAndWait, scrollTop]);
 
   return (
     <div className="relative h-full">
       <iframe ref={iframeRef} width="100%" height="100%" title="Preview" />
       {!loaded && (
-        <div className="absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center justify-center">
+        <div
+          style={
+            scrollTop
+              ? ({ "--scroll-top": `${scrollTop}px` } as React.CSSProperties)
+              : undefined
+          }
+          className={clsx(
+            "absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center",
+            scrollTop ? "pt-(--scroll-top)" : "justify-center",
+          )}
+        >
           <div className="opacity-50">
             <div className="animate-pulse">{fallback}</div>
           </div>
@@ -665,6 +688,7 @@ export function CodeBlockTabs(props: CodeBlockTabsProps) {
               previewUrl={previewUrl}
               clickAndWait={props.clickAndWait}
               fallback={props.fallback}
+              scrollTop={props.scrollTop}
             />
           </div>
         )}
