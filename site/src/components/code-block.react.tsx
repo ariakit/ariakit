@@ -3,8 +3,8 @@ import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
-import { Thumbnail } from "../examples/popover/thumb.react.tsx";
 import { Icon } from "../icons/icon.react.tsx";
+import type { Source } from "../lib/types.ts";
 import type { Framework } from "../lib/types.ts";
 import { useControllableState } from "../lib/use-controllable-state.ts";
 import type {
@@ -206,6 +206,7 @@ export interface CodeBlockTabsProps2
   framework?: Framework;
   example?: string;
   preview?: boolean | "full";
+  source?: Source;
   ai?: boolean;
   cli?: boolean;
   edit?: boolean;
@@ -223,9 +224,10 @@ export function CodeBlockTabs2({
   fallback,
   clickAndWait,
   persistTabKey,
-  ai,
-  cli,
-  edit,
+  source,
+  ai = !!source,
+  cli = !!source,
+  edit = !!source,
   preview: previewProp,
   slot0,
   slot1,
@@ -434,7 +436,7 @@ export function CodeBlockTabs2({
                       ) : (
                         <CodeBlockPreviewIframe
                           previewUrl={previewUrl}
-                          fallback={fallback || <Thumbnail />}
+                          fallback={fallback}
                           clickAndWait={clickAndWait}
                           loaded={loaded}
                           setLoaded={setLoaded}
@@ -494,7 +496,7 @@ export function CodeBlockPreviewIframe({
     let raf = 0;
 
     const triggerSelector =
-      typeof clickAndWait === "string" ? clickAndWait : "button";
+      typeof clickAndWait === "string" ? clickAndWait : "input, button";
 
     const scrollToCenter = (
       doc = iframe.contentDocument,
@@ -608,7 +610,7 @@ export function CodeBlockPreviewIframe({
   }, [previewUrl, clickAndWait]);
 
   return (
-    <div className="relative h-full" onMouseDownCapture={console.log}>
+    <div className="relative h-full">
       <iframe ref={iframeRef} width="100%" height="100%" title="Preview" />
       {!loaded && (
         <div className="absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center justify-center">
@@ -662,7 +664,7 @@ export function CodeBlockTabs(props: CodeBlockTabsProps) {
             <CodeBlockPreviewIframe
               previewUrl={previewUrl}
               clickAndWait={props.clickAndWait}
-              fallback={props.fallback || <Thumbnail />}
+              fallback={props.fallback}
             />
           </div>
         )}

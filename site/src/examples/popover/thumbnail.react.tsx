@@ -1,7 +1,7 @@
 import { PlaceholderPopoverArrow } from "../../components/placeholder-popover-arrow.react.tsx";
 import { PlaceholderText } from "../../components/placeholder-text.react.tsx";
 
-export function Thumbnail() {
+export default function Thumbnail() {
   return (
     <div className="flex flex-col gap-4 items-center">
       <div className="ak-button-classic_idle relative">Accept invite</div>
