@@ -77,6 +77,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   moveOnKeyDown = true,
   toggleOnPress = true,
   toggleOnClick = toggleOnPress,
+  disabled,
   ...props
 }) {
   const context = useSelectProviderContext();
@@ -202,6 +203,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
             name={name}
             form={form}
             required={required}
+            disabled={disabled}
             value={value}
             multiple={multiSelectable}
             // Even though this element is visually hidden and is not
