@@ -4,12 +4,14 @@ export interface PlaceholderTextProps {
   children: string;
   layer?: string;
   weight?: "light" | "normal" | "medium" | "bold";
+  className?: string;
 }
 
 export function PlaceholderText({
   children,
   layer,
   weight = "normal",
+  className,
 }: PlaceholderTextProps) {
   const weightMap = {
     light: "ak-layer-pop",
@@ -22,7 +24,8 @@ export function PlaceholderText({
       aria-hidden
       className={clsx(
         layer ?? weightMap[weight],
-        "!text-transparent !bg-transparent select-none px-2 ak-frame",
+        "!text-transparent !bg-transparent select-none px-2 ak-frame leading-tight",
+        className,
       )}
     >
       {children.split("").map((char, index) => (

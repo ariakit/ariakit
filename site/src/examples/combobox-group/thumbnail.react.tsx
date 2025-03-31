@@ -3,7 +3,7 @@ import { PlaceholderText } from "../../components/placeholder-text.react.tsx";
 export default function Thumbnail() {
   return (
     <div className="flex flex-col gap-2 items-center">
-      <div className="ak-input w-64 flex">
+      <div className="ak-input w-64 flex mt-4">
         <PlaceholderText>e.g., Apple</PlaceholderText>
       </div>
       <div className="ak-popover_idle ak-frame-force-container w-66 max-w-full">
