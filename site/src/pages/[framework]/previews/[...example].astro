@@ -30,10 +30,6 @@ if (!entry) {
 }
 
 const { Content } = await render(entry);
-
-const title = entry.data.title
-  ? `Preview ${entry.data.title} - Ariakit`
-  : "Ariakit";
 ---
 
 <!doctype html>
@@ -42,7 +38,7 @@ const title = entry.data.title
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
+    <title>Preview - Ariakit</title>
   </head>
 
   <body class="grid content-center items-center">
