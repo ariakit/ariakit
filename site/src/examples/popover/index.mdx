@@ -11,47 +11,6 @@ Description {props.framework}
 import CodeBlockTabs from "../../components/code-block-tabs.astro";
 import Preview, { source } from "./preview.mdx";
 
-<CodeBlockTabs ai cli edit source={source}>
+<CodeBlockTabs source={source} clickAndWait>
   <Preview />
 </CodeBlockTabs>
-
-<br />
-<br />
-
-## Variants
-
-<br />
-<br />
-
-<div className="grid grid-cols-[repeat(auto-fill,minmax(min(31rem,100%),1fr))] gap-4">
-  <CodeBlockTabs ai cli edit clickAndWait source={source} />
-  <CodeBlockTabs ai cli edit clickAndWait source={source}>
-    <Preview />
-  </CodeBlockTabs>
-  <CodeBlockTabs ai cli edit clickAndWait source={source} />
-  <CodeBlockTabs ai cli edit clickAndWait source={source} />
-  <CodeBlockTabs ai cli edit clickAndWait source={source} />
-  <CodeBlockTabs ai cli edit clickAndWait source={source} />
-</div>
-
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />

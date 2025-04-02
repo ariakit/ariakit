@@ -5,8 +5,15 @@ import {
   ComboboxGroup,
   ComboboxItem,
   ComboboxNoResults,
-} from "./combobox.react.tsx";
-import data from "./data.ts";
+} from "../combobox.react.tsx";
+import data from "../data.ts";
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("");
+}
 
 export default function Example() {
   const [value, setValue] = React.useState("");
@@ -38,9 +45,23 @@ export default function Example() {
       >
         {!matches.length && <ComboboxNoResults />}
         {matches.map(([type, items]) => (
-          <ComboboxGroup key={type} label={type}>
+          <ComboboxGroup key={type} label={type} stickyLabel>
             {items.map((item) => (
-              <ComboboxItem key={item.name} value={item.name} />
+              <ComboboxItem key={item.name} value={item.name}>
+                <div className="grid grid-cols-[2rem_auto] items-center gap-2">
+                  <div className="ak-layer-contrast-primary rounded-full aspect-square flex items-center justify-center text-sm font-medium">
+                    {getInitials(item.name)}
+                  </div>
+                  <div className="grid">
+                    <div className="ak-text/90 text-sm font-medium">
+                      {item.name}
+                    </div>
+                    <div className="ak-text/60 text-xs">
+                      {"email" in item ? item.email : item.folder}
+                    </div>
+                  </div>
+                </div>
+              </ComboboxItem>
             ))}
           </ComboboxGroup>
         ))}

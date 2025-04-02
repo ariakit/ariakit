@@ -12,102 +12,109 @@ function getSelectionValue(element: Element | HTMLInputElement | null) {
 test("auto select with inline autocomplete on typing", async () => {
   await press.Tab();
   await type("a");
-  expect(q.combobox()).toHaveValue("apple");
-  expect(getSelectionValue(q.combobox())).toBe("pple");
+  expect(q.combobox()).toHaveValue("annual_report.pdf");
+  expect(getSelectionValue(q.combobox())).toBe("nnual_report.pdf");
   await press.ArrowDown();
-  expect(q.combobox()).toHaveValue("Avocado");
+  expect(q.combobox()).toHaveValue("images_backup.tar.gz");
   expect(getSelectionValue(q.combobox())).toBe("");
   await press.ArrowUp();
-  expect(q.combobox()).toHaveValue("apple");
-  expect(getSelectionValue(q.combobox())).toBe("pple");
+  expect(q.combobox()).toHaveValue("annual_report.pdf");
+  expect(getSelectionValue(q.combobox())).toBe("nnual_report.pdf");
   await type("e");
   expect(q.combobox()).toHaveValue("ae");
   expect(getSelectionValue(q.combobox())).toBe("");
-  await type("\b\bv");
-  expect(q.combobox()).toHaveValue("vodka");
-  expect(getSelectionValue(q.combobox())).toBe("odka");
+  await type("\b\bj");
+  expect(q.combobox()).toHaveValue("john Smith");
+  expect(getSelectionValue(q.combobox())).toBe("ohn Smith");
   await type("\bo");
-  expect(q.combobox()).toHaveValue("vodka");
-  expect(getSelectionValue(q.combobox())).toBe("dka");
+  expect(q.combobox()).toHaveValue("john Smith");
+  expect(getSelectionValue(q.combobox())).toBe("hn Smith");
 });
 
 test("auto select with inline autocomplete on arrow down", async () => {
   await press.Tab();
   await press.ArrowDown();
   await press.ArrowDown();
-  expect(q.combobox()).toHaveValue("Apple");
-  expect(getSelectionValue(q.combobox())).toBe("Apple");
+  expect(q.combobox()).toHaveValue("John Smith");
+  expect(getSelectionValue(q.combobox())).toBe("John Smith");
   await press.ArrowDown();
-  expect(q.combobox()).toHaveValue("Avocado");
+  expect(q.combobox()).toHaveValue("Emma Johnson");
   expect(getSelectionValue(q.combobox())).toBe("");
   await press.ArrowUp();
-  expect(q.combobox()).toHaveValue("Apple");
+  expect(q.combobox()).toHaveValue("John Smith");
 });
 
-test("auto select with inline autocomplete on typing + arrow down", async () => {
+test("auto select with inline autocomplete on typing + clearing", async () => {
   await press.Tab();
-  await type("av");
-  expect(q.combobox()).toHaveValue("avocado");
-  expect(getSelectionValue(q.combobox())).toBe("ocado");
+  await type("em");
+  expect(q.combobox()).toHaveValue("emma Johnson");
+  expect(getSelectionValue(q.combobox())).toBe("ma Johnson");
   await type("\b");
-  expect(q.combobox()).toHaveValue("av");
-  expect(q.option("Avocado")).toHaveFocus();
+  expect(q.combobox()).toHaveValue("em");
+  expect(q.option("Emma Johnson")).toHaveFocus();
   expect(getSelectionValue(q.combobox())).toBe("");
   await type("\b");
-  expect(q.combobox()).toHaveValue("a");
-  expect(q.option("Apple")).toHaveFocus();
-  expect(getSelectionValue(q.combobox())).toBe("");
+  expect(q.combobox()).toHaveValue("e");
+  await type("\b");
+  expect(q.combobox()).toHaveValue("");
+  await type("j");
+  expect(q.combobox()).toHaveValue("john Smith");
+  expect(q.option("John Smith")).toHaveFocus();
+  expect(getSelectionValue(q.combobox())).toBe("ohn Smith");
+  await type("\b");
+  expect(q.combobox()).toHaveValue("j");
+});
+
+test("text selection with shift+arrow keys and replacement", async () => {
+  await press.Tab();
+  // Navigate to an item using arrow keys (no auto-completion highlighting)
   await press.ArrowDown();
-  expect(q.combobox()).toHaveValue("Avocado");
-  expect(q.option("Avocado")).toHaveFocus();
+  await press.ArrowDown();
+  await press.ArrowDown();
+  expect(q.combobox()).toHaveValue("Emma Johnson");
+  expect(q.option("Emma Johnson")).toHaveFocus();
   expect(getSelectionValue(q.combobox())).toBe("");
-  for (const _ of "Avocado") {
+
+  // Test ArrowLeft + shiftKey for text selection
+  for (const _ of "Emma Johnson") {
     await press.ArrowLeft(null, { shiftKey: true });
   }
-  await type("p");
-  expect(q.combobox()).toHaveValue("papaya");
-  expect(q.option("Papaya")).toHaveFocus();
-  expect(getSelectionValue(q.combobox())).toBe("apaya");
-  await type("\b");
-  await press.ArrowLeft();
-  await type("a");
-  expect(q.combobox()).toHaveValue("ap");
-  expect(q.option("Apple")).toHaveFocus();
-  expect(getSelectionValue(q.combobox())).toBe("");
-  await press.ArrowRight();
-  await type("p");
-  expect(q.combobox()).toHaveValue("apple");
-  expect(q.option("Apple")).toHaveFocus();
-  expect(getSelectionValue(q.combobox())).toBe("le");
+  expect(getSelectionValue(q.combobox())).toBe("Emma Johnson");
+
+  // Type after selection to replace selected text
+  await type("m");
+  expect(q.combobox()).toHaveValue("michael Brown");
+  expect(q.option("Michael Brown")).toHaveFocus();
+  expect(getSelectionValue(q.combobox())).toBe("ichael Brown");
 });
 
 test("blur input after autocomplete", async () => {
   await press.Tab();
   await type("a");
-  expect(q.combobox()).toHaveValue("apple");
+  expect(q.combobox()).toHaveValue("annual_report.pdf");
   await press.ArrowDown();
-  expect(q.combobox()).toHaveValue("Avocado");
+  expect(q.combobox()).toHaveValue("images_backup.tar.gz");
   await click(document.body);
   await click(document.body);
-  expect(q.combobox()).toHaveValue("Avocado");
+  expect(q.combobox()).toHaveValue("images_backup.tar.gz");
 });
 
 test("autocomplete on focus on hover", async () => {
   await click(q.combobox());
-  await type("g");
-  expect(q.combobox()).toHaveValue("gelato");
-  await hover(q.option("Pudding"));
-  expect(q.combobox()).toHaveValue("g");
+  await type("m");
+  expect(q.combobox()).toHaveValue("michael Brown");
+  await hover(q.option("Sarah Davis"));
+  expect(q.combobox()).toHaveValue("m");
 });
 
 test("composition text", async () => {
   // TODO: Add composition util to @ariakit/test
   await dispatch.compositionStart(q.combobox());
   await type("'", q.combobox(), { isComposing: true });
-  expect(q.option("Apple")).not.toBeInTheDocument();
+  expect(q.option("John Smith")).not.toBeInTheDocument();
   await type("á", q.combobox(), { isComposing: true });
   await dispatch.compositionEnd(q.combobox());
-  expect(q.combobox()).toHaveValue("ápple");
-  expect(getSelectionValue(q.combobox())).toBe("pple");
-  expect(q.option("Apple")).toHaveFocus();
+  expect(q.combobox()).toHaveValue("ánnual_report.pdf");
+  expect(getSelectionValue(q.combobox())).toBe("nnual_report.pdf");
+  expect(q.option("annual_report.pdf")).toHaveFocus();
 });
