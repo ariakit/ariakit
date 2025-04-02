@@ -19,11 +19,11 @@ export function PlaceholderPopoverArrow({
     left: `rotate(90 ${halfDefaultSize} ${halfDefaultSize})`,
   };
   const transform = rotateMap[position];
-
+  const strokeWidth = 2 * (30 / size);
   return (
     <div
-      style={{ [position]: "100%", fontSize: size }}
-      className="size-[1em] absolute ak-popover-arrow left-1/2 -translate-x-1/2"
+      style={{ [position]: "100%", fontSize: size, strokeWidth }}
+      className="size-[1em] absolute fill-(--ak-layer) stroke-(--ak-layer-border) left-1/2 -translate-x-1/2"
     >
       <svg display="block" viewBox="0 0 30 30">
         <g transform={transform}>
