@@ -250,6 +250,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
       value,
       multiSelectable,
       values,
+      props.disabled,
     ],
   );
 
