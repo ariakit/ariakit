@@ -420,8 +420,12 @@ const AriakitTailwind = plugin(
         // TODO: Rename this variable
         [lVar]: lLight,
         borderColor: prop(vars.border, prop(vars.layerBorder)),
-        [soft ? vars.layerRing : vars.ring]: finalColor,
-        [soft ? vars.layerBorder : vars.border]: finalColor,
+        [soft ? vars.layerRing : vars.ring]: soft
+          ? prop(vars.ring, finalColor)
+          : finalColor,
+        [soft ? vars.layerBorder : vars.border]: soft
+          ? prop(vars.border, finalColor)
+          : finalColor,
         [IN_DARK]: {
           [lVar]: lDark,
         },
