@@ -30,7 +30,7 @@
   },
   "keywords": ["ariakit", "tailwind", "styles", "css", "a11y", "ui"],
   "dependencies": {
-    "color-string": "^1.9.1"
+    "color-string": "^2.0.0"
   },
   "devDependencies": {
     "@types/color-string": "^1.5.5",
