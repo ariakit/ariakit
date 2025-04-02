@@ -26,15 +26,13 @@ export default function Example() {
             <SelectItem className="select-item" value="Grape" />
             <SelectItem className="select-item" value="Orange" />
           </SelectGroup>
-          <SelectSeparator className="separator" />
-          <SelectGroup className="group">
+          <SelectGroup className="group group-separator">
             <SelectGroupLabel className="group-label">Dairy</SelectGroupLabel>
             <SelectItem className="select-item" value="Milk" />
             <SelectItem className="select-item" value="Cheese" />
             <SelectItem className="select-item" value="Yogurt" />
           </SelectGroup>
-          <SelectSeparator className="separator" />
-          <SelectGroup className="group">
+          <SelectGroup className="group group-separator">
             <SelectGroupLabel className="group-label">
               Beverages
             </SelectGroupLabel>
@@ -42,8 +40,7 @@ export default function Example() {
             <SelectItem className="select-item" value="Juice" />
             <SelectItem className="select-item" value="Soda" />
           </SelectGroup>
-          <SelectSeparator className="separator" />
-          <SelectGroup className="group">
+          <SelectGroup className="group group-separator">
             <SelectGroupLabel className="group-label">Snacks</SelectGroupLabel>
             <SelectItem className="select-item" value="Chips" />
             <SelectItem className="select-item" value="Nuts" />
