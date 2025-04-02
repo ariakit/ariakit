@@ -96,13 +96,6 @@ body {
   @apply ak-frame-cover overflow-auto overscroll-contain;
 }
 
-@utility ak-popover-arrow {
-  svg&,
-  svg {
-    @apply fill-(--ak-layer) stroke-(--ak-popover-ring-color) stroke-2;
-  }
-}
-
 /** ak-tooltip **/
 
 @utility ak-tooltip_idle {
@@ -125,19 +118,11 @@ body {
   }
 }
 
-@utility ak-tooltip-arrow {
-  @apply ak-popover-arrow;
-  svg&,
-  svg {
-    @apply stroke-4;
-  }
-}
-
 /** ak-input **/
 
 @utility ak-input_idle {
   @apply ak-edge-contrast ak-frame-field ak-frame-border;
-  @apply max-w-full cursor-text leading-[1em] -outline-offset-1 transition-[background-color];
+  @apply flex h-[2.5em] max-w-full cursor-text items-center -outline-offset-1 transition-[background-color];
   @variant ak-light {
     @apply ak-layer-canvas-10;
   }
@@ -525,14 +510,14 @@ body {
   @apply ak-text/80;
 
   :where(h1) {
-    @apply text-3xl;
+    @apply my-10 text-4xl;
   }
 
   :where(h2) {
-    @apply text-2xl;
+    @apply my-10 text-3xl;
   }
 
   :where(h3) {
-    @apply text-xl;
+    @apply my-10 text-2xl;
   }
 }

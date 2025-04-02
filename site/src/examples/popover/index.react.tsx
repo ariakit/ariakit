@@ -12,7 +12,7 @@ export default function Example() {
         Accept invite
       </ak.PopoverDisclosure>
       <ak.Popover className="ak-popover data-open:ak-popover_open not-data-open:ak-popover_closed max-w-80 origin-(--popover-transform-origin) flex flex-col gap-2">
-        <ak.PopoverArrow className="ak-popover-arrow" />
+        <ak.PopoverArrow />
         <ak.PopoverHeading className="text-lg font-medium">
           Team meeting
         </ak.PopoverHeading>
