@@ -6,7 +6,6 @@ import {
   SelectLabel,
   SelectPopover,
   SelectProvider,
-  SelectSeparator,
 } from "@ariakit/react";
 import "./style.css";
 
