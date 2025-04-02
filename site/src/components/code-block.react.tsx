@@ -189,6 +189,196 @@ function CodeBlockTab({
   );
 }
 
+export interface CodeBlockPreviewIframeProps {
+  previewUrl: string;
+  fallback?: React.ReactNode;
+  clickAndWait?: boolean | string;
+  scrollTop?: number;
+  loaded?: boolean;
+  setLoaded?: (loaded: boolean) => void;
+}
+
+export function CodeBlockPreviewIframe({
+  previewUrl,
+  fallback,
+  clickAndWait,
+  loaded: loadedProp,
+  setLoaded: setLoadedProp,
+  scrollTop,
+}: CodeBlockPreviewIframeProps) {
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
+  const [loaded, setLoaded] = useControllableState(
+    false,
+    loadedProp,
+    setLoadedProp,
+  );
+
+  React.useEffect(() => {
+    setLoaded(false);
+  }, [previewUrl]);
+
+  React.useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    let timeout = 0;
+    let raf = 0;
+
+    const triggerSelector =
+      typeof clickAndWait === "string" ? clickAndWait : "input, button";
+
+    const scroll = (
+      doc = iframe.contentDocument,
+      button = doc?.querySelector<HTMLButtonElement>(triggerSelector),
+      popup = doc?.querySelector<HTMLElement>("[data-dialog]"),
+    ) => {
+      if (!doc) return;
+      if (scrollTop) {
+        doc.documentElement.scrollTo({ top: scrollTop });
+        return;
+      }
+      if (!button) return;
+      const { top, bottom: buttonBottom } = button.getBoundingClientRect();
+      const { bottom = buttonBottom } = popup?.getBoundingClientRect() || {};
+      const iframeHeight = iframe.contentWindow?.innerHeight;
+      if (top == null || bottom == null || iframeHeight == null) return;
+      const currentScrollTop = doc.documentElement.scrollTop || 0;
+      // Scroll the iframe to center the combined element
+      doc.documentElement.scrollTo({
+        top: currentScrollTop - (iframeHeight - bottom - top) / 2,
+      });
+    };
+
+    const setDataFocus = (event: FocusEvent) => {
+      const html = iframe.contentDocument?.documentElement;
+      if (!html) return;
+      if (event.type === "focus") {
+        html.setAttribute("data-focus", "true");
+      } else {
+        html.removeAttribute("data-focus");
+      }
+    };
+
+    const disableHover = (event: MouseEvent) => {
+      const html = iframe.contentDocument?.documentElement;
+      if (!html) return;
+      if (!html.hasAttribute("data-focus")) {
+        event.stopPropagation();
+      }
+    };
+
+    const onLoad = () => {
+      const doc = iframe.contentDocument;
+      if (!doc) return;
+      const html = doc.documentElement;
+      doc.body.classList.add("!ak-layer-canvas-down-0.15");
+      html.classList.add("scheme-light", "dark:scheme-dark");
+      html.classList.add("[scrollbar-gutter:stable_both-edges]");
+      html.classList.add(
+        "not-data-focus:overflow-hidden",
+        "not-data-focus:[&_.ak-popover-scroll]:overflow-hidden",
+      );
+
+      iframe.contentWindow?.addEventListener("focus", setDataFocus);
+      iframe.contentWindow?.addEventListener("blur", setDataFocus);
+      iframe.contentWindow?.addEventListener("mousemove", disableHover, true);
+
+      if (!clickAndWait) return setLoaded(true);
+      // Make the iframe inert so we can interact with it without moving focus
+      doc.body.inert = true;
+
+      const button = doc.querySelector<HTMLButtonElement>(triggerSelector);
+      if (!button) return setLoaded(true);
+
+      const { top } = button.getBoundingClientRect();
+      html.scrollTo({ top });
+
+      const clickAndWaitForPopup = () => {
+        const eventInit = { bubbles: true, cancelable: true };
+        button.dispatchEvent(new MouseEvent("pointerdown", eventInit));
+        button.dispatchEvent(new MouseEvent("mousedown", eventInit));
+        button.dispatchEvent(new MouseEvent("pointerup", eventInit));
+        button.dispatchEvent(new MouseEvent("mouseup", eventInit));
+        button.dispatchEvent(new MouseEvent("click", eventInit));
+
+        // Wait for the popup to be visible
+        timeout = window.setTimeout(() => {
+          const popup = doc.querySelector<HTMLElement>("[data-dialog]");
+          if (!popup || popup.hasAttribute("hidden")) {
+            // If the popup is missing or hidden, it might not have been
+            // hydrated yet. We'll try again shortly.
+            timeout = window.setTimeout(clickAndWaitForPopup, 84);
+            return;
+          }
+          // Make the popup transition immediately so we can check its position
+          popup.style.setProperty("transition", "none", "important");
+          raf = requestAnimationFrame(() => {
+            setLoaded(true);
+            scroll(doc, button, popup);
+            // Reset the transition
+            popup.style.removeProperty("transition");
+            // Toggle the iframe visibility to trigger the transition when it's
+            // visible in the viewport
+            doc.body.style.display = "none";
+            raf = requestAnimationFrame(() => {
+              doc.body.style.removeProperty("display");
+            });
+            timeout = window.setTimeout(() => {
+              doc.body.inert = false;
+            }, 42);
+          });
+        }, 42);
+      };
+      clickAndWaitForPopup();
+    };
+
+    iframe.addEventListener("load", onLoad);
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        if (iframe.src.endsWith(previewUrl)) {
+          scroll();
+          return setLoaded(true);
+        }
+        iframe.src = previewUrl;
+      },
+      { rootMargin: "50%" },
+    );
+    observer.observe(iframe);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timeout);
+      cancelAnimationFrame(raf);
+      iframe.removeEventListener("load", onLoad);
+      iframe.contentWindow?.removeEventListener("focus", setDataFocus);
+      iframe.contentWindow?.removeEventListener("blur", setDataFocus);
+      iframe.contentWindow?.removeEventListener(
+        "mousemove",
+        disableHover,
+        true,
+      );
+    };
+  }, [previewUrl, clickAndWait, scrollTop]);
+
+  return (
+    <div className="relative h-full min-h-[29.1rem]">
+      <iframe ref={iframeRef} width="100%" height="100%" title="Preview" />
+      {!loaded && (
+        <div
+          className={clsx(
+            "absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center justify-center",
+          )}
+        >
+          <div className="opacity-50">
+            <div className="animate-pulse">{fallback}</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export interface CodeBlockTabsProps2
   extends Pick<
       CodeBlockPreviewIframeProps,
@@ -219,6 +409,9 @@ export interface CodeBlockTabsProps2
   slot2?: React.ReactElement;
   slot3?: React.ReactElement;
   slot4?: React.ReactElement;
+  slot5?: React.ReactElement;
+  slot6?: React.ReactElement;
+  slot7?: React.ReactElement;
 }
 
 export function CodeBlockTabs2({
@@ -239,11 +432,14 @@ export function CodeBlockTabs2({
   slot2,
   slot3,
   slot4,
+  slot5,
+  slot6,
+  slot7,
   children,
   ...props
 }: CodeBlockTabsProps2) {
   const storeId = React.useId();
-  const slots = [slot0, slot1, slot2, slot3, slot4];
+  const slots = [slot0, slot1, slot2, slot3, slot4, slot5, slot6, slot7];
 
   const [firstTab] = tabs;
   invariant(firstTab, "At least one tab is required");
@@ -432,7 +628,7 @@ export function CodeBlockTabs2({
                         !fullPreview && "ak-frame-cover-start",
                       )}
                     >
-                      {children ? (
+                      {children && !clickAndWait ? (
                         <div className="min-h-[29.1rem] grid items-center">
                           <div className="mx-auto ak-frame-cover/4 pt-12">
                             {children}
@@ -469,186 +665,17 @@ export function CodeBlockTabs2({
   );
 }
 
-export interface CodeBlockPreviewIframeProps {
-  previewUrl: string;
-  fallback?: React.ReactNode;
-  clickAndWait?: boolean | string;
-  scrollTop?: number;
-  loaded?: boolean;
-  setLoaded?: (loaded: boolean) => void;
+export interface CodeBlockTabsProps
+  extends Omit<CodeBlockTabsProps2, "fallback"> {
+  fallback0?: React.ReactNode;
+  fallback1?: React.ReactNode;
 }
 
-export function CodeBlockPreviewIframe({
-  previewUrl,
-  fallback,
-  clickAndWait,
-  loaded: loadedProp,
-  setLoaded: setLoadedProp,
-  scrollTop,
-}: CodeBlockPreviewIframeProps) {
-  const iframeRef = React.useRef<HTMLIFrameElement>(null);
-  const [loaded, setLoaded] = useControllableState(
-    false,
-    loadedProp,
-    setLoadedProp,
-  );
-
-  React.useEffect(() => {
-    setLoaded(false);
-  }, [previewUrl]);
-
-  React.useEffect(() => {
-    const iframe = iframeRef.current;
-    if (!iframe) return;
-    let timeout = 0;
-    let raf = 0;
-
-    const triggerSelector =
-      typeof clickAndWait === "string" ? clickAndWait : "input, button";
-
-    const scroll = (
-      doc = iframe.contentDocument,
-      button = doc?.querySelector<HTMLButtonElement>(triggerSelector),
-      popup = doc?.querySelector<HTMLElement>("[data-dialog]"),
-    ) => {
-      if (!doc) return;
-      if (scrollTop) {
-        doc.documentElement.scrollTo({ top: scrollTop });
-        return;
-      }
-      if (!button) return;
-      const { top, bottom: buttonBottom } = button.getBoundingClientRect();
-      const { bottom = buttonBottom } = popup?.getBoundingClientRect() || {};
-      const iframeHeight = iframe.contentWindow?.innerHeight;
-      if (top == null || bottom == null || iframeHeight == null) return;
-      const currentScrollTop = doc.documentElement.scrollTop || 0;
-      // Scroll the iframe to center the combined element
-      doc.documentElement.scrollTo({
-        top: currentScrollTop - (iframeHeight - bottom - top) / 2,
-      });
-    };
-
-    const setDataFocus = (event: FocusEvent) => {
-      const html = iframe.contentDocument?.documentElement;
-      if (!html) return;
-      if (event.type === "focus") {
-        html.setAttribute("data-focus", "true");
-      } else {
-        html.removeAttribute("data-focus");
-      }
-    };
-
-    const onLoad = () => {
-      const doc = iframe.contentDocument;
-      if (!doc) return;
-      const html = doc.documentElement;
-      // Make the iframe inert so we can interact with it without moving focus
-      doc.body.classList.add("!ak-layer-canvas-down-0.15");
-      html.classList.add("scheme-light", "dark:scheme-dark");
-      html.classList.add("[scrollbar-gutter:stable_both-edges]");
-      html.classList.add("not-data-focus:overflow-hidden");
-
-      iframe.contentWindow?.addEventListener("focus", setDataFocus);
-      iframe.contentWindow?.addEventListener("blur", setDataFocus);
-
-      if (!clickAndWait) return setLoaded(true);
-      doc.body.inert = true;
-
-      const button = doc.querySelector<HTMLButtonElement>(triggerSelector);
-      if (!button) return setLoaded(true);
-
-      const { top } = button.getBoundingClientRect();
-      html.scrollTo({ top });
-
-      const clickAndWaitForPopup = () => {
-        const eventInit = { bubbles: true, cancelable: true };
-        button.dispatchEvent(new MouseEvent("pointerdown", eventInit));
-        button.dispatchEvent(new MouseEvent("mousedown", eventInit));
-        button.dispatchEvent(new MouseEvent("pointerup", eventInit));
-        button.dispatchEvent(new MouseEvent("mouseup", eventInit));
-        button.dispatchEvent(new MouseEvent("click", eventInit));
-
-        // Wait for the popup to be visible
-        timeout = window.setTimeout(() => {
-          const popup = doc.querySelector<HTMLElement>("[data-dialog]");
-          if (!popup || popup.hasAttribute("hidden")) {
-            // If the popup is missing or hidden, it might not have been
-            // hydrated yet. We'll try again shortly.
-            timeout = window.setTimeout(clickAndWaitForPopup, 84);
-            return;
-          }
-          // Make the popup transition immediately so we can check its position
-          popup.style.setProperty("transition", "none", "important");
-          raf = requestAnimationFrame(() => {
-            setLoaded(true);
-            scroll(doc, button, popup);
-            // Reset the transition
-            popup.style.removeProperty("transition");
-            // Toggle the iframe visibility to trigger the transition when it's
-            // visible in the viewport
-            doc.body.style.display = "none";
-            raf = requestAnimationFrame(() => {
-              doc.body.style.removeProperty("display");
-            });
-            timeout = window.setTimeout(() => {
-              doc.body.inert = false;
-            }, 42);
-          });
-        }, 42);
-      };
-      clickAndWaitForPopup();
-    };
-
-    iframe.addEventListener("load", onLoad);
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        if (iframe.src.endsWith(previewUrl)) {
-          scroll();
-          return setLoaded(true);
-        }
-        iframe.src = previewUrl;
-      },
-      { rootMargin: "50%" },
-    );
-    observer.observe(iframe);
-
-    return () => {
-      observer.disconnect();
-      clearTimeout(timeout);
-      cancelAnimationFrame(raf);
-      iframe.removeEventListener("load", onLoad);
-    };
-  }, [previewUrl, clickAndWait, scrollTop]);
-
-  return (
-    <div className="relative h-full">
-      <iframe ref={iframeRef} width="100%" height="100%" title="Preview" />
-      {!loaded && (
-        <div
-          style={
-            scrollTop
-              ? ({ "--scroll-top": `${scrollTop}px` } as React.CSSProperties)
-              : undefined
-          }
-          className={clsx(
-            "absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center",
-            scrollTop ? "pt-(--scroll-top)" : "justify-center",
-          )}
-        >
-          <div className="opacity-50">
-            <div className="animate-pulse">{fallback}</div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export interface CodeBlockTabsProps extends CodeBlockTabsProps2 {}
-
-export function CodeBlockTabs(props: CodeBlockTabsProps) {
+export function CodeBlockTabs({
+  fallback0,
+  fallback1,
+  ...props
+}: CodeBlockTabsProps) {
   const preview = getPreviewValue(
     props.framework,
     props.example,
@@ -668,7 +695,13 @@ export function CodeBlockTabs(props: CodeBlockTabsProps) {
           preview={false}
           className={preview ? "@max-[64rem]:hidden" : ""}
         />
-        {preview && <CodeBlockTabs2 {...props} className="@[64rem]:hidden" />}
+        {preview && (
+          <CodeBlockTabs2
+            {...props}
+            fallback={fallback0}
+            className="@[64rem]:hidden"
+          />
+        )}
         {preview && previewUrl && (
           <div className="relative ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 overflow-clip ak-layer-down-0.15 ak-dark:ak-edge/13 @max-[64rem]:hidden">
             <div className="ak-frame-cover/1 absolute top-0 end-0 z-1">
@@ -687,7 +720,7 @@ export function CodeBlockTabs(props: CodeBlockTabsProps) {
             <CodeBlockPreviewIframe
               previewUrl={previewUrl}
               clickAndWait={props.clickAndWait}
-              fallback={props.fallback}
+              fallback={fallback1}
               scrollTop={props.scrollTop}
             />
           </div>
