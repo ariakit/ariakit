@@ -84,10 +84,10 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
   },
 );
 
-export const ComboboxNoResults = React.forwardRef<
+export const ComboboxEmpty = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div">
->(function ComboboxNoResults(props, ref) {
+>(function ComboboxEmpty(props, ref) {
   return (
     <div
       ref={ref}

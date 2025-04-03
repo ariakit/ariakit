@@ -2,9 +2,9 @@ import { matchSorter } from "match-sorter";
 import * as React from "react";
 import {
   Combobox,
+  ComboboxEmpty,
   ComboboxGroup,
   ComboboxItem,
-  ComboboxNoResults,
 } from "../combobox.react.tsx";
 import data from "../data.ts";
 
@@ -43,7 +43,7 @@ export default function Example() {
         value={value}
         onChange={setValue}
       >
-        {!matches.length && <ComboboxNoResults />}
+        {!matches.length && <ComboboxEmpty />}
         {matches.map(([type, items]) => (
           <ComboboxGroup key={type} label={type}>
             {items.map((item) => (
