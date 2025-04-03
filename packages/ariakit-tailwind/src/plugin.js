@@ -403,12 +403,12 @@ const AriakitTailwind = plugin(
      */
     function getEdgeCss(color, level = "0", modifier = null, soft = false) {
       const contrast = getContrast();
-      const alphaModifier = modifier || 5;
+      const alphaModifier = modifier || 10;
       const lLight = `min(l, ${level} * 0.15 - ${contrast} * 0.15)`;
       const lDark = `max(max(l, 0.13), 1 - ${level} * 0.1 + ${contrast} * 0.1)`;
       // const c = `calc(c * 2)`;
       const c = `c`;
-      const alphaBase = `((${alphaModifier} + 5) * 1%)`;
+      const alphaBase = `(${alphaModifier} * 1%)`;
       const alphaLAdd = oklchLightDark("(1 - l) * 0.1%", "l * 0.1%");
       const alphaCAdd = `(c * 50%)`;
       const contrastAdd = `(12% * ${contrast})`;
@@ -420,8 +420,12 @@ const AriakitTailwind = plugin(
         // TODO: Rename this variable
         [lVar]: lLight,
         borderColor: prop(vars.border, prop(vars.layerBorder)),
-        [soft ? vars.layerRing : vars.ring]: finalColor,
-        [soft ? vars.layerBorder : vars.border]: finalColor,
+        [soft ? vars.layerRing : vars.ring]: soft
+          ? prop(vars.ring, finalColor)
+          : finalColor,
+        [soft ? vars.layerBorder : vars.border]: soft
+          ? prop(vars.border, finalColor)
+          : finalColor,
         [IN_DARK]: {
           [lVar]: lDark,
         },
