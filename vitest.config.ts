@@ -1,3 +1,4 @@
+import reactPlugin from "@vitejs/plugin-react";
 import { version } from "react";
 import solidPlugin from "vite-plugin-solid";
 import { type Plugin, configDefaults, defineConfig } from "vitest/config";
@@ -28,6 +29,9 @@ if (!ALLOWED_TEST_LOADERS.includes(LOADER))
   throw new Error(`Invalid loader: ${LOADER}`);
 
 const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
+  // @ts-expect-error I believe this error will go away when we regenerate
+  // package-lock.json
+  react: [reactPlugin()],
   solid: [solidPlugin()],
 };
 
