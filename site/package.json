@@ -18,6 +18,6 @@
     "@astrojs/react": "4.2.3",
     "@astrojs/solid-js": "5.0.7",
     "shiki": "3.2.1",
-    "tailwindcss": "4.1.1"
+    "tailwindcss": "4.1.3"
   }
 }
