@@ -8,6 +8,7 @@
   "files": {
     "ignoreUnknown": true,
     "ignore": [
+      "package.json",
       "website/.next/**",
       "website/.pages/**",
       "site/.astro/**",
