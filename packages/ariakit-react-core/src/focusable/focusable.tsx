@@ -393,6 +393,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       onBlurProp?.(event);
       if (!focusable) return;
       if (!isFocusEventOutside(event)) return;
+      // Since we set the data-focus-visible attribute on the element in the
+      // handleFocusVisible function, we remove it directly here. Otherwise, the
+      // attribute might not be removed on lower-end devices.
+      event.currentTarget.removeAttribute("data-focus-visible");
       setFocusVisible(false);
     });
 

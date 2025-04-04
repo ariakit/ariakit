@@ -1,5 +1,9 @@
 # @ariakit/tailwind
 
+## 0.1.5
+
+- Adjusted `ak-edge` opacity calculation to be more accurate.
+
 ## 0.1.4
 
 ### `ak-layer-pop` and `ak-layer-hover`
