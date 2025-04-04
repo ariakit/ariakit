@@ -19,5 +19,5 @@ test("https://github.com/ariakit/ariakit/issues/4324", async ({ page }) => {
   });
   await page.mouse.click(10, 10);
   await expect(q.dialog("Add block")).not.toBeVisible();
-  expect(q.button("Add block")).not.toBeInViewport();
+  await expect(q.button("Add block")).not.toBeInViewport();
 });
