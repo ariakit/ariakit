@@ -423,7 +423,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       }
       if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
       if (!isElementFocusable) return;
-      element?.focus();
+      element?.focus({ preventScroll: true });
     },
     [store, finalFocus, autoFocusOnHideProp],
   );
