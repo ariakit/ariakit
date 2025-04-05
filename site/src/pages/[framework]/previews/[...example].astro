@@ -1,0 +1,49 @@
+---
+import "@fontsource-variable/inter";
+import "../../../styles/global.css";
+import { getEntry } from "astro:content";
+import { render } from "astro:content";
+import { getCollection } from "astro:content";
+import type { GetStaticPaths } from "astro";
+
+export const getStaticPaths = (async () => {
+  const previews = await getCollection("previews");
+  return previews.flatMap((preview) =>
+    preview.data.frameworks.map((framework) => ({
+      params: {
+        framework,
+        example: preview.id,
+      },
+    }))
+  );
+}) satisfies GetStaticPaths;
+
+const { framework, example } = Astro.params;
+
+Astro.locals.framework = framework;
+Astro.locals.example = example;
+
+const entry = await getEntry("previews", example);
+
+if (!entry) {
+  return Astro.rewrite("/404");
+}
+
+const { Content } = await render(entry);
+---
+
+<!doctype html>
+<html lang="en" style="min-height: 200vh;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Preview - Ariakit</title>
+  </head>
+
+  <body class="grid content-center items-center">
+    <div class="mx-auto max-w-screen p-4">
+      <Content {framework} />
+    </div>
+  </body>
+</html>
