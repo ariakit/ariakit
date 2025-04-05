@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.4.15
+
+- Fixed `valid` state not updating on [Form](https://ariakit.org/components/form).
+
 ## 0.4.14
 
 - Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.

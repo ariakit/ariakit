@@ -1,5 +1,26 @@
 # @ariakit/react-core
 
+## 0.4.16
+
+### Improved `PopoverArrow`
+
+The [`PopoverArrow`](https://ariakit.org/reference/popover-arrow) component now attempts to infer its border width from the popover’s `box-shadow` style when all lengths are `0px` and the spread radius exceeds `0px` (e.g., `box-shadow: 0 0 0 1px black`), which is commonly known as a "ring". If the border width cannot be inferred, you can use the new [`borderWidth`](https://ariakit.org/reference/popover-arrow#borderwidth) prop to define it. This ensures a consistent size regardless of the arrow's size, which wasn't achievable before when manually setting the CSS `stroke-width` property.
+
+In addition, the arrow’s SVG path has been slightly modified to be more angled in the pointing direction. Note that you can always provide your own SVG using the `children` prop.
+
+### Scrolling behavior when closing dialogs and popovers
+
+When hiding a dialog or popover, the [`finalFocus`](https://ariakit.org/reference/dialog#finalfocus) element will no longer scroll into view. This change prevents scrolling issues when the element lies outside the viewport and mirrors the behavior of native HTML dialog and popover elements.
+
+### Other updates
+
+- Fixed [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible) attribute removal on lower-end devices.
+- Fixed [Select](https://ariakit.org/components/select) not passing down the [`disabled`](https://ariakit.org/reference/select#disabled) prop to the native select element.
+- Fixed [Dialog](https://ariakit.org/components/dialog) initial focus behavior in Safari for non-focusable elements.
+- Fixed `valid` state not updating on [Form](https://ariakit.org/components/form).
+- Fixed [`moveOnKeyPress`](https://ariakit.org/reference/composite#moveonkeypress) being triggered with composition text commands.
+- Updated dependencies: `@ariakit/core@0.4.15`
+
 ## 0.4.15
 
 - Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
