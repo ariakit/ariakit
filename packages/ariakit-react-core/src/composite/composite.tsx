@@ -368,6 +368,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
+      // https://github.com/ariakit/ariakit/issues/4388
+      if (event.nativeEvent.isComposing) return;
       if (event.defaultPrevented) return;
       if (!store) return;
       if (!isSelfTarget(event)) return;
