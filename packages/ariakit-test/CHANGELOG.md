@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.4.10
+
+- Updated dependencies: `@ariakit/core@0.4.15`
+
 ## 0.4.9
 
 - Fixed a build issue that resulted in JavaScript files not being part of the released package.
