@@ -186,7 +186,7 @@
     "solid-js": "1.9.5",
     "stripe": "17.7.0",
     "stylelint": "16.18.0",
-    "stylelint-config-standard": "36.0.1",
+    "stylelint-config-standard": "38.0.0",
     "stylis": "4.3.4",
     "sugarss": "5.0.0",
     "tailwind-merge": "2.6.0",
