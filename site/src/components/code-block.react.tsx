@@ -196,6 +196,7 @@ export interface CodeBlockPreviewIframeProps {
   scrollTop?: number;
   loaded?: boolean;
   setLoaded?: (loaded: boolean) => void;
+  minHeight?: string;
 }
 
 export function CodeBlockPreviewIframe({
@@ -205,6 +206,7 @@ export function CodeBlockPreviewIframe({
   loaded: loadedProp,
   setLoaded: setLoadedProp,
   scrollTop,
+  minHeight = "29.1rem",
 }: CodeBlockPreviewIframeProps) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useControllableState(
@@ -362,7 +364,7 @@ export function CodeBlockPreviewIframe({
   }, [previewUrl, clickAndWait, scrollTop]);
 
   return (
-    <div className="relative h-full min-h-[29.1rem]">
+    <div className="relative h-full" style={{ minHeight }}>
       <iframe ref={iframeRef} width="100%" height="100%" title="Preview" />
       {!loaded && (
         <div
@@ -382,7 +384,7 @@ export function CodeBlockPreviewIframe({
 export interface CodeBlockTabsProps2
   extends Pick<
       CodeBlockPreviewIframeProps,
-      "fallback" | "clickAndWait" | "scrollTop"
+      "fallback" | "clickAndWait" | "scrollTop" | "minHeight"
     >,
     Omit<
       CodeBlockProps,
@@ -427,6 +429,7 @@ export function CodeBlockTabs2({
   edit = !!source,
   preview: previewProp,
   scrollTop,
+  minHeight,
   slot0,
   slot1,
   slot2,
@@ -629,7 +632,10 @@ export function CodeBlockTabs2({
                       )}
                     >
                       {children && !clickAndWait ? (
-                        <div className="min-h-[29.1rem] grid items-center">
+                        <div
+                          className="grid items-center"
+                          style={{ minHeight }}
+                        >
                           <div className="mx-auto ak-frame-cover/4 pt-12">
                             {children}
                           </div>
@@ -642,6 +648,7 @@ export function CodeBlockTabs2({
                           loaded={loaded}
                           setLoaded={setLoaded}
                           scrollTop={scrollTop}
+                          minHeight={minHeight}
                         />
                       )}
                     </div>
@@ -722,6 +729,7 @@ export function CodeBlockTabs({
               clickAndWait={props.clickAndWait}
               fallback={fallback1}
               scrollTop={props.scrollTop}
+              minHeight={props.minHeight}
             />
           </div>
         )}
