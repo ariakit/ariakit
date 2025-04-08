@@ -21,8 +21,9 @@
   --radius-field: var(--radius-lg);
   --spacing-field: --spacing(3);
 
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 astro-island,
@@ -247,8 +248,8 @@ body {
   --ak-button-shadow: 0 -0.5px 0.5px 1px var(--ak-button-shadow-color);
   --ak-button-highlight: 0 2px 0.5px
     oklch(from var(--ak-button-bg-dark) calc(l + 0.2) calc(c / 2) h);
-  --ak-button-inset-shadow: var(--ak-button-shadow),
-    inset var(--ak-button-highlight);
+  --ak-button-inset-shadow:
+    var(--ak-button-shadow), inset var(--ak-button-highlight);
 
   @variant ak-dark {
     --ak-button-min-l: 0.15;
@@ -473,13 +474,15 @@ body {
     --ak-tab-outer-bg: calc(var(--ak-tab-outer) - var(--ak-tab-smoothness));
 
     --ak-tab-transparent: transparent var(--ak-tab-outer-bg);
-    --ak-tab-border: var(--ak-tab-border-color) var(--ak-tab-outer-border),
+    --ak-tab-border:
+      var(--ak-tab-border-color) var(--ak-tab-outer-border),
       var(--ak-tab-border-color) var(--ak-tab-inner-border);
     --ak-tab-bg: var(--ak-layer) var(--ak-tab-inner-bg);
 
-    --ak-tab-gradient: var(--ak-tab-transparent), var(--ak-tab-border),
-      var(--ak-tab-bg);
-    --ak-tab-backdrop: transparent var(--ak-tab-outer),
+    --ak-tab-gradient:
+      var(--ak-tab-transparent), var(--ak-tab-border), var(--ak-tab-bg);
+    --ak-tab-backdrop:
+      transparent var(--ak-tab-outer),
       var(--ak-layer) var(--ak-tab-outer-border);
 
     height: var(--ak-frame-radius);
@@ -488,14 +491,16 @@ body {
 
   &::before {
     right: 100%;
-    background-image: radial-gradient(circle at 0 0, var(--ak-tab-gradient)),
+    background-image:
+      radial-gradient(circle at 0 0, var(--ak-tab-gradient)),
       radial-gradient(circle at 0 0, var(--ak-tab-backdrop));
   }
 
   &::after {
     left: 100%;
     background-position: 100%, 100%;
-    background-image: radial-gradient(circle at 100% 0, var(--ak-tab-gradient)),
+    background-image:
+      radial-gradient(circle at 100% 0, var(--ak-tab-gradient)),
       radial-gradient(circle at 100% 0, var(--ak-tab-backdrop));
   }
 }
