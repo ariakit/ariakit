@@ -1,5 +1,6 @@
 ---
 "@ariakit/react-core": patch
+"@ariakit/react": patch
 ---
 
-used useId from util for backward compatibility
+Restored support for React 17 in [`PopoverArrow`](https://ariakit.org/reference/popover-arrow).
