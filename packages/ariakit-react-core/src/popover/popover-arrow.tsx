@@ -1,8 +1,8 @@
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
-import { useId, useMemo, useState } from "react";
-import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
+import { useMemo, useState } from "react";
+import { useId, useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
