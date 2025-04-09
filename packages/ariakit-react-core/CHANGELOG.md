@@ -1,5 +1,9 @@
 # @ariakit/react-core
 
+## 0.4.17
+
+- Restored support for React 17 in [`PopoverArrow`](https://ariakit.org/reference/popover-arrow).
+
 ## 0.4.16
 
 ### Improved `PopoverArrow`
