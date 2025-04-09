@@ -15,17 +15,26 @@ import { useCollapsible } from "./collapsible.react.tsx";
 import { CopyCode } from "./copy-code.react.tsx";
 import { Tooltip } from "./tooltip.react.tsx";
 
+/**
+ * Generates a unique tab ID by combining a prefix with an optional filename
+ */
 function getTabId(prefix: string, filename?: string) {
   if (!filename) return prefix;
   return `${prefix}/${filename}`;
 }
 
+/**
+ * Extracts the filename from a tab ID
+ */
 function getFilename(id?: string | null) {
   if (!id) return;
   const [, filename] = id.split(/\/(.*)/);
   return filename;
 }
 
+/**
+ * Determines if preview should be shown based on framework, example, and preview settings
+ */
 function getPreviewValue(
   framework?: string,
   example?: string,
@@ -34,6 +43,9 @@ function getPreviewValue(
   return !!framework && !!example ? (preview ?? true) : false;
 }
 
+/**
+ * Generates the preview URL based on framework, example, and preview settings
+ */
 function getPreviewUrl(
   framework?: string,
   example?: string,
@@ -44,6 +56,9 @@ function getPreviewUrl(
     : null;
 }
 
+/**
+ * A wrapper component for TabPanel that handles tab selection state
+ */
 function SingleTabPanel(props: ak.TabPanelProps) {
   const store = ak.useTabContext();
   const tabId = ak.useStoreState(
@@ -61,6 +76,10 @@ export interface CodeBlockProps
   renderContent?: (content: React.ReactElement) => React.ReactNode;
 }
 
+/**
+ * The main component for displaying code blocks with various features like line
+ * numbers, highlighting, and collapsible content
+ */
 export function CodeBlock({
   code,
   lang,
@@ -163,6 +182,9 @@ interface CodeBlockTabProps extends ak.TabProps {
   fullPreview?: boolean;
 }
 
+/**
+ * A component for rendering individual tabs in the code block interface
+ */
 function CodeBlockTab({
   isPreviewSelected,
   fullPreview,
@@ -199,6 +221,10 @@ export interface CodeBlockPreviewIframeProps {
   minHeight?: string;
 }
 
+/**
+ * A component for rendering preview iframes with loading states and interaction
+ * handling
+ */
 export function CodeBlockPreviewIframe({
   previewUrl,
   fallback,
@@ -381,7 +407,7 @@ export function CodeBlockPreviewIframe({
   );
 }
 
-export interface CodeBlockTabsProps2
+export interface CodeBlockTabsContentProps
   extends Pick<
       CodeBlockPreviewIframeProps,
       "fallback" | "clickAndWait" | "scrollTop" | "minHeight"
@@ -416,7 +442,11 @@ export interface CodeBlockTabsProps2
   slot7?: React.ReactElement;
 }
 
-export function CodeBlockTabs2({
+/**
+ * A component that manages the content of multiple tabs including preview and
+ * code views
+ */
+export function CodeBlockTabsContent({
   tabs,
   framework,
   example,
@@ -440,7 +470,7 @@ export function CodeBlockTabs2({
   slot7,
   children,
   ...props
-}: CodeBlockTabsProps2) {
+}: CodeBlockTabsContentProps) {
   const storeId = React.useId();
   const slots = [slot0, slot1, slot2, slot3, slot4, slot5, slot6, slot7];
 
@@ -673,11 +703,15 @@ export function CodeBlockTabs2({
 }
 
 export interface CodeBlockTabsProps
-  extends Omit<CodeBlockTabsProps2, "fallback"> {
+  extends Omit<CodeBlockTabsContentProps, "fallback"> {
   fallback0?: React.ReactNode;
   fallback1?: React.ReactNode;
 }
 
+/**
+ * The top-level component that handles the layout of code blocks and previews
+ * in a responsive grid
+ */
 export function CodeBlockTabs({
   fallback0,
   fallback1,
@@ -697,13 +731,13 @@ export function CodeBlockTabs({
           preview && "@[64rem]:grid-cols-2",
         )}
       >
-        <CodeBlockTabs2
+        <CodeBlockTabsContent
           {...props}
           preview={false}
           className={preview ? "@max-[64rem]:hidden" : ""}
         />
         {preview && (
-          <CodeBlockTabs2
+          <CodeBlockTabsContent
             {...props}
             fallback={fallback0}
             className="@[64rem]:hidden"
