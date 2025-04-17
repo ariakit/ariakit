@@ -292,8 +292,10 @@ for (const plan of ["month", "year"] as const) {
       expect(subs.data.length).toBe(0);
     }).toPass({ intervals: [2000, 5000, 10000] });
 
-    await q.button("Back to page").click();
-    await page.waitForURL("/components");
+    await expect(async () => {
+      await q.button("Back to page").click();
+      await page.waitForURL("/components", { timeout: 2000 });
+    }).toPass({ intervals: [2000, 5000, 10000] });
 
     await q.button("Plus").click();
     await expect(q.menuitem("Billing")).toBeVisible();
@@ -384,8 +386,10 @@ test("purchase Plus from /components, sign out, sign in again, and access the bi
   await fq.button("Pay").click();
   await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
-  await q.button("Back to page").click();
-  await page.waitForURL("/components");
+  await expect(async () => {
+    await q.button("Back to page").click();
+    await page.waitForURL("/components", { timeout: 2000 });
+  }).toPass({ intervals: [2000, 5000, 10000] });
 
   await q.button("Plus").click();
   await q.menuitem("Benefits").click();
