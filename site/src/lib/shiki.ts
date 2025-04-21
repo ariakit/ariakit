@@ -1,11 +1,12 @@
 // @ts-nocheck Revisit this after we merge the site folder into root
+import type { BundledLanguage } from "shiki";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
 export const highlighter = await createHighlighterCore({
   themes: [
     import("@shikijs/themes/dark-plus"),
-    import("@shikijs/themes/light-plus"),
+    import("@shikijs/themes/github-light"),
   ],
   langs: [
     import("@shikijs/langs/javascript"),
@@ -18,8 +19,10 @@ export const highlighter = await createHighlighterCore({
     import("@shikijs/langs/python"),
     import("@shikijs/langs/jsx"),
   ],
-  engine: createOnigurumaEngine(
-    // @ts-expect-error
-    import("shiki/onig.wasm"),
-  ),
+  engine: createOnigurumaEngine(import("shiki/wasm")),
 });
+
+export function getLangFromFilename(filename: string) {
+  const extension = filename.split(".").pop();
+  return extension as BundledLanguage;
+}

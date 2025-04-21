@@ -1,16 +1,13 @@
 ---
-import { type BundledLanguage, type CodeToTokensOptions } from "shiki";
-import { highlighter } from "../lib/shiki.ts";
+import { getLangFromFilename, highlighter } from "../lib/shiki.ts";
 import type { CodeBlockProps } from "./code-block.types";
-
-type Lang = CodeToTokensOptions<BundledLanguage>["lang"];
 
 interface Props extends CodeBlockProps {}
 
 const {
   code,
   filename,
-  lang = filename ? (filename.split(".").pop() as Lang) : "text",
+  lang = filename ? getLangFromFilename(filename) : "text",
   maxLines,
   lineNumbers = false,
   highlightLines = [],
@@ -20,7 +17,7 @@ const {
 const { tokens } = highlighter.codeToTokens(code.trim(), {
   lang,
   themes: {
-    light: "light-plus",
+    light: "github-light",
     dark: "dark-plus",
   },
 });
@@ -36,7 +33,7 @@ function isCollapsed(lineIndex: number) {
 }
 
 function splitContent(content: string) {
-  const tokens = content.split(/([^\s"']+)/);
+  const tokens = content.split(/([^:\(\)\s"']+)/);
   return tokens.flatMap((token) => {
     const highlightToken = highlightTokens.some((t) => {
       const [word, indexes] = Array.isArray(t) ? t : [t];
@@ -56,7 +53,7 @@ function splitContent(content: string) {
 <Fragment>
   <div
     class:list={[
-      "grid whitespace-pre *:*:ps-4 **:data-highlight:ak-edge/20 **:data-highlight:shadow-(color:--ak-border) **:data-highlight:shadow-[inset_0.175rem_0]",
+      "grid whitespace-pre *:*:ps-4 **:data-highlight:ak-edge/25 **:data-highlight:shadow-(color:--ak-border) **:data-highlight:shadow-[inset_0.175rem_0]",
       lineNumbers && "sm:grid-cols-[max-content_1fr]",
     ]}
   >
@@ -71,7 +68,10 @@ function splitContent(content: string) {
             return (
               <span
                 data-highlight={highlightLine || undefined}
-                class:list={["pe-4", { "ak-layer-pop": highlightLine }]}
+                class:list={[
+                  "pe-4 h-(--line-height)",
+                  { "ak-layer-pop": highlightLine },
+                ]}
               >
                 {i + 1}
               </span>

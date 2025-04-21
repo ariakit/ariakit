@@ -1,0 +1,14 @@
+---
+title: Popover
+frameworks:
+  - react
+---
+
+# {frontmatter.title}
+
+Description {props.framework}
+
+import CodeBlockTabs from "../../components/code-block-tabs.astro";
+import { source } from "./preview.mdx";
+
+<CodeBlockTabs source={source} clickAndWait />

@@ -5,7 +5,7 @@
     "rootDir": "../..",
     "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"]
   },
-  "include": ["../.astro/types.d.ts", "**/*"],
+  "include": ["../.astro/types.d.ts", "env.d.ts", "**/*.astro"],
   "exclude": [],
   "references": [
     { "path": "tsconfig.react.json" },

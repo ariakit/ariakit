@@ -9,6 +9,9 @@
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
 
+  --radius-tooltip: var(--radius-lg);
+  --spacing-tooltip: --spacing(1);
+
   --radius-dialog: var(--radius-2xl);
   --spacing-dialog: --spacing(4);
 
@@ -16,10 +19,17 @@
   --spacing-playground: --spacing(0);
 
   --radius-field: var(--radius-lg);
-  --spacing-field: --spacing(2);
+  --spacing-field: --spacing(3);
 
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+astro-island,
+astro-slot,
+astro-static-slot {
+  display: block !important;
 }
 
 :root {
@@ -34,11 +44,7 @@ body {
 }
 
 body {
-  @apply ak-layer-canvas ak-frame/4 antialiased;
-
-  [data-iframe] & {
-    @apply ak-layer-canvas-down-0.3;
-  }
+  @apply ak-layer-canvas antialiased;
 }
 
 @custom-variant base {
@@ -50,11 +56,7 @@ body {
 /** ak-command **/
 
 @utility ak-command_idle {
-  @apply not-[a&]:cursor-default relative block select-none;
-}
-
-@utility ak-command_touch-target {
-  @apply -translate-1/2 absolute left-1/2 top-1/2 size-full min-h-12 min-w-12 content-[''] [@media(pointer:fine)]:hidden;
+  @apply not-[a]:cursor-default [[type=submit]]:cursor-pointer relative block select-none;
 }
 
 @utility ak-command_active {
@@ -62,13 +64,7 @@ body {
 }
 
 @utility ak-command {
-  @apply ak-command_idle active:ak-command_active before:ak-command_touch-target;
-}
-
-/** ak-tooltip **/
-
-@utility ak-tooltip {
-  @apply ak-layer ak-frame-lg/1 z-10 px-2 text-sm ring shadow-md;
+  @apply ak-command_idle active:ak-command_active;
 }
 
 /** ak-popover **/
@@ -76,7 +72,7 @@ body {
 @utility ak-popover_idle {
   --ak-popover-ring-color: var(--ak-ring, var(--ak-layer-ring));
   transition-property: overlay, display, scale, opacity;
-  @apply ak-layer ak-frame-force-dialog;
+  @apply ak-layer-canvas-1 ak-frame-force-dialog;
   @apply transition-discrete z-10 ring shadow-xl;
 }
 
@@ -97,10 +93,29 @@ body {
   }
 }
 
-@utility ak-popover-arrow {
-  svg&,
-  svg {
-    @apply fill-(--ak-layer) stroke-(--ak-popover-ring-color) stroke-2;
+@utility ak-popover-scroll {
+  @apply ak-frame-cover overflow-auto overscroll-contain;
+}
+
+/** ak-tooltip **/
+
+@utility ak-tooltip_idle {
+  @apply ak-popover_idle ak-frame-force-tooltip;
+  @apply px-2 text-sm shadow-md;
+}
+
+@utility ak-tooltip_open {
+  @apply ak-popover_open;
+}
+
+@utility ak-tooltip_closed {
+  @apply ak-popover_closed;
+}
+
+@utility ak-tooltip {
+  @apply ak-tooltip_idle;
+  &:is(dialog, [popover]) {
+    @apply open:ak-tooltip_open not-open:ak-tooltip_closed;
   }
 }
 
@@ -108,7 +123,7 @@ body {
 
 @utility ak-input_idle {
   @apply ak-edge-contrast ak-frame-field ak-frame-border;
-  @apply cursor-text px-3 -outline-offset-1 transition-[background-color];
+  @apply flex h-[2.5em] max-w-full cursor-text items-center -outline-offset-1 transition-[background-color];
   @variant ak-light {
     @apply ak-layer-canvas-10;
   }
@@ -147,15 +162,33 @@ body {
   @apply ak-input_idle hover:ak-input_hover focus-within:ak-input_focus;
 }
 
+/** ak-option **/
+
+@utility ak-option_idle {
+  @apply ak-frame-field/2 ak-command_idle;
+}
+
+@utility ak-option_hover {
+  @apply ak-layer-hover;
+}
+
+@utility ak-option_focus {
+  @apply ak-layer-contrast-primary;
+}
+
+@utility ak-option_active {
+  @apply ak-command_active;
+}
+
+@utility ak-option {
+  @apply ak-option_idle hover:ak-option_hover focus-visible:ak-option_focus active:ak-option_active;
+}
+
 /** ak-button **/
 
 @utility ak-button_idle {
   @apply ak-command_idle ak-outline-primary ak-frame-field;
-  @apply flex items-center justify-center gap-1 whitespace-nowrap px-[calc(var(--ak-frame-padding)+--spacing(1))] font-[calc(500+50*var(--contrast))];
-
-  &::before {
-    @apply ak-command_touch-target;
-  }
+  @apply flex items-center justify-center gap-1.5 whitespace-nowrap font-[calc(500+50*var(--contrast))] leading-[1em];
 }
 
 @utility ak-button_hover {
@@ -180,7 +213,7 @@ body {
 }
 
 @utility ak-button-square {
-  @apply p-(--ak-frame-padding) aspect-square;
+  @apply aspect-square p-0;
 }
 
 @utility ak-button-classic_idle {
@@ -215,8 +248,8 @@ body {
   --ak-button-shadow: 0 -0.5px 0.5px 1px var(--ak-button-shadow-color);
   --ak-button-highlight: 0 2px 0.5px
     oklch(from var(--ak-button-bg-dark) calc(l + 0.2) calc(c / 2) h);
-  --ak-button-inset-shadow: var(--ak-button-shadow),
-    inset var(--ak-button-highlight);
+  --ak-button-inset-shadow:
+    var(--ak-button-shadow), inset var(--ak-button-highlight);
 
   @variant ak-dark {
     --ak-button-min-l: 0.15;
@@ -235,7 +268,7 @@ body {
 
   @variant ak-dark {
     --ak-button-min-l: 0.25;
-    --ak-button-max-l: 0.75;
+    --ak-button-max-l: 1;
   }
 }
 
@@ -271,6 +304,68 @@ body {
   @apply ak-button-classic_idle hover:ak-button-classic_hover focus-visible:ak-button-classic_focus active:not-disabled:not-aria-disabled:ak-button-classic_active disabled:ak-button-classic_disabled;
 }
 
+/** ak-segmented **/
+
+@utility ak-segmented {
+  @apply ak-frame-container ak-layer-down;
+  @apply gap-(--ak-frame-padding) flex;
+  --ak-segmented-padding: var(--ak-frame-padding);
+}
+
+@utility ak-segmented-button_idle {
+  @apply ak-button_idle ak-text/70;
+  @apply relative font-medium;
+  input[type="radio"] {
+    @apply sr-only;
+  }
+  &:not(:last-child)::after {
+    @apply ak-layer-current;
+    @apply absolute -end-[calc(var(--ak-segmented-padding)/2+1px)] h-1/2 border-r bg-transparent content-[''];
+  }
+  &:has(+ * :checked)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_selected {
+  @apply ak-layer-2 ak-edge/0;
+  @apply z-1 ak-light:shadow ring;
+  &:not(:last-child)::after {
+    @apply content-none;
+  }
+  :has(+ &)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_hover {
+  @apply ak-button_hover;
+  &:not(:last-child)::after {
+    @apply content-none;
+  }
+  :has(+ &)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-segmented-button_active {
+  @apply ak-button_active;
+}
+
+@utility ak-segmented-button_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-segmented-button {
+  @apply ak-segmented-button_idle hover:ak-segmented-button_hover active:not-disabled:not-aria-disabled:ak-segmented-button_active disabled:ak-segmented-button_disabled;
+  @apply focus-visible:ak-segmented-button_focus has-focus-visible:ak-segmented-button_focus;
+  @apply aria-selected:ak-segmented-button_selected aria-checked:ak-segmented-button_selected has-checked:ak-segmented-button_selected;
+}
+
 /** ak-tab **/
 
 @property --ak-tab-border-width {
@@ -287,7 +382,7 @@ body {
 
 @utility ak-tab-list {
   @apply ak-frame-overflow ak-layer-down;
-  @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip !pb-0;
+  @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain !pb-0;
   scrollbar-width: none;
 
   &::after {
@@ -308,11 +403,7 @@ body {
 
 @utility ak-tab_idle {
   @apply ak-command_idle ak-text/70;
-  @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap;
-
-  &:not(:last-child)::after {
-    @apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r content-[''];
-  }
+  @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap font-medium leading-[1em];
 }
 
 @utility ak-tab-folder_idle {
@@ -321,11 +412,15 @@ body {
   padding-block-end: calc(
     var(--ak-tab-border-width) + var(--ak-frame-padding)
   ) !important;
+  --ak-tab-folder-padding: var(--ak-frame-padding);
+
+  &:not(:last-child)::after {
+    @apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r content-[''];
+  }
 
   > * {
-    @apply max-sm:ak-frame/2 sm:ak-frame/1 h-full;
-    @apply flex items-center gap-1.5 whitespace-nowrap !px-2;
-    @apply before:ak-command_touch-target;
+    @apply ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))];
+    @apply flex h-full items-center gap-1.5 whitespace-nowrap;
   }
 }
 
@@ -379,13 +474,15 @@ body {
     --ak-tab-outer-bg: calc(var(--ak-tab-outer) - var(--ak-tab-smoothness));
 
     --ak-tab-transparent: transparent var(--ak-tab-outer-bg);
-    --ak-tab-border: var(--ak-tab-border-color) var(--ak-tab-outer-border),
+    --ak-tab-border:
+      var(--ak-tab-border-color) var(--ak-tab-outer-border),
       var(--ak-tab-border-color) var(--ak-tab-inner-border);
     --ak-tab-bg: var(--ak-layer) var(--ak-tab-inner-bg);
 
-    --ak-tab-gradient: var(--ak-tab-transparent), var(--ak-tab-border),
-      var(--ak-tab-bg);
-    --ak-tab-backdrop: transparent var(--ak-tab-outer),
+    --ak-tab-gradient:
+      var(--ak-tab-transparent), var(--ak-tab-border), var(--ak-tab-bg);
+    --ak-tab-backdrop:
+      transparent var(--ak-tab-outer),
       var(--ak-layer) var(--ak-tab-outer-border);
 
     height: var(--ak-frame-radius);
@@ -394,14 +491,16 @@ body {
 
   &::before {
     right: 100%;
-    background-image: radial-gradient(circle at 0 0, var(--ak-tab-gradient)),
+    background-image:
+      radial-gradient(circle at 0 0, var(--ak-tab-gradient)),
       radial-gradient(circle at 0 0, var(--ak-tab-backdrop));
   }
 
   &::after {
     left: 100%;
     background-position: 100%, 100%;
-    background-image: radial-gradient(circle at 100% 0, var(--ak-tab-gradient)),
+    background-image:
+      radial-gradient(circle at 100% 0, var(--ak-tab-gradient)),
       radial-gradient(circle at 100% 0, var(--ak-tab-backdrop));
   }
 }
@@ -416,14 +515,14 @@ body {
   @apply ak-text/80;
 
   :where(h1) {
-    @apply text-3xl;
+    @apply my-10 text-4xl;
   }
 
   :where(h2) {
-    @apply text-2xl;
+    @apply my-10 text-3xl;
   }
 
   :where(h3) {
-    @apply text-xl;
+    @apply my-10 text-2xl;
   }
 }

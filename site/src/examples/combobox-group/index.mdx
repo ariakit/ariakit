@@ -1,0 +1,20 @@
+---
+title: Combobox Group
+frameworks:
+  - react
+---
+
+# {frontmatter.title}
+
+import CodeBlockTabs from "../../components/code-block-tabs.astro";
+import { source } from "./preview.mdx";
+
+<CodeBlockTabs source={source} clickAndWait scrollTop={108} />
+
+import { source as s1 } from "./custom-items/preview.mdx";
+import { source as s2 } from "./sticky-group-labels/preview.mdx";
+
+<div className="my-8 grid grid-cols-[repeat(auto-fill,minmax(min(31rem,100%),1fr))] items-start gap-4 py-8">
+  <CodeBlockTabs source={s1} clickAndWait scrollTop={108} />
+  <CodeBlockTabs source={s2} clickAndWait scrollTop={108} />
+</div>

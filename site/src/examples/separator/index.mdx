@@ -9,14 +9,11 @@ frameworks:
 
 Description {props.framework}
 
-import { Show } from "solid-js";
+import CodeBlockTabs from "../../components/code-block-tabs.astro";
+import Preview, { source } from "./preview.mdx";
+
 import ReactExample from "./index.react.tsx";
-import SolidExample from "./index.solid.tsx";
 
-<Show when={props.framework === "react"}>
-  <ReactExample client:load />
-</Show>
-
-<Show when={props.framework === "solid"}>
-  <SolidExample client:load />
-</Show>
+<CodeBlockTabs source={source}>
+  <Preview />
+</CodeBlockTabs>

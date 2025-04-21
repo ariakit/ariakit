@@ -1,30 +1,105 @@
 ---
 import CodeBlockContent from "./code-block-content.astro";
-import {
-  CodeBlockTabs as CodeBlockTabsReact,
-  CodeBlockTabPanel,
-} from "./code-block.react.tsx";
+import { CodeBlockTabs as CodeBlockTabsReact } from "./code-block.react.tsx";
 import type { ComponentProps } from "astro/types";
+import type { Source } from "../lib/types.ts";
+import type { CodeBlockTabProps } from "./code-block.types";
+import { getLangFromFilename } from "../lib/shiki.ts";
+import * as icons from "../icons/icons.ts";
+import type { Framework } from "../lib/types.ts";
+import { importThumbnail } from "../lib/import-thumbnail.ts";
+import { getEntry } from "astro:content";
 
 interface Props
-  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "storeId"> {}
+  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "source"> {
+  source?: Source | Record<Framework, Source>;
+}
 
-const { tabs, ...props } = Astro.props;
+const {
+  source: sourceProp,
+  tabs: tabsProp,
+  lineNumbers = true,
+  maxLines = 17,
+  framework = Astro.locals.framework,
+  example: exampleProp,
+  ...props
+} = Astro.props;
 
-const storeId = `code-block-tabs-${Math.random().toString(36).substring(2, 15)}`;
+function hasIcon(name: string): name is keyof typeof icons {
+  return name in icons;
+}
+
+function isTsxFramework(
+  framework: string
+): framework is "react" | "solid" | "preact" {
+  return ["react", "solid", "preact"].includes(framework);
+}
+
+function getSource(source: typeof sourceProp) {
+  if (!source) return;
+  if ("files" in source) return source;
+  if (!framework) return;
+  return source[framework];
+}
+
+async function getVariantTitle(source?: Source) {
+  if (!source) return;
+  if (!source.name.includes("/")) return;
+  const title = await getEntry("previews", source.name);
+  return title?.data.title;
+}
+
+const source = getSource(sourceProp);
+
+const tabsFromSource = source
+  ? Object.entries(source.files).map(([filename, code]) => {
+      const lang = getLangFromFilename(filename);
+      const filenameIcon =
+        lang === "tsx" && framework && isTsxFramework(framework)
+          ? framework
+          : hasIcon(lang)
+            ? lang
+            : undefined;
+      return {
+        code,
+        filename,
+        filenameIcon,
+      } satisfies CodeBlockTabProps;
+    })
+  : [];
+
+const tabs = tabsProp || tabsFromSource;
+const example = exampleProp ?? source?.name ?? Astro.locals.example;
+const title = await getVariantTitle(source);
+
+const Fallback = example
+  ? (await importThumbnail(example))?.default
+  : undefined;
 ---
 
-<CodeBlockTabsReact client:visible {storeId} {tabs} {...props}>
-  {
-    tabs.map((tab, index) => (
-      <CodeBlockTabPanel
-        client:load
-        storeId={storeId}
-        filename={tab.filename}
-        defaultOpen={index === 0}
-      >
-        <CodeBlockContent {...tab} />
-      </CodeBlockTabPanel>
-    ))
-  }
-</CodeBlockTabsReact>
+<div class="grid gap-4">
+  {title && <div class="ak-text/60 font-medium text-center">{title}</div>}
+  <CodeBlockTabsReact
+    client:visible={{ rootMargin: "50%" }}
+    hasFallback={!!Fallback}
+    iframe={!Astro.slots.has("default")}
+    {tabs}
+    {source}
+    {maxLines}
+    {framework}
+    {example}
+    {...props}
+  >
+    <slot />
+    {Fallback && <Fallback slot="fallback0" />}
+    {Fallback && <Fallback slot="fallback1" />}
+    {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
+    {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
+    {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}
+    {tabs[3] && <CodeBlockContent slot="slot3" {lineNumbers} {...tabs[3]} />}
+    {tabs[4] && <CodeBlockContent slot="slot4" {lineNumbers} {...tabs[4]} />}
+    {tabs[5] && <CodeBlockContent slot="slot5" {lineNumbers} {...tabs[5]} />}
+    {tabs[6] && <CodeBlockContent slot="slot6" {lineNumbers} {...tabs[6]} />}
+    {tabs[7] && <CodeBlockContent slot="slot7" {lineNumbers} {...tabs[7]} />}
+  </CodeBlockTabsReact>
+</div>

@@ -8,6 +8,7 @@ const excludeFromReact17 = [
   "examples/*-framer-motion/**",
   "examples/dialog-animated-various",
   "examples/combobox-group",
+  "site/src/examples/combobox-group",
   "examples/*-radix*/**",
   "examples/*react-router*/**",
 ];
