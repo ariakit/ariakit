@@ -407,6 +407,29 @@ export function CodeBlockPreviewIframe({
   );
 }
 
+export interface CodeBlockPreviewProps extends React.ComponentProps<"div"> {
+  minHeight?: string;
+}
+
+/**
+ * A component for rendering preview content with consistent styling
+ */
+export function CodeBlockPreview({
+  minHeight,
+  children,
+  ...props
+}: CodeBlockPreviewProps) {
+  return (
+    <div
+      {...props}
+      className={clsx("grid items-center h-full", props.className)}
+      style={{ minHeight, ...props.style }}
+    >
+      <div className="mx-auto p-4 py-12">{children}</div>
+    </div>
+  );
+}
+
 export interface CodeBlockTabsContentProps
   extends Pick<
       CodeBlockPreviewIframeProps,
@@ -429,6 +452,7 @@ export interface CodeBlockTabsContentProps
   example?: string;
   preview?: boolean | "full";
   source?: Source;
+  iframe?: boolean;
   ai?: boolean;
   cli?: boolean;
   edit?: boolean;
@@ -454,6 +478,7 @@ export function CodeBlockTabsContent({
   clickAndWait,
   persistTabKey,
   source,
+  iframe,
   ai = !!source,
   cli = !!source,
   edit = !!source,
@@ -661,16 +686,7 @@ export function CodeBlockTabsContent({
                         !fullPreview && "ak-frame-cover-start",
                       )}
                     >
-                      {children && !clickAndWait ? (
-                        <div
-                          className="grid items-center"
-                          style={{ minHeight }}
-                        >
-                          <div className="mx-auto ak-frame-cover/4 pt-12">
-                            {children}
-                          </div>
-                        </div>
-                      ) : (
+                      {iframe ? (
                         <CodeBlockPreviewIframe
                           previewUrl={previewUrl}
                           fallback={fallback}
@@ -680,6 +696,10 @@ export function CodeBlockTabsContent({
                           scrollTop={scrollTop}
                           minHeight={minHeight}
                         />
+                      ) : (
+                        <CodeBlockPreview minHeight={minHeight}>
+                          {children}
+                        </CodeBlockPreview>
                       )}
                     </div>
                   }
@@ -704,6 +724,8 @@ export function CodeBlockTabsContent({
 
 export interface CodeBlockTabsProps
   extends Omit<CodeBlockTabsContentProps, "fallback"> {
+  iframe?: boolean;
+  hasFallback?: boolean;
   fallback0?: React.ReactNode;
   fallback1?: React.ReactNode;
 }
@@ -713,6 +735,7 @@ export interface CodeBlockTabsProps
  * in a responsive grid
  */
 export function CodeBlockTabs({
+  hasFallback,
   fallback0,
   fallback1,
   ...props
@@ -739,7 +762,7 @@ export function CodeBlockTabs({
         {preview && (
           <CodeBlockTabsContent
             {...props}
-            fallback={fallback0}
+            fallback={hasFallback ? fallback0 : undefined}
             className="@[64rem]:hidden"
           />
         )}
@@ -758,13 +781,19 @@ export function CodeBlockTabs({
                 </a>
               </Tooltip>
             </div>
-            <CodeBlockPreviewIframe
-              previewUrl={previewUrl}
-              clickAndWait={props.clickAndWait}
-              fallback={fallback1}
-              scrollTop={props.scrollTop}
-              minHeight={props.minHeight}
-            />
+            {props.iframe ? (
+              <CodeBlockPreviewIframe
+                previewUrl={previewUrl}
+                clickAndWait={props.clickAndWait}
+                fallback={hasFallback ? fallback1 : undefined}
+                scrollTop={props.scrollTop}
+                minHeight={props.minHeight}
+              />
+            ) : (
+              <CodeBlockPreview minHeight={props.minHeight}>
+                {props.children}
+              </CodeBlockPreview>
+            )}
           </div>
         )}
       </div>
