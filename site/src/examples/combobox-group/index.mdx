@@ -7,20 +7,14 @@ frameworks:
 # {frontmatter.title}
 
 import CodeBlockTabs from "../../components/code-block-tabs.astro";
-import Preview, { source } from "./preview.mdx";
+import { source } from "./preview.mdx";
 
-<CodeBlockTabs source={source} clickAndWait scrollTop={108}>
-  <Preview />
-</CodeBlockTabs>
+<CodeBlockTabs source={source} clickAndWait scrollTop={108} />
 
-import P1, { source as s1 } from "./custom-items/preview.mdx";
-import P2, { source as s2 } from "./sticky-group-labels/preview.mdx";
+import { source as s1 } from "./custom-items/preview.mdx";
+import { source as s2 } from "./sticky-group-labels/preview.mdx";
 
 <div className="my-8 grid grid-cols-[repeat(auto-fill,minmax(min(31rem,100%),1fr))] items-start gap-4 py-8">
-  <CodeBlockTabs source={s1} clickAndWait scrollTop={108}>
-    <P1 />
-  </CodeBlockTabs>
-  <CodeBlockTabs source={s2} clickAndWait scrollTop={108}>
-    <P2 />
-  </CodeBlockTabs>
+  <CodeBlockTabs source={s1} clickAndWait scrollTop={108} />
+  <CodeBlockTabs source={s2} clickAndWait scrollTop={108} />
 </div>

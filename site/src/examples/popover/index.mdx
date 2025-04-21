@@ -9,8 +9,6 @@ frameworks:
 Description {props.framework}
 
 import CodeBlockTabs from "../../components/code-block-tabs.astro";
-import Preview, { source } from "./preview.mdx";
+import { source } from "./preview.mdx";
 
-<CodeBlockTabs source={source} clickAndWait>
-  <Preview />
-</CodeBlockTabs>
+<CodeBlockTabs source={source} clickAndWait />
