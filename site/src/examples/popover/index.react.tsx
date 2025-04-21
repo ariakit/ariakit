@@ -1,9 +1,4 @@
 import * as ak from "@ariakit/react";
-import { Suspense, lazy } from "react";
-
-const Foo = lazy(() =>
-  import("./foo.react.tsx").then((m) => ({ default: m.Foo })),
-);
 
 export default function Example() {
   return (
@@ -23,9 +18,6 @@ export default function Example() {
           <ak.Button className="ak-button-classic">Accept</ak.Button>
         </div>
       </ak.Popover>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Foo />
-      </Suspense>
     </ak.PopoverProvider>
   );
 }
