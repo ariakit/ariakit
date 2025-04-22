@@ -87,7 +87,7 @@
     "@clerk/types": "3.65.4",
     "@fontsource-variable/inter": "5.2.5",
     "@playwright/test": "1.52.0",
-    "@radix-ui/react-popover": "1.1.10",
+    "@radix-ui/react-popover": "1.1.11",
     "@radix-ui/react-select": "2.2.2",
     "@stackblitz/sdk": "1.11.0",
     "@stripe/react-stripe-js": "3.6.0",
