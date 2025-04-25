@@ -72,9 +72,7 @@ const tabs = tabsProp || tabsFromSource;
 const example = exampleProp ?? source?.name ?? Astro.locals.example;
 const title = await getVariantTitle(source);
 
-const Fallback = example
-  ? (await importThumbnail(example))?.default
-  : undefined;
+const Fallback = example ? await importThumbnail(example) : undefined;
 ---
 
 <div class="grid gap-4">
