@@ -120,7 +120,7 @@
     "autoprefixer": "10.4.21",
     "babel-loader": "10.0.0",
     "babel-plugin-transform-rewrite-imports": "1.5.3",
-    "babel-preset-solid": "1.9.5",
+    "babel-preset-solid": "1.9.6",
     "babylon": "6.18.0",
     "chalk": "5.4.1",
     "chokidar": "4.0.3",
