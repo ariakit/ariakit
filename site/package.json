@@ -3,24 +3,24 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev --host",
+    "dev": "astro dev",
     "tsc": "astro check && tsc -b src",
     "build": "astro build",
     "preview": "wrangler pages dev",
     "astro": "astro"
   },
-  "exports": {
-    "./*": "./*"
+  "imports": {
+    "#app/*": "./src/*"
   },
   "dependencies": {
     "@astrojs/check": "0.9.4",
-    "@astrojs/cloudflare": "12.5.0",
-    "@astrojs/react": "4.2.4",
-    "@astrojs/solid-js": "5.0.8",
-    "@clerk/astro": "2.6.8",
+    "@astrojs/cloudflare": "12.5.2",
+    "@astrojs/react": "4.2.7",
+    "@astrojs/solid-js": "5.0.10",
+    "@clerk/astro": "2.6.10",
     "@stripe/stripe-js": "7.2.0",
-    "shiki": "3.1.0",
-    "stripe": "18.0.0",
-    "tailwindcss": "4.1.4"
+    "shiki": "3.3.0",
+    "stripe": "18.1.0",
+    "tailwindcss": "4.1.5"
   }
 }
