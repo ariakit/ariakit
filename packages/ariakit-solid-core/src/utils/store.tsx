@@ -204,6 +204,16 @@ export function useStore<T extends CoreStore, P>(
 ) {
   const [store, setStore] = Solid.createSignal(createStore(props));
 
+  Solid.createEffect(() => {
+    const dynamicStore = access((props as { store?: MaybeAccessor<T> }).store);
+    const currentStore = store();
+
+    if (dynamicStore && dynamicStore !== currentStore) {
+      setStore(() => dynamicStore);
+      return;
+    }
+  });
+
   Solid.createEffect(() => Solid.onCleanup(init(store())));
 
   const useState = ((keyOrSelector: any) =>
