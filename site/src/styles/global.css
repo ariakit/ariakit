@@ -1,1 +1,5 @@
 @import "./ariakit.css";
+
+.cl-cardBox {
+  @apply ak-layer border shadow-none;
+}
