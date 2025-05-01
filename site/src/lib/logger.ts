@@ -48,7 +48,9 @@ export function createLogger(label?: string, disableInProduction = false) {
   ) => {
     const prefix = getEventPrefix(options);
     const suffix = getEventSuffix(options);
-    return [[prefix, message].join(" "), ...optionalParams, suffix].filter(
+    const text =
+      typeof message === "string" ? message : JSON.stringify(message, null, 2);
+    return [[prefix, text].join(" "), ...optionalParams, suffix].filter(
       (param) => param !== undefined,
     );
   };
