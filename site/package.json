@@ -14,9 +14,9 @@
   },
   "dependencies": {
     "@astrojs/check": "0.9.4",
-    "@astrojs/cloudflare": "12.5.1",
-    "@astrojs/react": "4.2.5",
-    "@astrojs/solid-js": "5.0.9",
+    "@astrojs/cloudflare": "12.5.2",
+    "@astrojs/react": "4.2.7",
+    "@astrojs/solid-js": "5.0.10",
     "shiki": "3.1.0",
     "tailwindcss": "4.1.4"
   }
