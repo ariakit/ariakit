@@ -1,4 +1,4 @@
-export function getIPCountry(headers: Headers) {
+export function getCountryCode(headers: Headers) {
   const countryCode =
     headers.get("x-country") ??
     headers.get("cf-ipcountry") ??
@@ -18,11 +18,25 @@ export function getCurrency(countryCode: string) {
   return "USD";
 }
 
-export function formatCurrency(amount: number, countryCode: string) {
-  const currency = getCurrency(countryCode);
-  return new Intl.NumberFormat("en-US", {
+export interface FormatCurrencyParams {
+  amount: number;
+  currency: string;
+}
+
+export function formatCurrency({ amount, currency }: FormatCurrencyParams) {
+  const numberFormat = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,
     currencyDisplay: "narrowSymbol",
-  }).format(amount);
+    maximumFractionDigits: 0,
+  });
+  const parts = numberFormat.formatToParts(Math.ceil(amount));
+  const symbol = parts.find((part) => part.type === "currency")?.value;
+  const value = parts.reduce((value, part) => {
+    if (part.type === "currency") return value;
+    value += part.value;
+    return value;
+  }, "");
+  const text = symbol + value;
+  return { symbol, value, parts, text, toString: () => text };
 }

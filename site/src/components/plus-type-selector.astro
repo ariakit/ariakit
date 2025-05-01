@@ -1,0 +1,75 @@
+---
+import { getPlusCheckoutPath, parsePlusCheckoutPath } from "#app/lib/url.ts";
+import PlusPrice from "#app/components/plus-price.astro";
+import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
+import { PLUS_TYPES } from "#app/lib/schemas.ts";
+import { getUserPlus } from "#app/lib/clerk.ts";
+
+interface Props {
+  url: string;
+}
+
+const { url } = Astro.props;
+const { type: selectedType } = parsePlusCheckoutPath(url);
+const currentUserType = await getUserPlus({ context: Astro });
+---
+
+<div class="flex flex-col gap-8 mt-10">
+  {
+    PLUS_TYPES.map((type) => {
+      const path = getPlusCheckoutPath({ url, type });
+      const isSelected = type === selectedType;
+      const isCurrentUserType = type === currentUserType;
+      // const isUpgrade = currentUserType === "personal" && type === "team";
+      if (isCurrentUserType) return null;
+      return (
+        <Fragment>
+          <a
+            href={path}
+            aria-current={isSelected ? "page" : undefined}
+            class="ak-option relative shadow-lg group/option ak-layer ak-frame-field ring-2 grid grid-cols-[1fr_auto] gap-x-2 gap-y-1.5 aria-[current]:ak-edge-contrast-primary"
+          >
+            {/* {isUpgrade && (
+              <div class="absolute ak-layer-primary text-sm rounded-full px-2 py-1 start-1/2 -top-4 font-semibold -translate-x-1/2">
+                Upgrade
+              </div>
+            )} */}
+            <div
+              class:list={[
+                "font-semibold grid grid-cols-[1.5em_max-content_max-content] items-center gap-2",
+              ]}
+            >
+              <div
+                class:list={[
+                  "group-not-aria-[current]/option:border-2 group-aria-[current]/option:ak-edge-contrast-primary group-aria-[current]/option:border-8 aspect-square rounded-full flex items-center justify-center",
+                  isCurrentUserType && "border-none",
+                ]}
+              />
+              {type === "personal" ? "Personal" : "Team"}
+            </div>
+            <div class="relative flex items-baseline-last gap-2">
+              <PlusPrice server:defer {type} {url}>
+                <PlaceholderText
+                  slot="fallback"
+                  text="222"
+                  size="xl"
+                  className="animate-pulse"
+                />
+              </PlusPrice>
+            </div>
+            {!isCurrentUserType && (
+              <div class="pl-8 text-sm ak-text/75">
+                {type === "personal"
+                  ? "Individual license"
+                  : "For up to 10 people in your company"}
+              </div>
+            )}
+          </a>
+        </Fragment>
+      );
+    })
+  }
+  <p class="text-sm ak-text/70 text-right">
+    Taxes will be calculated at checkout
+  </p>
+</div>

@@ -1,0 +1,68 @@
+---
+import { getCurrentCustomer } from "#app/lib/clerk.ts";
+import {
+  getActivePlusPrice,
+  getPlusPrice,
+  type ActivePlusPrice,
+} from "#app/lib/stripe.ts";
+import {
+  formatCurrency,
+  getCountryCode,
+  getCurrency,
+} from "#app/lib/locale.ts";
+import type { PlusType } from "#app/lib/schemas.ts";
+
+export const prerender = false;
+
+interface Props {
+  url: string;
+  type: PlusType;
+  activePlusPrice?: ActivePlusPrice | null;
+}
+const customer = await getCurrentCustomer(Astro);
+const countryCode = getCountryCode(Astro.request.headers);
+const currency = getCurrency(countryCode);
+
+const {
+  type,
+  activePlusPrice = await getActivePlusPrice({ context: Astro }),
+} = Astro.props;
+
+const price = await getPlusPrice({
+  context: Astro,
+  product: type,
+  customer,
+  currency,
+  countryCode,
+  getActivePlusPrice: () => Promise.resolve(activePlusPrice),
+});
+
+if (!price) {
+  throw new Error("Plus price not found");
+}
+
+const originalAmount = formatCurrency({
+  amount: price.originalAmount / 100,
+  currency: price.currency,
+});
+
+const amount = formatCurrency({
+  amount: price.amount / 100,
+  currency: price.currency,
+});
+
+const hasOffer = price.percentOff;
+---
+
+{
+  hasOffer && (
+    <div class="absolute text-xs font-semibold ak-layer-yellow-300 ak-edge/10 ring rounded-full px-2 py-1 end-0 bottom-full mb-0.5 min-w-max">
+      <div class="ak-text-yellow-300">Save {price.percentOff}%</div>
+    </div>
+    <del class="original-amount ak-text/0 text-sm">{originalAmount}</del>
+  )
+}
+<div class="amount flex items-center gap-0.5">
+  <span class="currency text-lg">{amount.symbol}</span>
+  <span class="value text-xl font-semibold">{amount.value}</span>
+</div>

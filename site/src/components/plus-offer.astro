@@ -1,0 +1,54 @@
+---
+import { formatDistanceToNow } from "date-fns";
+import { getCurrentCustomer } from "#app/lib/clerk.ts";
+import {
+  getActivePlusPrice,
+  getPlusPrice,
+  type ActivePlusPrice,
+} from "#app/lib/stripe.ts";
+import { getCountryCode, getCurrency } from "#app/lib/locale.ts";
+import type { PlusType } from "#app/lib/schemas.ts";
+export const prerender = false;
+
+interface Props {
+  product?: PlusType;
+  activePlusPrice?: ActivePlusPrice | null;
+}
+
+const customer = await getCurrentCustomer(Astro);
+const countryCode = getCountryCode(Astro.request.headers);
+const currency = getCurrency(countryCode);
+
+const {
+  product = "personal",
+  activePlusPrice = await getActivePlusPrice({ context: Astro }),
+} = Astro.props;
+
+const price = await getPlusPrice({
+  context: Astro,
+  product,
+  customer,
+  currency,
+  countryCode,
+  getActivePlusPrice: () => Promise.resolve(activePlusPrice),
+});
+
+if (!price) {
+  throw new Error("Plus price not found");
+}
+
+if (!price.percentOff) {
+  return;
+}
+
+const beforeDate = price.expiresAt
+  ? new Date(price.expiresAt).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    })
+  : null;
+
+const dateLeft = price.expiresAt ? formatDistanceToNow(price.expiresAt) : null;
+---
+
+Special offer ends on {beforeDate} ({dateLeft} left)

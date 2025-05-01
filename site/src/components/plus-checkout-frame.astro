@@ -1,0 +1,73 @@
+---
+import {
+  createCheckout,
+  getActivePlusPrice,
+  getPlusPrice,
+} from "#app/lib/stripe.ts";
+import { getCurrency, getCountryCode } from "#app/lib/locale.ts";
+import { getCurrentCustomer } from "#app/lib/clerk.ts";
+import { getPlusCheckoutPath } from "#app/lib/url.ts";
+import type { PlusType } from "#app/lib/schemas.ts";
+
+export const prerender = false;
+
+interface Props {
+  product: PlusType;
+  url: string;
+}
+
+const customer = await getCurrentCustomer(Astro);
+const countryCode = getCountryCode(Astro.request.headers);
+const currency = getCurrency(countryCode);
+
+if (!customer) {
+  throw new Error("Customer not found");
+}
+
+const { product } = Astro.props;
+
+const price = await getPlusPrice({
+  context: Astro,
+  customer,
+  product,
+  currency,
+  countryCode,
+  getActivePlusPrice,
+});
+
+if (!price) {
+  throw new Error("Price not found");
+}
+
+const session = await createCheckout({
+  customer: customer,
+  price: price.price,
+  discount: price.discount,
+  amount: price.originalAmount,
+  redirectUrl: new URL(
+    getPlusCheckoutPath({
+      url: Astro.props.url,
+      step: Astro.props.product === "team" ? "setup" : "success",
+    }),
+    Astro.url.origin
+  ),
+});
+
+if (!session) {
+  throw new Error("Session not found");
+}
+---
+
+<div id="checkout" data-client-secret={session.client_secret} class="w-full">
+</div>
+
+<script>
+  import { loadStripe } from "@stripe/stripe-js";
+  const checkoutDiv = document.querySelector<HTMLElement>("#checkout");
+  const { clientSecret } = checkoutDiv?.dataset || {};
+  const stripe = await loadStripe(
+    import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  );
+  const checkout = await stripe?.initEmbeddedCheckout({ clientSecret });
+  checkout?.mount(checkoutDiv!);
+</script>

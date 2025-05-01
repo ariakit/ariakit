@@ -1,0 +1,159 @@
+---
+import { z } from "zod";
+import { OrganizationList, SignIn, SignUp } from "@clerk/astro/components";
+import PlusLayout from "#app/layouts/plus-layout.astro";
+import { getPlusCheckoutPath } from "#app/lib/url.ts";
+import PlusTypeSelector from "#app/components/plus-type-selector.astro";
+import PlusCheckoutFrame from "#app/components/plus-checkout-frame.astro";
+import { getCurrentUser, getUserPlus } from "#app/lib/clerk.ts";
+import PlusOffer from "#app/components/plus-offer.astro";
+import { PlusTypeSchema } from "#app/lib/schemas.ts";
+
+export const prerender = false;
+
+const schema = z.tuple([
+  z.enum(["sign-in", "sign-up", "payment", "setup", "success"]),
+  PlusTypeSchema,
+]);
+
+const params = schema.safeParse(Astro.params.checkout?.split("/") ?? []);
+
+if (!params.success) {
+  return Astro.redirect("/plus");
+}
+
+const [step, plusType] = params.data;
+
+const isLogin = step === "sign-in" || step === "sign-up";
+const isPayment = step === "payment";
+const isAfterPayment = step === "success" || step === "setup";
+const shouldShowProductSelector = isLogin || isPayment;
+
+const user = await getCurrentUser(Astro);
+
+if (isLogin) {
+  if (user) {
+    return Astro.redirect(
+      getPlusCheckoutPath({ step: "payment", url: Astro.url })
+    );
+  }
+} else {
+  if (!user) {
+    return Astro.redirect(
+      getPlusCheckoutPath({ step: "sign-up", url: Astro.url })
+    );
+  }
+  const currentPlus = await getUserPlus({ context: Astro, user });
+  const hasPersonal = currentPlus === "personal";
+  const hasTeam = currentPlus === "team";
+
+  if (isAfterPayment) {
+    if (!currentPlus) {
+      return Astro.redirect(
+        getPlusCheckoutPath({ step: "payment", url: Astro.url })
+      );
+    }
+    if (step === "setup" && !hasTeam) {
+      return Astro.redirect(
+        getPlusCheckoutPath({ type: "team", step: "payment", url: Astro.url })
+      );
+    }
+  } else if (isPayment && hasTeam) {
+    return Astro.redirect(
+      getPlusCheckoutPath({ step: "setup", url: Astro.url })
+    );
+  } else if (isPayment && plusType === "personal" && hasPersonal) {
+    return Astro.redirect(
+      getPlusCheckoutPath({ step: "success", url: Astro.url })
+    );
+  }
+}
+
+const LoginComponent =
+  step === "sign-in" ? SignIn : step === "sign-up" ? SignUp : null;
+
+function getPath(step: string) {
+  return getPlusCheckoutPath({ step, url: Astro.url });
+}
+---
+
+<PlusLayout>
+  <div class="grid md:grid-cols-2 gap-8">
+    {
+      shouldShowProductSelector && (
+        <div>
+          <PlusOffer server:defer />
+          <PlusTypeSelector url={Astro.url.toString()} />
+        </div>
+      )
+    }
+    {
+      LoginComponent && (
+        <LoginComponent
+          signUpUrl={getPath("sign-up")}
+          signInUrl={getPath("sign-in")}
+          forceRedirectUrl={getPath("payment")}
+          signUpForceRedirectUrl={getPath("payment")}
+          signInForceRedirectUrl={getPath("payment")}
+          appearance={{
+            elements: {
+              rootBox: { width: "100%" },
+              cardBox: { width: "100%" },
+            },
+          }}
+        />
+      )
+    }
+    {
+      step === "payment" && (
+        <PlusCheckoutFrame
+          server:defer
+          product={plusType}
+          url={Astro.url.toString()}
+        >
+          <div slot="fallback">Loading...</div>
+        </PlusCheckoutFrame>
+      )
+    }
+    {
+      step === "setup" && (
+        <div>
+          <h1>Setup</h1>
+          <OrganizationList hidePersonal />
+        </div>
+      )
+    }
+    {
+      step === "success" && (
+        <div data-success-step>
+          <h1>Success</h1>
+        </div>
+      )
+    }
+  </div>
+</PlusLayout>
+
+<script>
+  async function runConfetti() {
+    const { default: confetti } = await import("canvas-confetti");
+
+    function fire(particleRatio: number, opts: confetti.Options) {
+      confetti({
+        origin: { y: 1, x: 0.5 },
+        disableForReducedMotion: true,
+        ...opts,
+        particleCount: Math.floor(200 * particleRatio),
+      });
+    }
+
+    fire(0.25, { spread: 26, startVelocity: 55, scalar: 1.5 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 120, startVelocity: 45 });
+  }
+
+  if (document.querySelector("[data-success-step]")) {
+    runConfetti();
+  }
+</script>
