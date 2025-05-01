@@ -18,7 +18,7 @@ export function Icon({ name, ...props }: IconProps) {
     replaceId,
     fill,
     size = 24,
-    strokeWidth = 1.5,
+    strokeWidth = props.strokeWidth ?? 1.5,
   } = icons[name];
 
   let content = html;
