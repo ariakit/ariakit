@@ -2,12 +2,12 @@
 import CodeBlockContent from "./code-block-content.astro";
 import { CodeBlockTabs as CodeBlockTabsReact } from "./code-block.react.tsx";
 import type { ComponentProps } from "astro/types";
-import type { Source } from "../lib/types.ts";
+import type { Source } from "#app/lib/types.ts";
+import { getLangFromFilename } from "#app/lib/shiki.ts";
+import * as icons from "#app/icons/icons.ts";
+import type { Framework } from "#app/lib/schemas.ts";
+import { importThumbnail } from "#app/lib/import-thumbnail.ts";
 import type { CodeBlockTabProps } from "./code-block.types";
-import { getLangFromFilename } from "../lib/shiki.ts";
-import * as icons from "../icons/icons.ts";
-import type { Framework } from "../lib/types.ts";
-import { importThumbnail } from "../lib/import-thumbnail.ts";
 import { getEntry } from "astro:content";
 
 interface Props
