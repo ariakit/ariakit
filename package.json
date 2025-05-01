@@ -204,7 +204,7 @@
     "vitest": "3.1.2",
     "vitest-fail-on-console": "0.7.1",
     "webpack": "5.99.7",
-    "wrangler": "4.12.0",
+    "wrangler": "4.13.2",
     "zod": "3.24.3"
   }
 }
