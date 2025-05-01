@@ -5,22 +5,40 @@ import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 
 // https://astro.build/config
 export default defineConfig({
   srcDir: "src",
+
+  server: {
+    host: true,
+    allowedHosts: true,
+  },
+
   devToolbar: {
     enabled: false,
   },
 
+  redirects: {
+    "/plus/checkout": "/plus/checkout/sign-up/personal",
+    "/plus/checkout/[step]": "/plus/checkout/[step]/personal",
+  },
+
   adapter: cloudflare({
     imageService: "compile",
+    platformProxy: { enabled: true },
   }),
 
   env: {
-    schema: {},
+    schema: {
+      PUBLIC_CLERK_PUBLISHABLE_KEY: envField.string({
+        context: "client",
+        access: "public",
+        optional: true,
+      }),
+    },
   },
 
   vite: {
@@ -38,6 +56,7 @@ export default defineConfig({
         variables: {
           fontSize: "1rem",
         },
+
         layout: {
           logoPlacement: "none",
           showOptionalFields: false,
