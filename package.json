@@ -109,7 +109,7 @@
     "@types/react": "18.3.20",
     "@types/react-dom": "18.3.7",
     "@types/stylis": "4.2.7",
-    "@types/textarea-caret": "3.0.3",
+    "@types/textarea-caret": "3.0.4",
     "@types/use-sync-external-store": "0.0.6",
     "@vercel/analytics": "1.5.0",
     "@vitejs/plugin-react": "4.4.1",
