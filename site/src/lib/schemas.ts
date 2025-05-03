@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parsePlusPriceKey } from "./stripe.ts";
 
 export const FRAMEWORKS = [
   "react",
@@ -24,10 +25,15 @@ export const PLUS_TYPES = ["personal", "team"] as const;
 export const PlusTypeSchema = z.enum(PLUS_TYPES);
 export type PlusType = z.infer<typeof PlusTypeSchema>;
 
+export const PriceKeySchema = z.string().refine((key) => {
+  const { type } = parsePlusPriceKey(key);
+  return !!type;
+});
+
 export const PriceDataSchema = z.object({
   id: z.string(),
   type: PlusTypeSchema,
-  key: z.string(),
+  key: PriceKeySchema,
   product: z.string(),
   amount: z.number(),
   currency: z.string(),

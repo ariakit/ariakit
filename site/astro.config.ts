@@ -9,7 +9,9 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 
-loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
+try {
+  loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
+} catch (error) {}
 
 const hasClerk = !!process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
