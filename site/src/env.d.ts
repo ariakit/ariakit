@@ -1,6 +1,11 @@
 /// <reference types="astro/client" />
 /// <reference types="@clerk/astro/env" />
 
+type Runtime = import("@astrojs/cloudflare").Runtime<{
+  PLUS: import("@cloudflare/workers-types").KVNamespace;
+  EVENTS: import("@cloudflare/workers-types").KVNamespace;
+}>;
+
 declare namespace App {
   interface Locals extends Runtime {
     user?: import("@clerk/astro/server").User | null;
