@@ -39,7 +39,7 @@ export function Icon({ name, ...props }: IconProps) {
       {...props}
       style={{ "--stroke-width": strokeWidth, ...props.style } as CSSProperties}
       className={clsx(
-        "base:stroke-(length:--stroke-width) base:ak-dark:stroke-[calc(var(--stroke-width)/1.25)]",
+        "inline-block base:stroke-(length:--stroke-width) base:ak-dark:stroke-[calc(var(--stroke-width)/1.25)]",
         props.className,
       )}
     />
