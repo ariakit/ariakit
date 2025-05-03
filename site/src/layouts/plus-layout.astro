@@ -3,6 +3,7 @@ import "@fontsource-variable/inter";
 import "../styles/global.css";
 import { SignedIn, SignOutButton } from "@clerk/astro/components";
 import { getPlusCheckoutPath } from "#app/lib/url.ts";
+import { Logo } from "#app/icons/logo.react.tsx";
 ---
 
 <!doctype html>
@@ -14,14 +15,21 @@ import { getPlusCheckoutPath } from "#app/lib/url.ts";
     <title>Ariakit</title>
   </head>
   <body class="!ak-layer-[#F9FAFA] [--max-width:56rem]">
-    <div class="ak-layer-10 ring">
-      <div class="max-w-(--max-width) mx-auto p-2 w-full flex flex-col gap-2">
-        <div class="max-w-(--max-width) mx-auto w-full">
+    <div class="">
+      <div
+        class="max-w-(--max-width) mx-auto p-2 py-4 w-full flex flex-col gap-2"
+      >
+        <!-- <div class="max-w-(--max-width) mx-auto w-full">
           <a href="/" class="ak-link">← Back to site</a>
-        </div>
+        </div> -->
         <div class="flex justify-between gap-2">
-          <h1 class="text-2xl font-bold">Ariakit Plus</h1>
-          <SignedIn>
+          <div class="flex items-center gap-2">
+            <Logo iconOnly />
+            <h1 class="text-2xl">
+              Get <span class="font-bold">Ariakit Plus</span>
+            </h1>
+          </div>
+          <SignedIn isStatic={false}>
             <SignOutButton
               redirectUrl={getPlusCheckoutPath({
                 type: "personal",
