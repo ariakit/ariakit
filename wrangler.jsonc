@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/wrangler/config-schema.json",
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
   "main": "./site/dist/_worker.js/index.js",
   "compatibility_date": "2025-04-10",
