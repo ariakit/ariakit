@@ -4,7 +4,7 @@ import type { APIContext, MiddlewareNext } from "astro";
 const clerk = clerkMiddleware();
 
 export async function onRequest(context: APIContext, next: MiddlewareNext) {
-  if (context.url.pathname.includes("/previews")) {
+  if (!import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY) {
     return next();
   }
   return clerk(context, next);

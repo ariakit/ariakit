@@ -1,4 +1,5 @@
 import { join } from "node:path";
+import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
@@ -7,6 +8,10 @@ import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
+
+loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
+
+const hasClerk = !!process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // https://astro.build/config
 export default defineConfig({
@@ -52,18 +57,19 @@ export default defineConfig({
     mdx(),
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
-    clerk({
-      signInUrl: "/sign-in",
-      signUpUrl: "/sign-up",
-      appearance: {
-        variables: {
-          fontSize: "1rem",
+    hasClerk &&
+      clerk({
+        signInUrl: "/sign-in",
+        signUpUrl: "/sign-up",
+        appearance: {
+          variables: {
+            fontSize: "1rem",
+          },
+          layout: {
+            logoPlacement: "none",
+            showOptionalFields: false,
+          },
         },
-        layout: {
-          logoPlacement: "none",
-          showOptionalFields: false,
-        },
-      },
-    }),
+      }),
   ],
 });
