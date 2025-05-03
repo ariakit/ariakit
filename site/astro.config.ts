@@ -49,6 +49,9 @@ export default defineConfig({
   },
 
   integrations: [
+    mdx(),
+    react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
+    solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     clerk({
       signInUrl: "/sign-in",
       signUpUrl: "/sign-up",
@@ -56,15 +59,11 @@ export default defineConfig({
         variables: {
           fontSize: "1rem",
         },
-
         layout: {
           logoPlacement: "none",
           showOptionalFields: false,
         },
       },
     }),
-    mdx(),
-    react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
-    solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
   ],
 });
