@@ -18,54 +18,6 @@ declare namespace App {
   }
 }
 
-declare module "stripe" {
-  namespace Stripe {
-    interface Customer {
-      metadata: {
-        clerkId?: string;
-      };
-    }
-    interface Product {
-      metadata: {
-        plusType?: import("./lib/schemas.ts").PlusType;
-      };
-    }
-    interface PaymentIntent {
-      metadata: {
-        clerkId?: string;
-        plusType?: import("./lib/schemas.ts").PlusType;
-      };
-    }
-    interface Coupon {
-      metadata: {
-        type?: "ariakit-plus-sale";
-      };
-    }
-    namespace Checkout {
-      namespace SessionCreateParams {
-        interface PaymentIntentData {
-          metadata: {
-            clerkId: string;
-            plusType: import("./lib/schemas.ts").PlusType;
-          };
-        }
-      }
-      interface SessionCreateParams {
-        metadata: {
-          clerkId: string;
-          plusType: import("./lib/schemas.ts").PlusType;
-        };
-      }
-      interface Session {
-        metadata: {
-          clerkId?: string;
-          plusType?: import("./lib/schemas.ts").PlusType;
-        };
-      }
-    }
-  }
-}
-
 interface UserPublicMetadata {
   plus?: import("./lib/schemas.ts").PlusType | null;
 }

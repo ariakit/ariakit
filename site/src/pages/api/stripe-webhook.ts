@@ -5,7 +5,7 @@ import { deletePrice, deletePromo, putPrice, putPromo } from "#app/lib/kv.ts";
 import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object-id.ts";
 import { badRequest, internalServerError, ok } from "#app/lib/response.ts";
-import { PlusTypeSchema } from "#app/lib/schemas.ts";
+import { type PlusType, PlusTypeSchema } from "#app/lib/schemas.ts";
 import { getStripeClient, parsePlusPriceKey } from "#app/lib/stripe.ts";
 
 export const prerender = false;
@@ -73,7 +73,7 @@ export const POST: APIRoute = async (context) => {
       logger.error("Checkout session not paid", session.id);
       return ok();
     }
-    const { plusType, clerkId } = session.metadata;
+    const { plusType, clerkId } = session.metadata ?? {};
     if (!plusType) {
       logger.error("No plus type in session metadata", session.id);
       return ok();
@@ -89,7 +89,7 @@ export const POST: APIRoute = async (context) => {
     await addPlusToUser({
       context,
       user: clerkId,
-      type: plusType,
+      type: plusType as PlusType,
       amount: session.amount_total ?? 0,
       currency: session.currency ?? "usd",
     });
@@ -153,7 +153,7 @@ export const POST: APIRoute = async (context) => {
     let userId: string | null = null;
     const promo = event.data.object;
     const coupon = promo.coupon;
-    const isSale = coupon.metadata.type === "ariakit-plus-sale";
+    const isSale = coupon.metadata?.type === "ariakit-plus-sale";
     if (!isSale && !promo.customer) {
       await deletePromo(context, promo.id);
       logger.info("Promotion code not a plus sale", promo.id);
