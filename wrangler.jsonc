@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/wrangler/config-schema.json",
   "name": "ariakit",
+  "main": "./site/dist/_worker.js/index.js",
   "compatibility_date": "2025-04-10",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
@@ -11,8 +12,8 @@
     "port": 4321
   },
   "assets": {
-    "directory": "./site/dist",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "directory": "./site/dist"
   },
   "kv_namespaces": [
     {

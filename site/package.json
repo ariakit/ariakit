@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "tsc": "astro check && tsc -b src",
     "build": "astro build",
-    "preview": "wrangler pages dev",
+    "preview": "wrangler dev",
     "astro": "astro"
   },
   "imports": {
