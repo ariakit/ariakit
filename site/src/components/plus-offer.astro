@@ -1,54 +1,42 @@
 ---
 import { formatDistanceToNow } from "date-fns";
-import { getCurrentCustomer } from "#app/lib/clerk.ts";
-import {
-  getActivePlusPrice,
-  getPlusPrice,
-  type ActivePlusPrice,
-} from "#app/lib/stripe.ts";
-import { getCountryCode, getCurrency } from "#app/lib/locale.ts";
+import { getPlusPrice } from "#app/lib/stripe.ts";
 import type { PlusType } from "#app/lib/schemas.ts";
+import { createLogger } from "#app/lib/logger.ts";
+
 export const prerender = false;
 
 interface Props {
-  product?: PlusType;
-  activePlusPrice?: ActivePlusPrice | null;
+  type?: PlusType;
 }
 
-const customer = await getCurrentCustomer(Astro);
-const countryCode = getCountryCode(Astro.request.headers);
-const currency = getCurrency(countryCode);
+const { type = "personal" } = Astro.props;
+const price = await getPlusPrice({ context: Astro, type });
 
-const {
-  product = "personal",
-  activePlusPrice = await getActivePlusPrice({ context: Astro }),
-} = Astro.props;
-
-const price = await getPlusPrice({
-  context: Astro,
-  product,
-  customer,
-  currency,
-  countryCode,
-  getActivePlusPrice: () => Promise.resolve(activePlusPrice),
-});
+const logger = createLogger("plus-offer");
 
 if (!price) {
-  throw new Error("Plus price not found");
+  logger.error("Price not found");
+  return null;
 }
+if (!price.percentOff) return null;
 
-if (!price.percentOff) {
-  return;
-}
-
-const beforeDate = price.expiresAt
+const formattedExpirationDate = price.expiresAt
   ? new Date(price.expiresAt).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     })
   : null;
 
-const dateLeft = price.expiresAt ? formatDistanceToNow(price.expiresAt) : null;
+const timeRemaining = price.expiresAt
+  ? formatDistanceToNow(price.expiresAt)
+  : null;
+
+const text = price.maxRedemptions
+  ? `Limited offer (${price.maxRedemptions - price.timesRedeemed} left)`
+  : formattedExpirationDate && timeRemaining
+    ? `Special offer ends on ${formattedExpirationDate} (${timeRemaining} left)`
+    : null;
 ---
 
-Special offer ends on {beforeDate} ({dateLeft} left)
+{text}

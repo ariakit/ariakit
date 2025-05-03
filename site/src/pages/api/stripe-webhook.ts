@@ -1,44 +1,32 @@
 import type { APIRoute } from "astro";
 import type { Stripe } from "stripe";
 import { addPlusToUser, getUser } from "#app/lib/clerk.ts";
+import { deletePrice, deletePromo, putPrice, putPromo } from "#app/lib/kv.ts";
 import { createLogger } from "#app/lib/logger.ts";
-import { getStripeClient } from "#app/lib/stripe.ts";
+import { objectId } from "#app/lib/object-id.ts";
+import { badRequest, internalServerError, ok } from "#app/lib/response.ts";
+import { PlusTypeSchema } from "#app/lib/schemas.ts";
+import { getStripeClient, parsePlusPriceKey } from "#app/lib/stripe.ts";
 
 export const prerender = false;
+
 const logger = createLogger("stripe-webhook");
-
-function ok(...logs: any[]) {
-  logger.info(...logs);
-  return new Response("OK", { status: 200 });
-}
-
-function badRequest(...logs: any[]) {
-  logger.error(...logs);
-  return new Response("Bad request", { status: 400 });
-}
-
-function notFound(...logs: any[]) {
-  logger.error(...logs);
-  return new Response("Not found", { status: 404 });
-}
-
-function internalServerError(...logs: any[]) {
-  logger.error(...logs);
-  return new Response("Internal server error", { status: 500 });
-}
 
 export const POST: APIRoute = async (context) => {
   const stripe = getStripeClient();
   if (!stripe) {
-    return internalServerError("Stripe not configured");
+    logger.error("Stripe not configured");
+    return internalServerError();
   }
   const signature = context.request.headers.get("stripe-signature");
   if (!signature) {
-    return badRequest("No signature");
+    logger.error("No signature");
+    return badRequest();
   }
   const secret = import.meta.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) {
-    return internalServerError("Stripe webhook secret not configured");
+    logger.error("Stripe webhook secret not configured");
+    return internalServerError();
   }
 
   const body = await context.request.text();
@@ -47,26 +35,31 @@ export const POST: APIRoute = async (context) => {
   try {
     event = stripe.webhooks.constructEvent(body, signature, secret);
   } catch (err) {
-    return badRequest("Webhook error:", err);
+    logger.error("Webhook error:", err);
+    return badRequest();
   }
 
   const getUserFromCustomer = async (
     customerId?: string | Stripe.Customer | Stripe.DeletedCustomer | null,
   ) => {
     if (typeof customerId !== "string") {
-      return badRequest("Invalid customer ID", customerId);
+      logger.error("Invalid customer ID", customerId);
+      return badRequest();
     }
     const customer = await stripe.customers.retrieve(customerId);
     if (customer.deleted) {
-      return notFound("Customer deleted", customerId);
+      logger.error("Customer deleted", customerId);
+      return ok();
     }
     const { clerkId } = customer.metadata;
     if (!clerkId) {
-      return notFound("Customer has no Clerk ID", customerId);
+      logger.error("Customer has no Clerk ID", customerId);
+      return ok();
     }
     const user = await getUser({ context, user: clerkId });
     if (!user) {
-      return notFound("User not found", clerkId);
+      logger.error("User not found", clerkId);
+      return ok();
     }
     return user;
   };
@@ -77,36 +70,126 @@ export const POST: APIRoute = async (context) => {
   ) {
     const session = event.data.object;
     if (session.payment_status === "unpaid") {
-      return ok("Checkout session not paid", session.id);
+      logger.error("Checkout session not paid", session.id);
+      return ok();
     }
-    const user = await getUserFromCustomer(session.customer);
-    if (user instanceof Response) {
-      return user;
-    }
-    if (typeof session.payment_intent !== "string") {
-      return badRequest("Invalid payment intent", session.id);
-    }
-    const pi = await stripe.paymentIntents.retrieve(session.payment_intent);
-    if (pi.status !== "succeeded") {
-      return badRequest("Payment intent not succeeded", session.id);
-    }
-    const productId = pi.metadata.product;
-    if (!productId) {
-      return badRequest("No product in payment intent metadata", session.id);
-    }
-    const product = await stripe.products.retrieve(productId);
-    const { plusType } = product.metadata;
+    const { plusType, clerkId } = session.metadata;
     if (!plusType) {
-      return badRequest("No plus type in product metadata", session.id);
+      logger.error("No plus type in session metadata", session.id);
+      return ok();
+    }
+    if (!PlusTypeSchema.safeParse(plusType).success) {
+      logger.error("Invalid plus type in session metadata", session.id);
+      return ok();
+    }
+    if (!clerkId) {
+      logger.error("No Clerk ID in session metadata", session.id);
+      return ok();
     }
     await addPlusToUser({
       context,
-      user,
+      user: clerkId,
       type: plusType,
-      amount: pi.amount_received,
-      currency: pi.currency,
+      amount: session.amount_total ?? 0,
+      currency: session.currency ?? "usd",
     });
     return ok();
   }
+
+  if (event.type === "price.created" || event.type === "price.updated") {
+    const price = event.data.object;
+    const key = price.lookup_key;
+    if (!key) {
+      logger.error("Price has no lookup key", price.id);
+      return ok();
+    }
+    const { type } = parsePlusPriceKey(key);
+    if (!type) {
+      logger.error("Price not a plus price", key);
+      return ok();
+    }
+    if (price.deleted || !price.active) {
+      await deletePrice(context, key);
+      return ok();
+    }
+    if (!price.unit_amount) {
+      logger.error("Price has no unit amount", price.id);
+      return ok();
+    }
+    await putPrice(context, {
+      id: price.id,
+      type,
+      key,
+      product: objectId(price.product),
+      amount: price.unit_amount,
+      currency: price.currency,
+      taxBehavior: price.tax_behavior ?? "unspecified",
+    });
+    logger.info("Price stored in KV store", key);
+    return ok();
+  }
+
+  if (event.type === "price.deleted") {
+    const price = event.data.object;
+    const key = price.lookup_key;
+    if (!key) {
+      logger.error("Price has no lookup key", price.id);
+      return ok();
+    }
+    const { type } = parsePlusPriceKey(key);
+    if (!type) {
+      logger.error("Price not a plus price", key);
+      return ok();
+    }
+    await deletePrice(context, key);
+    logger.info("Price deleted from KV store", key);
+    return ok();
+  }
+
+  if (
+    event.type === "promotion_code.created" ||
+    event.type === "promotion_code.updated"
+  ) {
+    let userId: string | null = null;
+    const promo = event.data.object;
+    const coupon = promo.coupon;
+    const isSale = coupon.metadata.type === "ariakit-plus-sale";
+    if (!isSale && !promo.customer) {
+      await deletePromo(context, promo.id);
+      logger.info("Promotion code not a plus sale", promo.id);
+      return ok();
+    }
+    if (promo.customer) {
+      const user = await getUserFromCustomer(promo.customer);
+      if (user instanceof Response) {
+        await deletePromo(context, promo.id);
+        return user;
+      }
+      userId = objectId(user);
+    }
+    if (!promo.active || coupon.deleted || !coupon.valid) {
+      await deletePromo(context, promo.id);
+      logger.info("Promotion code not valid anymore", promo.id);
+      return ok();
+    }
+    if (!coupon.percent_off) {
+      logger.error("Promotion code has no percent off", promo.id);
+      return ok();
+    }
+    const products = coupon.applies_to?.products ?? [];
+    await putPromo(context, {
+      id: promo.id,
+      type: promo.customer ? "customer" : "sale",
+      user: userId,
+      products,
+      expiresAt: promo.expires_at ?? coupon.redeem_by,
+      percentOff: coupon.percent_off,
+      timesRedeemed: coupon.times_redeemed,
+      maxRedemptions: coupon.max_redemptions,
+    });
+    logger.info("Promotion code added to KV store", promo.id);
+    return ok();
+  }
+
   return ok();
 };

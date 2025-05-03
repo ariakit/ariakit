@@ -3,7 +3,10 @@ import { getPlusCheckoutPath, parsePlusCheckoutPath } from "#app/lib/url.ts";
 import PlusPrice from "#app/components/plus-price.astro";
 import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 import { PLUS_TYPES } from "#app/lib/schemas.ts";
-import { getUserPlus } from "#app/lib/clerk.ts";
+import { getCurrentUserPlus } from "#app/lib/clerk.ts";
+import { Icon } from "#app/icons/icon.react.tsx";
+
+export const prerender = false;
 
 interface Props {
   url: string;
@@ -11,10 +14,19 @@ interface Props {
 
 const { url } = Astro.props;
 const { type: selectedType } = parsePlusCheckoutPath(url);
-const currentUserType = await getUserPlus({ context: Astro });
+const currentUserType = getCurrentUserPlus(Astro);
 ---
 
-<div class="flex flex-col gap-8 mt-10">
+<div class="flex flex-col gap-8">
+  <div class="text-sm ak-text/70 flex gap-4">
+    {
+      ["One-time payment", "Lifetime access", "Free updates"].map((item) => (
+        <div class="flex items-start gap-1">
+          <Icon name="check" className="h-[1lh]" /> {item}
+        </div>
+      ))
+    }
+  </div>
   {
     PLUS_TYPES.map((type) => {
       const path = getPlusCheckoutPath({ url, type });
@@ -27,7 +39,7 @@ const currentUserType = await getUserPlus({ context: Astro });
           <a
             href={path}
             aria-current={isSelected ? "page" : undefined}
-            class="ak-option relative shadow-lg group/option ak-layer ak-frame-field ring-2 grid grid-cols-[1fr_auto] gap-x-2 gap-y-1.5 aria-[current]:ak-edge-contrast-primary"
+            class="ak-button relative aria-[current]:shadow-lg group/option ak-layer ak-frame-field ring-2 grid grid-cols-[1fr_auto] gap-x-2 gap-y-1.5 aria-[current]:ak-edge-contrast-primary"
           >
             {/* {isUpgrade && (
               <div class="absolute ak-layer-primary text-sm rounded-full px-2 py-1 start-1/2 -top-4 font-semibold -translate-x-1/2">
@@ -60,7 +72,7 @@ const currentUserType = await getUserPlus({ context: Astro });
             {!isCurrentUserType && (
               <div class="pl-8 text-sm ak-text/75">
                 {type === "personal"
-                  ? "Individual license"
+                  ? "For solo developers"
                   : "For up to 10 people in your company"}
               </div>
             )}
@@ -69,7 +81,7 @@ const currentUserType = await getUserPlus({ context: Astro });
       );
     })
   }
-  <p class="text-sm ak-text/70 text-right">
-    Taxes will be calculated at checkout
+  <p class="text-sm ak-text/70 text-right flex items-center gap-1">
+    <Icon name="info" className="text-base" /> Taxes will be calculated at checkout
   </p>
 </div>

@@ -19,7 +19,7 @@ declare namespace App {
 }
 
 declare module "stripe" {
-  declare namespace Stripe {
+  namespace Stripe {
     interface Customer {
       metadata: {
         clerkId?: string;
@@ -32,18 +32,52 @@ declare module "stripe" {
     }
     interface PaymentIntent {
       metadata: {
-        price?: string;
-        product?: string;
+        clerkId?: string;
+        plusType?: import("./lib/schemas.ts").PlusType;
       };
+    }
+    interface Coupon {
+      metadata: {
+        type?: "ariakit-plus-sale";
+      };
+    }
+    namespace Checkout {
+      namespace SessionCreateParams {
+        interface PaymentIntentData {
+          metadata: {
+            clerkId: string;
+            plusType: import("./lib/schemas.ts").PlusType;
+          };
+        }
+      }
+      interface SessionCreateParams {
+        metadata: {
+          clerkId: string;
+          plusType: import("./lib/schemas.ts").PlusType;
+        };
+      }
+      interface Session {
+        metadata: {
+          clerkId?: string;
+          plusType?: import("./lib/schemas.ts").PlusType;
+        };
+      }
     }
   }
 }
 
+interface UserPublicMetadata {
+  plus?: import("./lib/schemas.ts").PlusType | null;
+}
+
 interface UserPrivateMetadata {
   stripeId?: string;
-  plus?: import("./lib/schemas.ts").PlusType | null;
   credit?: number | null;
   currency?: string | null;
+}
+
+interface CustomJwtSessionClaims {
+  publicMetadata: UserPublicMetadata;
 }
 
 interface ImportMetaEnv {

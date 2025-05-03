@@ -1,9 +1,14 @@
-import { type PlusType, PlusTypeSchema } from "./schemas.ts";
+import {
+  type PlusCheckoutStep,
+  PlusCheckoutStepSchema,
+  type PlusType,
+  PlusTypeSchema,
+} from "./schemas.ts";
 
 export interface GetPlusCheckoutPathParams {
   url: string | URL;
   type?: PlusType;
-  step?: string;
+  step?: PlusCheckoutStep;
 }
 
 export function getPlusCheckoutPath({
@@ -31,8 +36,10 @@ export function getRedirectUrl(url: string | URL) {
 }
 
 export function parsePlusCheckoutPath(url: string | URL) {
-  const [, , , step, maybeType] = new URL(url).pathname.split("/");
-  const parsed = PlusTypeSchema.safeParse(maybeType);
-  const type = parsed.success ? parsed.data : undefined;
+  const [, , , maybeStep, maybeType] = new URL(url).pathname.split("/");
+  const parsedStep = PlusCheckoutStepSchema.safeParse(maybeStep);
+  const parsedType = PlusTypeSchema.safeParse(maybeType);
+  const step = parsedStep.success ? parsedStep.data : undefined;
+  const type = parsedType.success ? parsedType.data : undefined;
   return { step, type };
 }

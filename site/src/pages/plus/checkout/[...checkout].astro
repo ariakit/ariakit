@@ -5,17 +5,17 @@ import PlusLayout from "#app/layouts/plus-layout.astro";
 import { getPlusCheckoutPath } from "#app/lib/url.ts";
 import PlusTypeSelector from "#app/components/plus-type-selector.astro";
 import PlusCheckoutFrame from "#app/components/plus-checkout-frame.astro";
-import { getCurrentUser, getUserPlus } from "#app/lib/clerk.ts";
+import { getCurrentUser, getCurrentUserPlus } from "#app/lib/clerk.ts";
 import PlusOffer from "#app/components/plus-offer.astro";
-import { PlusTypeSchema } from "#app/lib/schemas.ts";
+import {
+  PlusTypeSchema,
+  PlusCheckoutStepSchema,
+  type PlusCheckoutStep,
+} from "#app/lib/schemas.ts";
 
 export const prerender = false;
 
-const schema = z.tuple([
-  z.enum(["sign-in", "sign-up", "payment", "setup", "success"]),
-  PlusTypeSchema,
-]);
-
+const schema = z.tuple([PlusCheckoutStepSchema, PlusTypeSchema]);
 const params = schema.safeParse(Astro.params.checkout?.split("/") ?? []);
 
 if (!params.success) {
@@ -24,45 +24,45 @@ if (!params.success) {
 
 const [step, plusType] = params.data;
 
-const isLogin = step === "sign-in" || step === "sign-up";
-const isPayment = step === "payment";
-const isAfterPayment = step === "success" || step === "setup";
-const shouldShowProductSelector = isLogin || isPayment;
+const isLoginStep = step === "sign-in" || step === "sign-up";
+const isPaymentStep = step === "payment";
+const isAfterPaymentStep = step === "success" || step === "team";
+const shouldShowProductSelector = isLoginStep || isPaymentStep;
 
-const user = await getCurrentUser(Astro);
+const { userId } = Astro.locals.auth();
 
-if (isLogin) {
-  if (user) {
+if (isLoginStep) {
+  if (userId) {
     return Astro.redirect(
       getPlusCheckoutPath({ step: "payment", url: Astro.url })
     );
   }
 } else {
-  if (!user) {
+  if (!userId) {
     return Astro.redirect(
-      getPlusCheckoutPath({ step: "sign-up", url: Astro.url })
+      getPlusCheckoutPath({ step: "sign-in", url: Astro.url })
     );
   }
-  const currentPlus = await getUserPlus({ context: Astro, user });
-  const hasPersonal = currentPlus === "personal";
-  const hasTeam = currentPlus === "team";
+  const currentUserPlus = getCurrentUserPlus(Astro);
+  const userHasPlusPersonal = currentUserPlus === "personal";
+  const userCanCreateTeam = currentUserPlus === "team";
 
-  if (isAfterPayment) {
-    if (!currentPlus) {
+  if (isAfterPaymentStep) {
+    if (!currentUserPlus) {
       return Astro.redirect(
         getPlusCheckoutPath({ step: "payment", url: Astro.url })
       );
     }
-    if (step === "setup" && !hasTeam) {
+    if (step === "team" && !userCanCreateTeam) {
       return Astro.redirect(
-        getPlusCheckoutPath({ type: "team", step: "payment", url: Astro.url })
+        getPlusCheckoutPath({ step: "payment", type: "team", url: Astro.url })
       );
     }
-  } else if (isPayment && hasTeam) {
+  } else if (isPaymentStep && userCanCreateTeam) {
     return Astro.redirect(
-      getPlusCheckoutPath({ step: "setup", url: Astro.url })
+      getPlusCheckoutPath({ step: "team", url: Astro.url })
     );
-  } else if (isPayment && plusType === "personal" && hasPersonal) {
+  } else if (isPaymentStep && plusType === "personal" && userHasPlusPersonal) {
     return Astro.redirect(
       getPlusCheckoutPath({ step: "success", url: Astro.url })
     );
@@ -72,7 +72,7 @@ if (isLogin) {
 const LoginComponent =
   step === "sign-in" ? SignIn : step === "sign-up" ? SignUp : null;
 
-function getPath(step: string) {
+function getPath(step: PlusCheckoutStep) {
   return getPlusCheckoutPath({ step, url: Astro.url });
 }
 ---
@@ -108,7 +108,7 @@ function getPath(step: string) {
       step === "payment" && (
         <PlusCheckoutFrame
           server:defer
-          product={plusType}
+          type={plusType}
           url={Astro.url.toString()}
         >
           <div slot="fallback">Loading...</div>
@@ -116,9 +116,9 @@ function getPath(step: string) {
       )
     }
     {
-      step === "setup" && (
+      step === "team" && (
         <div>
-          <h1>Setup</h1>
+          <h1>Team setup</h1>
           <OrganizationList hidePersonal />
         </div>
       )

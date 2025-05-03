@@ -1,45 +1,19 @@
 ---
-import { getCurrentCustomer } from "#app/lib/clerk.ts";
-import {
-  getActivePlusPrice,
-  getPlusPrice,
-  type ActivePlusPrice,
-} from "#app/lib/stripe.ts";
-import {
-  formatCurrency,
-  getCountryCode,
-  getCurrency,
-} from "#app/lib/locale.ts";
+import { getPlusPrice } from "#app/lib/stripe.ts";
 import type { PlusType } from "#app/lib/schemas.ts";
+import { formatCurrency } from "#app/lib/locale.ts";
 
 export const prerender = false;
 
 interface Props {
   url: string;
   type: PlusType;
-  activePlusPrice?: ActivePlusPrice | null;
 }
-const customer = await getCurrentCustomer(Astro);
-const countryCode = getCountryCode(Astro.request.headers);
-const currency = getCurrency(countryCode);
 
-const {
-  type,
-  activePlusPrice = await getActivePlusPrice({ context: Astro }),
-} = Astro.props;
+const { type } = Astro.props;
+const price = await getPlusPrice({ context: Astro, type });
 
-const price = await getPlusPrice({
-  context: Astro,
-  product: type,
-  customer,
-  currency,
-  countryCode,
-  getActivePlusPrice: () => Promise.resolve(activePlusPrice),
-});
-
-if (!price) {
-  throw new Error("Plus price not found");
-}
+if (!price) return null;
 
 const originalAmount = formatCurrency({
   amount: price.originalAmount / 100,
@@ -51,7 +25,7 @@ const amount = formatCurrency({
   currency: price.currency,
 });
 
-const hasOffer = price.percentOff;
+const hasOffer = price.percentOff > 0;
 ---
 
 {
