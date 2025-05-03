@@ -2,10 +2,26 @@
   "$schema": "https://unpkg.com/wrangler/config-schema.json",
   "name": "ariakit",
   "compatibility_date": "2025-04-10",
-  "pages_build_output_dir": "site/dist",
   "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
   "dev": {
     "ip": "0.0.0.0",
     "port": 4321
-  }
+  },
+  "assets": {
+    "directory": "./site/dist",
+    "not_found_handling": "404-page"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "PLUS",
+      "id": "805a2deebf034516b9fdaa776ebaf83e"
+    },
+    {
+      "binding": "EVENTS",
+      "id": "2693472753774223ab25c58880991173"
+    }
+  ]
 }

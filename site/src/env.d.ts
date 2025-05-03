@@ -2,7 +2,7 @@
 /// <reference types="@clerk/astro/env" />
 
 declare namespace App {
-  interface Locals {
+  interface Locals extends Runtime {
     user?: import("@clerk/astro/server").User | null;
     products?: Record<
       import("./lib/schemas.ts").PlusType,
