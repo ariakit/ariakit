@@ -46,5 +46,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           preCommands: npm run build -w site
-          workingDirectory: packages/site
           environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
