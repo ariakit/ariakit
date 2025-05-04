@@ -15,14 +15,23 @@
     "binding": "ASSETS",
     "directory": "./site/dist"
   },
-  "kv_namespaces": [
-    {
-      "binding": "PLUS",
-      "id": "805a2deebf034516b9fdaa776ebaf83e"
-    },
-    {
-      "binding": "EVENTS",
-      "id": "2693472753774223ab25c58880991173"
+  "env": {
+    "preview": {},
+    "production": {
+      "kv_namespaces": [
+        {
+          "binding": "PLUS",
+          "id": "805a2deebf034516b9fdaa776ebaf83e"
+        },
+        {
+          "binding": "EVENTS",
+          "id": "2693472753774223ab25c58880991173"
+        },
+        {
+          "binding": "ADMIN",
+          "id": "added36c1d7349b887e9d0caab35dd6c"
+        }
+      ]
     }
-  ]
+  }
 }

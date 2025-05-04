@@ -10,7 +10,9 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview2' }}
+      url: ${{ steps.deploy.outputs.deployment-url }}
 
     steps:
       - name: Checkout repository
@@ -32,6 +34,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: Deploy to Cloudflare Workers
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
