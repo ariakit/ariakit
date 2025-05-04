@@ -1,6 +1,8 @@
+name: deploy
+
 on:
   push:
-    branches: [main, astro-plus-payment]
+    branches: [main]
   pull_request_target:
     branches: [main]
 
@@ -40,4 +42,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           preCommands: npm run build -w site
-          environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
+          environment: ${{ github.ref == 'refs/heads/main' && '' || 'preview' }}
