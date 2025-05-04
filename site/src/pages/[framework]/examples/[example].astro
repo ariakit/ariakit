@@ -33,7 +33,7 @@ const entry = await getEntry("examples", `${example}`);
 
 // If example doesn't exist, redirect to 404
 if (!entry) {
-  return Astro.redirect("/404");
+  return Astro.rewrite("/404");
 }
 
 const examples = await getCollection("examples");
