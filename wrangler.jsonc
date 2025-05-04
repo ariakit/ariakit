@@ -16,7 +16,14 @@
     "directory": "./site/dist"
   },
   "env": {
-    "preview": {},
+    "preview": {
+      "kv_namespaces": [
+        {
+          "binding": "PLUS",
+          "id": "805a2deebf034516b9fdaa776ebaf83e"
+        }
+      ]
+    },
     "production": {
       "kv_namespaces": [
         {

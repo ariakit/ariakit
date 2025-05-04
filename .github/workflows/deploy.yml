@@ -1,5 +1,3 @@
-name: deploy
-
 on:
   push:
     branches: [main, astro-plus-payment]
@@ -11,12 +9,14 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview2' }}
+      name: ${{ github.ref == 'refs/heads/main' && 'Production - Astro' || 'Preview - Astro' }}
       url: ${{ steps.deploy.outputs.deployment-url }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.ref || '' }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -40,4 +40,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           preCommands: npm run build -w site
-          environment: production
+          environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
