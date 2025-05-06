@@ -106,7 +106,7 @@
     "@types/marked": "5.0.2",
     "@types/node": "22.15.11",
     "@types/postcss-import": "14.0.3",
-    "@types/react": "18.3.20",
+    "@types/react": "18.3.21",
     "@types/react-dom": "18.3.7",
     "@types/stylis": "4.2.7",
     "@types/textarea-caret": "3.0.4",
