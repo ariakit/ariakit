@@ -76,7 +76,7 @@
   "dependencies": {
     "@astrojs/mdx": "4.2.6",
     "@babel/core": "7.27.1",
-    "@babel/preset-env": "7.27.1",
+    "@babel/preset-env": "7.27.2",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@babel/types": "7.27.1",
