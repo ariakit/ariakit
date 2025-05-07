@@ -56,7 +56,7 @@ body {
 /** ak-command **/
 
 @utility ak-command_idle {
-  @apply not-[a]:cursor-default [[type=submit]]:cursor-pointer relative block select-none;
+  @apply not-[a]:cursor-default [[type=submit]]:not-disabled:not-aria-disabled:cursor-pointer relative block select-none;
 }
 
 @utility ak-command_active {
@@ -74,16 +74,25 @@ body {
   transition-property: overlay, display, scale, opacity;
   @apply ak-layer-canvas-1 ak-frame-force-dialog;
   @apply transition-discrete z-10 ring shadow-xl;
+  @variant backdrop {
+    transition-property: overlay, display, opacity;
+  }
 }
 
 @utility ak-popover_open {
   @apply starting:scale-95 starting:opacity-0 duration-500;
   /* https://easingwizard.com */
   @apply ease-[linear(0,_0.008_1.1%,_0.031_2.2%,_0.129_4.8%,_0.257_7.2%,_0.671_14.2%,_0.789_16.5%,_0.881_18.6%,_0.957_20.7%,_1.019_22.9%,_1.063_25.1%,_1.094_27.4%,_1.114_30.7%,_1.112_34.5%,_1.018_49.9%,_0.99_59.1%,_1)];
+  @variant backdrop {
+    @apply duration-250 opacity-100;
+  }
 }
 
 @utility ak-popover_closed {
   @apply duration-250 scale-95 opacity-0;
+  @variant backdrop {
+    @apply duration-250 opacity-0;
+  }
 }
 
 @utility ak-popover {
@@ -117,6 +126,34 @@ body {
   &:is(dialog, [popover]) {
     @apply open:ak-tooltip_open not-open:ak-tooltip_closed;
   }
+}
+
+/** ak-dialog **/
+
+@utility ak-dialog_idle {
+  @apply ak-popover_idle backdrop:backdrop-blur-xs;
+  @variant backdrop {
+    @apply overflow-auto overscroll-contain;
+  }
+}
+
+@utility ak-dialog_open {
+  @apply ak-popover_open;
+}
+
+@utility ak-dialog_closed {
+  @apply ak-popover_closed;
+}
+
+@utility ak-dialog {
+  @apply ak-dialog_idle;
+  &:is(dialog, [popover]) {
+    @apply open:ak-dialog_open not-open:ak-dialog_closed;
+  }
+}
+
+@utility ak-dialog-scroll {
+  @apply ak-popover-scroll;
 }
 
 /** ak-input **/
