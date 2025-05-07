@@ -11,7 +11,7 @@ export function getCountryCode(headers: Headers) {
 export function getCurrency(countryCode: string) {
   countryCode = countryCode.toUpperCase();
   if (countryCode === "GB") return "GBP";
-  if (countryCode === "IND") return "INR";
+  if (countryCode === "IN") return "INR";
   const euCodes =
     "AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE";
   if (euCodes.includes(countryCode)) return "EUR";
