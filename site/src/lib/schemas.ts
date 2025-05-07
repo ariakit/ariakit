@@ -26,8 +26,8 @@ export const PlusTypeSchema = z.enum(PLUS_TYPES);
 export type PlusType = z.infer<typeof PlusTypeSchema>;
 
 export const PriceKeySchema = z.string().refine((key) => {
-  const { type } = parsePlusPriceKey(key);
-  return !!type;
+  const { type, currency } = parsePlusPriceKey(key);
+  return !!type || !!currency;
 });
 
 export const PriceDataSchema = z.object({
