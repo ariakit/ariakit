@@ -1,25 +1,27 @@
 /// <reference types="astro/client" />
 /// <reference types="@clerk/astro/env" />
 
+type PlusType = import("./lib/schemas.ts").PlusType;
+type Framework = import("./lib/schemas.ts").Framework;
+type User = import("@clerk/astro/server").User;
+type KVNamespace = import("@cloudflare/workers-types").KVNamespace;
+
 type Runtime = import("@astrojs/cloudflare").Runtime<{
-  PLUS: import("@cloudflare/workers-types").KVNamespace;
-  EVENTS: import("@cloudflare/workers-types").KVNamespace;
+  PLUS: KVNamespace;
+  EVENTS: KVNamespace;
+  ADMIN: KVNamespace;
 }>;
 
-declare namespace App {
+namespace App {
   interface Locals extends Runtime {
-    user?: import("@clerk/astro/server").User | null;
-    products?: Record<
-      import("./lib/schemas.ts").PlusType,
-      import("stripe").Stripe.Product | null
-    >;
-    framework?: import("./lib/schemas.ts").Framework;
+    user?: User | null;
+    framework?: Framework;
     example?: string;
   }
 }
 
 interface UserPublicMetadata {
-  plus?: import("./lib/schemas.ts").PlusType | null;
+  plus?: PlusType | null;
 }
 
 interface UserPrivateMetadata {
@@ -39,8 +41,23 @@ interface ImportMetaEnv {
   readonly PUBLIC_STRIPE_PUBLISHABLE_KEY?: string;
   readonly STRIPE_SECRET_KEY?: string;
   readonly STRIPE_WEBHOOK_SECRET?: string;
+  readonly ADMIN_ORG_ID?: string;
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+namespace astroHTML.JSX {
+  interface ButtonHTMLAttributes {
+    command?:
+      | "show-modal"
+      | "close"
+      | "request-close"
+      | "show-popover"
+      | "hide-popover"
+      | "toggle-popover"
+      | `--${string}`;
+    commandfor?: string;
+  }
 }
