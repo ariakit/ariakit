@@ -14,8 +14,8 @@ export const POST: APIRoute = async (context) => {
     logger.error("Clerk is not enabled");
     return internalServerError();
   }
-  const secret = import.meta.env.CLERK_WEBHOOK_SECRET;
-  if (!secret) {
+  const signingSecret = import.meta.env.CLERK_WEBHOOK_SECRET;
+  if (!signingSecret) {
     logger.error("Clerk webhook secret not configured");
     return internalServerError();
   }
@@ -23,7 +23,7 @@ export const POST: APIRoute = async (context) => {
   let event: WebhookEvent;
 
   try {
-    event = await verifyWebhook(context.request, { signingSecret: secret });
+    event = await verifyWebhook(context.request, { signingSecret });
   } catch (err) {
     logger.error("Webhook error:", err);
     return badRequest();
