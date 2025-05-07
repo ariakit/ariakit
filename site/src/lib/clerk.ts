@@ -157,6 +157,11 @@ export async function removePlusFromUser(params: RemovePlusFromUserParams) {
   info("Removed plus from user", userId);
 }
 
+export function isAdmin(context: APIContext) {
+  const { orgId, orgRole } = context.locals.auth();
+  return orgId === import.meta.env.ADMIN_ORG_ID && orgRole === "org:admin";
+}
+
 export interface GetAllUsersParams {
   context: APIContext;
   limit?: number;
