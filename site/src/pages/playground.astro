@@ -1,13 +1,13 @@
 ---
 import CanvasColorPicker from "#app/components/canvas-color-picker.astro";
 import CodeBlock from "#app/components/code-block.astro";
-import MainLayout from "#app/layouts/main-layout.astro";
 import { Playground as PlaygroundClient } from "#app/components/playground.react.tsx";
 import CodeBlockTabs from "#app/components/code-block-tabs.astro";
 import example from "#app/components/copy-code.react?raw";
+import Layout from "./_layout.astro";
 ---
 
-<MainLayout>
+<Layout>
   <CanvasColorPicker />
 
   <div class="ak-segmented m-2 w-max">
@@ -308,4 +308,4 @@ export default App;`,
       ]}
     />
   </PlaygroundClient>
-</MainLayout>
+</Layout>
