@@ -3,7 +3,7 @@ import { getEntry } from "astro:content";
 import { render } from "astro:content";
 import { getCollection } from "astro:content";
 import type { GetStaticPaths } from "astro";
-import Layout from "../../../layouts/Layout.astro";
+import MainLayout from "#app/layouts/main-layout.astro";
 
 // Create getStaticPaths
 export const getStaticPaths = (async () => {
@@ -42,7 +42,7 @@ const examples = await getCollection("examples");
 const { Content } = await render(entry);
 ---
 
-<Layout title={entry.data.title || example}>
+<MainLayout title={entry.data.title || example}>
   <main
     class="w-full max-w-[95rem] mx-auto [&_:is(h1,h2,h3)]:max-w-[80rem] [&_:is(h1,h2,h3)]:mx-auto"
   >
@@ -62,4 +62,4 @@ const { Content } = await render(entry);
       )
     }
   </main>
-</Layout>
+</MainLayout>
