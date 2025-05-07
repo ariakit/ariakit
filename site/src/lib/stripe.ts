@@ -3,7 +3,8 @@ import { Stripe } from "stripe";
 import { findInOrder } from "./array.ts";
 import { getCustomer, getUser, getUserId, setCustomer } from "./clerk.ts";
 import type { User } from "./clerk.ts";
-import { getBestPromo, getPrices } from "./kv.ts";
+import { getUnixTime } from "./datetime.ts";
+import { getBestPromo, getPrices, putPromo } from "./kv.ts";
 import { getCountryCode, getCurrency } from "./locale.ts";
 import { createLogger } from "./logger.ts";
 import { objectId } from "./object-id.ts";
@@ -15,10 +16,15 @@ function createHttpClient(enabled: boolean) {
   if (!enabled) return;
   return Stripe.createFetchHttpClient(
     async (...args: Parameters<typeof fetch>) => {
-      const startTime = performance.now();
-      const response = await fetch(...args);
+      const { info, error } = logger.start();
       const url = new URL(args[0].toString());
-      logger.since(startTime).info(url.pathname);
+      const response = await fetch(...args);
+      if (response.ok) {
+        info(url.pathname);
+      } else {
+        error(url.pathname, response.status);
+        error(response.status, await response.text());
+      }
       return response;
     },
   );
@@ -41,6 +47,82 @@ export function getStripeClient() {
   return stripe;
 }
 
+export function expanded(
+  object: string | { id: string },
+  message: string | Error = "Stripe object is not expanded",
+): asserts object is { id: string } {
+  if (typeof object === "object") return;
+  if (typeof message === "string") {
+    message = new Error(message);
+  }
+  throw message;
+}
+
+export function isSalePromo(promo: Stripe.PromotionCode | Stripe.Coupon) {
+  const coupon = "coupon" in promo ? promo.coupon : promo;
+  return coupon.metadata?.type === "ariakit-plus-sale";
+}
+
+export interface CreateSalePromoParams {
+  context: APIContext;
+  percentOff: number;
+  user?: User | string | null;
+  expiresAt?: Date;
+  maxRedemptions?: number;
+}
+
+export async function createSalePromo({
+  context,
+  percentOff,
+  user,
+  expiresAt,
+  maxRedemptions,
+}: CreateSalePromoParams) {
+  if (!stripe) return;
+  const coupons: Stripe.Coupon[] = [];
+  for await (const coupon of stripe.coupons.list({ limit: 100 })) {
+    if (!isSalePromo(coupon)) continue;
+    coupons.push(coupon);
+  }
+  let coupon = coupons.find((coupon) => {
+    if (coupon.deleted) return false;
+    if (!coupon.valid) return false;
+    if (coupon.percent_off !== percentOff) return false;
+    if (coupon.applies_to?.products.length) return false;
+    return true;
+  });
+
+  if (!coupon) {
+    const name = `${percentOff}% off`;
+    coupon = await stripe.coupons.create({
+      name,
+      percent_off: percentOff,
+      metadata: { type: "ariakit-plus-sale" },
+    });
+  }
+
+  const customer = user ? await getCustomer({ context, user }) : undefined;
+  const expiresAtTime = expiresAt ? getUnixTime(expiresAt) : undefined;
+
+  const promo = await stripe.promotionCodes.create({
+    coupon: coupon.id,
+    customer: customer || undefined,
+    max_redemptions: maxRedemptions,
+    expires_at: expiresAtTime,
+  });
+  await putPromo(context, {
+    id: promo.id,
+    type: user ? "customer" : "sale",
+    user: user ? objectId(user) : null,
+    percentOff,
+    expiresAt: expiresAtTime ?? null,
+    maxRedemptions: maxRedemptions ?? null,
+    products: [],
+    timesRedeemed: 0,
+  });
+  return promo;
+}
+
 export interface CreateCustomerParams extends Stripe.CustomerCreateParams {
   context: APIContext;
   user: User | string;
@@ -55,13 +137,10 @@ export async function createCustomer({
 }: CreateCustomerParams) {
   if (!stripe) return;
   const userId = objectId(user);
-  const customerParams = {
+  const customer = await stripe.customers.create({
     email,
     ...params,
     metadata: { ...params?.metadata, clerkId: userId },
-  };
-  const customer = await stripe.customers.create(customerParams, {
-    idempotencyKey: userId,
   });
   await setCustomer(context, userId, customer.id);
   return customer;
@@ -86,12 +165,13 @@ export function getPlusPriceKey({
     : `ariakit-plus-${type}-${lowercaseCurrency}${country}`;
 }
 
-export function parsePlusPriceKey(key: string): GetPlusPriceKeyParams {
-  const match = key.match(/ariakit-plus-(?:team-)?([a-z]+)(?:-([a-z]+))?$/);
+export function parsePlusPriceKey(key: string) {
+  const match = key.match(/ariakit-plus-(?:team-)?([a-z]+)(?:-([a-z]{2}))?$/);
   if (!match) return {};
   const [, currency, countryCode] = match;
+  if (!currency) return {};
   return {
-    type: key.includes("team-") ? "team" : "personal",
+    type: key.includes("team-") ? ("team" as const) : ("personal" as const),
     currency,
     countryCode,
   };
@@ -240,13 +320,5 @@ export async function createCheckout({
     },
   });
 
-  return session;
-}
-
-export async function getCheckout(session: Stripe.Checkout.Session | string) {
-  if (!stripe) return;
-  if (typeof session === "string") {
-    session = await stripe.checkout.sessions.retrieve(session);
-  }
   return session;
 }
