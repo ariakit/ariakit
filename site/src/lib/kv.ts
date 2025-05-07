@@ -1,7 +1,15 @@
 import type { APIContext } from "astro";
+import { getUnixTime } from "./datetime.ts";
+import { nonNullable } from "./non-nullable.ts";
 import type { PriceData, PromoData } from "./schemas.ts";
 
-type EventStatus = "processing" | "processed" | "failed";
+function priceKey(key = "") {
+  return `price:${key}`;
+}
+
+function promoKey(key = "") {
+  return `promo:${key}`;
+}
 
 export function getPlusStore(context: APIContext) {
   return context.locals.runtime.env.PLUS;
@@ -11,28 +19,39 @@ export function getEventsStore(context: APIContext) {
   return context.locals.runtime.env.EVENTS;
 }
 
-export async function getPrice(context: APIContext, key: string) {
-  const store = getPlusStore(context);
-  return store.get<PriceData>(`price:${key}`, "json");
+export function getAdminStore(context: APIContext) {
+  return context.locals.runtime.env.ADMIN;
 }
 
-export async function getPrices(context: APIContext, keys: string[]) {
+export async function getPrice(context: APIContext, key: string) {
   const store = getPlusStore(context);
-  const prices = await store.get<PriceData>(
-    keys.map((key) => `price:${key}`),
-    "json",
-  );
-  return Array.from(prices.values()).filter((price) => price != null);
+  const price = await store.getWithMetadata<PriceData>(priceKey(key));
+  return price.metadata;
+}
+
+export async function getPrices(context: APIContext, keys?: string[]) {
+  const store = getPlusStore(context);
+  if (!keys?.length) {
+    const result = await store.list<PriceData>({ prefix: priceKey() });
+    return result.keys.map((key) => key.metadata).filter(nonNullable);
+  }
+  const priceKeys = keys.map(priceKey);
+  const prices = await store.getWithMetadata<PriceData>(priceKeys);
+  return prices
+    .values()
+    .map((price) => price.metadata)
+    .filter(nonNullable)
+    .toArray();
 }
 
 export async function putPrice(context: APIContext, data: PriceData) {
   const store = getPlusStore(context);
-  await store.put(`price:${data.key}`, JSON.stringify(data));
+  await store.put(priceKey(data.key), "", { metadata: data });
 }
 
 export async function deletePrice(context: APIContext, key: string) {
   const store = getPlusStore(context);
-  await store.delete(`price:${key}`);
+  await store.delete(priceKey(key));
 }
 
 interface GetPromoParams {
@@ -43,11 +62,9 @@ interface GetPromoParams {
 
 export async function getAllPromos({ context, product, user }: GetPromoParams) {
   const store = getPlusStore(context);
-  const result = await store.list({ prefix: "promo:" });
-  const keys = result.keys.map((key) => key.name);
-  const promos = await store.get<PromoData>(keys, "json");
-  if (!promos) return [];
-  return Array.from(promos.values()).filter((promo): promo is PromoData => {
+  const result = await store.list<PromoData>({ prefix: promoKey() });
+  const promos = result.keys.map((key) => key.metadata);
+  return promos.filter((promo): promo is PromoData => {
     if (promo == null) return false;
     if (promo.user && promo.user !== user) return false;
     if (promo.products.length) {
@@ -69,29 +86,33 @@ export async function getBestPromo(params: GetPromoParams) {
 
 export async function putPromo(context: APIContext, data: PromoData) {
   const store = getPlusStore(context);
-  await store.put(`promo:${data.id}`, JSON.stringify(data));
+  await store.put(promoKey(data.id), "", { metadata: data });
 }
 
 export async function deletePromo(context: APIContext, id: string) {
   const store = getPlusStore(context);
-  await store.delete(`promo:${id}`);
+  await store.delete(promoKey(id));
 }
 
-export async function processEvent(
-  context: APIContext,
-  id: string,
-  status: EventStatus,
-) {
+export async function processEvent(context: APIContext, id: string) {
   const store = getEventsStore(context);
-  if (status === "failed") {
-    await store.delete(id);
-  } else {
-    await store.put(id, status);
-  }
+  await store.put(id, "");
 }
 
-export async function isEventHandled(context: APIContext, id: string) {
+export async function isEventProcessed(context: APIContext, id: string) {
   const store = getEventsStore(context);
-  const status = await store.get<EventStatus>(id);
-  return status === "processed" || status === "processing";
+  const event = await store.get(id);
+  return event !== null;
+}
+
+export async function syncAdmin(context: APIContext, time = getUnixTime()) {
+  const store = getAdminStore(context);
+  await store.put("last-sync", time.toString());
+}
+
+export async function getAdminLastSync(context: APIContext) {
+  const store = getAdminStore(context);
+  const lastSync = await store.get("last-sync");
+  if (!lastSync) return;
+  return Number.parseInt(lastSync);
 }

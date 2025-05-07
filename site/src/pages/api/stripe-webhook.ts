@@ -1,12 +1,23 @@
 import type { APIRoute } from "astro";
 import type { Stripe } from "stripe";
 import { addPlusToUser, getUser } from "#app/lib/clerk.ts";
-import { deletePrice, deletePromo, putPrice, putPromo } from "#app/lib/kv.ts";
+import {
+  deletePrice,
+  deletePromo,
+  isEventProcessed,
+  processEvent,
+  putPrice,
+  putPromo,
+} from "#app/lib/kv.ts";
 import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object-id.ts";
 import { badRequest, internalServerError, ok } from "#app/lib/response.ts";
-import { type PlusType, PlusTypeSchema } from "#app/lib/schemas.ts";
-import { getStripeClient, parsePlusPriceKey } from "#app/lib/stripe.ts";
+import { PlusTypeSchema } from "#app/lib/schemas.ts";
+import {
+  getStripeClient,
+  isSalePromo,
+  parsePlusPriceKey,
+} from "#app/lib/stripe.ts";
 
 export const prerender = false;
 
@@ -78,7 +89,8 @@ export const POST: APIRoute = async (context) => {
       logger.error("No plus type in session metadata", session.id);
       return ok();
     }
-    if (!PlusTypeSchema.safeParse(plusType).success) {
+    const { success, data: type } = PlusTypeSchema.safeParse(plusType);
+    if (!success) {
       logger.error("Invalid plus type in session metadata", session.id);
       return ok();
     }
@@ -86,13 +98,18 @@ export const POST: APIRoute = async (context) => {
       logger.error("No Clerk ID in session metadata", session.id);
       return ok();
     }
+    if (await isEventProcessed(context, session.id)) {
+      logger.info("Checkout session already processed", session.id);
+      return ok();
+    }
     await addPlusToUser({
       context,
       user: clerkId,
-      type: plusType as PlusType,
+      type: type,
       amount: session.amount_total ?? 0,
       currency: session.currency ?? "usd",
     });
+    await processEvent(context, session.id);
     return ok();
   }
 
@@ -153,7 +170,7 @@ export const POST: APIRoute = async (context) => {
     let userId: string | null = null;
     const promo = event.data.object;
     const coupon = promo.coupon;
-    const isSale = coupon.metadata?.type === "ariakit-plus-sale";
+    const isSale = isSalePromo(promo);
     if (!isSale && !promo.customer) {
       await deletePromo(context, promo.id);
       logger.info("Promotion code not a plus sale", promo.id);
