@@ -3,10 +3,10 @@ import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
-import { Icon } from "../icons/icon.react.tsx";
-import type { Source } from "../lib/types.ts";
-import type { Framework } from "../lib/types.ts";
-import { useControllableState } from "../lib/use-controllable-state.ts";
+import { Icon } from "#app/icons/icon.react.tsx";
+import type { Framework } from "#app/lib/schemas.ts";
+import type { Source } from "#app/lib/types.ts";
+import { useControllableState } from "#app/lib/use-controllable-state.ts";
 import type {
   CodeBlockProps as CodeBlockBaseProps,
   CodeBlockTabProps as CodeBlockTabBaseProps,
