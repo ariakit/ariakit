@@ -18,6 +18,11 @@ namespace App {
     framework?: Framework;
     example?: string;
   }
+  interface SessionData {
+    admin: {
+      limit?: number;
+    };
+  }
 }
 
 interface UserPublicMetadata {
@@ -38,6 +43,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_CLERK_PUBLISHABLE_KEY?: string;
   readonly CLERK_SECRET_KEY?: string;
   readonly CLERK_WEBHOOK_SECRET?: string;
+  readonly CLERK_APP_ID?: string;
   readonly PUBLIC_STRIPE_PUBLISHABLE_KEY?: string;
   readonly STRIPE_SECRET_KEY?: string;
   readonly STRIPE_WEBHOOK_SECRET?: string;
