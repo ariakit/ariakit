@@ -46,7 +46,9 @@ export async function getPrices(context: APIContext, keys?: string[]) {
 
 export async function putPrice(context: APIContext, data: PriceData) {
   const store = getPlusStore(context);
-  await store.put(priceKey(data.key), "", { metadata: data });
+  await store.put(priceKey(data.key), data.amount.toString(), {
+    metadata: data,
+  });
 }
 
 export async function deletePrice(context: APIContext, key: string) {
@@ -77,7 +79,7 @@ export async function getAllPromos({ context, product, user }: GetPromoParams) {
 
 export async function getBestPromo(params: GetPromoParams) {
   const promos = await getAllPromos(params);
-  if (!promos) return null;
+  if (!promos.length) return null;
   return promos.reduce((best, promo) => {
     if (promo.percentOff > best.percentOff) return promo;
     return best;
@@ -86,7 +88,9 @@ export async function getBestPromo(params: GetPromoParams) {
 
 export async function putPromo(context: APIContext, data: PromoData) {
   const store = getPlusStore(context);
-  await store.put(promoKey(data.id), "", { metadata: data });
+  await store.put(promoKey(data.id), data.percentOff.toString(), {
+    metadata: data,
+  });
 }
 
 export async function deletePromo(context: APIContext, id: string) {
@@ -96,7 +100,7 @@ export async function deletePromo(context: APIContext, id: string) {
 
 export async function processEvent(context: APIContext, id: string) {
   const store = getEventsStore(context);
-  await store.put(id, "");
+  await store.put(id, "processed");
 }
 
 export async function isEventProcessed(context: APIContext, id: string) {
