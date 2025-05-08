@@ -129,6 +129,8 @@ export async function addPlusToUser(params: AddPlusToUserParams) {
   await clerk.users.updateUser(userId, {
     createOrganizationEnabled: isTeam,
     createOrganizationsLimit: isTeam ? 1 : undefined,
+  });
+  await clerk.users.updateUserMetadata(userId, {
     publicMetadata: { plus: params.type },
     privateMetadata: {
       credit: isTeam ? 0 : params.amount,
@@ -151,6 +153,8 @@ export async function removePlusFromUser(params: RemovePlusFromUserParams) {
   const clerk = clerkClient(params.context);
   await clerk.users.updateUser(userId, {
     createOrganizationEnabled: false,
+  });
+  await clerk.users.updateUserMetadata(userId, {
     publicMetadata: { plus: null },
     privateMetadata: { credit: 0, currency: null },
   });
