@@ -1,5 +1,22 @@
 @import "./ariakit.css";
 
+@custom-variant base {
+  @layer base {
+    @slot;
+  }
+}
+
+astro-island,
+astro-slot,
+astro-static-slot {
+  display: block !important;
+}
+
 .cl-cardBox {
   @apply ak-layer border shadow-none;
+}
+
+html,
+body {
+  @apply font-sans min-h-screen antialiased;
 }

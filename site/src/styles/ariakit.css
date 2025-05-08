@@ -26,37 +26,27 @@
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-astro-island,
-astro-slot,
-astro-static-slot {
-  display: block !important;
-}
-
 :root {
   @variant dark {
     --color-canvas: oklch(16.52% 0.0062 285.7);
   }
 }
 
-html,
 body {
-  @apply font-sans min-h-screen;
-}
-
-body {
-  @apply ak-layer-canvas antialiased;
-}
-
-@custom-variant base {
-  @layer base {
-    @slot;
-  }
+  @apply ak-layer-canvas;
 }
 
 /** ak-command **/
 
 @utility ak-command_idle {
-  @apply not-[a]:cursor-default [[type=submit]]:not-disabled:not-aria-disabled:cursor-pointer relative block select-none;
+  @apply not-[a]:cursor-default relative block select-none;
+
+  /* Only apply cursor-pointer to submit buttons that are not disabled */
+  &:is([type="submit"], form button:only-of-type) {
+    &:not(:disabled, [aria-disabled="true"]) {
+      @apply cursor-pointer;
+    }
+  }
 }
 
 @utility ak-command_active {
@@ -73,7 +63,7 @@ body {
   --ak-popover-ring-color: var(--ak-ring, var(--ak-layer-ring));
   transition-property: overlay, display, scale, opacity;
   @apply ak-layer-canvas-1 ak-frame-force-dialog;
-  @apply transition-discrete z-10 ring shadow-xl;
+  @apply transition-discrete z-10 border-none ring shadow-xl;
   @variant backdrop {
     transition-property: overlay, display, opacity;
   }
@@ -104,6 +94,58 @@ body {
 
 @utility ak-popover-scroll {
   @apply ak-frame-cover overflow-auto overscroll-contain;
+}
+
+/** ak-select **/
+
+@utility ak-select_idle {
+  @apply ak-button_idle;
+  appearance: base-select;
+}
+
+@utility ak-select_hover {
+  @apply ak-button_hover;
+}
+
+@utility ak-select_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-select_active {
+  @apply ak-button_active;
+}
+
+@utility ak-select_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-select-picker_idle {
+  appearance: base-select;
+  top: calc(anchor(bottom) + --spacing(1));
+  inset-inline-start: calc(anchor(start) - --spacing(1));
+  position-try-fallbacks: flip-block, flip-inline;
+  @apply ak-popover_idle ak-frame-force-container min-w-20;
+}
+
+@utility ak-select-picker_open {
+  @apply ak-popover_open;
+}
+
+@utility ak-select-picker_closed {
+  @apply ak-popover_closed;
+}
+
+@utility ak-select {
+  @apply ak-select_idle hover:ak-select_hover focus-visible:ak-select_focus active:not-disabled:not-aria-disabled:ak-select_active aria-disabled:ak-select_disabled disabled:ak-select_disabled;
+  &::picker(select) {
+    @apply ak-select-picker_idle;
+  }
+  &::picker(select):popover-open {
+    @apply ak-select-picker_open;
+  }
+  &::picker(select):not(:popover-open) {
+    @apply ak-select-picker_closed;
+  }
 }
 
 /** ak-tooltip **/
@@ -210,7 +252,7 @@ body {
 }
 
 @utility ak-option_focus {
-  @apply ak-layer-contrast-primary;
+  @apply ak-layer-contrast-primary outline-none;
 }
 
 @utility ak-option_active {
@@ -219,6 +261,17 @@ body {
 
 @utility ak-option {
   @apply ak-option_idle hover:ak-option_hover focus-visible:ak-option_focus active:not-disabled:not-aria-disabled:ak-option_active;
+}
+
+/** ak-badge **/
+
+@utility ak-badge-* {
+  --ak-badge-color: --value(--color, [color]);
+  @apply ak-layer-mix-(--ak-badge-color)/20 ak-edge-(--ak-badge-color);
+  @apply rounded-full border px-2 py-1.5 text-xs font-medium leading-[1em];
+  > * {
+    @apply ak-text-(--ak-badge-color);
+  }
 }
 
 /** ak-button **/
@@ -338,7 +391,7 @@ body {
 }
 
 @utility ak-button-classic {
-  @apply ak-button-classic_idle hover:ak-button-classic_hover focus-visible:ak-button-classic_focus active:not-disabled:not-aria-disabled:ak-button-classic_active disabled:ak-button-classic_disabled;
+  @apply ak-button-classic_idle hover:ak-button-classic_hover focus-visible:ak-button-classic_focus active:not-disabled:not-aria-disabled:ak-button-classic_active disabled:ak-button-classic_disabled aria-disabled:ak-button-classic_disabled;
 }
 
 /** ak-segmented **/
@@ -544,6 +597,41 @@ body {
 
 @utility ak-tab-folder {
   @apply ak-tab-folder_idle hover:not-aria-selected:ak-tab-folder_hover focus-visible:ak-tab-folder_focus aria-selected:ak-tab-folder_selected active:ak-tab-folder_active;
+}
+
+/** ak-container **/
+
+@utility ak-container-size-* {
+  --ak-container-max-width: --spacing(--value(number));
+  --ak-container-max-width: --value(--spacing, [length]);
+  --ak-container-padding: --spacing(--modifier(number));
+  --ak-container-padding: --modifier([length]);
+}
+
+@utility ak-container {
+  max-width: var(--ak-container-max-width);
+  padding: var(--ak-container-padding);
+  margin-inline: auto;
+  width: 100%;
+}
+
+/** ak-link **/
+
+@utility ak-link_idle {
+  @apply ak-text-primary ak-outline-primary;
+  @apply relative -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium underline decoration-1 underline-offset-[0.25em];
+}
+
+@utility ak-link_hover {
+  @apply decoration-[3px];
+}
+
+@utility ak-link_focus {
+  @apply outline-2;
+}
+
+@utility ak-link {
+  @apply ak-link_idle hover:ak-link_hover focus-visible:ak-link_focus;
 }
 
 /** ak-prose **/
