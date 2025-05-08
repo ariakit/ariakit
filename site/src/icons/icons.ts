@@ -14,6 +14,13 @@ export const copy: Icon = {
   html: `<g stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></g>`,
 };
 
+export const search: Icon = {
+  size: 24,
+  stroke: "currentColor",
+  fill: "none",
+  html: `<path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />`,
+};
+
 export const check: Icon = {
   size: 16,
   stroke: "currentColor",
