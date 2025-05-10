@@ -4,13 +4,15 @@ import SelectOption from "./select-option.astro";
 
 interface Props extends HTMLAttributes<"select"> {
   options?: ComponentProps<typeof SelectOption>[];
+  submitOnChange?: boolean;
 }
 
-const { options, ...props } = Astro.props;
+const { options, submitOnChange, ...props } = Astro.props;
 ---
 
 <select
   data-select
+  data-submit-on-change={submitOnChange || undefined}
   class:list={["ak-select ak-layer-pop", props.class]}
   {...props}
 >
@@ -30,6 +32,7 @@ const { options, ...props } = Astro.props;
       }
     });
     select.form?.addEventListener("change", () => {
+      if (!select.dataset.submitOnChange) return;
       select.form?.submit();
     });
   }
