@@ -1,0 +1,17 @@
+@utility ak-container-size-* {
+  --ak-container-max-width: --spacing(--value(number));
+  --ak-container-max-width: --value(--spacing, [length]);
+  --ak-container-padding: --spacing(--modifier(number));
+  --ak-container-padding: --modifier([length]);
+}
+
+@utility ak-container {
+  width: calc(100% - var(--ak-container-padding) * 2);
+  max-width: var(--ak-container-max-width);
+  margin-inline: auto;
+}
+
+@utility ak-container-padding-* {
+  --ak-container-padding: --spacing(--value(number));
+  --ak-container-padding: --value(--spacing, [length]);
+}

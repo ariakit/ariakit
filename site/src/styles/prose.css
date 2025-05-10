@@ -1,0 +1,15 @@
+@utility ak-prose {
+  @apply ak-text/80;
+
+  :where(h1) {
+    @apply my-10 text-4xl;
+  }
+
+  :where(h2) {
+    @apply my-10 text-3xl;
+  }
+
+  :where(h3) {
+    @apply my-10 text-2xl;
+  }
+}

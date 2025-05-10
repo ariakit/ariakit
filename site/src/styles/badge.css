@@ -1,0 +1,8 @@
+@utility ak-badge-* {
+  --ak-badge-color: --value(--color, [color]);
+  @apply ak-layer-mix-(--ak-badge-color)/15 ak-edge-(--ak-badge-color)/5 ak-frame-force-badge;
+  @apply inline-block border text-xs font-medium leading-[1ex];
+  > * {
+    @apply ak-text-(--ak-badge-color)/70;
+  }
+}
