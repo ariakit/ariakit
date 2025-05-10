@@ -40,3 +40,14 @@ export function formatCurrency({ amount, currency }: FormatCurrencyParams) {
   const text = symbol + value;
   return { symbol, value, parts, text, toString: () => text };
 }
+
+export function getCurrencySymbol(currency: string) {
+  const { symbol } = formatCurrency({ amount: 1, currency });
+  return symbol;
+}
+
+export function getFlagEmoji(countryCode: string) {
+  return [...countryCode.toUpperCase()]
+    .map((char) => String.fromCodePoint(127397 + char.charCodeAt(0)))
+    .reduce((a, b) => `${a}${b}`);
+}
