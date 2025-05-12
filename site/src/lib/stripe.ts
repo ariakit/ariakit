@@ -12,6 +12,8 @@ import type { PlusType, PriceData, PromoData } from "./schemas.ts";
 
 const logger = createLogger("stripe");
 
+const SALE_PROMO_TYPE = "ariakit-plus-sale";
+
 function createHttpClient(enabled: boolean) {
   if (!enabled) return;
   return Stripe.createFetchHttpClient(
@@ -60,7 +62,7 @@ export function expanded(
 
 export function isSalePromo(promo: Stripe.PromotionCode | Stripe.Coupon) {
   const coupon = "coupon" in promo ? promo.coupon : promo;
-  return coupon.metadata?.type === "ariakit-plus-sale";
+  return coupon.metadata?.type === SALE_PROMO_TYPE;
 }
 
 export interface CreateSalePromoParams {
@@ -97,7 +99,7 @@ export async function createSalePromo({
     coupon = await stripe.coupons.create({
       name,
       percent_off: percentOff,
-      metadata: { type: "ariakit-plus-sale" },
+      metadata: { type: SALE_PROMO_TYPE },
     });
   }
 
@@ -279,7 +281,7 @@ export async function createCheckout({
   returnUrl.searchParams.set("redirect_url", url.toString());
 
   const isSamePrice =
-    price.amount === stripePrice.unit_amount &&
+    price.originalAmount === stripePrice.unit_amount &&
     price.taxBehavior === stripePrice.tax_behavior &&
     compareCurrency(price.currency, stripePrice.currency);
 
@@ -290,7 +292,7 @@ export async function createCheckout({
         price_data: {
           product: price.product,
           currency: price.currency,
-          unit_amount: price.amount,
+          unit_amount: price.originalAmount,
           tax_behavior: price.taxBehavior,
         },
       };
