@@ -59,7 +59,7 @@ export async function deletePrice(context: APIContext, key: string) {
 interface GetPromoParams {
   context: APIContext;
   product?: string | null;
-  user?: string | null;
+  user?: string | null | "any";
 }
 
 export async function getAllPromos({ context, product, user }: GetPromoParams) {
@@ -68,7 +68,7 @@ export async function getAllPromos({ context, product, user }: GetPromoParams) {
   const promos = result.keys.map((key) => key.metadata);
   return promos.filter((promo): promo is PromoData => {
     if (promo == null) return false;
-    if (promo.user && promo.user !== user) return false;
+    if (user !== "any" && promo.user && promo.user !== user) return false;
     if (promo.products.length) {
       if (!product) return false;
       if (!promo.products.includes(product)) return false;
@@ -77,8 +77,19 @@ export async function getAllPromos({ context, product, user }: GetPromoParams) {
   });
 }
 
-export async function getBestPromo(params: GetPromoParams) {
-  const promos = await getAllPromos(params);
+export async function getBestPromo(
+  promos: PromoData[],
+): Promise<PromoData | null>;
+export async function getBestPromo(
+  params: GetPromoParams,
+): Promise<PromoData | null>;
+
+export async function getBestPromo(
+  promosOrParams: GetPromoParams | PromoData[],
+) {
+  const promos = Array.isArray(promosOrParams)
+    ? promosOrParams
+    : await getAllPromos(promosOrParams);
   if (!promos.length) return null;
   return promos.reduce((best, promo) => {
     if (promo.percentOff > best.percentOff) return promo;
