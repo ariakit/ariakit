@@ -2,19 +2,20 @@
 @import "@ariakit/tailwind";
 
 @import "./badge.css";
-@import "./button.css";
 @import "./command.css";
-@import "./container.css";
+@import "./button.css";
+@import "./radio.css";
+@import "./option.css";
+@import "./tab.css";
+@import "./popover.css";
 @import "./dialog.css";
+@import "./tooltip.css";
+@import "./select.css";
+@import "./container.css";
 @import "./input.css";
 @import "./link.css";
-@import "./option.css";
-@import "./popover.css";
-@import "./prose.css";
 @import "./segmented.css";
-@import "./select.css";
-@import "./tab.css";
-@import "./tooltip.css";
+@import "./prose.css";
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
@@ -37,7 +38,7 @@
   --spacing-field: --spacing(3);
 
   --radius-card: var(--radius-xl);
-  --spacing-card: --spacing(3);
+  --spacing-card: --spacing(4);
 
   --radius-badge: var(--radius-md);
   --spacing-badge: --spacing(1.5);
