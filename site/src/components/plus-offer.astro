@@ -22,14 +22,14 @@ if (!price) {
 if (!price.percentOff) return null;
 
 const formattedExpirationDate = price.expiresAt
-  ? new Date(price.expiresAt).toLocaleDateString("en-US", {
+  ? new Date(price.expiresAt * 1000).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     })
   : null;
 
 const timeRemaining = price.expiresAt
-  ? formatDistanceToNow(price.expiresAt)
+  ? formatDistanceToNow(price.expiresAt * 1000)
   : null;
 
 const text = price.maxRedemptions
