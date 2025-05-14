@@ -111,6 +111,30 @@ export async function setCustomer(
   setCurrentUser(context, user);
 }
 
+export interface CreateTeamParams {
+  context: APIContext;
+  name?: string;
+  user?: User | string | null;
+}
+
+export async function createTeam(params: CreateTeamParams) {
+  if (!isClerkEnabled()) return;
+  const clerk = clerkClient(params.context);
+  const { info } = logger.start();
+  const user = await getUser(params);
+  if (!user) return;
+  const userName =
+    user.firstName ?? user.primaryEmailAddress?.emailAddress.split("@")[0];
+  const name = params.name ?? `${userName}'s Team`;
+  const team = await clerk.organizations.createOrganization({
+    name,
+    createdBy: user.id,
+    maxAllowedMemberships: 10,
+  });
+  info("Created team %s", name);
+  return team;
+}
+
 export interface AddPlusToUserParams {
   context: APIContext;
   type: PlusType;
@@ -127,8 +151,7 @@ export async function addPlusToUser(params: AddPlusToUserParams) {
   const clerk = clerkClient(params.context);
   const isTeam = params.type === "team";
   await clerk.users.updateUser(userId, {
-    createOrganizationEnabled: isTeam,
-    createOrganizationsLimit: isTeam ? 1 : undefined,
+    createOrganizationEnabled: false,
   });
   await clerk.users.updateUserMetadata(userId, {
     publicMetadata: { plus: params.type },
