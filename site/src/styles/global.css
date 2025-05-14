@@ -18,5 +18,5 @@ astro-static-slot {
 
 html,
 body {
-  @apply font-sans min-h-screen antialiased;
+  @apply font-sans min-h-[100dvh] antialiased;
 }
