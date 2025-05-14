@@ -4,10 +4,12 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "dev-all": "concurrently -k -r 'npm:dev' 'npm:listen-*'",
     "tsc": "astro check && tsc -b src",
     "build": "astro build",
     "preview": "wrangler dev",
-    "astro": "astro"
+    "preview-all": "concurrently -k -r 'npm:preview' 'npm:listen-*'",
+    "listen-stripe": "stripe listen --forward-to http://localhost:4321/api/stripe-webhook"
   },
   "imports": {
     "#app/*": "./src/*"
@@ -17,7 +19,7 @@
     "@astrojs/cloudflare": "12.5.2",
     "@astrojs/react": "4.2.7",
     "@astrojs/solid-js": "5.0.10",
-    "@clerk/astro": "2.6.10",
+    "@clerk/astro": "2.7.2",
     "@stripe/stripe-js": "7.2.0",
     "shiki": "3.3.0",
     "stripe": "18.1.0",
