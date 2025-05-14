@@ -20,19 +20,9 @@ export function getPlusCheckoutPath({
     parsePlusCheckoutPath(url);
   type = type ?? _type;
   step = step ?? _step;
-  const nextUrl = new URL(`/plus/checkout/${step}/${type}`, url);
-  const redirectUrl = getRedirectUrl(url);
-  if (redirectUrl) {
-    nextUrl.searchParams.set("redirect_url", encodeURIComponent(redirectUrl));
-  }
+  const nextUrl = new URL(url);
+  nextUrl.pathname = `/plus/checkout/${step}/${type}`;
   return nextUrl.toString().replace(nextUrl.origin, "");
-}
-
-export function getRedirectUrl(url: string | URL) {
-  url = new URL(url);
-  const redirectUrl = url.searchParams.get("redirect_url");
-  if (!redirectUrl) return null;
-  return decodeURIComponent(redirectUrl);
 }
 
 export function parsePlusCheckoutPath(url: string | URL) {
