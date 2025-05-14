@@ -39,7 +39,7 @@ export async function getPrices(context: APIContext, keys?: string[]) {
   const prices = await store.getWithMetadata<PriceData>(priceKeys);
   return prices
     .values()
-    .map((price) => price.metadata)
+    .map((price) => price?.metadata)
     .filter(nonNullable)
     .toArray();
 }
