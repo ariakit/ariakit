@@ -1,5 +1,5 @@
 @utility ak-radio_idle {
-  @apply ak-button_idle ak-layer-pop;
+  @apply ak-button_idle;
 
   input {
     @apply sr-only;
@@ -30,7 +30,7 @@
 @utility ak-radio_checked {
   @variant before {
     @apply ak-text-primary/50;
-    @apply border-current bg-current;
+    @apply bg-current;
   }
 }
 
