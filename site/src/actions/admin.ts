@@ -366,7 +366,7 @@ export const admin = {
     accept: "form",
     async handler(_, action) {
       const context = wrapActionContext(action);
-      if (!isAdmin(context)) {
+      if (!(await isAdmin(context))) {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
       try {
@@ -384,7 +384,7 @@ export const admin = {
     input: SetPriceInputSchema,
     async handler(input, action) {
       const context = wrapActionContext(action);
-      if (!isAdmin(context)) {
+      if (!(await isAdmin(context))) {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
       await setPrice(context, input);
@@ -402,7 +402,7 @@ export const admin = {
     }),
     async handler(input, action) {
       const context = wrapActionContext(action);
-      if (!isAdmin(context)) {
+      if (!(await isAdmin(context))) {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
       const stripe = getStripeClient();

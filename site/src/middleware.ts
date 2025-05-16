@@ -19,7 +19,7 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
 
   const response = await clerk(context, next);
 
-  if (isAdminAction && !isAdmin(context)) {
+  if (isAdminAction && !(await isAdmin(context))) {
     return unauthorized();
   }
 

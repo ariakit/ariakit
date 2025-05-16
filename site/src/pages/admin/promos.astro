@@ -16,7 +16,7 @@ import {
 
 export const prerender = false;
 
-if (!isAdmin(Astro)) {
+if (!(await isAdmin(Astro))) {
   return Astro.redirect("/");
 }
 
@@ -87,7 +87,7 @@ function truncate(str: string, maxLength: number) {
                   type="text"
                   inputmode="numeric"
                   name="expiresInDays"
-                  pattern="^\\d+$"
+                  pattern="^\\d+(\\.\\d+)?$"
                   placeholder="00"
                   autocomplete="off"
                   class="field-sizing-content"

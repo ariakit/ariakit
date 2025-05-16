@@ -1,18 +1,18 @@
 ---
-import { clerkClient, type Organization } from "@clerk/astro/server";
-import { isAdmin } from "#app/lib/clerk.ts";
+import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
+import { isAdmin } from "#app/lib/clerk.ts";
+import { clerkClient, type Organization } from "@clerk/astro/server";
 import LayoutPagination from "./_layout-pagination.astro";
 import {
   getClerkInstanceUrl,
   getPageUrls,
   getPaginationData,
 } from "./_utils.ts";
-import { InlineLink } from "#app/components/inline-link.react.tsx";
 
 export const prerender = false;
 
-if (!isAdmin(Astro)) {
+if (!(await isAdmin(Astro))) {
   return Astro.redirect("/");
 }
 

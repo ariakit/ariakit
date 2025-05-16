@@ -35,14 +35,32 @@ export async function getCurrentCustomer(context: APIContext) {
   return getCustomer({ context, user });
 }
 
-export function currentUserHasTeam(context: APIContext) {
-  if (!isClerkEnabled()) return false;
-  const { orgId } = context.locals.auth();
-  return orgId != null;
+export async function getCurrentUserTeams(
+  context: APIContext,
+  refresh = false,
+) {
+  if (!isClerkEnabled()) return new Map<string, string>();
+  if (refresh) {
+    const clerk = clerkClient(context);
+    const { userId } = context.locals.auth();
+    if (!userId) return new Map<string, string>();
+    const teams = await clerk.users.getOrganizationMembershipList({
+      userId,
+      limit: 100,
+    });
+    return new Map(teams.data.map((t) => [t.organization.id, t.role]));
+  }
+  const { sessionClaims } = context.locals.auth();
+  return new Map(Object.entries(sessionClaims?.teams ?? {}));
 }
 
-export function getCurrentUserPlus(context: APIContext) {
+export async function getCurrentUserPlus(context: APIContext, refresh = false) {
   if (!isClerkEnabled()) return null;
+  if (refresh) {
+    const user = await getCurrentUser(context);
+    if (!user) return null;
+    return user.publicMetadata.plus || null;
+  }
   const { sessionClaims } = context.locals.auth();
   return sessionClaims?.publicMetadata.plus || null;
 }
@@ -184,9 +202,13 @@ export async function removePlusFromUser(params: RemovePlusFromUserParams) {
   info("Removed plus from user", userId);
 }
 
-export function isAdmin(context: APIContext) {
-  const { orgId, orgRole } = context.locals.auth();
-  return orgId === import.meta.env.ADMIN_ORG_ID && orgRole === "org:admin";
+export async function isAdmin(context: APIContext) {
+  if (!isClerkEnabled()) return false;
+  const orgId = import.meta.env.ADMIN_ORG_ID;
+  if (!orgId) return false;
+  const teams = await getCurrentUserTeams(context);
+  const orgRole = teams.get(orgId);
+  return orgRole === "org:admin";
 }
 
 export interface GetAllUsersParams {

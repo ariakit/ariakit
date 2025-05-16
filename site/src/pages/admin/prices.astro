@@ -1,17 +1,17 @@
 ---
-import { actions } from "astro:actions";
+import Select from "#app/components/select.astro";
+import SubmitButton from "#app/components/submit-button.astro";
 import { isAdmin } from "#app/lib/clerk.ts";
 import { getPrices } from "#app/lib/kv.ts";
 import { getPlusPriceKey, parsePlusPriceKey } from "#app/lib/stripe.ts";
-import Select from "#app/components/select.astro";
+import { actions } from "astro:actions";
 import Layout from "./_layout.astro";
 import PriceCard from "./_price-card.astro";
 import { getCurrencyData, processFormRequest } from "./_utils.ts";
-import SubmitButton from "#app/components/submit-button.astro";
 
 export const prerender = false;
 
-if (!isAdmin(Astro)) {
+if (!(await isAdmin(Astro))) {
   return Astro.redirect("/");
 }
 
