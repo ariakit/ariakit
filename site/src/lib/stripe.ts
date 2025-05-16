@@ -1,14 +1,33 @@
 import type { APIContext } from "astro";
 import { Stripe } from "stripe";
 import { findInOrder } from "./array.ts";
-import { getCustomer, getUser, getUserId, setCustomer } from "./clerk.ts";
+import {
+  addPlusToUser,
+  createTeam,
+  getCustomer,
+  getUser,
+  getUserId,
+  removePlusFromUser,
+  setCustomer,
+} from "./clerk.ts";
 import type { User } from "./clerk.ts";
 import { getUnixTime } from "./datetime.ts";
-import { getBestPromo, getPrices, putPromo } from "./kv.ts";
+import {
+  getBestPromo,
+  getPrices,
+  isEventProcessed,
+  processEvent,
+  putPromo,
+} from "./kv.ts";
 import { getCountryCode, getCurrency } from "./locale.ts";
 import { createLogger } from "./logger.ts";
 import { objectId } from "./object-id.ts";
-import type { PlusType, PriceData, PromoData } from "./schemas.ts";
+import {
+  type PlusType,
+  PlusTypeSchema,
+  type PriceData,
+  type PromoData,
+} from "./schemas.ts";
 
 const logger = createLogger("stripe");
 
@@ -186,6 +205,7 @@ export interface PlusPrice
       "percentOff" | "expiresAt" | "maxRedemptions" | "timesRedeemed"
     > {
   originalAmount: number;
+  credit: number;
   promo: string | null;
 }
 
@@ -237,6 +257,7 @@ export async function getPlusPrice({
     ...price,
     originalAmount,
     amount,
+    credit,
     promo: promo?.id ?? null,
     percentOff: promo?.percentOff ?? 0,
     expiresAt: promo?.expiresAt ?? null,
@@ -248,15 +269,15 @@ export async function getPlusPrice({
 export interface CreateCheckoutParams {
   context: APIContext;
   price: PlusPrice;
-  redirectUrl: string | URL;
   user?: User | string | null;
+  returnUrl?: string | URL;
 }
 
 export async function createCheckout({
   context,
   price,
-  redirectUrl,
   user,
+  returnUrl = context.url,
 }: CreateCheckoutParams) {
   if (!stripe) return;
   const stripePrice = await stripe.prices.retrieve(price.id);
@@ -274,11 +295,8 @@ export async function createCheckout({
     }
   }
 
-  const url = new URL(redirectUrl);
-  // TODO: Accept as a param
-  const returnUrl = new URL("/plus/success", url.origin);
-  returnUrl.searchParams.set("session_id", "_CHECKOUT_SESSION_ID_");
-  returnUrl.searchParams.set("redirect_url", url.toString());
+  const url = new URL(returnUrl);
+  url.searchParams.set("session_id", "_CHECKOUT_SESSION_ID_");
 
   const isSamePrice =
     price.originalAmount === stripePrice.unit_amount &&
@@ -307,20 +325,76 @@ export async function createCheckout({
     tax_id_collection: { enabled: true },
     customer_update: { name: "auto", address: "auto" },
     discounts: price.promo ? [{ promotion_code: price.promo }] : [],
-    return_url: returnUrl
+    return_url: url
       .toString()
       .replace("_CHECKOUT_SESSION_ID_", "{CHECKOUT_SESSION_ID}"),
     metadata: {
       clerkId: user.id,
       plusType: price.type,
+      creditUsed: price.credit,
     },
     payment_intent_data: {
       metadata: {
         clerkId: user.id,
         plusType: price.type,
+        creditUsed: price.credit,
       },
     },
   });
 
+  return session;
+}
+
+export interface ProcessCheckoutParams {
+  context: APIContext;
+  session: Stripe.Checkout.Session | string;
+}
+
+export async function processCheckout({
+  context,
+  session,
+}: ProcessCheckoutParams) {
+  const stripe = getStripeClient();
+  if (!stripe) return;
+  if (typeof session === "string") {
+    try {
+      session = await stripe.checkout.sessions.retrieve(session);
+    } catch (error) {
+      return logger.error("Failed to retrieve checkout session", error);
+    }
+  }
+  if (session.payment_status === "unpaid") {
+    return logger.error("Checkout session not paid", session.id);
+  }
+  const { plusType, clerkId, creditUsed } = session.metadata ?? {};
+  if (!plusType) {
+    return logger.error("No plus type in session metadata", session.id);
+  }
+  const { success, data: type } = PlusTypeSchema.safeParse(plusType);
+  if (!success) {
+    return logger.error("Invalid plus type in session metadata", session.id);
+  }
+  if (!clerkId) {
+    return logger.error("No clerk ID in session metadata", session.id);
+  }
+  if (await isEventProcessed(context, session.id)) {
+    logger.info("Checkout session already processed", session.id);
+    return session;
+  }
+  await processEvent(context, session.id);
+  if (type === "team") {
+    if (Number(creditUsed)) {
+      await removePlusFromUser({ context, user: clerkId });
+    }
+    await createTeam({ context, user: clerkId });
+  } else {
+    await addPlusToUser({
+      context,
+      type,
+      user: clerkId,
+      amount: session.amount_total ?? 0,
+      currency: session.currency ?? "usd",
+    });
+  }
   return session;
 }
