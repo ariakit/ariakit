@@ -91,7 +91,14 @@ export async function getBestPromo(
     ? promosOrParams
     : await getAllPromos(promosOrParams);
   if (!promos.length) return null;
-  return promos.reduce((best, promo) => {
+  const now = getUnixTime();
+  const isValid = (promo: PromoData) => {
+    // The Stripe webhook doesn’t automatically send an event when a promo code
+    // expires, so we need to check manually
+    if (promo.expiresAt && promo.expiresAt < now) return false;
+    return true;
+  };
+  return promos.filter(isValid).reduce((best, promo) => {
     if (promo.percentOff > best.percentOff) return promo;
     return best;
   });
