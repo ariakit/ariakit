@@ -1,27 +1,38 @@
 import type { APIRoute } from "astro";
 import type { Stripe } from "stripe";
-import { addPlusToUser, getUser } from "#app/lib/clerk.ts";
+import { getUser } from "#app/lib/clerk.ts";
 import {
   deletePrice,
   deletePromo,
-  isEventProcessed,
-  processEvent,
+  getPrices,
   putPrice,
   putPromo,
 } from "#app/lib/kv.ts";
 import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object-id.ts";
 import { badRequest, internalServerError, ok } from "#app/lib/response.ts";
-import { PlusTypeSchema } from "#app/lib/schemas.ts";
 import {
   getStripeClient,
   isSalePromo,
   parsePlusPriceKey,
+  processCheckout,
 } from "#app/lib/stripe.ts";
 
 export const prerender = false;
 
 const logger = createLogger("stripe-webhook");
+
+// Lists all events in use
+const EVENTS = {
+  CheckoutSessionCompleted: "checkout.session.completed",
+  CheckoutSessionAsyncPaymentSucceeded:
+    "checkout.session.async_payment_succeeded",
+  PriceCreated: "price.created",
+  PriceUpdated: "price.updated",
+  PriceDeleted: "price.deleted",
+  PromotionCodeCreated: "promotion_code.created",
+  PromotionCodeUpdated: "promotion_code.updated",
+} satisfies Record<string, Stripe.Event.Type>;
 
 export const POST: APIRoute = async (context) => {
   const stripe = getStripeClient();
@@ -76,44 +87,18 @@ export const POST: APIRoute = async (context) => {
   };
 
   if (
-    event.type === "checkout.session.completed" ||
-    event.type === "checkout.session.async_payment_succeeded"
+    event.type === EVENTS.CheckoutSessionCompleted ||
+    event.type === EVENTS.CheckoutSessionAsyncPaymentSucceeded
   ) {
     const session = event.data.object;
-    if (session.payment_status === "unpaid") {
-      logger.error("Checkout session not paid", session.id);
-      return ok();
-    }
-    const { plusType, clerkId } = session.metadata ?? {};
-    if (!plusType) {
-      logger.error("No plus type in session metadata", session.id);
-      return ok();
-    }
-    const { success, data: type } = PlusTypeSchema.safeParse(plusType);
-    if (!success) {
-      logger.error("Invalid plus type in session metadata", session.id);
-      return ok();
-    }
-    if (!clerkId) {
-      logger.error("No Clerk ID in session metadata", session.id);
-      return ok();
-    }
-    if (await isEventProcessed(context, session.id)) {
-      logger.info("Checkout session already processed", session.id);
-      return ok();
-    }
-    await addPlusToUser({
-      context,
-      user: clerkId,
-      type: type,
-      amount: session.amount_total ?? 0,
-      currency: session.currency ?? "usd",
-    });
-    await processEvent(context, session.id);
+    await processCheckout({ context, session });
     return ok();
   }
 
-  if (event.type === "price.created" || event.type === "price.updated") {
+  if (
+    event.type === EVENTS.PriceCreated ||
+    event.type === EVENTS.PriceUpdated
+  ) {
     const price = event.data.object;
     const key = price.lookup_key;
     if (!key) {
@@ -146,16 +131,12 @@ export const POST: APIRoute = async (context) => {
     return ok();
   }
 
-  if (event.type === "price.deleted") {
+  if (event.type === EVENTS.PriceDeleted) {
     const price = event.data.object;
-    const key = price.lookup_key;
+    const prices = await getPrices(context);
+    const key = prices.find((p) => p.id === price.id)?.key;
     if (!key) {
-      logger.error("Price has no lookup key", price.id);
-      return ok();
-    }
-    const { type } = parsePlusPriceKey(key);
-    if (!type) {
-      logger.error("Price not a plus price", key);
+      logger.info("Price not found in KV store", price.id);
       return ok();
     }
     await deletePrice(context, key);
@@ -164,8 +145,8 @@ export const POST: APIRoute = async (context) => {
   }
 
   if (
-    event.type === "promotion_code.created" ||
-    event.type === "promotion_code.updated"
+    event.type === EVENTS.PromotionCodeCreated ||
+    event.type === EVENTS.PromotionCodeUpdated
   ) {
     let userId: string | null = null;
     const promo = event.data.object;
@@ -193,16 +174,15 @@ export const POST: APIRoute = async (context) => {
       logger.error("Promotion code has no percent off", promo.id);
       return ok();
     }
-    const products = coupon.applies_to?.products ?? [];
     await putPromo(context, {
       id: promo.id,
       type: promo.customer ? "customer" : "sale",
       user: userId,
-      products,
+      products: coupon.applies_to?.products ?? [],
       expiresAt: promo.expires_at ?? coupon.redeem_by,
       percentOff: coupon.percent_off,
-      timesRedeemed: coupon.times_redeemed,
-      maxRedemptions: coupon.max_redemptions,
+      timesRedeemed: promo.times_redeemed,
+      maxRedemptions: promo.max_redemptions,
     });
     logger.info("Promotion code added to KV store", promo.id);
     return ok();
