@@ -10,9 +10,9 @@ export function Logo({ iconOnly, responsive }: LogoProps) {
     <>
       <svg
         aria-hidden
-        height="32"
+        height="2em"
         viewBox="0 0 48 48"
-        className="ak-layer-primary bg-transparent fill-(--ak-layer)"
+        className="ak-text-primary/0 fill-current"
       >
         <circle cx="29" cy="24" r="5" />
         <path
@@ -29,7 +29,7 @@ export function Logo({ iconOnly, responsive }: LogoProps) {
       {!iconOnly && (
         <svg
           aria-hidden
-          height="20"
+          height="1.25em"
           viewBox="0 0 150 40"
           className={clsx(
             "fill-current ak-dark:ak-text/80",
