@@ -89,7 +89,7 @@ export function getPageUrls(context: APIContext, options: GetPageUrlsOptions) {
 
 export function processFormRequest(context: APIContext) {
   if (!context.url.searchParams.has("_action")) return;
-  return context.redirect(context.originPathname);
+  return context.redirect(context.originPathname, 303);
 }
 
 export function getCurrencyData() {
