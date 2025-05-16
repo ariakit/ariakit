@@ -37,6 +37,7 @@ interface UserPrivateMetadata {
 
 interface CustomJwtSessionClaims {
   publicMetadata: UserPublicMetadata;
+  teams: Record<string, string>;
 }
 
 interface ImportMetaEnv {
