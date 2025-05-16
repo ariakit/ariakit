@@ -1,9 +1,38 @@
 ---
-import "@fontsource-variable/inter";
+import { InlineLink } from "#app/components/inline-link.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { Logo } from "#app/icons/logo.react.tsx";
+import type { PlusCheckoutStep } from "#app/lib/schemas.ts";
+import { getPlusCheckoutPath } from "#app/lib/url.ts";
 import "#app/styles/global.css";
 import { SignedIn, SignOutButton } from "@clerk/astro/components";
-import { getPlusCheckoutPath } from "#app/lib/url.ts";
-import { Logo } from "#app/icons/logo.react.tsx";
+import "@fontsource-variable/inter";
+
+interface Props {
+  step: PlusCheckoutStep;
+}
+
+const { step } = Astro.props;
+
+function getSteps() {
+  return [
+    {
+      label: "Login",
+      isDone: step === "payment" || step === "access",
+      isActive: step === "sign-in" || step === "sign-up",
+    },
+    {
+      label: "Payment",
+      isDone: step === "access",
+      isActive: step === "payment",
+    },
+    {
+      label: "Access",
+      isDone: step === "access",
+      isActive: false,
+    },
+  ];
+}
 ---
 
 <!doctype html>
@@ -14,35 +43,115 @@ import { Logo } from "#app/icons/logo.react.tsx";
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Ariakit</title>
   </head>
-  <body class="!ak-layer-[#F9FAFA] [--max-width:56rem]">
-    <div class="">
-      <div
-        class="max-w-(--max-width) mx-auto p-2 py-4 w-full flex flex-col gap-2"
-      >
-        <!-- <div class="max-w-(--max-width) mx-auto w-full">
-          <a href="/" class="ak-link">← Back to site</a>
-        </div> -->
-        <div class="flex justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <Logo iconOnly />
-            <h1 class="text-2xl">
-              Get <span class="font-bold">Ariakit Plus</span>
-            </h1>
+  <body
+    class="[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] ak-container-size-[56rem]/3 flex flex-col"
+  >
+    <div
+      class="py-8 border-b ak-layer-current flex flex-col gap-4 ak-layer-down-0.5"
+    >
+      <div class="ak-container">
+        <div class="flex items-center gap-2">
+          <Logo iconOnly />
+          <h1 class="text-xl font-light">
+            Get <span class="font-semibold">Ariakit Plus</span>
+          </h1>
+        </div>
+      </div>
+      <div class="ak-container flex flex-col gap-2">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <InlineLink href="/" className="text-sm group"
+              ><Icon
+                name="arrowLeft"
+                slot="iconLeft"
+                className="group-hover:-translate-x-1 transition-transform"
+              />Back to site
+            </InlineLink>
           </div>
-          <SignedIn isStatic={false}>
-            <SignOutButton
-              redirectUrl={getPlusCheckoutPath({
-                type: "personal",
-                step: "sign-in",
-                url: Astro.url,
-              })}
-            />
-          </SignedIn>
+          <ol class="flex items-center gap-2 min-w-max font-medium">
+            {
+              getSteps().map((step, index) => {
+                return (
+                  <>
+                    {index > 0 && (
+                      <div
+                        role="presentation"
+                        class:list={[
+                          "h-0.5 min-w-4 flex-1 rounded-full",
+                          step.isActive || step.isDone
+                            ? "ak-layer-contrast-primary"
+                            : "ak-layer-pop-2",
+                        ]}
+                      />
+                    )}
+                    <li
+                      class:list={[
+                        "relative flex items-center gap-2",
+                        !step.isActive && !step.isDone && "ak-text/80",
+                      ]}
+                    >
+                      <div
+                        class:list={[
+                          "rounded-full size-6 grid place-items-center font-semibold flex-none",
+                          step.isActive || step.isDone
+                            ? "ak-layer-contrast-primary"
+                            : "ak-layer-pop-2",
+                        ]}
+                      >
+                        {step.isDone ? <Icon name="check" /> : index + 1}
+                      </div>
+                      {step.label}
+                    </li>
+                  </>
+                );
+              })
+            }
+          </ol>
         </div>
       </div>
     </div>
-    <div class="max-w-(--max-width) mx-auto p-4 mt-8">
+
+    <div class="ak-container py-12 flex-1">
       <slot />
     </div>
+    <footer>
+      <div
+        class="ak-container flex flex-col gap-2 text-sm border-t pt-8 pb-12 ak-layer-current"
+      >
+        <ul class="flex flex-wrap gap-4 items-center">
+          <li>
+            <InlineLink href="/plus/license" className="ak-text/60">
+              License agreement
+            </InlineLink>
+          </li>
+          <li>
+            <InlineLink href="/privacy" className="ak-text/60">
+              Privacy policy
+            </InlineLink>
+          </li>
+          <li>
+            <InlineLink href="/terms" className="ak-text/60">
+              Terms of service
+            </InlineLink>
+          </li>
+          <li>
+            <InlineLink href="/plus#faq" className="ak-text/60">
+              FAQ
+            </InlineLink>
+          </li>
+          <SignedIn isStatic={false}>
+            <li class="ms-auto">
+              <SignOutButton
+                class="ak-link [&&]:ak-text/60 ak-button hover:no-underline"
+                redirectUrl={getPlusCheckoutPath({
+                  step: "sign-in",
+                  url: Astro.url,
+                })}
+              />
+            </li>
+          </SignedIn>
+        </ul>
+      </div>
+    </footer>
   </body>
 </html>
