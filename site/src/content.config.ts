@@ -1,14 +1,7 @@
 import { join } from "node:path";
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
-
-const frameworks = z.union([
-  z.literal("preact"),
-  z.literal("react"),
-  z.literal("solid"),
-  z.literal("svelte"),
-  z.literal("vue"),
-]);
+import { FrameworkSchema } from "./lib/schemas.ts";
 
 const examples = defineCollection({
   loader: glob({
@@ -17,7 +10,7 @@ const examples = defineCollection({
   }),
   schema: z.object({
     title: z.string().optional(),
-    frameworks: z.array(frameworks),
+    frameworks: FrameworkSchema.array(),
   }),
 });
 
@@ -31,7 +24,7 @@ const previews = defineCollection({
   }),
   schema: z.object({
     title: z.string().optional(),
-    frameworks: z.array(frameworks),
+    frameworks: FrameworkSchema.array(),
   }),
 });
 

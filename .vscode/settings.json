@@ -40,7 +40,11 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "[astro]": {
-    "editor.defaultFormatter": "astro-build.astro-vscode"
+    "editor.defaultFormatter": "astro-build.astro-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.removeUnusedImports": "explicit"
+    }
   },
   "[mdx]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

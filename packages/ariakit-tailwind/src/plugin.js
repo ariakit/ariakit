@@ -334,7 +334,7 @@ const AriakitTailwind = plugin(
           };
         },
       },
-      { values: getLayerValues(), modifiers: "any" },
+      { values: getLayerValues({ DEFAULT: "0" }), modifiers: "any" },
     );
 
     /**

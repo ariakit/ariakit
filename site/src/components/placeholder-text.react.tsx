@@ -1,15 +1,17 @@
 import clsx from "clsx";
 
 export interface PlaceholderTextProps {
-  children: string;
+  children?: string;
+  text?: string;
   layer?: string;
   weight?: "light" | "normal" | "medium" | "bold";
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
   className?: string;
 }
 
 export function PlaceholderText({
   children,
+  text,
   layer,
   weight = "normal",
   size = "md",
@@ -26,6 +28,7 @@ export function PlaceholderText({
     md: "text-base",
     lg: "text-lg",
     xl: "text-xl",
+    "2xl": "text-2xl",
   };
   return (
     <div
@@ -37,7 +40,7 @@ export function PlaceholderText({
         className,
       )}
     >
-      {children.split("").map((char, index) => (
+      {(text ?? children)?.split("").map((char, index) => (
         <span
           key={index}
           className="bg-(--ak-layer) rounded-[inherit] px-2 -mx-2 text-[0.7em] tracking-[0.17em]"

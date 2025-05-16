@@ -12,14 +12,8 @@ export function Icon({ name, ...props }: IconProps) {
   const hasLabel =
     props["aria-label"] !== undefined || props["aria-labelledby"] !== undefined;
 
-  const {
-    html,
-    stroke,
-    replaceId,
-    fill,
-    size = 24,
-    strokeWidth = 1.5,
-  } = icons[name];
+  const { html, stroke, replaceId, fill, size = 24 } = icons[name];
+  const strokeWidth = props.strokeWidth ?? icons[name].strokeWidth ?? 1.5;
 
   let content = html;
 
@@ -39,7 +33,7 @@ export function Icon({ name, ...props }: IconProps) {
       {...props}
       style={{ "--stroke-width": strokeWidth, ...props.style } as CSSProperties}
       className={clsx(
-        "base:stroke-(length:--stroke-width) base:ak-dark:stroke-[calc(var(--stroke-width)/1.25)]",
+        "inline-block base:stroke-(length:--stroke-width) base:ak-dark:stroke-[calc(var(--stroke-width)/1.25)]",
         props.className,
       )}
     />
