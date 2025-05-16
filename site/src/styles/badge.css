@@ -1,8 +1,23 @@
 @utility ak-badge-* {
   --ak-badge-color: --value(--color, [color]);
-  @apply ak-layer-mix-(--ak-badge-color)/15 ak-edge-(--ak-badge-color)/5 ak-frame-badge;
-  @apply border text-xs font-medium leading-[1ex];
+  @apply ak-layer-mix-(--ak-badge-color)/15 ak-dark:ak-edge-(--ak-badge-color)/5 ak-light:ak-edge-(--ak-badge-color)/15 ak-frame-badge;
+  @apply flex items-center gap-1 text-xs font-medium leading-[1em];
+
+  padding-inline: calc(var(--spacing-badge) * 1.5);
+
   > * {
     @apply ak-text-(--ak-badge-color)/70;
+  }
+}
+
+@utility ak-badge-icon {
+  @apply flex-none;
+
+  :has(> &:first-child) {
+    padding-inline-start: calc(var(--spacing-badge));
+  }
+
+  :has(> &:last-child) {
+    padding-inline-end: calc(var(--spacing-badge));
   }
 }
