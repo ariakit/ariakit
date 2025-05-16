@@ -12,14 +12,8 @@ export function Icon({ name, ...props }: IconProps) {
   const hasLabel =
     props["aria-label"] !== undefined || props["aria-labelledby"] !== undefined;
 
-  const {
-    html,
-    stroke,
-    replaceId,
-    fill,
-    size = 24,
-    strokeWidth = props.strokeWidth ?? 1.5,
-  } = icons[name];
+  const { html, stroke, replaceId, fill, size = 24 } = icons[name];
+  const strokeWidth = props.strokeWidth ?? icons[name].strokeWidth ?? 1.5;
 
   let content = html;
 
