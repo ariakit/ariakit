@@ -1,43 +1,35 @@
 ---
-import { createCheckout, getPlusPrice } from "#app/lib/stripe.ts";
-import { getPlusCheckoutPath } from "#app/lib/url.ts";
-import type { PlusType } from "#app/lib/schemas.ts";
 import { createLogger } from "#app/lib/logger.ts";
+import type { PlusType } from "#app/lib/schemas.ts";
+import { createCheckout, getPlusPrice } from "#app/lib/stripe.ts";
+
 export const prerender = false;
 
 interface Props {
   type: PlusType;
-  url: string;
 }
+
+const logger = createLogger("plus-checkout-frame");
 
 const { type } = Astro.props;
 const price = await getPlusPrice({ context: Astro, type });
-
-const logger = createLogger("plus-checkout-frame");
 
 if (!price) {
   logger.error("Price not found");
   return null;
 }
 
-const session = await createCheckout({
-  price,
-  context: Astro,
-  redirectUrl: new URL(
-    getPlusCheckoutPath({
-      url: Astro.props.url,
-      step: Astro.props.type === "team" ? "team" : "success",
-    }),
-    Astro.url.origin
-  ),
-});
+const session = await createCheckout({ context: Astro, price });
 
 if (!session) {
-  throw new Error("Session not found");
+  logger.error("Session not found");
+  return null;
 }
 ---
 
-<div id="checkout" data-client-secret={session.client_secret} class="w-full">
+<div class="ak-frame-card/0 overflow-clip">
+  <div id="checkout" data-client-secret={session.client_secret} class="w-full">
+  </div>
 </div>
 
 <script>

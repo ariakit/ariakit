@@ -15,8 +15,7 @@ export const PLUS_CHECKOUT_STEPS = [
   "sign-in",
   "sign-up",
   "payment",
-  "team",
-  "success",
+  "access",
 ] as const;
 export const PlusCheckoutStepSchema = z.enum(PLUS_CHECKOUT_STEPS);
 export type PlusCheckoutStep = z.infer<typeof PlusCheckoutStepSchema>;
