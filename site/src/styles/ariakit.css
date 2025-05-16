@@ -40,7 +40,7 @@
   --radius-card: var(--radius-xl);
   --spacing-card: --spacing(4);
 
-  --radius-badge: var(--radius-md);
+  --radius-badge: var(--radius-full);
   --spacing-badge: --spacing(1.5);
 
   --font-sans:
