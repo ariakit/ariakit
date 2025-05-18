@@ -98,4 +98,4 @@ Browser testing provided by
 
 ## Contributing
 
-Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
+Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/solid/next/packages/ariakit-solid/contributing.md).
