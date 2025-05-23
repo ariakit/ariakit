@@ -8,6 +8,7 @@ import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, envField } from "astro/config";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
+import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
 try {
   loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
@@ -24,11 +25,6 @@ export default defineConfig({
 
   devToolbar: {
     enabled: false,
-  },
-
-  redirects: {
-    "/plus/checkout": "/plus/checkout/sign-up/personal",
-    "/plus/checkout/[step]": "/plus/checkout/[step]/personal",
   },
 
   adapter: cloudflare({
@@ -58,8 +54,8 @@ export default defineConfig({
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     clerk({
-      signInUrl: "/plus/account/sign-in",
-      signUpUrl: "/plus/account/sign-up",
+      signInUrl: getPlusAccountPath({ path: "login" }),
+      signUpUrl: getPlusCheckoutPath({ step: "login" }),
       appearance: {
         variables: {
           fontSize: "1rem",
