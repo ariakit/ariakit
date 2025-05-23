@@ -3,7 +3,7 @@ import { getEntry } from "astro:content";
 import { render } from "astro:content";
 import { getCollection } from "astro:content";
 import type { GetStaticPaths } from "astro";
-import Layout from "../../../layouts/Layout.astro";
+import Layout from "#app/pages/_layout.astro";
 
 // Create getStaticPaths
 export const getStaticPaths = (async () => {
@@ -33,7 +33,7 @@ const entry = await getEntry("examples", `${example}`);
 
 // If example doesn't exist, redirect to 404
 if (!entry) {
-  return Astro.redirect("/404");
+  return Astro.rewrite("/404");
 }
 
 const examples = await getCollection("examples");

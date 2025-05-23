@@ -1,0 +1,18 @@
+@utility ak-command_idle {
+  @apply not-[a]:cursor-default relative block select-none;
+
+  /* Only apply cursor-pointer to submit buttons that are not disabled */
+  &:is([type="submit"], form button:only-of-type) {
+    &:not(:disabled, [aria-disabled="true"]) {
+      @apply cursor-pointer;
+    }
+  }
+}
+
+@utility ak-command_active {
+  @apply scale-x-98 scale-y-96 origin-bottom;
+}
+
+@utility ak-command {
+  @apply ak-command_idle active:ak-command_active;
+}

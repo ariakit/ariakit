@@ -3,21 +3,26 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev --host",
+    "dev": "astro dev",
+    "dev-all": "concurrently -k -r 'npm:dev' 'npm:listen-*'",
     "tsc": "astro check && tsc -b src",
     "build": "astro build",
-    "preview": "wrangler pages dev",
-    "astro": "astro"
+    "preview": "wrangler dev",
+    "preview-all": "concurrently -k -r 'npm:preview' 'npm:listen-*'",
+    "listen-stripe": "stripe listen --forward-to http://localhost:4321/api/stripe-webhook"
   },
-  "exports": {
-    "./*": "./*"
+  "imports": {
+    "#app/*": "./src/*"
   },
   "dependencies": {
     "@astrojs/check": "0.9.4",
     "@astrojs/cloudflare": "12.5.2",
     "@astrojs/react": "4.2.7",
     "@astrojs/solid-js": "5.0.10",
-    "shiki": "3.1.0",
-    "tailwindcss": "4.1.4"
+    "@clerk/astro": "2.7.4",
+    "@stripe/stripe-js": "7.2.0",
+    "shiki": "3.3.0",
+    "stripe": "18.1.0",
+    "tailwindcss": "4.1.5"
   }
 }

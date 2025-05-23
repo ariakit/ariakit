@@ -1,0 +1,24 @@
+---
+import { getPlusAccountPath } from "#app/lib/url.ts";
+import { UserProfile } from "@clerk/astro/components";
+import Layout from "./_layout.astro";
+
+export const prerender = false;
+
+const { userId } = Astro.locals.auth();
+
+if (!userId) {
+  return Astro.redirect(getPlusAccountPath({ url: Astro.url, path: "login" }));
+}
+---
+
+<Layout
+  ><UserProfile
+    appearance={{
+      elements: {
+        rootBox: { width: "100%", maxWidth: "100%" },
+        cardBox: { width: "100%", maxWidth: "100%" },
+      },
+    }}
+  /></Layout
+>
