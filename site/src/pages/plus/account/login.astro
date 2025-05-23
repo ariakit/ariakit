@@ -1,0 +1,23 @@
+---
+import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
+import { SignIn as SignInComponent } from "@clerk/astro/components";
+import Layout from "./_layout.astro";
+
+export const prerender = false;
+
+const { userId } = Astro.locals.auth();
+
+if (userId) {
+  return Astro.redirect(getPlusAccountPath({ url: Astro.url }));
+}
+---
+
+<Layout>
+  <div class="flex flex-col items-center">
+    <SignInComponent
+      signUpUrl={getPlusCheckoutPath({ step: "login", url: Astro.url })}
+      forceRedirectUrl={getPlusAccountPath({ url: Astro.url })}
+      signUpForceRedirectUrl={getPlusAccountPath({ url: Astro.url })}
+    />
+  </div>
+</Layout>
