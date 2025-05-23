@@ -1,5 +1,9 @@
 # @ariakit/tailwind
 
+## 0.1.6
+
+- Updated `ak-layer-mix` to use `0` as the default level.
+
 ## 0.1.5
 
 - Adjusted `ak-edge` opacity calculation to be more accurate.
