@@ -21,7 +21,6 @@ const { orgId } = Astro.locals.auth();
 ---
 
 <Layout>
-  <div data-team-id={teams.keys().next().value}></div>
   {
     teams.size > 0 ? (
       <div class="flex flex-col gap-4">
@@ -153,18 +152,3 @@ const { orgId } = Astro.locals.auth();
     )
   }
 </Layout>
-
-<!-- <script>
-  import { $clerkStore as clerk } from "@clerk/astro/client";
-
-  const teamId =
-    document.querySelector<HTMLElement>("[data-team-id]")?.dataset.teamId;
-
-  console.log(teamId);
-
-  clerk.listen((clerk) => {
-    if (teamId && clerk) {
-      clerk.setActive({ organization: teamId });
-    }
-  });
-</script> -->
