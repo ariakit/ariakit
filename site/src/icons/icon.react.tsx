@@ -5,9 +5,10 @@ import * as icons from "./icons.ts";
 
 export interface IconProps extends ComponentProps<"svg"> {
   name: keyof typeof icons;
+  animateStroke?: boolean | number;
 }
 
-export function Icon({ name, ...props }: IconProps) {
+export function Icon({ name, animateStroke, ...props }: IconProps) {
   const id = useId();
   const hasLabel =
     props["aria-label"] !== undefined || props["aria-labelledby"] !== undefined;
@@ -31,9 +32,20 @@ export function Icon({ name, ...props }: IconProps) {
       aria-hidden={!hasLabel || undefined}
       dangerouslySetInnerHTML={{ __html: content }}
       {...props}
-      style={{ "--stroke-width": strokeWidth, ...props.style } as CSSProperties}
+      style={
+        {
+          "--stroke-width": strokeWidth,
+          transitionDuration:
+            typeof animateStroke === "number"
+              ? `${animateStroke}ms`
+              : undefined,
+          ...props.style,
+        } as CSSProperties
+      }
       className={clsx(
         "inline-block base:stroke-(length:--stroke-width) base:ak-dark:stroke-[calc(var(--stroke-width)/1.25)]",
+        animateStroke &&
+          "[stroke-dasharray:1em] starting:[stroke-dashoffset:1em] [stroke-dashoffset:0] transition-[stroke-dashoffset]",
         props.className,
       )}
     />
