@@ -1,43 +1,37 @@
 ---
+import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 import PlusCheckoutFrame from "#app/components/plus-checkout-frame.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { getCurrentUserPlus, getCurrentUserTeams } from "#app/lib/clerk.ts";
 import { formatCurrency } from "#app/lib/locale.ts";
 import {
   PLUS_TYPES,
+  URLSchema,
   PlusCheckoutStepSchema,
   PlusTypeSchema,
   type PlusCheckoutStep,
+  camelCaseObject,
 } from "#app/lib/schemas.ts";
 import { capitalize } from "#app/lib/string.ts";
 import { getPlusPrice, processCheckout } from "#app/lib/stripe.ts";
-import { getPlusCheckoutPath } from "#app/lib/url.ts";
-import { SignIn, SignUp } from "@clerk/astro/components";
+import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
+import { SignUp } from "@clerk/astro/components";
 import { formatDistanceToNow } from "date-fns";
 import { z } from "zod";
 import Layout from "./_layout.astro";
-import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 
 export const prerender = false;
 
 const schema = z.tuple([PlusCheckoutStepSchema, PlusTypeSchema]);
 const params = schema.safeParse(Astro.params.checkout?.split("/") ?? []);
 
-const querySchema = z
-  .object({
-    session_id: z.string().optional(),
-    redirect_url: z.string().optional(),
-  })
-  .transform((data) => ({
-    ...data,
-    sessionId: data.session_id,
-    redirectUrl: data.redirect_url
-      ? decodeURIComponent(data.redirect_url)
-      : undefined,
-  }));
+const querySchema = camelCaseObject({
+  sessionId: z.string().optional(),
+  redirectUrl: URLSchema,
+});
 
 if (!params.success) {
-  return Astro.redirect("/plus");
+  return Astro.redirect(getPlusCheckoutPath({ url: Astro.url }));
 }
 
 const { sessionId, redirectUrl } = querySchema.parse(
@@ -46,7 +40,7 @@ const { sessionId, redirectUrl } = querySchema.parse(
 
 const [step, plusType] = params.data;
 
-const isLoginStep = step === "sign-in" || step === "sign-up";
+const isLoginStep = step === "login";
 const isPaymentStep = step === "payment";
 const isAccessStep = step === "access";
 const shouldShowProductSelector = isLoginStep || isPaymentStep;
@@ -63,12 +57,13 @@ if (isLoginStep) {
   }
 } else {
   if (!userId) {
-    return Astro.redirect(getPath("sign-in"));
+    return Astro.redirect(getPath("login"));
   }
   const currentUserPlus = await getCurrentUserPlus(Astro, isAccessStep);
-  const teams = await getCurrentUserTeams(Astro, isAccessStep);
   const hasPersonal = currentUserPlus === "personal";
-  const hasTeam = teams.size > 0;
+  const hasTeam =
+    currentUserPlus === "team" ||
+    !!(await getCurrentUserTeams(Astro, isAccessStep)).size;
 
   if (sessionId) {
     const session = await processCheckout({
@@ -91,9 +86,6 @@ if (isLoginStep) {
   }
 }
 
-const LoginComponent =
-  step === "sign-in" ? SignIn : step === "sign-up" ? SignUp : null;
-
 async function getPriceData() {
   const currentUserPlus = await getCurrentUserPlus(Astro);
   return Promise.all(
@@ -103,7 +95,7 @@ async function getPriceData() {
       return {
         ...price,
         selected: type === plusType,
-        active: type === currentUserPlus,
+        active: currentUserPlus === "personal" && type === currentUserPlus,
         upgrade: !!price.credit,
         description:
           type === "personal"
@@ -152,21 +144,23 @@ async function getOfferText() {
     : null;
 
   const licensesLeftText =
-    price.maxRedemptions === licensesLeft ? "" : ` (${licensesLeft} left)`;
+    price.maxRedemptions === licensesLeft
+      ? ""
+      : ` <span class="opacity-40">—</span> ${licensesLeft} left`;
 
   const text =
     price.maxRedemptions &&
     (!isExpiring || (licensesLeft && licensesLeft <= 10))
       ? `Special offer for the next ${price.maxRedemptions} customers${licensesLeftText}`
       : formattedExpirationDate && timeLeft
-        ? `Special offer ends on ${formattedExpirationDate} (${timeLeft} left)`
+        ? `Special offer ends on ${formattedExpirationDate} <span class="opacity-40">—</span> ${timeLeft} left`
         : `Special offer for a limited time`;
 
   return text;
 }
 ---
 
-<Layout {step}>
+<Layout {step} {redirectUrl}>
   <div class="grid md:grid-cols-2 gap-8 items-start">
     {
       shouldShowProductSelector && (
@@ -183,7 +177,7 @@ async function getOfferText() {
               <Fragment>
                 <div class="ak-badge-yellow-500 self-start gap-1.5 text-sm">
                   <Icon name="sale" className="ak-badge-icon animate-pulse" />
-                  <div>{text}</div>
+                  <div set:html={text} />
                 </div>
               </Fragment>
             );
@@ -250,12 +244,10 @@ async function getOfferText() {
       )
     }
     {
-      LoginComponent && (
-        <LoginComponent
-          signUpUrl={getPath("sign-up")}
-          signInUrl={getPath("sign-in")}
+      step === "login" && (
+        <SignUp
+          signInUrl={getPlusAccountPath({ url: Astro.url, path: "login" })}
           forceRedirectUrl={getPath("payment")}
-          signUpForceRedirectUrl={getPath("payment")}
           signInForceRedirectUrl={getPath("payment")}
           appearance={{
             elements: {
@@ -274,8 +266,8 @@ async function getOfferText() {
       <div data-access-step>
         <div class="flex flex-col gap-8 h-full justify-center items-center w-full">
           <div class="flex flex-col gap-2 items-center">
-            <div class="ak-badge-green-500 rounded-full aspect-square grid place-items-center text-6xl">
-              <Icon name="check" strokeWidth={1} />
+            <div class="ak-text-green-500/50 text-8xl">
+              <Icon name="checkCircle" strokeWidth={1} animateStroke={2000} />
             </div>
             <h2 class="text-2xl font-bold">Awesome!</h2>
             <p class="ak-text/70">

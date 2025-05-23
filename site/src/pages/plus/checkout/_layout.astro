@@ -10,16 +10,17 @@ import "@fontsource-variable/inter";
 
 interface Props {
   step: PlusCheckoutStep;
+  redirectUrl?: string;
 }
 
-const { step } = Astro.props;
+const { step, redirectUrl } = Astro.props;
 
 function getSteps() {
   return [
     {
       label: "Login",
       isDone: step === "payment" || step === "access",
-      isActive: step === "sign-in" || step === "sign-up",
+      isActive: step === "login",
     },
     {
       label: "Payment",
@@ -60,7 +61,7 @@ function getSteps() {
       <div class="ak-container flex flex-col gap-2">
         <div class="grid md:grid-cols-2 gap-8 items-center">
           <div>
-            <InlineLink href="/" className="text-sm group"
+            <InlineLink href={redirectUrl ?? "/"} className="text-sm group"
               ><Icon
                 name="arrowLeft"
                 slot="iconLeft"
@@ -144,8 +145,8 @@ function getSteps() {
               <SignOutButton
                 class="ak-link [&&]:ak-text/60 ak-button hover:no-underline"
                 redirectUrl={getPlusCheckoutPath({
-                  step: "sign-in",
                   url: Astro.url,
+                  step: "login",
                 })}
               />
             </li>
