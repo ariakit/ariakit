@@ -1,3 +1,5 @@
+import camelCase from "lodash-es/camelCase.js";
+import mapKeys from "lodash-es/mapKeys.js";
 import { z } from "zod";
 import { parsePlusPriceKey } from "./stripe.ts";
 
@@ -11,14 +13,13 @@ export const FRAMEWORKS = [
 export const FrameworkSchema = z.enum(FRAMEWORKS);
 export type Framework = z.infer<typeof FrameworkSchema>;
 
-export const PLUS_CHECKOUT_STEPS = [
-  "sign-in",
-  "sign-up",
-  "payment",
-  "access",
-] as const;
+export const PLUS_CHECKOUT_STEPS = ["login", "payment", "access"] as const;
 export const PlusCheckoutStepSchema = z.enum(PLUS_CHECKOUT_STEPS);
 export type PlusCheckoutStep = z.infer<typeof PlusCheckoutStepSchema>;
+
+export const PLUS_ACCOUNT_PATHS = ["login", "", "team", "billing"] as const;
+export const PlusAccountPathSchema = z.enum(PLUS_ACCOUNT_PATHS);
+export type PlusAccountPath = z.infer<typeof PlusAccountPathSchema>;
 
 export const PLUS_TYPES = ["personal", "team"] as const;
 export const PlusTypeSchema = z.enum(PLUS_TYPES);
@@ -51,3 +52,21 @@ export const PromoDataSchema = z.object({
   maxRedemptions: z.number().nullable(),
 });
 export type PromoData = z.infer<typeof PromoDataSchema>;
+
+export const URLSchema = z
+  .string()
+  .optional()
+  .transform((value) => {
+    if (!value) return undefined;
+    return decodeURIComponent(value);
+  });
+
+export function camelCaseObject<T extends z.ZodRawShape>(
+  shape: T,
+  params?: z.RawCreateParams,
+) {
+  return z
+    .record(z.string())
+    .transform((data) => mapKeys(data, (_, key) => camelCase(key)))
+    .pipe(z.object(shape, params));
+}
