@@ -24,13 +24,13 @@ export function InlineLink({
       rel={newWindow ? "noopener noreferrer nofollow" : undefined}
     >
       {iconLeft && (
-        <span className="whitespace-nowrap me-[0.25em]">
+        <span className="whitespace-nowrap me-[0.25em] select-none">
           {iconLeft}&#x2060;
         </span>
       )}
       {children}
       {(newWindow || iconRight) && (
-        <span className="whitespace-nowrap ms-[0.25em]">
+        <span className="whitespace-nowrap ms-[0.25em] select-none">
           &#x2060;
           {iconRight || <Icon name="newWindow" />}
         </span>
