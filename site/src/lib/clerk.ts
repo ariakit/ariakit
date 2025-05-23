@@ -56,13 +56,19 @@ export async function getCurrentUserTeams(
 
 export async function getCurrentUserPlus(context: APIContext, refresh = false) {
   if (!isClerkEnabled()) return null;
+  const { sessionClaims } = context.locals.auth();
+  let publicMetadata = sessionClaims?.publicMetadata;
   if (refresh) {
     const user = await getCurrentUser(context);
     if (!user) return null;
-    return user.publicMetadata.plus || null;
+    publicMetadata = user.publicMetadata;
   }
-  const { sessionClaims } = context.locals.auth();
-  return sessionClaims?.publicMetadata.plus || null;
+  if (publicMetadata?.plus) {
+    return publicMetadata.plus;
+  }
+  const teams = await getCurrentUserTeams(context, refresh);
+  if (teams.size === 0) return null;
+  return "team";
 }
 
 export interface GetUserIdParams {
@@ -143,7 +149,7 @@ export async function createTeam(params: CreateTeamParams) {
   if (!user) return;
   const userName =
     user.firstName ?? user.primaryEmailAddress?.emailAddress.split("@")[0];
-  const name = params.name ?? `${userName}'s Team`;
+  const name = params.name ?? `${userName} Team`;
   const team = await clerk.organizations.createOrganization({
     name,
     createdBy: user.id,
