@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getCustomer } from "#app/lib/auth.ts";
+import { getCurrentUserId, getCustomer } from "#app/lib/auth.ts";
 import { camelCaseObject } from "#app/lib/schemas.ts";
 import { URLSchema } from "#app/lib/schemas.ts";
 import { getStripeClient } from "#app/lib/stripe.ts";
@@ -16,7 +16,7 @@ const querySchema = camelCaseObject({
 });
 
 export const GET: APIRoute = async (context) => {
-  const { userId } = context.locals.auth();
+  const userId = getCurrentUserId(context);
 
   if (!userId) {
     return context.redirect(

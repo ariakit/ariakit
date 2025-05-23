@@ -1,6 +1,6 @@
 ---
 import { Icon } from "#app/icons/icon.react.tsx";
-import { getCurrentUserTeams } from "#app/lib/auth.ts";
+import { getCurrentUserTeams, isSignedIn } from "#app/lib/auth.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
 import {
   OrganizationProfile,
@@ -10,9 +10,9 @@ import Layout from "./_layout.astro";
 
 export const prerender = false;
 
-const { userId } = Astro.locals.auth();
+const signedIn = isSignedIn(Astro);
 
-if (!userId) {
+if (!signedIn) {
   return Astro.redirect(getPlusAccountPath({ url: Astro.url, path: "login" }));
 }
 

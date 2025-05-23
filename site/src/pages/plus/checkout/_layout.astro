@@ -2,10 +2,11 @@
 import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { Logo } from "#app/icons/logo.react.tsx";
+import { isSignedIn } from "#app/lib/auth.ts";
 import type { PlusCheckoutStep } from "#app/lib/schemas.ts";
 import { getPlusCheckoutPath } from "#app/lib/url.ts";
 import "#app/styles/global.css";
-import { SignedIn, SignOutButton } from "@clerk/astro/components";
+import { SignOutButton } from "@clerk/astro/components";
 import "@fontsource-variable/inter";
 
 interface Props {
@@ -34,6 +35,8 @@ function getSteps() {
     },
   ];
 }
+
+const signedIn = isSignedIn(Astro);
 ---
 
 <!doctype html>
@@ -140,17 +143,19 @@ function getSteps() {
               FAQ
             </InlineLink>
           </li>
-          <SignedIn isStatic={false}>
-            <li class="ms-auto">
-              <SignOutButton
-                class="ak-link [&&]:ak-text/60 ak-button hover:no-underline"
-                redirectUrl={getPlusCheckoutPath({
-                  url: Astro.url,
-                  step: "login",
-                })}
-              />
-            </li>
-          </SignedIn>
+          {
+            signedIn && (
+              <li class="ms-auto">
+                <SignOutButton
+                  class="ak-link [&&]:ak-text/60 ak-button hover:no-underline"
+                  redirectUrl={getPlusCheckoutPath({
+                    url: Astro.url,
+                    step: "login",
+                  })}
+                />
+              </li>
+            )
+          }
         </ul>
       </div>
     </footer>

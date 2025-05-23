@@ -2,7 +2,11 @@
 import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 import PlusCheckoutFrame from "#app/components/plus-checkout-frame.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
-import { getCurrentUserPlus, getCurrentUserTeams } from "#app/lib/auth.ts";
+import {
+  getCurrentUserPlus,
+  getCurrentUserTeams,
+  isSignedIn,
+} from "#app/lib/auth.ts";
 import { formatCurrency } from "#app/lib/locale.ts";
 import {
   PLUS_TYPES,
@@ -45,18 +49,18 @@ const isPaymentStep = step === "payment";
 const isAccessStep = step === "access";
 const shouldShowProductSelector = isLoginStep || isPaymentStep;
 
-const { userId } = Astro.locals.auth();
+const signedIn = isSignedIn(Astro);
 
 function getPath(step: PlusCheckoutStep) {
   return getPlusCheckoutPath({ step, url: Astro.url });
 }
 
 if (isLoginStep) {
-  if (userId) {
+  if (signedIn) {
     return Astro.redirect(getPath("payment"));
   }
 } else {
-  if (!userId) {
+  if (!signedIn) {
     return Astro.redirect(getPath("login"));
   }
   const currentUserPlus = await getCurrentUserPlus(Astro, isAccessStep);

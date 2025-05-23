@@ -13,7 +13,12 @@ export function isClerkEnabled() {
 }
 
 export function getCurrentUserId(context: APIContext) {
+  if (!isClerkEnabled()) return null;
   return context.locals.auth().userId;
+}
+
+export function isSignedIn(context: APIContext) {
+  return !!getCurrentUserId(context);
 }
 
 export function setCurrentUser(context: APIContext, user: User | null) {

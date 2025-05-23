@@ -6,13 +6,16 @@ import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig, envField } from "astro/config";
+import { defineConfig } from "astro/config";
+import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
 try {
   loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
 } catch (error) {}
+
+const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // https://astro.build/config
 export default defineConfig({
@@ -32,16 +35,6 @@ export default defineConfig({
     platformProxy: { enabled: true },
   }),
 
-  env: {
-    schema: {
-      PUBLIC_CLERK_PUBLISHABLE_KEY: envField.string({
-        context: "client",
-        access: "public",
-        optional: true,
-      }),
-    },
-  },
-
   vite: {
     plugins: [
       tailwindcss(),
@@ -53,18 +46,20 @@ export default defineConfig({
     mdx(),
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
-    clerk({
-      signInUrl: getPlusAccountPath({ path: "login" }),
-      signUpUrl: getPlusCheckoutPath({ step: "login" }),
-      appearance: {
-        variables: {
-          fontSize: "1rem",
-        },
-        layout: {
-          logoPlacement: "none",
-          showOptionalFields: false,
-        },
-      },
-    }),
+    !hasClerk
+      ? dummyClerkIntegration()
+      : clerk({
+          signInUrl: getPlusAccountPath({ path: "login" }),
+          signUpUrl: getPlusCheckoutPath({ step: "login" }),
+          appearance: {
+            variables: {
+              fontSize: "1rem",
+            },
+            layout: {
+              logoPlacement: "none",
+              showOptionalFields: false,
+            },
+          },
+        }),
   ],
 });

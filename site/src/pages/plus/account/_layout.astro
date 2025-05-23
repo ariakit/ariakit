@@ -2,7 +2,11 @@
 import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { Logo } from "#app/icons/logo.react.tsx";
-import { getCurrentUserPlus, getCurrentUserTeams } from "#app/lib/auth.ts";
+import {
+  getCurrentUserPlus,
+  getCurrentUserTeams,
+  isSignedIn,
+} from "#app/lib/auth.ts";
 import { camelCaseObject, URLSchema } from "#app/lib/schemas.ts";
 import type { GetPlusAccountURLParams } from "#app/lib/url.ts";
 import {
@@ -11,7 +15,7 @@ import {
   getPlusCheckoutPath,
 } from "#app/lib/url.ts";
 import "#app/styles/global.css";
-import { SignedIn, SignOutButton } from "@clerk/astro/components";
+import { SignOutButton } from "@clerk/astro/components";
 import "@fontsource-variable/inter";
 import type { HTMLAttributes } from "astro/types";
 
@@ -42,7 +46,7 @@ function getLinkProps(
   } satisfies HTMLAttributes<"a">;
 }
 
-const { userId } = Astro.locals.auth();
+const signedIn = isSignedIn(Astro);
 const currentUserPlus = await getCurrentUserPlus(Astro);
 const teams = await getCurrentUserTeams(Astro);
 ---
@@ -68,7 +72,7 @@ const teams = await getCurrentUserTeams(Astro);
             My <span class="font-semibold">Ariakit Plus</span>
           </h1>
           {
-            userId &&
+            signedIn &&
               (currentUserPlus ? (
                 <span class="ak-badge-green-500">
                   <Icon name="check" className="ak-badge-icon" />
@@ -106,38 +110,46 @@ const teams = await getCurrentUserTeams(Astro);
               />Back to site
             </InlineLink>
           </div>
-          <SignedIn isStatic={false}>
-            <ul class="flex items-center gap-2 min-w-max font-medium">
-              <li>
-                <a
-                  {...getLinkProps()}
-                  class="ak-button aria-[current]:ak-layer-pop">Account</a
-                >
-              </li>
-              <li>
-                <a
-                  {...getLinkProps("team")}
-                  class="ak-button aria-[current]:ak-layer-pop">Team</a
-                >
-              </li>
-              <li>
-                <a
-                  {...getLinkProps("billing", Astro.url)}
-                  target="_blank"
-                  class="ak-button">Billing <Icon name="newWindow" /></a
-                >
-              </li>
-              <li>
-                <SignOutButton
-                  class="ak-button"
-                  redirectUrl={getPlusAccountPath({
-                    url: Astro.url,
-                    path: "login",
-                  })}
-                />
-              </li>
-            </ul>
-          </SignedIn>
+          {
+            signedIn && (
+              <ul class="flex items-center gap-2 min-w-max font-medium">
+                <li>
+                  <a
+                    {...getLinkProps()}
+                    class="ak-button aria-[current]:ak-layer-pop"
+                  >
+                    Account
+                  </a>
+                </li>
+                <li>
+                  <a
+                    {...getLinkProps("team")}
+                    class="ak-button aria-[current]:ak-layer-pop"
+                  >
+                    Team
+                  </a>
+                </li>
+                <li>
+                  <a
+                    {...getLinkProps("billing", Astro.url)}
+                    target="_blank"
+                    class="ak-button"
+                  >
+                    Billing <Icon name="newWindow" />
+                  </a>
+                </li>
+                <li>
+                  <SignOutButton
+                    class="ak-button"
+                    redirectUrl={getPlusAccountPath({
+                      url: Astro.url,
+                      path: "login",
+                    })}
+                  />
+                </li>
+              </ul>
+            )
+          }
         </nav>
       </div>
     </div>
