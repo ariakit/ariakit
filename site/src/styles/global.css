@@ -16,6 +16,10 @@ astro-static-slot {
   @apply ak-layer border shadow-none;
 }
 
+.cl-organizationSwitcherTrigger {
+  @apply ak-button !ak-layer-pop hover:!ak-layer-pop-2 ak-frame-field/2;
+}
+
 html,
 body {
   @apply font-sans min-h-[100dvh] antialiased;
