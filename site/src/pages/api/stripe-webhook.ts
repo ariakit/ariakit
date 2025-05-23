@@ -9,7 +9,7 @@ import {
   putPromo,
 } from "#app/lib/kv.ts";
 import { createLogger } from "#app/lib/logger.ts";
-import { objectId } from "#app/lib/object-id.ts";
+import { objectId } from "#app/lib/object.ts";
 import { badRequest, internalServerError, ok } from "#app/lib/response.ts";
 import {
   getStripeClient,

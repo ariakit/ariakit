@@ -1,7 +1,7 @@
 import { type User, clerkClient } from "@clerk/astro/server";
 import type { APIContext } from "astro";
 import { createLogger } from "./logger.ts";
-import { objectId } from "./object-id.ts";
+import { objectId } from "./object.ts";
 import type { PlusType } from "./schemas.ts";
 
 const logger = createLogger("clerk");

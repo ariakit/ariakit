@@ -21,7 +21,7 @@ import {
 } from "./kv.ts";
 import { getCountryCode, getCurrency } from "./locale.ts";
 import { createLogger } from "./logger.ts";
-import { objectId } from "./object-id.ts";
+import { objectId } from "./object.ts";
 import {
   type PlusType,
   PlusTypeSchema,

@@ -14,7 +14,7 @@ import {
 } from "#app/lib/kv.ts";
 import { formatCurrency } from "#app/lib/locale.ts";
 import { createLogger } from "#app/lib/logger.ts";
-import { objectId } from "#app/lib/object-id.ts";
+import { objectId } from "#app/lib/object.ts";
 import {
   type PlusType,
   PlusTypeSchema,
