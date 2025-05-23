@@ -165,6 +165,7 @@ export const arrowLeft: Icon = {
   size: 24,
   stroke: "currentColor",
   fill: "none",
+  strokeWidth: 2,
   html: `<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />`,
 };
 
@@ -172,6 +173,7 @@ export const arrowRight: Icon = {
   size: 24,
   stroke: "currentColor",
   fill: "none",
+  strokeWidth: 2,
   html: `<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />`,
 };
 
