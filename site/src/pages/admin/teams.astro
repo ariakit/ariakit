@@ -1,7 +1,7 @@
 ---
 import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
-import { isAdmin } from "#app/lib/clerk.ts";
+import { isAdmin } from "#app/lib/auth.ts";
 import { clerkClient, type Organization } from "@clerk/astro/server";
 import LayoutPagination from "./_layout-pagination.astro";
 import {

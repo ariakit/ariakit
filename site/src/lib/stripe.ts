@@ -9,8 +9,8 @@ import {
   getUserId,
   removePlusFromUser,
   setCustomer,
-} from "./clerk.ts";
-import type { User } from "./clerk.ts";
+} from "./auth.ts";
+import type { User } from "./auth.ts";
 import { getUnixTime } from "./datetime.ts";
 import {
   getBestPromo,

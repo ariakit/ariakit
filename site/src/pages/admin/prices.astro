@@ -1,7 +1,7 @@
 ---
 import Select from "#app/components/select.astro";
 import SubmitButton from "#app/components/submit-button.astro";
-import { isAdmin } from "#app/lib/clerk.ts";
+import { isAdmin } from "#app/lib/auth.ts";
 import { getPrices } from "#app/lib/kv.ts";
 import { getPlusPriceKey, parsePlusPriceKey } from "#app/lib/stripe.ts";
 import { actions } from "astro:actions";

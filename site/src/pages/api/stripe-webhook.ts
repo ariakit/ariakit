@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import type { Stripe } from "stripe";
-import { getUser } from "#app/lib/clerk.ts";
+import { getUser } from "#app/lib/auth.ts";
 import {
   deletePrice,
   deletePromo,

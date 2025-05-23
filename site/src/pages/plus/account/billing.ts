@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getCustomer } from "#app/lib/clerk.ts";
+import { getCustomer } from "#app/lib/auth.ts";
 import { camelCaseObject } from "#app/lib/schemas.ts";
 import { URLSchema } from "#app/lib/schemas.ts";
 import { getStripeClient } from "#app/lib/stripe.ts";

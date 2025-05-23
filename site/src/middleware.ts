@@ -1,7 +1,7 @@
 import { getActionContext } from "astro:actions";
 import { clerkMiddleware } from "@clerk/astro/server";
 import type { APIContext, MiddlewareNext } from "astro";
-import { isAdmin } from "./lib/clerk.ts";
+import { isAdmin } from "./lib/auth.ts";
 import { unauthorized } from "./lib/response.ts";
 
 const clerk = clerkMiddleware();

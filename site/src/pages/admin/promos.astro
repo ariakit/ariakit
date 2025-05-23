@@ -3,7 +3,7 @@ import { InlineLink } from "#app/components/inline-link.react.tsx";
 import Select from "#app/components/select.astro";
 import SubmitButton from "#app/components/submit-button.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
-import { isAdmin } from "#app/lib/clerk.ts";
+import { isAdmin } from "#app/lib/auth.ts";
 import { getAllPromos, getBestPromo } from "#app/lib/kv.ts";
 import { actions } from "astro:actions";
 import { formatDistanceToNow } from "date-fns";
