@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@astrojs/check": "0.9.4",
-    "@astrojs/cloudflare": "12.5.2",
-    "@astrojs/react": "4.2.7",
-    "@astrojs/solid-js": "5.0.10",
+    "@astrojs/cloudflare": "12.5.3",
+    "@astrojs/react": "4.3.0",
+    "@astrojs/solid-js": "5.1.0",
     "@clerk/astro": "2.7.4",
     "@stripe/stripe-js": "7.2.0",
     "shiki": "3.3.0",
