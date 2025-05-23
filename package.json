@@ -99,7 +99,7 @@
     "@stripe/react-stripe-js": "3.7.0",
     "@stripe/stripe-js": "6.1.0",
     "@tailwindcss/vite": "4.1.5",
-    "@tanstack/react-query": "5.75.1",
+    "@tanstack/react-query": "5.76.2",
     "@tanstack/react-store": "0.7.0",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",
