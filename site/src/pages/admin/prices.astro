@@ -55,7 +55,7 @@ const { currencies, countries } = getCurrencyData();
 <Layout>
   <div class="ak-layer-down border-t min-h-[90vh]">
     <ul
-      class="ak-container ak-container-padding-3 grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-(--ak-container-padding) py-(--ak-container-padding)"
+      class="ak-container ak-container-p-3 grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-(--ak-container-p) py-(--ak-container-p)"
     >
       {prices.map((price) => <PriceCard {...price} />)}
       <li class="ak-layer ak-frame-card ak-frame-border">
