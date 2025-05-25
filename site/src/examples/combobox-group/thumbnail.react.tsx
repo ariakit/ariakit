@@ -1,4 +1,4 @@
-import { PlaceholderText } from "../../components/placeholder-text.react.tsx";
+import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 
 export default function Thumbnail() {
   return (
