@@ -1,5 +1,9 @@
 # @ariakit/tailwind
 
+## 0.1.7
+
+- Fixed `ak-edge-contrast` for mid-tone colors.
+
 ## 0.1.6
 
 - Updated `ak-layer-mix` to use `0` as the default level.
