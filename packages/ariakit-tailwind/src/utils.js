@@ -1,4 +1,4 @@
-export const LIGHTNESS_LEVELS = 10;
+export const LIGHTNESS_LEVELS = 8;
 export const SCHEME_THRESHOLD_L = 56.27;
 export const SCHEME_THRESHOLD_OKL = 0.623;
 
@@ -361,7 +361,6 @@ export function withParentL(fn) {
     (_, i) => (i / LIGHTNESS_LEVELS) * 100,
   );
   return levels.reduce((acc, l) => {
-    l = Math.round(l);
     const query = `@container style(${vars._layerL}: lch(${l} 0 0))`;
     const result = fn(l);
     if (!result) return acc;
