@@ -73,6 +73,7 @@ export interface CodeBlockProps
     CodeBlockBaseProps {
   topbar?: React.ReactNode;
   showFilename?: boolean;
+  collapsibleClassName?: string;
   renderContent?: (content: React.ReactElement) => React.ReactNode;
 }
 
@@ -93,6 +94,7 @@ export function CodeBlock({
   topbar,
   renderContent,
   children,
+  collapsibleClassName,
   ...props
 }: CodeBlockProps) {
   const lineCount = code.trimEnd().split("\n").length;
@@ -153,7 +155,10 @@ export function CodeBlock({
       className={clsx("flex flex-col isolate scroll-my-2", props.className)}
     >
       <div
-        className="ak-layer-0.5 ak-light:ak-layer group peer ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2"
+        className={clsx(
+          "ak-layer-0.5 ak-light:ak-layer group peer ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
+          collapsibleClassName,
+        )}
         data-collapsible={collapsible || undefined}
         data-collapsed={collapsed || undefined}
       >
@@ -665,10 +670,9 @@ export function CodeBlockTabsContent({
         {...selectedTab}
         topbar={renderTopbar()}
         code={selectedTab?.code || ""}
-        className={clsx(
-          // TODO: Refactor this
-          isPreviewSelected && "*:ak-layer-down-0.15 *:ak-dark:ak-edge/13",
-          props.className,
+        collapsibleClassName={clsx(
+          isPreviewSelected &&
+            "ak-layer-canvas-down-0.15! ak-light:ak-edge/15 ak-dark:ak-edge/13",
         )}
         renderContent={(content) => {
           return (
@@ -684,10 +688,7 @@ export function CodeBlockTabsContent({
                   }}
                   render={
                     <div
-                      className={clsx(
-                        "ak-tab-panel",
-                        !fullPreview && "ak-frame-cover-start",
-                      )}
+                      className={clsx(!fullPreview && "ak-frame-cover-start")}
                     >
                       {iframe ? (
                         <CodeBlockPreviewIframe
@@ -774,7 +775,7 @@ export function CodeBlockTabs({
             <div className="@max-[64rem]:hidden absolute text-lg ak-text/0 top-1/2 left-1/2 -translate-1/2 z-1 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full">
               <Icon name="chevronRight" />
             </div>
-            <div className="relative ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 overflow-clip ak-layer-down-0.15 ak-dark:ak-edge/13 @max-[64rem]:hidden">
+            <div className="relative ak-frame-border ak-frame-container/0 overflow-clip ak-layer-canvas-down-0.15 ak-light:ak-edge/15 ak-dark:ak-edge/13 @max-[64rem]:hidden">
               <div className="ak-frame-cover/1 absolute top-0 end-0 z-1">
                 <Tooltip title="Open preview in new tab">
                   <a
