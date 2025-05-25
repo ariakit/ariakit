@@ -23,6 +23,7 @@ import { SignUp } from "@clerk/astro/components";
 import { formatDistanceToNow } from "date-fns";
 import { z } from "zod";
 import Layout from "./_layout.astro";
+import { importThumbnail } from "#app/lib/import-thumbnail.ts";
 
 export const prerender = false;
 
@@ -285,25 +286,12 @@ async function getOfferText() {
               class="ak-button min-w-72 ak-layer ak-light:ring ak-frame-card flex flex-col gap-2 items-stretch font-normal [--test:var(--ak-layer)] outline-offset-0 group"
             >
               <span class="ak-frame-cover/1">
-                <span
-                  inert
-                  class="ak-layer-down ak-frame/px block in-focus-visible:ak-layer-primary [--ak-layer-text:var(--ak-text)]"
-                >
-                  <span class="ak-frame/6 overflow-clip block">
-                    <span class="flex flex-col gap-2 in-focus-visible:ak-layer-(--ak-layer-text) group-focus-visible:bg-transparent group-hover:scale-110 group-focus-visible:scale-110 transition-transform duration-1000">
-                      <span class="ak-option_idle flex items-center gap-2 ak-layer shadow-lg">
-                        <span class="block size-4 rounded-full ak-layer-mix-primary/30" />
-                        <PlaceholderText text="Testing this" />
-                      </span>
-                      <span class="ak-option_idle flex items-center gap-2 translate-x-12 ak-layer shadow-lg">
-                        <span class="block size-4 rounded-full ak-layer-mix-primary/30" />
-                        <PlaceholderText text="Testing this" />
-                      </span>
-                      <span class="ak-option_idle flex items-center gap-2 translate-x-24 ak-layer shadow-lg">
-                        <span class="block size-4 rounded-full ak-layer-mix-primary/30" />
-                        <PlaceholderText text="Testing this" />
-                      </span>
-                    </span>
+                <span class="ak-layer-down ak-la border !border-(--ak-layer) ak-frame/8 block group-focus-visible:ak-layer-primary h-60 w-80 overflow-clip">
+                  <span class="not-group-focus-visible:not-group-hover:opacity-75 group-focus-visible:ak-layer-white !bg-transparent block group-hover:scale-105 transition-transform duration-1000">
+                    {importThumbnail("combobox-group").then((Thumbnail) => {
+                      if (!Thumbnail) return null;
+                      return <Thumbnail />;
+                    })}
                   </span>
                 </span>
               </span>
