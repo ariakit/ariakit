@@ -153,7 +153,7 @@ export function CodeBlock({
       className={clsx("flex flex-col isolate scroll-my-2", props.className)}
     >
       <div
-        className="ak-layer group peer ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2"
+        className="ak-layer-0.5 ak-light:ak-layer group peer ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2"
         data-collapsible={collapsible || undefined}
         data-collapsed={collapsed || undefined}
       >
@@ -279,7 +279,7 @@ export function CodeBlockPreviewIframe({
     const setDataFocus = (event: FocusEvent) => {
       const html = iframe.contentDocument?.documentElement;
       if (!html) return;
-      if (event.type === "focus") {
+      if (event.type === "focus" || event.type === "focusin") {
         html.setAttribute("data-focus", "true");
       } else {
         html.removeAttribute("data-focus");
@@ -306,9 +306,12 @@ export function CodeBlockPreviewIframe({
         "not-data-focus:[&_.ak-popover-scroll]:overflow-hidden",
       );
 
-      iframe.contentWindow?.addEventListener("focus", setDataFocus);
-      iframe.contentWindow?.addEventListener("blur", setDataFocus);
-      iframe.contentWindow?.addEventListener("mousemove", disableHover, true);
+      const win = iframe.contentWindow;
+
+      win?.document.body.addEventListener("focusin", setDataFocus);
+      win?.addEventListener("focus", setDataFocus);
+      win?.addEventListener("blur", setDataFocus);
+      win?.addEventListener("mousemove", disableHover, true);
 
       if (!clickAndWait) return setLoaded(true);
       // Make the iframe inert so we can interact with it without moving focus
@@ -539,7 +542,7 @@ export function CodeBlockTabsContent({
       className={clsx(
         hasToolbar && "[--height:--spacing(12)]",
         !isPreviewSelected
-          ? "ak-layer-down ak-light:ak-layer-down-0.5 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)"
+          ? "ak-layer-down-0.7 ak-light:ak-layer-down-0.5 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)"
           : [
               "flex items-start",
               fullPreview
@@ -750,7 +753,7 @@ export function CodeBlockTabs({
     <div className="@container">
       <div
         className={clsx(
-          "grid grid-cols-1 gap-4",
+          "grid grid-cols-1 gap-4 relative",
           preview && "@[64rem]:grid-cols-2",
         )}
       >
@@ -767,34 +770,39 @@ export function CodeBlockTabs({
           />
         )}
         {preview && previewUrl && (
-          <div className="relative ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 overflow-clip ak-layer-down-0.15 ak-dark:ak-edge/13 @max-[64rem]:hidden">
-            <div className="ak-frame-cover/1 absolute top-0 end-0 z-1">
-              <Tooltip title="Open preview in new tab">
-                <a
-                  href={previewUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ak-button ak-button-square sm:h-10 h-9"
-                >
-                  <Icon name="newWindow" className="text-lg" />
-                  <span className="sr-only">Open preview in new tab</span>
-                </a>
-              </Tooltip>
+          <>
+            <div className="@max-[64rem]:hidden absolute text-lg ak-text/0 top-1/2 left-1/2 -translate-1/2 z-1 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full">
+              <Icon name="chevronRight" />
             </div>
-            {props.iframe ? (
-              <CodeBlockPreviewIframe
-                previewUrl={previewUrl}
-                clickAndWait={props.clickAndWait}
-                fallback={hasFallback ? fallback1 : undefined}
-                scrollTop={props.scrollTop}
-                minHeight={props.minHeight}
-              />
-            ) : (
-              <CodeBlockPreview minHeight={props.minHeight}>
-                {props.children}
-              </CodeBlockPreview>
-            )}
-          </div>
+            <div className="relative ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 overflow-clip ak-layer-down-0.15 ak-dark:ak-edge/13 @max-[64rem]:hidden">
+              <div className="ak-frame-cover/1 absolute top-0 end-0 z-1">
+                <Tooltip title="Open preview in new tab">
+                  <a
+                    href={previewUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ak-button ak-button-square sm:h-10 h-9"
+                  >
+                    <Icon name="newWindow" className="text-lg" />
+                    <span className="sr-only">Open preview in new tab</span>
+                  </a>
+                </Tooltip>
+              </div>
+              {props.iframe ? (
+                <CodeBlockPreviewIframe
+                  previewUrl={previewUrl}
+                  clickAndWait={props.clickAndWait}
+                  fallback={hasFallback ? fallback1 : undefined}
+                  scrollTop={props.scrollTop}
+                  minHeight={props.minHeight}
+                />
+              ) : (
+                <CodeBlockPreview minHeight={props.minHeight}>
+                  {props.children}
+                </CodeBlockPreview>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
