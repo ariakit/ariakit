@@ -1,10 +1,16 @@
 @utility ak-popover_idle {
   --ak-popover-ring-color: var(--ak-ring, var(--ak-layer-ring));
   transition-property: overlay, display, scale, opacity;
-  @apply ak-layer-canvas-1 ak-frame-force-dialog ak-light:ring ak-dark:ak-frame-border ak-light:border-none;
+  @apply ak-frame-force-dialog ak-light:ring ak-dark:ak-frame-border ak-light:border-none;
   @apply transition-discrete z-10 shadow-xl;
   @variant backdrop {
     transition-property: overlay, display, opacity;
+  }
+  @variant ak-light {
+    @apply ak-layer-white;
+  }
+  @variant ak-dark {
+    @apply ak-layer;
   }
 }
 
