@@ -3,13 +3,16 @@
   @apply max-w-full cursor-text leading-[1em] -outline-offset-1 transition-[background-color];
 
   @variant ak-light {
-    @apply ak-layer-canvas-10;
+    @apply ak-layer-white;
   }
   @variant ak-dark {
     @apply not-hover:not-focus-within:ak-layer-down;
   }
   &:is(input) {
     @apply box-content h-[1em];
+  }
+  &:not(:is(input)):not(:has(input)) {
+    padding-block: calc(var(--ak-frame-padding) - 0.25em);
   }
   input {
     @apply -my-[0.25em] box-content h-[1.5em] outline-none;
