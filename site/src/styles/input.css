@@ -5,7 +5,7 @@
     @apply ak-layer-white;
   }
   @variant ak-dark {
-    @apply not-hover:not-focus-within:ak-layer-down;
+    @apply not-hover:not-focus-within:ak-layer-down-0.5;
   }
   &:is(input) {
     @apply box-content h-[1em];

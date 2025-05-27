@@ -1,6 +1,8 @@
 ---
-import "@fontsource-variable/inter";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { Logo } from "#app/icons/logo.react.tsx";
 import "#app/styles/global.css";
+import "@fontsource-variable/inter";
 import { ClientRouter } from "astro:transitions";
 ---
 
@@ -13,7 +15,119 @@ import { ClientRouter } from "astro:transitions";
     <title>Ariakit</title>
     <ClientRouter />
   </head>
-  <body>
-    <slot />
+  <body class="ak-container-size-default/3">
+    <div class="flex">
+      <div class="flex flex-col flex-1 @container">
+        <header
+          transition:persist
+          class="ak-container-size-default sticky [container-type:scroll-state] top-0 z-10"
+        >
+          <div
+            class="ak-layer-current [@container_not_scroll-state(stuck:top)]:bg-transparent [@container_scroll-state(stuck:top)]:ring ak-light:[@container_scroll-state(stuck:top)]:ak-layer"
+          >
+            <div class="ak-container flex items-center gap-3 py-2">
+              <div class="flex items-center gap-2"><Logo iconOnly /></div>
+
+              <div class="flex items-center gap-0.5">
+                <span
+                  aria-hidden="true"
+                  class="opacity-30 text-3xl/0 font-thin cursor-default">/</span
+                >
+                <span class="ak-button font-normal">
+                  <Icon name="html" /> HTML
+                </span>
+                <span
+                  aria-hidden="true"
+                  class="opacity-30 text-3xl/0 font-thin cursor-default">/</span
+                >
+                <span class="ak-button font-normal">Examples</span>
+                <span
+                  aria-hidden="true"
+                  class="opacity-30 text-3xl/0 font-thin cursor-default">/</span
+                >
+                <span class="ak-button"
+                  >Combobox Group <span class="ak-text/0 font-normal">⌘K</span
+                  ></span
+                >
+              </div>
+              <div class="flex items-center gap-2 ms-auto">
+                <a
+                  href="/plus"
+                  class="ak-button ak-frame-field/1 hover:ak-layer-mix-primary/20"
+                >
+                  <span
+                    class="ak-badge-primary border-dashed ak-frame-border ak-frame-field/2 text-sm"
+                  >
+                    <span>Plus</span>
+                  </span>
+                </a>
+                <button
+                  id="theme-toggle"
+                  class="ak-button font-normal text-sm group/theme"
+                >
+                  <div
+                    class="flex-none ak-layer rounded-full p-1 border-white bg-clip-padding bg-conic/decreasing from-violet-500 via-lime-500 to-violet-500"
+                  >
+                    <div class="ak-layer-current rounded-full size-[0.4em]">
+                    </div>
+                  </div>
+                  Theme
+                  <kbd class="ak-text/0 font-normal">T</kbd>
+                </button>
+              </div>
+            </div>
+          </div>
+        </header>
+        <main>
+          <slot />
+        </main>
+        <footer class="ak-container-size-default ak-layer-down">
+          <div class="ak-container">Footer</div>
+        </footer>
+      </div>
+      <div
+        id="theme-sidebar"
+        data-state="closed"
+        transition:persist
+        class="hidden data-[state=open]:block sticky w-100 h-[100dvh] top-0 z-10 ak-layer-current ring flex-none not-data-view-transitioning:starting:w-0 data-[state=closed]:w-0 transition-discrete transition-[display,width,min-width]"
+      >
+        dsadas
+      </div>
+    </div>
   </body>
 </html>
+
+<script>
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeSidebar = document.getElementById("theme-sidebar");
+
+  themeToggle?.addEventListener("click", () => {
+    if (!themeSidebar) return;
+    console.log("clicked", themeSidebar.dataset.state);
+    themeSidebar.dataset.state =
+      themeSidebar.dataset.state !== "open" ? "open" : "closed";
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
+    if (e.key === "t" || e.key === "T") {
+      if (!themeSidebar) return;
+      console.log("clicked", themeSidebar.dataset.state);
+      themeSidebar.dataset.state =
+        themeSidebar.dataset.state !== "open" ? "open" : "closed";
+    }
+  });
+
+  // Mark the sidebar as transitioning during view transitions
+  document.addEventListener("astro:before-preparation", () => {
+    if (!themeSidebar) return;
+    themeSidebar.setAttribute("data-view-transitioning", "true");
+  });
+
+  document.addEventListener("astro:after-swap", () => {
+    requestAnimationFrame(() => {
+      if (!themeSidebar) return;
+      themeSidebar.removeAttribute("data-view-transitioning");
+    });
+  });
+</script>

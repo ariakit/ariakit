@@ -60,7 +60,7 @@ const teams = await getCurrentUserTeams(Astro);
     <title>Ariakit</title>
   </head>
   <body
-    class="[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] ak-container-[64rem]/3 flex flex-col"
+    class="[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] ak-container-size-[64rem]/3 flex flex-col"
   >
     <div
       class="py-8 border-b ak-layer-current flex flex-col gap-4 ak-layer-down-0.5"
@@ -112,7 +112,7 @@ const teams = await getCurrentUserTeams(Astro);
           </div>
           {
             signedIn && (
-              <ul class="flex items-center gap-2 min-w-max font-medium">
+              <ul class="flex items-center gap-2 font-medium">
                 <li>
                   <a
                     {...getLinkProps()}

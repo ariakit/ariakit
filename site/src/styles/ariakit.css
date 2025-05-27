@@ -51,6 +51,7 @@
 :root {
   @variant dark {
     --color-canvas: oklch(16.52% 0.0062 285.7);
+    /* --color-canvas: theme(--color-zinc-900); */
   }
 }
 

@@ -12,7 +12,7 @@
 @utility ak-badge-* {
   --ak-badge-color: --value(--color, [color]);
   @apply ak-badge_base;
-  @apply ak-layer-mix-(--ak-badge-color)/15 ak-dark:ak-edge-(--ak-badge-color)/5 ak-light:ak-edge-(--ak-badge-color)/15;
+  @apply ak-layer-mix-(--ak-badge-color)/15 ak-dark:ak-edge-(--ak-badge-color)/10 ak-light:ak-edge-(--ak-badge-color)/15;
 
   > * {
     @apply ak-text-(--ak-badge-color)/70;

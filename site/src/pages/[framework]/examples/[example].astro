@@ -1,65 +1,211 @@
 ---
-import { getEntry } from "astro:content";
-import { render } from "astro:content";
-import { getCollection } from "astro:content";
-import type { GetStaticPaths } from "astro";
+import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
 import Layout from "#app/pages/_layout.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection, getEntries, render } from "astro:content";
 
-// Create getStaticPaths
 export const getStaticPaths = (async () => {
-  // Get all examples from the content collection
-  const examples = await getCollection("examples");
-
-  const paths = examples.flatMap((example) =>
-    example.data.frameworks.map((framework) => ({
-      params: {
-        framework,
-        example: example.id,
-      },
-    }))
-  );
-
-  return paths;
+  const entries = await getCollection("examples");
+  const descriptions = await getCollection("descriptions");
+  const galleries = await getCollection("galleries");
+  return entries.flatMap((entry) => {
+    const gallery = galleries.find((gallery) => gallery.id === entry.id);
+    const description = descriptions.find((header) => header.id === entry.id);
+    return entry.data.frameworks.map((framework) => ({
+      params: { framework, example: entry.id },
+      props: { entry, gallery, description },
+    }));
+  });
 }) satisfies GetStaticPaths;
 
-// Get the dynamic route parameters
-const { framework, example } = Astro.params;
-
-Astro.locals.framework = framework;
-Astro.locals.example = example;
-
-// Get the example from the content collection
-const entry = await getEntry("examples", `${example}`);
-
-// If example doesn't exist, redirect to 404
-if (!entry) {
-  return Astro.rewrite("/404");
-}
+const { framework } = Astro.params;
+const { entry, gallery, description } = Astro.props;
+const { Content, headings } = await render(entry);
+const { Content: Gallery = Fragment } = gallery ? await render(gallery) : {};
+const { Content: Description = Fragment } = description
+  ? await render(description)
+  : {};
 
 const examples = await getCollection("examples");
+const tags = await getEntries(entry.data.tags);
 
-// Get the rendered content
-const { Content } = await render(entry);
+Astro.locals.framework = framework;
+Astro.locals.example = entry.id;
 ---
 
-<Layout title={entry.data.title || example}>
-  <main
-    class="w-full max-w-[95rem] mx-auto [&_:is(h1,h2,h3)]:max-w-[80rem] [&_:is(h1,h2,h3)]:mx-auto"
-  >
-    <div class="px-3 sm:px-4 py-8">
-      <h1 class="text-3xl font-bold mb-6">{entry.data.title || example}</h1>
-      <div class="ak-prose">
-        <Content framework={framework} />
+<Layout title={entry.data.title}>
+  <div class="overflow-x-clip">
+    <div class="ak-container-size-default ak-container py-24">
+      <h1
+        class="text-4xl font-semibold mb-4 ak-container-size-default/0 ak-container"
+      >
+        {entry.data.title}
+      </h1>
+      <div
+        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem] gap-3 items-start"
+      >
+        <div
+          class="ak-text/60 text-lg ak-container-size-content/0 ak-container"
+        >
+          <Description />
+          {
+            !!tags.length && (
+              <ul class="flex gap-2 mt-4">
+                {tags.map((tag) => (
+                  <li>
+                    <a
+                      href={`/${framework}/tags/${tag.id}`}
+                      class="ak-badge ak-layer-pop hover:ak-layer-hover"
+                    >
+                      {tag.data.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </div>
+        <div class="ms-auto flex gap-2 items-center relative">
+          <BoxPatternsRight />
+          <div class="flex gap-2">
+            <button
+              class="ak-button ak-layer-primary-down-2 ak-frame-border ak-edge-primary/25 flex-1"
+            >
+              <Icon name="copyAi" strokeWidth={2} /> Copy AI prompt
+              <kbd class="ak-text/0">
+                <span class="font-sans">⌘</span>I
+              </kbd>
+            </button>
+            <button
+              class="ak-button ak-layer-current ak-layer-pop ak-frame-border"
+            >
+              <Icon name="shadcn" />
+              <span class="sr-only">Copy shadcn command</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-    {
-      examples.flatMap((example) =>
-        example.data.frameworks.map((framework) => (
-          <a href={`/${framework}/examples/${example.id}`}>
-            {framework}/{example.data.title}
-          </a>
-        ))
-      )
-    }
-  </main>
+    <div class="ak-container-size-wider ak-container">
+      <Gallery />
+    </div>
+    <div class="ak-container-size-wider ak-container">
+      <div
+        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem] gap-(--ak-container-p)"
+      >
+        <div class="ak-prose">
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+          <div
+            class="max-w-[calc(100cqi-var(--container-sidebar)-var(--ak-container-p)*2)] my-10"
+          >
+            <div
+              class="max-w-[calc(var(--ak-container-max-width)-var(--container-sidebar)-var(--ak-container-p))] relative z-1"
+            >
+              <div
+                class="w-(--container-wider) max-w-[calc(100cqi-var(--ak-container-p)*2)] relative z-1 ak-layer-current shadow-(color:--ak-layer) shadow-[0_1rem_1rem_1rem_var(--ak-layer),0_-1rem_1rem_1rem_var(--ak-layer)]"
+              >
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas,
+                  ab! Error praesentium pariatur quod fuga tempore quae nam ab
+                  obcaecati inventore, molestiae vitae, unde eius. Repudiandae,
+                  fugit. Ab, omnis quibusdam.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas,
+                  ab! Error praesentium pariatur quod fuga tempore quae nam ab
+                  obcaecati inventore, molestiae vitae, unde eius. Repudiandae,
+                  fugit. Ab, omnis quibusdam.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas,
+                  ab! Error praesentium pariatur quod fuga tempore quae nam ab
+                  obcaecati inventore, molestiae vitae, unde eius. Repudiandae,
+                  fugit. Ab, omnis quibusdam.
+                </p>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas,
+                  ab! Error praesentium pariatur quod fuga tempore quae nam ab
+                  obcaecati inventore, molestiae vitae, unde eius. Repudiandae,
+                  fugit. Ab, omnis quibusdam.
+                </p>
+              </div>
+            </div>
+          </div>
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+          <p class="ak-container-size-content/0 ak-container">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
+            Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
+            inventore, molestiae vitae, unde eius. Repudiandae, fugit. Ab, omnis
+            quibusdam.
+          </p>
+        </div>
+        <ul class="ak-layer-current border-s p-4 sticky top-20 h-fit">
+          {
+            headings.map((heading) => (
+              <li>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+    <Content {framework} />
+  </div>
+  {
+    examples.flatMap((example) =>
+      example.data.frameworks.map((framework) => (
+        <a href={`/${framework}/examples/${example.id}`}>
+          {framework}/{example.data.title}
+        </a>
+      ))
+    )
+  }
 </Layout>

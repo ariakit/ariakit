@@ -1,35 +1,25 @@
 ---
-import "@fontsource-variable/inter";
 import "#app/styles/global.css";
-import { getEntry } from "astro:content";
-import { render } from "astro:content";
-import { getCollection } from "astro:content";
+import "@fontsource-variable/inter";
 import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
 
 export const getStaticPaths = (async () => {
-  const previews = await getCollection("previews");
-  return previews.flatMap((preview) =>
-    preview.data.frameworks.map((framework) => ({
-      params: {
-        framework,
-        example: preview.id,
-      },
-    }))
-  );
+  const entries = await getCollection("previews");
+  return entries.flatMap((entry) => {
+    return entry.data.frameworks.map((framework) => ({
+      params: { framework, example: entry.id },
+      props: { entry },
+    }));
+  });
 }) satisfies GetStaticPaths;
 
 const { framework, example } = Astro.params;
+const { entry } = Astro.props;
+const { Content } = await render(entry);
 
 Astro.locals.framework = framework;
 Astro.locals.example = example;
-
-const entry = await getEntry("previews", example);
-
-if (!entry) {
-  return Astro.rewrite("/404");
-}
-
-const { Content } = await render(entry);
 ---
 
 <!doctype html>

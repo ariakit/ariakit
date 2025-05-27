@@ -1,5 +1,19 @@
 @import "./ariakit.css";
 
+@theme {
+  --container-wider: 92rem;
+  --container-wide: 84rem;
+  --container-default: 72rem;
+  --container-sidebar: 24rem;
+}
+
+@theme inline {
+  --container-content: calc(
+    100% - var(--container-sidebar) -
+      (100% - var(--container-default) + var(--ak-container-p))
+  );
+}
+
 @custom-variant base {
   @layer base {
     @slot;

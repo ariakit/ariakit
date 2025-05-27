@@ -12,4 +12,8 @@
   :where(h3) {
     @apply my-10 text-2xl;
   }
+
+  :where(p) {
+    @apply mb-8 text-lg leading-relaxed;
+  }
 }
