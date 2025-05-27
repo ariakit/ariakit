@@ -13,7 +13,7 @@ export function Icon({ name, animateStroke, ...props }: IconProps) {
   const hasLabel =
     props["aria-label"] !== undefined || props["aria-labelledby"] !== undefined;
 
-  const { html, stroke, replaceId, fill, size = 24 } = icons[name];
+  const { html, stroke, replaceId, fill, size = 24, emSize = 1 } = icons[name];
   const strokeWidth = props.strokeWidth ?? icons[name].strokeWidth ?? 1.5;
 
   let content = html;
@@ -25,8 +25,8 @@ export function Icon({ name, animateStroke, ...props }: IconProps) {
   return (
     <svg
       viewBox={`0 0 ${size} ${size}`}
-      width="1em"
-      height="1em"
+      width={`${emSize}em`}
+      height={`${emSize}em`}
       fill={fill}
       stroke={stroke}
       aria-hidden={!hasLabel || undefined}
