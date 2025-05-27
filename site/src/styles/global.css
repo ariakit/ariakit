@@ -9,8 +9,7 @@
 
 @theme inline {
   --container-content: calc(
-    100% - var(--container-sidebar) -
-      (100% - var(--container-default) + var(--ak-container-p))
+    100% - var(--container-sidebar) - (100% - var(--container-default))
   );
 }
 
