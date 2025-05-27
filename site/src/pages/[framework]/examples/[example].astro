@@ -73,7 +73,7 @@ Astro.locals.example = entry.id;
               class="ak-button ak-layer-primary-down-2 ak-frame-border ak-edge-primary/25 flex-1"
             >
               <Icon name="copyAi" strokeWidth={2} /> Copy AI prompt
-              <kbd class="ak-text/0">
+              <kbd class="ak-text/0 ms-1">
                 <span class="font-sans">⌘</span>I
               </kbd>
             </button>
@@ -92,7 +92,7 @@ Astro.locals.example = entry.id;
     </div>
     <div class="ak-container-size-wider ak-container">
       <div
-        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem] gap-(--ak-container-p)"
+        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem]"
       >
         <div class="ak-prose">
           <p class="ak-container-size-content/0 ak-container">
@@ -186,15 +186,24 @@ Astro.locals.example = entry.id;
             quibusdam.
           </p>
         </div>
-        <ul class="ak-layer-current border-s p-4 sticky top-20 h-fit">
-          {
-            headings.map((heading) => (
-              <li>
-                <a href={`#${heading.slug}`}>{heading.text}</a>
-              </li>
-            ))
-          }
-        </ul>
+        <div class="ps-3">
+          <ul
+            class="ak-layer-current ak-dark:scheme-dark border-s ps-3 sticky top-22 max-h-[calc(100dvh---spacing(25))] overflow-y-auto flex flex-col gap-1 text-sm w-fit"
+          >
+            {
+              headings.map((heading) => (
+                <li>
+                  <a
+                    class="ak-text/80 not-hover:no-underline ak-button justify-start ak-frame-field/2"
+                    href={`#${heading.slug}`}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
       </div>
     </div>
     <Content {framework} />
