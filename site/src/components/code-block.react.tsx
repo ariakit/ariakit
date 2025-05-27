@@ -202,7 +202,7 @@ function CodeBlockTab({
       className={clsx(
         isPreviewSelected
           ? [
-              "ak-segmented-button aria-selected:ak-edge/8 aria-selected:ak-layer-pop aria-selected:shadow-none",
+              "ak-segmented-button aria-selected:ak-edge/0 aria-selected:ak-layer-pop aria-selected:shadow-none",
               fullPreview
                 ? "aria-selected:ak-layer-down aria-selected:ak-light:ak-edge/0 px-2 not-aria-selected:px-3"
                 : "px-1.5 not-aria-selected:px-2.5 not-aria-selected:sm:px-3 sm:px-2",
@@ -552,7 +552,7 @@ export function CodeBlockTabsContent({
               "flex items-start",
               fullPreview
                 ? "ak-layer ak-frame-cover/1"
-                : "absolute z-1 inset-0 bottom-auto ak-frame-container/1 pointer-events-none *:pointer-events-auto [@media(hover:hover)]:not-group-hover:not-group-focus-within:opacity-0 transition-opacity",
+                : "absolute z-1 inset-0 bottom-auto ak-frame-container/1 pointer-events-none *:pointer-events-auto _[@media(hover:hover)]:not-group-hover:not-group-focus-within:opacity-0 transition-opacity",
             ],
       )}
     >
