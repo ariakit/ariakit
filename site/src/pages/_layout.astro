@@ -15,7 +15,7 @@ import { ClientRouter } from "astro:transitions";
     <title>Ariakit</title>
     <ClientRouter />
   </head>
-  <body class="ak-container-size-default/3">
+  <body class="ak-container-size-default/3 overflow-x-clip">
     <div class="flex">
       <div class="flex flex-col flex-1 @container">
         <header
@@ -28,27 +28,35 @@ import { ClientRouter } from "astro:transitions";
             <div class="ak-container flex items-center gap-3 py-2">
               <div class="flex items-center gap-2"><Logo iconOnly /></div>
 
-              <div class="flex items-center gap-0.5">
+              <div class="flex items-center gap-0.5 min-w-0">
+                <span
+                  aria-hidden="true"
+                  class="opacity-30 text-3xl/0 font-thin cursor-default @max-3xl:hidden"
+                  >/</span
+                >
+                <button
+                  class="ak-button font-normal ak-dark:ak-text/80 @max-3xl:hidden"
+                >
+                  <Icon name="html" className="flex-none" /><span>HTML</span>
+                </button>
+                <span
+                  aria-hidden="true"
+                  class="opacity-30 text-3xl/0 font-thin cursor-default @max-3xl:hidden"
+                  >/</span
+                >
+                <button
+                  class="ak-button font-normal ak-dark:ak-text/80 min-w-0 @max-3xl:hidden"
+                >
+                  <span class="truncate">Examples</span>
+                </button>
                 <span
                   aria-hidden="true"
                   class="opacity-30 text-3xl/0 font-thin cursor-default">/</span
                 >
-                <span class="ak-button font-normal">
-                  <Icon name="html" /> HTML
-                </span>
-                <span
-                  aria-hidden="true"
-                  class="opacity-30 text-3xl/0 font-thin cursor-default">/</span
-                >
-                <span class="ak-button font-normal">Examples</span>
-                <span
-                  aria-hidden="true"
-                  class="opacity-30 text-3xl/0 font-thin cursor-default">/</span
-                >
-                <span class="ak-button"
-                  >Combobox Group <span class="ak-text/0 font-normal">⌘K</span
-                  ></span
-                >
+                <button class="ak-button min-w-0">
+                  <span class="truncate">Combobox Group</span>
+                  <span class="ak-text/0 font-normal">⌘K</span>
+                </button>
               </div>
               <div class="flex items-center gap-2 ms-auto">
                 <a
@@ -71,8 +79,8 @@ import { ClientRouter } from "astro:transitions";
                     <div class="ak-layer-current rounded-full size-[0.4em]">
                     </div>
                   </div>
-                  Theme
-                  <kbd class="ak-text/0 font-normal">T</kbd>
+                  <span class="@max-4xl:sr-only">Theme</span>
+                  <kbd class="ak-text/0 font-normal @max-4xl:hidden">T</kbd>
                 </button>
               </div>
             </div>
