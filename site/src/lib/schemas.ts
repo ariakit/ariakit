@@ -1,17 +1,18 @@
 import camelCase from "lodash-es/camelCase.js";
 import mapKeys from "lodash-es/mapKeys.js";
 import { z } from "zod";
+import { frameworks } from "./frameworks.ts";
+import { keys } from "./object.ts";
 import { parsePlusPriceKey } from "./stripe.ts";
+import { tags } from "./tags.ts";
 
-export const FRAMEWORKS = [
-  "react",
-  "solid",
-  "svelte",
-  "vue",
-  "preact",
-] as const;
+export const FRAMEWORKS = keys(frameworks);
 export const FrameworkSchema = z.enum(FRAMEWORKS);
 export type Framework = z.infer<typeof FrameworkSchema>;
+
+export const TAGS = keys(tags);
+export const TagSchema = z.enum(TAGS);
+export type Tag = z.infer<typeof TagSchema>;
 
 export const PLUS_CHECKOUT_STEPS = ["login", "payment", "access"] as const;
 export const PlusCheckoutStepSchema = z.enum(PLUS_CHECKOUT_STEPS);
