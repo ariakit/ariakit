@@ -142,8 +142,10 @@ export const edit: Icon = {
 
 export const shadcn: Icon = {
   size: 256,
-  strokeWidth: 24,
-  html: `<path fill="none" stroke="currentColor" stroke-linecap="round" d="M208 128l-80 80M192 40L40 192"/>`,
+  strokeWidth: 32,
+  fill: "none",
+  stroke: "currentColor",
+  html: `<line x1="208" y1="128" x2="128" y2="208" stroke-linecap="round" stroke-linejoin="round"></line><line x1="192" y1="40" x2="40" y2="192" stroke-linecap="round" stroke-linejoin="round"></line>`,
 };
 
 export const newWindow: Icon = {
