@@ -1,5 +1,7 @@
 ---
 import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
+import ContentCodeBlock from "#app/components/content-code-block.astro";
+import ContentLink from "#app/components/content-link.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
@@ -56,7 +58,7 @@ Astro.locals.example = entry.id;
                   <li>
                     <a
                       href={`/${framework}/tags/${tag.id}`}
-                      class="ak-badge ak-layer-pop hover:ak-layer-hover"
+                      class="ak-badge ak-button ak-layer-pop"
                     >
                       {tag.data.label}
                     </a>
@@ -94,7 +96,17 @@ Astro.locals.example = entry.id;
       <div
         class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem]"
       >
-        <div class="ak-prose">
+        <div
+          class="ak-prose [:where(&>p,&>h2)]:ak-container-size-content/0 [:where(&>p,&>h2)]:ak-container [:where(&>:where(h1,h2,h3,h4,h5))]:scroll-mt-[calc(var(--header-height)+--spacing(4))]"
+        >
+          <Content
+            {framework}
+            components={{
+              a: ContentLink,
+              pre: ContentCodeBlock,
+            }}
+          />
+
           <p class="ak-container-size-content/0 ak-container">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
             Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
@@ -188,7 +200,7 @@ Astro.locals.example = entry.id;
         </div>
         <div class="ps-3">
           <ul
-            class="ak-layer-current ak-dark:scheme-dark border-s ps-3 sticky top-22 max-h-[calc(100dvh---spacing(25))] overflow-y-auto flex flex-col gap-1 text-sm w-fit"
+            class="ak-layer-current ak-dark:scheme-dark border-s ps-3 sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto flex flex-col gap-1 text-sm w-fit"
           >
             {
               headings.map((heading) => (
@@ -206,7 +218,6 @@ Astro.locals.example = entry.id;
         </div>
       </div>
     </div>
-    <Content {framework} />
   </div>
   {
     examples.flatMap((example) =>

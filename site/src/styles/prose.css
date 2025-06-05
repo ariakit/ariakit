@@ -1,19 +1,28 @@
+@utility ak-code {
+  @apply ak-layer-pop;
+  @apply rounded px-[0.25em] py-[0.2em] font-mono text-[0.9375em];
+}
+
+@utility ak-paragraph {
+  @apply text-pretty text-lg leading-relaxed;
+}
+
 @utility ak-prose {
-  @apply ak-text/80;
+  @apply ak-text/80 flex flex-col gap-4;
 
-  :where(h1) {
-    @apply my-10 text-4xl;
-  }
-
-  :where(h2) {
-    @apply my-10 text-3xl;
-  }
-
-  :where(h3) {
-    @apply my-10 text-2xl;
+  :where(h1, h2, h3, h4, h5) {
+    @apply ak-heading;
   }
 
   :where(p) {
-    @apply mb-8 text-lg leading-relaxed;
+    @apply ak-paragraph;
+  }
+
+  :where(code):not(:where(pre code)) {
+    @apply ak-code;
+  }
+
+  :where(a):not(:where(:where(h1, h2, h3, h4, h5) > a)) {
+    @apply ak-link;
   }
 }

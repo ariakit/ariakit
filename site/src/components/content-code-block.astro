@@ -1,0 +1,90 @@
+---
+import CodeBlock from "./code-block.astro";
+import type { CodeBlockProps } from "./code-block.types";
+
+interface Props extends Partial<CodeBlockProps> {
+  [key: string]: any;
+}
+
+// The code comes as an HTML string like: <code class="language-jsx">encoded content</code>
+const htmlString = await Astro.slots.render("default");
+
+// Parse the HTML to extract language and code content
+function parseCodeBlock(html: string) {
+  // Match the code element and extract all attributes and content
+  const codeMatch = html.match(/<code([^>]*)>([\s\S]*?)<\/code>/);
+
+  if (!codeMatch) {
+    // Fallback: if no code element found, use the raw HTML
+    return {
+      code: html,
+      lang: undefined,
+      lineNumbers: false,
+      highlightLines: [],
+    };
+  }
+
+  const [, attributes, encodedContent] = codeMatch;
+
+  // Extract class attribute
+  const classMatch = attributes.match(/class="([^"]*)"/);
+  const classAttr = classMatch?.[1] || "";
+
+  // Extract language from class attribute (e.g., "language-jsx" -> "jsx")
+  const langMatch = classAttr.match(/language-(\w+)/);
+  const lang = langMatch?.[1];
+
+  // Parse additional attributes from data attributes or class names
+  let lineNumbers = false;
+  let highlightLines: number[] = [];
+
+  // Check for lineNumbers in class or data attributes
+  if (
+    classAttr.includes("line-numbers") ||
+    attributes.includes("data-line-numbers")
+  ) {
+    lineNumbers = true;
+  }
+
+  // Parse highlight lines from data attributes (set by rehype plugin)
+  const highlightMatch = attributes.match(/data-highlight="([^"]*)"/);
+  if (highlightMatch) {
+    highlightLines = highlightMatch[1]
+      .split(",")
+      .map(Number)
+      .filter((n) => !Number.isNaN(n));
+  }
+
+  // Decode HTML entities
+  const decodedContent = encodedContent
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+
+  return {
+    code: decodedContent.trim(),
+    lang,
+    lineNumbers,
+    highlightLines,
+  };
+}
+
+const parsed = parseCodeBlock(htmlString);
+
+// Merge parsed data with any props passed directly
+const props: CodeBlockProps = {
+  code: parsed.code,
+  lang: parsed.lang as any, // Type assertion since we're dealing with supported languages
+  lineNumbers: parsed.lineNumbers,
+  highlightLines: parsed.highlightLines,
+  ...Astro.props,
+};
+---
+
+<div
+  class="ak-container-size-[calc(min(theme(--container-content),100%)+--spacing(8))]/0 ak-container"
+>
+  <CodeBlock {...props} />
+</div>

@@ -8,26 +8,375 @@ tags:
   - forms
 ---
 
-## Test
+## Overview
 
-Testing {props.framework}
+Combobox groups provide visual separation and improved accessibility by grouping related options together. Each group can have its own header, making the interface more intuitive and scannable.
 
-## Test 2
+> **Note**: Combobox groups are especially beneficial when you have more than 10-15 options, as they help reduce cognitive load and improve the user experience.
 
-Testing {props.framework}
+### Key Benefits
 
-## Test 3
+- **Enhanced User Experience**
 
-Testing {props.framework}
+  Groups reduce cognitive load by organizing options into logical categories, making it easier for users to find what they're looking for without scrolling through long lists of unrelated items.
 
-## Test 4
+- **Improved Accessibility**
 
-Testing {props.framework}
+  Screen readers can announce group labels when users navigate between sections, providing better context and navigation landmarks for users with visual impairments.
 
-## Test 5
+  ```jsx
+  // Screen readers will announce group labels automatically
+  <ComboboxGroup label="Popular Countries">
+    <ComboboxItem value="us">United States</ComboboxItem>
+    <ComboboxItem value="uk">United Kingdom</ComboboxItem>
+  </ComboboxGroup>
+  ```
 
-Testing {props.framework}
+- **Better Visual Hierarchy**
 
-## Test 6
+  Visual grouping creates clear sections that help users understand the relationship between options and quickly scan for relevant categories.
 
-Testing {props.framework}
+  > **Design Tip**: Use consistent spacing and visual separators between groups to maintain clear hierarchy. A well-structured visual layout can reduce user confusion by up to 40%.
+
+- **Scalable Organization**
+
+  As your dataset grows, groups prevent the interface from becoming overwhelming by maintaining logical structure regardless of the number of options.
+
+### Quick Start Checklist
+
+- [x] Install the `@ariakit/react` package
+- [x] Import `ComboboxGroup` component
+- [ ] ~~Use deprecated `Select` component~~ (Use `Combobox` instead)
+- [ ] Add proper ARIA labels
+- [ ] Test with screen readers
+- [ ] Implement keyboard navigation
+
+## Implementation Guide
+
+Follow these steps to implement combobox groups in your application:
+
+1. **Install Dependencies**
+
+   Start by installing the required packages. You'll need `@ariakit/react` as the main dependency, and optionally `@ariakit/react-core` if you need lower-level access to the components.
+
+   ```bash
+   npm install @ariakit/react
+   # or with yarn
+   yarn add @ariakit/react
+   ```
+
+2. **Import Required Components**
+
+   Import the necessary components from the library. The main components you'll need are `Combobox`, `ComboboxGroup`, and `ComboboxItem` for basic functionality.
+
+3. **Structure Your Data**
+
+   Organize your data into groups before rendering. This typically involves creating an object or array structure where each group has a label and an array of items.
+
+   ```javascript
+   const groupedData = {
+     "North America": [
+       { id: "us", label: "United States", value: "us" },
+       { id: "ca", label: "Canada", value: "ca" },
+     ],
+     Europe: [
+       { id: "uk", label: "United Kingdom", value: "uk" },
+       { id: "fr", label: "France", value: "fr" },
+     ],
+   };
+   ```
+
+4. **Implement Basic Markup**
+
+   Create the basic structure using the imported components. Wrap your grouped items in `ComboboxGroup` components with appropriate labels.
+
+5. **Add Accessibility Features**
+
+   Ensure proper ARIA labels are set, group labels are descriptive, and keyboard navigation works correctly across all groups and items.
+
+   > **Important**: Always test with actual screen readers, not just automated accessibility tools. Real user testing reveals issues that automated tools might miss.
+
+6. **Style and Customize**
+
+   Apply your custom styles, themes, and any advanced features like icons, badges, or custom group headers to match your design system.
+
+7. **Test Thoroughly**
+
+   Test with different input methods (mouse, keyboard, touch), screen readers, and various data sizes to ensure optimal performance and accessibility.
+
+## Basic Usage
+
+Here's how you can implement a basic combobox with grouped options using {props.framework}:
+
+```jsx
+import { Combobox, ComboboxGroup, ComboboxItem } from "@ariakit/react";
+
+function GroupedCombobox() {
+  return (
+    <Combobox placeholder="Select a country...">
+      <ComboboxGroup label="North America">
+        <ComboboxItem value="us">United States</ComboboxItem>
+        <ComboboxItem value="ca">Canada</ComboboxItem>
+        <ComboboxItem value="mx">Mexico</ComboboxItem>
+      </ComboboxGroup>
+
+      <ComboboxGroup label="Europe">
+        <ComboboxItem value="uk">United Kingdom</ComboboxItem>
+        <ComboboxItem value="fr">France</ComboboxItem>
+        <ComboboxItem value="de">Germany</ComboboxItem>
+      </ComboboxGroup>
+    </Combobox>
+  );
+}
+```
+
+## Keyboard Navigation
+
+Users can navigate the combobox using these keyboard shortcuts:
+
+| Key                            | Action                         |
+| ------------------------------ | ------------------------------ |
+| <kbd>↓</kbd> / <kbd>↑</kbd>    | Navigate between options       |
+| <kbd>Enter</kbd>               | Select highlighted option      |
+| <kbd>Escape</kbd>              | Close the dropdown             |
+| <kbd>Tab</kbd>                 | Move to next focusable element |
+| <kbd>Ctrl</kbd> + <kbd>A</kbd> | Select all text in input       |
+
+## Advanced Features
+
+### Custom Group Headers
+
+You can customize group headers with additional styling or icons:
+
+```jsx
+<ComboboxGroup
+  label={
+    <div className="flex items-center gap-2">
+      <FlagIcon />
+      <span>Popular Destinations</span>
+    </div>
+  }
+>
+  {/* items */}
+</ComboboxGroup>
+```
+
+### Dynamic Grouping
+
+For dynamic data, you can programmatically create groups:
+
+```javascript
+const groupedData = data.reduce((groups, item) => {
+  const group = item.category;
+  if (!groups[group]) groups[group] = [];
+  groups[group].push(item);
+  return groups;
+}, {});
+```
+
+<details>
+<summary>View complete dynamic grouping example</summary>
+
+```jsx
+import { useMemo } from "react";
+
+function DynamicGroupedCombobox({ data }) {
+  const groupedData = useMemo(() => {
+    return data.reduce((groups, item) => {
+      const group = item.category;
+      if (!groups[group]) groups[group] = [];
+      groups[group].push(item);
+      return groups;
+    }, {});
+  }, [data]);
+
+  return (
+    <Combobox>
+      {Object.entries(groupedData).map(([groupName, items]) => (
+        <ComboboxGroup key={groupName} label={groupName}>
+          {items.map((item) => (
+            <ComboboxItem key={item.id} value={item.value}>
+              {item.label}
+            </ComboboxItem>
+          ))}
+        </ComboboxGroup>
+      ))}
+    </Combobox>
+  );
+}
+```
+
+</details>
+
+## Mathematical Concepts
+
+When calculating optimal group sizes, consider the Miller's Rule: 7±2 items per group for optimal cognitive processing[^1].
+
+The ideal group size can be calculated as:
+
+_Optimal Size_ = log<sub>2</sub>(n) where _n_ is the total number of items.
+
+For groups with more than 10<sup>2</sup> items, consider implementing virtualization.
+
+## Accessibility Considerations
+
+Combobox groups enhance accessibility by:
+
+- Providing semantic structure with `role="group"`
+- Supporting screen reader navigation between groups
+- Implementing proper ARIA labeling with `aria-labelledby`
+
+### Screen Reader Support
+
+When using screen readers, users can:
+
+- Navigate between groups using arrow keys
+- Hear group labels announced when entering each section
+- Jump directly to specific groups when available
+
+> **Accessibility Tip**: Always provide meaningful group labels that clearly describe the content within each section.
+
+## Use Cases
+
+### 1. Geographic Organization
+
+Perfect for location-based selections:
+
+```jsx
+<ComboboxGroup label="Continents">
+  <ComboboxGroup label="Asia">
+    <ComboboxItem value="jp">Japan</ComboboxItem>
+    <ComboboxItem value="kr">South Korea</ComboboxItem>
+  </ComboboxGroup>
+</ComboboxGroup>
+```
+
+### 2. Product Categories
+
+Ideal for e-commerce applications:
+
+```jsx
+<ComboboxGroup label="Electronics">
+  <ComboboxItem value="laptop">Laptops</ComboboxItem>
+  <ComboboxItem value="phone">Smartphones</ComboboxItem>
+</ComboboxGroup>
+```
+
+### 3. Team Organization
+
+Great for selecting team members:
+
+```jsx
+<ComboboxGroup label="Development Team">
+  <ComboboxItem value="john">John Doe (Frontend)</ComboboxItem>
+  <ComboboxItem value="jane">Jane Smith (Backend)</ComboboxItem>
+</ComboboxGroup>
+```
+
+## Styling
+
+### CSS Variables
+
+The component supports various CSS custom properties:
+
+```css
+.combobox-group {
+  --group-header-bg: #f8f9fa;
+  --group-header-color: #495057;
+  --group-border-color: #dee2e6;
+  --group-spacing: 0.5rem;
+}
+```
+
+### Custom Themes
+
+You can apply custom themes using the `className` prop:
+
+```jsx
+<ComboboxGroup className="dark-theme" label="Dark Mode Group">
+  {/* items */}
+</ComboboxGroup>
+```
+
+## Performance Optimization
+
+For large datasets, consider these optimization strategies:
+
+1. **Virtualization**: Use virtual scrolling for groups with many items
+2. **Lazy Loading**: Load group content on demand
+3. **Memoization**: Cache group renders to prevent unnecessary re-renders
+
+```jsx
+const MemoizedGroup = React.memo(({ label, items }) => (
+  <ComboboxGroup label={label}>
+    {items.map((item) => (
+      <ComboboxItem key={item.id} value={item.value}>
+        {item.label}
+      </ComboboxItem>
+    ))}
+  </ComboboxGroup>
+));
+```
+
+## Common Patterns
+
+### Search Within Groups
+
+Enable filtering that maintains group structure:
+
+```jsx
+const [search, setSearch] = useState("");
+const filteredGroups = groups
+  .map((group) => ({
+    ...group,
+    items: group.items.filter((item) =>
+      item.label.toLowerCase().includes(search.toLowerCase()),
+    ),
+  }))
+  .filter((group) => group.items.length > 0);
+```
+
+### Collapsible Groups
+
+Add expand/collapse functionality:
+
+```jsx
+const [collapsed, setCollapsed] = useState({});
+
+const toggleGroup = (groupId) => {
+  setCollapsed((prev) => ({
+    ...prev,
+    [groupId]: !prev[groupId],
+  }));
+};
+```
+
+## Browser Support
+
+| Feature      | Chrome | Firefox | Safari | Edge |
+| ------------ | ------ | ------- | ------ | ---- |
+| Basic Groups | ✅     | ✅      | ✅     | ✅   |
+| ARIA Support | ✅     | ✅      | ✅     | ✅   |
+| Keyboard Nav | ✅     | ✅      | ✅     | ✅   |
+
+## Troubleshooting
+
+<details>
+<summary>🐛 Common Issues and Solutions</summary>
+
+**Issue**: Groups not appearing properly
+**Solution**: Ensure you're wrapping items in `ComboboxGroup` components
+
+**Issue**: Screen reader not announcing groups
+**Solution**: Verify that group labels are properly set and not empty
+
+**Issue**: Performance issues with large datasets
+**Solution**: Implement virtualization or lazy loading as described above
+
+</details>
+
+---
+
+_For more advanced examples and API documentation, check out the [complete component reference](./api)._
+
+[^1]: Miller, George A. "The magical number seven, plus or minus two: Some limits on our capacity for processing information." _Psychological review_ 63.2 (1956): 81-97.
