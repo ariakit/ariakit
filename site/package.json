@@ -19,7 +19,7 @@
     "@astrojs/cloudflare": "12.5.4",
     "@astrojs/react": "4.3.0",
     "@astrojs/solid-js": "5.1.0",
-    "@clerk/astro": "2.8.2",
+    "@clerk/astro": "2.9.0",
     "@stripe/stripe-js": "7.2.0",
     "mdast-util-to-string": "4.0.0",
     "shiki": "3.3.0",
