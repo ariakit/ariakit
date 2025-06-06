@@ -242,7 +242,7 @@ When using screen readers, users can:
 
 Perfect for location-based selections:
 
-```jsx
+```test.jsx lineNumbers {0-2}
 <ComboboxGroup label="Continents">
   <ComboboxGroup label="Asia">
     <ComboboxItem value="jp">Japan</ComboboxItem>
@@ -374,6 +374,15 @@ const toggleGroup = (groupId) => {
 **Solution**: Implement virtualization or lazy loading as described above
 
 </details>
+
+```test.jsx {0-2} "label"0-2 'value="jp">J'
+<ComboboxGroup label="Continents">
+  <ComboboxGroup label="Asia">
+    <ComboboxItem value="jp">Japan</ComboboxItem>
+    <ComboboxItem value="kr">South Korea</ComboboxItem>
+  </ComboboxGroup>
+</ComboboxGroup>
+```
 
 ---
 
