@@ -11,7 +11,6 @@ import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
-import { rehypeCodeMeta } from "./src/lib/rehype-code-meta.ts";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
@@ -57,7 +56,6 @@ export default defineConfig({
       rehypePlugins: [
         rehypeHeadingIds,
         [rehypeAutolinkHeadings, { behavior: "wrap" }],
-        rehypeCodeMeta,
       ],
     }),
     !hasClerk
