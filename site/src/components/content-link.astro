@@ -1,0 +1,43 @@
+---
+import type { ComponentProps } from "astro/types";
+import { InlineLink } from "./inline-link.react.tsx";
+
+interface Props extends ComponentProps<typeof InlineLink> {}
+
+const { href, newWindow, ...props } = Astro.props;
+
+// Function to detect if a link is external
+function isExternalLink(url?: string): boolean {
+  if (!url) return false;
+
+  // Check if it's a full URL (starts with http:// or https://)
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    try {
+      const linkUrl = new URL(url);
+      const currentUrl = new URL(Astro.url);
+      // External if different hostname
+      return linkUrl.hostname !== currentUrl.hostname;
+    } catch {
+      return true; // If URL parsing fails, treat as external for safety
+    }
+  }
+
+  // Check for protocol-relative URLs (//example.com)
+  if (url.startsWith("//")) {
+    return true;
+  }
+
+  // Check for mailto:, tel:, etc.
+  if (url.includes(":") && !url.startsWith("/") && !url.startsWith("#")) {
+    return true;
+  }
+
+  return false;
+}
+
+const shouldOpenInNewWindow = newWindow ?? isExternalLink(href);
+---
+
+<InlineLink {...props} {href} newWindow={shouldOpenInNewWindow}
+  ><slot /></InlineLink
+>

@@ -134,7 +134,9 @@ export function CodeBlock({
           "[font-size-adjust:0.55]",
           expanded &&
             "overflow-auto overscroll-contain max-h-[min(calc(100svh-12rem),60rem)]",
-          collapsed && "max-h-[calc(var(--max-lines)*var(--line-height))]",
+          collapsed &&
+            "max-h-[calc(var(--max-lines)*var(--line-height))] overflow-hidden",
+          !collapsible && "overflow-auto overscroll-x-contain",
           lineCount === 1 ? "h-12 grid items-center" : "py-4",
         )}
       >

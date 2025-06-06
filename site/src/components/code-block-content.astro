@@ -1,5 +1,5 @@
 ---
-import { getLangFromFilename, highlighter } from "../lib/shiki.ts";
+import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
 import type { CodeBlockProps } from "./code-block.types";
 
 interface Props extends CodeBlockProps {}
@@ -32,13 +32,14 @@ function isCollapsed(lineIndex: number) {
   return maxLines !== undefined && lineIndex > maxLines;
 }
 
+// Original splitContent function for single token highlighting
 function splitContent(content: string) {
   const tokens = content.split(/([^:\(\)\s"']+)/);
   return tokens.flatMap((token) => {
     const highlightToken = highlightTokens.some((t) => {
-      const [word, indexes] = Array.isArray(t) ? t : [t];
+      const [word, ...indexes] = Array.isArray(t) ? t : [t];
       if (token !== word) return false;
-      if (!indexes) return token === word;
+      if (!indexes.length) return token === word;
       if (!(word in tokensSeen)) {
         tokensSeen[word] = 0;
       }
@@ -48,12 +49,170 @@ function splitContent(content: string) {
     return { content: token, highlightToken };
   });
 }
+
+// Helper function to find text spans that should be highlighted (multi-token/substring)
+function findTextHighlights(lineContent: string, lineTokens: any[]) {
+  const highlights: Array<{ start: number; end: number; text: string }> = [];
+
+  highlightTokens.forEach((t) => {
+    const [word, ...indexes] = Array.isArray(t) ? t : [t];
+
+    // Skip if this is a single token (handled by splitContent)
+    if (lineTokens.some((token) => token.content === word)) return;
+
+    let startIndex = 0;
+    let foundIndex;
+    let currentInstanceIndex = 0;
+
+    while ((foundIndex = lineContent.indexOf(word, startIndex)) !== -1) {
+      // Check if this instance should be highlighted based on indexes
+      const shouldHighlight =
+        !indexes.length || indexes.includes(currentInstanceIndex);
+
+      if (shouldHighlight) {
+        highlights.push({
+          start: foundIndex,
+          end: foundIndex + word.length,
+          text: word,
+        });
+      }
+
+      startIndex = foundIndex + 1;
+      currentInstanceIndex++;
+    }
+  });
+
+  // Sort highlights by start position and merge overlapping ones
+  highlights.sort((a, b) => a.start - b.start);
+
+  const merged: typeof highlights = [];
+  highlights.forEach((current) => {
+    const last = merged[merged.length - 1];
+    if (last && current.start <= last.end) {
+      // Merge overlapping highlights
+      last.end = Math.max(last.end, current.end);
+    } else {
+      merged.push(current);
+    }
+  });
+
+  return merged;
+}
+
+// Helper function to create segments for text highlighting (returns data only)
+function createHighlightSegments(
+  line: any[],
+  textHighlights: ReturnType<typeof findTextHighlights>
+) {
+  type TokenFragment = {
+    content: string;
+    token: any;
+    isHighlighted: boolean;
+  };
+
+  type Segment = {
+    fragments: TokenFragment[];
+    isHighlighted: boolean;
+  };
+
+  if (!line.some((token) => token.content)) {
+    return { isEmpty: true, segments: [] as Segment[] };
+  }
+
+  // Create character-level mapping
+  let currentPosition = 0;
+  const allFragments: TokenFragment[] = [];
+
+  // Process each token and split it if it crosses highlight boundaries
+  line.forEach((token) => {
+    const tokenStart = currentPosition;
+    const tokenEnd = currentPosition + token.content.length;
+
+    // Find all highlight boundaries that intersect with this token
+    const relevantHighlights = textHighlights.filter(
+      (h) => h.start < tokenEnd && h.end > tokenStart
+    );
+
+    if (relevantHighlights.length === 0) {
+      // Token is completely outside any highlights
+      allFragments.push({
+        content: token.content,
+        token,
+        isHighlighted: false,
+      });
+    } else {
+      // Token intersects with highlights - split it
+      const splitPoints = new Set([tokenStart, tokenEnd]);
+
+      // Add highlight boundaries as split points
+      relevantHighlights.forEach((h) => {
+        if (h.start > tokenStart && h.start < tokenEnd) {
+          splitPoints.add(h.start);
+        }
+        if (h.end > tokenStart && h.end < tokenEnd) {
+          splitPoints.add(h.end);
+        }
+      });
+
+      const sortedSplitPoints = Array.from(splitPoints).sort((a, b) => a - b);
+
+      // Create fragments between split points
+      for (let i = 0; i < sortedSplitPoints.length - 1; i++) {
+        const fragmentStart = sortedSplitPoints[i];
+        const fragmentEnd = sortedSplitPoints[i + 1];
+
+        // Check if this fragment is highlighted
+        const isHighlighted = textHighlights.some(
+          (h) => fragmentStart >= h.start && fragmentEnd <= h.end
+        );
+
+        // Extract the content for this fragment
+        const relativeStart = fragmentStart - tokenStart;
+        const relativeEnd = fragmentEnd - tokenStart;
+        const fragmentContent = token.content.slice(relativeStart, relativeEnd);
+
+        if (fragmentContent) {
+          allFragments.push({
+            content: fragmentContent,
+            token,
+            isHighlighted,
+          });
+        }
+      }
+    }
+
+    currentPosition += token.content.length;
+  });
+
+  // Group consecutive fragments with the same highlight status into segments
+  const segments: Segment[] = [];
+  let currentSegment: Segment | null = null;
+
+  allFragments.forEach((fragment) => {
+    if (
+      !currentSegment ||
+      currentSegment.isHighlighted !== fragment.isHighlighted
+    ) {
+      // Start new segment
+      currentSegment = {
+        fragments: [fragment],
+        isHighlighted: fragment.isHighlighted,
+      };
+      segments.push(currentSegment);
+    } else {
+      // Add to current segment
+      currentSegment.fragments.push(fragment);
+    }
+  });
+
+  return { isEmpty: false, segments };
+}
 ---
 
 <Fragment>
   <div
     class:list={[
-      "grid whitespace-pre *:*:ps-4 **:data-highlight:ak-edge/25 **:data-highlight:shadow-(color:--ak-border) **:data-highlight:shadow-[inset_0.175rem_0]",
+      "grid whitespace-pre *:*:ps-4 **:data-highlight:ak-edge/25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0625rem*var(--contrast,0))_0_var(--ak-border)]",
       lineNumbers && "sm:grid-cols-[max-content_1fr]",
     ]}
   >
@@ -84,7 +243,15 @@ function splitContent(content: string) {
       {
         tokens.map((line, i) => {
           const highlightLine = isHighlighted(i);
-          const hasContent = line.some((token) => token.content);
+
+          // Get the full line content for text highlighting
+          const lineContent = line.map((token) => token.content).join("");
+          const textHighlights = findTextHighlights(lineContent, line);
+          const { isEmpty, segments } = createHighlightSegments(
+            line,
+            textHighlights
+          );
+
           return (
             <div
               data-highlight={highlightLine || undefined}
@@ -94,35 +261,63 @@ function splitContent(content: string) {
                 isCollapsed(i) && "in-data-collapsed:hidden",
               ]}
             >
-              {!hasContent
+              {isEmpty
                 ? "\n"
-                : line.flatMap((token) =>
-                    splitContent(token.content).map(
-                      ({ content, highlightToken }) => {
-                        // TODO: Fix this after we merge the site folder into root
-                        const style = token.htmlStyle as any;
-                        const dark = style?.["--shiki-dark"] || token.color;
-                        const light = style?.color || token.color;
-                        const el = (
-                          <span
-                            style={`--dark:${dark}; --light:${light}`}
-                            class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
-                          >
-                            {content || ""}
-                          </span>
+                : segments.map((segment) => {
+                    const highlightClass = "ring rounded px-[0.5ch] py-0.5";
+                    const segmentElements = segment.fragments
+                      .map(({ content, token }) => {
+                        // Apply splitContent logic to each fragment
+                        const splitTokens = splitContent(content);
+                        return splitTokens.map(
+                          ({ content: splitContent, highlightToken }) => {
+                            // TODO: Fix this after we merge the site folder into root
+                            const style = token.htmlStyle as any;
+                            const dark = style?.["--shiki-dark"] || token.color;
+                            const light = style?.color || token.color;
+                            const baseEl = (
+                              <span
+                                style={`--dark:${dark}; --light:${light}`}
+                                class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
+                              >
+                                {splitContent || ""}
+                              </span>
+                            );
+                            // Apply individual token highlighting if needed (single token)
+                            if (highlightToken) {
+                              return (
+                                <span
+                                  style={`--dark:${dark}; --light:${light}`}
+                                  class:list={[
+                                    "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
+                                    highlightClass,
+                                  ]}
+                                >
+                                  {baseEl}
+                                </span>
+                              );
+                            }
+                            return baseEl;
+                          }
                         );
-                        if (!highlightToken) return el;
-                        return (
-                          <span
-                            style={`--dark:${dark}; --light:${light}`}
-                            class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20 ring rounded px-[0.5ch] py-0.5"
-                          >
-                            {el}
-                          </span>
-                        );
-                      }
-                    )
-                  )}
+                      })
+                      .flat();
+                    // Wrap in text highlight span if needed (multi-token/substring)
+                    if (segment.isHighlighted) {
+                      return (
+                        <span
+                          class:list={[
+                            "ak-layer-pop ak-edge/25",
+                            highlightClass,
+                          ]}
+                        >
+                          {segmentElements}
+                        </span>
+                      );
+                    } else {
+                      return segmentElements;
+                    }
+                  })}
             </div>
           );
         })

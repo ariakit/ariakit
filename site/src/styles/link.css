@@ -1,6 +1,6 @@
 @utility ak-link_idle {
   @apply ak-text-primary ak-outline-primary;
-  @apply relative -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium underline decoration-1 underline-offset-[0.25em];
+  @apply -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium underline decoration-1 underline-offset-[0.25em];
 }
 
 @utility ak-link_hover {

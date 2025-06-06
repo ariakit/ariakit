@@ -1,0 +1,127 @@
+---
+import * as icons from "#app/icons/icons.ts";
+import { isJsxFramework } from "#app/lib/frameworks.ts";
+import { getLangFromFilename } from "#app/lib/shiki.ts";
+import { decode } from "html-entities";
+import parseNumericRange from "parse-numeric-range";
+import CodeBlock from "./code-block.astro";
+import type { CodeBlockProps } from "./code-block.types";
+
+const htmlString = await Astro.slots.render("default");
+
+const framework = Astro.locals.framework;
+
+function getFilenameIcon(lang: string): keyof typeof icons | undefined {
+  if (lang in icons) return lang as keyof typeof icons;
+  const jsxFramework = isJsxFramework(framework) ? framework : "react";
+  if (lang === "tsx") return jsxFramework;
+  if (lang === "jsx") return jsxFramework;
+  if (lang === "ts") return "ts";
+  if (lang === "js") return "js";
+  if (lang === "html") return "html";
+  return undefined;
+}
+
+function parseLang(className?: string) {
+  if (!className) return { filename: undefined, lang: undefined };
+  const [, filename] = className.match(/language-(.+)/) ?? [];
+  const lang = getLangFromFilename(filename);
+  const showFilename = filename !== lang;
+  return {
+    filename: showFilename ? filename : undefined,
+    showFilename,
+    lang,
+    filenameIcon: getFilenameIcon(lang),
+  };
+}
+
+function splitRespectingQuotes(str: string): string[] {
+  const props: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  let quoteChar = "";
+
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
+
+    if (!inQuotes && (char === '"' || char === "'")) {
+      inQuotes = true;
+      quoteChar = char;
+      current += char;
+    } else if (inQuotes && char === quoteChar) {
+      inQuotes = false;
+      quoteChar = "";
+      current += char;
+    } else if (!inQuotes && char === " ") {
+      if (current.trim()) {
+        props.push(current.trim());
+        current = "";
+      }
+    } else {
+      current += char;
+    }
+  }
+
+  if (current.trim()) {
+    props.push(current.trim());
+  }
+
+  return props;
+}
+
+function parseMetaString(metaString?: string) {
+  if (!metaString) return {};
+  const decodedMetaString = decode(metaString);
+  const props = splitRespectingQuotes(decodedMetaString);
+  const lineNumbers = props.includes("lineNumbers");
+  const maxLines = decodedMetaString.match(/maxLines=(\d+)/)?.[1];
+  const rangePattern = /^\{([\d\-,]+)\}$/;
+
+  const highlightLines = props
+    .filter((item) => rangePattern.test(item))
+    .flatMap((item) => parseNumericRange(item.replace(rangePattern, "$1")));
+
+  const tokenPattern = /^["'](.+)["']([\d\-,]+)?$/;
+
+  const highlightTokens = props
+    .filter((item) => tokenPattern.test(item))
+    .map((item) => {
+      const [, token, ranges] = item.match(tokenPattern) || [];
+      if (!ranges) return token;
+      return [token, ...parseNumericRange(ranges)] as const;
+    });
+
+  return {
+    lineNumbers,
+    maxLines: maxLines ? Number.parseInt(maxLines) : undefined,
+    highlightLines,
+    highlightTokens,
+  };
+}
+
+function parseCodeBlock(html: string): CodeBlockProps {
+  const codeMatch = html.match(
+    /^<code((?:[^>"]|"[^"]*")*)>([\s\S]*?)<\/code>$/
+  );
+  if (!codeMatch) {
+    return { code: html };
+  }
+  const [, attributes, encodedContent] = codeMatch;
+  const className = attributes.match(/class="([^"]*)"/)?.[1];
+  const langInfo = parseLang(className);
+  const metaString = attributes.match(/metastring="([^"]*)"/)?.[1];
+  return {
+    code: decode(encodedContent).trim(),
+    ...langInfo,
+    ...parseMetaString(metaString),
+  };
+}
+
+const props = parseCodeBlock(htmlString);
+---
+
+<div
+  class="ak-container-size-[calc(min(theme(--container-content),100%)+--spacing(8))]/0 ak-container"
+>
+  <CodeBlock {...props} />
+</div>

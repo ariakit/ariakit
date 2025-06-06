@@ -46,7 +46,11 @@
       "source.removeUnusedImports": "explicit"
     }
   },
+  "[markdown]": {
+    "editor.wordWrap": "on"
+  },
   "[mdx]": {
+    "editor.wordWrap": "on",
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

@@ -11,7 +11,7 @@ export interface CodeBlockProps {
   maxLines?: number;
   lineNumbers?: boolean;
   highlightLines?: number[];
-  highlightTokens?: (string | readonly [string, number[]])[];
+  highlightTokens?: (string | readonly [string, ...number[]])[];
 }
 
 export interface CodeBlockTabProps extends CodeBlockProps {

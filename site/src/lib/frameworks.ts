@@ -13,3 +13,9 @@ export const frameworks = {
   svelte: { label: "Svelte", icon: "svelte" },
   vue: { label: "Vue", icon: "vue" },
 } as const satisfies Frameworks;
+
+export function isJsxFramework(framework?: string) {
+  return (
+    framework === "react" || framework === "solid" || framework === "preact"
+  );
+}
