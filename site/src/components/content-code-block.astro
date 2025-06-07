@@ -31,7 +31,7 @@ function getFilenameIcon(
 
 function parseLang(className?: string) {
   if (!className) return { filename: undefined, lang: undefined };
-  const [, filename] = className.match(/language-(.+)/) ?? [];
+  const [, filename] = className.match(/language\-(.+)/) ?? [];
   const lang = getLangFromFilename(filename);
   const showFilename = filename !== lang;
   return {
@@ -135,6 +135,7 @@ const codeBlockProps = !hasProps
 if (tabs?.length) {
   for (const tab of tabs) {
     tab.filenameIcon = getFilenameIcon(tab);
+    tab.lang = tab.lang ?? getLangFromFilename(tab.filename);
   }
 }
 ---
