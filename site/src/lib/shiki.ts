@@ -22,7 +22,11 @@ export const highlighter = await createHighlighterCore({
   engine: createOnigurumaEngine(import("shiki/wasm")),
 });
 
-export function getLangFromFilename(filename: string) {
-  const extension = filename.split(".").pop();
+export function getLangFromFilename(filename: string): BundledLanguage {
+  if (filename === "npm") return "bash";
+  if (filename === "bun") return "bash";
+  if (filename === "yarn") return "bash";
+  if (filename === "pnpm") return "bash";
+  const extension = filename.split(".").pop()?.toLowerCase();
   return extension as BundledLanguage;
 }

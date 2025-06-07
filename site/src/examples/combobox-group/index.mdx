@@ -14,19 +14,17 @@ Combobox groups provide visual separation and improved accessibility by grouping
 
 import ContentCodeBlock from "#app/components/content-code-block.astro";
 
+<test>
+  dsadsa <div slot="dsadsa">dsadsa</div>
+</test>
+
 <ContentCodeBlock
   persistTabKey="package-manager"
   tabs={[
-    {
-      filename: "npm",
-      lang: "bash",
-      code: `npm add @ariakit/react`,
-    },
-    {
-      filename: "yarn",
-      lang: "bash",
-      code: `yarn add @ariakit/react`,
-    },
+    { filename: "npm", code: `npm install @ariakit/react` },
+    { filename: "pnpm", code: `pnpm add @ariakit/react` },
+    { filename: "yarn", code: `yarn add @ariakit/react` },
+    { filename: "bun", code: `bun add @ariakit/react` },
   ]}
 />
 

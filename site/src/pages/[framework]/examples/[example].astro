@@ -2,6 +2,7 @@
 import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
 import ContentCodeBlock from "#app/components/content-code-block.astro";
 import ContentLink from "#app/components/content-link.astro";
+import ContentParagraph from "#app/components/content-paragraph.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
@@ -97,12 +98,14 @@ Astro.locals.example = entry.id;
         class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem]"
       >
         <div
-          class="ak-prose [:where(&>p,&>h2)]:ak-container-size-content/0 [:where(&>p,&>h2)]:ak-container [:where(&>:where(h1,h2,h3,h4,h5))]:scroll-mt-[calc(var(--header-height)+--spacing(4))]"
+          class="ak-prose [:where(&>h2)]:ak-container-size-content/0 [:where(&>h2)]:ak-container [:where(&>:where(h1,h2,h3,h4,h5))]:scroll-mt-[calc(var(--header-height)+--spacing(4))]"
         >
           <Content
+            <Content
             {framework}
             components={{
               a: ContentLink,
+              p: ContentParagraph,
               pre: ContentCodeBlock,
             }}
           />
