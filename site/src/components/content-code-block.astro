@@ -2,17 +2,24 @@
 import * as icons from "#app/icons/icons.ts";
 import { isJsxFramework } from "#app/lib/frameworks.ts";
 import { getLangFromFilename } from "#app/lib/shiki.ts";
+import type { ComponentProps } from "astro/types";
 import { decode } from "html-entities";
 import parseNumericRange from "parse-numeric-range";
+import CodeBlockTabs from "./code-block-tabs.astro";
 import CodeBlock from "./code-block.astro";
-import type { CodeBlockProps } from "./code-block.types";
+import type { CodeBlockProps } from "./code-block.types.ts";
 
-const htmlString = await Astro.slots.render("default");
+interface Props extends ComponentProps<typeof CodeBlockTabs> {}
 
 const framework = Astro.locals.framework;
 
-function getFilenameIcon(lang: string): keyof typeof icons | undefined {
-  if (lang in icons) return lang as keyof typeof icons;
+function getFilenameIcon(
+  props: Pick<CodeBlockProps, "lang" | "filename" | "filenameIcon">
+): keyof typeof icons | undefined {
+  const { lang, filename, filenameIcon } = props;
+  if (filenameIcon) return filenameIcon;
+  if (lang && lang in icons) return lang as keyof typeof icons;
+  if (filename && filename in icons) return filename as keyof typeof icons;
   const jsxFramework = isJsxFramework(framework) ? framework : "react";
   if (lang === "tsx") return jsxFramework;
   if (lang === "jsx") return jsxFramework;
@@ -31,7 +38,7 @@ function parseLang(className?: string) {
     filename: showFilename ? filename : undefined,
     showFilename,
     lang,
-    filenameIcon: getFilenameIcon(lang),
+    filenameIcon: getFilenameIcon({ lang, filename }),
   };
 }
 
@@ -117,11 +124,29 @@ function parseCodeBlock(html: string): CodeBlockProps {
   };
 }
 
-const props = parseCodeBlock(htmlString);
+const { tabs } = Astro.props;
+
+const hasProps = Object.keys(Astro.props).length > 0;
+const codeBlockProps = !hasProps
+  ? parseCodeBlock(await Astro.slots.render("default"))
+  : null;
+
+// Automatically set the filename icon for each tab
+if (tabs?.length) {
+  for (const tab of tabs) {
+    tab.filenameIcon = getFilenameIcon(tab);
+  }
+}
 ---
 
 <div
   class="ak-container-size-[calc(min(theme(--container-content),100%)+--spacing(8))]/0 ak-container"
 >
-  <CodeBlock {...props} />
+  {
+    codeBlockProps ? (
+      <CodeBlock {...codeBlockProps} />
+    ) : (
+      <CodeBlockTabs {...Astro.props} />
+    )
+  }
 </div>
