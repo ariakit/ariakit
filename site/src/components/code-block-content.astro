@@ -1,5 +1,6 @@
 ---
 import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
+import type { ThemedToken } from "shiki";
 import type { CodeBlockProps } from "./code-block.types";
 
 interface Props extends CodeBlockProps {}
@@ -34,37 +35,37 @@ function isCollapsed(lineIndex: number) {
 
 // Original splitContent function for single token highlighting
 function splitContent(content: string) {
-  const tokens = content.split(/([^:\(\)\s"']+)/);
-  return tokens.flatMap((token) => {
+  const parts = content.split(/([^:\(\)\s"']+)/);
+  return parts.flatMap((part) => {
     const highlightToken = highlightTokens.some((t) => {
       const [word, ...indexes] = Array.isArray(t) ? t : [t];
-      if (token !== word) return false;
-      if (!indexes.length) return token === word;
+      if (part !== word) return false;
+      if (!indexes.length) return part === word;
       if (!(word in tokensSeen)) {
         tokensSeen[word] = 0;
       }
       const index = tokensSeen[word]++;
       return indexes.includes(index);
     });
-    return { content: token, highlightToken };
+    return { content: part, highlightToken };
   });
 }
 
 // Helper function to find text spans that should be highlighted (multi-token/substring)
-function findTextHighlights(lineContent: string, lineTokens: any[]) {
+function findTextHighlights(content: string, line: ThemedToken[]) {
   const highlights: Array<{ start: number; end: number; text: string }> = [];
 
   highlightTokens.forEach((t) => {
     const [word, ...indexes] = Array.isArray(t) ? t : [t];
 
     // Skip if this is a single token (handled by splitContent)
-    if (lineTokens.some((token) => token.content === word)) return;
+    if (line.some((token) => token.content === word)) return;
 
     let startIndex = 0;
     let foundIndex;
     let currentInstanceIndex = 0;
 
-    while ((foundIndex = lineContent.indexOf(word, startIndex)) !== -1) {
+    while ((foundIndex = content.indexOf(word, startIndex)) !== -1) {
       // Check if this instance should be highlighted based on indexes
       const shouldHighlight =
         !indexes.length || indexes.includes(currentInstanceIndex);
@@ -101,12 +102,12 @@ function findTextHighlights(lineContent: string, lineTokens: any[]) {
 
 // Helper function to create segments for text highlighting (returns data only)
 function createHighlightSegments(
-  line: any[],
+  line: ThemedToken[],
   textHighlights: ReturnType<typeof findTextHighlights>
 ) {
   type TokenFragment = {
     content: string;
-    token: any;
+    token: ThemedToken;
     isHighlighted: boolean;
   };
 
@@ -264,11 +265,13 @@ function createHighlightSegments(
               {isEmpty
                 ? "\n"
                 : segments.map((segment) => {
-                    const highlightClass = "ring rounded px-[0.5ch] py-0.5";
+                    const highlightClass = "ring rounded px-[0.25em] py-0.5";
                     const segmentElements = segment.fragments
-                      .map(({ content, token }) => {
+                      .map(({ content, token, isHighlighted }) => {
                         // Apply splitContent logic to each fragment
-                        const splitTokens = splitContent(content);
+                        const splitTokens = isHighlighted
+                          ? [{ content, highlightToken: false }]
+                          : splitContent(content);
                         return splitTokens.map(
                           ({ content: splitContent, highlightToken }) => {
                             // TODO: Fix this after we merge the site folder into root
@@ -314,9 +317,8 @@ function createHighlightSegments(
                           {segmentElements}
                         </span>
                       );
-                    } else {
-                      return segmentElements;
                     }
+                    return segmentElements;
                   })}
             </div>
           );
