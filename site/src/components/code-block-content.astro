@@ -565,7 +565,10 @@ const linesToRender = (() => {
     ]}
   >
     {
-      (lineNumbers || diffInfo) && (
+      (lineNumbers ||
+        diffInfo?.some(
+          (line) => line.type === "added" || line.type === "removed"
+        )) && (
         <div
           aria-hidden
           class="max-sm:hidden -me-2 grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50"
@@ -573,18 +576,21 @@ const linesToRender = (() => {
           {linesToRender.map((line) => {
             const isAdded = line.type === "added";
             const isRemoved = line.type === "removed";
+            const addedOrRemoved = isAdded || isRemoved;
             const highlightLine = isHighlighted(line.i) || isAdded || isRemoved;
             const displayLineNum = isRemoved
               ? "-"
               : lineNumbers
                 ? line.lineNum || "+"
-                : "+";
+                : isAdded
+                  ? "+"
+                  : "";
             return (
               <span
                 data-highlight={highlightLine || undefined}
                 class:list={[
                   "pe-4 h-(--line-height)",
-                  isHighlighted(line.i) && "ak-layer-pop",
+                  isHighlighted(line.i) && !addedOrRemoved && "ak-layer-pop",
                   {
                     "ak-layer-mix-green-500/25": isAdded,
                     "ak-layer-mix-red-500/25": isRemoved,
@@ -609,10 +615,10 @@ const linesToRender = (() => {
       {
         linesToRender.map((lineInfo) => {
           const isAdded = lineInfo.type === "added";
+          const isRemoved = lineInfo.type === "removed";
+          const addedOrRemoved = isAdded || isRemoved;
           const highlightLine =
-            isHighlighted(lineInfo.i) ||
-            lineInfo.type === "added" ||
-            lineInfo.type === "removed";
+            isHighlighted(lineInfo.i) || isAdded || isRemoved;
           const lineClass = {
             "ak-layer-mix-green-500/25": isAdded,
             "ak-layer-mix-red-500/25 ak-text/0": lineInfo.type === "removed",
@@ -625,7 +631,9 @@ const linesToRender = (() => {
                 class:list={[
                   "h-(--line-height) pe-14",
                   lineClass,
-                  isHighlighted(lineInfo.i) && "ak-layer-pop",
+                  isHighlighted(lineInfo.i) &&
+                    !addedOrRemoved &&
+                    "ak-layer-pop",
                 ]}
               >
                 {lineInfo.diffs
@@ -751,7 +759,9 @@ const linesToRender = (() => {
                 class:list={[
                   "pe-14 [content-visibility:auto] h-(--line-height)",
                   lineClass,
-                  isHighlighted(lineInfo.i) && "ak-layer-pop",
+                  isHighlighted(lineInfo.i) &&
+                    !addedOrRemoved &&
+                    "ak-layer-pop",
                   isCollapsed(lineInfo.i) && "in-data-collapsed:hidden",
                 ]}
               >
