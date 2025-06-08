@@ -10,7 +10,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
-import { rehypeAsTagName } from "./src/lib/rehype.ts";
+import { rehypeAsTagName, rehypePreviousCode } from "./src/lib/rehype.ts";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
@@ -55,6 +55,7 @@ export default defineConfig({
     mdx({
       rehypePlugins: [
         rehypeHeadingIds,
+        rehypePreviousCode,
         [rehypeAutolinkHeadings, { behavior: "wrap" }],
         [
           rehypeAsTagName,
