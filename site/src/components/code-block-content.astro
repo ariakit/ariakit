@@ -6,6 +6,73 @@ import type { CodeBlockProps } from "./code-block.types";
 
 interface Props extends CodeBlockProps {}
 
+interface TokenFragment {
+  content: string;
+  token: ThemedToken;
+  isHighlighted: boolean;
+  tokenIndex: number;
+  isDiff?: boolean;
+}
+
+interface Segment {
+  fragments: TokenFragment[];
+  isHighlighted: boolean;
+  spansMultipleTokens: boolean;
+  isDiff?: boolean;
+}
+
+interface DiffInfoItem {
+  type: "added" | "removed" | "unchanged" | "modified-inline";
+  content: string;
+  tokens?: ThemedToken[];
+  lineNum?: number;
+  diffs?: ReturnType<typeof diffWordsWithSpace>;
+}
+type DiffInfo = DiffInfoItem[];
+
+interface BaseLine {
+  i: number;
+  key: string;
+}
+
+interface RemovedLine extends BaseLine {
+  type: "removed";
+  renderType: "removed";
+  content: string;
+  diffs?: ReturnType<typeof diffWordsWithSpace>;
+}
+
+interface RemovedPart {
+  renderType: "removed";
+  content: string;
+}
+
+interface SegmentsPart {
+  renderType: "segments";
+  isEmpty: boolean;
+  segments: Segment[];
+}
+
+type LinePart = RemovedPart | SegmentsPart;
+
+interface PartsLine extends BaseLine {
+  type: "modified-inline" | "added" | "unchanged";
+  renderType: "parts";
+  parts: LinePart[];
+  lineNum: number;
+}
+
+interface SegmentsLine extends BaseLine {
+  type: "added" | "unchanged";
+  renderType: "segments";
+  isEmpty: boolean;
+  segments: Segment[];
+  lineNum: number;
+}
+
+type LineToRender = RemovedLine | PartsLine | SegmentsLine;
+type LinesToRender = LineToRender[];
+
 const {
   code,
   previousCode,
@@ -25,29 +92,6 @@ const { tokens } = highlighter.codeToTokens(code.trim(), {
     dark: "dark-plus",
   },
 });
-
-type TokenFragment = {
-  content: string;
-  token: ThemedToken;
-  isHighlighted: boolean;
-  tokenIndex: number;
-  isDiff?: boolean;
-};
-
-type Segment = {
-  fragments: TokenFragment[];
-  isHighlighted: boolean;
-  spansMultipleTokens: boolean;
-  isDiff?: boolean;
-};
-
-type DiffInfo = Array<{
-  type: "added" | "removed" | "unchanged" | "modified-inline";
-  content: string;
-  tokens?: ThemedToken[];
-  lineNum?: number;
-  diffs?: ReturnType<typeof diffWordsWithSpace>;
-}>;
 
 let diffInfo: DiffInfo | null = null;
 
@@ -259,21 +303,6 @@ function createHighlightSegments(
     ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
   >
 ) {
-  type TokenFragment = {
-    content: string;
-    token: ThemedToken;
-    isHighlighted: boolean;
-    tokenIndex: number;
-    isDiff?: boolean;
-  };
-
-  type Segment = {
-    fragments: TokenFragment[];
-    isHighlighted: boolean;
-    spansMultipleTokens: boolean;
-    isDiff?: boolean;
-  };
-
   if (!line.some((token) => token.content)) {
     return { isEmpty: true, segments: [] as Segment[] };
   }
@@ -380,46 +409,6 @@ function createHighlightSegments(
 
   return { isEmpty: false, segments };
 }
-
-type LinesToRender = Array<
-  | {
-      i: number;
-      key: string;
-      type: "removed";
-      renderType: "removed";
-      content: string;
-      diffs?: ReturnType<typeof diffWordsWithSpace>;
-    }
-  | ({
-      i: number;
-      key: string;
-      renderType: "parts";
-      parts: Array<
-        | {
-            renderType: "removed";
-            content: string;
-          }
-        | {
-            renderType: "segments";
-            isEmpty: boolean;
-            segments: Segment[];
-          }
-      >;
-      lineNum: number;
-    } & (
-      | { type: "modified-inline" }
-      | { type: "added" }
-      | { type: "unchanged" }
-    ))
-  | ({
-      i: number;
-      key: string;
-      renderType: "segments";
-      isEmpty: boolean;
-      segments: Segment[];
-      lineNum: number;
-    } & ({ type: "added" } | { type: "unchanged" }))
->;
 
 const linesToRender = (() => {
   if (diffInfo) {
