@@ -104,9 +104,18 @@ Astro.locals.example = entry.id;
           class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed"
         >
           <CodeBlock
-            filename="combobox-group.ts"
-            previousCode={`const { id } = Astro.request.params;`}
-            code={`const { id } = Astro.params;`}
+            filename="combobox-group.tsx"
+            previousCode={`<ComboboxList disabled />`}
+            code={`<ComboboxList render={<Focusable disabled />} />`}
+          />
+          <CodeBlock
+            filename="combobox-group.tsx"
+            previousCode={`<SelectPopover role="grid">
+  <SelectRow>
+    <SelectItem>`}
+            code={`<SelectPopover role="grid">
+  <SelectRow>
+    <SelectItem role="gridcell">`}
           />
           <CodeBlock
             filename="combobox-group.tsx"
