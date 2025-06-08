@@ -1,0 +1,15 @@
+---
+import type { Polymorphic } from "astro/types";
+
+type ListTag = "ul" | "ol";
+type Props<T extends ListTag> = Polymorphic<{ as: T }>;
+
+const { as: Tag = "ul", ...props } = Astro.props as Props<ListTag>;
+---
+
+<Tag
+  class:list={["ak-container-size-content/0 ak-container", props.class]}
+  {...props}
+>
+  <slot />
+</Tag>
