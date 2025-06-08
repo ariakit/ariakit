@@ -1,7 +1,9 @@
 ---
 import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
 import ContentCodeBlock from "#app/components/content-code-block.astro";
+import ContentHeading from "#app/components/content-heading.astro";
 import ContentLink from "#app/components/content-link.astro";
+import ContentList from "#app/components/content-list.astro";
 import ContentParagraph from "#app/components/content-paragraph.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import Layout from "#app/pages/_layout.astro";
@@ -98,18 +100,24 @@ Astro.locals.example = entry.id;
         class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem]"
       >
         <div
-          class="ak-prose [:where(&>h2)]:ak-container-size-content/0 [:where(&>h2)]:ak-container [:where(&>:where(h1,h2,h3,h4,h5))]:scroll-mt-[calc(var(--header-height)+--spacing(4))]"
+          class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed"
         >
           <Content
-            <Content
             {framework}
             components={{
               a: ContentLink,
               p: ContentParagraph,
               pre: ContentCodeBlock,
+              h1: ContentHeading,
+              h2: ContentHeading,
+              h3: ContentHeading,
+              h4: ContentHeading,
+              h5: ContentHeading,
+              h6: ContentHeading,
+              ul: ContentList,
+              ol: ContentList,
             }}
           />
-
           <p class="ak-container-size-content/0 ak-container">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
             Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
@@ -203,13 +211,13 @@ Astro.locals.example = entry.id;
         </div>
         <div class="ps-3">
           <ul
-            class="ak-layer-current ak-dark:scheme-dark border-s ps-3 sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto flex flex-col gap-1 text-sm w-fit"
+            class="ak-layer-current ak-dark:scheme-dark border-s ps-3 sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto flex flex-col text-sm w-fit"
           >
             {
               headings.map((heading) => (
-                <li>
+                <li style={`--depth: ${heading.depth}`}>
                   <a
-                    class="ak-text/80 not-hover:no-underline ak-button font-normal justify-start ak-frame-field/2"
+                    class="ak-text/80 not-hover:no-underline ak-button font-normal justify-start ak-frame-field/2 ps-[calc((var(--depth)-1)*--spacing(2))]"
                     href={`#${heading.slug}`}
                   >
                     {heading.text}
