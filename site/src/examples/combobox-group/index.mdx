@@ -28,7 +28,9 @@ import ContentCodeBlock from "#app/components/content-code-block.astro";
   ]}
 />
 
-```test.jsx {0-2} "label"1 'value="jp">J' "Com" "Continents" lineNumbers
+Before:
+
+```test.jsx {0-2} "label"1 'value="jp">J' "Com" "Continents" previousCode
 <ComboboxGroup label="Continents">
   <ComboboxGroup label="Asia">
     <ComboboxItem value="jp">Japan</ComboboxItem>
@@ -37,11 +39,13 @@ import ContentCodeBlock from "#app/components/content-code-block.astro";
 </ComboboxGroup>
 ```
 
-```test.jsx {0-2} "label"0 'value="jp">J' "Com" "Continents"
+After:
+
+```jsx {0-2} "label"0 'value="jp">J' "Continents"
 <ComboboxGroup label="Continents">
   <ComboboxGroup label="Asia">
     <ComboboxItem value="jp">Japan</ComboboxItem>
-    <ComboboxItem value="kr">South Korea</ComboboxItem>
+    <ComboboxItem value="kr2">South Korea 2</ComboboxItem>
   </ComboboxGroup>
 </ComboboxGroup>
 ```
