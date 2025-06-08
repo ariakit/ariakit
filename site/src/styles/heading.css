@@ -1,28 +1,40 @@
 @utility ak-heading-1 {
-  @apply text-4xl;
+  @apply text-[2.25em];
 }
 
 @utility ak-heading-2 {
-  @apply text-3xl;
+  @apply text-[1.75em];
 }
 
 @utility ak-heading-3 {
-  @apply text-2xl;
+  @apply text-[1.4em];
 }
 
 @utility ak-heading-4 {
-  @apply text-xl;
+  @apply text-[1.2em];
 }
 
 @utility ak-heading-5 {
-  @apply text-lg;
+  @apply text-[1em];
 }
 
 @utility ak-heading {
-  @apply ak-text font-medium;
+  @apply ak-text mb-[0.5em] font-medium;
+
+  &:where(:not(:first-child)) {
+    @apply mt-[1em];
+  }
+
+  :is(h1, h2, h3, h4, h5) + & {
+    @apply mt-[0.35em];
+  }
 
   a {
-    @apply ak-text hover:ak-link_idle hover:ak-text no-underline;
+    @apply hover:ak-link_idle hover:ak-text font-[weight:inherit] text-current no-underline;
+  }
+
+  li & {
+    @apply mb-0;
   }
 
   &:is(h1) {
