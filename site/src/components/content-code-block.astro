@@ -117,8 +117,10 @@ function parseCodeBlock(html: string): CodeBlockProps {
   const className = attributes.match(/class="([^"]*)"/)?.[1];
   const langInfo = parseLang(className);
   const metaString = attributes.match(/metastring="([^"]*)"/)?.[1];
+  const previousCode = attributes.match(/previousCode="([^"]*)"/)?.[1];
   return {
     code: decode(encodedContent).trim(),
+    previousCode: previousCode ? atob(previousCode) : undefined,
     ...langInfo,
     ...parseMetaString(metaString),
   };
