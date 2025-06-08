@@ -76,7 +76,7 @@ type LinesToRender = LineToRender[];
 const {
   code,
   previousCode,
-  multilineDiff,
+  preferMultilineDiff,
   filename,
   lang = filename ? getLangFromFilename(filename) : "text",
   maxLines,
@@ -102,9 +102,9 @@ if (previousCode) {
 
   const linesCount = code.trim().split("\n").length;
   const multilineDiffCount =
-    typeof multilineDiff === "number"
-      ? multilineDiff
-      : multilineDiff
+    typeof preferMultilineDiff === "number"
+      ? preferMultilineDiff
+      : preferMultilineDiff
         ? 0
         : linesCount > 1
           ? 2

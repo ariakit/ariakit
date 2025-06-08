@@ -6,7 +6,7 @@ type IconName = keyof typeof icons;
 export interface CodeBlockProps {
   code: string;
   previousCode?: string;
-  multilineDiff?: boolean | number;
+  preferMultilineDiff?: boolean | number;
   filename?: string;
   filenameIcon?: IconName;
   lang?: BundledLanguage;

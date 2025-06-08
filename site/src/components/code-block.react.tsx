@@ -84,7 +84,7 @@ export interface CodeBlockProps
 export function CodeBlock({
   code,
   previousCode,
-  multilineDiff,
+  preferMultilineDiff,
   lang,
   lineNumbers,
   maxLines,
