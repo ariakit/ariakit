@@ -39,7 +39,7 @@ export function CopyCode({
       <button
         {...props}
         className={clsx(
-          "ak-button ak-button-square ak-layer-pop size-9",
+          "ak-button ak-button-square ak-layer-pop size-9 ring",
           props.className,
         )}
         onClick={async (event) => {
