@@ -28,7 +28,7 @@ import ContentCodeBlock from "#app/components/content-code-block.astro";
   ]}
 />
 
-```test.jsx {0-2} "label"0-2 'value="jp">J' "Com"
+```test.jsx {0-2} "label"0-2 'value="jp">J' "Com" "Continents"
 <ComboboxGroup label="Continents">
   <ComboboxGroup label="Asia">
     <ComboboxItem value="jp">Japan</ComboboxItem>
@@ -73,14 +73,23 @@ import ContentCodeBlock from "#app/components/content-code-block.astro";
 
   As your dataset grows, groups prevent the interface from becoming overwhelming by maintaining logical structure regardless of the number of options.
 
-### Quick Start Checklist
+## Implementation Guide 0
 
-- [x] Install the `@ariakit/react` package
-- [x] Import `ComboboxGroup` component
-- [ ] ~~Use deprecated `Select` component~~ (Use `Combobox` instead)
-- [ ] Add proper ARIA labels
-- [ ] Test with screen readers
-- [ ] Implement keyboard navigation
+Follow these steps to implement combobox groups in your application:
+
+1. ### Install Dependencies
+
+   Start by installing the required packages. You'll need `@ariakit/react` as the main dependency, and optionally `@ariakit/react-core` if you need lower-level access to the components.
+
+   ```bash
+   npm install @ariakit/react
+   # or with yarn
+   yarn add @ariakit/react
+   ```
+
+2. ### Import Required Components
+
+   Import the necessary components from the library. The main components you'll need are `Combobox`, `ComboboxGroup`, and `ComboboxItem` for basic functionality.
 
 ## Implementation Guide
 
@@ -97,8 +106,6 @@ Follow these steps to implement combobox groups in your application:
    ```
 
 2. **Import Required Components**
-
-   Import the necessary components from the library. The main components you'll need are `Combobox`, `ComboboxGroup`, and `ComboboxItem` for basic functionality.
 
 3. **Structure Your Data**
 
@@ -384,11 +391,11 @@ const toggleGroup = (groupId) => {
 
 ## Browser Support
 
-| Feature      | Chrome | Firefox | Safari | Edge |
-| ------------ | ------ | ------- | ------ | ---- |
-| Basic Groups | ✅     | ✅      | ✅     | ✅   |
-| ARIA Support | ✅     | ✅      | ✅     | ✅   |
-| Keyboard Nav | ✅     | ✅      | ✅     | ✅   |
+| Feature      | Chrome | Firefox | Safari |
+| ------------ | ------ | ------- | ------ |
+| Basic Groups | ✅     | ✅      | ✅     |
+| ARIA Support | ✅     | ✅      | ✅     |
+| Keyboard Nav | ✅     | ✅      | ✅     |
 
 ## Troubleshooting
 
