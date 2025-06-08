@@ -83,6 +83,8 @@ export interface CodeBlockProps
  */
 export function CodeBlock({
   code,
+  previousCode,
+  multilineDiff,
   lang,
   lineNumbers,
   maxLines,
@@ -137,7 +139,7 @@ export function CodeBlock({
           collapsed &&
             "max-h-[calc(var(--max-lines)*var(--line-height))] overflow-hidden",
           !collapsible && "overflow-auto overscroll-x-contain",
-          lineCount === 1 ? "h-12 grid items-center" : "py-4",
+          lineCount === 1 && !previousCode ? "h-12 grid items-center" : "py-4",
         )}
       >
         {children}

@@ -1,5 +1,6 @@
 ---
 import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
+import { diffLines, diffWordsWithSpace } from "diff";
 import type { ThemedToken } from "shiki";
 import type { CodeBlockProps } from "./code-block.types";
 
@@ -7,6 +8,8 @@ interface Props extends CodeBlockProps {}
 
 const {
   code,
+  previousCode,
+  multilineDiff,
   filename,
   lang = filename ? getLangFromFilename(filename) : "text",
   maxLines,
@@ -23,6 +26,146 @@ const { tokens } = highlighter.codeToTokens(code.trim(), {
   },
 });
 
+type DiffInfo = Array<{
+  type: "added" | "removed" | "unchanged" | "modified-inline";
+  content: string;
+  tokens?: ThemedToken[];
+  lineNum?: number;
+  diffs?: ReturnType<typeof diffWordsWithSpace>;
+}>;
+
+let diffInfo: DiffInfo | null = null;
+
+if (previousCode) {
+  const changes = diffLines(previousCode.trim(), code.trim());
+  diffInfo = [];
+  let newCodeLineIndex = 0;
+
+  const linesCount = code.trim().split("\n").length;
+  const multilineDiffCount =
+    typeof multilineDiff === "number"
+      ? multilineDiff
+      : multilineDiff
+        ? 0
+        : linesCount > 1
+          ? 2
+          : 0;
+
+  for (let i = 0; i < changes.length; i++) {
+    const part = changes[i];
+    const nextPart = i + 1 < changes.length ? changes[i + 1] : null;
+
+    const lines = part.value.replace(/\n$/, "").split("\n");
+
+    if (part.removed && nextPart?.added) {
+      const removedLines = part.value.replace(/\n$/, "").split("\n");
+      const addedLines = nextPart.value.replace(/\n$/, "").split("\n");
+
+      if (removedLines.length === addedLines.length) {
+        for (let j = 0; j < removedLines.length; j++) {
+          const oldLine = removedLines[j];
+          const newLine = addedLines[j];
+          const wordDiff = diffWordsWithSpace(oldLine, newLine);
+          const modifiedSegmentCount = wordDiff.filter(
+            (p) => p.added || p.removed
+          ).length;
+
+          if (
+            modifiedSegmentCount <= multilineDiffCount &&
+            oldLine.trim() &&
+            newLine.trim()
+          ) {
+            diffInfo.push({
+              type: "modified-inline",
+              content: newLine,
+              tokens: tokens[newCodeLineIndex],
+              lineNum: newCodeLineIndex + 1,
+              diffs: wordDiff,
+            });
+            newCodeLineIndex++;
+          } else {
+            diffInfo.push({
+              type: "removed",
+              content: oldLine,
+              diffs: wordDiff,
+            });
+            diffInfo.push({
+              type: "added",
+              content: newLine,
+              tokens: tokens[newCodeLineIndex],
+              lineNum: newCodeLineIndex + 1,
+              diffs: wordDiff,
+            });
+            newCodeLineIndex++;
+          }
+        }
+        i++; // Skip nextPart as it has been processed
+        continue;
+      }
+    }
+
+    for (const line of lines) {
+      if (part.added) {
+        diffInfo.push({
+          type: "added",
+          content: line,
+          tokens: tokens[newCodeLineIndex],
+          lineNum: newCodeLineIndex + 1,
+        });
+        newCodeLineIndex++;
+      } else if (part.removed) {
+        diffInfo.push({
+          type: "removed",
+          content: line,
+        });
+      } else {
+        if (newCodeLineIndex >= tokens.length) continue;
+        diffInfo.push({
+          type: "unchanged",
+          content: line,
+          tokens: tokens[newCodeLineIndex],
+          lineNum: newCodeLineIndex + 1,
+        });
+        newCodeLineIndex++;
+      }
+    }
+  }
+}
+
+function getTokensForSubstring(
+  lineTokens: ThemedToken[],
+  startIndex: number,
+  length: number
+) {
+  const resultTokens: ThemedToken[] = [];
+  if (!lineTokens) return resultTokens;
+  let currentPos = 0;
+  for (const token of lineTokens) {
+    const tokenStart = currentPos;
+    const tokenEnd = currentPos + token.content.length;
+
+    if (tokenStart >= startIndex + length || tokenEnd <= startIndex) {
+      // token is completely outside the substring
+    } else {
+      // token is partially or fully inside.
+      const substrStartInToken = Math.max(0, startIndex - tokenStart);
+      const substrEndInToken = Math.min(
+        token.content.length,
+        startIndex + length - tokenStart
+      );
+      const content = token.content.substring(
+        substrStartInToken,
+        substrEndInToken
+      );
+      if (content) {
+        resultTokens.push({ ...token, content });
+      }
+    }
+    currentPos += token.content.length;
+  }
+  return resultTokens;
+}
+
 function isHighlighted(i: number) {
   return highlightLines.includes(i + 1);
 }
@@ -32,9 +175,8 @@ function isCollapsed(lineIndex: number) {
 }
 
 // Helper function to find all text spans that should be highlighted
-function findTextHighlights(content: string, line: ThemedToken[]) {
+function findTextHighlights(content: string) {
   const highlights: Array<{ start: number; end: number; text: string }> = [];
-  const tokensSeen: Record<string, number> = {};
 
   highlightTokens.forEach((t) => {
     const [word, ...indexes] = Array.isArray(t) ? t : [t];
@@ -199,32 +341,112 @@ function createHighlightSegments(
 
   return { isEmpty: false, segments };
 }
+
+const linesToRender = (() => {
+  if (diffInfo) {
+    const linesData = diffInfo.map((line, i) => ({
+      ...line,
+      i,
+      key: `diff-${i}`,
+    }));
+    return linesData.map((line) => {
+      const isAddedOrUnchanged =
+        line.type === "unchanged" || line.type === "added";
+
+      if (!isAddedOrUnchanged) {
+        return { ...line, renderType: line.type };
+      }
+
+      const lineTokens = line.tokens || [];
+      let highlights: ReturnType<typeof findTextHighlights> = [];
+
+      if (line.diffs) {
+        // With diff, `highlights` are the added parts of the line
+        let currentPos = 0;
+        for (const part of line.diffs) {
+          if (part.added) {
+            highlights.push({
+              start: currentPos,
+              end: currentPos + part.value.length,
+              text: part.value,
+            });
+          }
+          if (!part.removed) {
+            currentPos += part.value.length;
+          }
+        }
+      }
+      const { isEmpty, segments } = createHighlightSegments(
+        lineTokens,
+        highlights
+      );
+      return { ...line, renderType: "segments" as const, isEmpty, segments };
+    });
+  }
+
+  const linesData = tokens.map((line, i) => ({
+    key: `token-${i}`,
+    i,
+    type: "unchanged" as const,
+    content: line.map((token) => token.content).join(""),
+    tokens: line,
+    lineNum: i + 1,
+  }));
+
+  return linesData.map((line) => {
+    const lineTokens = line.tokens || [];
+    const highlights = findTextHighlights(line.content);
+    const { isEmpty, segments } = createHighlightSegments(
+      lineTokens,
+      highlights
+    );
+    return { ...line, renderType: "segments" as const, isEmpty, segments };
+  });
+})();
 ---
 
 <Fragment>
   <div
     class:list={[
       "grid whitespace-pre *:*:ps-4 **:data-highlight:ak-edge/25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0625rem*var(--contrast,0))_0_var(--ak-border)]",
-      lineNumbers && "sm:grid-cols-[max-content_1fr]",
+      (lineNumbers || diffInfo) && "sm:grid-cols-[max-content_1fr]",
     ]}
   >
     {
-      lineNumbers && (
+      (lineNumbers || diffInfo) && (
         <div
           aria-hidden
           class="max-sm:hidden -me-2 grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50"
         >
-          {tokens.map((_, i) => {
-            const highlightLine = isHighlighted(i);
+          {linesToRender.map((line) => {
+            const isAdded = line.type === "added";
+            const isRemoved = line.type === "removed";
+            const highlightLine = isHighlighted(line.i) || isAdded || isRemoved;
+            const displayLineNum = isRemoved
+              ? "-"
+              : lineNumbers
+                ? line.lineNum || "+"
+                : "+";
             return (
               <span
                 data-highlight={highlightLine || undefined}
                 class:list={[
                   "pe-4 h-(--line-height)",
-                  { "ak-layer-pop": highlightLine },
+                  isHighlighted(line.i) && "ak-layer-pop",
+                  {
+                    "ak-layer-mix-green-500/25": isAdded,
+                    "ak-layer-mix-red-500/25": isRemoved,
+                  },
                 ]}
               >
-                {i + 1}
+                <span
+                  class:list={{
+                    "ak-text-red-500": isRemoved,
+                    "ak-text-green-500": isAdded,
+                  }}
+                >
+                  {displayLineNum}
+                </span>
               </span>
             );
           })}
@@ -233,56 +455,168 @@ function createHighlightSegments(
     }
     <code>
       {
-        tokens.map((line, i) => {
-          const highlightLine = isHighlighted(i);
+        linesToRender.map((lineInfo) => {
+          const isAdded = lineInfo.type === "added";
+          const highlightLine =
+            isHighlighted(lineInfo.i) ||
+            lineInfo.type === "added" ||
+            lineInfo.type === "removed";
+          const lineClass = {
+            "ak-layer-mix-green-500/25": isAdded,
+            "ak-layer-mix-red-500/25 ak-text/0": lineInfo.type === "removed",
+          };
 
-          // Get the full line content for text highlighting
-          const lineContent = line.map((token) => token.content).join("");
-          const textHighlights = findTextHighlights(lineContent, line);
-          const { isEmpty, segments } = createHighlightSegments(
-            line,
-            textHighlights
-          );
+          if (lineInfo.renderType === "removed") {
+            return (
+              <div
+                data-highlight={highlightLine || undefined}
+                class:list={[
+                  "h-(--line-height) pe-14",
+                  lineClass,
+                  isHighlighted(lineInfo.i) && "ak-layer-pop",
+                ]}
+              >
+                {lineInfo.diffs
+                  ? lineInfo.diffs.map((part) => {
+                      if (part.added) return null;
+                      return (
+                        <del
+                          class:list={{
+                            "ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 decoration-(--ak-border)":
+                              part.removed,
+                            "[text-decoration:none]": !part.removed,
+                          }}
+                        >
+                          {part.value}
+                        </del>
+                      );
+                    })
+                  : lineInfo.content}
+              </div>
+            );
+          }
 
-          return (
-            <div
-              data-highlight={highlightLine || undefined}
-              class:list={[
-                "pe-14 [content-visibility:auto] h-(--line-height)",
-                highlightLine && "ak-layer-pop",
-                isCollapsed(i) && "in-data-collapsed:hidden",
-              ]}
-            >
-              {isEmpty
-                ? "\n"
-                : segments.map((segment) => {
-                    const segmentElements = segment.fragments.map(
-                      ({ content, token }) => {
-                        // TODO: Fix this after we merge the site folder into root
-                        const style = token.htmlStyle as any;
-                        const dark = style?.["--shiki-dark"] || token.color;
-                        const light = style?.color || token.color;
+          if (lineInfo.renderType === "modified-inline") {
+            let charIndex = 0;
+            return (
+              <div
+                data-highlight={highlightLine || undefined}
+                class:list={[
+                  "h-(--line-height) pe-14",
+                  lineClass,
+                  isHighlighted(lineInfo.i) && "ak-layer-pop",
+                ]}
+              >
+                {lineInfo.diffs?.map((part) => {
+                  if (part.removed) {
+                    return (
+                      <del class="ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 decoration-(--ak-border)">
+                        {part.value}
+                      </del>
+                    );
+                  }
+                  const subTokens = getTokensForSubstring(
+                    lineInfo.tokens || [],
+                    charIndex,
+                    part.value.length
+                  );
+                  charIndex += part.value.length;
+                  const elements = subTokens.map((token) => {
+                    const style = token.htmlStyle as any;
+                    const dark = style?.["--shiki-dark"] || token.color;
+                    const light = style?.color || token.color;
+                    return (
+                      <span
+                        style={`--dark:${dark}; --light:${light}`}
+                        class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
+                      >
+                        {token.content}
+                      </span>
+                    );
+                  });
+                  if (part.added) {
+                    return (
+                      <ins class="ak-layer-mix-green-500/30 ak-edge-green-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 no-underline">
+                        {elements}
+                      </ins>
+                    );
+                  }
+                  return elements;
+                })}
+              </div>
+            );
+          }
+
+          if (lineInfo.renderType === "segments") {
+            const { isEmpty, segments } = lineInfo;
+            return (
+              <div
+                data-highlight={highlightLine || undefined}
+                class:list={[
+                  "pe-14 [content-visibility:auto] h-(--line-height)",
+                  lineClass,
+                  isHighlighted(lineInfo.i) && "ak-layer-pop",
+                  isCollapsed(lineInfo.i) && "in-data-collapsed:hidden",
+                ]}
+              >
+                {isEmpty
+                  ? "\n"
+                  : segments.map((segment) => {
+                      const segmentElements = segment.fragments.map(
+                        ({ content, token }) => {
+                          // TODO: Fix this after we merge the site folder into root
+                          const style = token.htmlStyle as any;
+                          const dark = style?.["--shiki-dark"] || token.color;
+                          const light = style?.color || token.color;
+                          return (
+                            <span
+                              style={`--dark:${dark}; --light:${light}`}
+                              class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
+                            >
+                              {content || ""}
+                            </span>
+                          );
+                        }
+                      );
+
+                      // Apply highlighting if needed
+                      if (segment.isHighlighted) {
+                        const highlightClass =
+                          "ring rounded px-[0.25em] py-0.5";
+
+                        if (diffInfo) {
+                          return (
+                            <span class="ak-layer-mix-green-500/30 ak-edge-green-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5">
+                              {segmentElements}
+                            </span>
+                          );
+                        }
+
+                        if (segment.spansMultipleTokens) {
+                          // Multi-token highlight
+                          return (
+                            <span
+                              class:list={[
+                                "ak-layer-pop ak-edge/25",
+                                highlightClass,
+                              ]}
+                            >
+                              {segmentElements}
+                            </span>
+                          );
+                        }
+                        // Single token highlight - use token colors for background
+                        const firstFragment = segment.fragments[0];
+                        const style = firstFragment.token.htmlStyle as any;
+                        const dark =
+                          style?.["--shiki-dark"] || firstFragment.token.color;
+                        const light = style?.color || firstFragment.token.color;
+
                         return (
                           <span
                             style={`--dark:${dark}; --light:${light}`}
-                            class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
-                          >
-                            {content || ""}
-                          </span>
-                        );
-                      }
-                    );
-
-                    // Apply highlighting if needed
-                    if (segment.isHighlighted) {
-                      const highlightClass = "ring rounded px-[0.25em] py-0.5";
-
-                      if (segment.spansMultipleTokens) {
-                        // Multi-token highlight
-                        return (
-                          <span
                             class:list={[
-                              "ak-layer-pop ak-edge/25",
+                              "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
                               highlightClass,
                             ]}
                           >
@@ -290,32 +624,15 @@ function createHighlightSegments(
                           </span>
                         );
                       }
-                      // Single token highlight - use token colors for background
-                      const firstFragment = segment.fragments[0];
-                      const style = firstFragment.token.htmlStyle as any;
-                      const dark =
-                        style?.["--shiki-dark"] || firstFragment.token.color;
-                      const light = style?.color || firstFragment.token.color;
 
-                      return (
-                        <span
-                          style={`--dark:${dark}; --light:${light}`}
-                          class:list={[
-                            "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
-                            highlightClass,
-                          ]}
-                        >
-                          {segmentElements}
-                        </span>
-                      );
-                    }
-
-                    return segmentElements;
-                  })}
-            </div>
-          );
+                      return segmentElements;
+                    })}
+              </div>
+            );
+          }
+          return null;
         })
-      }</code
-    >
+      }
+    </code>
   </div>
 </Fragment>

@@ -1,5 +1,6 @@
 ---
 import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
+import CodeBlock from "#app/components/code-block.astro";
 import ContentCodeBlock from "#app/components/content-code-block.astro";
 import ContentHeading from "#app/components/content-heading.astro";
 import ContentLink from "#app/components/content-link.astro";
@@ -102,6 +103,31 @@ Astro.locals.example = entry.id;
         <div
           class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed"
         >
+          <CodeBlock
+            filename="combobox-group.ts"
+            previousCode={`const { id } = Astro.request.params;`}
+            code={`const { id } = Astro.params;`}
+          />
+          <CodeBlock
+            filename="combobox-group.tsx"
+            lineNumbers
+            highlightLines={[2]}
+            highlightTokens={[["value", 0]]}
+            previousCode={`<ComboboxGroup label="Continents">
+  <ComboboxGroup pqp="Asia">
+    <ComboboxItem value="jp">Japan</ComboboxItem>
+    <ComboboxItem value="kr">South Korea</ComboboxItem>
+    <ComboboxItem value="jp2">Japan 2</ComboboxItem>
+  </ComboboxGroup>
+</ComboboxGroup>`}
+            code={`<ComboboxGroup label="Continents">
+  <ComboboxGroup label="Asia">
+    <ComboboxItem value="jp">Japan</ComboboxItem>
+    <ComboboxItem value="kr">South Korea</ComboboxItem>
+    <ComboboxItem value="kr2">South Korea Testing 2</ComboboxItem>
+  </ComboboxGroup>
+</ComboboxGroup>`}
+          />
           <Content
             {framework}
             components={{
