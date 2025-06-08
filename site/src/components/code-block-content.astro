@@ -23,8 +23,6 @@ const { tokens } = highlighter.codeToTokens(code.trim(), {
   },
 });
 
-const tokensSeen: Record<string, number> = {};
-
 function isHighlighted(i: number) {
   return highlightLines.includes(i + 1);
 }
@@ -33,33 +31,13 @@ function isCollapsed(lineIndex: number) {
   return maxLines !== undefined && lineIndex > maxLines;
 }
 
-// Original splitContent function for single token highlighting
-function splitContent(content: string) {
-  const parts = content.split(/([^:\(\)\s"']+)/);
-  return parts.flatMap((part) => {
-    const highlightToken = highlightTokens.some((t) => {
-      const [word, ...indexes] = Array.isArray(t) ? t : [t];
-      if (part !== word) return false;
-      if (!indexes.length) return part === word;
-      if (!(word in tokensSeen)) {
-        tokensSeen[word] = 0;
-      }
-      const index = tokensSeen[word]++;
-      return indexes.includes(index);
-    });
-    return { content: part, highlightToken };
-  });
-}
-
-// Helper function to find text spans that should be highlighted (multi-token/substring)
+// Helper function to find all text spans that should be highlighted
 function findTextHighlights(content: string, line: ThemedToken[]) {
   const highlights: Array<{ start: number; end: number; text: string }> = [];
+  const tokensSeen: Record<string, number> = {};
 
   highlightTokens.forEach((t) => {
     const [word, ...indexes] = Array.isArray(t) ? t : [t];
-
-    // Skip if this is a single token (handled by splitContent)
-    if (line.some((token) => token.content === word)) return;
 
     let startIndex = 0;
     let foundIndex;
@@ -109,11 +87,13 @@ function createHighlightSegments(
     content: string;
     token: ThemedToken;
     isHighlighted: boolean;
+    tokenIndex: number;
   };
 
   type Segment = {
     fragments: TokenFragment[];
     isHighlighted: boolean;
+    spansMultipleTokens: boolean;
   };
 
   if (!line.some((token) => token.content)) {
@@ -125,7 +105,7 @@ function createHighlightSegments(
   const allFragments: TokenFragment[] = [];
 
   // Process each token and split it if it crosses highlight boundaries
-  line.forEach((token) => {
+  line.forEach((token, tokenIndex) => {
     const tokenStart = currentPosition;
     const tokenEnd = currentPosition + token.content.length;
 
@@ -140,6 +120,7 @@ function createHighlightSegments(
         content: token.content,
         token,
         isHighlighted: false,
+        tokenIndex,
       });
     } else {
       // Token intersects with highlights - split it
@@ -177,6 +158,7 @@ function createHighlightSegments(
             content: fragmentContent,
             token,
             isHighlighted,
+            tokenIndex,
           });
         }
       }
@@ -198,11 +180,20 @@ function createHighlightSegments(
       currentSegment = {
         fragments: [fragment],
         isHighlighted: fragment.isHighlighted,
+        spansMultipleTokens: false,
       };
       segments.push(currentSegment);
     } else {
       // Add to current segment
       currentSegment.fragments.push(fragment);
+    }
+  });
+
+  // Determine if each segment spans multiple tokens
+  segments.forEach((segment) => {
+    if (segment.isHighlighted && segment.fragments.length > 0) {
+      const tokenIndexes = new Set(segment.fragments.map((f) => f.tokenIndex));
+      segment.spansMultipleTokens = tokenIndexes.size > 1;
     }
   });
 
@@ -265,52 +256,52 @@ function createHighlightSegments(
               {isEmpty
                 ? "\n"
                 : segments.map((segment) => {
-                    const highlightClass = "ring rounded px-[0.25em] py-0.5";
-                    const segmentElements = segment.fragments
-                      .map(({ content, token, isHighlighted }) => {
-                        // Apply splitContent logic to each fragment
-                        const splitTokens = isHighlighted
-                          ? [{ content, highlightToken: false }]
-                          : splitContent(content);
-                        return splitTokens.map(
-                          ({ content: splitContent, highlightToken }) => {
-                            // TODO: Fix this after we merge the site folder into root
-                            const style = token.htmlStyle as any;
-                            const dark = style?.["--shiki-dark"] || token.color;
-                            const light = style?.color || token.color;
-                            const baseEl = (
-                              <span
-                                style={`--dark:${dark}; --light:${light}`}
-                                class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
-                              >
-                                {splitContent || ""}
-                              </span>
-                            );
-                            // Apply individual token highlighting if needed (single token)
-                            if (highlightToken) {
-                              return (
-                                <span
-                                  style={`--dark:${dark}; --light:${light}`}
-                                  class:list={[
-                                    "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
-                                    highlightClass,
-                                  ]}
-                                >
-                                  {baseEl}
-                                </span>
-                              );
-                            }
-                            return baseEl;
-                          }
+                    const segmentElements = segment.fragments.map(
+                      ({ content, token }) => {
+                        // TODO: Fix this after we merge the site folder into root
+                        const style = token.htmlStyle as any;
+                        const dark = style?.["--shiki-dark"] || token.color;
+                        const light = style?.color || token.color;
+                        return (
+                          <span
+                            style={`--dark:${dark}; --light:${light}`}
+                            class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
+                          >
+                            {content || ""}
+                          </span>
                         );
-                      })
-                      .flat();
-                    // Wrap in text highlight span if needed (multi-token/substring)
+                      }
+                    );
+
+                    // Apply highlighting if needed
                     if (segment.isHighlighted) {
+                      const highlightClass = "ring rounded px-[0.25em] py-0.5";
+
+                      if (segment.spansMultipleTokens) {
+                        // Multi-token highlight
+                        return (
+                          <span
+                            class:list={[
+                              "ak-layer-pop ak-edge/25",
+                              highlightClass,
+                            ]}
+                          >
+                            {segmentElements}
+                          </span>
+                        );
+                      }
+                      // Single token highlight - use token colors for background
+                      const firstFragment = segment.fragments[0];
+                      const style = firstFragment.token.htmlStyle as any;
+                      const dark =
+                        style?.["--shiki-dark"] || firstFragment.token.color;
+                      const light = style?.color || firstFragment.token.color;
+
                       return (
                         <span
+                          style={`--dark:${dark}; --light:${light}`}
                           class:list={[
-                            "ak-layer-pop ak-edge/25",
+                            "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
                             highlightClass,
                           ]}
                         >
@@ -318,6 +309,7 @@ function createHighlightSegments(
                         </span>
                       );
                     }
+
                     return segmentElements;
                   })}
             </div>
