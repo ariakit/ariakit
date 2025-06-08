@@ -168,7 +168,7 @@ export function CodeBlock({
           ? topbar
           : showFilename &&
             filename && (
-              <div className="ak-tab-list ak-light:ak-layer-down-0.5 text-sm">
+              <div className="ak-tab-list ak-layer-down-0.7 ak-light:ak-layer-down-0.5 text-sm">
                 <div className="base:ak-tab-folder_idle ak-tab-folder_selected select-auto cursor-auto">
                   <div>
                     {filenameIcon && <Icon name={filenameIcon} />}
