@@ -91,7 +91,7 @@
     "@clerk/clerk-react": "4.32.5",
     "@clerk/nextjs": "4.31.8",
     "@clerk/types": "3.65.5",
-    "@fontsource-variable/inter": "5.2.5",
+    "@fontsource-variable/inter": "5.2.6",
     "@playwright/test": "1.52.0",
     "@radix-ui/react-popover": "1.1.14",
     "@radix-ui/react-select": "2.2.5",
