@@ -555,23 +555,30 @@ const linesToRender = (() => {
     return { ...line, renderType: "segments" as const, isEmpty, segments };
   }) as LinesToRender;
 })();
+
+const hasAddedOrRemoved = diffInfo?.some(
+  (line) => line.type === "added" || line.type === "removed"
+);
 ---
 
 <Fragment>
   <div
     class:list={[
       "grid whitespace-pre *:*:ps-4 **:data-highlight:ak-edge/25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0625rem*var(--contrast,0))_0_var(--ak-border)]",
-      (lineNumbers || diffInfo) && "sm:grid-cols-[max-content_1fr]",
+      (lineNumbers || diffInfo) && {
+        "sm:grid-cols-[max-content_1fr]": !hasAddedOrRemoved,
+        "grid-cols-[max-content_1fr]": hasAddedOrRemoved,
+      },
     ]}
   >
     {
-      (lineNumbers ||
-        diffInfo?.some(
-          (line) => line.type === "added" || line.type === "removed"
-        )) && (
+      (lineNumbers || hasAddedOrRemoved) && (
         <div
           aria-hidden
-          class="max-sm:hidden -me-2 grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50"
+          class:list={[
+            "-me-2 grid ak-layer-current sticky z-1 start-0 select-none pointer-events-none text-right ak-text-[#237893]/50 ak-dark:ak-text-[#858585]/50",
+            !hasAddedOrRemoved && "max-sm:hidden",
+          ]}
         >
           {linesToRender.map((line) => {
             const isAdded = line.type === "added";
@@ -623,6 +630,8 @@ const linesToRender = (() => {
             "ak-layer-mix-green-500/25": isAdded,
             "ak-layer-mix-red-500/25 ak-text/0": lineInfo.type === "removed",
           };
+          const removedTokenClass =
+            "ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
 
           if (lineInfo.renderType === "removed") {
             return (
@@ -642,12 +651,11 @@ const linesToRender = (() => {
                       return (
                         <del
                           class:list={{
-                            "ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 decoration-(--ak-border)":
-                              part.removed,
+                            [removedTokenClass]: part.removed,
                             "[text-decoration:none]": !part.removed,
                           }}
                         >
-                          {part.value}
+                          <span class="relative z-1">{part.value}</span>
                         </del>
                       );
                     })
@@ -670,8 +678,8 @@ const linesToRender = (() => {
                 {lineInfo.parts.map((part) => {
                   if (part.renderType === "removed") {
                     return (
-                      <del class="ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 decoration-(--ak-border)">
-                        {part.content}
+                      <del class={removedTokenClass}>
+                        <span class="relative z-1">{part.content}</span>
                       </del>
                     );
                   }
