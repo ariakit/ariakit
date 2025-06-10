@@ -143,7 +143,12 @@ if (tabs?.length) {
 ---
 
 <div
-  class="ak-container-size-[calc(min(theme(--container-content),100%)+--spacing(8))]/0 ak-container"
+  class:list={[
+    "ak-container-size-[calc(min(theme(--container-content),100%)+--spacing(8))]/0",
+    "not-in-data-admonition:ak-container",
+    "in-data-admonition:not-first:pt-0",
+    "in-data-admonition:ak-frame-cover/1",
+  ]}
 >
   {
     codeBlockProps ? (

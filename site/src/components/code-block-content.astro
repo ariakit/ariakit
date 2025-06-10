@@ -564,7 +564,8 @@ const hasAddedOrRemoved = diffInfo?.some(
 <Fragment>
   <div
     class:list={[
-      "grid whitespace-pre *:*:ps-4 **:data-highlight:ak-edge/25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0625rem*var(--contrast,0))_0_var(--ak-border)]",
+      "grid whitespace-pre **:data-highlight:ak-edge/25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0625rem*var(--contrast,0))_0_var(--ak-border)]",
+      "*:*:ps-4 *:*:in-data-admonition:ps-3",
       (lineNumbers || diffInfo) && {
         "sm:grid-cols-[max-content_1fr]": !hasAddedOrRemoved,
         "grid-cols-[max-content_1fr]": hasAddedOrRemoved,

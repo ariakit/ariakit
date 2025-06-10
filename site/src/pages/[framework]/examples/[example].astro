@@ -1,6 +1,7 @@
 ---
 import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
 import CodeBlock from "#app/components/code-block.astro";
+import ContentAdmonition from "#app/components/content-admonition.astro";
 import ContentCodeBlock from "#app/components/content-code-block.astro";
 import ContentHeading from "#app/components/content-heading.astro";
 import ContentLink from "#app/components/content-link.astro";
@@ -38,6 +39,21 @@ const tags = await getEntries(entry.data.tags);
 
 Astro.locals.framework = framework;
 Astro.locals.example = entry.id;
+
+const components = {
+  a: ContentLink,
+  p: ContentParagraph,
+  pre: ContentCodeBlock,
+  h1: ContentHeading,
+  h2: ContentHeading,
+  h3: ContentHeading,
+  h4: ContentHeading,
+  h5: ContentHeading,
+  h6: ContentHeading,
+  ul: ContentList,
+  ol: ContentList,
+  admonition: ContentAdmonition,
+};
 ---
 
 <Layout title={entry.data.title}>
@@ -49,7 +65,7 @@ Astro.locals.example = entry.id;
         {entry.data.title}
       </h1>
       <div
-        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem] gap-3 items-start"
+        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] gap-3 items-start"
       >
         <div
           class="ak-text/60 text-lg ak-container-size-content/0 ak-container"
@@ -93,13 +109,14 @@ Astro.locals.example = entry.id;
         </div>
       </div>
     </div>
-    <div class="ak-container-size-wider ak-container">
-      <Gallery />
+    <div
+      data-gallery="true"
+      class="ak-container-size-wider ak-container flex flex-col gap-12 mb-16"
+    >
+      <Gallery {framework} components={components} />
     </div>
-    <div class="ak-container-size-wider ak-container">
-      <div
-        class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] @max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem]"
-      >
+    <div data-content="true" class="ak-container-size-wider ak-container">
+      <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
         <div
           class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed"
         >
@@ -137,22 +154,7 @@ Astro.locals.example = entry.id;
   </ComboboxGroup>
 </ComboboxGroup>`}
           />
-          <Content
-            {framework}
-            components={{
-              a: ContentLink,
-              p: ContentParagraph,
-              pre: ContentCodeBlock,
-              h1: ContentHeading,
-              h2: ContentHeading,
-              h3: ContentHeading,
-              h4: ContentHeading,
-              h5: ContentHeading,
-              h6: ContentHeading,
-              ul: ContentList,
-              ol: ContentList,
-            }}
-          />
+          <Content {framework} components={components} />
           <p class="ak-container-size-content/0 ak-container">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas, ab!
             Error praesentium pariatur quod fuga tempore quae nam ab obcaecati
