@@ -206,18 +206,6 @@ function GroupedCombobox() {
 }
 ```
 
-## Keyboard Navigation
-
-Users can navigate the combobox using these keyboard shortcuts:
-
-| Key                            | Action                         |
-| ------------------------------ | ------------------------------ |
-| <kbd>↓</kbd> / <kbd>↑</kbd>    | Navigate between options       |
-| <kbd>Enter</kbd>               | Select highlighted option      |
-| <kbd>Escape</kbd>              | Close the dropdown             |
-| <kbd>Tab</kbd>                 | Move to next focusable element |
-| <kbd>Ctrl</kbd> + <kbd>A</kbd> | Select all text in input       |
-
 ## Advanced Features
 
 ### Custom Group Headers
@@ -250,43 +238,9 @@ const groupedData = data.reduce((groups, item) => {
 }, {});
 ```
 
-<details>
-<summary>View complete dynamic grouping example</summary>
-
-```jsx
-import { useMemo } from "react";
-
-function DynamicGroupedCombobox({ data }) {
-  const groupedData = useMemo(() => {
-    return data.reduce((groups, item) => {
-      const group = item.category;
-      if (!groups[group]) groups[group] = [];
-      groups[group].push(item);
-      return groups;
-    }, {});
-  }, [data]);
-
-  return (
-    <Combobox>
-      {Object.entries(groupedData).map(([groupName, items]) => (
-        <ComboboxGroup key={groupName} label={groupName}>
-          {items.map((item) => (
-            <ComboboxItem key={item.id} value={item.value}>
-              {item.label}
-            </ComboboxItem>
-          ))}
-        </ComboboxGroup>
-      ))}
-    </Combobox>
-  );
-}
-```
-
-</details>
-
 ## Mathematical Concepts
 
-When calculating optimal group sizes, consider the Miller's Rule: 7±2 items per group for optimal cognitive processing[^1].
+When calculating optimal group sizes, consider the Miller's Rule: 7±2 items per group for optimal cognitive processing.
 
 The ideal group size can be calculated as:
 
@@ -426,33 +380,3 @@ const toggleGroup = (groupId) => {
   }));
 };
 ```
-
-## Browser Support
-
-| Feature      | Chrome | Firefox | Safari |
-| ------------ | ------ | ------- | ------ |
-| Basic Groups | ✅     | ✅      | ✅     |
-| ARIA Support | ✅     | ✅      | ✅     |
-| Keyboard Nav | ✅     | ✅      | ✅     |
-
-## Troubleshooting
-
-<details>
-<summary>🐛 Common Issues and Solutions</summary>
-
-**Issue**: Groups not appearing properly
-**Solution**: Ensure you're wrapping items in `ComboboxGroup` components
-
-**Issue**: Screen reader not announcing groups
-**Solution**: Verify that group labels are properly set and not empty
-
-**Issue**: Performance issues with large datasets
-**Solution**: Implement virtualization or lazy loading as described above
-
-</details>
-
----
-
-_For more advanced examples and API documentation, check out the [complete component reference](./api)._
-
-[^1]: Miller, George A. "The magical number seven, plus or minus two: Some limits on our capacity for processing information." _Psychological review_ 63.2 (1956): 81-97.
