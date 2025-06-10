@@ -24,6 +24,26 @@ import ContentCodeBlock from "#app/components/content-code-block.astro";
   ]}
 />
 
+> [!NOTE]
+>
+> This is a note.
+
+> [!TIP] A tip for you
+>
+> This is a tip with a custom title.
+
+> [!IMPORTANT]
+>
+> This is an important message.
+
+> [!WARNING]
+>
+> This is a warning.
+
+> [!CAUTION] Be careful
+>
+> This is a caution admonition with a title.
+
 Before:
 
 ```test.jsx {0-2} "label"1 'value="jp">J' "Com" "Continents" previousCode
@@ -46,11 +66,20 @@ After:
 </ComboboxGroup>
 ```
 
-> [!NOTE]
+> [!NOTE] Test
 >
 > This example uses the `ComboboxGroup` component from `@ariakit/react`.
 >
 > If you're using `@ariakit/react-core`, you'll need to use the `Select` component instead.
+>
+> ```jsx {0-2} "label"0 'value="jp">J' "Continents"
+> <ComboboxGroup label="Continents">
+>   <ComboboxGroup label="Asia">
+>     <ComboboxItem value="jp">Japan</ComboboxItem>
+>     <ComboboxItem value="kr2">South Korea 2</ComboboxItem>
+>   </ComboboxGroup>
+> </ComboboxGroup>
+> ```
 
 > **Note**: Combobox groups are especially beneficial when you have more than 10-15 options, as they help reduce cognitive load and improve the user experience.
 
