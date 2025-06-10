@@ -15,9 +15,6 @@ export function rehypeAsTagName({ tags }: RehypeAsTagNameOptions) {
     visit(tree, "element", (node) => {
       if (!node.tagName) return;
       if (!tags.includes(node.tagName)) return;
-      if (!node.properties) {
-        node.properties = {};
-      }
       node.properties.as = node.tagName;
     });
   };
@@ -129,6 +126,49 @@ export function rehypePreviousCode() {
       for (const index of uniqueIndices) {
         children.splice(index, 1);
       }
+    });
+  };
+}
+
+/**
+ * This plugin transforms GitHub-style admonition blockquotes. It adds
+ * `data-admonition`, `data-type`, and an optional `data-title` attribute to the
+ * blockquote element.
+ */
+export function rehypeAdmonitions() {
+  return (tree: Root) => {
+    visit(tree, "element", (node) => {
+      if (node.tagName !== "blockquote") return;
+      if (!node.children) return;
+
+      const { children } = node;
+
+      const firstParagraph = children.find(
+        (child): child is Element =>
+          child.type === "element" && child.tagName === "p",
+      );
+
+      if (!firstParagraph) return;
+
+      const text = toText(firstParagraph).trim();
+      const match = text.match(/^\[!(\w+)\]\s*(.*)?$/);
+
+      if (!match) return;
+
+      const type = match[1]?.toLowerCase();
+      const title = match[2]?.trim();
+
+      node.properties.type = type;
+      if (title) {
+        node.properties.title = title;
+      }
+
+      // Remove the paragraph with the admonition type and title
+      const pIndex = children.indexOf(firstParagraph);
+      if (pIndex > -1) {
+        children.splice(pIndex, 1);
+      }
+      node.tagName = "admonition";
     });
   };
 }
