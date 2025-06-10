@@ -1,13 +1,20 @@
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
+import { rehypeHeadingIds } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
+import {
+  rehypeAdmonitions,
+  rehypeAsTagName,
+  rehypePreviousCode,
+} from "./src/lib/rehype.ts";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
@@ -42,10 +49,25 @@ export default defineConfig({
     ],
   },
 
+  markdown: {
+    syntaxHighlight: false,
+  },
+
   integrations: [
-    mdx(),
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
+    mdx({
+      rehypePlugins: [
+        rehypeHeadingIds,
+        rehypePreviousCode,
+        rehypeAdmonitions,
+        [rehypeAutolinkHeadings, { behavior: "wrap" }],
+        [
+          rehypeAsTagName,
+          { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
+        ],
+      ],
+    }),
     !hasClerk
       ? dummyClerkIntegration()
       : clerk({

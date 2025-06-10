@@ -83,6 +83,8 @@ export interface CodeBlockProps
  */
 export function CodeBlock({
   code,
+  previousCode,
+  preferMultilineDiff,
   lang,
   lineNumbers,
   maxLines,
@@ -134,8 +136,12 @@ export function CodeBlock({
           "[font-size-adjust:0.55]",
           expanded &&
             "overflow-auto overscroll-contain max-h-[min(calc(100svh-12rem),60rem)]",
-          collapsed && "max-h-[calc(var(--max-lines)*var(--line-height))]",
-          lineCount === 1 ? "h-12 grid items-center" : "py-4",
+          collapsed &&
+            "max-h-[calc(var(--max-lines)*var(--line-height))] overflow-hidden",
+          !collapsible && "overflow-auto overscroll-x-contain",
+          lineCount === 1 && !previousCode
+            ? "h-12 grid items-center"
+            : "py-4 in-data-admonition:py-3",
         )}
       >
         {children}
@@ -166,7 +172,7 @@ export function CodeBlock({
           ? topbar
           : showFilename &&
             filename && (
-              <div className="ak-tab-list ak-light:ak-layer-down-0.5 text-sm">
+              <div className="ak-tab-list ak-layer-down-0.7 ak-light:ak-layer-down-0.5 text-sm">
                 <div className="base:ak-tab-folder_idle ak-tab-folder_selected select-auto cursor-auto">
                   <div>
                     {filenameIcon && <Icon name={filenameIcon} />}

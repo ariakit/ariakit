@@ -10,6 +10,10 @@ export const FRAMEWORKS = keys(frameworks);
 export const FrameworkSchema = z.enum(FRAMEWORKS);
 export type Framework = z.infer<typeof FrameworkSchema>;
 
+export const ADMONITION_TYPES = ["note", "tip", "warning", "caution"] as const;
+export const AdmonitionTypeSchema = z.enum(ADMONITION_TYPES).catch("note");
+export type AdmonitionType = z.infer<typeof AdmonitionTypeSchema>;
+
 export const TAGS = keys(tags);
 export const TagSchema = z.enum(TAGS);
 export type Tag = z.infer<typeof TagSchema>;

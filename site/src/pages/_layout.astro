@@ -15,7 +15,9 @@ import { ClientRouter } from "astro:transitions";
     <title>Ariakit</title>
     <ClientRouter />
   </head>
-  <body class="ak-container-size-default/3 overflow-x-clip">
+  <body
+    class="ak-container-size-default/3 overflow-x-clip [--header-height:--spacing(14)]"
+  >
     <div class="flex">
       <div class="flex flex-col flex-1 @container">
         <header
@@ -37,7 +39,7 @@ import { ClientRouter } from "astro:transitions";
                 <button
                   class="ak-button font-normal ak-dark:ak-text/80 @max-3xl:hidden"
                 >
-                  <Icon name="html" className="flex-none" /><span>HTML</span>
+                  <Icon name="react" className="flex-none" /><span>React</span>
                 </button>
                 <span
                   aria-hidden="true"
@@ -86,7 +88,9 @@ import { ClientRouter } from "astro:transitions";
             </div>
           </div>
         </header>
-        <main>
+        <main
+          class="@max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem]"
+        >
           <slot />
         </main>
         <footer class="ak-container-size-default ak-layer-down">

@@ -1,14 +1,14 @@
 ---
+import * as icons from "#app/icons/icons.ts";
+import { importThumbnail } from "#app/lib/import-thumbnail.ts";
+import type { Framework } from "#app/lib/schemas.ts";
+import { getLangFromFilename } from "#app/lib/shiki.ts";
+import type { Source } from "#app/lib/types.ts";
+import type { ComponentProps } from "astro/types";
+import { getEntry } from "astro:content";
 import CodeBlockContent from "./code-block-content.astro";
 import { CodeBlockTabs as CodeBlockTabsReact } from "./code-block.react.tsx";
-import type { ComponentProps } from "astro/types";
-import type { Source } from "#app/lib/types.ts";
-import { getLangFromFilename } from "#app/lib/shiki.ts";
-import * as icons from "#app/icons/icons.ts";
-import type { Framework } from "#app/lib/schemas.ts";
-import { importThumbnail } from "#app/lib/import-thumbnail.ts";
 import type { CodeBlockTabProps } from "./code-block.types";
-import { getEntry } from "astro:content";
 
 interface Props
   extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "source"> {
@@ -18,7 +18,7 @@ interface Props
 const {
   source: sourceProp,
   tabs: tabsProp,
-  lineNumbers = true,
+  lineNumbers = !!sourceProp,
   maxLines = 17,
   framework = Astro.locals.framework,
   example: exampleProp,
@@ -87,6 +87,7 @@ const Fallback = example ? await importThumbnail(example) : undefined;
     {framework}
     {example}
     {...props}
+    preview={!!source}
   >
     <slot />
     {Fallback && <Fallback slot="fallback0" />}

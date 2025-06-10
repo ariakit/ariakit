@@ -3,6 +3,8 @@ import type { CSSProperties, ComponentProps } from "react";
 import { useId } from "react";
 import * as icons from "./icons.ts";
 
+export type IconName = keyof typeof icons;
+
 export interface IconProps extends ComponentProps<"svg"> {
   name: keyof typeof icons;
   animateStroke?: boolean | number;
