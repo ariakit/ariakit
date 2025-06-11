@@ -23,7 +23,7 @@ export function rehypeAsTagName({ tags }: RehypeAsTagNameOptions) {
 function isParagraphWithText(
   node: RootContent | undefined,
   text: string,
-): boolean {
+): node is Element {
   if (!node || node.type !== "element") return false;
   if (node.tagName !== "p") return false;
   const content = toText(node).trim().toLowerCase();
@@ -45,25 +45,28 @@ function getCodeText(codeNode: Element): string | null {
   return textNode?.value ?? null;
 }
 
-function markPrecedingParagraphForRemoval(
-  nodes: RootContent[],
+function queuePrecedingParagraphForRemoval(
+  parent: Element | Root,
   preNodeIndex: number,
   text: string,
-  indicesToRemove: number[],
+  nodesToRemove: { parent: Element | Root; node: RootContent }[],
 ) {
   let prevIndex = preNodeIndex - 1;
-  let prevNode = nodes[prevIndex];
+  let prevNode = parent.children[prevIndex];
+  const intermediateNodesToRemove: {
+    parent: Element | Root;
+    node: RootContent;
+  }[] = [];
 
-  // Skip over text nodes (like newlines) between the paragraph and the code
-  // block
   while (prevNode?.type === "text") {
-    indicesToRemove.push(prevIndex);
+    intermediateNodesToRemove.push({ parent, node: prevNode });
     prevIndex--;
-    prevNode = nodes[prevIndex];
+    prevNode = parent.children[prevIndex];
   }
 
   if (isParagraphWithText(prevNode, text)) {
-    indicesToRemove.push(prevIndex);
+    nodesToRemove.push({ parent, node: prevNode });
+    nodesToRemove.push(...intermediateNodesToRemove);
   }
 }
 
@@ -74,59 +77,64 @@ function markPrecedingParagraphForRemoval(
  */
 export function rehypePreviousCode() {
   return (tree: Root) => {
-    visit(tree, "root", (root) => {
-      if (root.type !== "root") return;
+    let previousCode: string | null = null;
+    const nodesToRemove: { parent: Element | Root; node: RootContent }[] = [];
 
-      const indicesToRemove: number[] = [];
-      let previousCode: string | null = null;
-      const { children } = root;
+    visit(tree, "element", (node, index, parent) => {
+      if (node.tagName !== "pre") return;
+      if (!parent || typeof index !== "number") return;
 
-      for (const [i, node] of children.entries()) {
-        if (node.type !== "element") continue;
-        if (node.tagName !== "pre") continue;
+      const codeNode = getCodeNode(node);
+      if (!codeNode) return;
 
-        const codeNode = getCodeNode(node);
-        if (!codeNode) continue;
+      const { metastring } = codeNode.properties;
+      const isPreviousCode =
+        typeof metastring === "string" && metastring.includes("previousCode");
 
-        const { metastring } = codeNode.properties;
-
-        if (
-          typeof metastring === "string" &&
-          metastring.includes("previousCode")
-        ) {
-          const text = getCodeText(codeNode);
-          if (text) {
-            previousCode = text;
-            codeNode.properties.metastring = metastring
-              .replace("previousCode", "")
-              .trim();
-            markPrecedingParagraphForRemoval(
-              children,
-              i,
-              "Before",
-              indicesToRemove,
-            );
-            indicesToRemove.push(i);
-          }
-        } else if (previousCode) {
-          codeNode.properties.previousCode = btoa(previousCode);
-          markPrecedingParagraphForRemoval(
-            children,
-            i,
-            "After",
-            indicesToRemove,
-          );
-          previousCode = null;
-        }
-      }
-
-      const uniqueIndices = [...new Set(indicesToRemove)];
-      uniqueIndices.sort((a, b) => b - a);
-
-      for (const index of uniqueIndices) {
-        children.splice(index, 1);
+      if (isPreviousCode) {
+        const text = getCodeText(codeNode);
+        if (!text) return;
+        previousCode = text;
+        codeNode.properties.metastring = metastring
+          .replace("previousCode", "")
+          .trim();
+        queuePrecedingParagraphForRemoval(
+          parent,
+          index,
+          "Before",
+          nodesToRemove,
+        );
+        nodesToRemove.push({ parent, node });
+      } else if (previousCode) {
+        codeNode.properties.previousCode = btoa(previousCode);
+        queuePrecedingParagraphForRemoval(
+          parent,
+          index,
+          "After",
+          nodesToRemove,
+        );
+        previousCode = null;
       }
     });
+
+    if (!nodesToRemove.length) return;
+
+    // Group nodes to be removed by their parent. This is necessary because a
+    // single parent might have multiple children that need to be removed.
+    const toRemoveByParent = new Map<Element | Root, Set<RootContent>>();
+
+    for (const { parent, node } of nodesToRemove) {
+      if (!toRemoveByParent.has(parent)) {
+        toRemoveByParent.set(parent, new Set());
+      }
+      toRemoveByParent.get(parent)!.add(node);
+    }
+
+    // For each parent, remove all the marked children in a single, efficient
+    // operation.
+    for (const [parent, nodes] of toRemoveByParent.entries()) {
+      parent.children = parent.children.filter((child) => !nodes.has(child));
+    }
   };
 }
 
