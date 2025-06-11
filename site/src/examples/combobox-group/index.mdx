@@ -8,11 +8,12 @@ tags:
   - forms
 ---
 
+import ContentCodeBlock from "#app/components/content-code-block.astro";
+import ContentFullWidth from "#app/components/content-full-width.astro";
+
 ## Overview
 
 Combobox groups provide visual separation and improved accessibility by grouping related options together. Each group can have its own header, making the interface more intuitive and scannable.
-
-import ContentCodeBlock from "#app/components/content-code-block.astro";
 
 <ContentCodeBlock
   persistTabKey="package-manager"
@@ -57,7 +58,7 @@ Before:
 
 After:
 
-```jsx {0-2} "label"0 'value="jp">J' "Continents"
+```jsx {0 - 2} "label"0 'value="jp">J' "Continents"
 <ComboboxGroup label="Continents">
   <ComboboxGroup label="Asia">
     <ComboboxItem value="jp">Japan</ComboboxItem>
@@ -65,6 +66,15 @@ After:
   </ComboboxGroup>
 </ComboboxGroup>
 ```
+
+import CodeBlockTabs from "#app/components/code-block-tabs.astro";
+import { source as s0 } from "./preview.mdx";
+
+<ContentFullWidth>
+  <CodeBlockTabs source={s0} clickAndWait scrollTop={108} />
+</ContentFullWidth>
+
+<CodeBlockTabs source={s0} clickAndWait scrollTop={108} />
 
 > [!NOTE] Test
 >
@@ -80,7 +90,7 @@ After:
 >   </ComboboxGroup>
 > </ComboboxGroup>
 > ```
-
+>
 > **Note**: Combobox groups are especially beneficial when you have more than 10-15 options, as they help reduce cognitive load and improve the user experience.
 
 ### Key Benefits
