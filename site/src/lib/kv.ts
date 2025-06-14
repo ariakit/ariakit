@@ -98,7 +98,9 @@ export async function getBestPromo(
     if (promo.expiresAt && promo.expiresAt < now) return false;
     return true;
   };
-  return promos.filter(isValid).reduce((best, promo) => {
+  const validPromos = promos.filter(isValid);
+  if (!validPromos.length) return null;
+  return validPromos.reduce((best, promo) => {
     if (promo.percentOff > best.percentOff) return promo;
     return best;
   });

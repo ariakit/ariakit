@@ -216,7 +216,7 @@ async function getOfferText() {
                           </div>
                         )}
                       </span>
-                      {price.percentOff && !price.active && (
+                      {!!price.percentOff && !price.active && (
                         <>
                           <span class="ak-badge-yellow-500">
                             <span>Save {price.percentOff}%</span>
