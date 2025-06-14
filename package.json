@@ -154,7 +154,7 @@
     "lint-staged": "16.1.0",
     "lodash-es": "4.17.21",
     "marked": "4.3.0",
-    "match-sorter": "8.0.2",
+    "match-sorter": "8.0.3",
     "monaco-editor": "0.52.2",
     "monaco-editor-textmate": "4.0.0",
     "monaco-editor-webpack-plugin": "7.1.0",
