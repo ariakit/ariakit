@@ -1,0 +1,11 @@
+---
+import type { ComponentProps } from "astro/types";
+import CodeBlockContent from "./code-block-content.astro";
+import { CodeBlock as CodeBlockReact } from "./code-block.react";
+
+type Props = ComponentProps<typeof CodeBlockReact>;
+---
+
+<CodeBlockReact client:visible {...Astro.props}>
+  <CodeBlockContent {...Astro.props} />
+</CodeBlockReact>

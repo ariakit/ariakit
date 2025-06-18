@@ -1,0 +1,39 @@
+@import "./ariakit.css";
+
+@theme {
+  --container-wider: 92rem;
+  --container-wide: 84rem;
+  --container-default: 72rem;
+  --container-sidebar: 24rem;
+}
+
+@theme inline {
+  --container-content: calc(
+    100% - var(--container-sidebar) - (100% - var(--container-default))
+  );
+}
+
+@custom-variant base {
+  @layer base {
+    @slot;
+  }
+}
+
+astro-island,
+astro-slot,
+astro-static-slot {
+  display: block !important;
+}
+
+.cl-cardBox {
+  @apply ak-layer border shadow-none;
+}
+
+.cl-organizationSwitcherTrigger {
+  @apply ak-button !ak-layer-pop hover:!ak-layer-pop-2 ak-frame-field/2;
+}
+
+html,
+body {
+  @apply font-sans min-h-[100dvh] antialiased;
+}

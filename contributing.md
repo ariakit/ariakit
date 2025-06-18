@@ -1,5 +1,7 @@
 # Contributing
 
+> Join the [Ariakit Discord server](https://discord.gg/WyHvnXsvMs) to connect with other contributors!
+
 ## Basic tutorial
 
 This guide is intended to help you get started with contributing to the project. By following these steps — **which should take no more than 30 minutes** —, you will understand the development process and workflow.

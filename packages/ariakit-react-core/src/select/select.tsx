@@ -202,6 +202,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
             name={name}
             form={form}
             required={required}
+            disabled={props.disabled}
             value={value}
             multiple={multiSelectable}
             // Even though this element is visually hidden and is not
@@ -249,6 +250,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
       value,
       multiSelectable,
       values,
+      props.disabled,
     ],
   );
 

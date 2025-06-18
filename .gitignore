@@ -2,6 +2,7 @@
 
 .nx
 .cache
+dist
 test-results
 playwright-report
 
@@ -23,16 +24,20 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+.dev.vars
 
 # vercel
 .vercel
+
+# cloudflare
+.wrangler
 
 # typescript
 *.tsbuildinfo
 
 # nix/direnv
 .direnv
+
+# generated types
+.astro/

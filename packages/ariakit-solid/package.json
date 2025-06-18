@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/solid",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Toolkit for building accessible web apps with Solid",
   "sideEffects": false,
   "license": "MIT",
@@ -35,22 +35,29 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": ["ariakit", "solid", "a11y", "ui", "toolkit", "components"],
+  "keywords": [
+    "ariakit",
+    "solid",
+    "a11y",
+    "ui",
+    "toolkit",
+    "components"
+  ],
   "dependencies": {
-    "@ariakit/solid-core": "0.1.0"
+    "@ariakit/solid-core": "0.1.1"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
   },
   "exports": {
     ".": "./src/index.ts",
-    "./visually-hidden": "./src/visually-hidden.ts",
-    "./separator": "./src/separator.ts",
-    "./role": "./src/role.ts",
-    "./heading": "./src/heading.ts",
-    "./group": "./src/group.ts",
-    "./focus-trap": "./src/focus-trap.ts",
     "./as": "./src/as.ts",
+    "./focus-trap": "./src/focus-trap.ts",
+    "./group": "./src/group.ts",
+    "./heading": "./src/heading.ts",
+    "./role": "./src/role.ts",
+    "./separator": "./src/separator.ts",
+    "./visually-hidden": "./src/visually-hidden.ts",
     "./package.json": "./package.json"
   }
 }

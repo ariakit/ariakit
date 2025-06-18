@@ -1,0 +1,39 @@
+---
+import "#app/styles/global.css";
+import "@fontsource-variable/inter";
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+
+export const getStaticPaths = (async () => {
+  const entries = await getCollection("previews");
+  return entries.flatMap((entry) => {
+    return entry.data.frameworks.map((framework) => ({
+      params: { framework, example: entry.id },
+      props: { entry },
+    }));
+  });
+}) satisfies GetStaticPaths;
+
+const { framework, example } = Astro.params;
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+Astro.locals.framework = framework;
+Astro.locals.example = example;
+---
+
+<!doctype html>
+<html lang="en" style="min-height: 200vh;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Preview - Ariakit</title>
+  </head>
+
+  <body class="grid content-center items-center">
+    <div class="mx-auto max-w-screen p-4">
+      <Content {framework} />
+    </div>
+  </body>
+</html>

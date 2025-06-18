@@ -70,7 +70,7 @@ async function tryImport(path: string) {
 
 async function loadReact(dir: string) {
   const { component, failedImport } = await tryImport(
-    `./examples/${dir}/index.react.tsx`,
+    `./${dir}/index.react.tsx`,
   );
   if (failedImport) return false;
   const element = createElement(ReactSuspense, {
@@ -84,7 +84,7 @@ async function loadReact(dir: string) {
 
 async function loadSolid(dir: string) {
   const { component, failedImport } = await tryImport(
-    `./examples/${dir}/index.solid.tsx`,
+    `./${dir}/index.solid.tsx`,
   );
   if (failedImport) return false;
   const div = document.createElement("div");
@@ -138,7 +138,7 @@ function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
     // @ts-expect-error Test runner is not limited by ES2017 target.
-    /examples\/(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
+    /(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
   );
   if (!match?.groups) return false;
   const { dir, loader } = match.groups;
