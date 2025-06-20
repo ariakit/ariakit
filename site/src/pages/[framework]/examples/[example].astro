@@ -6,6 +6,7 @@ import ContentHeading from "#app/components/content-heading.astro";
 import ContentLink from "#app/components/content-link.astro";
 import ContentList from "#app/components/content-list.astro";
 import ContentParagraph from "#app/components/content-paragraph.astro";
+import TableOfContents from "#app/components/table-of-contents.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
@@ -122,22 +123,7 @@ const components = {
           <Content {framework} components={components} />
         </div>
         <div class="ps-3">
-          <ul
-            class="ak-layer-current ak-dark:scheme-dark border-s ps-3 sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto flex flex-col text-sm w-fit"
-          >
-            {
-              headings.map((heading) => (
-                <li style={`--depth: ${heading.depth}`}>
-                  <a
-                    class="ak-text/80 not-hover:no-underline ak-button font-normal justify-start ak-frame-field/2 ps-[calc((var(--depth)-1)*--spacing(2))]"
-                    href={`#${heading.slug}`}
-                  >
-                    {heading.text}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
+          <TableOfContents title={entry.data.title} headings={headings} />
         </div>
       </div>
     </div>

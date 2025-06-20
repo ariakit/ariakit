@@ -89,7 +89,8 @@ import { ClientRouter } from "astro:transitions";
           </div>
         </header>
         <main
-          class="@max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem]"
+          class="@max-5xl:[--container-sidebar:16rem] @max-7xl:[--container-sidebar:20rem] scroll-mt-(--header-height)"
+          id="main"
         >
           <slot />
         </main>

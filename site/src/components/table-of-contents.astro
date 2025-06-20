@@ -1,0 +1,222 @@
+---
+import type { MarkdownHeading } from "astro";
+
+export interface Props {
+  title?: string;
+  headings: MarkdownHeading[];
+  topOffset?: number;
+}
+
+const { title, headings, topOffset = 72 } = Astro.props;
+
+if (title) {
+  headings.unshift({ depth: 1, slug: "top", text: title });
+}
+---
+
+<ul
+  class="ak-layer-current ak-dark:scheme-dark border-s ps-3 sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto flex flex-col text-sm w-fit"
+  data-table-of-contents
+  data-top-offset={topOffset}
+>
+  {
+    headings.map((heading) => {
+      const depth = heading.depth < 2 ? 2 : heading.depth;
+      const isTopLevel = heading.depth === 1;
+      return (
+        <li class="relative" style={`--depth:${depth}`}>
+          <a
+            class="ak-command decoration-1 data-top-level:font-semibold data-top-level:ak-text underline-offset-[0.25em] ak-text/80 data-active:ak-text hover:ak-layer-current hover:underline data-active:ak-layer-pop font-normal justify-start ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))]"
+            href={`#${heading.slug}`}
+            data-heading-link={heading.slug}
+            data-top-level={isTopLevel || undefined}
+          >
+            {heading.text} {isTopLevel ? <span class="ak-text/0">↑</span> : ""}
+          </a>
+          <div
+            class="absolute inset-y-0 -left-3 w-px bg-current opacity-0 data-visible:opacity-100 data-active:opacity-100"
+            data-indicator
+          />
+        </li>
+      );
+    })
+  }
+</ul>
+
+<script>
+  /**
+   * This script handles the table of contents behavior.
+   * - It highlights the current heading in the viewport.
+   * - It shows an indicator for all visible headings.
+   * - It scrolls the active link into view in the table of contents.
+   *
+   * The script is initialized on `DOMContentLoaded` and `astro:page-load`.
+   */
+  function initTableOfContents() {
+    const tocElement = document.querySelector<HTMLElement>(
+      "[data-table-of-contents]"
+    );
+    if (!tocElement) return;
+
+    const topOffset = Number.parseInt(tocElement.dataset.topOffset || "0");
+
+    // Get all the links within the table of contents.
+    const links = Array.from(
+      tocElement.querySelectorAll<HTMLAnchorElement>("[data-heading-link]")
+    );
+    // Get the actual heading elements on the page that correspond to the links.
+    const headings = links
+      .map((link) => {
+        const slug = link.dataset.headingLink!;
+        return document.getElementById(slug);
+      })
+      .filter((heading): heading is HTMLElement => heading !== null);
+
+    if (headings.length === 0) return;
+
+    // Use IntersectionObserver to show indicators for headings that are
+    // currently visible in the viewport.
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const heading = entry.target;
+            const link = tocElement.querySelector(
+              `[data-heading-link="${heading.id}"]`
+            );
+            if (!link) continue;
+            const listItem = link.closest("li");
+            if (!listItem) continue;
+            const indicator = listItem.querySelector("[data-indicator]");
+            if (!indicator) continue;
+            // When a heading enters the viewport, show the indicator. When it
+            // leaves, hide it.
+            if (entry.isIntersecting) {
+              indicator.setAttribute("data-visible", "");
+            } else {
+              indicator.removeAttribute("data-visible");
+            }
+          }
+        },
+        // The rootMargin is negative to account for the sticky header. A
+        // heading is considered "intersecting" when its top edge is
+        // `topOffset` pixels from the top of the viewport.
+        { rootMargin: `-${topOffset}px 0px 0px 0px` }
+      );
+
+      // Observe all the headings.
+      for (const heading of headings) {
+        observer.observe(heading);
+      }
+
+      // Clean up the observer when the page is about to be torn down by Astro.
+      document.addEventListener("astro:before-preparation", () => {
+        for (const heading of headings) {
+          observer.unobserve(heading);
+        }
+      });
+    }
+
+    let activeLink: Element | null = null;
+
+    /**
+     * This function is responsible for setting the `data-active` attribute on
+     * the correct link in the table of contents. It also ensures the active
+     * link is scrolled into view within the TOC container.
+     */
+    function setActiveLink(link: Element | null) {
+      if (activeLink === link) return;
+
+      if (activeLink) {
+        activeLink.removeAttribute("data-active");
+        const activeIndicator = activeLink
+          .closest("li")
+          ?.querySelector("[data-indicator]");
+        if (activeIndicator) {
+          activeIndicator.removeAttribute("data-active");
+        }
+      }
+      if (link) {
+        link.setAttribute("data-active", "true");
+        const indicator = link.closest("li")?.querySelector("[data-indicator]");
+        if (indicator) {
+          indicator.setAttribute("data-active", "true");
+        }
+        // Scroll active link into view if it's not fully visible in the TOC.
+        const tocRect = tocElement!.getBoundingClientRect();
+        const linkRect = link.getBoundingClientRect();
+        if (linkRect.top < tocRect.top || linkRect.bottom > tocRect.bottom) {
+          link.scrollIntoView({ block: "nearest" });
+        }
+      }
+      activeLink = link;
+    }
+
+    let timeout: number;
+
+    /**
+     * This function is called on scroll. It determines which heading is
+     * currently active and calls `setActiveLink`.
+     */
+    function onScroll() {
+      // A special case for when the user has scrolled to the bottom of the
+      // page. In this case, we always want to highlight the last heading.
+      const scrollBottom = window.innerHeight + window.scrollY;
+      if (document.body.offsetHeight - scrollBottom < 2) {
+        const lastHeading = headings[headings.length - 1];
+        if (lastHeading) {
+          const targetLink = tocElement!.querySelector(
+            `[data-heading-link="${lastHeading.id}"]`
+          );
+          setActiveLink(targetLink);
+          return;
+        }
+      }
+
+      // Find the heading that is currently active. The active heading is the
+      // last one whose top edge is above the viewport's "fold" (adjusted for
+      // the sticky header).
+      let currentActiveHeading: HTMLElement | null = null;
+      for (const heading of headings) {
+        const style = window.getComputedStyle(heading);
+        const scrollMargin = parseFloat(style.scrollMarginBlockStart);
+        const threshold = (isNaN(scrollMargin) ? 0 : scrollMargin) + topOffset;
+        if (heading.getBoundingClientRect().top < threshold + 2) {
+          currentActiveHeading = heading;
+        }
+      }
+
+      if (currentActiveHeading) {
+        const selector = `[data-heading-link="${currentActiveHeading.id}"]`;
+        const targetLink = tocElement!.querySelector(selector);
+        setActiveLink(targetLink);
+      } else {
+        setActiveLink(null);
+      }
+    }
+
+    /**
+     * Throttle the scroll event handler using requestAnimationFrame for
+     * performance.
+     */
+    const throttledScroll = () => {
+      if (timeout) window.cancelAnimationFrame(timeout);
+      timeout = window.requestAnimationFrame(onScroll);
+    };
+
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+    // Call onScroll once to set the initial state.
+    onScroll();
+
+    // Clean up the scroll listener when the page is about to be torn down.
+    document.addEventListener("astro:before-preparation", () => {
+      window.removeEventListener("scroll", throttledScroll);
+      if (timeout) window.cancelAnimationFrame(timeout);
+    });
+  }
+
+  // Initialize the table of contents script when the DOM is ready or when Astro
+  // navigates to a new page.
+  document.addEventListener("DOMContentLoaded", initTableOfContents);
+  document.addEventListener("astro:page-load", initTableOfContents);
+</script>
