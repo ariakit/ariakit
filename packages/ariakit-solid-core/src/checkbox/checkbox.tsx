@@ -1,5 +1,6 @@
 import { disabledFromProps } from "@ariakit/core/utils/misc";
-import type { Accessor, ComponentProps } from "solid-js";
+import type { Store as CoreStore, StoreState } from "@ariakit/core/utils/store";
+import { type Accessor, type ComponentProps, createMemo } from "solid-js";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 import {
@@ -90,7 +91,18 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
 
     const [_checked, setChecked] = useState(_.defaultChecked ?? false);
 
-    const checked = useStoreState(store, (state) => {
+    function useDynamicStoreValue<T extends CoreStore, V>(
+      store: Accessor<T | undefined>,
+      selector: (state: StoreState<T> | undefined) => V,
+    ): Accessor<V> {
+      return createMemo(() => {
+        const s = store();
+        if (!s) return selector(undefined);
+        return useStoreState(s, selector)();
+      });
+    }
+
+    const checked = useDynamicStoreValue(store, (state) => {
       const $checkedProp = checkedProp();
       if ($checkedProp !== undefined) return $checkedProp;
       if (state?.value === undefined) return _checked();
