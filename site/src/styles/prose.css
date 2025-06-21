@@ -117,4 +117,8 @@
   :where(p a) {
     @apply ak-link;
   }
+
+  :where(kbd) {
+    @apply ak-kbd;
+  }
 }
