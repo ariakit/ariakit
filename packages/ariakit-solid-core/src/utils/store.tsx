@@ -180,9 +180,13 @@ export function useStoreProps<
   // If the value prop is provided, we'll always reset the store state to it.
   Solid.createEffect(() => {
     const $store = access(store);
-    const $value = value();
+    const $value = Solid.untrack(value);
     const $key = access(key);
     if ($value === undefined) return;
+
+    const current = $store.getState()[$key];
+    if (current === $value) return;
+
     $store.setState($key, $value);
     return batch($store, [$key], () => {
       if ($value === undefined) return;
