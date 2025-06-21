@@ -37,3 +37,7 @@ html,
 body {
   @apply font-sans min-h-[100dvh] antialiased;
 }
+
+body > * {
+  @apply ak-dark:scheme-dark;
+}

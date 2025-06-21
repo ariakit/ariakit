@@ -56,7 +56,7 @@ const components = {
 };
 ---
 
-<Layout title={entry.data.title}>
+<Layout title={entry.data.title} {headings}>
   <div class="overflow-x-clip">
     <div class="ak-container-size-default ak-container py-24">
       <h1
@@ -122,8 +122,12 @@ const components = {
         >
           <Content {framework} components={components} />
         </div>
-        <div class="ps-3">
-          <TableOfContents title={entry.data.title} headings={headings} />
+        <div class="hidden @3xl:block ps-3">
+          <TableOfContents
+            title={entry.data.title}
+            {headings}
+            class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
+          />
         </div>
       </div>
     </div>
