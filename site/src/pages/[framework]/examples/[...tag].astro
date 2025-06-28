@@ -1,6 +1,5 @@
 ---
 import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
-import { NoScroll } from "#app/components/no-scroll.react.tsx";
 import PageCard from "#app/components/page-card.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
@@ -97,9 +96,8 @@ const title =
 ---
 
 <Layout {title}>
-  <NoScroll client:load />
   <div
-    class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8"
+    class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8 overflow-x-clip"
   >
     <h1 class="text-2xl @3xl:text-4xl font-semibold relative mt-2 text-center">
       <span class="ak-text-primary/0">
@@ -121,7 +119,7 @@ const title =
       <kbd class="ak-text/0 ak-layer-pop-1.5 ak-frame-field/2">/</kbd>
     </button>
   </div>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-8" id="tags">
     <div class="sticky top-(--header-height) z-2 ak-layer-current">
       <ul
         id="tags-list"
@@ -133,7 +131,7 @@ const title =
             return (
               <li>
                 <a
-                  href={`/${framework}/examples${t?.id ? `/${t.id}` : ""}`}
+                  href={`/${framework}/examples${t?.id ? `/${t.id}` : ""}#tags`}
                   aria-current={isCurrent ? "page" : undefined}
                   class:list={[
                     "ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1 gap-0",
@@ -176,6 +174,7 @@ const title =
 </Layout>
 
 <script>
+  // Scroll to the current tag when the page loads
   document.addEventListener("astro:page-load", () => {
     const list = document.getElementById("tags-list");
     const current = list?.querySelector<HTMLElement>('[aria-current="page"]');
