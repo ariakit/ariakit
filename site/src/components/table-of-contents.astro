@@ -31,7 +31,7 @@ const allHeadings = title
       return (
         <li class="relative" style={`--depth:${depth}`}>
           <a
-            class="ak-command decoration-1 data-top-level:font-semibold data-top-level:ak-text underline-offset-[0.25em] ak-text/80 data-active:ak-text hover:ak-layer-current hover:underline data-active:ak-layer-pop font-normal justify-start ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))]"
+            class="block decoration-1 data-top-level:font-semibold data-top-level:ak-text underline-offset-[0.25em] ak-text/80 data-active:ak-text hover:ak-layer-current hover:underline data-active:ak-layer-pop font-normal justify-start ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))]"
             href={`#${heading.slug}`}
             data-heading-link={heading.slug}
             data-top-level={isTopLevel || undefined}
