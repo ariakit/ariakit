@@ -22,16 +22,15 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Ariakit</title>
+    <title>{title ? `${title} - Ariakit` : "Ariakit"}</title>
     <ClientRouter />
   </head>
   <body
     class="ak-container-size-default/3 overflow-x-clip [--header-height:--spacing(14)] [--theme-sidebar-width:--spacing(100)]"
   >
     <div class="flex">
-      <div class="flex flex-col flex-1 @container">
+      <div class="flex flex-col flex-1 @container min-h-[100dvh]">
         <header
-          transition:persist
           class="ak-container-size-default sticky [container-type:scroll-state] top-0 z-10"
         >
           <div
@@ -135,7 +134,7 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
         >
           <slot />
         </main>
-        <footer class="ak-container-size-default ak-layer-down">
+        <footer class="ak-container-size-default ak-layer-down mt-auto">
           <div class="ak-container">Footer</div>
         </footer>
       </div>

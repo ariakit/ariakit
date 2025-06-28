@@ -113,14 +113,14 @@ const components = {
       data-gallery="true"
       class="ak-container-size-wider ak-container flex flex-col gap-12 mb-16"
     >
-      <Gallery {framework} components={components} />
+      <Gallery {framework} {components} />
     </div>
     <div data-content="true" class="ak-container-size-wider ak-container">
       <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
         <div
           class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed"
         >
-          <Content {framework} components={components} />
+          <Content {framework} {components} />
         </div>
         <div class="hidden @3xl:block ps-3">
           <TableOfContents
