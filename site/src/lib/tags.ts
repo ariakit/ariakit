@@ -1,18 +1,10 @@
-type Tags = Record<string, { label: string; description: string }>;
+type Tags = Record<string, { label: string }>;
 
 const customTags = {
-  search: {
-    label: "Search",
-    description: "All content related to search",
-  },
-  dropdowns: {
-    label: "Dropdowns",
-    description: "All content related to dropdowns",
-  },
-  forms: {
-    label: "Forms",
-    description: "All content related to forms",
-  },
+  plus: { label: "Plus" },
+  dropdowns: { label: "Dropdowns" },
+  forms: { label: "Forms" },
+  search: { label: "Search" },
 } as const satisfies Tags;
 
 export const tags = {

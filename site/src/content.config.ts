@@ -34,6 +34,9 @@ const galleries = defineCollection({
     base: join(import.meta.dirname, "examples"),
     generateId,
   }),
+  schema: z.object({
+    length: z.number().default(1),
+  }),
 });
 
 const previews = defineCollection({
@@ -50,15 +53,13 @@ const previews = defineCollection({
 
 const tags = defineCollection({
   loader() {
-    return Object.entries(tagData).map(([id, { label, description }]) => ({
+    return Object.entries(tagData).map(([id, { label }]) => ({
       id,
       label,
-      description,
     }));
   },
   schema: z.object({
     label: z.string(),
-    description: z.string(),
   }),
 });
 
