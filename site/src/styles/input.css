@@ -1,3 +1,7 @@
+@utility ak-input-placeholder {
+  @apply ak-text/0;
+}
+
 @utility ak-input_idle {
   @apply ak-edge-contrast ak-frame-field ak-frame-border;
   @apply max-w-full cursor-text leading-[1em] -outline-offset-1;
@@ -10,15 +14,15 @@
   &:is(input) {
     @apply box-content h-[1em];
   }
-  &:not(:is(input)):not(:has(input)) {
+  /* &:not(:is(input)):not(:has(input)) {
     padding-block: calc(var(--ak-frame-padding) - 0.25em);
-  }
+  } */
   input {
     @apply -my-[0.25em] box-content h-[1.5em] outline-none;
   }
   &::placeholder,
   ::placeholder {
-    @apply ak-text/0;
+    @apply ak-input-placeholder;
   }
 }
 
