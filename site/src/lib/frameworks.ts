@@ -19,3 +19,7 @@ export function isJsxFramework(framework?: string) {
     framework === "react" || framework === "solid" || framework === "preact"
   );
 }
+
+export function getFramework(framework: keyof typeof frameworks) {
+  return frameworks[framework];
+}
