@@ -1,5 +1,5 @@
 ---
-import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
+import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
 import PageCard from "#app/components/page-card.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
@@ -97,14 +97,14 @@ const title =
 
 <Layout {title}>
   <div
-    class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8 overflow-x-clip"
+    class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8"
   >
     <h1 class="text-2xl @3xl:text-4xl font-semibold relative mt-2 text-center">
       <span class="ak-text-primary/0">
         {frameworkLength * 100}
       </span>
       {frameworkData.label} Example{frameworkLength > 1 ? "s" : ""}
-      <BoxPatternsRight />
+      <BoxPatternsMiddle />
     </h1>
     <button
       class="ak-input flex items-center gap-2 ak-frame-field/1 text-start"
@@ -120,10 +120,11 @@ const title =
     </button>
   </div>
   <div class="flex flex-col gap-8" id="tags">
-    <div class="sticky top-(--header-height) z-2 ak-layer-current">
+    <div
+      class="sticky top-(--header-height) z-2 ak-layer-current overflow-x-auto"
+    >
       <ul
-        id="tags-list"
-        class="ak-container-size-default ak-container flex gap-2 py-3 overflow-x-auto items-center"
+        class="ak-container-size-default ak-container flex gap-2 py-3 items-center"
       >
         {
           [null, ...tags].map((t) => {
@@ -176,7 +177,7 @@ const title =
 <script>
   // Scroll to the current tag when the page loads
   document.addEventListener("astro:page-load", () => {
-    const list = document.getElementById("tags-list");
+    const list = document.getElementById("tags");
     const current = list?.querySelector<HTMLElement>('[aria-current="page"]');
     current?.scrollIntoView({
       behavior: "instant",

@@ -29,7 +29,9 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
     class="ak-container-size-default/3 overflow-x-clip [--header-height:--spacing(14)] [--theme-sidebar-width:--spacing(100)]"
   >
     <div class="flex">
-      <div class="flex flex-col flex-1 @container min-h-[100dvh]">
+      <div
+        class="flex flex-col flex-1 @container min-h-[100dvh] overflow-x-clip"
+      >
         <header
           class="ak-container-size-default sticky [container-type:scroll-state] top-0 z-10"
         >
