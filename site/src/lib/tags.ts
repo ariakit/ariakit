@@ -9,7 +9,14 @@ const customTags = {
   forms: { label: "Forms" },
   nextjs: { label: "Next.js", frameworks: ["react"] },
   "nextjs-app-router": { label: "Next.js App Router", frameworks: ["react"] },
-  search: { label: "Search" },
+  "framer-motion": { label: "Framer Motion" },
+  "ariakit-react": { label: "Ariakit React", frameworks: ["react"] },
+  "ariakit-solid": { label: "Ariakit Solid", frameworks: ["solid"] },
+  "base-ui": { label: "Base UI", frameworks: ["react"] },
+  "react-aria": { label: "React Aria", frameworks: ["react"] },
+  "radix-ui": { label: "Radix UI", frameworks: ["react"] },
+  "react-router": { label: "React Router", frameworks: ["react"] },
+  "react-toastify": { label: "React Toastify", frameworks: ["react"] },
 } as const satisfies Tags;
 
 export const tags = {
