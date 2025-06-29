@@ -38,7 +38,7 @@
   ],
   "dependencies": {
     "@ariakit/core": "0.4.15",
-    "@solid-primitives/props": "3.2.1",
+    "@solid-primitives/props": "3.2.2",
     "@solid-primitives/utils": "6.3.2"
   },
   "peerDependencies": {
