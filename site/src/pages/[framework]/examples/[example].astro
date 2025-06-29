@@ -8,9 +8,10 @@ import ContentList from "#app/components/content-list.astro";
 import ContentParagraph from "#app/components/content-paragraph.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
+import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
-import { getCollection, getEntries, render } from "astro:content";
+import { getCollection, render } from "astro:content";
 
 export const getStaticPaths = (async () => {
   const entries = await getCollection("examples");
@@ -35,7 +36,7 @@ const { Content: Description = Fragment } = description
   : {};
 
 const examples = await getCollection("examples");
-const tags = await getEntries(entry.data.tags);
+const tags = mapTags(entry.data.tags, [framework]);
 
 Astro.locals.framework = framework;
 Astro.locals.example = entry.id;
@@ -77,10 +78,10 @@ const components = {
                 {tags.map((tag) => (
                   <li>
                     <a
-                      href={`/${framework}/tags/${tag.id}`}
+                      href={`/${framework}/examples/${tag.id}`}
                       class="ak-badge ak-button ak-layer-pop"
                     >
-                      {tag.data.label}
+                      {tag.label}
                     </a>
                   </li>
                 ))}

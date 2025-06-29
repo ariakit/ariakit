@@ -6,13 +6,13 @@ import { getFramework } from "#app/lib/frameworks.ts";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { mapTags } from "#app/lib/tags.ts";
 import uniq from "lodash-es/uniq";
 
 export const getStaticPaths = (async () => {
   const entries = await getCollection("examples");
   const frameworks = uniq(entries.flatMap((entry) => entry.data.frameworks));
   const allExamples = await getCollection("examples");
-  const allTags = await getCollection("tags");
   const allGalleries = await getCollection("galleries");
 
   return frameworks.flatMap((framework) => {
@@ -23,18 +23,16 @@ export const getStaticPaths = (async () => {
     const galleries = allGalleries.filter((gallery) =>
       frameworkExampleIds.includes(gallery.id)
     );
-    const frameworkTagIds = frameworkExamples.flatMap((example) =>
-      example.data.tags.map((t) => t.id)
-    );
-    const frameworkTags = allTags.filter((tag) =>
-      frameworkTagIds.includes(tag.id)
+    const frameworkTags = mapTags(
+      frameworkExamples.flatMap((example) => example.data.tags),
+      [framework]
     );
 
     return [null, ...frameworkTags].map((tag) => {
       const tagExamples = !tag
         ? frameworkExamples
         : frameworkExamples.filter((example) =>
-            example.data.tags.find((t) => t.id === tag.id)
+            example.data.tags.find((t) => t === tag.id)
           );
       const frameworkLength = frameworkExamples.reduce((acc, example) => {
         const gallery = galleries.find((gallery) => gallery.id === example.id);
@@ -45,7 +43,7 @@ export const getStaticPaths = (async () => {
         const tagExamples = !tag
           ? frameworkExamples
           : frameworkExamples.filter((example) =>
-              example.data.tags.find((t) => t.id === tag.id)
+              example.data.tags.find((t) => t === tag.id)
             );
         const tagLength = tagExamples.reduce((acc, example) => {
           const gallery = galleries.find(
@@ -64,7 +62,6 @@ export const getStaticPaths = (async () => {
         props: {
           frameworks,
           examples: tagExamples,
-          frameworkTags,
           tag,
           tags: tagsWithLength,
           frameworkLength,
@@ -89,10 +86,9 @@ function getCardDescription(id: string) {
   return length === 1 ? "1 example" : `${length} examples`;
 }
 
-const title =
-  tag && tag.data.label !== frameworkData.label
-    ? `${tag.data.label} - ${frameworkData.label} Examples`
-    : `${frameworkData.label} Examples`;
+const title = tag
+  ? `${tag.label} - ${frameworkData.label} Examples`
+  : `${frameworkData.label} Examples`;
 ---
 
 <Layout {title}>
@@ -139,7 +135,7 @@ const title =
                   ]}
                 >
                   <span class="ak-frame-field/1 ps-2">
-                    {t?.data.label ?? "All"}{" "}
+                    {t?.label ?? "All"}{" "}
                   </span>
                   <span
                     class:list={[
@@ -166,7 +162,7 @@ const title =
             thumbnailId={example.id}
             title={example.data.title}
             description={getCardDescription(example.id)}
-            plus={example.data.tags.some((t) => t.id === "plus")}
+            plus={example.data.tags.includes("plus")}
           />
         ))
       }
