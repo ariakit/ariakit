@@ -227,12 +227,25 @@ export function addGlobalEventListener(
     for (const frame of Array.from(scope.frames)) {
       children.push(addGlobalEventListener(type, listener, options, frame));
     }
-  } catch {}
+  } catch (error) {
+    // Only ignore DOMException for security restricted frames, log other errors
+    if (error instanceof DOMException && error.name === "SecurityError") {
+      // Expected for cross-origin frames in sandboxed environments
+      return () => {};
+    }
+    // Log unexpected errors for debugging
+    console.warn("Failed to add global event listener:", error);
+  }
 
   const removeEventListener = () => {
     try {
       scope.document.removeEventListener(type, listener, options);
-    } catch {}
+    } catch (error) {
+      // Only ignore expected security errors, log others for debugging
+      if (!(error instanceof DOMException && error.name === "SecurityError")) {
+        console.warn("Failed to remove global event listener:", error);
+      }
+    }
     for (const remove of children) {
       remove();
     }
