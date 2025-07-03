@@ -1,5 +1,5 @@
-import { PlaceholderPopoverArrow } from "../../components/placeholder-popover-arrow.react.tsx";
-import { PlaceholderText } from "../../components/placeholder-text.react.tsx";
+import { PlaceholderPopoverArrow } from "#app/components/placeholder-popover-arrow.react.tsx";
+import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 
 export default function Thumbnail() {
   return (

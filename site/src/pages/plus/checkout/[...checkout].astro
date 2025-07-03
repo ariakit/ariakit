@@ -1,5 +1,5 @@
 ---
-import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
+import PageCard from "#app/components/page-card.astro";
 import PlusCheckoutFrame from "#app/components/plus-checkout-frame.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import {
@@ -9,12 +9,12 @@ import {
 } from "#app/lib/auth.ts";
 import { formatCurrency } from "#app/lib/locale.ts";
 import {
+  camelCaseObject,
   PLUS_TYPES,
-  URLSchema,
   PlusCheckoutStepSchema,
   PlusTypeSchema,
+  URLSchema,
   type PlusCheckoutStep,
-  camelCaseObject,
 } from "#app/lib/schemas.ts";
 import { capitalize } from "#app/lib/string.ts";
 import { getPlusPrice, processCheckout } from "#app/lib/stripe.ts";
@@ -23,7 +23,6 @@ import { SignUp } from "@clerk/astro/components";
 import { formatDistanceToNow } from "date-fns";
 import { z } from "zod";
 import Layout from "./_layout.astro";
-import { importThumbnail } from "#app/lib/import-thumbnail.ts";
 
 export const prerender = false;
 
@@ -281,25 +280,12 @@ async function getOfferText() {
           </div>
           <h3 class="text-lg font-medium">Continue to the content</h3>
           <div class="flex gap-4 items-center">
-            <a
-              href="/"
-              class="ak-button min-w-72 ak-layer ak-light:ring ak-frame-card flex flex-col gap-2 items-stretch font-normal [--test:var(--ak-layer)] outline-offset-0 group"
-            >
-              <span class="ak-frame-cover/1">
-                <span class="ak-layer-down ak-la border !border-(--ak-layer) ak-frame/8 block group-focus-visible:ak-layer-primary h-60 w-80 overflow-clip">
-                  <span class="not-group-focus-visible:not-group-hover:opacity-75 group-focus-visible:ak-layer-white !bg-transparent block group-hover:scale-105 transition-transform duration-1000">
-                    {importThumbnail("combobox-group").then((Thumbnail) => {
-                      if (!Thumbnail) return null;
-                      return <Thumbnail />;
-                    })}
-                  </span>
-                </span>
-              </span>
-              <span class="flex gap-2 items-center font-semibold">
-                <span>Manage your team</span>
-              </span>
-              <span class="ak-text/70 text-sm">Give your teammates access</span>
-            </a>
+            <PageCard
+              href={getPlusAccountPath({ url: Astro.url })}
+              thumbnailId="combobox-group"
+              title="Manage your team"
+              description="Give your teammates access"
+            />
           </div>
           <div class="flex flex-col gap-4 items-center py-8">
             <h3 class="text-lg font-medium">Access more</h3>

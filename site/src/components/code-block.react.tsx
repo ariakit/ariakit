@@ -123,7 +123,7 @@ export function CodeBlock({
         "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
       )}
     >
-      <div className="absolute top-0 end-0 ak-frame-cover/1.5 z-2 pointer-events-none size-max">
+      <div className="absolute top-0 end-0 ak-frame-cover/1.5 z-3 pointer-events-none size-max">
         <CopyCode
           text={code}
           className="pointer-events-auto [@media(hover:hover)]:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"

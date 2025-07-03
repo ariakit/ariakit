@@ -1,8 +1,7 @@
 import { join } from "node:path";
-import { defineCollection, reference, z } from "astro:content";
+import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
-import { FrameworkSchema } from "./lib/schemas.ts";
-import { tags as tagData } from "./lib/tags.ts";
+import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
 
 function generateId(options: { entry: string }) {
   return options.entry.replace(/\/[^/]+\.mdx?$/, "");
@@ -16,7 +15,7 @@ const examples = defineCollection({
   schema: z.object({
     title: z.string(),
     frameworks: FrameworkSchema.array(),
-    tags: reference("tags").array().default([]),
+    tags: TagSchema.array().default([]),
   }),
 });
 
@@ -34,6 +33,9 @@ const galleries = defineCollection({
     base: join(import.meta.dirname, "examples"),
     generateId,
   }),
+  schema: z.object({
+    length: z.number().default(1),
+  }),
 });
 
 const previews = defineCollection({
@@ -48,24 +50,9 @@ const previews = defineCollection({
   }),
 });
 
-const tags = defineCollection({
-  loader() {
-    return Object.entries(tagData).map(([id, { label, description }]) => ({
-      id,
-      label,
-      description,
-    }));
-  },
-  schema: z.object({
-    label: z.string(),
-    description: z.string(),
-  }),
-});
-
 export const collections = {
   examples,
   descriptions,
   galleries,
   previews,
-  tags,
 };

@@ -1,0 +1,54 @@
+---
+import { importThumbnail } from "#app/lib/import-thumbnail.ts";
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"a"> {
+  thumbnailId: string;
+  title: string;
+  description?: string;
+  plus?: boolean;
+}
+
+const { thumbnailId, title, description, plus, ...props } = Astro.props;
+---
+
+<a
+  class:list={[
+    "ak-button text-wrap ak-layer ak-dark:ak-edge/0 ring ak-frame-card flex flex-col gap-2 items-stretch font-normal outline-offset-0 group justify-start",
+    props.class,
+  ]}
+  {...props}
+>
+  <span class="ak-frame-cover/1">
+    <span
+      inert
+      class="ak-layer-down ak-frame-border border-(--ak-layer) ak-frame/4 flex justify-center items-center-safe group-focus-visible:ak-layer-primary overflow-hidden h-48 relative"
+    >
+      <span
+        class="ak-frame-cover/0 [--padding:var(--ak-frame-padding)] contents"
+      >
+        {
+          plus && (
+            <span class="absolute top-0 end-0 ak-badge-primary border border-dashed px-(--ak-frame-padding)">
+              <span>Plus</span>
+            </span>
+          )
+        }
+      </span>
+      <span
+        class="_not-group-focus-visible:not-group-hover:opacity-90 group-focus-visible:ak-layer-white -mx-10 !bg-transparent block group-hover:scale-75 scale-70 origin-top relative transition-transform duration-600"
+      >
+        {
+          importThumbnail(thumbnailId).then((Thumbnail) => {
+            if (!Thumbnail) return null;
+            return <Thumbnail />;
+          })
+        }
+      </span>
+    </span>
+  </span>
+  <span class="flex gap-2 items-center font-semibold">
+    <span class="truncate">{title}</span>
+  </span>
+  {description && <span class="ak-text/70 text-sm">{description}</span>}
+</a>
