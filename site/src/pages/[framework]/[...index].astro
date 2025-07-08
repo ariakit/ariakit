@@ -126,7 +126,7 @@ function getCardDescription(id: string) {
 
 function getTagPath(tag: (typeof tags)[number] | null) {
   const tagPath = tag?.id ? `/${tag.id}` : "";
-  return `/${framework}/${type.plural}${tagPath}#tags`;
+  return `/${framework}/${type.plural}${tagPath}/#tags`;
 }
 
 function getExamplePath(example: CollectionEntry<"examples">) {
