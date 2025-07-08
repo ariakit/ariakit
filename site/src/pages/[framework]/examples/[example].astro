@@ -18,6 +18,7 @@ export const getStaticPaths = (async () => {
   const descriptions = await getCollection("descriptions");
   const galleries = await getCollection("galleries");
   return entries.flatMap((entry) => {
+    if (entry.data.component) return [];
     const gallery = galleries.find((gallery) => gallery.id === entry.id);
     const description = descriptions.find((header) => header.id === entry.id);
     return entry.data.frameworks.map((framework) => ({
