@@ -36,7 +36,6 @@ const { Content: Description = Fragment } = description
   ? await render(description)
   : {};
 
-const examples = await getCollection("examples");
 const tags = mapTags(entry.data.tags, [framework]);
 
 Astro.locals.framework = framework;
