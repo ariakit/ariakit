@@ -14,6 +14,7 @@ const examples = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
+    component: z.boolean().default(false),
     frameworks: FrameworkSchema.array(),
     tags: TagSchema.array().default([]),
   }),
