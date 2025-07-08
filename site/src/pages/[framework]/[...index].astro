@@ -1,0 +1,302 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import type { GetStaticPaths } from "astro";
+import type { Framework } from "#app/lib/schemas.ts";
+import { mapTags } from "#app/lib/tags.ts";
+import Layout from "#app/pages/_layout.astro";
+import PageCard from "#app/components/page-card.astro";
+import HorizontalScroll from "#app/components/horizontal-scroll.astro";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { getFramework } from "#app/lib/frameworks.ts";
+import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
+import Sticky from "#app/components/sticky.astro";
+
+export const getStaticPaths = (async () => {
+  const allExamples = await getCollection("examples");
+  const allGalleries = await getCollection("galleries");
+
+  const types = [
+    {
+      singular: "component",
+      plural: "components",
+      capitalSingular: "Component",
+      capitalPlural: "Components",
+    },
+    {
+      singular: "example",
+      plural: "examples",
+      capitalSingular: "Example",
+      capitalPlural: "Examples",
+    },
+  ];
+
+  const frameworks = [
+    ...new Set(
+      allExamples.flatMap((entry) => entry.data.frameworks || "react")
+    ),
+  ] as Framework[];
+
+  return frameworks.flatMap((framework) => {
+    return types.flatMap((type) => {
+      const frameworkExamples = allExamples
+        .filter((example) => {
+          if (!example.data.frameworks.includes(framework)) return false;
+          if (type.singular === "component") {
+            return example.data.component;
+          }
+          return !example.data.component;
+        })
+        .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+      const frameworkExampleIds = frameworkExamples.map(
+        (example) => example.id
+      );
+
+      const galleries = allGalleries.filter((gallery) =>
+        frameworkExampleIds.includes(gallery.id)
+      );
+
+      const frameworkTags = mapTags(
+        frameworkExamples.flatMap((example) => example.data.tags),
+        [framework]
+      );
+
+      const frameworkLength = frameworkExamples.reduce((acc, example) => {
+        const gallery = galleries.find((gallery) => gallery.id === example.id);
+        return acc + (gallery?.data.length || 1);
+      }, 0);
+
+      const tagsWithLength = frameworkTags.map((tag) => {
+        const tagExamples = frameworkExamples.filter(
+          (example) => !!example.data.tags.find((t) => t === tag?.id)
+        );
+        const tagLength = tagExamples.reduce((acc, example) => {
+          const gallery = galleries.find(
+            (gallery) => gallery.id === example.id
+          );
+          return acc + (gallery?.data.length || 1);
+        }, 0);
+        return {
+          ...tag,
+          length: tagLength,
+        };
+      });
+
+      return [null, ...frameworkTags].map((tag) => {
+        const tagExamples = !tag
+          ? frameworkExamples
+          : frameworkExamples.filter(
+              (example) => !!example.data.tags.find((t) => t === tag?.id)
+            );
+
+        const index = tag ? `${type.plural}/${tag.id}` : type.plural;
+
+        return {
+          params: { framework, index },
+          props: {
+            type,
+            examples: tagExamples,
+            tag,
+            tags: tagsWithLength,
+            frameworkLength,
+          },
+        };
+      });
+    });
+  });
+}) satisfies GetStaticPaths;
+
+const { type, frameworkLength, tags, tag, examples } = Astro.props;
+const { framework } = Astro.params;
+
+Astro.locals.framework = framework;
+
+const galleries = await getCollection("galleries");
+
+function getPlural(string: string, length = 2) {
+  const plural = length === 1 ? "" : "s";
+  return `${string}${plural}`;
+}
+
+function getCardDescription(id: string) {
+  const gallery = galleries.find((gallery) => gallery.id === id);
+  const length = gallery?.data.length || 1;
+  return `${length} ${getPlural(type.singular, length)}`;
+}
+
+function getTagPath(tag: (typeof tags)[number] | null) {
+  const tagPath = tag?.id ? `/${tag.id}` : "";
+  return `/${framework}/${type.plural}${tagPath}#tags`;
+}
+
+function getExamplePath(example: CollectionEntry<"examples">) {
+  return `/${framework}/${type.plural}/${example.id}`;
+}
+
+const frameworkData = getFramework(framework);
+
+const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`;
+---
+
+<Layout {title}>
+  <div
+    class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8"
+  >
+    <div class="flex flex-col items-center gap-4">
+      <a href="/" class="ak-button rounded-full ak-badge-primary text-sm">
+        <span>Tutorials, guides, and more</span>
+        <Icon name="arrowRight" className="flex-none" />
+      </a>
+      <h1
+        class="text-2xl @3xl:text-4xl font-semibold relative text-center flex items-center gap-2"
+      >
+        {
+          type.singular === "example" && (
+            <span class="ak-text-primary/0">{frameworkLength}</span>
+          )
+        }
+        {
+          type.singular === "component" && (
+            <Icon name={frameworkData.icon} className="flex-none" />
+          )
+        }
+        {frameworkData.label}
+        {getPlural(type.capitalSingular, frameworkLength)}
+        <BoxPatternsMiddle />
+      </h1>
+    </div>
+    <div class="flex flex-col gap-4 items-center">
+      <button
+        class="ak-input flex items-center gap-2 ak-frame-field/1 text-start"
+      >
+        <div class="flex items-center gap-2 ak-frame-field/2 flex-grow min-w-0">
+          <Icon name="search" className="flex-none" />
+          <div class="ak-input-placeholder truncate">
+            Search {frameworkData.label}
+            {getPlural(type.singular, frameworkLength)}
+          </div>
+        </div>
+        <div class="flex-1 w-10"></div>
+        <kbd class="ak-text/0 ak-layer-pop-1.5 ak-frame-field/2">/</kbd>
+      </button>
+    </div>
+  </div>
+  <div
+    class="ak-layer-current border-t scroll-mt-[calc(var(--header-height)-1px)] grid [--pqp:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)] grid-cols-[var(--pqp)_min(calc(100%-var(--pqp)),var(--container-default)+var(--ak-container-p)*2)] content-start"
+    id="tags"
+  >
+    <div class="justify-self-end-safe text-sm">
+      <Sticky threshold={1} class="top-(--header-height) p-3">
+        <ul
+          class="pointer-events-none opacity-0 in-data-stuck:pointer-events-auto in-data-stuck:opacity-100 transition-opacity duration-500"
+        >
+          <li class="relative">
+            <a
+              aria-current="page"
+              class="block peer decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text aria-[current=page]:font-semibold ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
+              href="/">Components</a
+            >
+            <div
+              class="absolute inset-y-0 -right-3 w-[calc(1px+0.03rem*var(--contrast))] bg-current opacity-0 data-visible:opacity-100 peer-aria-[current=page]:opacity-100"
+              data-indicator
+            >
+            </div>
+          </li>
+          <li class="ak-text/0 font-medium text-sm pb-3 px-2 mt-5">Guides</li>
+          <li class="relative">
+            <a
+              class="block peer decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
+              href="/">Getting Started</a
+            >
+            <div
+              class="absolute inset-y-0 -right-3 w-[calc(1px+0.03rem*var(--contrast))] bg-current opacity-0 data-visible:opacity-100 peer-aria-[current=page]:opacity-100"
+              data-indicator
+            >
+            </div>
+          </li>
+          <li>
+            <a
+              class="block decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
+              href="/">Styling</a
+            >
+          </li>
+          <li>
+            <a
+              class="block decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
+              href="/">Composition</a
+            >
+          </li>
+          <li>
+            <a
+              class="block decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
+              href="/">Component Providers</a
+            >
+          </li>
+        </ul>
+      </Sticky>
+    </div>
+    <div
+      class="flex flex-col gap-4 ak-layer-current border-x z-1 min-h-[100dvh]"
+    >
+      <HorizontalScroll
+        class="sticky top-(--header-height) z-2 ak-layer-current [box-shadow:0_1px_0_0_var(--ak-layer-border)]"
+      >
+        <ul class="flex items-center gap-3 p-3 float-start">
+          {
+            [null, ...tags].map((t) => {
+              const isCurrent = t?.id === tag?.id;
+              const length = t?.length ?? frameworkLength;
+              return (
+                <li>
+                  <a
+                    href={getTagPath(t)}
+                    aria-current={isCurrent ? "page" : undefined}
+                    class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1 gap-0"
+                  >
+                    <span class="ak-frame-field/1 ps-2">
+                      {t?.label ?? "All"}
+                    </span>
+                    <span class="ak-text/0 ak-frame-field/1 rounded-full px-1.5 ak-layer-pop min-w-6 text-center in-aria-[current]:ak-layer-pop-3">
+                      {length}
+                      <span class="sr-only">
+                        {getPlural(type.singular, length)}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </HorizontalScroll>
+      <div
+        class="ak-container-size-default/4 ak-container grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4 ms-4"
+      >
+        {
+          examples.map((example) => (
+            <PageCard
+              href={getExamplePath(example)}
+              thumbnailId={example.id}
+              title={example.data.title}
+              description={getCardDescription(example.id)}
+              plus={example.data.tags.includes("plus")}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Scroll to the current tag when the page loads
+  document.addEventListener("astro:page-load", () => {
+    const list = document.getElementById("tags");
+    const current = list?.querySelector<HTMLElement>('[aria-current="page"]');
+    current?.scrollIntoView({
+      behavior: "instant",
+      inline: "nearest",
+      block: "nearest",
+    });
+  });
+</script>
