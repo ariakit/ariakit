@@ -237,12 +237,12 @@ export const chevronLeft: Icon = {
   html: `<polyline stroke-linecap="round" stroke-linejoin="round" points="10,4 6,8 10,12" />`,
 };
 
-export const arrowLeft: Icon = {
+export const arrowUp: Icon = {
   size: 24,
   stroke: "currentColor",
   fill: "none",
   strokeWidth: 2,
-  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />`,
+  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />`,
 };
 
 export const arrowRight: Icon = {
@@ -251,6 +251,22 @@ export const arrowRight: Icon = {
   fill: "none",
   strokeWidth: 2,
   html: `<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />`,
+};
+
+export const arrowDown: Icon = {
+  size: 24,
+  stroke: "currentColor",
+  fill: "none",
+  strokeWidth: 2,
+  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />`,
+};
+
+export const arrowLeft: Icon = {
+  size: 24,
+  stroke: "currentColor",
+  fill: "none",
+  strokeWidth: 2,
+  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />`,
 };
 
 export const upgrade: Icon = {
