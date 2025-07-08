@@ -18,18 +18,18 @@ export const getStaticPaths = (async () => {
   const descriptions = await getCollection("descriptions");
   const galleries = await getCollection("galleries");
   return entries.flatMap((entry) => {
-    if (entry.data.component) return [];
+    const type = entry.data.component ? "components" : "examples";
     const gallery = galleries.find((gallery) => gallery.id === entry.id);
     const description = descriptions.find((header) => header.id === entry.id);
     return entry.data.frameworks.map((framework) => ({
-      params: { framework, example: entry.id },
-      props: { entry, gallery, description },
+      params: { framework, example: `${type}/${entry.id}` },
+      props: { entry, gallery, description, type },
     }));
   });
 }) satisfies GetStaticPaths;
 
 const { framework } = Astro.params;
-const { entry, gallery, description } = Astro.props;
+const { entry, gallery, description, type } = Astro.props;
 const { Content, headings } = await render(entry);
 const { Content: Gallery = Fragment } = gallery ? await render(gallery) : {};
 const { Content: Description = Fragment } = description
@@ -79,7 +79,7 @@ const components = {
                 {tags.map((tag) => (
                   <li>
                     <a
-                      href={`/${framework}/examples/${tag.id}`}
+                      href={`/${framework}/${type}/${tag.id}`}
                       class="ak-badge ak-button ak-layer-pop"
                     >
                       {tag.label}
@@ -134,13 +134,4 @@ const components = {
       </div>
     </div>
   </div>
-  {
-    examples.flatMap((example) =>
-      example.data.frameworks.map((framework) => (
-        <a href={`/${framework}/examples/${example.id}`}>
-          {framework}/{example.data.title}
-        </a>
-      ))
-    )
-  }
 </Layout>
