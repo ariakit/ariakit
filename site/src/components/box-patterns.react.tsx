@@ -85,8 +85,8 @@ export function BoxPatternsMiddle() {
 
   const right = (
     <div className="absolute start-full ms-4 top-0 flex h-full gap-4">
-      <div className="ak-layer-pop ak-frame-border w-18 h-[1em] ak-frame-xl/1 flex justify-end">
-        <div className="ak-layer h-full aspect-square ak-frame-border ak-frame" />
+      <div className="ak-layer-pop ak-frame-border w-18 h-full ak-frame-xl/1 flex justify-end">
+        <div className="ak-layer h-full w-1/2 ak-frame-border ak-frame" />
       </div>
       <div className="grid h-max mask-b-from-60% mask-t-from-70% -translate-y-35 gap-4">
         <div className="ak-layer-pop ak-frame-border w-full h-10 ak-frame-xl/1" />
