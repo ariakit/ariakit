@@ -55,11 +55,11 @@ export default defineConfig({
     css: {
       include: includeWithStyles,
     },
-    sequence: {
-      hooks: "parallel",
-    },
     coverage: {
       include: ["packages"],
+    },
+    benchmark: {
+      include: ["**/*{test,perf}.{ts,tsx}", `**/*{test,perf}.${LOADER}.{ts,tsx}`],
     },
   },
 });
