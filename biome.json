@@ -53,7 +53,13 @@
       "correctness": {
         "useExhaustiveDependencies": "off",
         "useJsxKeyInIterable": "off",
-        "useHookAtTopLevel": "off"
+        "useHookAtTopLevel": "off",
+        "noUnusedVariables": {
+          "level": "on",
+          "options": {
+            "ignoreRestSiblings": true
+          }
+        }
       },
       "style": {
         "noParameterAssign": "off",

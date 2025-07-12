@@ -79,7 +79,7 @@ function useKeyboardEventProxy(
     const state = store.getState();
     const activeElement = getEnabledItem(store, state.activeId)?.element;
     if (!activeElement) return;
-    const { view: _view, ...eventInit } = event;
+    const { view, ...eventInit } = event;
     const previousElement = previousElementRef?.current;
     // If the active item element is not the previous element, this means that
     // it hasn't been focused (for example, when using composite hover). So we

@@ -120,11 +120,11 @@ export const CollectionItem = forwardRef(function CollectionItem({
   }
   // Remove CompositeItem props
   const {
-    store: _store,
-    shouldRegisterItem: _shouldRegisterItem,
-    getItem: _getItem,
+    store,
+    shouldRegisterItem,
+    getItem,
     // @ts-expect-error This prop may come from a collection renderer.
-    element: _element,
+    element,
     ...htmlProps
   } = allProps;
   const Component = Role[TagName];
