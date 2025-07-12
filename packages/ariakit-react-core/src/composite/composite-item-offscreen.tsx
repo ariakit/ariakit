@@ -91,12 +91,12 @@ export const CompositeItem = forwardRef(function CompositeItem({
   }
   // Remove CompositeItem props
   const {
-    store,
-    rowId,
-    preventScrollOnKeyDown,
-    moveOnKeyPress,
-    tabbable,
-    getItem,
+    store: _store,
+    rowId: _rowId,
+    preventScrollOnKeyDown: _preventScrollOnKeyDown,
+    moveOnKeyPress: _moveOnKeyPress,
+    tabbable: _tabbable,
+    getItem: _getItem,
     ...htmlProps
   } = allProps;
   const Component = Role[TagName];

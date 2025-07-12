@@ -96,7 +96,7 @@ export const useCommand = createHook<TagName, CommandOptions>(
         if (isEnter) {
           if (!nativeClick) {
             event.preventDefault();
-            const { view, ...eventInit } = event;
+            const { view: _view, ...eventInit } = event;
             // Fire a click event instead of calling element.click() directly so
             // we can pass along the modifier state.
             const click = () => fireClickEvent(element, eventInit);
@@ -137,7 +137,7 @@ export const useCommand = createHook<TagName, CommandOptions>(
           event.preventDefault();
           setActive(false);
           const element = event.currentTarget;
-          const { view, ...eventInit } = event;
+          const { view: _view, ...eventInit } = event;
           queueMicrotask(() => fireClickEvent(element, eventInit));
         }
       }

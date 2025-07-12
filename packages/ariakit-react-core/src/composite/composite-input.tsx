@@ -52,6 +52,7 @@ export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
     if (process.env.NODE_ENV !== "production") {
+      // biome-ignore lint/correctness/useHookAtTopLevel: not dynamic
       useEffect(() => {
         console.warn(
           "CompositeInput is deprecated. Use `<CompositeItem render={<input />}>` instead.",

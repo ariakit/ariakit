@@ -38,14 +38,14 @@ export const SelectItem = forwardRef(function SelectItem({
   }
   // Remove SelectItem props
   const {
-    store,
-    value,
-    getItem,
-    hideOnClick,
-    setValueOnClick,
-    preventScrollOnKeyDown,
-    focusOnHover,
-    blurOnHoverEnd,
+    store: _store,
+    value: _value,
+    getItem: _getItem,
+    hideOnClick: _hideOnClick,
+    setValueOnClick: _setValueOnClick,
+    preventScrollOnKeyDown: _preventScrollOnKeyDown,
+    focusOnHover: _focusOnHover,
+    blurOnHoverEnd: _blurOnHoverEnd,
     ...htmlProps
   } = allProps;
   const Component = Role[TagName];

@@ -184,6 +184,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // disclosure button may use a custom component, and not DialogDisclosure. In
   // this case, we need to make sure the disclosure button gets focused here.
   if (isSafariBrowser) {
+    // biome-ignore lint/correctness/useHookAtTopLevel: not dynamic
     useEffect(() => {
       if (!mounted) return;
       const { disclosureElement } = store.getState();
