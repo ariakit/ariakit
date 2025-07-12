@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation.js";
 import pagesConfig from "@/build-pages/config.js";
 import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
 import { getPageName } from "@/build-pages/get-page-name.js";
@@ -9,12 +10,11 @@ import type {
   TableOfContents as TableOfContentsData,
 } from "@/build-pages/types.ts";
 import {
-  PageMarkdown,
   getContent,
   getFile,
+  PageMarkdown,
 } from "@/components/page-markdown.tsx";
 import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
-import { notFound } from "next/navigation.js";
 
 const { pages } = pagesConfig;
 

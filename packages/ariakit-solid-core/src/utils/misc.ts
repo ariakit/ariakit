@@ -1,5 +1,5 @@
-import { type MaybeAccessor, access } from "@solid-primitives/utils";
-import { type Accessor, type ValidComponent, createUniqueId } from "solid-js";
+import { access, type MaybeAccessor } from "@solid-primitives/utils";
+import { type Accessor, createUniqueId, type ValidComponent } from "solid-js";
 
 /**
  * Generates a unique ID.

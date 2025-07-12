@@ -1,4 +1,4 @@
-import { type ValidComponent, createMemo, useContext } from "solid-js";
+import { createMemo, useContext, type ValidComponent } from "solid-js";
 import { extractTagName } from "../utils/misc.ts";
 import { createRef, mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";

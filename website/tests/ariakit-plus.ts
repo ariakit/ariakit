@@ -1,6 +1,6 @@
 import { createClerkClient } from "@clerk/clerk-sdk-node";
-import { expect, test } from "@playwright/test";
 import type { FrameLocator, Locator, Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
 import { Stripe } from "stripe";
 
@@ -196,7 +196,7 @@ async function getDisplayedPrice(page: Page | Locator | FrameLocator) {
     .text(/^(US)?\$\d+(\.\d*)?$/)
     .first()
     .textContent())!;
-  return Math.ceil(Number.parseFloat(priceText.replace(/[^\d\.]/g, "")));
+  return Math.ceil(Number.parseFloat(priceText.replace(/[^\d.]/g, "")));
 }
 
 function frameLocator(page: Page) {
@@ -351,7 +351,7 @@ test("purchase Plus from /plus, sign out, sign in again, and access the billing 
 
   await q.link("Unlock Ariakit Plus").click();
   await q.link("Sign in").click();
-  await page.waitForURL(/\/sign\-in/);
+  await page.waitForURL(/\/sign-in/);
   await fillSignIn(page, { email, redirectUrl: "/" });
 
   await q.button("Plus").click();
@@ -402,7 +402,7 @@ test("purchase Plus from /components, sign out, sign in again, and access the bi
 
   await q.link("Unlock Ariakit Plus").click();
   await q.link("Sign in").click();
-  await page.waitForURL(/\/sign\-in/);
+  await page.waitForURL(/\/sign-in/);
   await fillSignIn(page, { email, redirectUrl: "/components" });
 
   await q.button("Plus").click();

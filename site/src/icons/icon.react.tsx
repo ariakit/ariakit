@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import type { CSSProperties, ComponentProps } from "react";
+import type { ComponentProps, CSSProperties } from "react";
 import { useId } from "react";
 import * as icons from "./icons.ts";
 

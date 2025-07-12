@@ -1,11 +1,5 @@
 "use client";
 
-import { ChevronRight } from "@/icons/chevron-right.tsx";
-import { NewWindow } from "@/icons/new-window.tsx";
-import { Search } from "@/icons/search.tsx";
-import { Spinner } from "@/icons/spinner.tsx";
-import { useMedia } from "@/lib/use-media.ts";
-import { whenIdle } from "@/lib/when-idle.ts";
 import { batch } from "@ariakit/core/utils/store";
 import * as Ariakit from "@ariakit/react";
 import {
@@ -15,22 +9,28 @@ import {
 } from "@ariakit/react-core/utils/hooks";
 import Link from "next/link.js";
 import type {
-  ComponentPropsWithRef,
   ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
   HTMLAttributes,
   MouseEvent,
   ReactNode,
   RefObject,
 } from "react";
 import {
-  Fragment,
   createContext,
+  Fragment,
   forwardRef,
   useContext,
   useEffect,
   useRef,
 } from "react";
 import { twJoin } from "tailwind-merge";
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { Search } from "@/icons/search.tsx";
+import { Spinner } from "@/icons/spinner.tsx";
+import { useMedia } from "@/lib/use-media.ts";
+import { whenIdle } from "@/lib/when-idle.ts";
 import { Command } from "./command.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 import { Popup } from "./popup.tsx";

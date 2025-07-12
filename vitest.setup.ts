@@ -2,11 +2,11 @@ import "@testing-library/jest-dom/vitest";
 
 import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { Suspense as ReactSuspense, createElement, version } from "react";
+import { createElement, Suspense as ReactSuspense, version } from "react";
 import {
-  Suspense as SolidSuspense,
   createComponent,
   render as renderSolid,
+  Suspense as SolidSuspense,
 } from "solid-js/web";
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";

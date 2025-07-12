@@ -1,5 +1,5 @@
-import { expect } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { test } from "../test-utils.ts";
 
 const getPopover = (page: Page) => page.getByRole("dialog");

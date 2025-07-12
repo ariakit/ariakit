@@ -99,7 +99,7 @@ export async function parseCSSFile(filename, options) {
   let css = result.css;
 
   if (!isTheme && options.contents) {
-    const safelist = [/^aria\-/, /^data-/, ":is", "dark", "svg"];
+    const safelist = [/^aria-/, /^data-/, ":is", "dark", "svg"];
 
     const content = Object.entries(options.contents).map(([filename, raw]) => ({
       raw,

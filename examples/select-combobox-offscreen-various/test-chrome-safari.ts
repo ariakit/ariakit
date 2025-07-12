@@ -1,7 +1,7 @@
 import {
+  expect,
   type Locator,
   type Page,
-  expect,
   query,
 } from "@ariakit/test/playwright";
 import { test } from "../test-utils.ts";

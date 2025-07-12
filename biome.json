@@ -7,19 +7,18 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": [
-      "package.json",
-      "website/.next/**",
-      "website/.pages/**",
-      "site/.astro/**",
-      "site/.types/**",
-      "**/*.astro",
-      "**/*.css"
+    "includes": [
+      "**",
+      "!**/package.json",
+      "!**/website/.next/**",
+      "!**/website/.pages/**",
+      "!**/site/.astro/**",
+      "!**/site/.types/**",
+      "!**/*.astro",
+      "!**/*.css"
     ]
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "formatter": {
     "enabled": true,
     "indentStyle": "space"

@@ -1,16 +1,16 @@
 import type { ElementType, ReactNode } from "react";
 import { useMemo } from "react";
-import {
-  getCollectionRendererItem,
-  getCollectionRendererItemId,
-  useCollectionRenderer,
-} from "../collection/collection-renderer.tsx";
 import type {
   CollectionRendererBaseItemProps,
   CollectionRendererItem,
   CollectionRendererItemObject,
   CollectionRendererItemProps,
   CollectionRendererOptions,
+} from "../collection/collection-renderer.tsx";
+import {
+  getCollectionRendererItem,
+  getCollectionRendererItemId,
+  useCollectionRenderer,
 } from "../collection/collection-renderer.tsx";
 import type { CollectionStoreItem } from "../collection/collection-store.ts";
 import { useId } from "../utils/hooks.ts";

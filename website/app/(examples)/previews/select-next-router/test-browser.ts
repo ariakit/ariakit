@@ -1,6 +1,6 @@
 import { query } from "@ariakit/test/playwright";
-import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { test } from "../../../../../examples/test-utils.ts";
 
 async function getNewTabModifier(page: Page) {

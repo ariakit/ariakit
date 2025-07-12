@@ -1,7 +1,7 @@
 import reactPlugin from "@vitejs/plugin-react";
 import { version } from "react";
 import solidPlugin from "vite-plugin-solid";
-import { type Plugin, configDefaults, defineConfig } from "vitest/config";
+import { configDefaults, defineConfig, type Plugin } from "vitest/config";
 
 const excludeFromReact17 = [
   "examples/form-callback-queue",

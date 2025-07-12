@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import { Fragment, useState } from "react";
 import type { FunctionComponent, HTMLProps } from "react";
+import { Fragment, useState } from "react";
 import root from "react-shadow";
 
 const ShadowRootHost = root.div as FunctionComponent<HTMLProps<HTMLDivElement>>;

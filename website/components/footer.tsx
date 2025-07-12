@@ -1,8 +1,8 @@
-import { getPageTitle } from "@/build-pages/get-page-title.js";
-import { NewWindow } from "@/icons/new-window.tsx";
 import Link from "next/link.js";
 import { useId } from "react";
 import { twJoin } from "tailwind-merge";
+import { getPageTitle } from "@/build-pages/get-page-title.js";
+import { NewWindow } from "@/icons/new-window.tsx";
 import { Logo } from "./logo.tsx";
 
 const year = new Date().getFullYear();

@@ -8,8 +8,8 @@ import {
   ToolbarScopedContextProvider,
   useToolbarProviderContext,
 } from "./toolbar-context.tsx";
-import { useToolbarStore } from "./toolbar-store.ts";
 import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.ts";
+import { useToolbarStore } from "./toolbar-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

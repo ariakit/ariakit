@@ -12,6 +12,7 @@ import type {
   RefObject,
   SetStateAction,
 } from "react";
+import * as React from "react";
 import {
   useCallback,
   useEffect,
@@ -21,7 +22,6 @@ import {
   useRef,
   useState,
 } from "react";
-import * as React from "react";
 import { setRef } from "./misc.ts";
 import type { WrapElement } from "./types.ts";
 

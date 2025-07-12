@@ -1,7 +1,7 @@
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
 import { identity, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useEffect, useRef } from "react";
 import type { ElementType } from "react";
+import { useEffect, useRef } from "react";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

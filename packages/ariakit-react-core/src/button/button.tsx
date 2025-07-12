@@ -1,6 +1,6 @@
 import { isButton } from "@ariakit/core/utils/dom";
-import { useEffect, useRef, useState } from "react";
 import type { ElementType } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 import { useMergeRefs, useTagName } from "../utils/hooks.ts";

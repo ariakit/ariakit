@@ -11,8 +11,8 @@ import type {
 import { useCompositeStoreProps } from "../composite/composite-store.ts";
 import { useSelectContext } from "../select/select-context.tsx";
 import { useUpdateEffect } from "../utils/hooks.ts";
-import { useStore, useStoreProps } from "../utils/store.tsx";
 import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useTabStoreProps<T extends Core.TabStore>(
   store: T,

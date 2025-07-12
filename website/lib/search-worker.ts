@@ -1,7 +1,7 @@
-import type { PageContent } from "@/build-pages/contents.ts";
-import contents from "@/build-pages/contents.ts";
 import type { FullOptions } from "fast-fuzzy";
 import { Searcher, search } from "fast-fuzzy";
+import type { PageContent } from "@/build-pages/contents.ts";
+import contents from "@/build-pages/contents.ts";
 
 const searcherOptions = {
   keySelector: (obj) => {
@@ -92,7 +92,7 @@ onmessage = (
   const { query, category } = event.data;
   const searchTerm = query;
   const results =
-    category && Object.prototype.hasOwnProperty.call(searchers, category)
+    category && Object.hasOwn(searchers, category)
       ? searchers[category]!.search(searchTerm)
       : searcher.search(searchTerm);
   const items = results.map((result) => {

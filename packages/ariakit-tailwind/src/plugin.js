@@ -1,18 +1,18 @@
 import colorString from "color-string";
 import plugin from "tailwindcss/plugin";
 import {
-  LIGHTNESS_LEVELS,
-  SCHEME_THRESHOLD_L,
-  SCHEME_THRESHOLD_OKL,
-  TEXT_CONTRAST_L,
   bareValue,
   colorMix,
   css,
   isInlineThemeReference,
+  LIGHTNESS_LEVELS,
   lchLightDark,
   oklchLightDark,
   prop,
   properties,
+  SCHEME_THRESHOLD_L,
+  SCHEME_THRESHOLD_OKL,
+  TEXT_CONTRAST_L,
   textColor,
   toPercent,
   vars,
@@ -107,7 +107,7 @@ const AriakitTailwind = plugin(
       if (!value) {
         return { token: undefined, level: "1" };
       }
-      const matches = value.match(/(down\-)?([\.\d]+)$/);
+      const matches = value.match(/(down-)?([.\d]+)$/);
       if (!matches) {
         return { token: value, level: "0" };
       }

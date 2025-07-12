@@ -1,6 +1,4 @@
 "use client";
-import { NewWindow } from "@/icons/new-window.tsx";
-import { useSubscription } from "@/lib/use-subscription.ts";
 import {
   Button,
   Menu,
@@ -23,7 +21,9 @@ import {
   useSelectedLayoutSegments,
 } from "next/navigation.js";
 import type { ComponentPropsWithoutRef, ElementRef } from "react";
-import { Suspense, forwardRef } from "react";
+import { forwardRef, Suspense } from "react";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { useSubscription } from "@/lib/use-subscription.ts";
 import { Command } from "./command.tsx";
 import { DropdownItem } from "./dropdown-item.tsx";
 import { Popup } from "./popup.tsx";
@@ -136,6 +136,7 @@ export function HeaderAriakitPlus() {
                   method="post"
                   target="_blank"
                   action="/api/customer-portal"
+                  rel="noopener"
                 >
                   <MenuItem
                     className="w-full"

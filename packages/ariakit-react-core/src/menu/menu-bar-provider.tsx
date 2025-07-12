@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { MenubarProvider } from "../menubar/menubar-provider.tsx";
 import type { MenubarProviderProps } from "../menubar/menubar-provider.tsx";
+import { MenubarProvider } from "../menubar/menubar-provider.tsx";
 
 /**
  * Provides a menubar store to MenuBar components.

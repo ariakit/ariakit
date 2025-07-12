@@ -1,5 +1,5 @@
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import { type ValidComponent, mergeProps, splitProps } from "solid-js";
+import { mergeProps, splitProps, type ValidComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
 import {
   type ExtractPropsWithDefaultsExtractedProps,
@@ -7,8 +7,8 @@ import {
   extractPropsWithDefaults,
 } from "./reactivity.ts";
 import type {
-  HTMLProps,
   Hook,
+  HTMLProps,
   Options,
   Props,
   WrapInstance,

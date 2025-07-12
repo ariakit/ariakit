@@ -6,8 +6,8 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useFormControl } from "./form-control.tsx";
 import type { FormControlOptions } from "./form-control.tsx";
+import { useFormControl } from "./form-control.tsx";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;

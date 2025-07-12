@@ -36,28 +36,28 @@ export default defineConfig({
   projects: [
     {
       name: "chrome",
-      testMatch: [/\/test[^\/]*\-chrome/, /\/test[^\/]*\-browser/],
+      testMatch: [/\/test[^/]*-chrome/, /\/test[^/]*-browser/],
       use: devices["Desktop Chrome"],
     },
     {
       name: "firefox",
-      testMatch: [/\/test[^\/]*\-firefox/, /\/test[^\/]*\-browser/],
+      testMatch: [/\/test[^/]*-firefox/, /\/test[^/]*-browser/],
       retries: CI ? 2 : 1,
       use: devices["Desktop Firefox"],
     },
     {
       name: "safari",
-      testMatch: [/\/test[^\/]*\-safari/, /\/test[^\/]*\-browser/],
+      testMatch: [/\/test[^/]*-safari/, /\/test[^/]*-browser/],
       use: devices["Desktop Safari"],
     },
     {
       name: "ios",
-      testMatch: [/\/test[^\/]*\-ios/, /\/test[^\/]*\-mobile/],
+      testMatch: [/\/test[^/]*-ios/, /\/test[^/]*-mobile/],
       use: devices["iPhone 13 Pro Max"],
     },
     {
       name: "android",
-      testMatch: [/\/test[^\/]*\-android/, /\/test[^\/]*\-mobile/],
+      testMatch: [/\/test[^/]*-android/, /\/test[^/]*-mobile/],
       use: devices["Pixel 5"],
     },
     {

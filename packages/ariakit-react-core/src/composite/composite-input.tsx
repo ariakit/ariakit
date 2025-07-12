@@ -4,8 +4,8 @@ import {
   isTextField,
 } from "@ariakit/core/utils/dom";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useEffect } from "react";
 import type { ElementType, FocusEvent, KeyboardEvent } from "react";
+import { useEffect } from "react";
 import { useEvent } from "../utils/hooks.ts";
 import {
   createElement,
