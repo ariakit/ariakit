@@ -121,7 +121,8 @@ export function hasOwnProperty<T extends AnyObject>(
   if (typeof Object.hasOwn === "function") {
     return Object.hasOwn(object, prop);
   }
-  return Object.hasOwn(object, prop);
+  // biome-ignore lint/suspicious/noPrototypeBuiltins: false positive
+  return Object.prototype.hasOwnProperty.call(object, prop);
 }
 
 /**
