@@ -140,7 +140,7 @@ const AriakitTailwind = plugin(
      * @param {string} level
      */
     // @ts-expect-error
-    function getLayerLCH(level) {
+    function _getLayerLCH(level) {
       const minL = `min(2, ${level})`;
       const lMultiplier = 5;
       const cMultiplier = 0.00055;
@@ -907,7 +907,7 @@ const AriakitTailwind = plugin(
      * @param {string} css
      */
     // @ts-ignore
-    function debug(syntax, css) {
+    function _debug(syntax, css) {
       const initialValues = {
         color: "red",
         length: "9999px",

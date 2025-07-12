@@ -20,7 +20,7 @@ import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
 try {
   loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
-} catch (error) {}
+} catch (_error) {}
 
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 

@@ -30,7 +30,12 @@ function Tabs({ tabList, ...props }: TabsProps) {
         <button className="ak-tab-folder" tabIndex={0}>
           <div>default</div>
         </button>
-        <button className="ak-tab-folder" aria-selected="true" tabIndex={0}>
+        <button
+          className="ak-tab-folder"
+          role="tab"
+          aria-selected="true"
+          tabIndex={0}
+        >
           <div>default selected</div>
         </button>
       </ak.Role>

@@ -44,7 +44,6 @@ export default function Page({ params }: Props) {
 
   const groups = groupBy(pages, "group");
   const grouplessPages = groups.null || [];
-  // biome-ignore lint/performance/noDelete: TODO
   delete groups.null;
 
   return (

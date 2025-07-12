@@ -218,7 +218,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     // buttons when their labels are clicked. This effect will make sure the
     // focusable element is focused on label click.
     if (isSafariBrowser) {
-      // biome-ignore lint/correctness/useHookAtTopLevel: not dynamic
       useEffect(() => {
         if (!focusable) return;
         const element = ref.current;
