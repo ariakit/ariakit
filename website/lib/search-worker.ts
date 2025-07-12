@@ -85,7 +85,7 @@ function truncate(
   return final + suffix;
 }
 
-// biome-ignore lint/suspicious/noGlobalAssign:
+// biome-ignore lint/suspicious/noGlobalAssign: Required for web worker message handler
 onmessage = (
   event: MessageEvent<{ query: string; category?: string; allData?: boolean }>,
 ) => {

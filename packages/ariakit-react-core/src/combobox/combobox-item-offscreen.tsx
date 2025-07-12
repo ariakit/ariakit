@@ -63,16 +63,16 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
   }
   // Remove ComboboxItem props
   const {
-    store,
-    value,
-    hideOnClick,
-    setValueOnClick,
-    selectValueOnClick,
-    resetValueOnSelect,
-    focusOnHover,
-    blurOnHoverEnd,
-    moveOnKeyPress,
-    getItem,
+    store: _store,
+    value: _value,
+    hideOnClick: _hideOnClick,
+    setValueOnClick: _setValueOnClick,
+    selectValueOnClick: _selectValueOnClick,
+    resetValueOnSelect: _resetValueOnSelect,
+    focusOnHover: _focusOnHover,
+    blurOnHoverEnd: _blurOnHoverEnd,
+    moveOnKeyPress: _moveOnKeyPress,
+    getItem: _getItem,
     ...htmlProps
   } = allProps;
   const Component = Role[TagName];

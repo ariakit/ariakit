@@ -39,7 +39,8 @@
         "noAutofocus": "off",
         "noLabelWithoutControl": "off",
         "useSemanticElements": "off",
-        "useFocusableInteractive": "off"
+        "useFocusableInteractive": "off",
+        "noStaticElementInteractions": "off"
       },
       "suspicious": {
         "noExplicitAny": "off",

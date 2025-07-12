@@ -132,7 +132,7 @@ export default function Example() {
 
           <Ariakit.MenuSeparator className="separator" />
 
-          <div onClick={onChange(setParentValue)}>
+          <div role="group" onClick={onChange(setParentValue)}>
             {fruits.map((value) => (
               <Ariakit.MenuItemRadio
                 key={value}
