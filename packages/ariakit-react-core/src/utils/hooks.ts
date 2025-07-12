@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/useHookAtTopLevel: not dynamic */
 import { canUseDOM } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import type { AnyFunction } from "@ariakit/core/utils/types";

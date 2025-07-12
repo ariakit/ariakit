@@ -364,6 +364,7 @@ export function withParentL(fn) {
     const query = `@container style(${vars._layerL}: lch(${l} 0 0))`;
     const result = fn(l);
     if (!result) return acc;
+    // biome-ignore lint/performance/noAccumulatingSpread: TODO
     Object.assign(acc, { [query]: result });
     return acc;
   }, css());
