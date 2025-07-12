@@ -121,7 +121,7 @@ export function hasOwnProperty<T extends AnyObject>(
   if (typeof Object.hasOwn === "function") {
     return Object.hasOwn(object, prop);
   }
-  return Object.hasOwn(object, prop);
+  return Object.prototype.hasOwnProperty.call(object, prop);
 }
 
 /**
@@ -302,6 +302,6 @@ type DefaultValue<T extends readonly any[], Other = never> = T extends [
   ? Rest extends []
     ? T[number] | Other
     : undefined extends Head
-      ? DefaultValue<Rest, Exclude<Other | Head, undefined>>
-      : Exclude<T[number], undefined>
+    ? DefaultValue<Rest, Exclude<Other | Head, undefined>>
+    : Exclude<T[number], undefined>
   : never;
