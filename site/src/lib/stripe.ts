@@ -1,6 +1,7 @@
 import type { APIContext } from "astro";
 import { Stripe } from "stripe";
 import { findInOrder } from "./array.ts";
+import type { User } from "./auth.ts";
 import {
   addPlusToUser,
   createTeam,
@@ -10,7 +11,6 @@ import {
   removePlusFromUser,
   setCustomer,
 } from "./auth.ts";
-import type { User } from "./auth.ts";
 import { getUnixTime } from "./datetime.ts";
 import {
   getBestPromo,

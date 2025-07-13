@@ -1,6 +1,6 @@
 import { getActiveElement } from "@ariakit/core/utils/dom";
-import { flushMicrotasks, wrapAsync } from "./__utils.ts";
 import type { DirtiableElement } from "./__utils.ts";
+import { flushMicrotasks, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 
 export function blur(element?: DirtiableElement | null) {

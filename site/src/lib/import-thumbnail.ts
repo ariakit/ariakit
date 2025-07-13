@@ -7,7 +7,7 @@ export async function importThumbnail(name: string) {
       `../examples/${example}/thumbnail.react.tsx`
     );
     return Thumbnail as ComponentType;
-  } catch (error) {
+  } catch (_error) {
     console.log(`Missing thumbnail for ${name}`);
     return undefined;
   }

@@ -147,7 +147,7 @@ module.exports = {
   plugins: [
     require("tailwindcss-animate"),
     {
-      handler: ({ addUtilities, matchUtilities, addVariant, theme }) => {
+      handler: ({ addUtilities, addVariant, theme }) => {
         const dropShadow = theme("dropShadow");
         const dropShadowUtils = Object.entries(dropShadow).reduce(
           (acc, [key, shadow]) => {

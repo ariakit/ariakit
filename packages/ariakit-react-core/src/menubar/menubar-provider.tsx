@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { MenubarContextProvider } from "./menubar-context.tsx";
-import { useMenubarStore } from "./menubar-store.ts";
 import type { MenubarStoreProps } from "./menubar-store.ts";
+import { useMenubarStore } from "./menubar-store.ts";
 
 /**
  * Provides a menubar store to [Menubar](https://ariakit.org/components/menubar)

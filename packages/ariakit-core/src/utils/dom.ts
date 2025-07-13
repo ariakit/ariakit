@@ -141,7 +141,7 @@ export function isTextField(
       element instanceof HTMLInputElement && element.selectionStart !== null;
     const isTextArea = element.tagName === "TEXTAREA";
     return isTextInput || isTextArea || false;
-  } catch (error) {
+  } catch (_error) {
     // Safari throws an exception when trying to get `selectionStart` on
     // non-text <input> elements (which, understandably, don't have the text
     // selection API). We catch this via a try/catch block, as opposed to a more

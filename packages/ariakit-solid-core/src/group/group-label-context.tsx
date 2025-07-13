@@ -1,3 +1,3 @@
-import { type Setter, createContext } from "solid-js";
+import { createContext, type Setter } from "solid-js";
 
 export const GroupLabelContext = createContext<Setter<string | undefined>>();

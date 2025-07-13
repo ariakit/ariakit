@@ -7,19 +7,18 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": [
-      "package.json",
-      "website/.next/**",
-      "website/.pages/**",
-      "site/.astro/**",
-      "site/.types/**",
-      "**/*.astro",
-      "**/*.css"
+    "includes": [
+      "**",
+      "!**/package.json",
+      "!**/website/.next/**",
+      "!**/website/.pages/**",
+      "!**/site/.astro/**",
+      "!**/site/.types/**",
+      "!**/*.astro",
+      "!**/*.css"
     ]
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "formatter": {
     "enabled": true,
     "indentStyle": "space"
@@ -40,7 +39,9 @@
         "noAutofocus": "off",
         "noLabelWithoutControl": "off",
         "useSemanticElements": "off",
-        "useFocusableInteractive": "off"
+        "useFocusableInteractive": "off",
+        "noStaticElementInteractions": "off",
+        "useAriaPropsSupportedByRole": "off"
       },
       "suspicious": {
         "noExplicitAny": "off",
@@ -51,7 +52,14 @@
       },
       "correctness": {
         "useExhaustiveDependencies": "off",
-        "useJsxKeyInIterable": "off"
+        "useJsxKeyInIterable": "off",
+        "useHookAtTopLevel": "off",
+        "noUnusedVariables": {
+          "level": "on",
+          "options": {
+            "ignoreRestSiblings": true
+          }
+        }
       },
       "style": {
         "noParameterAssign": "off",

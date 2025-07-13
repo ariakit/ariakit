@@ -3,8 +3,8 @@ import {
   getTextboxSelection,
   getTextboxValue,
   isButton,
-  isTextField,
   isTextbox,
+  isTextField,
 } from "@ariakit/core/utils/dom";
 import { isPortalEvent, isSelfTarget } from "@ariakit/core/utils/events";
 import {

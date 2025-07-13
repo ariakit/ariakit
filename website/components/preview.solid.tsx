@@ -1,10 +1,10 @@
 // TODO: commented out code will need to be implemented in time.
 
-import examples from "@/build-pages/examples.ts";
 // import { Spinner } from "@/icons/spinner.tsx";
 // import { PortalContext } from "@ariakit/solid";
 // import { createEffect, createSignal } from "solid-js";
 import { Suspense } from "solid-js/web";
+import examples from "@/build-pages/examples.ts";
 
 // const ignoredExampleIds = ["examples-menu-wordpress-modal"];
 

@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Role } from "./role.tsx";
 import type { RoleProps } from "./role.tsx";
+import { Role } from "./role.tsx";
 
 interface FocusableProps extends RoleProps {
   flat?: boolean;

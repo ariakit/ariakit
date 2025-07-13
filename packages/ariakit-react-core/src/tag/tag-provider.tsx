@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { TagContextProvider } from "./tag-context.tsx";
-import { useTagStore } from "./tag-store.ts";
 import type { TagStoreProps } from "./tag-store.ts";
+import { useTagStore } from "./tag-store.ts";
 
 /**
  * Provides a tag store to [Tag](https://ariakit.org/components/tag) components.

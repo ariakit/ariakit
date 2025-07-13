@@ -1,17 +1,17 @@
 import { toArray } from "@ariakit/core/utils/array";
 import type { ElementType } from "react";
 import { useMemo } from "react";
-import {
-  getCompositeRendererItem,
-  getCompositeRendererItemId,
-  useCompositeRenderer,
-} from "../composite/composite-renderer.tsx";
 import type {
   CompositeRendererBaseItemProps,
   CompositeRendererItem,
   CompositeRendererItemObject,
   CompositeRendererItemProps,
   CompositeRendererOptions,
+} from "../composite/composite-renderer.tsx";
+import {
+  getCompositeRendererItem,
+  getCompositeRendererItemId,
+  useCompositeRenderer,
 } from "../composite/composite-renderer.tsx";
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, forwardRef } from "../utils/system.tsx";

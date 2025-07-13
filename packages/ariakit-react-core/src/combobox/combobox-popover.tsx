@@ -1,7 +1,7 @@
 import { getDocument } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
-import { useRef } from "react";
 import type { ElementType } from "react";
+import { useRef } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";

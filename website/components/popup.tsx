@@ -1,6 +1,6 @@
 "use client";
-import { Role } from "@ariakit/react";
 import type { RoleProps } from "@ariakit/react";
+import { Role } from "@ariakit/react";
 import { forwardRef } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
 

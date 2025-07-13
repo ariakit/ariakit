@@ -1,18 +1,18 @@
 import colorString from "color-string";
 import plugin from "tailwindcss/plugin";
 import {
-  LIGHTNESS_LEVELS,
-  SCHEME_THRESHOLD_L,
-  SCHEME_THRESHOLD_OKL,
-  TEXT_CONTRAST_L,
   bareValue,
   colorMix,
   css,
   isInlineThemeReference,
+  LIGHTNESS_LEVELS,
   lchLightDark,
   oklchLightDark,
   prop,
   properties,
+  SCHEME_THRESHOLD_L,
+  SCHEME_THRESHOLD_OKL,
+  TEXT_CONTRAST_L,
   textColor,
   toPercent,
   vars,
@@ -107,7 +107,7 @@ const AriakitTailwind = plugin(
       if (!value) {
         return { token: undefined, level: "1" };
       }
-      const matches = value.match(/(down\-)?([\.\d]+)$/);
+      const matches = value.match(/(down-)?([.\d]+)$/);
       if (!matches) {
         return { token: value, level: "0" };
       }
@@ -140,7 +140,7 @@ const AriakitTailwind = plugin(
      * @param {string} level
      */
     // @ts-expect-error
-    function getLayerLCH(level) {
+    function _getLayerLCH(level) {
       const minL = `min(2, ${level})`;
       const lMultiplier = 5;
       const cMultiplier = 0.00055;
@@ -907,7 +907,7 @@ const AriakitTailwind = plugin(
      * @param {string} css
      */
     // @ts-ignore
-    function debug(syntax, css) {
+    function _debug(syntax, css) {
       const initialValues = {
         color: "red",
         length: "9999px",

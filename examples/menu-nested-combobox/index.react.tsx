@@ -1,6 +1,6 @@
 import { Fragment, startTransition, useMemo, useState } from "react";
-import { actions, defaultValues } from "./actions.ts";
 import type { Action } from "./actions.ts";
+import { actions, defaultValues } from "./actions.ts";
 import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.tsx";
 import { filterActions } from "./utils.ts";
 

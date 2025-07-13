@@ -1,5 +1,5 @@
-import pageIndex from "@/build-pages/index.ts";
 import { kebabCase } from "lodash-es";
+import pageIndex from "@/build-pages/index.ts";
 
 const tags: string[] = [];
 const pages = Object.values(pageIndex).flat();

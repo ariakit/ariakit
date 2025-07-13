@@ -1,6 +1,6 @@
 import type { FrameLocator, Locator, Page } from "@playwright/test";
-import { roles } from "./__aria-role.ts";
 import type { AriaRole } from "./__aria-role.ts";
+import { roles } from "./__aria-role.ts";
 
 type RoleQuery = (
   name?: string | RegExp,

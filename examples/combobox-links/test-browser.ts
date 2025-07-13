@@ -1,4 +1,4 @@
-import { type Page, expect, query } from "@ariakit/test/playwright";
+import { expect, type Page, query } from "@ariakit/test/playwright";
 import { test } from "../test-utils.ts";
 
 const getClickModifier = async (page: Page) => {

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import type { CSSProperties, ComponentProps } from "react";
+import type { ComponentProps, CSSProperties } from "react";
 import { useId } from "react";
 import * as icons from "./icons.ts";
 
@@ -15,8 +15,10 @@ export function Icon({ name, animateStroke, ...props }: IconProps) {
   const hasLabel =
     props["aria-label"] !== undefined || props["aria-labelledby"] !== undefined;
 
-  const { html, stroke, replaceId, fill, size = 24, emSize = 1 } = icons[name];
-  const strokeWidth = props.strokeWidth ?? icons[name].strokeWidth ?? 1.5;
+  // biome-ignore lint/performance/noDynamicNamespaceImportAccess: name is constrained to keyof typeof icons
+  const icon = icons[name];
+  const { html, stroke, replaceId, fill, size = 24, emSize = 1 } = icon;
+  const strokeWidth = props.strokeWidth ?? icon.strokeWidth ?? 1.5;
 
   let content = html;
 

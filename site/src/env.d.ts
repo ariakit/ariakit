@@ -12,7 +12,7 @@ type Runtime = import("@astrojs/cloudflare").Runtime<{
   ADMIN: KVNamespace;
 }>;
 
-namespace App {
+declare namespace App {
   interface Locals extends Runtime {
     user?: User | null;
     framework?: Framework;
@@ -55,7 +55,7 @@ interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
-namespace astroHTML.JSX {
+declare namespace astroHTML.JSX {
   interface ButtonHTMLAttributes {
     command?:
       | "show-modal"

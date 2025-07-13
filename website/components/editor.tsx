@@ -1,11 +1,11 @@
 "use client";
-import { useMedia } from "@/lib/use-media.ts";
 import { invariant } from "@ariakit/core/utils/misc";
 import { Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import type * as monaco from "monaco-editor";
 import type { ReactNode } from "react";
 import { useEffect, useId, useRef, useState } from "react";
 import { bundledLanguages } from "shiki";
+import { useMedia } from "@/lib/use-media.ts";
 
 export interface EditorProps {
   files: Record<string, string>;

@@ -364,7 +364,7 @@ export function withParentL(fn) {
     const query = `@container style(${vars._layerL}: lch(${l} 0 0))`;
     const result = fn(l);
     if (!result) return acc;
-    Object.assign(acc, { [query]: result });
+    acc[query] = result;
     return acc;
   }, css());
 }
@@ -382,7 +382,7 @@ export function withParentOkL(fn) {
     const query = `@container style(${vars._layerOkL}: oklch(${l} 0 0))`;
     const result = fn(l);
     if (!result) return acc;
-    Object.assign(acc, { [query]: result });
+    acc[query] = result;
     return acc;
   }, css());
 }

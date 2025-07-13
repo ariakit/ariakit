@@ -1,6 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
-import { useEffect } from "react";
 import type { ElementType } from "react";
+import { useEffect } from "react";
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
 import { useInitialValue, useWrapElement } from "../utils/hooks.ts";

@@ -1,4 +1,4 @@
-import { type ValidComponent, createSignal } from "solid-js";
+import { createSignal, type ValidComponent } from "solid-js";
 import { As } from "../as/as.tsx";
 import { mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance, wrapInstance } from "../utils/system.tsx";

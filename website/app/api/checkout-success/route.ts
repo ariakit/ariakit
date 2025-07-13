@@ -1,3 +1,6 @@
+import { currentUser } from "@clerk/nextjs";
+import type { NextRequest } from "next/server.ts";
+import { z } from "zod";
 import { getStripeId } from "@/lib/clerk.ts";
 import {
   cancelSubscription,
@@ -5,9 +8,6 @@ import {
   getCheckout,
   listActiveSubscriptions,
 } from "@/lib/stripe.ts";
-import { currentUser } from "@clerk/nextjs";
-import type { NextRequest } from "next/server.ts";
-import { z } from "zod";
 
 const paramsSchema = z
   .object({
