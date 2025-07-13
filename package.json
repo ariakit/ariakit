@@ -92,7 +92,7 @@
     "@clerk/nextjs": "4.31.8",
     "@clerk/types": "3.65.5",
     "@fontsource-variable/inter": "5.2.6",
-    "@playwright/test": "1.54.0",
+    "@playwright/test": "1.54.1",
     "@radix-ui/react-popover": "1.1.14",
     "@radix-ui/react-select": "2.2.5",
     "@stackblitz/sdk": "1.11.0",
