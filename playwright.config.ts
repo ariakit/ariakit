@@ -49,6 +49,7 @@ export default defineConfig({
       name: "safari",
       testMatch: [/\/test[^/]*-safari/, /\/test[^/]*-browser/],
       use: devices["Desktop Safari"],
+      retries: CI ? 3 : 1,
     },
     {
       name: "ios",

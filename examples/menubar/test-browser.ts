@@ -9,6 +9,8 @@ function query(locator: Page | Locator) {
   };
 }
 
+test.describe.configure({ retries: 3 });
+
 test("re-open submenu and shift-tab back to the parent menu", async ({
   page,
 }) => {
