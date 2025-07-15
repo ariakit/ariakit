@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import type { ComponentProps, ReactNode } from "react";
 import { Icon } from "#app/icons/icon.react.tsx";
+import { InlineFragment } from "./inline-fragment.react.tsx";
 
 interface InlineLinkProps extends ComponentProps<"a"> {
   newWindow?: boolean;
@@ -23,18 +24,12 @@ export function InlineLink({
       target={newWindow ? "_blank" : undefined}
       rel={newWindow ? "noopener noreferrer nofollow" : undefined}
     >
-      {iconLeft && (
-        <span className="whitespace-nowrap me-[0.25em] select-none">
-          {iconLeft}&#x2060;
-        </span>
-      )}
-      {children}
-      {(newWindow || iconRight) && (
-        <span className="whitespace-nowrap ms-[0.25em] select-none">
-          &#x2060;
-          {iconRight || <Icon name="newWindow" />}
-        </span>
-      )}
+      <InlineFragment
+        iconLeft={iconLeft}
+        iconRight={iconRight || (newWindow && <Icon name="newWindow" />)}
+      >
+        {children}
+      </InlineFragment>
     </a>
   );
 }
