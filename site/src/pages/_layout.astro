@@ -40,12 +40,11 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
             <div class="ak-container flex items-center gap-3 py-2">
               <div class="flex items-center gap-2"><Logo iconOnly /></div>
 
-              <div class="flex items-center gap-0.5 min-w-0">
+              <div class="flex items-center min-w-0">
                 <span
                   aria-hidden="true"
-                  class="opacity-30 text-3xl/0 font-thin cursor-default @max-3xl:hidden"
-                  >/</span
-                >
+                  class="ak-layer-current -me-px ak-edge/20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:delay-[0ms,50ms]"
+                ></span>
                 <button
                   class="ak-button font-normal ak-dark:ak-text/80 @max-3xl:hidden"
                 >
@@ -53,9 +52,8 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
                 </button>
                 <span
                   aria-hidden="true"
-                  class="opacity-30 text-3xl/0 font-thin cursor-default @max-3xl:hidden"
-                  >/</span
-                >
+                  class="ak-layer-current -me-px ak-edge/20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
+                ></span>
                 <button
                   class="ak-button font-normal ak-dark:ak-text/80 min-w-0 @max-3xl:hidden"
                 >
@@ -63,8 +61,8 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
                 </button>
                 <span
                   aria-hidden="true"
-                  class="opacity-30 text-3xl/0 font-thin cursor-default">/</span
-                >
+                  class="ak-layer-current -me-px ak-edge/20 border-s rotate-15 flex-none h-8 block [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
+                ></span>
                 <button class="ak-button min-w-0">
                   <span class="truncate">{title}</span>
                   <span class="ak-text/0 font-normal">⌘K</span>
