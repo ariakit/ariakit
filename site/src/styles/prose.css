@@ -88,7 +88,8 @@
 
 @utility ak-prose {
   --ak-prose-gap: 1.25em;
-  @apply ak-text/80 gap-(--ak-prose-gap) flex flex-col;
+  @apply ak-text/80 ak-prose-text-base/relaxed;
+  @apply gap-(--ak-prose-gap) flex flex-col;
 
   :where(strong) {
     @apply ak-text;
