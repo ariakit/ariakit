@@ -12,6 +12,13 @@ export const frameworks = {
   vue: { label: "Vue", icon: "vue" },
 } as const satisfies Frameworks;
 
+export function isFramework(
+  framework?: string,
+): framework is keyof typeof frameworks {
+  if (!framework) return false;
+  return framework in frameworks;
+}
+
 export function isJsxFramework(framework?: string) {
   return (
     framework === "react" || framework === "solid" || framework === "preact"
