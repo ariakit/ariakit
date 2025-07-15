@@ -1,4 +1,6 @@
 ---
+import { InlineFragment } from "#app/components/inline-fragment.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
 import type { MarkdownHeading } from "astro";
 import type { HTMLAttributes } from "astro/types";
 
@@ -36,7 +38,12 @@ const allHeadings = title
             data-heading-link={heading.slug}
             data-top-level={isTopLevel || undefined}
           >
-            {heading.text} {isTopLevel ? <span class="ak-text/0">↑</span> : ""}
+            <InlineFragment>
+              {heading.text}
+              {!!isTopLevel && (
+                <Icon slot="iconRight" name="arrowUp" className="ak-text/0" />
+              )}
+            </InlineFragment>
           </a>
           <div
             class="absolute inset-y-0 -left-3 w-[calc(1px+0.03rem*var(--contrast))] bg-current opacity-0 data-visible:opacity-100 data-active:opacity-100"
