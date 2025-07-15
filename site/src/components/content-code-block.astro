@@ -126,12 +126,40 @@ function parseCodeBlock(html: string): CodeBlockProps {
   };
 }
 
-const { tabs } = Astro.props;
+function getPackageManagerTabs(
+  props: Pick<CodeBlockProps, "lang" | "code"> | null
+) {
+  if (!props) return null;
+  const { lang, code } = props;
+  if (lang !== "sh" && lang !== "bash") return null;
+  if (!code.startsWith("npm install")) return null;
+  const packages = code.replace(/^npm install\s*/, "").trim();
+  const tabs = [
+    { filename: "npm", code: `npm install ${packages}` },
+    { filename: "pnpm", code: `pnpm add ${packages}` },
+    { filename: "yarn", code: `yarn add ${packages}` },
+    { filename: "bun", code: `bun add ${packages}` },
+  ];
+  return {
+    tabs,
+    props: { persistTabKey: "package-manager" },
+  };
+}
+
+let { tabs, ...props } = Astro.props;
 
 const hasProps = Object.keys(Astro.props).length > 0;
-const codeBlockProps = !hasProps
+let codeBlockProps = !hasProps
   ? parseCodeBlock(await Astro.slots.render("default"))
   : null;
+
+const packageManagerTabs = getPackageManagerTabs(codeBlockProps);
+
+if (packageManagerTabs) {
+  tabs = packageManagerTabs.tabs;
+  Object.assign(props, packageManagerTabs.props);
+  codeBlockProps = null;
+}
 
 // Automatically set the filename icon for each tab
 if (tabs?.length) {
@@ -154,7 +182,7 @@ if (tabs?.length) {
     codeBlockProps ? (
       <CodeBlock {...codeBlockProps} />
     ) : (
-      <CodeBlockTabs {...Astro.props} />
+      <CodeBlockTabs {...props} {tabs} />
     )
   }
 </div>
