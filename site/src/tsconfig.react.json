@@ -9,6 +9,6 @@
     "jsx": "preserve",
     "jsxImportSource": "react"
   },
-  "include": ["**/*.react.tsx", "**/*.ts"],
+  "include": ["../.astro/types.d.ts", "env.d.ts", "**/*.react.tsx", "**/*.ts"],
   "exclude": ["content.config.ts"]
 }

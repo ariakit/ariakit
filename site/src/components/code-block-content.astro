@@ -1,5 +1,6 @@
 ---
 import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
+import { invariant } from "@ariakit/core/utils/misc";
 import { diffLines, diffWordsWithSpace } from "diff";
 import type { ThemedToken } from "shiki";
 import type { CodeBlockProps } from "./code-block.types";
@@ -112,6 +113,7 @@ if (previousCode) {
 
   for (let i = 0; i < changes.length; i++) {
     const part = changes[i];
+    invariant(part);
     const nextPart = i + 1 < changes.length ? changes[i + 1] : null;
 
     const lines = part.value.replace(/\n$/, "").split("\n");
@@ -124,6 +126,8 @@ if (previousCode) {
         for (let j = 0; j < removedLines.length; j++) {
           const oldLine = removedLines[j];
           const newLine = addedLines[j];
+          invariant(oldLine);
+          invariant(newLine);
           const wordDiff = diffWordsWithSpace(oldLine, newLine);
           const modifiedSegmentCount = wordDiff.filter(
             (p) => p.added || p.removed
@@ -349,6 +353,8 @@ function createHighlightSegments(
       for (let i = 0; i < sortedSplitPoints.length - 1; i++) {
         const fragmentStart = sortedSplitPoints[i];
         const fragmentEnd = sortedSplitPoints[i + 1];
+        invariant(fragmentStart);
+        invariant(fragmentEnd);
 
         // Check if this fragment is highlighted
         const highlight = textHighlights.find(
@@ -732,6 +738,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                         }
                         // Single token highlight - use token colors for background
                         const firstFragment = segment.fragments[0];
+                        invariant(firstFragment);
                         const style = firstFragment.token.htmlStyle as any;
                         const dark =
                           style?.["--shiki-dark"] || firstFragment.token.color;
@@ -822,6 +829,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                         }
                         // Single token highlight - use token colors for background
                         const firstFragment = segment.fragments[0];
+                        invariant(firstFragment);
                         const style = firstFragment.token.htmlStyle as any;
                         const dark =
                           style?.["--shiki-dark"] || firstFragment.token.color;

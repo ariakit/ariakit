@@ -43,7 +43,7 @@ const { threshold = 0, ...props } = Astro.props;
 
       const observer = new IntersectionObserver(
         ([entry]) => {
-          const isStuck = !entry.isIntersecting;
+          const isStuck = !entry?.isIntersecting;
           stickyEl.toggleAttribute("data-stuck", isStuck);
           stickyEl.toggleAttribute("data-not-stuck", !isStuck);
         },

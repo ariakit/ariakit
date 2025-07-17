@@ -1,5 +1,6 @@
 import { defineCollection, z } from "astro:content";
 import { join } from "node:path";
+import { invariant } from "@ariakit/core/utils/misc";
 import { glob } from "astro/loaders";
 import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
 
@@ -13,6 +14,8 @@ const guides = defineCollection({
     base: join(import.meta.dirname, "guides"),
     generateId(options) {
       const [group, entry] = options.entry.split("/");
+      invariant(group, "Guide must belong to a group or framework");
+      invariant(entry, "Guide must have an id");
       const id = entry.replace(/^(?:\d-)?(.+)\.mdx?$/, "$1");
       return `${group}/${id}`;
     },

@@ -2,6 +2,7 @@
 import * as icons from "#app/icons/icons.ts";
 import { isJsxFramework } from "#app/lib/frameworks.ts";
 import { getLangFromFilename } from "#app/lib/shiki.ts";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { ComponentProps } from "astro/types";
 import { decode } from "html-entities";
 import parseNumericRange from "parse-numeric-range";
@@ -32,6 +33,7 @@ function getFilenameIcon(
 function parseLang(className?: string) {
   if (!className) return { filename: undefined, lang: undefined };
   const [, filename] = className.match(/language\-(.+)/) ?? [];
+  if (!filename) return { filename: undefined, lang: undefined };
   const lang = getLangFromFilename(filename);
   const showFilename = filename !== lang;
   return {
@@ -94,6 +96,7 @@ function parseMetaString(metaString?: string) {
     .filter((item) => tokenPattern.test(item))
     .map((item) => {
       const [, token, ranges] = item.match(tokenPattern) || [];
+      invariant(token, "Token must be defined");
       if (!ranges) return token;
       return [token, ...parseNumericRange(ranges)] as const;
     });
@@ -114,6 +117,9 @@ function parseCodeBlock(html: string): CodeBlockProps {
     return { code: html };
   }
   const [, attributes, encodedContent] = codeMatch;
+  if (!attributes) {
+    return { code: html };
+  }
   const className = attributes.match(/class="([^"]*)"/)?.[1];
   const langInfo = parseLang(className);
   const metaString = attributes.match(/metastring="([^"]*)"/)?.[1];
