@@ -186,8 +186,13 @@ const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`
   >
   </div>
   <div
-    class="ak-layer-current ring scroll-mt-[calc(var(--header-height)-1px)] @5xl:grid [--pqp:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)] grid-cols-[var(--pqp)_min(calc(100%-var(--pqp)),var(--container-default)+var(--ak-container-p)*2)] @max-overlap:grid-cols-[var(--pqp)_1fr] content-start"
     id="tags"
+    class:list={[
+      "ak-layer-current ring scroll-mt-[calc(var(--header-height)-1px)] @5xl:grid content-start",
+      "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)]",
+      "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),var(--container-default)+var(--ak-container-p)*2)]",
+      "@max-overlap:grid-cols-[var(--sidebar-menu-width)_1fr]",
+    ]}
   >
     <div class="justify-self-end-safe z-2 @max-5xl:hidden">
       <SidebarMenu

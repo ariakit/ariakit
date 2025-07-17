@@ -37,7 +37,11 @@ if (framework) {
 
 <Layout title={entry.data.title} headerBorder {headings}>
   <div
-    class="overflow-x-clip ak-layer-current @5xl:grid [--pqp:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)] grid-cols-[var(--pqp)_min(calc(100%-var(--pqp)),calc(var(--container-wide)---spacing(2)))] content-start"
+    class:list={[
+      "overflow-x-clip ak-layer-current @5xl:grid content-start",
+      "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)]",
+      "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),calc(var(--container-wide)---spacing(2)))]",
+    ]}
   >
     <div class="justify-self-end-safe z-2 @max-5xl:hidden">
       <SidebarMenu
