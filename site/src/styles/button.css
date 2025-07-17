@@ -29,6 +29,12 @@
   @apply aspect-square p-0;
 }
 
+@utility ak-button-square-* {
+  height: --spacing(--value(number));
+  height: --value(--spacing, [length]);
+  @apply aspect-square p-0;
+}
+
 @utility ak-button-classic_idle {
   @apply ak-button_idle ak-layer;
   @apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-gradient-to-b from-50% bg-clip-padding;
