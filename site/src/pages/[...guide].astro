@@ -1,0 +1,97 @@
+---
+import { components } from "#app/components/content-components.astro";
+import SidebarMenu from "#app/components/sidebar-menu.astro";
+import TableOfContents from "#app/components/table-of-contents.astro";
+import { isFramework } from "#app/lib/frameworks.ts";
+import Layout from "#app/pages/_layout.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+
+export const getStaticPaths = (async () => {
+  const entries = await getCollection("guides");
+  return entries.flatMap((entry) => {
+    const [group, id] = entry.id.split("/");
+    const groupMap: Record<string, string> = {
+      "ariakit-react": "react/components",
+      "ariakit-solid": "solid/components",
+      "ariakit-tailwind": "styles/tailwind",
+    };
+    const path = groupMap[group] || group;
+    const [maybeFramework] = groupMap[group]?.split("/");
+    const framework = isFramework(maybeFramework) ? maybeFramework : undefined;
+    console.log(`${path}/${id}`);
+    return {
+      params: { guide: `${path}/${id}` },
+      props: { entry, framework },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { entry, framework } = Astro.props;
+const { Content, headings } = await render(entry);
+
+if (framework) {
+  Astro.locals.framework = framework;
+}
+---
+
+<Layout title={entry.data.title} headerBorder {headings}>
+  <div
+    class="overflow-x-clip ak-layer-current @5xl:grid [--pqp:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)] grid-cols-[var(--pqp)_min(calc(100%-var(--pqp)),calc(var(--container-wide)---spacing(2)))] content-start"
+  >
+    <div class="justify-self-end-safe z-2 @max-5xl:hidden">
+      <SidebarMenu
+        links={[
+          {
+            label: "Components",
+            href: "/react/components/#tags",
+            isCurrent: true,
+          },
+          { label: "Guides" },
+          {
+            label: "Getting Started with Ariakit React Components",
+            href: "/react/components/getting-started",
+          },
+          { label: "Styling", href: "/react/components/styling" },
+          { label: "Composition", href: "/react/components/composition" },
+          {
+            label: "Component Providers",
+            href: "/react/components/component-providers",
+          },
+        ]}
+      />
+    </div>
+    <div data-content="true" class="ak-layer-current border-s">
+      <div class="@container min-h-[200dvh]">
+        <div
+          class="flex flex-col gap-16 @max-3xl:[--container-sidebar:0] @7xl:[--container-p:--spacing(14)] @5xl:[--container-p:--spacing(8)] @3xl:[--container-p:--spacing(6)] [--container-p:--spacing(3)]"
+        >
+          <div
+            class="ak-container-size-[calc(100cqi-var(--ak-container-p)*2-var(--container-sidebar))]/0 ak-container ms-0 pt-18"
+          >
+            <div
+              class="ak-container-size-content/(--container-p) ak-container flex flex-col gap-4"
+            >
+              <h1 class="text-4xl font-semibold">{entry.data.title}</h1>
+              <div class="ak-text/60 text-lg">{entry.data.description}</div>
+            </div>
+          </div>
+          <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
+            <div
+              class="ak-prose @3xl:ak-container-size-[calc(100cqi-var(--container-sidebar))]/(--container-p) ak-container @5xl:ak-prose-text-lg/relaxed flex flex-col"
+            >
+              <Content {framework} {components} />
+            </div>
+            <div class="hidden @3xl:block pe-(--container-p)">
+              <TableOfContents
+                {headings}
+                title={entry.data.title}
+                class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
