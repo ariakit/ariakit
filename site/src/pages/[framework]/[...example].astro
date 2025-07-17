@@ -1,11 +1,6 @@
 ---
 import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
-import ContentAdmonition from "#app/components/content-admonition.astro";
-import ContentCodeBlock from "#app/components/content-code-block.astro";
-import ContentHeading from "#app/components/content-heading.astro";
-import ContentLink from "#app/components/content-link.astro";
-import ContentList from "#app/components/content-list.astro";
-import ContentParagraph from "#app/components/content-paragraph.astro";
+import { components } from "#app/components/content-components.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { mapTags } from "#app/lib/tags.ts";
@@ -40,21 +35,6 @@ const tags = mapTags(entry.data.tags, [framework]);
 
 Astro.locals.framework = framework;
 Astro.locals.example = entry.id;
-
-const components = {
-  a: ContentLink,
-  p: ContentParagraph,
-  pre: ContentCodeBlock,
-  h1: ContentHeading,
-  h2: ContentHeading,
-  h3: ContentHeading,
-  h4: ContentHeading,
-  h5: ContentHeading,
-  h6: ContentHeading,
-  ul: ContentList,
-  ol: ContentList,
-  admonition: ContentAdmonition,
-};
 ---
 
 <Layout title={entry.data.title} {headings}>
