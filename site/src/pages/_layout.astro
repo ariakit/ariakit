@@ -12,9 +12,15 @@ export interface Props {
   title?: string;
   headings?: MarkdownHeading[];
   toc?: boolean;
+  headerBorder?: boolean;
 }
 
-const { title, headings, toc = !!headings?.length } = Astro.props;
+const {
+  title,
+  headings,
+  toc = !!headings?.length,
+  headerBorder = false,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -27,7 +33,7 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
     <ClientRouter />
   </head>
   <body
-    class="ak-container-size-default/3 overflow-x-clip [--header-height:--spacing(14)] [--theme-sidebar-width:--spacing(100)]"
+    class="ak-container-size-default/3 overflow-x-clip [--header-height:calc(--spacing(14)+1px)] [--theme-sidebar-width:--spacing(100)]"
   >
     <div class="flex">
       <div
@@ -35,9 +41,14 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
       >
         <Sticky class="ak-container-size-default top-0 z-10">
           <header
-            class="ak-layer-current in-data-not-stuck:bg-transparent in-has-[:popover-open_[data-table-of-contents]]:ring in-data-stuck:ring ak-light:ak-layer ak-light:in-data-not-stuck:bg-transparent"
+            class:list={[
+              "ak-layer-current in-data-not-stuck:bg-transparent in-has-[:popover-open_[data-table-of-contents]]:ring in-data-stuck:ring ak-light:ak-layer ak-light:in-data-not-stuck:bg-transparent",
+              headerBorder ? "ring" : "",
+            ]}
           >
-            <div class="ak-container flex items-center gap-3 py-2">
+            <div
+              class="@max-overlap:ak-container-size-[100dvw] transition-[max-width] ak-container flex items-center gap-3 py-2"
+            >
               <div class="flex items-center gap-2"><Logo iconOnly /></div>
 
               <div class="flex items-center min-w-0">
@@ -73,7 +84,7 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
                   headings && headings.length > 0 && toc && (
                     <div class="@3xl:hidden">
                       <button
-                        class="ak-button"
+                        class="ak-button ak-button-square-10"
                         popovertarget="mobile-toc"
                         aria-label="Table of contents"
                       >
@@ -112,7 +123,7 @@ const { title, headings, toc = !!headings?.length } = Astro.props;
                 </a>
                 <button
                   id="theme-toggle"
-                  class="ak-button font-normal text-sm group/theme"
+                  class="ak-button font-normal text-sm group/theme @max-4xl:ak-button-square-10"
                 >
                   <div
                     class="flex-none ak-layer rounded-full p-1 border-white bg-clip-padding bg-conic/decreasing from-violet-500 via-lime-500 to-violet-500"
