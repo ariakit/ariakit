@@ -1,11 +1,12 @@
 ---
 import Sticky from "#app/components/sticky.astro";
-import type { ComponentProps } from "astro/types";
+import { trimRight } from "#app/lib/string.ts";
+import type { HTMLAttributes } from "astro/types";
 
 interface LinkItem {
   href: string;
   label: string;
-  isCurrent?: boolean;
+  currentPage?: boolean;
 }
 
 interface HeadingItem {
@@ -14,12 +15,12 @@ interface HeadingItem {
 
 export type SidebarMenuItem = LinkItem | HeadingItem;
 
-interface Props extends ComponentProps<typeof Sticky> {
-  links: SidebarMenuItem[];
+interface Props extends HTMLAttributes<"div"> {
+  items: SidebarMenuItem[];
   revealOnStuck?: boolean;
 }
 
-const { links, revealOnStuck = false, ...props } = Astro.props;
+const { items, revealOnStuck = false, ...props } = Astro.props;
 
 function isLinkItem(item: SidebarMenuItem) {
   return "href" in item;
@@ -28,44 +29,63 @@ function isLinkItem(item: SidebarMenuItem) {
 function isHeadingItem(item: SidebarMenuItem): item is HeadingItem {
   return !isLinkItem(item);
 }
+
+function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
+  if (!isLinkItem(item)) return false;
+  if (item.currentPage) return true;
+  // If any other link is forced current, this link is not current.
+  if (items.some((item) => isLinkItem(item) && item.currentPage)) return false;
+  const url = new URL(item.href, Astro.url.origin);
+  return trimRight(pathname, "/") === trimRight(url.pathname, "/");
+}
 ---
 
-<Sticky
-  class:list={["top-(--header-height) [--p:--spacing(2)] p-(--p)", props.class]}
+<div
+  class:list={[
+    "justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size_+_--spacing(4))] max-w-full sidebar-menu z-2 @max-5xl:hidden",
+    props.class,
+  ]}
   {...props}
-  threshold={revealOnStuck ? 192 : 10}
 >
-  <ul
-    class:list={[
-      revealOnStuck &&
-        "base:@overlap:pointer-events-none base:@overlap:opacity-0 in-data-stuck:pointer-events-auto in-data-stuck:opacity-100 transition-opacity duration-500",
-    ]}
+  <Sticky
+    class="top-(--header-height) [--p:--spacing(2)] p-(--p)"
+    threshold={revealOnStuck ? 192 : 10}
   >
-    {
-      links.map((item) => {
-        if (isHeadingItem(item)) {
-          return (
-            <li class="ak-text/0 font-medium pb-3 px-2 mt-5">{item.label}</li>
-          );
-        }
-        const { href, label, isCurrent } = item;
+    <ul
+      class:list={[
+        "flex flex-col gap-1",
+        revealOnStuck &&
+          "base:@overlap:pointer-events-none base:@overlap:opacity-0 in-data-stuck:pointer-events-auto in-data-stuck:opacity-100 transition-opacity duration-500",
+      ]}
+    >
+      {
+        items.map((item) => {
+          if (isHeadingItem(item)) {
+            return (
+              <li class="ak-text/0 font-medium p-field text-sm not-first-of-type:mt-2">
+                {item.label}
+              </li>
+            );
+          }
+          const { href, label } = item;
 
-        return (
-          <li class="relative">
-            <a
-              href={href}
-              aria-current={isCurrent ? "page" : undefined}
-              class="peer ak-button justify-start font-normal ak-frame-field/2 whitespace-normal aria-[current]:font-semibold aria-[current]:ak-layer-pop"
-            >
-              {label}
-            </a>
-            <div
-              class="absolute inset-y-0 -right-[calc(var(--p)+1px)] w-[calc(2px+0.03rem*var(--contrast))] bg-current opacity-0 peer-aria-[current=page]:opacity-100"
-              data-indicator
-            />
-          </li>
-        );
-      })
-    }
-  </ul>
-</Sticky>
+          return (
+            <li class="relative">
+              <a
+                href={href}
+                aria-current={isCurrentPage(item) ? "page" : undefined}
+                class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop"
+              >
+                {label}
+              </a>
+              <div
+                class="absolute inset-y-0 -right-[calc(var(--p)+1px)] w-[calc(2px+0.03rem*var(--contrast))] bg-current opacity-0 peer-aria-[current=page]:opacity-100"
+                data-indicator
+              />
+            </li>
+          );
+        })
+      }
+    </ul>
+  </Sticky>
+</div>

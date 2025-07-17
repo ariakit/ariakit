@@ -1,7 +1,6 @@
 ---
 import { type CollectionEntry, getCollection } from "astro:content";
 import type { GetStaticPaths } from "astro";
-import type { Framework } from "#app/lib/schemas.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
 import PageCard from "#app/components/page-card.astro";
@@ -10,6 +9,7 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
+import { filterGuidesByGroup, getGuideDetail } from "#app/lib/content.ts";
 
 export const getStaticPaths = (async () => {
   const allExamples = await getCollection("examples");
@@ -34,7 +34,7 @@ export const getStaticPaths = (async () => {
     ...new Set(
       allExamples.flatMap((entry) => entry.data.frameworks || "react")
     ),
-  ] as Framework[];
+  ];
 
   return frameworks.flatMap((framework) => {
     return types.flatMap((type) => {
@@ -48,10 +48,7 @@ export const getStaticPaths = (async () => {
         })
         .sort((a, b) => a.data.title.localeCompare(b.data.title));
 
-      const frameworkExampleIds = frameworkExamples.map(
-        (example) => example.id
-      );
-
+      const frameworkExampleIds = frameworkExamples.map((e) => e.id);
       const galleries = allGalleries.filter((gallery) =>
         frameworkExampleIds.includes(gallery.id)
       );
@@ -62,7 +59,7 @@ export const getStaticPaths = (async () => {
       );
 
       const frameworkLength = frameworkExamples.reduce((acc, example) => {
-        const gallery = galleries.find((gallery) => gallery.id === example.id);
+        const gallery = galleries.find((g) => g.id === example.id);
         return acc + (gallery?.data.length || 1);
       }, 0);
 
@@ -71,15 +68,10 @@ export const getStaticPaths = (async () => {
           (example) => !!example.data.tags.find((t) => t === tag?.id)
         );
         const tagLength = tagExamples.reduce((acc, example) => {
-          const gallery = galleries.find(
-            (gallery) => gallery.id === example.id
-          );
+          const gallery = galleries.find((g) => g.id === example.id);
           return acc + (gallery?.data.length || 1);
         }, 0);
-        return {
-          ...tag,
-          length: tagLength,
-        };
+        return { ...tag, length: tagLength };
       });
 
       return [null, ...frameworkTags].map((tag) => {
@@ -136,6 +128,12 @@ function getExamplePath(example: CollectionEntry<"examples">) {
 const frameworkData = getFramework(framework);
 
 const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`;
+
+const groupPath = `/${framework}/${type.plural}`;
+const guides = (
+  await getCollection("guides", filterGuidesByGroup(groupPath))
+).map(getGuideDetail);
+const hasGuides = guides.length > 0;
 ---
 
 <Layout {title}>
@@ -143,10 +141,17 @@ const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`
     class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8"
   >
     <div class="flex flex-col items-center gap-4">
-      <a href="/" class="ak-button rounded-full ak-badge-primary text-sm">
-        <span>Tutorials, guides, and more</span>
-        <Icon name="arrowRight" className="flex-none" />
-      </a>
+      {
+        !!guides[0] && (
+          <a
+            href={guides[0].path}
+            class="ak-button rounded-full ak-badge-primary text-sm"
+          >
+            <span>Tutorials, guides, and more</span>
+            <Icon name="arrowRight" className="flex-none" />
+          </a>
+        )
+      }
       <h1
         class="text-2xl @3xl:text-4xl font-semibold relative text-center flex items-center gap-2"
       >
@@ -188,33 +193,35 @@ const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`
   <div
     id="tags"
     class:list={[
-      "ak-layer-current ring scroll-mt-[calc(var(--header-height)-1px)] @5xl:grid content-start",
+      "ak-layer-current ring scroll-mt-[calc(var(--header-height)-1px)] content-start",
+      "[--p:var(--ak-container-p)]",
       "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)]",
       "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),var(--container-default)+var(--ak-container-p)*2)]",
       "@max-overlap:grid-cols-[var(--sidebar-menu-width)_1fr]",
+      hasGuides && "@5xl:grid",
     ]}
   >
-    <div class="justify-self-end-safe z-2 @max-5xl:hidden">
-      <SidebarMenu
-        revealOnStuck
-        links={[
-          { label: "Components", href: "/react/components", isCurrent: true },
-          { label: "Guides" },
-          {
-            label: "Getting Started with Ariakit React Components",
-            href: "/react/components/getting-started",
-          },
-          { label: "Styling", href: "/react/components/styling" },
-          { label: "Composition", href: "/react/components/composition" },
-          {
-            label: "Component Providers",
-            href: "/react/components/component-providers",
-          },
-        ]}
-      />
-    </div>
+    {
+      hasGuides && (
+        <SidebarMenu
+          revealOnStuck
+          items={[
+            { label: type.capitalPlural, href: groupPath },
+            { label: "Guides" },
+            ...guides.map((guide) => ({
+              label: guide.data.title,
+              href: guide.path,
+            })),
+          ]}
+        />
+      )
+    }
     <div
-      class="flex flex-col gap-4 ak-layer-current border-x z-1 min-h-[100dvh]"
+      class:list={[
+        "flex flex-col ak-layer-current border-x z-1 min-h-[100dvh]",
+        !hasGuides &&
+          "ak-container-size-[calc(var(--container-default)+var(--p)*2)]/0 ak-container",
+      ]}
     >
       <HorizontalScroll
         class="sticky top-(--header-height) z-2 ak-layer-current [box-shadow:0_1px_0_0_var(--ak-layer-border)]"
@@ -246,7 +253,7 @@ const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`
         </ul>
       </HorizontalScroll>
       <div
-        class="ak-container-size-default/4 ak-container grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4 ms-4"
+        class="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4 p-4 pt-[calc(--spacing(4)+1px)]"
       >
         {
           examples.map((example) => (

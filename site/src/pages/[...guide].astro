@@ -2,7 +2,7 @@
 import { components } from "#app/components/content-components.astro";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
-import { isFramework } from "#app/lib/frameworks.ts";
+import { filterGuidesByGroup, getGuideDetail } from "#app/lib/content.ts";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
@@ -10,25 +10,20 @@ import { getCollection, render } from "astro:content";
 export const getStaticPaths = (async () => {
   const entries = await getCollection("guides");
   return entries.flatMap((entry) => {
-    const [group, id] = entry.id.split("/");
-    const groupMap: Record<string, string> = {
-      "ariakit-react": "react/components",
-      "ariakit-solid": "solid/components",
-      "ariakit-tailwind": "styles/tailwind",
-    };
-    const path = groupMap[group] || group;
-    const [maybeFramework] = groupMap[group]?.split("/");
-    const framework = isFramework(maybeFramework) ? maybeFramework : undefined;
-    console.log(`${path}/${id}`);
+    const { path, framework, groupLabel, groupPath } = getGuideDetail(entry);
     return {
-      params: { guide: `${path}/${id}` },
-      props: { entry, framework },
+      params: { guide: path },
+      props: { entry, framework, groupLabel, groupPath },
     };
   });
 }) satisfies GetStaticPaths;
 
-const { entry, framework } = Astro.props;
+const { entry, groupLabel, groupPath, framework } = Astro.props;
 const { Content, headings } = await render(entry);
+
+const guides = (
+  await getCollection("guides", filterGuidesByGroup(groupPath))
+).map(getGuideDetail);
 
 if (framework) {
   Astro.locals.framework = framework;
@@ -43,28 +38,16 @@ if (framework) {
       "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),calc(var(--container-wide)---spacing(2)))]",
     ]}
   >
-    <div class="justify-self-end-safe z-2 @max-5xl:hidden">
-      <SidebarMenu
-        links={[
-          {
-            label: "Components",
-            href: "/react/components/#tags",
-            isCurrent: true,
-          },
-          { label: "Guides" },
-          {
-            label: "Getting Started with Ariakit React Components",
-            href: "/react/components/getting-started",
-          },
-          { label: "Styling", href: "/react/components/styling" },
-          { label: "Composition", href: "/react/components/composition" },
-          {
-            label: "Component Providers",
-            href: "/react/components/component-providers",
-          },
-        ]}
-      />
-    </div>
+    <SidebarMenu
+      items={[
+        { label: groupLabel, href: `${groupPath}/#tags` },
+        { label: "Guides" },
+        ...guides.map((guide) => ({
+          label: guide.data.title,
+          href: guide.path,
+        })),
+      ]}
+    />
     <div data-content="true" class="ak-layer-current border-s">
       <div class="@container min-h-[200dvh]">
         <div
