@@ -5,6 +5,8 @@
   --container-wide: 84rem;
   --container-default: 72rem;
   --container-sidebar: 24rem;
+
+  --container-overlap: 100.05rem;
 }
 
 @theme inline {
