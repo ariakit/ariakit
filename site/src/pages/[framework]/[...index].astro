@@ -9,7 +9,7 @@ import HorizontalScroll from "#app/components/horizontal-scroll.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
-import Sticky from "#app/components/sticky.astro";
+import SidebarMenu from "#app/components/sidebar-menu.astro";
 
 export const getStaticPaths = (async () => {
   const allExamples = await getCollection("examples");
@@ -182,58 +182,31 @@ const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`
     </div>
   </div>
   <div
-    class="ak-layer-current border-t scroll-mt-[calc(var(--header-height)-1px)] grid [--pqp:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)] grid-cols-[var(--pqp)_min(calc(100%-var(--pqp)),var(--container-default)+var(--ak-container-p)*2)] content-start"
+    class="sticky top-(--header-height) ak-layer-current w-full h-px z-2 -translate-y-px"
+  >
+  </div>
+  <div
+    class="ak-layer-current ring scroll-mt-[calc(var(--header-height)-1px)] @5xl:grid [--pqp:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)] grid-cols-[var(--pqp)_min(calc(100%-var(--pqp)),var(--container-default)+var(--ak-container-p)*2)] @max-overlap:grid-cols-[var(--pqp)_1fr] content-start"
     id="tags"
   >
-    <div class="justify-self-end-safe text-sm">
-      <Sticky threshold={1} class="top-(--header-height) p-3">
-        <ul
-          class="pointer-events-none opacity-0 in-data-stuck:pointer-events-auto in-data-stuck:opacity-100 transition-opacity duration-500"
-        >
-          <li class="relative">
-            <a
-              aria-current="page"
-              class="block peer decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text aria-[current=page]:font-semibold ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
-              href="/">Components</a
-            >
-            <div
-              class="absolute inset-y-0 -right-3 w-[calc(1px+0.03rem*var(--contrast))] bg-current opacity-0 data-visible:opacity-100 peer-aria-[current=page]:opacity-100"
-              data-indicator
-            >
-            </div>
-          </li>
-          <li class="ak-text/0 font-medium text-sm pb-3 px-2 mt-5">Guides</li>
-          <li class="relative">
-            <a
-              class="block peer decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
-              href="/">Getting Started</a
-            >
-            <div
-              class="absolute inset-y-0 -right-3 w-[calc(1px+0.03rem*var(--contrast))] bg-current opacity-0 data-visible:opacity-100 peer-aria-[current=page]:opacity-100"
-              data-indicator
-            >
-            </div>
-          </li>
-          <li>
-            <a
-              class="block decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
-              href="/">Styling</a
-            >
-          </li>
-          <li>
-            <a
-              class="block decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
-              href="/">Composition</a
-            >
-          </li>
-          <li>
-            <a
-              class="block decoration-1 data-top-level:font-semibold ak-text/80 aria-[current=page]:ak-text ak-button aria-[current=page]:ak-layer-pop font-normal justify-start ak-frame-field/2"
-              href="/">Component Providers</a
-            >
-          </li>
-        </ul>
-      </Sticky>
+    <div class="justify-self-end-safe z-2 @max-5xl:hidden">
+      <SidebarMenu
+        revealOnStuck
+        links={[
+          { label: "Components", href: "/react/components", isCurrent: true },
+          { label: "Guides" },
+          {
+            label: "Getting Started with Ariakit React Components",
+            href: "/react/components/getting-started",
+          },
+          { label: "Styling", href: "/react/components/styling" },
+          { label: "Composition", href: "/react/components/composition" },
+          {
+            label: "Component Providers",
+            href: "/react/components/component-providers",
+          },
+        ]}
+      />
     </div>
     <div
       class="flex flex-col gap-4 ak-layer-current border-x z-1 min-h-[100dvh]"
@@ -251,12 +224,10 @@ const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`
                   <a
                     href={getTagPath(t)}
                     aria-current={isCurrent ? "page" : undefined}
-                    class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1 gap-0"
+                    class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1"
                   >
-                    <span class="ak-frame-field/1 ps-2">
-                      {t?.label ?? "All"}
-                    </span>
-                    <span class="ak-text/0 ak-frame-field/1 rounded-full px-1.5 ak-layer-pop min-w-6 text-center in-aria-[current]:ak-layer-pop-3">
+                    <span class="ps-2">{t?.label ?? "All"}</span>
+                    <span class="ak-text/0 rounded-full px-1.5 ak-layer-pop min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer-pop-3">
                       {length}
                       <span class="sr-only">
                         {getPlural(type.singular, length)}

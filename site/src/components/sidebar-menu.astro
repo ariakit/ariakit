@@ -1,0 +1,71 @@
+---
+import Sticky from "#app/components/sticky.astro";
+import type { ComponentProps } from "astro/types";
+
+interface LinkItem {
+  href: string;
+  label: string;
+  isCurrent?: boolean;
+}
+
+interface HeadingItem {
+  label: string;
+}
+
+export type SidebarMenuItem = LinkItem | HeadingItem;
+
+interface Props extends ComponentProps<typeof Sticky> {
+  links: SidebarMenuItem[];
+  revealOnStuck?: boolean;
+}
+
+const { links, revealOnStuck = false, ...props } = Astro.props;
+
+function isLinkItem(item: SidebarMenuItem) {
+  return "href" in item;
+}
+
+function isHeadingItem(item: SidebarMenuItem): item is HeadingItem {
+  return !isLinkItem(item);
+}
+---
+
+<Sticky
+  class:list={["top-(--header-height) [--p:--spacing(2)] p-(--p)", props.class]}
+  {...props}
+  threshold={revealOnStuck ? 192 : 10}
+>
+  <ul
+    class:list={[
+      revealOnStuck &&
+        "base:@overlap:pointer-events-none base:@overlap:opacity-0 in-data-stuck:pointer-events-auto in-data-stuck:opacity-100 transition-opacity duration-500",
+    ]}
+  >
+    {
+      links.map((item) => {
+        if (isHeadingItem(item)) {
+          return (
+            <li class="ak-text/0 font-medium pb-3 px-2 mt-5">{item.label}</li>
+          );
+        }
+        const { href, label, isCurrent } = item;
+
+        return (
+          <li class="relative">
+            <a
+              href={href}
+              aria-current={isCurrent ? "page" : undefined}
+              class="peer ak-button justify-start font-normal ak-frame-field/2 whitespace-normal aria-[current]:font-semibold aria-[current]:ak-layer-pop"
+            >
+              {label}
+            </a>
+            <div
+              class="absolute inset-y-0 -right-[calc(var(--p)+1px)] w-[calc(2px+0.03rem*var(--contrast))] bg-current opacity-0 peer-aria-[current=page]:opacity-100"
+              data-indicator
+            />
+          </li>
+        );
+      })
+    }
+  </ul>
+</Sticky>
