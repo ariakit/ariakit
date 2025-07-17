@@ -28,6 +28,22 @@ const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 export default defineConfig({
   srcDir: "src",
 
+  redirects: {
+    // Redirects for old site
+    "/profile": "/plus/account",
+    "/updates": "/changelog",
+    "/components": "/react/components",
+    "/components/[...slug]": "/react/components/[...slug]",
+    "/examples": "/react/examples",
+    "/examples/[...slug]": "/react/examples/[...slug]",
+    "/guides": "/react/components/getting-started",
+    "/guides/[...slug]": "/react/components/[...slug]",
+    "/reference": "/react/components",
+    // TODO: Translate /reference/use-checkbox-store to
+    // /react/components/checkbox/api/use-checkbox-store
+    "/reference/[...slug]": "/react/components/[...slug]",
+  },
+
   server: {
     host: true,
     allowedHosts: true,
