@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
-export async function importThumbnail(name: string) {
+export async function importThumbnail(name?: string) {
+  if (!name) return undefined;
   const example = name.split("/").shift();
   try {
     const { default: Thumbnail } = await import(
