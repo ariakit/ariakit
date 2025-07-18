@@ -56,3 +56,13 @@ export function filterGuidesByGroup(groupPath: string) {
     return guide.groupPath === groupPath;
   };
 }
+
+export function getGalleryLength(
+  examples: CollectionEntry<"examples">[],
+  galleries: CollectionEntry<"galleries">[],
+) {
+  return examples.reduce((acc, example) => {
+    const gallery = galleries.find((g) => g.id === example.id);
+    return acc + (gallery?.data.length || 1);
+  }, 0);
+}

@@ -9,7 +9,12 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
-import { filterGuidesByGroup, getGuideDetail } from "#app/lib/content.ts";
+import {
+  filterGuidesByGroup,
+  getGuideDetail,
+  getGalleryLength,
+} from "#app/lib/content.ts";
+import { uniq } from "#app/lib/array.ts";
 
 export const getStaticPaths = (async () => {
   const allExamples = await getCollection("examples");
@@ -30,11 +35,9 @@ export const getStaticPaths = (async () => {
     },
   ];
 
-  const frameworks = [
-    ...new Set(
-      allExamples.flatMap((entry) => entry.data.frameworks || "react")
-    ),
-  ];
+  const frameworks = uniq(
+    allExamples.flatMap((entry) => entry.data.frameworks)
+  );
 
   return frameworks.flatMap((framework) => {
     return types.flatMap((type) => {
@@ -58,10 +61,7 @@ export const getStaticPaths = (async () => {
         [framework]
       );
 
-      const frameworkLength = frameworkExamples.reduce((acc, example) => {
-        const gallery = galleries.find((g) => g.id === example.id);
-        return acc + (gallery?.data.length || 1);
-      }, 0);
+      const frameworkLength = getGalleryLength(frameworkExamples, galleries);
 
       const tagsWithLength = frameworkTags.map((tag) => {
         const tagExamples = frameworkExamples.filter(
