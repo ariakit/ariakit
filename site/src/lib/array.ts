@@ -15,3 +15,7 @@ export function findInOrder<T, Value>(
   }
   return null;
 }
+
+export function uniq<T>(array: T[]) {
+  return [...new Set(array)];
+}
