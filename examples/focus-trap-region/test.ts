@@ -1,6 +1,6 @@
 import { press, q } from "@ariakit/test";
 
-function setup() {
+beforeEach(() => {
   const before = document.createElement("div");
   before.tabIndex = 0;
   before.textContent = "Before";
@@ -12,10 +12,9 @@ function setup() {
     before.remove();
     after.remove();
   };
-}
+})
 
 test("correctly traps focus in region", async () => {
-  const cleanup = setup();
   await press.Tab();
   expect(q.text("Before")).toHaveFocus();
   await press.Tab();
@@ -30,11 +29,9 @@ test("correctly traps focus in region", async () => {
   await press.Tab();
   // looped
   expect(q.checkbox()).toHaveFocus();
-  cleanup();
 });
 
 test("correctly releases focus from region", async () => {
-  const cleanup = setup();
   await press.Tab();
   expect(q.text("Before")).toHaveFocus();
   await press.Tab();
@@ -53,5 +50,4 @@ test("correctly releases focus from region", async () => {
   await press.Tab();
   await press.Tab();
   expect(q.text("After")).toHaveFocus();
-  cleanup();
 });

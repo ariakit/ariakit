@@ -10,6 +10,7 @@ import {
 } from "solid-js/web";
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";
+import { bench } from "vitest";
 
 if (!version.startsWith("17")) {
   failOnConsole();
@@ -159,4 +160,11 @@ beforeEach(async ({ task, skip }) => {
   const result = await LOADERS[LOADER](dir);
   if (result === false) skip();
   return result;
-});
+})
+
+if (process.env.MODE === "benchmark") {
+  //@ts-expect-error not the same api but should be fine?
+  globalThis['test'] = function() {
+    bench(arguments[0], arguments[1], { throws: true })
+  }
+}
