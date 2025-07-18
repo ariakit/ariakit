@@ -1,4 +1,4 @@
-import { nonNullable } from "./non-nullable.ts";
+import { nonNullable } from "./object.ts";
 import type { Framework } from "./schemas.ts";
 
 type Tags = Record<string, { label: string; frameworks?: Framework[] }>;

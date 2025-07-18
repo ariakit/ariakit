@@ -1,6 +1,6 @@
 import type { APIContext } from "astro";
 import { getUnixTime } from "./datetime.ts";
-import { nonNullable } from "./non-nullable.ts";
+import { nonNullable } from "./object.ts";
 import type { PriceData, PromoData } from "./schemas.ts";
 
 function priceKey(key = "") {

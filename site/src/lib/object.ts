@@ -5,3 +5,7 @@ export function objectId(object: string | { id: string }) {
 export function keys<T extends Record<string, unknown>>(object: T) {
   return Object.keys(object) as [keyof T, ...(keyof T)[]];
 }
+
+export function nonNullable<T>(value: T) {
+  return value != null;
+}
