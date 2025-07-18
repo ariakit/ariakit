@@ -10,6 +10,7 @@ export const frameworks = {
   solid: { label: "Solid", icon: "solid" },
   svelte: { label: "Svelte", icon: "svelte" },
   vue: { label: "Vue", icon: "vue" },
+  tailwind: { label: "Tailwind", icon: "tailwind" },
 } as const satisfies Frameworks;
 
 export function isFramework(
