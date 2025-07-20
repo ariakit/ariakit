@@ -35,9 +35,6 @@ export async function getOGImageItem({
 }
 
 export async function getOGImageItems(): Promise<OGImageItem[]> {
-  if (import.meta.env.PROD) {
-    return [];
-  }
   const entries = await getCollection("examples");
   const examples = entries.flatMap((entry) => {
     const type = entry.data.component ? "components" : "examples";
@@ -99,5 +96,8 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
 }
 
 export const GET: APIRoute = async () => {
+  if (import.meta.env.PROD) {
+    return Response.json([]);
+  }
   return Response.json(await getOGImageItems());
 };

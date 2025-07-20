@@ -13,6 +13,9 @@ import "@fontsource-variable/inter";
 import { getOGImageItems } from "./api.ts";
 
 export async function getStaticPaths() {
+  if (import.meta.env.PROD) {
+    return [];
+  }
   const items = await getOGImageItems();
   return items.map(({ path, ...props }) => {
     return { params: { path }, props };
