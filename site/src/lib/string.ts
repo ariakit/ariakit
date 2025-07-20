@@ -13,3 +13,7 @@ export function trimLeft(str: string, chars: string) {
 export function trimRight(str: string, chars: string) {
   return str.replace(new RegExp(`[${chars}]+$`), "");
 }
+
+export function trim(str: string, chars: string) {
+  return trimLeft(trimRight(str, chars), chars);
+}
