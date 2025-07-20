@@ -7,6 +7,7 @@ import "@fontsource-variable/inter";
 import { ClientRouter } from "astro:transitions";
 import type { MarkdownHeading } from "astro";
 import Sticky from "#app/components/sticky.astro";
+import Meta from "#app/components/meta.astro";
 
 export interface Props {
   title?: string;
@@ -26,10 +27,9 @@ const {
 <!doctype html>
 <html lang="en" transition:animate="none">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title ? `${title} - Ariakit` : "Ariakit"}</title>
+    <slot name="meta">
+      <Meta {title} />
+    </slot>
     <ClientRouter />
   </head>
   <body
@@ -103,8 +103,8 @@ const {
                           On this page
                         </h2>
                         <TableOfContents
-                          title={title}
-                          headings={headings}
+                          {title}
+                          {headings}
                           class="h-max border-none"
                         />
                       </div>
