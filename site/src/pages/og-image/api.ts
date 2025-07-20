@@ -1,13 +1,19 @@
 import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
 import { uniq } from "#app/lib/array.ts";
+import { trim } from "#app/lib/string.ts";
 
-interface OGImageItem {
-  path: string;
+function getImagePath(path: string) {
+  return `/og-image/${trim(path, "/").replaceAll("/", "_")}.png`;
+}
+
+export interface OGImageItem {
   type: "page" | "examples" | "components";
-  framework?: Framework;
+  path: string;
+  imagePath: string;
   id?: string;
   title?: string;
+  framework?: Framework;
 }
 
 interface GetOGImageItemParams {
@@ -36,9 +42,11 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
   const examples = entries.flatMap((entry) => {
     const type = entry.data.component ? "components" : "examples";
     const frameworks = entry.data.frameworks;
+    const path = `/${type}/${entry.id}`;
     return frameworks.map((framework) => {
       return {
-        path: `/${framework}/${type}/${entry.id}`,
+        path: `/${framework}${path}`,
+        imagePath: getImagePath(`${framework}${path}`),
         type,
         framework,
         id: entry.id,
@@ -50,8 +58,10 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
   const exampleIndexes = uniq(
     exampleEntries.flatMap((entry) => entry.data.frameworks),
   ).map((framework) => {
+    const path = "/examples";
     return {
-      path: `/${framework}/examples`,
+      path: `/${framework}${path}`,
+      imagePath: getImagePath(`/${framework}${path}`),
       type: "examples",
       framework,
     } as const;
@@ -62,8 +72,10 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
       entry.data.component ? entry.data.frameworks : [],
     ),
   ).map((framework) => {
+    const path = "/components";
     return {
-      path: `/${framework}/components`,
+      path: `/${framework}${path}`,
+      imagePath: getImagePath(`/${framework}${path}`),
       type: "components",
       framework,
     } as const;
@@ -72,10 +84,12 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
   const genericPages = [
     {
       path: "/",
+      imagePath: getImagePath("/default"),
       type: "page",
     },
     {
       path: "/changelog",
+      imagePath: getImagePath("/changelog"),
       type: "page",
       title: "Changelog",
     },

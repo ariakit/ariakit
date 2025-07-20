@@ -15,7 +15,7 @@ import { getOGImageItems } from "./api.ts";
 export async function getStaticPaths() {
   const items = await getOGImageItems();
   return items.map(({ path, ...props }) => {
-    return { params: { path }, props } as const;
+    return { params: { path }, props };
   });
 }
 
@@ -38,7 +38,7 @@ const Thumbnail2 = await importThumbnail("popover");
   </head>
   <body class="flex items-center justify-center">
     <div
-      class="h-[315px] w-[600px] ak-layer-current border overflow-clip relative isolate"
+      class="h-[315px] w-[600px] ak-layer-current ring overflow-clip relative isolate"
     >
       {
         type === "page" && title ? (
