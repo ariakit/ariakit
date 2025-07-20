@@ -1,0 +1,228 @@
+---
+import {
+  BoxPatternsFull,
+  BoxPatternsMiddle,
+} from "#app/components/box-patterns.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { Logo } from "#app/icons/logo.react.tsx";
+import { getFramework } from "#app/lib/frameworks.ts";
+import { importThumbnail } from "#app/lib/import-thumbnail.ts";
+import { capitalize } from "#app/lib/string.ts";
+import "#app/styles/global.css";
+import "@fontsource-variable/inter";
+import { getOGImageItems } from "./api.ts";
+
+export async function getStaticPaths() {
+  const items = await getOGImageItems();
+  return items.map(({ path, ...props }) => {
+    return { params: { path }, props } as const;
+  });
+}
+
+const { id, type, title, framework: frameworkProp } = Astro.props;
+
+const Thumbnail = await importThumbnail(id);
+const framework = frameworkProp ? getFramework(frameworkProp) : undefined;
+
+const Thumbnail1 = await importThumbnail("combobox-group");
+const Thumbnail2 = await importThumbnail("popover");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title ? `${title} - Ariakit` : "Ariakit"}</title>
+  </head>
+  <body class="flex items-center justify-center">
+    <div
+      class="h-[315px] w-[600px] ak-layer-current border overflow-clip relative isolate"
+    >
+      {
+        type === "page" && title ? (
+          <div class="p-11 flex flex-col items-center justify-center gap-2 h-full">
+            <div class="flex gap-2 items-center p-1 relative">
+              <Logo />
+              <BoxPatternsMiddle />
+            </div>
+            <h1 class="flex text-center text-4xl font-semibold text-balance relative w-fit">
+              {title}
+            </h1>
+          </div>
+        ) : type === "page" ? (
+          <div class="p-11 flex flex-col items-center justify-center gap-4 h-full">
+            <div class="flex gap-2 items-center text-2xl relative">
+              <Logo />
+              <BoxPatternsFull />
+            </div>
+          </div>
+        ) : title && framework ? (
+          <div class="flex flex-col gap-4 h-full">
+            <div class="flex gap-2 items-center p-11 pb-0">
+              <Logo />
+            </div>
+            <div class="relative z-10 mt-auto p-11 pt-4 pe-60 flex flex-col gap-1">
+              <div class="ak-text-primary flex items-center gap-1">
+                <Icon name={framework.icon} />
+                {framework.label}
+                {capitalize(type)}
+              </div>
+              <h1 class="text-3xl font-semibold z-10 text-balance">{title}</h1>
+            </div>
+            <div class="absolute inset-0 -z-1 top-8">
+              {Thumbnail && (
+                <div class="absolute end-8 flex h-full bg-transparent z-1 w-max justify-self-end-safe gap-4">
+                  <Thumbnail />
+                  <BoxPatternsMiddle />
+                </div>
+              )}
+              <div class="gradient-blur translate-y-6 bg-gradient-to-t from-(--ak-layer) to-transparent">
+                <div />
+                <div />
+                <div />
+                <div />
+                <div />
+                <div />
+              </div>
+            </div>
+          </div>
+        ) : framework ? (
+          <div class="p-11 pt-16 flex flex-col items-center gap-4 h-full">
+            <div class="flex gap-2 items-center text-sm">
+              <Logo />
+            </div>
+            <h1 class="flex items-center gap-2 text-4xl font-semibold text-balance relative">
+              <Icon name={framework.icon} />
+              {framework.label}
+              {capitalize(type)}
+              <BoxPatternsMiddle />
+            </h1>
+            <div class="[zoom:0.5] mt-4">
+              <div class="flex h-full bg-transparent gap-4 w-max">
+                {Thumbnail1 && <Thumbnail1 />}
+                {Thumbnail2 && <Thumbnail2 />}
+                {Thumbnail1 && <Thumbnail1 />}
+                {Thumbnail2 && <Thumbnail2 />}
+                {Thumbnail1 && <Thumbnail1 />}
+                {Thumbnail2 && <Thumbnail2 />}
+              </div>
+              <div class="gradient-blur translate-y-20 bg-gradient-to-t from-(--ak-layer) to-transparent">
+                <div />
+                <div />
+                <div />
+                <div />
+                <div />
+                <div />
+              </div>
+            </div>
+          </div>
+        ) : null
+      }
+    </div>
+  </body>
+</html>
+
+<style>
+  .gradient-blur {
+    position: absolute;
+    z-index: 10;
+    inset: auto 0 0 0;
+    height: 65%;
+    pointer-events: none;
+  }
+  .gradient-blur > div,
+  .gradient-blur::before,
+  .gradient-blur::after {
+    position: absolute;
+    inset: 0;
+  }
+  .gradient-blur::before {
+    content: "";
+    z-index: 1;
+    backdrop-filter: blur(0.5px);
+    mask: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 1) 12.5%,
+      rgba(0, 0, 0, 1) 25%,
+      rgba(0, 0, 0, 0) 37.5%
+    );
+  }
+  .gradient-blur > div:nth-of-type(1) {
+    z-index: 2;
+    backdrop-filter: blur(1px);
+    mask: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 12.5%,
+      rgba(0, 0, 0, 1) 25%,
+      rgba(0, 0, 0, 1) 37.5%,
+      rgba(0, 0, 0, 0) 50%
+    );
+  }
+  .gradient-blur > div:nth-of-type(2) {
+    z-index: 3;
+    backdrop-filter: blur(2px);
+    mask: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 25%,
+      rgba(0, 0, 0, 1) 37.5%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 0) 62.5%
+    );
+  }
+  .gradient-blur > div:nth-of-type(3) {
+    z-index: 4;
+    backdrop-filter: blur(4px);
+    mask: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 37.5%,
+      rgba(0, 0, 0, 1) 50%,
+      rgba(0, 0, 0, 1) 62.5%,
+      rgba(0, 0, 0, 0) 75%
+    );
+  }
+  .gradient-blur > div:nth-of-type(4) {
+    z-index: 5;
+    backdrop-filter: blur(8px);
+    mask: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 50%,
+      rgba(0, 0, 0, 1) 62.5%,
+      rgba(0, 0, 0, 1) 75%,
+      rgba(0, 0, 0, 0) 87.5%
+    );
+  }
+  .gradient-blur > div:nth-of-type(5) {
+    z-index: 6;
+    backdrop-filter: blur(16px);
+    mask: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 62.5%,
+      rgba(0, 0, 0, 1) 75%,
+      rgba(0, 0, 0, 1) 87.5%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+  .gradient-blur > div:nth-of-type(6) {
+    z-index: 7;
+    backdrop-filter: blur(32px);
+    mask: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 75%,
+      rgba(0, 0, 0, 1) 87.5%,
+      rgba(0, 0, 0, 1) 100%
+    );
+  }
+  .gradient-blur::after {
+    content: "";
+    z-index: 8;
+    backdrop-filter: blur(64px);
+    mask: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 87.5%,
+      rgba(0, 0, 0, 1) 100%
+    );
+  }
+</style>
