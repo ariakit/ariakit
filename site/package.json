@@ -26,7 +26,9 @@
     "hast-util-to-text": "4.0.2",
     "html-entities": "2.6.0",
     "rehype-autolink-headings": "7.1.0",
+    "remark": "15.0.1",
     "shiki": "3.3.0",
+    "strip-markdown": "6.0.0",
     "stripe": "18.1.0",
     "tailwindcss": "4.1.5",
     "vfile": "6.0.3"
