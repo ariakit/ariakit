@@ -26,6 +26,11 @@ const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // https://astro.build/config
 export default defineConfig({
+  site:
+    process.env.NODE_ENV === "production"
+      ? "https://next.ariakit.org"
+      : "http://localhost:4321",
+
   srcDir: "src",
 
   server: {
