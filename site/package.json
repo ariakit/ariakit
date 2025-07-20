@@ -9,7 +9,9 @@
     "build": "astro build",
     "preview": "wrangler dev",
     "preview-all": "concurrently -k -r 'npm:preview' 'npm:listen-*'",
-    "listen-stripe": "stripe listen --forward-to http://localhost:4321/api/stripe-webhook"
+    "listen-stripe": "stripe listen --forward-to http://localhost:4321/api/stripe-webhook",
+    "og-image-clean": "rimraf public/og-image",
+    "og-image-generate": "npm run og-image-clean && node --experimental-strip-types src/pages/og-image/_generate-images.ts"
   },
   "imports": {
     "#app/*": "./src/*"
