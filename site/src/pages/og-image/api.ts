@@ -16,7 +16,7 @@ export interface OGImageItem {
   framework?: Framework;
 }
 
-interface GetOGImageItemParams {
+export interface GetOGImageItemParams {
   id?: OGImageItem["id"];
   type?: OGImageItem["type"];
   framework?: OGImageItem["framework"];
