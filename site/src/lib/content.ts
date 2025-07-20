@@ -3,24 +3,29 @@ import { invariant } from "@ariakit/core/utils/misc";
 import { isFramework } from "./frameworks.ts";
 
 interface ContentGroup {
+  type: "examples" | "components" | "styles";
   label: string;
   path: string | ((framework: Framework) => string);
 }
 
 const contentGroups: Record<string, ContentGroup> = {
   "ariakit-react": {
+    type: "components",
     label: "Components",
     path: (framework) => `${framework}/components`,
   },
   "ariakit-solid": {
+    type: "components",
     label: "Components",
     path: (framework) => `${framework}/components`,
   },
   "ariakit-tailwind": {
+    type: "styles",
     label: "Styles",
     path: "styles",
   },
   examples: {
+    type: "examples",
     label: "Examples",
     path: "examples",
   },
@@ -47,7 +52,14 @@ export function getGuideDetail(entry: CollectionEntry<"guides">) {
   const framework = segments.find((segment) => isFramework(segment));
   const groupPath = `/${getGroupPath(group, framework)}`;
   const path = `${groupPath}/${id}`;
-  return { ...entry, path, framework, groupLabel: group.label, groupPath };
+  return {
+    ...entry,
+    path,
+    framework,
+    groupLabel: group.label,
+    groupPath,
+    type: group.type,
+  };
 }
 
 export function filterGuidesByGroup(groupPath: string) {

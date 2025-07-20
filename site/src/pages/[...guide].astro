@@ -1,5 +1,6 @@
 ---
 import { components } from "#app/components/content-components.astro";
+import Meta from "#app/components/meta.astro";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import { filterGuidesByGroup, getGuideDetail } from "#app/lib/content.ts";
@@ -10,15 +11,16 @@ import { getCollection, render } from "astro:content";
 export const getStaticPaths = (async () => {
   const entries = await getCollection("guides");
   return entries.flatMap((entry) => {
-    const { path, framework, groupLabel, groupPath } = getGuideDetail(entry);
+    const { path, framework, groupLabel, groupPath, type } =
+      getGuideDetail(entry);
     return {
       params: { guide: path },
-      props: { entry, framework, groupLabel, groupPath },
+      props: { entry, framework, groupLabel, groupPath, type },
     };
   });
 }) satisfies GetStaticPaths;
 
-const { entry, groupLabel, groupPath, framework } = Astro.props;
+const { entry, groupLabel, groupPath, framework, type } = Astro.props;
 const { Content, headings } = await render(entry);
 
 const guides = (
@@ -28,9 +30,19 @@ const guides = (
 if (framework) {
   Astro.locals.framework = framework;
 }
+
+const title = entry.data.title;
 ---
 
-<Layout title={entry.data.title} headerBorder {headings}>
+<Layout {title} headerBorder {headings}>
+  <Meta
+    slot="meta"
+    id={entry.id}
+    {framework}
+    {type}
+    {title}
+    description={entry.data.description}
+  />
   <div
     class:list={[
       "overflow-x-clip ak-layer-current @5xl:grid content-start",

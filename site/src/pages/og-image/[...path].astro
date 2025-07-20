@@ -3,6 +3,7 @@ import {
   BoxPatternsFull,
   BoxPatternsMiddle,
 } from "#app/components/box-patterns.react.tsx";
+import { ProgressiveBlur } from "#app/components/progressive-blur.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { Logo } from "#app/icons/logo.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
@@ -44,7 +45,7 @@ const Thumbnail2 = await importThumbnail("popover");
       class="h-[315px] w-[600px] ak-layer-current ring overflow-clip relative isolate"
     >
       {
-        type === "page" && title ? (
+        type === "pages" && title ? (
           <div class="p-11 flex flex-col items-center justify-center gap-2 h-full">
             <div class="flex gap-2 items-center p-1 relative">
               <Logo />
@@ -54,7 +55,7 @@ const Thumbnail2 = await importThumbnail("popover");
               {title}
             </h1>
           </div>
-        ) : type === "page" ? (
+        ) : type === "pages" ? (
           <div class="p-11 flex flex-col items-center justify-center gap-4 h-full">
             <div class="flex gap-2 items-center text-2xl relative">
               <Logo />
@@ -63,33 +64,44 @@ const Thumbnail2 = await importThumbnail("popover");
           </div>
         ) : title && framework ? (
           <div class="flex flex-col gap-4 h-full">
-            <div class="flex gap-2 items-center p-11 pb-0">
+            <div class="flex gap-2 items-center p-11 pb-0 z-20 relative">
               <Logo />
             </div>
-            <div class="relative z-10 p-11 pt-4 pe-60 flex flex-col gap-1">
-              <div class="ak-text-primary flex items-center gap-1">
+            <div
+              class:list={[
+                "z-10 p-11 pt-6 flex flex-col gap-1",
+                Thumbnail ? "pe-60" : "pe-32",
+              ]}
+            >
+              <div class="relative w-max ak-text-primary flex items-center gap-1">
                 <Icon name={framework.icon} />
                 {framework.label}
                 {capitalize(type)}
+                {!Thumbnail && (
+                  <div class="absolute min-w-55 -ms-8 -mt-4 -translate-y-1 inset-0">
+                    <BoxPatternsMiddle />
+                  </div>
+                )}
               </div>
-              <h1 class="text-3xl font-semibold z-10 text-balance">{title}</h1>
+              <h1 class="relative text-3xl font-semibold z-10 text-balance">
+                {title}
+              </h1>
             </div>
-            <div class="absolute inset-0 -z-1 top-8">
-              {Thumbnail && (
+            {Thumbnail && (
+              <div class="absolute inset-0 -z-1 top-8">
                 <div class="absolute end-8 flex h-full bg-transparent z-1 w-max justify-self-end-safe gap-4">
-                  <Thumbnail />
+                  {Thumbnail && <Thumbnail />}
                   <BoxPatternsMiddle />
                 </div>
-              )}
-              <div class="gradient-blur translate-y-6 bg-gradient-to-t from-(--ak-layer) to-transparent">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
+                <ProgressiveBlur
+                  side="bottom"
+                  strength={16}
+                  steps={16}
+                  tint="var(--ak-layer)"
+                  className="translate-y-16"
+                />
               </div>
-            </div>
+            )}
           </div>
         ) : framework ? (
           <div class="p-11 pt-16 flex flex-col items-center gap-4 h-full">
@@ -102,7 +114,7 @@ const Thumbnail2 = await importThumbnail("popover");
               {capitalize(type)}
               <BoxPatternsMiddle />
             </h1>
-            <div class="[zoom:0.5] mt-4">
+            <div class="[zoom:0.5] mt-4 relative">
               <div class="flex h-full bg-transparent gap-4 w-max">
                 {Thumbnail1 && <Thumbnail1 />}
                 {Thumbnail2 && <Thumbnail2 />}
@@ -111,14 +123,12 @@ const Thumbnail2 = await importThumbnail("popover");
                 {Thumbnail1 && <Thumbnail1 />}
                 {Thumbnail2 && <Thumbnail2 />}
               </div>
-              <div class="gradient-blur translate-y-20 bg-gradient-to-t from-(--ak-layer) to-transparent">
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-                <div />
-              </div>
+              <ProgressiveBlur
+                side="bottom"
+                strength={16}
+                steps={16}
+                tint="var(--ak-layer)"
+              />
             </div>
           </div>
         ) : null
@@ -126,106 +136,3 @@ const Thumbnail2 = await importThumbnail("popover");
     </div>
   </body>
 </html>
-
-<style>
-  .gradient-blur {
-    position: absolute;
-    z-index: 10;
-    inset: auto 0 0 0;
-    height: 65%;
-    pointer-events: none;
-  }
-  .gradient-blur > div,
-  .gradient-blur::before,
-  .gradient-blur::after {
-    position: absolute;
-    inset: 0;
-  }
-  .gradient-blur::before {
-    content: "";
-    z-index: 1;
-    backdrop-filter: blur(0.5px);
-    mask: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 1) 12.5%,
-      rgba(0, 0, 0, 1) 25%,
-      rgba(0, 0, 0, 0) 37.5%
-    );
-  }
-  .gradient-blur > div:nth-of-type(1) {
-    z-index: 2;
-    backdrop-filter: blur(1px);
-    mask: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 12.5%,
-      rgba(0, 0, 0, 1) 25%,
-      rgba(0, 0, 0, 1) 37.5%,
-      rgba(0, 0, 0, 0) 50%
-    );
-  }
-  .gradient-blur > div:nth-of-type(2) {
-    z-index: 3;
-    backdrop-filter: blur(2px);
-    mask: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 25%,
-      rgba(0, 0, 0, 1) 37.5%,
-      rgba(0, 0, 0, 1) 50%,
-      rgba(0, 0, 0, 0) 62.5%
-    );
-  }
-  .gradient-blur > div:nth-of-type(3) {
-    z-index: 4;
-    backdrop-filter: blur(4px);
-    mask: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 37.5%,
-      rgba(0, 0, 0, 1) 50%,
-      rgba(0, 0, 0, 1) 62.5%,
-      rgba(0, 0, 0, 0) 75%
-    );
-  }
-  .gradient-blur > div:nth-of-type(4) {
-    z-index: 5;
-    backdrop-filter: blur(8px);
-    mask: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 50%,
-      rgba(0, 0, 0, 1) 62.5%,
-      rgba(0, 0, 0, 1) 75%,
-      rgba(0, 0, 0, 0) 87.5%
-    );
-  }
-  .gradient-blur > div:nth-of-type(5) {
-    z-index: 6;
-    backdrop-filter: blur(16px);
-    mask: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 62.5%,
-      rgba(0, 0, 0, 1) 75%,
-      rgba(0, 0, 0, 1) 87.5%,
-      rgba(0, 0, 0, 0) 100%
-    );
-  }
-  .gradient-blur > div:nth-of-type(6) {
-    z-index: 7;
-    backdrop-filter: blur(32px);
-    mask: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 75%,
-      rgba(0, 0, 0, 1) 87.5%,
-      rgba(0, 0, 0, 1) 100%
-    );
-  }
-  .gradient-blur::after {
-    content: "";
-    z-index: 8;
-    backdrop-filter: blur(64px);
-    mask: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 87.5%,
-      rgba(0, 0, 0, 1) 100%
-    );
-  }
-</style>

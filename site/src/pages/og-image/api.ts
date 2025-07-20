@@ -1,14 +1,17 @@
 import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
 import { uniq } from "#app/lib/array.ts";
+import { getGuideDetail } from "#app/lib/content.ts";
 import { trim } from "#app/lib/string.ts";
+
+const types = ["pages", "examples", "components", "styles"] as const;
 
 function getImagePath(path: string) {
   return `/og-image/${trim(path, "/").replaceAll("/", "_")}.png`;
 }
 
 export interface OGImageItem {
-  type: "page" | "examples" | "components";
+  type: (typeof types)[number];
   path: string;
   imagePath: string;
   id?: string;
@@ -23,7 +26,7 @@ export interface GetOGImageItemParams {
 }
 
 export async function getOGImageItem({
-  type = "page",
+  type = "pages",
   framework,
   id,
 }: GetOGImageItemParams) {
@@ -51,6 +54,20 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
       } as const;
     });
   });
+
+  const guides = await getCollection("guides");
+  const guidePages = guides.map((guide) => {
+    const { type, data, framework, id, path } = getGuideDetail(guide);
+    return {
+      path,
+      type,
+      imagePath: getImagePath(path),
+      title: data.title,
+      framework,
+      id,
+    } as const;
+  });
+
   const exampleEntries = entries.filter((entry) => !entry.data.component);
   const exampleIndexes = uniq(
     exampleEntries.flatMap((entry) => entry.data.frameworks),
@@ -82,17 +99,23 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
     {
       path: "/",
       imagePath: getImagePath("/default"),
-      type: "page",
+      type: "pages",
     },
     {
       path: "/changelog",
       imagePath: getImagePath("/changelog"),
-      type: "page",
+      type: "pages",
       title: "Changelog",
     },
   ] satisfies OGImageItem[];
 
-  return [...examples, ...exampleIndexes, ...componentIndexes, ...genericPages];
+  return [
+    ...examples,
+    ...guidePages,
+    ...exampleIndexes,
+    ...componentIndexes,
+    ...genericPages,
+  ];
 }
 
 export const GET: APIRoute = async () => {
