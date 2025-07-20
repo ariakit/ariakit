@@ -15,6 +15,7 @@ import {
   getGalleryLength,
 } from "#app/lib/content.ts";
 import { uniq } from "#app/lib/array.ts";
+import Meta from "#app/components/meta.astro";
 
 export const getStaticPaths = (async () => {
   const allExamples = await getCollection("examples");
@@ -137,6 +138,12 @@ const hasGuides = guides.length > 0;
 ---
 
 <Layout {title}>
+  <Meta
+    slot="meta"
+    {title}
+    {framework}
+    type={type.plural === "components" ? "components" : "examples"}
+  />
   <div
     class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8"
   >
