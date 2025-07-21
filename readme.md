@@ -8,8 +8,6 @@
   <a href="https://ariakit.org"><strong>Explore website »</strong></a>
 </p>
 
----
-
 <br>
 
 <div align="center">
@@ -26,59 +24,28 @@
 
 <br>
 
-## Installation
+## Docs
 
-npm:
+- [Ariakit.org](https://ariakit.org)
+- [Components](https://ariakit.org/components)
+- [Examples](https://ariakit.org/examples)
 
-```
-npm i @ariakit/react
-```
+## Packages
 
-pnpm:
-
-```
-pnpm add @ariakit/react
-```
-
-Yarn:
-
-```
-yarn add @ariakit/react
-```
-
-## Usage
-
-```jsx
-import { useState } from "react";
-import { createRoot } from "react-dom/client";
-import { Button, Dialog, DialogHeading } from "@ariakit/react";
-
-function App() {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>Open dialog</Button>
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogHeading>Ariakit</DialogHeading>
-        <p>Welcome to Ariakit!</p>
-      </Dialog>
-    </>
-  );
-}
-
-createRoot(document.getElementById("root")).render(<App />);
-```
+- [@ariakit/react](packages/ariakit-react)
+- [@ariakit/solid](packages/ariakit-solid) (experimental)
+- [@ariakit/tailwind](packages/ariakit-tailwind) (experimental)
 
 ## Core Team
 
-- [Diego Haz](https://bsky.app/profile/haz.dev)
+- [Diego Haz](https://haz.dev)
 - [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
 - [Dani Guardiola](https://bsky.app/profile/dio.la)
 
 ## Attribution
 
-Browser testing provided by
-<a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png" height="80" align="center"></a>
+Browser testing provided by <a href="https://www.browserstack.com" target="_blank"><img height="80" alt="BrowserStack" src="https://github.com/user-attachments/assets/661e578b-f09a-47d2-b5e1-2457451b7e54#gh-light-mode-only" />
+<img height="80" alt="BrowserStack" src="https://github.com/user-attachments/assets/6f6e4185-9fa4-48c6-a01a-70b8a58bdca4#gh-dark-mode-only" /></a>
 
 ## Contributing
 
