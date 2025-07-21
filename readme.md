@@ -49,7 +49,7 @@
 | Path                     | License                                                      | Summary                                                                    |
 | :----------------------- | :----------------------------------------------------------- | :------------------------------------------------------------------------- |
 | `packages`               | [**MIT License**](packages/ariakit-react/license)            | Permissive open-source.                                                    |
-| `examples` (except Plus) | [**MIT License**](examples/license.md)                       | Permissive open-source.                                                    |
+| `examples` (except Plus) | [**MIT License**](site/src/examples/license.md)              | Permissive open-source.                                                    |
 | `examples` (Plus)        | [**Ariakit Plus License**](https://ariakit.org/plus/license) | License granted to [**Ariakit Plus**](https://ariakit.org/plus) customers. |
 | `site`                   | [**Proprietary**](site/license.md)                           | Source-available for reference. No license granted.                        |
 
