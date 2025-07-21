@@ -44,12 +44,9 @@
 
 ## Browser testing
 
-<a href="https://www.browserstack.com" target="_blank">
+<a href="https://www.browserstack.com" target="_blank"><img src="https://user-images.githubusercontent.com/15015324/45184727-368fbf80-b1fe-11e8-8827-08dbc80b0fb1.png" height="80" align="center"></a>
 
-![BrowserStack](https://github.com/user-attachments/assets/661e578b-f09a-47d2-b5e1-2457451b7e54#gh-light-mode-only)
-![BrowserStack](https://github.com/user-attachments/assets/6f6e4185-9fa4-48c6-a01a-70b8a58bdca4#gh-dark-mode-only)
-
-</a>
+Browser testing is provided by [BrowserStack](https://www.browserstack.com).
 
 ## Contributing
 
