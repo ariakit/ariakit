@@ -42,16 +42,16 @@
 - [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
 - [Dani Guardiola](https://bsky.app/profile/dio.la)
 
-## 📜 Licensing
+## Licensing
 
 **This repository contains code with different licenses.** Please read this section carefully.
 
-| Path                     | License                                                      | Summary                                                                |
-| :----------------------- | :----------------------------------------------------------- | :--------------------------------------------------------------------- |
-| `packages`               | [**MIT License**](packages/ariakit-react/license)            | Permissive open-source.                                                |
-| `site`                   | [**Proprietary**](site/license.md)                           | Source-available for reference. No license granted.                    |
-| `examples` (except Plus) | [**MIT License**](examples/license.md)                       | Permissive open-source.                                                |
-| `examples` (Plus)        | [**Ariakit Plus License**](https://ariakit.org/plus/license) | License granted to [Ariakit Plus](https://ariakit.org/plus) customers. |
+| Path                     | License                                                      | Summary                                                                    |
+| :----------------------- | :----------------------------------------------------------- | :------------------------------------------------------------------------- |
+| `packages`               | [**MIT License**](packages/ariakit-react/license)            | Permissive open-source.                                                    |
+| `examples` (except Plus) | [**MIT License**](examples/license.md)                       | Permissive open-source.                                                    |
+| `examples` (Plus)        | [**Ariakit Plus License**](https://ariakit.org/plus/license) | License granted to [**Ariakit Plus**](https://ariakit.org/plus) customers. |
+| `site`                   | [**Proprietary**](site/license.md)                           | Source-available for reference. No license granted.                        |
 
 Each of these directories contains its own license file with the full terms. Always refer to the most specific license file that applies to the code you are using.
 
