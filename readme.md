@@ -44,13 +44,14 @@
 
 ## Browser testing
 
-Browser testing is provided by
-<a href="https://www.browserstack.com" target="_blank"><picture>
-
+<a href="https://www.browserstack.com" target="_blank">
+<picture>
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/661e578b-f09a-47d2-b5e1-2457451b7e54">
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/6f6e4185-9fa4-48c6-a01a-70b8a58bdca4">
-  <img alt="BrowserStack" height="32" src="https://github.com/user-attachments/assets/661e578b-f09a-47d2-b5e1-2457451b7e54">
+  <img alt="BrowserStack" height="64" src="https://github.com/user-attachments/assets/661e578b-f09a-47d2-b5e1-2457451b7e54">
 </picture></a>
+
+Browser testing is provided by [BrowserStack](https://www.browserstack.com).
 
 ## Contributing
 
