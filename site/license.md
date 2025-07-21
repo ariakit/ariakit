@@ -10,7 +10,7 @@ By accessing or using any part of the Software not governed by a subdirectory-sp
 
 ## 1. No License Granted
 
-This Software is not free or open-source. The source code is provided for inspection and reference purposes only. The Licensor grants no license to the Software and reserves all rights, title, and interest in and to the Software and all associated intellectual property rights. No rights are granted to You by implication, estoppel, or otherwise.
+This Software is not free or open-source. The Licensor grants no license to the Software and reserves all rights, title, and interest in and to the Software and all associated intellectual property rights. No rights are granted to You by implication, estoppel, or otherwise.
 
 ## 2. Restrictions
 
