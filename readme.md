@@ -42,6 +42,23 @@
 - [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
 - [Dani Guardiola](https://bsky.app/profile/dio.la)
 
+## 📜 Licensing
+
+**This repository contains code with different licenses.** Please read this section carefully.
+
+| Path                     | License                                                      | Summary                                                                |
+| :----------------------- | :----------------------------------------------------------- | :--------------------------------------------------------------------- |
+| `packages`               | [**MIT License**](packages/ariakit-react/license)            | Permissive open-source.                                                |
+| `site`                   | [**Proprietary**](site/license.md)                           | Source-available for reference. No license granted.                    |
+| `examples` (except Plus) | [**MIT License**](examples/license.md)                       | Permissive open-source.                                                |
+| `examples` (Plus)        | [**Ariakit Plus License**](https://ariakit.org/plus/license) | License granted to [Ariakit Plus](https://ariakit.org/plus) customers. |
+
+Each of these directories contains its own license file with the full terms. Always refer to the most specific license file that applies to the code you are using.
+
+## Contributing
+
+Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
+
 ## Browser testing
 
 <a href="https://www.browserstack.com" target="_blank">
@@ -52,25 +69,3 @@
 </picture></a>
 
 Browser testing is provided by [BrowserStack](https://www.browserstack.com).
-
-## Contributing
-
-Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
-
-## 📜 Licensing
-
-**This repository contains code with different licenses.** Please read this section carefully.
-
-| Path                    | License         | Summary                                             |
-| :---------------------- | :-------------- | :-------------------------------------------------- |
-| `packages/ariakit-mit/` | **MIT License** | Permissive open-source.                             |
-| `packages/ariakit-pro/` | **Proprietary** | Source-available for reference. No license granted. |
-
-### Exceptions within `ariakit-pro`
-
-The `ariakit-pro` package is proprietary by default. However, the following subdirectories are exceptions and are licensed under the **MIT License**:
-
-- [`packages/ariakit-pro/src/utils/`](./packages/ariakit-pro/src/utils/)
-- [`packages/ariakit-pro/src/another-folder/`](./packages/ariakit-pro/src/another-folder/)
-
-Each of these directories contains its own `LICENSE` file with the full MIT terms. Always refer to the most specific `LICENSE` file that applies to the code you are using.
