@@ -42,10 +42,14 @@
 - [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
 - [Dani Guardiola](https://bsky.app/profile/dio.la)
 
-## Attribution
+## Browser testing
 
-Browser testing provided by <a href="https://www.browserstack.com" target="_blank"><img height="32" alt="BrowserStack" class="gh-light-mode-only" src="https://github.com/user-attachments/assets/661e578b-f09a-47d2-b5e1-2457451b7e54" />
-<img height="32" alt="BrowserStack" class="gh-dark-mode-only" src="https://github.com/user-attachments/assets/6f6e4185-9fa4-48c6-a01a-70b8a58bdca4" /></a>
+<a href="https://www.browserstack.com" target="_blank">
+
+![BrowserStack](https://github.com/user-attachments/assets/661e578b-f09a-47d2-b5e1-2457451b7e54#gh-light-mode-only)
+![BrowserStack](https://github.com/user-attachments/assets/6f6e4185-9fa4-48c6-a01a-70b8a58bdca4#gh-dark-mode-only)
+
+</a>
 
 ## Contributing
 
