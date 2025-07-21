@@ -2,6 +2,7 @@
   "name": "site",
   "type": "module",
   "version": "0.0.1",
+  "license": "See license.md",
   "scripts": {
     "dev": "astro dev",
     "dev-all": "concurrently -k -r 'npm:dev' 'npm:listen-*'",

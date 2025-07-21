@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import type { APIRoute } from "astro";
 import { getCurrentUserId, getCustomer } from "#app/lib/auth.ts";
 import { camelCaseObject, URLSchema } from "#app/lib/schemas.ts";

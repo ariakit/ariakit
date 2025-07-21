@@ -1,6 +1,6 @@
-MIT License
+# MIT License
 
-Copyright (c) Diego Haz
+Copyright (c) 2025-present Ariakit FZ-LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Note on Ariakit Plus Examples
+
+Please note that while the examples in this directory are generally available under the MIT License, some folders may contain examples that are part of [Ariakit Plus](https://ariakit.org/plus) and are subject to the [Ariakit Plus License](https://ariakit.org/plus/license).
+
+Each of these folders will contain its own license file with the full terms. Always refer to the most specific license file that applies to the code you are using.
