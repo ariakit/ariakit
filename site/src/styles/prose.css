@@ -1,3 +1,11 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 @utility ak-code {
   @apply ak-layer-pop ak-edge/15;
   @apply rounded px-[0.25em] py-[0.18em] font-mono ring;
