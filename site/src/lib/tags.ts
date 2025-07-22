@@ -15,6 +15,7 @@ type Tags = Record<string, { label: string; frameworks?: Framework[] }>;
 const customTags = {
   plus: { label: "Plus" },
   dropdowns: { label: "Dropdowns" },
+  modals: { label: "Modals" },
   forms: { label: "Forms" },
   nextjs: { label: "Next.js", frameworks: ["react"] },
   "nextjs-app-router": { label: "Next.js App Router", frameworks: ["react"] },
