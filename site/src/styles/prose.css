@@ -8,7 +8,7 @@
  */
 @utility ak-code {
   @apply ak-layer-pop ak-edge/15;
-  @apply rounded px-[0.25em] py-[0.18em] font-mono ring;
+  @apply rounded px-[0.25em] py-[0.18em] font-mono text-inherit ring;
   font-size-adjust: 0.48;
 }
 
