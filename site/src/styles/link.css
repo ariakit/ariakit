@@ -9,10 +9,9 @@
 @utility ak-link_idle {
   @apply ak-text-primary ak-outline-primary;
   @apply -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium underline decoration-1 underline-offset-[0.25em];
-  --color: var(--ak-text);
 
   code {
-    @apply ak-text-(--color);
+    @apply ak-text-primary;
   }
 }
 

@@ -94,11 +94,7 @@
   @apply leading-(--ak-prose-leading);
 }
 
-@utility ak-prose {
-  --ak-prose-gap: 1.25em;
-  @apply ak-text/80 ak-prose-text-base/relaxed;
-  @apply gap-(--ak-prose-gap) flex flex-col;
-
+@utility ak-prose-elements {
   :where(strong) {
     @apply ak-text;
   }
@@ -130,4 +126,10 @@
   :where(kbd) {
     @apply ak-kbd;
   }
+}
+
+@utility ak-prose {
+  --ak-prose-gap: 1.25em;
+  @apply ak-text/80 ak-prose-text-base/relaxed ak-prose-elements;
+  @apply gap-(--ak-prose-gap) flex flex-col;
 }

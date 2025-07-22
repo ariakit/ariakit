@@ -72,13 +72,17 @@ const { value: excerpt } = await remark()
       <div
         class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] gap-3 items-start"
       >
-        <div
-          class="ak-text/60 text-lg ak-container-size-content/0 ak-container"
-        >
-          {Description && <Description {components} {framework} />}
+        <div class="text-lg ak-container-size-content/0 ak-container">
+          {
+            Description && (
+              <div class="ak-text/60 ak-prose-elements text-lg/[1.8] [&_code]:ak-text/60 [&_a]:not-hover:ak-text-primary/0">
+                <Description {framework} {components} />
+              </div>
+            )
+          }
           {
             !!tags.length && (
-              <ul class="flex gap-2 mt-4">
+              <ul class="flex gap-2 mt-5">
                 {tags.map((tag) => (
                   <li>
                     <a

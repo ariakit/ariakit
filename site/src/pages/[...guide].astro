@@ -81,7 +81,9 @@ const title = entry.data.title;
               class="ak-container-size-content/(--container-p) ak-container flex flex-col gap-4"
             >
               <h1 class="text-4xl font-semibold">{entry.data.title}</h1>
-              <div class="ak-text/60 text-lg">{entry.data.description}</div>
+              <div class="ak-text/60 text-lg/relaxed">
+                {entry.data.description}
+              </div>
             </div>
           </div>
           <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
