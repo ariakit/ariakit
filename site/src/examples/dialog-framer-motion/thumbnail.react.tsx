@@ -1,0 +1,16 @@
+import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
+
+export default function Thumbnail() {
+  return (
+    <div className="flex flex-col gap-4 items-center">
+      <div className="ak-dialog_idle max-w-80 static flex flex-col gap-4 items-start">
+        <div className="text-lg font-medium">Success</div>
+        <PlaceholderText>
+          Your payment has been successfully processed. We have emailed your
+          receipt.
+        </PlaceholderText>
+        <div className="ak-button-classic_idle">OK</div>
+      </div>
+    </div>
+  );
+}
