@@ -421,7 +421,11 @@ export function CodeBlockPreviewIframe({
             "absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center justify-center",
           )}
         >
-          <div className="opacity-50">
+          <div
+            //@ts-expect-error
+            inert="true"
+            className="opacity-50"
+          >
             <div className="animate-pulse">{fallback}</div>
           </div>
         </div>
