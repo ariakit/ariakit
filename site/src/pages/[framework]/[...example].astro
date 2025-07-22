@@ -75,7 +75,7 @@ const { value: excerpt } = await remark()
         <div
           class="ak-text/60 text-lg ak-container-size-content/0 ak-container"
         >
-          {Description && <Description />}
+          {Description && <Description {components} {framework} />}
           {
             !!tags.length && (
               <ul class="flex gap-2 mt-4">
