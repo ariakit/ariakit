@@ -24,14 +24,16 @@
     "@astrojs/solid-js": "5.1.0",
     "@clerk/astro": "2.10.8",
     "@stripe/stripe-js": "7.2.0",
+    "@types/hast": "3.0.4",
     "hast-util-to-text": "4.0.2",
     "html-entities": "2.6.0",
     "rehype-autolink-headings": "7.1.0",
-    "remark": "15.0.1",
+    "rehype-parse": "9.0.1",
     "shiki": "3.3.0",
-    "strip-markdown": "6.0.0",
     "stripe": "18.1.0",
     "tailwindcss": "4.1.5",
+    "unified": "11.0.5",
+    "unist-util-visit": "5.0.0",
     "vfile": "6.0.3"
   }
 }

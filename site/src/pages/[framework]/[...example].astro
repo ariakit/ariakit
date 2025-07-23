@@ -13,12 +13,11 @@ import { components } from "#app/components/content-components.astro";
 import Meta from "#app/components/meta.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
+import { renderContentToString } from "#app/lib/content.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
-import { remark } from "remark";
-import stripMarkdown from "strip-markdown";
 
 export const getStaticPaths = (async () => {
   const entries = await getCollection("examples");
@@ -41,29 +40,31 @@ const { Content, headings } = await render(entry);
 const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};
 
-const tags = mapTags(entry.data.tags, [framework]);
-
 Astro.locals.framework = framework;
 Astro.locals.example = entry.id;
 
-const title = entry.data.title;
+async function getDescriptionText() {
+  if (!Description) return;
+  const sections = await renderContentToString(Description, {
+    framework,
+    components,
+  });
+  return sections[0]?.content[0];
+}
 
-const body = description?.body ?? "";
-const withoutImports = body.replace(/^\s*import.*$/gm, "");
-const withoutJSX = withoutImports.replace(/<\/?[^>]+(>|$)/g, "");
-const { value: excerpt } = await remark()
-  .use(stripMarkdown)
-  .process(withoutJSX);
+const tags = mapTags(entry.data.tags, [framework]);
+const title = entry.data.title;
+const descriptionText = await getDescriptionText();
 ---
 
 <Layout {title} {headings}>
   <Meta
     slot="meta"
-    {type}
-    {framework}
     id={entry.id}
-    {title}
-    description={excerpt.toString().trim()}
+    type={type}
+    title={title}
+    framework={framework}
+    description={descriptionText}
   />
   <div class="overflow-x-clip">
     <div class="ak-container-size-default ak-container py-24">

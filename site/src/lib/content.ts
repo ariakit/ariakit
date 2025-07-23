@@ -7,8 +7,15 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { CollectionEntry } from "astro:content";
+import type { CollectionEntry, RenderResult } from "astro:content";
 import { invariant } from "@ariakit/core/utils/misc";
+import mdxRenderer from "@astrojs/mdx/server.js";
+import reactRenderer from "@astrojs/react/server.js";
+import { experimental_AstroContainer } from "astro/container";
+import type { Element } from "hast";
+import { toText } from "hast-util-to-text";
+import rehypeParse from "rehype-parse";
+import { unified } from "unified";
 import { isFramework } from "./frameworks.ts";
 
 interface ContentGroup {
@@ -86,4 +93,87 @@ export function getGalleryLength(
     const gallery = galleries.find((g) => g.id === example.id);
     return acc + (gallery?.data.length || 1);
   }, 0);
+}
+
+interface Section {
+  parent: string | null;
+  id: string | null;
+  title: string | null;
+  content: string[];
+}
+
+export async function renderContentToString(
+  component: RenderResult["Content"],
+  props: Record<string, any>,
+) {
+  const container = await experimental_AstroContainer.create();
+  const getServerRenderer = (renderer: typeof mdxRenderer) => ({
+    name: renderer.name,
+    renderer: renderer,
+  });
+  container.addServerRenderer(getServerRenderer(mdxRenderer));
+  container.addServerRenderer(getServerRenderer(reactRenderer));
+
+  container.addClientRenderer({
+    name: "@astrojs/react",
+    entrypoint: "@astrojs/react/client.js",
+  });
+
+  const result = await container.renderToString(component, { props });
+  const sections = parseContentToSections(result);
+  return sections;
+}
+
+export function parseContentToSections(html: string): Section[] {
+  const tree = unified().use(rehypeParse, { fragment: true }).parse(html);
+
+  const sections: Section[] = [
+    { id: null, parent: null, title: null, content: [] },
+  ];
+  const parentHeadings: Element[] = [];
+
+  for (const node of tree.children) {
+    if (node.type !== "element") continue;
+
+    const { tagName } = node;
+    const isHeading = /^h[1-6]$/.test(tagName);
+
+    if (isHeading) {
+      const { id } = node.properties || {};
+      if (typeof id === "string") {
+        const level = parseInt(tagName.charAt(1), 10);
+        while (parentHeadings.length > 0) {
+          const parentHeading = parentHeadings[parentHeadings.length - 1];
+          if (!parentHeading) break;
+          const parentLevel = parseInt(parentHeading.tagName.charAt(1), 10);
+          if (parentLevel >= level) {
+            parentHeadings.pop();
+          } else {
+            break;
+          }
+        }
+        const parentHeading = parentHeadings[parentHeadings.length - 1];
+        const parent = parentHeading?.properties?.id;
+        const newSection: Section = {
+          id,
+          parent: typeof parent === "string" ? parent : null,
+          title: toText(node),
+          content: [],
+        };
+        sections.push(newSection);
+        parentHeadings.push(node);
+        continue;
+      }
+    }
+
+    const content = toText(node).trim();
+    if (content) {
+      const lastSection = sections[sections.length - 1];
+      if (lastSection) {
+        lastSection.content.push(content);
+      }
+    }
+  }
+
+  return sections.filter((s) => s.id || s.content.length > 0);
 }
