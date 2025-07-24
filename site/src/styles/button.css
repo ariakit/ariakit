@@ -30,7 +30,7 @@
 }
 
 @utility ak-button {
-  @apply ak-button_idle hover:ak-button_hover focus-visible:ak-button_focus active:not-disabled:not-aria-disabled:ak-button_active aria-disabled:ak-button_disabled disabled:ak-button_disabled;
+  @apply ak-button_idle hover:ak-button_hover focus-visible:ak-button_focus has-focus-visible:ak-button_focus active:not-disabled:not-aria-disabled:ak-button_active aria-disabled:ak-button_disabled disabled:ak-button_disabled;
 }
 
 @utility ak-button-square {
