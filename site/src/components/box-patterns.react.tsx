@@ -77,6 +77,53 @@ export function BoxPatternsRight() {
   );
 }
 
+export function BoxPatternsLeft() {
+  const top = (
+    <div className="absolute bottom-full mb-4 w-full flex">
+      <div className="ak-layer-down ak-frame-border w-40 h-32 justify-self-start ak-frame-xl/1 mask-t-from-50% mask-t-to-90% mask-r-to-50% flex flex-col gap-2">
+        <div className="flex-1" />
+        <div className="ak-layer ak-frame-cover ak-frame-border flex gap-1">
+          <div className="ak-layer-down ak-frame size-8 ak-frame-border" />
+          <div className="ak-layer-down ak-frame size-8 ak-frame-border" />
+        </div>
+      </div>
+    </div>
+  );
+
+  const left = (
+    <div className="absolute end-full me-4 flex gap-4">
+      <div className="ak-layer-down ak-frame-border w-80 ak-frame-2xl/2 flex flex-col gap-2 -translate-y-28 mask-y-from-80% mask-y-to-95% mask-l-from-10% mask-l-to-40%">
+        <div className="ak-layer-pop ak-frame w-1/2 h-12 self-end" />
+        <div className="ak-layer-pop ak-frame w-3/4 h-12" />
+        <div className="ak-layer-pop ak-frame w-3/4 h-12 self-end" />
+        <div className="ak-layer-pop ak-frame w-1/3 h-12 self-end" />
+        <div className="ak-layer ak-frame-cover ak-frame-border mt-auto flex justify-end gap-2">
+          <div className="ak-layer-pop ak-frame h-16 w-40" />
+        </div>
+      </div>
+      <div className="flex flex-col gap-4 -translate-y-40">
+        <div className="ak-layer-down ak-frame-2xl/2 h-20 ak-frame-border flex flex-col gap-2 mask-t-to-90%">
+          <div className="ak-layer ak-frame h-10 mt-auto ak-frame-border" />
+        </div>
+        <div className="ak-layer-down ak-frame-border w-48 ak-frame-2xl/2 flex gap-2 flex-col mask-b-from-50% mask-b-to-90%">
+          <div className="ak-layer ak-frame-cover ak-frame-border flex justify-end">
+            <div className="ak-layer-pop ak-frame ak-frame-border size-8" />
+          </div>
+          <div className="ak-layer-pop ak-frame h-10" />
+          <div className="ak-layer-pop ak-frame h-10" />
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="opacity-30 absolute inset-0 ak-light:opacity-40 -z-1 touch-none **:ak-edge/25 [--contrast:0]">
+      {top}
+      {left}
+    </div>
+  );
+}
+
 export function BoxPatternsMiddle() {
   const top = (
     <div className="absolute bottom-full mb-4 w-full flex">

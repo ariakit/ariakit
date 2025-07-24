@@ -8,7 +8,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { BoxPatternsRight } from "#app/components/box-patterns.react.tsx";
+import {
+  BoxPatternsLeft,
+  BoxPatternsRight,
+} from "#app/components/box-patterns.react.tsx";
 import { components } from "#app/components/content-components.astro";
 import Meta from "#app/components/meta.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
@@ -69,9 +72,10 @@ const descriptionText = await getDescriptionText();
   <div class="overflow-x-clip">
     <div class="ak-container-size-default ak-container py-24">
       <h1
-        class="text-4xl font-semibold mb-5 ak-container-size-default/0 ak-container"
+        class="text-4xl font-semibold mb-5 ak-container-size-default/0 ak-container relative"
       >
         {entry.data.title}
+        <BoxPatternsLeft />
       </h1>
       <div
         class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] gap-3 items-start"
@@ -114,9 +118,7 @@ const descriptionText = await getDescriptionText();
                 <span class="font-sans">⌘</span>I
               </kbd>
             </button>
-            <button
-              class="ak-button ak-layer-current ak-layer-pop ak-frame-border"
-            >
+            <button class="ak-button ak-layer-pop ak-frame-border">
               <Icon name="shadcn" />
               <span class="sr-only">Copy shadcn command</span>
             </button>
