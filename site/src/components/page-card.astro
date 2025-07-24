@@ -45,7 +45,7 @@ const { thumbnailId, title, description, plus, ...props } = Astro.props;
         }
       </span>
       <span
-        class="_not-group-focus-visible:not-group-hover:opacity-90 group-focus-visible:ak-layer-white -mx-10 !bg-transparent block group-hover:scale-75 scale-70 origin-top relative transition-transform duration-600"
+        class="_not-group-focus-visible:not-group-hover:opacity-90 group-focus-visible:ak-layer-white -mx-10 -mt-4 !bg-transparent block group-hover:scale-75 scale-70 origin-[50%_5rem] relative transition-transform duration-600"
       >
         {
           importThumbnail(thumbnailId).then((Thumbnail) => {
@@ -54,6 +54,13 @@ const { thumbnailId, title, description, plus, ...props } = Astro.props;
           })
         }
       </span>
+      <!-- <ProgressiveBlur
+        side="bottom"
+        strength={16}
+        steps={4}
+        tint="var(--ak-layer)"
+        className="translate-y-20"
+      /> -->
     </span>
   </span>
   <span class="flex flex-col gap-1">
