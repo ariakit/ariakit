@@ -449,10 +449,15 @@ export function CodeBlockPreview({
   return (
     <div
       {...props}
-      className={clsx("grid items-center h-full", props.className)}
+      className={clsx(
+        "size-full overflow-auto overscroll-contain max-h-200",
+        props.className,
+      )}
       style={{ minHeight, ...props.style }}
     >
-      <div className="mx-auto p-4 py-12">{children}</div>
+      <div className="p-4 py-16 @container size-full flex items-center-safe justify-center-safe">
+        {children}
+      </div>
     </div>
   );
 }
@@ -483,6 +488,7 @@ export interface CodeBlockTabsContentProps
   ai?: boolean;
   cli?: boolean;
   edit?: boolean;
+  wide?: boolean;
   slot0?: React.ReactElement;
   slot1?: React.ReactElement;
   slot2?: React.ReactElement;
@@ -510,6 +516,7 @@ export function CodeBlockTabsContent({
   cli = false,
   edit = !!source,
   preview: previewProp,
+  wide = false,
   scrollTop,
   minHeight,
   slot0,
@@ -571,7 +578,7 @@ export function CodeBlockTabsContent({
               "flex items-start",
               fullPreview
                 ? "ak-layer ak-frame-cover/1"
-                : "absolute z-1 inset-0 bottom-auto ak-frame-container/1 pointer-events-none *:pointer-events-auto _[@media(hover:hover)]:not-group-hover:not-group-focus-within:opacity-0 transition-opacity",
+                : "absolute z-1 inset-0 bottom-auto ak-frame-container/1 pointer-events-none *:pointer-events-auto transition-opacity [@media(hover:hover)]:not-group-hover:not-group-focus-within:opacity-0",
             ],
       )}
     >
@@ -773,56 +780,68 @@ export function CodeBlockTabs({
     <div className="@container">
       <div
         className={clsx(
-          "grid grid-cols-1 gap-4 relative",
-          preview && "@[64rem]:grid-cols-2",
+          "grid gap-4 relative",
+          preview && !props.wide && "@[64rem]:grid-cols-2",
         )}
       >
-        <CodeBlockTabsContent
-          {...props}
-          preview={false}
-          className={preview ? "@max-[64rem]:hidden" : ""}
-        />
+        <div
+          className={clsx(
+            "h-max sticky top-[calc(var(--header-height)+--spacing(4))] z-1",
+            props.wide ? "hidden" : preview ? "@max-[64rem]:hidden" : "",
+          )}
+        >
+          <CodeBlockTabsContent {...props} preview={false} />
+          {preview && (
+            <div
+              className={clsx(
+                "absolute @max-[64rem]:hidden text-lg ak-text/0 top-1/2 end-0 -translate-y-1/2 translate-x-7 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full",
+              )}
+            >
+              <Icon name="chevronRight" />
+            </div>
+          )}
+        </div>
         {preview && (
           <CodeBlockTabsContent
             {...props}
             fallback={hasFallback ? fallback0 : undefined}
-            className="@[64rem]:hidden"
+            className={props.wide ? "" : "@[64rem]:hidden"}
           />
         )}
         {preview && previewUrl && (
-          <>
-            <div className="@max-[64rem]:hidden absolute text-lg ak-text/0 top-1/2 left-1/2 -translate-1/2 z-1 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full">
-              <Icon name="chevronRight" />
+          <div
+            className={clsx(
+              "relative ak-frame-border ak-frame-container/0 overflow-clip ak-layer-canvas-down-0.15 ak-light:ak-edge/15 ak-dark:ak-edge/13",
+              props.wide ? "hidden" : "@max-[64rem]:hidden",
+            )}
+          >
+            <div className="ak-frame-cover/1 absolute top-0 end-0 z-1">
+              <Tooltip title="Open preview in new tab">
+                <a
+                  href={previewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ak-button ak-button-square sm:h-10 h-9"
+                >
+                  <Icon name="newWindow" className="text-lg" />
+                  <span className="sr-only">Open preview in new tab</span>
+                </a>
+              </Tooltip>
             </div>
-            <div className="relative ak-frame-border ak-frame-container/0 overflow-clip ak-layer-canvas-down-0.15 ak-light:ak-edge/15 ak-dark:ak-edge/13 @max-[64rem]:hidden">
-              <div className="ak-frame-cover/1 absolute top-0 end-0 z-1">
-                <Tooltip title="Open preview in new tab">
-                  <a
-                    href={previewUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ak-button ak-button-square sm:h-10 h-9"
-                  >
-                    <Icon name="newWindow" className="text-lg" />
-                    <span className="sr-only">Open preview in new tab</span>
-                  </a>
-                </Tooltip>
-              </div>
-              {props.iframe ? (
-                <CodeBlockPreviewIframe
-                  previewUrl={previewUrl}
-                  clickAndWait={props.clickAndWait}
-                  fallback={hasFallback ? fallback1 : undefined}
-                  scrollTop={props.scrollTop}
-                  minHeight={props.minHeight}
-                />
-              ) : (
-                <CodeBlockPreview minHeight={props.minHeight}>
-                  {props.children}
-                </CodeBlockPreview>
-              )}
-            </div>
-          </>
+            {props.iframe ? (
+              <CodeBlockPreviewIframe
+                previewUrl={previewUrl}
+                clickAndWait={props.clickAndWait}
+                fallback={hasFallback ? fallback1 : undefined}
+                scrollTop={props.scrollTop}
+                minHeight={props.minHeight}
+              />
+            ) : (
+              <CodeBlockPreview minHeight={props.minHeight}>
+                {props.children}
+              </CodeBlockPreview>
+            )}
+          </div>
         )}
       </div>
     </div>

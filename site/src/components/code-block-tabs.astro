@@ -22,6 +22,7 @@ import type { CodeBlockTabProps } from "./code-block.types";
 interface Props
   extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "source"> {
   source?: Source | Record<Framework, Source>;
+  span?: boolean;
 }
 
 const {
@@ -31,6 +32,8 @@ const {
   maxLines = 17,
   framework = Astro.locals.framework,
   example: exampleProp,
+  wide = false,
+  span = !!wide,
   ...props
 } = Astro.props;
 
@@ -84,30 +87,35 @@ const title = await getVariantTitle(source);
 const Fallback = example ? await importThumbnail(example) : undefined;
 ---
 
-<div class="grid gap-4">
-  {title && <div class="ak-text/60 font-medium text-center">{title}</div>}
-  <CodeBlockTabsReact
-    client:visible={{ rootMargin: "50%" }}
-    hasFallback={!!Fallback}
-    iframe={!Astro.slots.has("default")}
-    {tabs}
-    {source}
-    {maxLines}
-    {framework}
-    {example}
-    {...props}
-    preview={!!source}
+<div class:list={["h-full", span ? "col-span-full" : ""]}>
+  <div
+    class="grid gap-4 content-start sticky top-[calc(var(--header-height)+--spacing(4))]"
   >
-    <slot />
-    {Fallback && <Fallback slot="fallback0" />}
-    {Fallback && <Fallback slot="fallback1" />}
-    {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
-    {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
-    {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}
-    {tabs[3] && <CodeBlockContent slot="slot3" {lineNumbers} {...tabs[3]} />}
-    {tabs[4] && <CodeBlockContent slot="slot4" {lineNumbers} {...tabs[4]} />}
-    {tabs[5] && <CodeBlockContent slot="slot5" {lineNumbers} {...tabs[5]} />}
-    {tabs[6] && <CodeBlockContent slot="slot6" {lineNumbers} {...tabs[6]} />}
-    {tabs[7] && <CodeBlockContent slot="slot7" {lineNumbers} {...tabs[7]} />}
-  </CodeBlockTabsReact>
+    {title && <div class="ak-text/60 font-medium text-center">{title}</div>}
+    <CodeBlockTabsReact
+      wide={wide}
+      client:visible={{ rootMargin: "50%" }}
+      hasFallback={!!Fallback}
+      iframe={!Astro.slots.has("default")}
+      tabs={tabs}
+      source={source}
+      maxLines={maxLines}
+      framework={framework}
+      example={example}
+      {...props}
+      preview={!!source}
+    >
+      <slot />
+      {Fallback && <Fallback slot="fallback0" />}
+      {Fallback && <Fallback slot="fallback1" />}
+      {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
+      {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
+      {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}
+      {tabs[3] && <CodeBlockContent slot="slot3" {lineNumbers} {...tabs[3]} />}
+      {tabs[4] && <CodeBlockContent slot="slot4" {lineNumbers} {...tabs[4]} />}
+      {tabs[5] && <CodeBlockContent slot="slot5" {lineNumbers} {...tabs[5]} />}
+      {tabs[6] && <CodeBlockContent slot="slot6" {lineNumbers} {...tabs[6]} />}
+      {tabs[7] && <CodeBlockContent slot="slot7" {lineNumbers} {...tabs[7]} />}
+    </CodeBlockTabsReact>
+  </div>
 </div>

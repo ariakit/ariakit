@@ -39,9 +39,10 @@ Astro.locals.example = example;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Preview - Ariakit</title>
   </head>
-
-  <body class="grid content-center items-center">
-    <div class="mx-auto max-w-screen p-4">
+  <body class="flex items-center-safe justify-center-safe">
+    <div
+      class="p-3 size-full @container flex items-center-safe justify-center-safe"
+    >
       <Content {framework} />
     </div>
   </body>

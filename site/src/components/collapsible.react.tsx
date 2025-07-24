@@ -72,7 +72,10 @@ export function useCollapsible<T extends HTMLElement>({
 
   const collapseButton = (
     <div
-      className={clsx("sticky bottom-2", collapsible && !collapsed && "my-2")}
+      className={clsx(
+        "sticky bottom-2 z-10",
+        collapsible && !collapsed && "my-2",
+      )}
     >
       {collapsible && !collapsed && (
         <div className="grid justify-center">
