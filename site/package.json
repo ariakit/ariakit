@@ -22,7 +22,7 @@
     "@astrojs/cloudflare": "12.6.0",
     "@astrojs/react": "4.3.0",
     "@astrojs/solid-js": "5.1.0",
-    "@clerk/astro": "2.10.10",
+    "@clerk/astro": "2.10.11",
     "@stripe/stripe-js": "7.2.0",
     "hast-util-to-text": "4.0.2",
     "html-entities": "2.6.0",
