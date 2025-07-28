@@ -26,3 +26,7 @@ export function trimRight(str: string, chars: string) {
 export function trim(str: string, chars: string) {
   return trimLeft(trimRight(str, chars), chars);
 }
+
+export function generateId(prefix = "ak-") {
+  return `${prefix}${Math.random().toString(36).substring(2, 10)}`;
+}
