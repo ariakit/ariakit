@@ -168,7 +168,7 @@ function useDisableEvent(
 
 let hasInstalledGlobalEventListeners = false;
 
-// isKeyboardModality should be true by defaault.
+// isKeyboardModality should be true by default.
 let isKeyboardModality = true;
 
 function onGlobalMouseDown(event: MouseEvent) {
