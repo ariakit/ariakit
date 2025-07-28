@@ -1,4 +1,5 @@
 import { contains } from "./dom.ts";
+import { shallowEqual } from "./misc.ts";
 import { isApple } from "./platform.ts";
 
 /**
@@ -223,7 +224,11 @@ export function addGlobalEventListener(
 
   // Prevent errors from "sandbox" frames.
   try {
-    scope.document.addEventListener(type, listener, options);
+    if (!hasEventListenerBeenAdded(type, listener, options, scope)) {
+      scope.document.addEventListener(type, listener, options);
+      markEventListenerAsAdded(type, listener, options, scope);
+    }
+
     for (const frame of Array.from(scope.frames)) {
       children.push(addGlobalEventListener(type, listener, options, frame));
     }
@@ -231,6 +236,7 @@ export function addGlobalEventListener(
 
   const removeEventListener = () => {
     try {
+      markEventListenerAsRemoved(type, listener, options, scope);
       scope.document.removeEventListener(type, listener, options);
     } catch {}
     for (const remove of children) {
@@ -239,4 +245,35 @@ export function addGlobalEventListener(
   };
 
   return removeEventListener;
+}
+
+const addedGlobalEventListeners = new WeakMap<
+  EventListenerOrEventListenerObject,
+  { type: string, options: boolean | AddEventListenerOptions | undefined, scope: Window }[]
+>
+function hasEventListenerBeenAdded(type: string, listener: EventListenerOrEventListenerObject, options: boolean | AddEventListenerOptions | undefined, scope: Window) {
+  const cache = addedGlobalEventListeners.get(listener) || [];
+  const existing = cache.find(item => item.type === type && booleanOrShallowEqual(item.options, options) && item.scope === scope);
+  return !!existing;
+}
+
+function markEventListenerAsAdded(type: string, listener: EventListenerOrEventListenerObject, options: boolean | AddEventListenerOptions | undefined, scope: Window) {
+  const cache = addedGlobalEventListeners.get(listener) || [];
+  cache.push({ type, options, scope });
+  addedGlobalEventListeners.set(listener, cache);
+}
+
+function markEventListenerAsRemoved(type: string, listener: EventListenerOrEventListenerObject, options: boolean | AddEventListenerOptions | undefined, scope: Window) {
+  const cache = addedGlobalEventListeners.get(listener) || [];
+  const index = cache.findIndex(item => item.type === type && booleanOrShallowEqual(item.options, options) && item.scope === scope);
+  if (index !== -1) {
+    cache.splice(index, 1);
+  }
+}
+
+function booleanOrShallowEqual(a: boolean | AddEventListenerOptions | undefined, b: boolean | AddEventListenerOptions | undefined) {
+  if (typeof a === "boolean" || typeof b === "boolean") {
+    return a === b;
+  }
+  return shallowEqual(a, b);
 }
