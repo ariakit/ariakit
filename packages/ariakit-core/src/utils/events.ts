@@ -249,29 +249,61 @@ export function addGlobalEventListener(
 
 const addedGlobalEventListeners = new WeakMap<
   EventListenerOrEventListenerObject,
-  { type: string, options: boolean | AddEventListenerOptions | undefined, scope: Window }[]
->
-function hasEventListenerBeenAdded(type: string, listener: EventListenerOrEventListenerObject, options: boolean | AddEventListenerOptions | undefined, scope: Window) {
+  {
+    type: string;
+    options: boolean | AddEventListenerOptions | undefined;
+    scope: Window;
+  }[]
+>();
+function hasEventListenerBeenAdded(
+  type: string,
+  listener: EventListenerOrEventListenerObject,
+  options: boolean | AddEventListenerOptions | undefined,
+  scope: Window,
+) {
   const cache = addedGlobalEventListeners.get(listener) || [];
-  const existing = cache.find(item => item.type === type && booleanOrShallowEqual(item.options, options) && item.scope === scope);
+  const existing = cache.find(
+    (item) =>
+      item.type === type &&
+      booleanOrShallowEqual(item.options, options) &&
+      item.scope === scope,
+  );
   return !!existing;
 }
 
-function markEventListenerAsAdded(type: string, listener: EventListenerOrEventListenerObject, options: boolean | AddEventListenerOptions | undefined, scope: Window) {
+function markEventListenerAsAdded(
+  type: string,
+  listener: EventListenerOrEventListenerObject,
+  options: boolean | AddEventListenerOptions | undefined,
+  scope: Window,
+) {
   const cache = addedGlobalEventListeners.get(listener) || [];
   cache.push({ type, options, scope });
   addedGlobalEventListeners.set(listener, cache);
 }
 
-function markEventListenerAsRemoved(type: string, listener: EventListenerOrEventListenerObject, options: boolean | AddEventListenerOptions | undefined, scope: Window) {
+function markEventListenerAsRemoved(
+  type: string,
+  listener: EventListenerOrEventListenerObject,
+  options: boolean | AddEventListenerOptions | undefined,
+  scope: Window,
+) {
   const cache = addedGlobalEventListeners.get(listener) || [];
-  const index = cache.findIndex(item => item.type === type && booleanOrShallowEqual(item.options, options) && item.scope === scope);
+  const index = cache.findIndex(
+    (item) =>
+      item.type === type &&
+      booleanOrShallowEqual(item.options, options) &&
+      item.scope === scope,
+  );
   if (index !== -1) {
     cache.splice(index, 1);
   }
 }
 
-function booleanOrShallowEqual(a: boolean | AddEventListenerOptions | undefined, b: boolean | AddEventListenerOptions | undefined) {
+function booleanOrShallowEqual(
+  a: boolean | AddEventListenerOptions | undefined,
+  b: boolean | AddEventListenerOptions | undefined,
+) {
   if (typeof a === "boolean" || typeof b === "boolean") {
     return a === b;
   }
