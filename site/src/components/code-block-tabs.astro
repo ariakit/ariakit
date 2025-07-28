@@ -56,9 +56,8 @@ function getSource(source: typeof sourceProp) {
 
 async function getVariantTitle(source?: Source) {
   if (!source) return;
-  if (!source.name.includes("/")) return;
-  const title = await getEntry("previews", source.name);
-  return title?.data.title;
+  const preview = await getEntry("previews", source.name);
+  return preview?.data.title;
 }
 
 const source = getSource(sourceProp);
@@ -82,6 +81,7 @@ const tabsFromSource = source
 
 const tabs = tabsProp || tabsFromSource;
 const example = exampleProp ?? source?.name ?? Astro.locals.example;
+const isMainPreview = !source?.name.includes("/");
 const title = await getVariantTitle(source);
 
 const Fallback = example ? await importThumbnail(example) : undefined;
@@ -91,9 +91,14 @@ const Fallback = example ? await importThumbnail(example) : undefined;
   <div
     class="grid gap-4 content-start sticky top-[calc(var(--header-height)+--spacing(4))]"
   >
-    {title && <div class="ak-text/60 font-medium text-center">{title}</div>}
+    {
+      title && !isMainPreview && (
+        <div class="ak-text/60 font-medium text-center">{title}</div>
+      )
+    }
     <CodeBlockTabsReact
       wide={wide}
+      title={title}
       client:visible={{ rootMargin: "50%" }}
       hasFallback={!!Fallback}
       iframe={!Astro.slots.has("default")}

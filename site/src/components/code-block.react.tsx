@@ -424,7 +424,7 @@ export function CodeBlockPreviewIframe({
           <div
             //@ts-expect-error
             inert="true"
-            className="opacity-50"
+            className="opacity-50 *:*:*:scale-100"
           >
             <div className="animate-pulse">{fallback}</div>
           </div>
@@ -436,6 +436,7 @@ export function CodeBlockPreviewIframe({
 
 export interface CodeBlockPreviewProps extends React.ComponentProps<"div"> {
   minHeight?: string;
+  title?: string;
 }
 
 /**
@@ -444,18 +445,22 @@ export interface CodeBlockPreviewProps extends React.ComponentProps<"div"> {
 export function CodeBlockPreview({
   minHeight,
   children,
+  title,
   ...props
 }: CodeBlockPreviewProps) {
   return (
     <div
       {...props}
+      role="group"
+      tabIndex={-1}
+      aria-label={title ? `${title} Preview` : "Preview"}
       className={clsx(
-        "size-full overflow-auto overscroll-contain max-h-200",
+        "size-full group-focus-within:overflow-auto overflow-hidden max-h-[calc(100svh-var(--header-height)---spacing(16))] ak-frame-container/0 focus-visible:ak-outline-primary",
         props.className,
       )}
       style={{ minHeight, ...props.style }}
     >
-      <div className="p-4 py-16 @container size-full flex items-center-safe justify-center-safe">
+      <div className="py-16 @container w-full min-h-full flex items-center-safe justify-center-safe ak-frame/4 @max-3xl/main:pb-8 @max-3xl/main:px-3">
         {children}
       </div>
     </div>
@@ -463,7 +468,8 @@ export function CodeBlockPreview({
 }
 
 export interface CodeBlockTabsContentProps
-  extends Pick<
+  extends Pick<CodeBlockPreviewProps, "title">,
+    Pick<
       CodeBlockPreviewIframeProps,
       "fallback" | "clickAndWait" | "scrollTop" | "minHeight"
     >,
@@ -519,6 +525,7 @@ export function CodeBlockTabsContent({
   wide = false,
   scrollTop,
   minHeight,
+  title,
   slot0,
   slot1,
   slot2,
@@ -727,7 +734,7 @@ export function CodeBlockTabsContent({
                           minHeight={minHeight}
                         />
                       ) : (
-                        <CodeBlockPreview minHeight={minHeight}>
+                        <CodeBlockPreview title={title} minHeight={minHeight}>
                           {children}
                         </CodeBlockPreview>
                       )}
@@ -837,7 +844,7 @@ export function CodeBlockTabs({
                 minHeight={props.minHeight}
               />
             ) : (
-              <CodeBlockPreview minHeight={props.minHeight}>
+              <CodeBlockPreview title={props.title} minHeight={props.minHeight}>
                 {props.children}
               </CodeBlockPreview>
             )}
