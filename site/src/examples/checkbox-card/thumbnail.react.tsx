@@ -3,7 +3,7 @@ import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 export default function Thumbnail() {
   return (
     <div className="flex flex-col gap-4 scale-85">
-      <div className="ak-checkbox-card-grid">
+      <div className="ak-checkbox-card-grid ak-checkbox-card-grid-min-w-60">
         <div className="ak-checkbox-card">
           <div className="ak-checkbox-card-check"></div>
           <div className="ak-checkbox-card-content">
