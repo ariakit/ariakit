@@ -225,8 +225,8 @@ export function addGlobalEventListener(
   // Prevent errors from "sandbox" frames.
   try {
     if (!hasEventListenerBeenAdded(type, listener, options, scope)) {
-      scope.document.addEventListener(type, listener, options);
       markEventListenerAsAdded(type, listener, options, scope);
+      scope.document.addEventListener(type, listener, options);
     }
 
     for (const frame of Array.from(scope.frames)) {
