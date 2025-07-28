@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { importThumbnail } from "#app/lib/import-thumbnail.ts";
+import { generateId } from "#app/lib/string.ts";
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"a"> {
@@ -19,13 +20,18 @@ interface Props extends HTMLAttributes<"a"> {
 }
 
 const { thumbnailId, title, description, plus, ...props } = Astro.props;
+
+const labelId = generateId("label-");
+const descriptionId = description ? generateId("description-") : undefined;
 ---
 
 <a
   class:list={[
-    "ak-button text-wrap ak-layer ak-dark:ak-edge/0 ring ak-frame-card flex flex-col gap-2 items-stretch font-normal outline-offset-0 group justify-start",
+    "ak-button ak-command-active-depth-4 text-wrap ak-layer ak-dark:ak-edge/0 ring ak-frame-card flex flex-col gap-2 items-stretch font-normal outline-offset-0 group justify-start",
     props.class,
   ]}
+  aria-labelledby={labelId}
+  aria-describedby={descriptionId}
   {...props}
 >
   <span class="ak-frame-cover/1">
@@ -65,8 +71,14 @@ const { thumbnailId, title, description, plus, ...props } = Astro.props;
   </span>
   <span class="flex flex-col gap-1">
     <span class="flex gap-2 items-center font-semibold">
-      <span class="truncate">{title}</span>
+      <span id={labelId} class="truncate">{title}</span>
     </span>
-    {description && <span class="ak-text/70 text-sm">{description}</span>}
+    {
+      description && (
+        <span id={descriptionId} class="ak-text/70 text-sm">
+          {description}
+        </span>
+      )
+    }
   </span>
 </a>

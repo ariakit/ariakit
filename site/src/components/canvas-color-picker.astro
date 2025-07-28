@@ -8,7 +8,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-const id = Math.random().toString(36).substring(2, 15);
+import { generateId } from "#app/lib/string.ts";
+
+const id = generateId();
 ---
 
 <style>
