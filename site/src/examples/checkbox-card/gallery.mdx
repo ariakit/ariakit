@@ -1,0 +1,48 @@
+---
+length: 9
+---
+
+import CodeBlockTabs from "#app/components/code-block-tabs.astro";
+import PreviewGallery from "#app/components/preview-gallery.astro";
+import Preview, { source } from "./preview.mdx";
+import Grid, { source as grid } from "./grid/preview.mdx";
+import Round, { source as round } from "./round/preview.mdx";
+import Detailed, { source as detailed } from "./detailed/preview.mdx";
+import Indented, { source as indented } from "./indented/preview.mdx";
+import Leading, { source as leading } from "./leading-images/preview.mdx";
+import Trailing, { source as trailing } from "./trailing-images/preview.mdx";
+import TopImages, { source as topImages } from "./top-images/preview.mdx";
+import Form, { source as form } from "./form/preview.mdx";
+
+export const minHeight = "30rem";
+
+<CodeBlockTabs source={source}>
+  <Preview />
+</CodeBlockTabs>
+
+<PreviewGallery>
+  <CodeBlockTabs source={grid} minHeight={minHeight}>
+    <Grid />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={round} minHeight={minHeight}>
+    <Round />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={detailed} minHeight={minHeight}>
+    <Detailed />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={indented} minHeight={minHeight}>
+    <Indented />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={leading} minHeight={minHeight}>
+    <Leading />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={trailing} minHeight={minHeight}>
+    <Trailing />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={topImages} minHeight={minHeight}>
+    <TopImages />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={form} minHeight={minHeight}>
+    <Form />
+  </CodeBlockTabs>
+</PreviewGallery>

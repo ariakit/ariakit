@@ -12,6 +12,7 @@
 @import "./badge.css";
 @import "./command.css";
 @import "./button.css";
+@import "./checkbox.css";
 @import "./radio.css";
 @import "./option.css";
 @import "./tab.css";
@@ -61,7 +62,7 @@
 :root {
   @variant dark {
     --color-canvas: oklch(16.52% 0.0062 285.7);
-    /* --color-canvas: theme(--color-zinc-900); */
+    /* --color-canvas: theme(--color-slate-900); */
   }
 }
 
