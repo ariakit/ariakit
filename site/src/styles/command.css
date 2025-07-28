@@ -18,9 +18,15 @@
 }
 
 @utility ak-command_active {
-  @apply scale-x-98 scale-y-96 origin-bottom;
+  @apply origin-bottom;
+  scale: min(100%, 98% + 2% * var(--ak-command-depth, 0))
+    min(100%, 96% + 4% * var(--ak-command-depth, 0));
 }
 
 @utility ak-command {
   @apply ak-command_idle active:ak-command_active;
+}
+
+@utility ak-command-active-depth-* {
+  --ak-command-depth: calc(1 - clamp(0, --value(number) / 10, 1));
 }

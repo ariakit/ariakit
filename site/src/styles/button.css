@@ -8,7 +8,8 @@
  */
 @utility ak-button_idle {
   @apply ak-command_idle ak-outline-primary ak-frame-field;
-  @apply leading-(--ak-button-leading) flex items-center justify-center gap-1.5 whitespace-nowrap py-[calc(var(--ak-frame-padding)-(var(--ak-button-leading)-1em)/2)] font-[calc(500+50*var(--contrast))];
+  @apply leading-(--ak-button-leading) flex items-center justify-center gap-1.5 whitespace-nowrap font-[calc(500+50*var(--contrast))];
+  @apply py-[calc(var(--ak-frame-padding)-(var(--ak-button-leading)-1em)/2)];
   --ak-button-leading: 1.5em;
 }
 
