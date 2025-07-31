@@ -19,7 +19,7 @@ import CodeBlockTabs from "./code-block-tabs.astro";
 import CodeBlock from "./code-block.astro";
 import type { CodeBlockProps } from "./code-block.types.ts";
 
-interface Props extends ComponentProps<typeof CodeBlockTabs> {}
+interface Props extends Partial<ComponentProps<typeof CodeBlockTabs>> {}
 
 const framework = Astro.locals.framework;
 
@@ -148,12 +148,21 @@ function getPackageManagerTabs(
   const { lang, code } = props;
   if (lang !== "sh" && lang !== "bash") return null;
   if (!code.startsWith("npm install")) return null;
-  const packages = code.replace(/^npm install\s*/, "").trim();
+  const isDev = code.includes("--save-dev") || code.includes(" -D");
+  const packages = code
+    .replace(/^npm install\s*/, "")
+    .replace(/--save-dev/, "")
+    .replace(/-D/, "")
+    .trim();
+  const npm = `npm install${isDev ? " --save-dev" : ""} ${packages}`;
+  const pnpm = `pnpm add${isDev ? " --save-dev" : ""} ${packages}`;
+  const yarn = `yarn add${isDev ? " --dev" : ""} ${packages}`;
+  const bun = `bun add${isDev ? " --dev" : ""} ${packages}`;
   const tabs = [
-    { filename: "npm", code: `npm install ${packages}` },
-    { filename: "pnpm", code: `pnpm add ${packages}` },
-    { filename: "yarn", code: `yarn add ${packages}` },
-    { filename: "bun", code: `bun add ${packages}` },
+    { filename: "npm", code: npm },
+    { filename: "pnpm", code: pnpm },
+    { filename: "yarn", code: yarn },
+    { filename: "bun", code: bun },
   ];
   return {
     tabs,
@@ -197,7 +206,7 @@ if (tabs?.length) {
     codeBlockProps ? (
       <CodeBlock {...codeBlockProps} />
     ) : (
-      <CodeBlockTabs {...props} {tabs} />
+      !!tabs && <CodeBlockTabs {...props} tabs={tabs} />
     )
   }
 </div>
