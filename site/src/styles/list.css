@@ -137,6 +137,9 @@
   }
   & > details {
     @apply ak-list-item-disclosure;
+    & > :where(summary + *:only-of-type) {
+      @apply ak-list-item-disclosure-content;
+    }
   }
 }
 

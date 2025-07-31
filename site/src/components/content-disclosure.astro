@@ -1,0 +1,26 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+---
+
+<details
+  class:list={[
+    "ak-disclosure ak-frame-card ak-layer-pop-0.5 ring",
+    "ak-container-size-[calc(min(theme(--container-content),100%)+var(--ak-frame-padding)*2)]/0",
+    "ak-container",
+  ]}
+>
+  <summary class="before:ak-disclosure-arrow-start">
+    <slot name="summary" />
+  </summary>
+  <div class="ak-disclosure-content ak-prose-content">
+    <slot />
+  </div>
+</details>
