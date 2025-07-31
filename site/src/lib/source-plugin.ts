@@ -14,6 +14,7 @@ import resolveFrom from "resolve-from";
 import type { PluginContext } from "rollup";
 import ts from "typescript";
 import type { Plugin } from "vite";
+import { getFramework, getFrameworkByFilename } from "./frameworks.ts";
 import type { Source } from "./types.ts";
 
 // Cache for package information to avoid repeated lookups
@@ -161,15 +162,9 @@ async function addFrameworkDependencies(
   source: Source,
 ) {
   const filename = basename(filePath);
-  if (filename.includes(".preact.tsx")) {
-    await addDependency(context, source, "preact", filePath);
-  }
-  if (filename.includes(".react.tsx")) {
-    await addDependency(context, source, "react", filePath);
-    await addDependency(context, source, "react-dom", filePath);
-  }
-  if (filename.includes(".solid.tsx")) {
-    await addDependency(context, source, "solid-js", filePath);
+  const framework = getFramework(getFrameworkByFilename(filename));
+  for (const dependency of framework.dependencies) {
+    await addDependency(context, source, dependency, filePath);
   }
 }
 
