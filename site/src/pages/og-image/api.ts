@@ -47,9 +47,11 @@ export async function getOGImageItem({
 }
 
 export async function getOGImageItems(): Promise<OGImageItem[]> {
-  const entries = await getCollection("examples");
-  const examples = entries.flatMap((entry) => {
-    const type = entry.data.component ? "components" : "examples";
+  const components = await getCollection("components");
+  const examples = await getCollection("examples");
+  const entries = [...components, ...examples];
+  const items = entries.flatMap((entry) => {
+    const type = entry.collection;
     const frameworks = entry.data.frameworks;
     const path = `/${type}/${entry.id}`;
     return frameworks.map((framework) => {
@@ -77,9 +79,10 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
     } as const;
   });
 
-  const exampleEntries = entries.filter((entry) => !entry.data.component);
   const exampleIndexes = uniq(
-    exampleEntries.flatMap((entry) => entry.data.frameworks),
+    items
+      .filter((item) => item.type === "examples")
+      .flatMap((item) => item.framework),
   ).map((framework) => {
     const path = "/examples";
     return {
@@ -91,9 +94,9 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
   });
 
   const componentIndexes = uniq(
-    entries.flatMap((entry) =>
-      entry.data.component ? entry.data.frameworks : [],
-    ),
+    items
+      .filter((item) => item.type === "components")
+      .flatMap((item) => item.framework),
   ).map((framework) => {
     const path = "/components";
     return {
@@ -119,7 +122,7 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
   ] satisfies OGImageItem[];
 
   return [
-    ...examples,
+    ...items,
     ...guidePages,
     ...exampleIndexes,
     ...componentIndexes,
