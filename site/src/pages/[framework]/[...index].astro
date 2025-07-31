@@ -27,6 +27,7 @@ import { uniq } from "#app/lib/array.ts";
 import Meta from "#app/components/meta.astro";
 
 export const getStaticPaths = (async () => {
+  const allComponents = await getCollection("components");
   const allExamples = await getCollection("examples");
   const allGalleries = await getCollection("galleries");
 
@@ -36,28 +37,27 @@ export const getStaticPaths = (async () => {
       plural: "components",
       capitalSingular: "Component",
       capitalPlural: "Components",
+      entries: allComponents,
     },
     {
       singular: "example",
       plural: "examples",
       capitalSingular: "Example",
       capitalPlural: "Examples",
+      entries: allExamples,
     },
   ];
 
   const frameworks = uniq(
-    allExamples.flatMap((entry) => entry.data.frameworks)
+    [...allComponents, ...allExamples].flatMap((entry) => entry.data.frameworks)
   );
 
   return frameworks.flatMap((framework) => {
     return types.flatMap((type) => {
-      const frameworkExamples = allExamples
+      const frameworkExamples = type.entries
         .filter((example) => {
           if (!example.data.frameworks.includes(framework)) return false;
-          if (type.singular === "component") {
-            return example.data.component;
-          }
-          return !example.data.component;
+          return true;
         })
         .sort((a, b) => a.data.title.localeCompare(b.data.title));
 
@@ -131,7 +131,7 @@ function getTagPath(tag: (typeof tags)[number] | null) {
   return `/${framework}/${type.plural}${tagPath}/#tags`;
 }
 
-function getExamplePath(example: CollectionEntry<"examples">) {
+function getExamplePath(example: CollectionEntry<"components" | "examples">) {
   return `/${framework}/${type.plural}/${example.id}`;
 }
 
@@ -278,7 +278,7 @@ const hasGuides = guides.length > 0;
               thumbnailId={example.id}
               title={example.data.title}
               description={getCardDescription(example.id)}
-              plus={example.data.tags.includes("plus")}
+              plus={!!example.data.tags?.includes("plus")}
             />
           ))
         }

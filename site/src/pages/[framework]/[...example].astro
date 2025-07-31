@@ -23,16 +23,25 @@ import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
 export const getStaticPaths = (async () => {
-  const entries = await getCollection("examples");
+  const components = await getCollection("components");
+  const examples = await getCollection("examples");
   const descriptions = await getCollection("descriptions");
   const galleries = await getCollection("galleries");
+  const entries = [
+    ...components.map((entry) => ({ ...entry, type: "components" as const })),
+    ...examples.map((entry) => ({ ...entry, type: "examples" as const })),
+  ];
   return entries.flatMap((entry) => {
-    const type = entry.data.component ? "components" : "examples";
     const gallery = galleries.find((gallery) => gallery.id === entry.id);
     const description = descriptions.find((header) => header.id === entry.id);
     return entry.data.frameworks.map((framework) => ({
-      params: { framework, example: `${type}/${entry.id}` },
-      props: { entry, gallery, description, type } as const,
+      params: { framework, example: `${entry.type}/${entry.id}` },
+      props: {
+        entry,
+        gallery,
+        description,
+        type: entry.type,
+      } as const,
     }));
   });
 }) satisfies GetStaticPaths;

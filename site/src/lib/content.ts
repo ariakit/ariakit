@@ -86,7 +86,7 @@ export function filterGuidesByGroup(groupPath: string) {
 }
 
 export function getGalleryLength(
-  examples: CollectionEntry<"examples">[],
+  examples: CollectionEntry<"components" | "examples">[],
   galleries: CollectionEntry<"galleries">[],
 ) {
   return examples.reduce((acc, example) => {

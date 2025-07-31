@@ -35,6 +35,19 @@ const guides = defineCollection({
   }),
 });
 
+const components = defineCollection({
+  loader: glob({
+    pattern: "*/component.mdx",
+    base: join(import.meta.dirname, "examples"),
+    generateId: generateExampleId,
+  }),
+  schema: z.object({
+    title: z.string(),
+    frameworks: FrameworkSchema.array(),
+    tags: TagSchema.array().default([]),
+  }),
+});
+
 const examples = defineCollection({
   loader: glob({
     pattern: "*/index.mdx",
@@ -42,7 +55,6 @@ const examples = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
-    component: z.boolean().default(false),
     frameworks: FrameworkSchema.array(),
     tags: TagSchema.array().default([]),
   }),
@@ -81,6 +93,7 @@ const previews = defineCollection({
 
 export const collections = {
   guides,
+  components,
   examples,
   descriptions,
   galleries,
