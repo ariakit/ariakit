@@ -61,9 +61,6 @@ export default defineConfig({
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
-    ssr: {
-      external: ["async_hooks"],
-    },
   },
 
   markdown: {

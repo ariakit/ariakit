@@ -1,0 +1,141 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+
+@custom-variant ak-disclosure-open {
+  @container style(--ak-disclosure-open: 1) {
+    @slot;
+  }
+}
+
+/* ak-disclosure */
+@utility ak-disclosure_idle {
+  @apply p-0!;
+  --ak-disclosure-padding: var(--ak-frame-padding);
+  --ak-disclosure-radius: var(--ak-frame-radius);
+  --ak-disclosure-border: var(--ak-frame-border);
+
+  :where(summary) {
+    @apply ak-disclosure-button;
+  }
+  &::details-content {
+    @apply ak-disclosure-content-base_idle;
+  }
+}
+
+@utility ak-disclosure_open {
+  @apply delay-0 duration-0;
+  --ak-disclosure-open: 1;
+
+  &::details-content {
+    @apply ak-disclosure-content-base_open;
+  }
+}
+
+@utility ak-disclosure {
+  @apply ak-disclosure_idle;
+  @apply open:ak-disclosure_open;
+}
+
+/* ak-disclosure-button */
+@utility ak-disclosure-button_idle {
+  @apply ak-command-depth-x-3 ak-button_idle ak-text;
+  @apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding);
+  @apply justify-start text-wrap;
+  --ak-disclosure-button-radius: calc(
+    var(--ak-disclosure-radius) - var(--ak-disclosure-border)
+  );
+}
+
+@utility ak-disclosure-button_hover {
+  /* TODO: Fix this in @ariait/tailwind */
+  @apply base:ak-layer-(--ak-layer-parent) ak-layer-hover;
+}
+
+@utility ak-disclosure-button_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-disclosure-button_active {
+  @apply ak-button_active;
+}
+
+@utility ak-disclosure-button_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-disclosure-button {
+  @apply ak-disclosure-button_idle;
+  @apply ak-command-hover:ak-disclosure-button_hover;
+  @apply ak-command-focus:ak-disclosure-button_focus;
+  @apply ak-command-active:ak-disclosure-button_active;
+  @apply ak-command-disabled:ak-disclosure-button_disabled;
+}
+
+/* ak-disclosure-arrow */
+@utility ak-disclosure-arrow-start_idle {
+  @apply h-(--ak-button-leading) w-4 flex-none -rotate-90 self-start bg-current transition-transform duration-300;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' stroke-width='1.25' stroke='black' fill='none'%3E%3Cpolyline stroke-linecap='round' stroke-linejoin='round' points='4,6 8,10 12,6'%3E%3C/polyline%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-type: alpha;
+  mask-size: --spacing(4);
+}
+
+@utility ak-disclosure-arrow-start_open {
+  @apply rotate-0;
+}
+
+@utility ak-disclosure-arrow-start {
+  @apply ak-disclosure-arrow-start_idle;
+  @variant ak-disclosure-open {
+    @apply ak-disclosure-arrow-start_open;
+  }
+}
+
+@utility ak-disclosure-arrow-end_idle {
+  @apply ak-disclosure-arrow-start_idle w-(--ak-button-leading) ms-auto rotate-0;
+}
+
+@utility ak-disclosure-arrow-end_open {
+  @apply rotate-180;
+}
+
+@utility ak-disclosure-arrow-end {
+  @apply ak-disclosure-arrow-end_idle;
+  @variant ak-disclosure-open {
+    @apply ak-disclosure-arrow-end_open;
+  }
+}
+
+/* ak-disclosure-content-base */
+@utility ak-disclosure-content-base_idle {
+  @apply h-0 overflow-y-clip transition-[content-visibility,height] duration-300;
+  transition-behavior: allow-discrete;
+  interpolate-size: allow-keywords;
+}
+
+@utility ak-disclosure-content-base_open {
+  @apply h-auto;
+}
+
+/* ak-disclosure-content */
+@utility ak-disclosure-content_idle {
+  @apply ak-disclosure-content-base_idle p-(--ak-frame-padding);
+}
+
+@utility ak-disclosure-content_open {
+  @apply ak-disclosure-content-base_open;
+}
+
+@utility ak-disclosure-content {
+  @apply ak-disclosure-content_idle;
+  details[open] > & {
+    @apply ak-disclosure-content_open;
+  }
+}

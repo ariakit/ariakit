@@ -12,76 +12,18 @@
   font-size-adjust: 0.48;
 }
 
+@utility ak-strong {
+  @apply ak-text font-medium;
+}
+
 @utility ak-paragraph {
   @apply text-pretty;
 }
 
-@utility ak-list {
-  --ak-list-gap: calc(var(--ak-prose-gap) * 0.5);
-  counter-reset: ak-list;
-  @apply gap-(--ak-list-gap) flex flex-col;
-
-  &:has(p) {
-    --ak-list-gap: calc(var(--ak-prose-gap) * 1.25);
-  }
-
-  &:has(h1, h2, h3, h4) {
-    --ak-list-gap: calc(var(--ak-prose-gap) * 2);
-    @apply not-first:mt-[1em];
-  }
-}
-
-@utility ak-list-item {
-  @apply relative;
-
-  &:has(p) {
-    @apply flex flex-col gap-[calc(var(--ak-list-gap)*0.5)];
-  }
-
-  ul > & {
-    @apply ps-6;
-    &::before {
-      content: "";
-      @apply ak-layer-current ak-edge/40 absolute left-0 top-[calc(var(--ak-prose-leading)*0.5)] w-4 border-b;
-    }
-  }
-
-  ol > & {
-    counter-increment: ak-list;
-    padding-inline-start: calc(var(--ak-prose-leading) + --spacing(1));
-
-    &:has(p, h1, h2, h3, h4, h5) {
-      &::after {
-        @apply ak-layer-pop-2;
-        @apply absolute left-0 h-full w-px;
-        content: "";
-        --ak-list-item-top: calc(var(--ak-prose-leading) + --spacing(1));
-        top: var(--ak-list-item-top);
-        height: calc(
-          100% - var(--ak-list-item-top) + var(--ak-list-gap) - --spacing(1)
-        );
-        left: calc(var(--ak-prose-leading) / 2 - --spacing(1));
-      }
-
-      &:last-of-type {
-        &::after {
-          height: calc(100% - var(--ak-list-item-top));
-        }
-      }
-    }
-
-    &::before {
-      content: counter(ak-list);
-      @apply ak-layer-pop-2;
-      @apply size-(--ak-prose-leading) ak-text text-[0.8em]/0 absolute left-0 top-0 m-[0.25em] ms-0 grid place-items-center rounded-full font-semibold;
-    }
-  }
-}
-
 @utility ak-prose-leading-* {
   --ak-prose-leading: calc(1em * --value(--leading));
-  --ak-prose-leading: --value([length]);
   --ak-prose-leading: --spacing(--value(number));
+  --ak-prose-leading: --value([*]);
   @apply leading-(--ak-prose-leading);
 }
 
@@ -89,16 +31,26 @@
   --ak-prose-leading: calc(1em * --modifier(--leading));
   --ak-prose-leading: --modifier([length]);
   --ak-prose-leading: --spacing(--modifier(number));
-  font-size: --value(--text, [length]);
-
+  font-size: --value(--text, [*]);
   @apply leading-(--ak-prose-leading);
 }
 
-@utility ak-prose-elements {
-  :where(strong) {
-    @apply ak-text;
-  }
+@utility ak-prose-gap-* {
+  --ak-prose-gap: --spacing(--value(number));
+  --ak-prose-gap: --value(--spacing, [*]);
+}
 
+@utility ak-prose-content {
+  @apply gap-(--ak-prose-gap) flex flex-col;
+}
+
+@utility ak-prose {
+  --ak-prose-gap: 1.25em;
+  @apply ak-text/80 ak-prose-text-base/relaxed ak-prose-elements;
+  @apply ak-prose-content;
+}
+
+@utility ak-prose-elements {
   :where(h1, h2, h3, h4, h5) {
     @apply ak-heading;
   }
@@ -108,11 +60,15 @@
   }
 
   :where(ul, ol) {
-    @apply ak-list;
+    @apply ak-list ak-list-gap-(--ak-prose-gap) ak-list-leading-(--ak-prose-leading);
   }
 
   :where(li) {
     @apply ak-list-item;
+  }
+
+  :where(strong) {
+    @apply ak-strong;
   }
 
   :where(code):not(:where(pre code)) {
@@ -126,10 +82,4 @@
   :where(kbd) {
     @apply ak-kbd;
   }
-}
-
-@utility ak-prose {
-  --ak-prose-gap: 1.25em;
-  @apply ak-text/80 ak-prose-text-base/relaxed ak-prose-elements;
-  @apply gap-(--ak-prose-gap) flex flex-col;
 }

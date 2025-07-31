@@ -61,7 +61,7 @@
   }
 
   &:has(> *:nth-child(4), > div > div) {
-    @apply ak-command-active-depth-4;
+    @apply ak-command-depth-4;
   }
 }
 

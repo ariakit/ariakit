@@ -18,12 +18,14 @@
 @import "./tab.css";
 @import "./popover.css";
 @import "./dialog.css";
+@import "./disclosure.css";
 @import "./tooltip.css";
 @import "./select.css";
 @import "./container.css";
 @import "./input.css";
 @import "./kbd.css";
 @import "./link.css";
+@import "./list.css";
 @import "./heading.css";
 @import "./segmented.css";
 @import "./prose.css";
@@ -46,7 +48,7 @@
   --spacing-playground: --spacing(0);
 
   --radius-field: var(--radius-lg);
-  --spacing-field: --spacing(3);
+  --spacing-field: 0.75em;
 
   --radius-card: var(--radius-xl);
   --spacing-card: --spacing(4);

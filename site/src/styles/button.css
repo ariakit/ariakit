@@ -9,8 +9,11 @@
 @utility ak-button_idle {
   @apply ak-command_idle ak-outline-primary ak-frame-field;
   @apply leading-(--ak-button-leading) flex items-center justify-center gap-1.5 whitespace-nowrap font-[calc(500+50*var(--contrast))];
-  @apply py-[calc(var(--ak-frame-padding)-(var(--ak-button-leading)-1em)/2)];
   --ak-button-leading: 1.5em;
+  --ak-button-padding-block: calc(
+    var(--ak-frame-padding) - (var(--ak-button-leading) - 1em) / 2
+  );
+  padding-block: var(--ak-button-padding-block);
 }
 
 @utility ak-button_hover {
@@ -31,7 +34,11 @@
 }
 
 @utility ak-button {
-  @apply ak-button_idle hover:ak-button_hover focus-visible:ak-button_focus has-focus-visible:ak-button_focus active:not-disabled:not-aria-disabled:ak-button_active aria-disabled:ak-button_disabled disabled:ak-button_disabled;
+  @apply ak-button_idle;
+  @apply hover:ak-button_hover;
+  @apply ak-command-focus:ak-button_focus;
+  @apply ak-command-active:ak-button_active;
+  @apply ak-command-disabled:ak-button_disabled;
 }
 
 @utility ak-button-square {
@@ -129,5 +136,9 @@
 }
 
 @utility ak-button-classic {
-  @apply ak-button-classic_idle hover:ak-button-classic_hover focus-visible:ak-button-classic_focus active:not-disabled:not-aria-disabled:ak-button-classic_active disabled:ak-button-classic_disabled aria-disabled:ak-button-classic_disabled;
+  @apply ak-button-classic_idle;
+  @apply hover:ak-button-classic_hover;
+  @apply ak-command-focus:ak-button-classic_focus;
+  @apply ak-command-active:ak-button-classic_active;
+  @apply ak-command-disabled:ak-button-classic_disabled;
 }
