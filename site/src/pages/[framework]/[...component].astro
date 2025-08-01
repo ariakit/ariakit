@@ -16,7 +16,7 @@ import { components } from "#app/components/content-components.astro";
 import ExampleCard from "#app/components/example-card.astro";
 import Meta from "#app/components/meta.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
-import { renderContentToString } from "#app/lib/content.ts";
+import { descriptionToText } from "#app/lib/content.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
@@ -55,18 +55,13 @@ const { Content: Description } = description ? await render(description) : {};
 Astro.locals.framework = framework;
 Astro.locals.example = entry.id;
 
-async function getDescriptionText() {
-  if (!Description) return;
-  const sections = await renderContentToString(Description, {
-    framework,
-    components,
-  });
-  return sections[0]?.content[0];
-}
-
 const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;
-const descriptionText = await getDescriptionText();
+const descriptionText = await descriptionToText(
+  Description,
+  framework,
+  components
+);
 ---
 
 <Layout {title} {headings}>

@@ -17,6 +17,7 @@ import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { isFramework } from "./frameworks.ts";
+import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
   type: "examples" | "components" | "styles";
@@ -102,7 +103,7 @@ interface Section {
   content: string[];
 }
 
-export async function renderContentToString(
+export async function contentToText(
   component: RenderResult["Content"],
   props: Record<string, any>,
 ) {
@@ -179,4 +180,17 @@ export function parseContentToSections(html: string): Section[] {
   }
 
   return sections.filter((s) => s.id || s.content.length > 0);
+}
+
+export async function descriptionToText(
+  component: RenderResult["Content"] | undefined,
+  framework: Framework,
+  components: Record<string, any>,
+) {
+  if (!component) return;
+  const sections = await contentToText(component, {
+    framework,
+    components,
+  });
+  return sections[0]?.content[0];
 }
