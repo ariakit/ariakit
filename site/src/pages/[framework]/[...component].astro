@@ -13,8 +13,8 @@ import {
   BoxPatternsRightOnly,
 } from "#app/components/box-patterns.react.tsx";
 import { components } from "#app/components/content-components.astro";
+import ExampleCard from "#app/components/example-card.astro";
 import Meta from "#app/components/meta.astro";
-import PageCard from "#app/components/page-card.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import { renderContentToString } from "#app/lib/content.ts";
 import { mapTags } from "#app/lib/tags.ts";
@@ -62,14 +62,6 @@ async function getDescriptionText() {
     components,
   });
   return sections[0]?.content[0];
-}
-
-const galleries = await getCollection("galleries");
-
-function getCardDescription(id: string) {
-  const gallery = galleries.find((gallery) => gallery.id === id);
-  const length = gallery?.data.length || 1;
-  return `${length} example${length > 1 ? "s" : ""}`;
 }
 
 const tags = mapTags(entry.data.tags, [framework]);
@@ -135,17 +127,7 @@ const descriptionText = await getDescriptionText();
     {Gallery && <Gallery {framework} {components} />}
   </div>
   <div class="ak-container-size-wider ak-container flex flex-col gap-12 mb-16">
-    {
-      examples.map((example) => (
-        <PageCard
-          href={`/${framework}/examples/${example.id}`}
-          thumbnailId={example.id}
-          title={example.data.title}
-          description={getCardDescription(example.id)}
-          plus={!!example.data.tags?.includes("plus")}
-        />
-      ))
-    }
+    {examples.map((example) => <ExampleCard {example} />)}
   </div>
   <div data-content="true" class="ak-container-size-wider ak-container">
     <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">

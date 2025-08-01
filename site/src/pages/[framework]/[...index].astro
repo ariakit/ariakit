@@ -8,16 +8,16 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { type CollectionEntry, getCollection } from "astro:content";
+import { getCollection } from "astro:content";
 import type { GetStaticPaths } from "astro";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
-import PageCard from "#app/components/page-card.astro";
 import HorizontalScroll from "#app/components/horizontal-scroll.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
+import ExampleCard from "#app/components/example-card.astro";
 import {
   filterGuidesByGroup,
   getGuideDetail,
@@ -25,6 +25,7 @@ import {
 } from "#app/lib/content.ts";
 import { uniq } from "#app/lib/array.ts";
 import Meta from "#app/components/meta.astro";
+import pluralize from "pluralize";
 
 export const getStaticPaths = (async () => {
   const allComponents = await getCollection("components");
@@ -113,26 +114,9 @@ const { framework } = Astro.params;
 
 Astro.locals.framework = framework;
 
-const galleries = await getCollection("galleries");
-
-function getPlural(string: string, length = 2) {
-  const plural = length === 1 ? "" : "s";
-  return `${string}${plural}`;
-}
-
-function getCardDescription(id: string) {
-  const gallery = galleries.find((gallery) => gallery.id === id);
-  const length = gallery?.data.length || 1;
-  return `${length} ${getPlural(type.singular, length)}`;
-}
-
 function getTagPath(tag: (typeof tags)[number] | null) {
   const tagPath = tag?.id ? `/${tag.id}` : "";
   return `/${framework}/${type.plural}${tagPath}/#tags`;
-}
-
-function getExamplePath(example: CollectionEntry<"components" | "examples">) {
-  return `/${framework}/${type.plural}/${example.id}`;
 }
 
 const frameworkData = getFramework(framework);
@@ -182,7 +166,7 @@ const hasGuides = guides.length > 0;
           )
         }
         {frameworkData.label}
-        {getPlural(type.capitalSingular, frameworkLength)}
+        {pluralize(type.capitalSingular, frameworkLength)}
         <BoxPatternsMiddle />
       </h1>
     </div>
@@ -194,7 +178,7 @@ const hasGuides = guides.length > 0;
           <Icon name="search" className="flex-none" />
           <div class="ak-input-placeholder truncate">
             Search {frameworkData.label}
-            {getPlural(type.singular, frameworkLength)}
+            {pluralize(type.singular, frameworkLength)}
           </div>
         </div>
         <div class="flex-1 w-10"></div>
@@ -258,7 +242,7 @@ const hasGuides = guides.length > 0;
                     <span class="ak-text/0 rounded-full px-1.5 ak-layer-pop min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer-pop-3">
                       {length}
                       <span class="sr-only">
-                        {getPlural(type.singular, length)}
+                        {pluralize(type.singular, length)}
                       </span>
                     </span>
                   </a>
@@ -271,17 +255,7 @@ const hasGuides = guides.length > 0;
       <div
         class="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4 p-4 pt-[calc(--spacing(4)+1px)]"
       >
-        {
-          examples.map((example) => (
-            <PageCard
-              href={getExamplePath(example)}
-              thumbnailId={example.id}
-              title={example.data.title}
-              description={getCardDescription(example.id)}
-              plus={!!example.data.tags?.includes("plus")}
-            />
-          ))
-        }
+        {examples.map((example) => <ExampleCard {example} />)}
       </div>
     </div>
   </div>
