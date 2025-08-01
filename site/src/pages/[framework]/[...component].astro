@@ -9,13 +9,13 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import {
-  BoxPatternsLeft,
-  BoxPatternsRight,
+  BoxPatternsLeftOnly,
+  BoxPatternsRightOnly,
 } from "#app/components/box-patterns.react.tsx";
 import { components } from "#app/components/content-components.astro";
 import Meta from "#app/components/meta.astro";
+import PageCard from "#app/components/page-card.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
-import { Icon } from "#app/icons/icon.react.tsx";
 import { renderContentToString } from "#app/lib/content.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
@@ -26,19 +26,28 @@ export const getStaticPaths = (async () => {
   const entries = await getCollection("components");
   const descriptions = await getCollection("descriptions");
   const galleries = await getCollection("galleries");
+  const examples = await getCollection("examples");
   return entries.flatMap((entry) => {
     const id = `${entry.id}/_component`;
     const gallery = galleries.find((gallery) => gallery.id === id);
     const description = descriptions.find((header) => header.id === id);
+    const componentExamples = examples.filter((example) =>
+      example.data.components.some((component) => component.id === entry.id)
+    );
     return entry.data.frameworks.map((framework) => ({
       params: { framework, component: `components/${entry.id}` },
-      props: { entry, gallery, description } as const,
+      props: {
+        entry,
+        gallery,
+        description,
+        examples: componentExamples,
+      } as const,
     }));
   });
 }) satisfies GetStaticPaths;
 
 const { framework } = Astro.params;
-const { entry, gallery, description } = Astro.props;
+const { entry, gallery, description, examples } = Astro.props;
 const { Content, headings } = await render(entry);
 const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};
@@ -53,6 +62,14 @@ async function getDescriptionText() {
     components,
   });
   return sections[0]?.content[0];
+}
+
+const galleries = await getCollection("galleries");
+
+function getCardDescription(id: string) {
+  const gallery = galleries.find((gallery) => gallery.id === id);
+  const length = gallery?.data.length || 1;
+  return `${length} example${length > 1 ? "s" : ""}`;
 }
 
 const tags = mapTags(entry.data.tags, [framework]);
@@ -75,7 +92,7 @@ const descriptionText = await getDescriptionText();
         class="text-4xl font-semibold mb-5 ak-container-size-default/0 ak-container relative"
       >
         {entry.data.title}
-        <BoxPatternsLeft />
+        <BoxPatternsLeftOnly />
       </h1>
       <div
         class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] gap-3 items-start"
@@ -85,8 +102,9 @@ const descriptionText = await getDescriptionText();
         >
           {
             Description && (
-              <div class="ak-text/60 ak-prose-elements text-lg/[1.8] [&_code]:ak-text/60">
+              <div class="ak-text/60 ak-prose-elements text-lg/[1.8] [&_code]:ak-text/60 relative">
                 <Description {framework} {components} />
+                <BoxPatternsRightOnly />
               </div>
             )
           }
@@ -107,45 +125,41 @@ const descriptionText = await getDescriptionText();
             )
           }
         </div>
-        <div class="ms-auto flex gap-2 items-center relative">
-          <BoxPatternsRight />
-          <div class="flex gap-2">
-            <button
-              class="ak-button ak-light:ak-layer-primary ak-dark:ak-layer-primary-down-3 flex-1"
-            >
-              <Icon name="copyAi" strokeWidth={2} /> Copy AI prompt
-              <kbd class="ak-text/0 ms-1">
-                <span class="font-sans">⌘</span>I
-              </kbd>
-            </button>
-            <button class="ak-button ak-layer-pop ak-frame-border">
-              <Icon name="shadcn" />
-              <span class="sr-only">Copy shadcn command</span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
-    <div
-      data-gallery="true"
-      class="ak-container-size-wider ak-container flex flex-col gap-12 mb-16"
-    >
-      {Gallery && <Gallery {framework} {components} />}
-    </div>
-    <div data-content="true" class="ak-container-size-wider ak-container">
-      <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
-        <div
-          class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed"
-        >
-          <Content {framework} {components} />
-        </div>
-        <div class="hidden @3xl:block ps-3">
-          <TableOfContents
-            title={entry.data.title}
-            {headings}
-            class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
-          />
-        </div>
+  </div>
+  <div
+    data-gallery="true"
+    class="ak-container-size-wider ak-container flex flex-col gap-12 mb-16"
+  >
+    {Gallery && <Gallery {framework} {components} />}
+  </div>
+  <div class="ak-container-size-wider ak-container flex flex-col gap-12 mb-16">
+    {
+      examples.map((example) => (
+        <PageCard
+          href={`/${framework}/examples/${example.id}`}
+          thumbnailId={example.id}
+          title={example.data.title}
+          description={getCardDescription(example.id)}
+          plus={!!example.data.tags?.includes("plus")}
+        />
+      ))
+    }
+  </div>
+  <div data-content="true" class="ak-container-size-wider ak-container">
+    <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
+      <div
+        class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed"
+      >
+        <Content {framework} {components} />
+      </div>
+      <div class="hidden @3xl:block ps-3">
+        <TableOfContents
+          title={entry.data.title}
+          {headings}
+          class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
+        />
       </div>
     </div>
   </div>

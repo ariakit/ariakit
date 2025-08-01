@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { defineCollection, z } from "astro:content";
+import { defineCollection, reference, z } from "astro:content";
 import { join } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import { glob } from "astro/loaders";
@@ -61,6 +61,7 @@ const examples = defineCollection({
     title: z.string(),
     frameworks: FrameworkSchema.array(),
     tags: TagSchema.array().default([]),
+    components: z.array(reference("components")).default([]),
   }),
 });
 

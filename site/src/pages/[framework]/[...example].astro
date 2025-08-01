@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import {
-  BoxPatternsLeft,
+  BoxPatternsLeftOnly,
   BoxPatternsRight,
 } from "#app/components/box-patterns.react.tsx";
 import { components } from "#app/components/content-components.astro";
@@ -74,7 +74,7 @@ const descriptionText = await getDescriptionText();
         class="text-4xl font-semibold mb-5 ak-container-size-default/0 ak-container relative"
       >
         {entry.data.title}
-        <BoxPatternsLeft />
+        <BoxPatternsLeftOnly />
       </h1>
       <div
         class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)] gap-3 items-start"
