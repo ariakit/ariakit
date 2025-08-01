@@ -37,9 +37,13 @@ const guides = defineCollection({
 
 const components = defineCollection({
   loader: glob({
-    pattern: "*/component.mdx",
+    pattern: "*/_component/index.mdx",
     base: join(import.meta.dirname, "examples"),
-    generateId: generateExampleId,
+    generateId(options) {
+      const [id] = options.entry.split("/");
+      invariant(id, "Component must have an id");
+      return id;
+    },
   }),
   schema: z.object({
     title: z.string(),
@@ -62,7 +66,7 @@ const examples = defineCollection({
 
 const descriptions = defineCollection({
   loader: glob({
-    pattern: "*/description.mdx",
+    pattern: "**/description.mdx",
     base: join(import.meta.dirname, "examples"),
     generateId: generateExampleId,
   }),
@@ -70,7 +74,7 @@ const descriptions = defineCollection({
 
 const galleries = defineCollection({
   loader: glob({
-    pattern: "*/gallery.mdx",
+    pattern: "**/gallery.mdx",
     base: join(import.meta.dirname, "examples"),
     generateId: generateExampleId,
   }),

@@ -23,14 +23,15 @@ import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
 export const getStaticPaths = (async () => {
-  const entries = await getCollection("examples");
+  const entries = await getCollection("components");
   const descriptions = await getCollection("descriptions");
   const galleries = await getCollection("galleries");
   return entries.flatMap((entry) => {
-    const gallery = galleries.find((gallery) => gallery.id === entry.id);
-    const description = descriptions.find((header) => header.id === entry.id);
+    const id = `${entry.id}/_component`;
+    const gallery = galleries.find((gallery) => gallery.id === id);
+    const description = descriptions.find((header) => header.id === id);
     return entry.data.frameworks.map((framework) => ({
-      params: { framework, example: `examples/${entry.id}` },
+      params: { framework, component: `components/${entry.id}` },
       props: { entry, gallery, description } as const,
     }));
   });
@@ -63,7 +64,7 @@ const descriptionText = await getDescriptionText();
   <Meta
     slot="meta"
     id={entry.id}
-    type="examples"
+    type="components"
     title={title}
     framework={framework}
     description={descriptionText}
@@ -95,7 +96,7 @@ const descriptionText = await getDescriptionText();
                 {tags.map((tag) => (
                   <li>
                     <a
-                      href={`/${framework}/examples/${tag.id}`}
+                      href={`/${framework}/components/${tag.id}`}
                       class="ak-badge ak-button ak-layer-pop"
                     >
                       {tag.label}

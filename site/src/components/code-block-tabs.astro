@@ -81,7 +81,8 @@ const tabsFromSource = source
 
 const tabs = tabsProp || tabsFromSource;
 const example = exampleProp ?? source?.name ?? Astro.locals.example;
-const isMainPreview = !source?.name.includes("/");
+const isMainPreview =
+  !source?.name.includes("/") || source.name.includes("_component");
 const title = await getVariantTitle(source);
 
 const Fallback = example ? await importThumbnail(example) : undefined;
