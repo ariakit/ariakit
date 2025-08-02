@@ -87,10 +87,10 @@ export function filterGuidesByGroup(groupPath: string) {
 }
 
 export function getGalleryLength(
-  examples: CollectionEntry<"components" | "examples">[],
+  entries: CollectionEntry<"components" | "examples">[],
   galleries: CollectionEntry<"galleries">[],
 ) {
-  return examples.reduce((acc, example) => {
+  return entries.reduce((acc, example) => {
     const gallery = galleries.find((g) => g.id === example.id);
     return acc + (gallery?.data.length || 1);
   }, 0);

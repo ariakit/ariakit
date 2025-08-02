@@ -17,7 +17,8 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
-import ExampleCard from "#app/components/example-card.astro";
+import PageCardExample from "#app/components/page-card-example.astro";
+import PageCardComponent from "#app/components/page-card-component.astro";
 import {
   filterGuidesByGroup,
   getGuideDetail,
@@ -26,79 +27,58 @@ import {
 import { uniq } from "#app/lib/array.ts";
 import Meta from "#app/components/meta.astro";
 import pluralize from "pluralize";
+import { capitalize } from "#app/lib/string.ts";
 
 export const getStaticPaths = (async () => {
-  const allComponents = await getCollection("components");
-  const allExamples = await getCollection("examples");
+  const types = ["components", "examples"] as const;
+  const allEntries = (
+    await Promise.all(types.map((type) => getCollection(type)))
+  ).flat();
+  // Get all galleries so we can count the number of items in each gallery.
   const allGalleries = await getCollection("galleries");
-
-  const types = [
-    {
-      singular: "component",
-      plural: "components",
-      capitalSingular: "Component",
-      capitalPlural: "Components",
-      entries: allComponents,
-    },
-    {
-      singular: "example",
-      plural: "examples",
-      capitalSingular: "Example",
-      capitalPlural: "Examples",
-      entries: allExamples,
-    },
-  ];
-
-  const frameworks = uniq(
-    [...allComponents, ...allExamples].flatMap((entry) => entry.data.frameworks)
-  );
-
+  // Get all unique frameworks from the entries.
+  const frameworks = uniq(allEntries.flatMap((entry) => entry.data.frameworks));
+  // Create a page for each framework.
   return frameworks.flatMap((framework) => {
+    const frameworkEntries = allEntries
+      .filter((entry) => entry.data.frameworks.includes(framework))
+      .sort((a, b) => a.data.title.localeCompare(b.data.title));
+    // Create a page for each type (components, examples).
     return types.flatMap((type) => {
-      const frameworkExamples = type.entries
-        .filter((example) => {
-          if (!example.data.frameworks.includes(framework)) return false;
-          return true;
-        })
-        .sort((a, b) => a.data.title.localeCompare(b.data.title));
-
-      const frameworkExampleIds = frameworkExamples.map((e) => e.id);
-      const galleries = allGalleries.filter((gallery) =>
-        frameworkExampleIds.includes(gallery.id)
+      const typeEntries = frameworkEntries.filter(
+        (entry) => entry.collection === type
       );
-
-      const frameworkTags = mapTags(
-        frameworkExamples.flatMap((example) => example.data.tags),
+      const ids = typeEntries.map((entry) => entry.id);
+      const galleries = allGalleries.filter((entry) => ids.includes(entry.id));
+      // Count the total number of gallery items for the current framework and
+      // type.
+      const frameworkLength = getGalleryLength(typeEntries, galleries);
+      // Get all unique tags for the current entries.
+      const tags = mapTags(
+        typeEntries.flatMap((entry) => entry.data.tags),
         [framework]
       );
-
-      const frameworkLength = getGalleryLength(frameworkExamples, galleries);
-
-      const tagsWithLength = frameworkTags.map((tag) => {
-        const tagExamples = frameworkExamples.filter(
-          (example) => !!example.data.tags.find((t) => t === tag?.id)
+      // Calculate the number of entries for each tag.
+      const tagsWithLength = tags.map((tag) => {
+        const tagEntries = typeEntries.filter(
+          (entry) => !!entry.data.tags.find((t) => t === tag?.id)
         );
-        const tagLength = tagExamples.reduce((acc, example) => {
-          const gallery = galleries.find((g) => g.id === example.id);
-          return acc + (gallery?.data.length || 1);
-        }, 0);
+        const tagLength = getGalleryLength(tagEntries, galleries);
         return { ...tag, length: tagLength };
       });
-
-      return [null, ...frameworkTags].map((tag) => {
-        const tagExamples = !tag
-          ? frameworkExamples
-          : frameworkExamples.filter(
-              (example) => !!example.data.tags.find((t) => t === tag?.id)
+      // Create a page for each tag, plus a page for all entries (null tag).
+      return [null, ...tags].map((tag) => {
+        const tagEntries = !tag
+          ? typeEntries
+          : typeEntries.filter(
+              (entry) => !!entry.data.tags.find((t) => t === tag?.id)
             );
-
-        const index = tag ? `${type.plural}/${tag.id}` : type.plural;
-
+        const index = tag ? `${type}/${tag.id}` : type;
         return {
           params: { framework, index },
           props: {
             type,
-            examples: tagExamples,
+            entries: tagEntries,
             tag,
             tags: tagsWithLength,
             frameworkLength,
@@ -109,21 +89,22 @@ export const getStaticPaths = (async () => {
   });
 }) satisfies GetStaticPaths;
 
-const { type, frameworkLength, tags, tag, examples } = Astro.props;
+const { type, frameworkLength, tags, tag, entries } = Astro.props;
 const { framework } = Astro.params;
 
 Astro.locals.framework = framework;
 
 function getTagPath(tag: (typeof tags)[number] | null) {
   const tagPath = tag?.id ? `/${tag.id}` : "";
-  return `/${framework}/${type.plural}${tagPath}/#tags`;
+  return `/${framework}/${type}${tagPath}/#tags`;
 }
 
 const frameworkData = getFramework(framework);
 
-const title = `${frameworkData.label} ${tag?.label || ""} ${type.capitalPlural}`;
+const typeTitle = capitalize(type);
+const title = `${frameworkData.label} ${tag?.label || ""} ${typeTitle}`;
 
-const groupPath = `/${framework}/${type.plural}`;
+const groupPath = `/${framework}/${type}`;
 const guides = (
   await getCollection("guides", filterGuidesByGroup(groupPath))
 ).map(getGuideDetail);
@@ -131,12 +112,7 @@ const hasGuides = guides.length > 0;
 ---
 
 <Layout {title}>
-  <Meta
-    slot="meta"
-    {title}
-    {framework}
-    type={type.plural === "components" ? "components" : "examples"}
-  />
+  <Meta slot="meta" type={type} title={title} framework={framework} />
   <div
     class="ak-container-size-default py-24 ak-container flex flex-col items-center gap-8"
   >
@@ -156,17 +132,17 @@ const hasGuides = guides.length > 0;
         class="text-2xl @3xl:text-4xl font-semibold relative text-center flex items-center gap-2"
       >
         {
-          type.singular === "example" && (
+          type === "examples" && (
             <span class="ak-text-primary/0">{frameworkLength}</span>
           )
         }
         {
-          type.singular === "component" && (
+          type === "components" && (
             <Icon name={frameworkData.icon} className="flex-none" />
           )
         }
         {frameworkData.label}
-        {pluralize(type.capitalSingular, frameworkLength)}
+        {pluralize(typeTitle, frameworkLength)}
         <BoxPatternsMiddle />
       </h1>
     </div>
@@ -178,11 +154,13 @@ const hasGuides = guides.length > 0;
           <Icon name="search" className="flex-none" />
           <div class="ak-input-placeholder truncate">
             Search {frameworkData.label}
-            {pluralize(type.singular, frameworkLength)}
+            {pluralize(typeTitle, frameworkLength)}
           </div>
         </div>
         <div class="flex-1 w-10"></div>
-        <kbd class="ak-text/0 ak-layer-pop-1.5 ak-frame-field/2">/</kbd>
+        <kbd class="ak-text/0 ak-layer-pop-1.5 ak-frame-field/2">
+          {type === "components" ? "," : "/"}
+        </kbd>
       </button>
     </div>
   </div>
@@ -206,7 +184,7 @@ const hasGuides = guides.length > 0;
         <SidebarMenu
           revealOnStuck
           items={[
-            { label: type.capitalPlural, href: groupPath },
+            { label: capitalize(type), href: groupPath },
             { label: "Guides" },
             ...guides.map((guide) => ({
               label: guide.data.title,
@@ -239,11 +217,9 @@ const hasGuides = guides.length > 0;
                     class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1"
                   >
                     <span class="ps-2">{t?.label ?? "All"}</span>
-                    <span class="ak-text/0 rounded-full px-1.5 ak-layer-pop min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer-pop-3">
+                    <span class="ak-text/0 rounded-full ak-edge/0 ring px-1.5 ak-layer-pop min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer-pop-3">
                       {length}
-                      <span class="sr-only">
-                        {pluralize(type.singular, length)}
-                      </span>
+                      <span class="sr-only">{pluralize(type, length)}</span>
                     </span>
                   </a>
                 </li>
@@ -255,7 +231,15 @@ const hasGuides = guides.length > 0;
       <div
         class="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4 p-4 pt-[calc(--spacing(4)+1px)]"
       >
-        {examples.map((example) => <ExampleCard {example} />)}
+        {
+          entries.map((entry) =>
+            entry.collection === "components" ? (
+              <PageCardComponent {entry} />
+            ) : (
+              <PageCardExample {entry} />
+            )
+          )
+        }
       </div>
     </div>
   </div>
