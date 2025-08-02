@@ -27,31 +27,31 @@ const descriptionId = description ? generateId("description-") : undefined;
 
 <a
   class:list={[
-    "ak-button ak-command-depth-4 text-wrap ak-layer ak-dark:ak-edge/0 ring ak-frame-card flex flex-col gap-2 items-stretch font-normal outline-offset-0 group justify-start",
+    "ak-button ak-command-depth-4 text-wrap ak-layer-(--ak-layer-parent) ak-command-focus:outline-0 ak-command-focus:ak-layer-hover ak-frame-card flex flex-col gap-2 items-stretch font-normal outline-offset-2 group/card justify-start",
     props.class,
   ]}
   aria-labelledby={labelId}
   aria-describedby={descriptionId}
   {...props}
 >
-  <span class="ak-frame-cover/1">
+  <span class="ak-frame-cover/0">
     <span
       inert
-      class="ak-layer-down ak-frame-border border-(--ak-layer) ak-frame/4 flex justify-center items-center-safe group-focus-visible:ak-layer-primary overflow-hidden h-48 relative"
+      class="ak-light:ak-layer-down ak-dark:ak-layer-down-0.3 ak-frame-border ak-frame/4 flex justify-center items-center-safe group-focus-visible/card:ak-layer-contrast-primary overflow-hidden h-48 relative"
     >
       <span
-        class="ak-frame-cover/0 [--padding:var(--ak-frame-padding)] contents"
+        class="ak-frame-cover/1 [--padding:var(--ak-frame-padding)] contents"
       >
         {
           plus && (
-            <span class="absolute top-0 end-0 ak-badge-primary border border-dashed px-(--ak-frame-padding)">
+            <span class="absolute top-(--padding) end-(--padding) ak-badge-primary border border-dashed px-(--ak-frame-padding)">
               <span>Plus</span>
             </span>
           )
         }
       </span>
       <span
-        class="_not-group-focus-visible:not-group-hover:opacity-90 group-focus-visible:ak-layer-white -mx-10 -mt-4 !bg-transparent block group-hover:scale-75 scale-70 origin-[50%_5rem] relative transition-transform duration-600"
+        class="group-ak-command-focus/card:ak-layer-white -mx-10 -mt-4 !bg-transparent block group-ak-command-hover/card:scale-75 scale-70 origin-[50%_5rem] relative transition-transform duration-600"
       >
         {
           importThumbnail(thumbnailId).then((Thumbnail) => {
