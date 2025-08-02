@@ -59,6 +59,7 @@ export function useCollapsible<T extends HTMLElement>({
   const expandButton =
     collapsible && collapsed ? (
       <button
+        data-expand
         ref={expandButtonRef}
         onClick={expand}
         className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-var(--line-height)*8)] ak-light:from-[calc(100%-var(--line-height)*4)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-2 justify-center items-end"

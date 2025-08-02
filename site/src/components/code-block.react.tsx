@@ -172,6 +172,7 @@ export function CodeBlock({
       <div
         className={clsx(
           "ak-layer-0.5 ak-light:ak-layer group peer ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
+          collapsed && "has-[[data-expand]:hover]:ak-layer-hover-0.5",
           collapsibleClassName,
         )}
         data-collapsible={collapsible || undefined}
