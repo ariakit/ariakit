@@ -142,6 +142,7 @@ export function CodeBlock({
         {...scrollableProps}
         className={clsx(
           "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",
+          // "transition-[max-height] duration-300 transition-discrete [interpolate-size:allow-keywords]",
           "[font-size-adjust:0.55]",
           expanded &&
             "overflow-auto overscroll-contain max-h-[min(calc(100svh-12rem),60rem)]",
@@ -240,6 +241,7 @@ export interface CodeBlockPreviewIframeProps {
   loaded?: boolean;
   setLoaded?: (loaded: boolean) => void;
   minHeight?: string;
+  title?: string;
 }
 
 /**
@@ -254,6 +256,7 @@ export function CodeBlockPreviewIframe({
   setLoaded: setLoadedProp,
   scrollTop,
   minHeight = "29.1rem",
+  title,
 }: CodeBlockPreviewIframeProps) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useControllableState(
@@ -383,16 +386,16 @@ export function CodeBlockPreviewIframe({
       clickAndWaitForPopup();
     };
 
-    iframe.addEventListener("load", onLoad);
+    if (iframe.contentDocument?.readyState === "complete") {
+      onLoad();
+    } else {
+      iframe.addEventListener("load", onLoad);
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
-        if (iframe.src.endsWith(previewUrl)) {
-          scroll();
-          return setLoaded(true);
-        }
-        iframe.src = previewUrl;
+        scroll();
       },
       { rootMargin: "50%" },
     );
@@ -415,7 +418,13 @@ export function CodeBlockPreviewIframe({
 
   return (
     <div className="relative h-full" style={{ minHeight }}>
-      <iframe ref={iframeRef} width="100%" height="100%" title="Preview" />
+      <iframe
+        ref={iframeRef}
+        src={previewUrl}
+        width="100%"
+        height="100%"
+        title={title ? `${title} Preview` : "Preview"}
+      />
       {!loaded && (
         <div
           className={clsx(
@@ -733,6 +742,7 @@ export function CodeBlockTabsContent({
                           setLoaded={setLoaded}
                           scrollTop={scrollTop}
                           minHeight={minHeight}
+                          title={title}
                         />
                       ) : (
                         <CodeBlockPreview title={title} minHeight={minHeight}>
@@ -843,6 +853,7 @@ export function CodeBlockTabs({
                 fallback={hasFallback ? fallback1 : undefined}
                 scrollTop={props.scrollTop}
                 minHeight={props.minHeight}
+                title={props.title}
               />
             ) : (
               <CodeBlockPreview title={props.title} minHeight={props.minHeight}>
