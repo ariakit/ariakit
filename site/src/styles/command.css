@@ -22,18 +22,14 @@
 }
 
 @custom-variant ak-command-active {
-  &:not(:disabled, [aria-disabled="true"]) {
-    &:active {
-      @slot;
-    }
+  &:not(:disabled, [aria-disabled="true"]):active {
+    @slot;
   }
 }
 
 @custom-variant ak-command-hover {
-  &:not(:disabled, [aria-disabled="true"]) {
-    &:hover {
-      @slot;
-    }
+  &:not(:disabled, [aria-disabled="true"]):hover {
+    @slot;
   }
 }
 
