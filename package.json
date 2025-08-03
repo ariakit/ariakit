@@ -151,7 +151,7 @@
     "jsdom": "26.1.0",
     "kleur": "4.1.5",
     "lerna": "8.2.3",
-    "lint-staged": "16.1.2",
+    "lint-staged": "16.1.4",
     "lodash-es": "4.17.21",
     "marked": "4.3.0",
     "match-sorter": "8.1.0",
