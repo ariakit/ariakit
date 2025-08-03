@@ -18,9 +18,9 @@ import ContentLink from "#app/components/content-link.astro";
 import ContentParagraph from "#app/components/content-paragraph.astro";
 import Meta from "#app/components/meta.astro";
 import PageCardExample from "#app/components/page-card-example.astro";
+import SidebarMenu from "#app/components/sidebar-menu.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
-import { descriptionToText, getGalleryLength } from "#app/lib/content.ts";
-import { getFramework } from "#app/lib/frameworks.ts";
+import { descriptionToText } from "#app/lib/content.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
 import type { GetStaticPaths } from "astro";
@@ -59,22 +59,10 @@ const { Content: Description } = description ? await render(description) : {};
 Astro.locals.framework = framework;
 Astro.locals.example = entry.id;
 
-const allFrameworkExamples = await getCollection("examples", (entry) =>
-  entry.data.frameworks.includes(framework)
+headings.unshift(
+  { slug: "examples", text: "Examples", depth: 2 },
+  { slug: "api", text: "API Reference", depth: 2 }
 );
-const allFrameworkGalleries = await getCollection("galleries");
-const frameworkLength = getGalleryLength(
-  allFrameworkExamples,
-  allFrameworkGalleries
-);
-
-const frameworkDetail = getFramework(framework);
-
-headings.unshift({
-  slug: "examples",
-  text: "Examples",
-  depth: 2,
-});
 
 const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;
@@ -138,13 +126,13 @@ const descriptionText = await descriptionToText(
   </div>
   <div
     data-gallery="true"
-    class="ak-container-size-wider ak-container flex flex-col gap-12 mb-16"
+    class="ak-container-size-wider ak-container flex flex-col gap-12 mb-24"
   >
     {Gallery && <Gallery {framework} {components} />}
   </div>
   {
     !!examples.length && (
-      <div class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed ak-container-size-wider ak-container mt-24 mb-40">
+      <div class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed ak-container-size-wider ak-container mb-24">
         <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
           <ContentHeading as="h2" id="examples">
             <ContentLink href="#examples">Examples</ContentLink>
@@ -164,12 +152,12 @@ const descriptionText = await descriptionToText(
         >
           {[
             ...examples,
-            ...examples,
-            ...examples,
-            ...examples,
-            ...examples,
-            ...examples,
-            ...examples,
+            // ...examples,
+            // ...examples,
+            // ...examples,
+            // ...examples,
+            // ...examples,
+            // ...examples,
           ].map((example) => (
             <PageCardExample entry={example} />
           ))}
@@ -177,7 +165,67 @@ const descriptionText = await descriptionToText(
       </div>
     )
   }
-  <div>dsdsa</div>
+  <div class="mb-24">
+    <div
+      class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed ak-container-size-wider ak-container"
+    >
+      <ContentHeading as="h2" id="api" hasSidebar={false}>
+        <ContentLink href="#api">API Reference</ContentLink>
+      </ContentHeading>
+      <div></div>
+    </div>
+    <div class="ak-layer-current border-y">
+      <div
+        class:list={[
+          "overflow-x-clip ak-layer-current @5xl:grid content-start",
+          "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)]",
+          "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),calc(var(--container-wide)---spacing(2)))]",
+        ]}
+      >
+        <SidebarMenu
+          items={[
+            { label: "Hooks" },
+            { label: "usePopoverStore()", href: `/` },
+            { label: "Components" },
+            { label: "<Popover>", href: `/` },
+            { label: "<PopoverDisclosure>", href: `/` },
+          ]}
+        />
+        <div data-content="true" class="ak-layer-current border-s">
+          <div class="@container">
+            <div
+              class="flex flex-col @max-3xl:[--container-sidebar:0] [--container-p:--spacing(3)]"
+            >
+              <div
+                class="ak-container-size-[calc(100cqi-var(--ak-container-p)*2-var(--container-sidebar))]/(--container-p) ak-container ms-(--container-p) pt-3"
+              >
+                <div
+                  class="ak-container-size-content/(--container-p) ak-container flex flex-col gap-4 ms-0"
+                >
+                  <h1 class="text-4xl font-semibold">{entry.data.title}</h1>
+                  <div class="ak-text/60 text-lg/relaxed">Description</div>
+                </div>
+              </div>
+              <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
+                <div
+                  class="ak-prose *:ms-0 @3xl:ak-container-size-[calc(100cqi-var(--container-sidebar))]/(--container-p) ak-container @5xl:ak-prose-text-lg/relaxed"
+                >
+                  <Content {framework} {components} />
+                </div>
+                <div class="hidden @3xl:block pe-(--container-p)">
+                  <TableOfContents
+                    {headings}
+                    title={entry.data.title}
+                    class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div data-content="true" class="ak-container-size-wider ak-container">
     <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
       <div
