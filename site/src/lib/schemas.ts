@@ -76,6 +76,7 @@ export const URLSchema = z
 const ReferenceExampleSchema = z.object({
   description: z.string(),
   language: z.string(),
+  meta: z.string(),
   code: z.string(),
 });
 

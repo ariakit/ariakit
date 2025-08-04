@@ -149,12 +149,12 @@ function extractLiveExamples(text: string) {
   );
   if (!liveExamplesMatch) {
     // Return the original text (not normalized) if no live examples found
-    return { description: normalizedText.trim(), liveExamples: [] };
+    return { description: text.trim(), liveExamples: [] };
   }
   // Extract URLs from markdown links in the live examples section
   const liveExamplesSection = liveExamplesMatch[1];
   if (!liveExamplesSection) {
-    return { description: normalizedText.trim(), liveExamples: [] };
+    return { description: text.trim(), liveExamples: [] };
   }
   const urlMatches = liveExamplesSection.match(/\[.*?\]\((.*?)\)/g) || [];
   const liveExamples = urlMatches
@@ -164,7 +164,7 @@ function extractLiveExamples(text: string) {
     })
     .filter((url): url is string => !!url);
   // Remove the live examples section from the normalized description
-  const cleanedDescription = normalizedText
+  const cleanedDescription = text
     .replace(/\s*Live examples:\s*(?:\s*-\s*\[.*?\]\(.*?\).*?)+/i, "")
     .trim();
   return { description: cleanedDescription, liveExamples };
@@ -254,11 +254,15 @@ function getExamples(node: Node) {
     // Ensure it's a string
     const text = String(rawText);
     // Parse example with optional description and code block
-    const match = text.match(/^((.|\n)*)```([^\n]+)\n((.|\n)+)\n```$/m);
+    const match = text.match(
+      // @ts-expect-error
+      /^(?<description>(.|\n)*)```(?<language>\S+)(?<modifiers>[^\n]*)\n(?<code>(.|\n)+)\n```$/m,
+    );
     examples.push({
-      description: (match?.[1] || "").trim(),
-      language: match?.[3] || "jsx",
-      code: (match?.[4] || text).trim(),
+      description: (match?.groups?.description || "").trim(),
+      language: match?.groups?.language || "jsx",
+      meta: match?.groups?.modifiers?.trim() || "",
+      code: (match?.groups?.code || text).trim(),
     });
   }
   return examples;
