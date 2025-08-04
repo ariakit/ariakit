@@ -90,20 +90,15 @@ const BaseReferencePropSchema = z.object({
   liveExamples: z.array(z.string()),
 });
 
-export interface ReferenceProp extends z.infer<typeof BaseReferencePropSchema> {
-  props?: ReferenceProp[];
-}
-
-const ReferencePropSchema: z.ZodType<ReferenceProp> =
-  BaseReferencePropSchema.extend({
-    props: z.lazy(() => ReferencePropSchema.array()).optional(),
-  });
+const ReferencePropSchema = BaseReferencePropSchema.extend({
+  props: BaseReferencePropSchema.array().optional(),
+});
 
 const ReferenceReturnValueSchema = z.object({
   type: z.string(),
   description: z.string(),
-  props: ReferencePropSchema.array().optional(),
   liveExamples: z.array(z.string()),
+  props: ReferencePropSchema.array().optional(),
 });
 
 export const ReferenceSchema = z.object({
@@ -114,10 +109,10 @@ export const ReferenceSchema = z.object({
   description: z.string(),
   deprecated: z.union([z.string(), z.boolean()]),
   examples: ReferenceExampleSchema.array(),
-  params: ReferencePropSchema.array(),
-  state: ReferencePropSchema.array(),
-  returnValue: ReferenceReturnValueSchema.optional(),
   liveExamples: z.array(z.string()),
+  state: ReferencePropSchema.array(),
+  params: ReferencePropSchema.array(),
+  returnValue: ReferenceReturnValueSchema.optional(),
 });
 
 export type Reference = z.infer<typeof ReferenceSchema>;

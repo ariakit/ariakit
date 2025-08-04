@@ -25,6 +25,7 @@
     "@clerk/astro": "2.10.13",
     "@stripe/stripe-js": "7.2.0",
     "@types/pluralize": "0.0.33",
+    "astro-remote": "0.3.4",
     "hast-util-to-text": "4.0.2",
     "html-entities": "2.6.0",
     "pluralize": "8.0.0",

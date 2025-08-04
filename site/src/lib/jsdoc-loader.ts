@@ -123,7 +123,11 @@ function getExportKind(name: string, node: Node) {
     return "component";
   }
   // Check if it's a function (including context hooks)
-  if (Node.isFunctionLikeDeclaration(node) || getFunctionDeclaration(node)) {
+  if (
+    name.startsWith("use") ||
+    Node.isFunctionLikeDeclaration(node) ||
+    getFunctionDeclaration(node)
+  ) {
     return "function";
   }
   // Skip everything else (types that don't have Options/Props)
@@ -145,12 +149,12 @@ function extractLiveExamples(text: string) {
   );
   if (!liveExamplesMatch) {
     // Return the original text (not normalized) if no live examples found
-    return { description: text.trim(), liveExamples: [] };
+    return { description: normalizedText.trim(), liveExamples: [] };
   }
   // Extract URLs from markdown links in the live examples section
   const liveExamplesSection = liveExamplesMatch[1];
   if (!liveExamplesSection) {
-    return { description: text.trim(), liveExamples: [] };
+    return { description: normalizedText.trim(), liveExamples: [] };
   }
   const urlMatches = liveExamplesSection.match(/\[.*?\]\((.*?)\)/g) || [];
   const liveExamples = urlMatches
