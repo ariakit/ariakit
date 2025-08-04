@@ -7,8 +7,6 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import camelCase from "lodash-es/camelCase.js";
-import mapKeys from "lodash-es/mapKeys.js";
 import { z } from "zod";
 import { frameworks } from "./frameworks.ts";
 import { keys } from "./object.ts";
@@ -74,16 +72,6 @@ export const URLSchema = z
     if (!value) return undefined;
     return decodeURIComponent(value);
   });
-
-export function camelCaseObject<T extends z.ZodRawShape>(
-  shape: T,
-  params?: z.RawCreateParams,
-) {
-  return z
-    .record(z.string())
-    .transform((data) => mapKeys(data, (_, key) => camelCase(key)))
-    .pipe(z.object(shape, params));
-}
 
 const ReferenceExampleSchema = z.object({
   description: z.string(),

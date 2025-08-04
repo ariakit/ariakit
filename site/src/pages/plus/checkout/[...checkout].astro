@@ -18,7 +18,6 @@ import {
 } from "#app/lib/auth.ts";
 import { formatCurrency } from "#app/lib/locale.ts";
 import {
-  camelCaseObject,
   PLUS_TYPES,
   PlusCheckoutStepSchema,
   PlusTypeSchema,
@@ -38,10 +37,15 @@ export const prerender = false;
 const schema = z.tuple([PlusCheckoutStepSchema, PlusTypeSchema]);
 const params = schema.safeParse(Astro.params.checkout?.split("/") ?? []);
 
-const querySchema = camelCaseObject({
-  sessionId: z.string().optional(),
-  redirectUrl: URLSchema,
-});
+const querySchema = z
+  .object({
+    session_id: z.string().optional(),
+    redirect_url: URLSchema,
+  })
+  .transform((data) => ({
+    sessionId: data.session_id,
+    redirectUrl: data.redirect_url,
+  }));
 
 if (!params.success) {
   return Astro.redirect(getPlusCheckoutPath({ url: Astro.url }));
