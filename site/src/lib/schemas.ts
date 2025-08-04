@@ -84,3 +84,52 @@ export function camelCaseObject<T extends z.ZodRawShape>(
     .transform((data) => mapKeys(data, (_, key) => camelCase(key)))
     .pipe(z.object(shape, params));
 }
+
+const ReferenceExampleSchema = z.object({
+  description: z.string(),
+  language: z.string(),
+  code: z.string(),
+});
+
+const BaseReferencePropSchema = z.object({
+  name: z.string(),
+  type: z.string(),
+  description: z.string(),
+  optional: z.boolean(),
+  defaultValue: z.string().optional(),
+  deprecated: z.union([z.string(), z.boolean()]),
+  examples: ReferenceExampleSchema.array(),
+  liveExamples: z.array(z.string()),
+});
+
+export interface ReferenceProp extends z.infer<typeof BaseReferencePropSchema> {
+  props?: ReferenceProp[];
+}
+
+const ReferencePropSchema: z.ZodType<ReferenceProp> =
+  BaseReferencePropSchema.extend({
+    props: z.lazy(() => ReferencePropSchema.array()).optional(),
+  });
+
+const ReferenceReturnValueSchema = z.object({
+  type: z.string(),
+  description: z.string(),
+  props: ReferencePropSchema.array().optional(),
+  liveExamples: z.array(z.string()),
+});
+
+export const ReferenceSchema = z.object({
+  name: z.string(),
+  componentId: z.string(),
+  kind: z.enum(["component", "function", "store"]),
+  framework: FrameworkSchema,
+  description: z.string(),
+  deprecated: z.union([z.string(), z.boolean()]),
+  examples: ReferenceExampleSchema.array(),
+  params: ReferencePropSchema.array(),
+  state: ReferencePropSchema.array(),
+  returnValue: ReferenceReturnValueSchema.optional(),
+  liveExamples: z.array(z.string()),
+});
+
+export type Reference = z.infer<typeof ReferenceSchema>;

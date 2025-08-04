@@ -11,6 +11,7 @@ import { defineCollection, reference, z } from "astro:content";
 import { join } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import { glob } from "astro/loaders";
+import { jsdoc } from "./lib/jsdoc-loader.ts";
 import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
 
 function generateExampleId(options: { entry: string }) {
@@ -96,6 +97,23 @@ const previews = defineCollection({
   }),
 });
 
+const references = defineCollection({
+  loader: jsdoc(
+    {
+      framework: "react",
+      corePath: join(import.meta.dirname, "../../packages/ariakit-react-core"),
+      packagePath: join(import.meta.dirname, "../../packages/ariakit-react"),
+      // watch: true,
+    },
+    {
+      framework: "solid",
+      corePath: join(import.meta.dirname, "../../packages/ariakit-solid-core"),
+      packagePath: join(import.meta.dirname, "../../packages/ariakit-solid"),
+      // watch: true,
+    },
+  ),
+});
+
 export const collections = {
   guides,
   components,
@@ -103,4 +121,5 @@ export const collections = {
   descriptions,
   galleries,
   previews,
+  references,
 };
