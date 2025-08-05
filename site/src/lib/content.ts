@@ -9,6 +9,10 @@
  */
 import type { CollectionEntry, RenderResult } from "astro:content";
 import { invariant } from "@ariakit/core/utils/misc";
+import {
+  createMarkdownProcessor,
+  type MarkdownProcessor,
+} from "@astrojs/markdown-remark";
 import mdxRenderer from "@astrojs/mdx/server.js";
 import reactRenderer from "@astrojs/react/server.js";
 import { experimental_AstroContainer } from "astro/container";
@@ -17,6 +21,7 @@ import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { isFramework } from "./frameworks.ts";
+import { rehypeAsTagName } from "./rehype.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -94,6 +99,30 @@ export function getGalleryLength(
     const gallery = galleries.find((g) => g.id === example.id);
     return acc + (gallery?.data.length || 1);
   }, 0);
+}
+
+let markdownProcessor: MarkdownProcessor | null = null;
+
+async function getMarkdownProcessor() {
+  if (markdownProcessor) {
+    return markdownProcessor;
+  }
+  markdownProcessor = await createMarkdownProcessor({
+    syntaxHighlight: false,
+    rehypePlugins: [
+      [
+        rehypeAsTagName,
+        { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
+      ],
+    ],
+  });
+  return markdownProcessor;
+}
+
+export async function markdownToHtml(markdownString: string) {
+  const processor = await getMarkdownProcessor();
+  const result = await processor.render(markdownString);
+  return result.code;
 }
 
 interface Section {
