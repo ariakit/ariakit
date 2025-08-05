@@ -71,6 +71,7 @@ export default defineConfig({
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     mdx({
+      syntaxHighlight: false,
       rehypePlugins: [
         rehypeHeadingIds,
         rehypePreviousCode,

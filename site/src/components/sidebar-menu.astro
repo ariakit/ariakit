@@ -10,7 +10,8 @@
  */
 import Sticky from "#app/components/sticky.astro";
 import { trimRight } from "#app/lib/string.ts";
-import type { HTMLAttributes } from "astro/types";
+import type { ComponentProps, HTMLAttributes } from "astro/types";
+import { ApiReferenceLabel } from "./api-reference-label.react.tsx";
 
 interface LinkItem {
   href: string;
@@ -18,11 +19,15 @@ interface LinkItem {
   currentPage?: boolean;
 }
 
+interface ReferenceItem
+  extends LinkItem,
+    ComponentProps<typeof ApiReferenceLabel> {}
+
 interface HeadingItem {
   label: string;
 }
 
-export type SidebarMenuItem = LinkItem | HeadingItem;
+export type SidebarMenuItem = LinkItem | ReferenceItem | HeadingItem;
 
 interface Props extends HTMLAttributes<"div"> {
   items: SidebarMenuItem[];
@@ -35,8 +40,8 @@ function isLinkItem(item: SidebarMenuItem) {
   return "href" in item;
 }
 
-function isHeadingItem(item: SidebarMenuItem): item is HeadingItem {
-  return !isLinkItem(item);
+function isReferenceItem(item: SidebarMenuItem): item is ReferenceItem {
+  return "kind" in item && item.kind !== undefined;
 }
 
 function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
@@ -60,6 +65,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
     class="top-(--header-height) [--p:--spacing(2)] p-(--p)"
     threshold={revealOnStuck ? 192 : 10}
   >
+    <slot name="before" />
     <ul
       class:list={[
         "flex flex-col gap-1",
@@ -69,7 +75,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
     >
       {
         items.map((item) => {
-          if (isHeadingItem(item)) {
+          if (!isLinkItem(item)) {
             return (
               <li class="ak-text/0 font-medium p-field text-sm not-first-of-type:mt-2">
                 {item.label}
@@ -77,15 +83,25 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
             );
           }
           const { href, label } = item;
+          const { kind, withSymbols } = isReferenceItem(item) ? item : {};
 
           return (
             <li class="relative">
               <a
                 href={href}
                 aria-current={isCurrentPage(item) ? "page" : undefined}
-                class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop"
+                class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop overflow-x-clip relative"
               >
-                {label}
+                {kind ? (
+                  <ApiReferenceLabel
+                    kind={kind}
+                    withSymbols={withSymbols}
+                    set:text={label}
+                  />
+                ) : (
+                  label
+                )}
+                <span class="absolute inset-y-0 end-0 w-(--ak-frame-padding) bg-gradient-to-l from-(--ak-layer) from-25% to-transparent z-10 rounded-r-[inherit]" />
               </a>
               <div
                 class="absolute inset-y-0 -right-[calc(var(--p)+1px)] w-[calc(2px+0.03rem*var(--contrast))] bg-current opacity-0 peer-aria-[current=page]:opacity-100"
