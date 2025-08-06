@@ -62,7 +62,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
 
 <div
   class:list={[
-    "justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size_+_--spacing(4))] max-w-full sidebar-menu z-2 @max-5xl:hidden",
+    "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size_+_--spacing(4))] max-w-full z-2 @max-5xl:hidden h-full ak-layer-current border-e",
     props.class,
   ]}
   {...props}
