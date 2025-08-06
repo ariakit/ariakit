@@ -163,10 +163,9 @@ function extractLiveExamples(text: string) {
       return urlMatch?.[1];
     })
     .filter((url): url is string => !!url);
-  // Remove the live examples section from the normalized description
-  const cleanedDescription = text
-    .replace(/\s*Live examples:\s*(?:\s*-\s*\[.*?\]\(.*?\).*?)+/i, "")
-    .trim();
+  // @ts-expect-error
+  const cleanedDescription = text.replace(/\s*Live examples:.*$/is, "").trim();
+
   return { description: cleanedDescription, liveExamples };
 }
 
@@ -316,7 +315,7 @@ function getProps(node: Node) {
     });
   }
 
-  return props;
+  return props.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**
