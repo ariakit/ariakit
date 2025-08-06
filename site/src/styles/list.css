@@ -77,9 +77,18 @@
 
 @utility ak-list-item-ol-marker {
   @apply ak-layer-pop-2 ak-text;
-  @apply size-(--ak-list-leading) z-3 pointer-events-none absolute top-0 ms-0 grid -translate-x-1/2 scale-75 place-items-center rounded-full font-semibold;
+  @apply size-(--ak-list-item-ol-marker-size) pointer-events-none absolute top-0 -translate-x-1/2 rounded-full text-center font-semibold;
+  --ak-list-item-ol-marker-margin: 0.2em;
+  --ak-list-item-ol-marker-size: calc(
+    var(--ak-list-leading) - var(--ak-list-item-ol-marker-margin) * 2
+  );
   content: counter(ak-list);
-  left: var(--ak-list-item-left-center);
+  font-size-adjust: 0.45;
+  line-height: var(--ak-list-item-ol-marker-size);
+  margin: var(--ak-list-item-ol-marker-margin);
+  left: calc(
+    var(--ak-list-item-left-center) - var(--ak-list-item-ol-marker-margin)
+  );
 }
 
 @utility ak-list-item-ol-border {
@@ -160,10 +169,6 @@
   & > :where(summary) {
     @apply ak-list-item-disclosure-button;
   }
-  /* Hide the markers from the list item. They will be rendered in the disclosure button. */
-  li:has(> &)::before {
-    display: none;
-  }
 }
 
 @utility ak-list-item-disclosure_open {
@@ -191,7 +196,9 @@
   ol > li &::before {
     @apply ak-list-item-ol-marker;
     top: var(--ak-frame-padding);
-    left: calc(var(--ak-list-item-left-center) * 2);
+    left: calc(
+      var(--ak-list-item-left-center) * 2 - var(--ak-list-item-ol-marker-margin)
+    );
   }
 }
 

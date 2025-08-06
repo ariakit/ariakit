@@ -315,7 +315,11 @@ function getProps(node: Node) {
     });
   }
 
-  return props.sort((a, b) => a.name.localeCompare(b.name));
+  return props.sort((a, b) => {
+    if (a.deprecated && !b.deprecated) return 1;
+    if (!a.deprecated && b.deprecated) return -1;
+    return a.name.localeCompare(b.name);
+  });
 }
 
 /**
