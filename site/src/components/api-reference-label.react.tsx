@@ -12,52 +12,58 @@ import type { Reference } from "#app/lib/schemas.ts";
 
 export interface ApiReferenceLabelProps {
   kind: Reference["kind"];
-  withSymbols?: boolean;
+  symbols?: boolean;
+  colors?: boolean;
   children?: ReactNode;
 }
 
-export function ApiReferenceLabel({
-  kind,
-  withSymbols = false,
-  children,
-}: ApiReferenceLabelProps) {
-  const colors = {
-    component: { dark: "#4EC9B0", light: "#005CC5" },
-    function: { dark: "#DCDCAA", light: "#6F42C1" },
-    store: { dark: "#DCDCAA", light: "#6F42C1" },
-  };
+const labelColors = {
+  component: { dark: "#4EC9B0", light: "#005CC5" },
+  function: { dark: "#DCDCAA", light: "#6F42C1" },
+  store: { dark: "#DCDCAA", light: "#6F42C1" },
+};
 
-  const symbolColors = {
-    parenthesis: { dark: "#D4D4D4", light: "#24292E" },
-    brackets: { dark: "#808080", light: "#24292E" },
-  };
+const symbolColors = {
+  parenthesis: { dark: "#D4D4D4", light: "#24292E" },
+  brackets: { dark: "#808080", light: "#24292E" },
+};
 
-  const kindColors = colors[kind];
-  const className = "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65";
+export function ApiReferenceLabel(props: ApiReferenceLabelProps) {
+  const kindColors = labelColors[props.kind];
+  const className = props.colors
+    ? "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
+    : "ak-text/0";
 
   const getStyle = (color: typeof kindColors) => {
+    if (!props.colors) return {};
     return {
       "--dark": color.dark,
       "--light": color.light,
     } as React.CSSProperties;
   };
 
+  const isFunction = props.kind === "function" || props.kind === "store";
+  const isComponent = props.kind === "component";
+
   return (
     <span>
-      {withSymbols && kind === "component" && (
+      {props.symbols && isComponent && (
         <span style={getStyle(symbolColors.brackets)} className={className}>
           &lt;
         </span>
       )}
-      <span style={getStyle(kindColors)} className={className}>
-        {children}
+      <span
+        style={getStyle(kindColors)}
+        className={props.colors ? className : ""}
+      >
+        {props.children}
       </span>
-      {withSymbols && kind === "component" && (
+      {props.symbols && isComponent && (
         <span style={getStyle(symbolColors.brackets)} className={className}>
           &gt;
         </span>
       )}
-      {withSymbols && (kind === "function" || kind === "store") && (
+      {props.symbols && isFunction && (
         <span style={getStyle(symbolColors.parenthesis)} className={className}>
           ()
         </span>
