@@ -44,6 +44,12 @@ function isReferenceItem(item: SidebarMenuItem): item is ReferenceItem {
   return "kind" in item && item.kind !== undefined;
 }
 
+function getReferenceProps(item: SidebarMenuItem) {
+  if (!isReferenceItem(item)) return;
+  const { href: _, ...referenceProps } = item;
+  return referenceProps;
+}
+
 function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
   if (!isLinkItem(item)) return false;
   if (item.currentPage) return true;
@@ -83,7 +89,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
             );
           }
           const { href, label } = item;
-          const { kind, withSymbols } = isReferenceItem(item) ? item : {};
+          const referenceProps = getReferenceProps(item);
 
           return (
             <li class="relative">
@@ -92,12 +98,8 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
                 aria-current={isCurrentPage(item) ? "page" : undefined}
                 class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop overflow-x-clip relative"
               >
-                {kind ? (
-                  <ApiReferenceLabel
-                    kind={kind}
-                    withSymbols={withSymbols}
-                    set:text={label}
-                  />
+                {referenceProps?.kind ? (
+                  <ApiReferenceLabel {...referenceProps} set:text={label} />
                 ) : (
                   label
                 )}

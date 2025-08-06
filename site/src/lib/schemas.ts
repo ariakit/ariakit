@@ -91,9 +91,11 @@ const BaseReferencePropSchema = z.object({
   liveExamples: z.array(z.string()),
 });
 
-const ReferencePropSchema = BaseReferencePropSchema.extend({
+export const ReferencePropSchema = BaseReferencePropSchema.extend({
   props: BaseReferencePropSchema.array().optional(),
 });
+
+export type ReferenceProp = z.infer<typeof ReferencePropSchema>;
 
 const ReferenceReturnValueSchema = z.object({
   type: z.string(),

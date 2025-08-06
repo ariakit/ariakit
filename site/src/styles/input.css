@@ -14,7 +14,7 @@
   @apply ak-edge-contrast ak-frame-field ak-frame-border;
   @apply max-w-full cursor-text leading-[1em] -outline-offset-1;
   @variant ak-light {
-    @apply ak-layer-white;
+    @apply ak-layer;
   }
   @variant ak-dark {
     @apply not-hover:not-focus-within:ak-layer-down-0.5;
@@ -47,7 +47,7 @@
 @utility ak-input_focus {
   @apply ak-outline-primary outline-2;
   @variant ak-light {
-    @apply ak-layer-white;
+    @apply ak-layer;
   }
   @variant ak-dark {
     @apply ak-layer-current;

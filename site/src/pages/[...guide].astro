@@ -81,14 +81,14 @@ const title = entry.data.title;
               class="ak-container-size-content/(--container-p) ak-container flex flex-col gap-4"
             >
               <h1 class="text-4xl font-semibold">{entry.data.title}</h1>
-              <div class="ak-text/60 text-lg/relaxed">
+              <div class="ak-text/60 text-lg/loose">
                 {entry.data.description}
               </div>
             </div>
           </div>
           <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
             <div
-              class="ak-prose @3xl:ak-container-size-[calc(100cqi-var(--container-sidebar))]/(--container-p) ak-container @5xl:ak-prose-text-lg/relaxed flex flex-col"
+              class="ak-prose @3xl:ak-container-size-[calc(100cqi-var(--container-sidebar))]/(--container-p) ak-container ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose flex flex-col"
             >
               <Content {framework} {components} />
             </div>

@@ -12,9 +12,11 @@
   --container-wider: 92rem;
   --container-wide: 84rem;
   --container-default: 72rem;
-  --container-sidebar: 24rem;
+  --container-sidebar: 22rem;
 
   --container-overlap: 100.05rem;
+
+  --leading-loose: 1.85;
 }
 
 @theme inline {

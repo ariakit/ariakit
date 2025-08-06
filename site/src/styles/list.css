@@ -77,7 +77,7 @@
 
 @utility ak-list-item-ol-marker {
   @apply ak-layer-pop-2 ak-text;
-  @apply size-(--ak-list-leading) z-3 scale-85 pointer-events-none absolute top-0 ms-0 grid -translate-x-1/2 place-items-center rounded-full font-semibold;
+  @apply size-(--ak-list-leading) z-3 pointer-events-none absolute top-0 ms-0 grid -translate-x-1/2 scale-75 place-items-center rounded-full font-semibold;
   content: counter(ak-list);
   left: var(--ak-list-item-left-center);
 }
@@ -161,8 +161,8 @@
     @apply ak-list-item-disclosure-button;
   }
   /* Hide the markers from the list item. They will be rendered in the disclosure button. */
-  li:has(> &) {
-    @apply before:hidden;
+  li:has(> &)::before {
+    display: none;
   }
 }
 
