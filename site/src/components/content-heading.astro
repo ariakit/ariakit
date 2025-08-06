@@ -8,10 +8,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { Polymorphic } from "astro/types";
+import type { HTMLTag, Polymorphic } from "astro/types";
 
-type HeadingTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-type Props<T extends HeadingTag> = Polymorphic<{ as: T }> & {
+type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
   hasSidebar?: boolean;
 };
 
@@ -19,7 +18,7 @@ const {
   as: Tag = "h1",
   hasSidebar = true,
   ...props
-} = Astro.props as Props<HeadingTag>;
+} = Astro.props as Props<HTMLTag>;
 ---
 
 <Tag
