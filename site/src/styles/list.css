@@ -181,7 +181,7 @@
 }
 
 @utility ak-list-item-disclosure-button_idle {
-  @apply ak-disclosure-button_idle after:ak-disclosure-arrow-end;
+  @apply ak-disclosure-button_idle after:ak-disclosure-arrow-after;
   @apply after:ms-0;
   --ak-button-leading: var(--ak-list-leading);
   padding-inline-start: calc(

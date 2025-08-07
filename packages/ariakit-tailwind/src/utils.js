@@ -309,6 +309,7 @@ export function toPercent(value, defaultValue = "100%") {
  * Just to please TypeScript.
  * @typedef {{[key: string]: string | string[] | CssInJs | CssInJs[]}} CssInJs
  * @param {CssInJs[]} objects
+ * @returns {CssInJs}
  */
 export function css(...objects) {
   return Object.assign({}, ...objects);

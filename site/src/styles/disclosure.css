@@ -19,19 +19,20 @@
   --ak-disclosure-padding: var(--ak-frame-padding);
   --ak-disclosure-radius: var(--ak-frame-radius);
   --ak-disclosure-border: var(--ak-frame-border);
-
   :where(summary) {
     @apply ak-disclosure-button;
   }
   &::details-content {
     @apply ak-disclosure-content-base_idle;
   }
+  :where(summary ~ *) {
+    @apply p-(--ak-frame-padding);
+  }
 }
 
 @utility ak-disclosure_open {
   @apply delay-0 duration-0;
   --ak-disclosure-open: 1;
-
   &::details-content {
     @apply ak-disclosure-content-base_open;
   }
@@ -46,7 +47,7 @@
 @utility ak-disclosure-button_idle {
   @apply ak-command-depth-x-3 ak-button_idle ak-text;
   @apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding);
-  @apply justify-start text-wrap;
+  @apply w-full justify-start text-wrap;
   --ak-disclosure-button-radius: calc(
     var(--ak-disclosure-radius) - var(--ak-disclosure-border)
   );
@@ -78,7 +79,7 @@
 }
 
 /* ak-disclosure-arrow */
-@utility ak-disclosure-arrow-start_idle {
+@utility ak-disclosure-arrow-before_idle {
   @apply h-(--ak-button-leading) w-4 flex-none -rotate-90 self-start bg-current transition-transform duration-300;
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' stroke-width='1.25' stroke='black' fill='none'%3E%3Cpolyline stroke-linecap='round' stroke-linejoin='round' points='4,6 8,10 12,6'%3E%3C/polyline%3E%3C/svg%3E");
   mask-repeat: no-repeat;
@@ -87,46 +88,52 @@
   mask-size: --spacing(4);
 }
 
-@utility ak-disclosure-arrow-start_open {
+@utility ak-disclosure-arrow-before_open {
   @apply rotate-0;
 }
 
-@utility ak-disclosure-arrow-start {
-  @apply ak-disclosure-arrow-start_idle;
+@utility ak-disclosure-arrow-before {
+  @apply ak-disclosure-arrow-before_idle;
   @variant ak-disclosure-open {
-    @apply ak-disclosure-arrow-start_open;
+    @apply ak-disclosure-arrow-before_open;
   }
 }
 
-@utility ak-disclosure-arrow-end_idle {
-  @apply ak-disclosure-arrow-start_idle w-(--ak-button-leading) ms-auto rotate-0;
+@utility ak-disclosure-arrow-after_idle {
+  @apply ak-disclosure-arrow-before_idle w-(--ak-button-leading) ms-auto rotate-0;
 }
 
-@utility ak-disclosure-arrow-end_open {
+@utility ak-disclosure-arrow-after_open {
   @apply rotate-180;
 }
 
-@utility ak-disclosure-arrow-end {
-  @apply ak-disclosure-arrow-end_idle;
+@utility ak-disclosure-arrow-after {
+  @apply ak-disclosure-arrow-after_idle;
   @variant ak-disclosure-open {
-    @apply ak-disclosure-arrow-end_open;
+    @apply ak-disclosure-arrow-after_open;
   }
 }
 
-/* ak-disclosure-content-base */
+/* ak-disclosure-content */
 @utility ak-disclosure-content-base_idle {
-  @apply h-0 overflow-y-clip transition-[content-visibility,height] duration-300;
+  @apply h-0 overflow-y-clip p-0 transition-[content-visibility,height];
   transition-behavior: allow-discrete;
   interpolate-size: allow-keywords;
+
+  @supports (interpolate-size: allow-keywords) {
+    @apply duration-300;
+  }
 }
 
 @utility ak-disclosure-content-base_open {
   @apply h-auto;
 }
 
-/* ak-disclosure-content */
 @utility ak-disclosure-content_idle {
-  @apply ak-disclosure-content-base_idle p-(--ak-frame-padding);
+  @apply ak-disclosure-content-base_idle;
+  > * {
+    @apply p-(--ak-frame-padding);
+  }
 }
 
 @utility ak-disclosure-content_open {
@@ -136,6 +143,9 @@
 @utility ak-disclosure-content {
   @apply ak-disclosure-content_idle;
   details[open] > & {
+    @apply ak-disclosure-content_open;
+  }
+  @variant ak-disclosure-open {
     @apply ak-disclosure-content_open;
   }
 }

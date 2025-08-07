@@ -24,10 +24,10 @@ const props = Astro.props;
   ]}
   {...props}
 >
-  <summary class="before:ak-disclosure-arrow-start">
+  <summary class="before:ak-disclosure-arrow-before">
     <slot name="summary" />
   </summary>
-  <div class="ak-disclosure-content ak-prose-content">
+  <div class="ak-prose-content">
     <slot />
   </div>
 </details>
