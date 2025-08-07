@@ -39,17 +39,15 @@ const descriptionId = description ? generateId("description-") : undefined;
       inert
       class="ak-light:ak-layer-down ak-dark:ak-layer-down-0.3 ak-frame-border ak-frame/4 flex justify-center items-center-safe group-focus-visible/card:ak-layer-contrast-primary overflow-hidden h-48 relative [content-visibility:auto]"
     >
-      <span
-        class="ak-frame-cover/1 [--padding:var(--ak-frame-padding)] contents"
-      >
-        {
-          plus && (
+      {
+        plus && (
+          <span class="ak-frame-cover/1 [--padding:var(--ak-frame-padding)] contents">
             <span class="absolute top-(--padding) end-(--padding) ak-badge-primary border border-dashed px-(--ak-frame-padding)">
               <span>Plus</span>
             </span>
-          )
-        }
-      </span>
+          </span>
+        )
+      }
       <span
         class="group-ak-command-focus/card:ak-layer-white -mx-10 -mt-4 !bg-transparent block group-ak-command-hover/card:scale-75 scale-70 origin-[50%_5rem] relative transition-transform duration-600"
       >
