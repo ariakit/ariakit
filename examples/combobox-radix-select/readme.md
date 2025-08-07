@@ -22,7 +22,7 @@ This example is designed for those who are already using Radix UI in their proje
 
 </aside>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

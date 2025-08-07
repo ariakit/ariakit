@@ -1,10 +1,13 @@
 "use client";
 
-import examples from "@/build-pages/examples.ts";
-import { Spinner } from "@/icons/spinner.tsx";
 import { PortalContext } from "@ariakit/react";
 import type { ReactNode } from "react";
 import { Suspense, useEffect, useState } from "react";
+import { createComponent } from "solid-js";
+import { render } from "solid-js/web";
+import examples from "@/build-pages/examples.ts";
+import { Spinner } from "@/icons/spinner.tsx";
+import { SolidPreviewContent } from "./preview.solid.tsx";
 
 const ignoredExampleIds = ["examples-menu-wordpress-modal"];
 
@@ -54,4 +57,16 @@ export function Preview({ path, id, css }: Props) {
       {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
     </Suspense>
   );
+}
+
+export function SolidPreview(props: Props) {
+  useEffect(
+    () =>
+      render(
+        () => createComponent(SolidPreviewContent as any, props),
+        document.querySelector("[data-preview-render-target]")!,
+      ),
+    [],
+  );
+  return null;
 }

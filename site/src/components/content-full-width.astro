@@ -1,0 +1,35 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {}
+
+const props = Astro.props;
+---
+
+<div
+  data-full-width="true"
+  class:list={[
+    "max-w-[calc(100cqi-var(--container-sidebar)-var(--ak-container-p)*2)] my-10",
+    props.class,
+  ]}
+  {...props}
+>
+  <div
+    class="max-w-[calc(var(--ak-container-max-width)-var(--container-sidebar)-var(--ak-container-p))] relative z-1"
+  >
+    <div
+      class="ak-prose w-(--container-wider) max-w-[calc(100cqi-var(--ak-container-p)*2)] relative z-1 ak-layer-current shadow-(color:--ak-layer) shadow-[0_1rem_1rem_1rem_var(--ak-layer),0_-1rem_1rem_1rem_var(--ak-layer)]"
+    >
+      <slot />
+    </div>
+  </div>
+</div>

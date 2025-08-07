@@ -11,8 +11,8 @@ import type {
 import { useCompositeStoreProps } from "../composite/composite-store.ts";
 import { useSelectContext } from "../select/select-context.tsx";
 import { useUpdateEffect } from "../utils/hooks.ts";
-import { useStore, useStoreProps } from "../utils/store.tsx";
 import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useTabStoreProps<T extends Core.TabStore>(
   store: T,
@@ -87,6 +87,8 @@ export interface TabStoreOptions
    * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
    * - [Select with Combobox and
    *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   setSelectedId?: (selectedId: TabStoreState["selectedId"]) => void;
   /**

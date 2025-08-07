@@ -1,3 +1,11 @@
+import matter from "gray-matter";
+import type { ReactNode } from "react";
+import { Fragment } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
+import invariant from "tiny-invariant";
 import pagesConfig from "@/build-pages/config.js";
 import { getPageContent } from "@/build-pages/get-page-content.js";
 import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
@@ -7,14 +15,6 @@ import { getReferences } from "@/build-pages/reference-utils.js";
 import type { Page, TableOfContents } from "@/build-pages/types.ts";
 import { rehypeCodeMeta } from "@/lib/rehype-code-meta.ts";
 import { rehypeWrapHeadings } from "@/lib/rehype-wrap-headings.ts";
-import matter from "gray-matter";
-import type { ReactNode } from "react";
-import { Fragment } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
-import invariant from "tiny-invariant";
 import { AuthEnabled } from "./auth.tsx";
 import {
   PageA,
@@ -40,9 +40,7 @@ export const getFile = (config: Page, page: string) => {
   const file = config.reference
     ? [...entryFiles]
         .reverse()
-        .find((file) =>
-          page.replace(/^use\-/, "").startsWith(getPageName(file)),
-        )
+        .find((file) => page.replace(/^use-/, "").startsWith(getPageName(file)))
     : entryFiles.find((file) => getPageName(file) === page);
   return file;
 };
@@ -75,6 +73,8 @@ export function PageMarkdown({
 }: PageMarkdownProps) {
   const hovercards = new Set<Promise<string | Iterable<string>>>();
 
+  const isSolid = category === "examples" && page?.endsWith("__solid");
+
   if (!content || !file) {
     invariant(category && page);
     const config = pagesConfig.pages.find((page) => page.slug === category);
@@ -85,8 +85,10 @@ export function PageMarkdown({
     if (!content) return null;
   }
 
+  const originalPage = !isSolid ? page : page?.replace("__solid", "");
+
   const pageDetail = category
-    ? pageIndex[category]?.find((item) => item.slug === page)
+    ? pageIndex[category]?.find((item) => item.slug === originalPage)
     : null;
 
   const { content: contentWithoutMatter } = matter(content);
@@ -149,6 +151,7 @@ export function PageMarkdown({
                 {...props}
                 category={category}
                 page={page}
+                // TODO: add " (Solid)" to title?
                 title={pageDetail?.title}
                 tags={pageDetail?.tags}
                 media={pageDetail?.media}

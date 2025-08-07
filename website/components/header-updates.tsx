@@ -1,9 +1,5 @@
 "use client";
 
-import { Bell } from "@/icons/bell.tsx";
-import { useMedia } from "@/lib/use-media.ts";
-import { useUpdates } from "@/lib/use-updates.ts";
-import type { UpdateItem } from "@/updates.ts";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import * as Ariakit from "@ariakit/react";
 import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
@@ -13,6 +9,10 @@ import Link from "next/link.js";
 import type { ComponentPropsWithoutRef } from "react";
 import { useId, useMemo, useState } from "react";
 import { twJoin } from "tailwind-merge";
+import { Bell } from "@/icons/bell.tsx";
+import { useMedia } from "@/lib/use-media.ts";
+import { useUpdates } from "@/lib/use-updates.ts";
+import type { UpdateItem } from "@/updates.ts";
 // import { NewsletterForm } from "./newsletter-form.tsx";
 import { Command } from "./command.tsx";
 import { Popup } from "./popup.tsx";

@@ -1,4 +1,4 @@
-import { type Page, expect, query } from "@ariakit/test/playwright";
+import { expect, type Page, query } from "@ariakit/test/playwright";
 import { test } from "../test-utils.ts";
 
 function pressTab(page: Page, browserName: string, shift = false) {

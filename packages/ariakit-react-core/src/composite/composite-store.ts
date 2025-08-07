@@ -6,8 +6,16 @@ import type {
   CollectionStoreState,
 } from "../collection/collection-store.ts";
 import { useCollectionStoreProps } from "../collection/collection-store.ts";
+import { useId } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
+
+export function useCompositeStoreOptions<T extends Core.CompositeStoreOptions>(
+  props: T,
+) {
+  const id = useId(props.id);
+  return { id, ...props };
+}
 
 export function useCompositeStoreProps<T extends Core.CompositeStore>(
   store: T,
@@ -53,6 +61,7 @@ export function useCompositeStore(props?: CompositeStoreProps): CompositeStore;
 export function useCompositeStore(
   props: CompositeStoreProps = {},
 ): CompositeStore {
+  props = useCompositeStoreOptions(props);
   const [store, update] = useStore(Core.createCompositeStore, props);
   return useCompositeStoreProps(store, update, props);
 }

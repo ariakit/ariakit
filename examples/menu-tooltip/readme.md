@@ -15,7 +15,7 @@ Rendering [Menu](/components/menu) with a [Tooltip](/components/tooltip) that ap
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -42,6 +42,7 @@ You can learn more about this pattern on the [Composition](/guide/composition) g
 
 - [](/examples/menu-item-checkbox)
 - [](/examples/dialog-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/dialog-combobox-command-menu)
 
 </div>

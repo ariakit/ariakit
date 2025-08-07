@@ -1,0 +1,116 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { InlineLink } from "#app/components/inline-link.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { isAdmin } from "#app/lib/auth.ts";
+import { clerkClient, type Organization } from "@clerk/astro/server";
+import LayoutPagination from "./_layout-pagination.astro";
+import {
+  getClerkInstanceUrl,
+  getPageUrls,
+  getPaginationData,
+} from "./_utils.ts";
+
+export const prerender = false;
+
+if (!(await isAdmin(Astro))) {
+  return Astro.redirect("/");
+}
+
+const data = await getPaginationData(Astro);
+
+if (data instanceof Response) return data;
+
+const { limit, offset, query } = data;
+const clerk = clerkClient(Astro);
+const clerkInstanceUrl = await getClerkInstanceUrl(Astro);
+
+async function getTeamData() {
+  const teams = await clerk.organizations.getOrganizationList({
+    query,
+    limit,
+    offset,
+    includeMembersCount: true,
+    orderBy: "-created_at",
+  });
+  const pageURLs = getPageUrls(Astro, {
+    limit,
+    offset,
+    totalCount: teams.totalCount,
+  });
+  return { ...teams, ...pageURLs };
+}
+
+const teams = await getTeamData();
+
+function getTeamAvatarUrl(team: Organization) {
+  const url = new URL(team.imageUrl);
+  url.searchParams.set("width", "32");
+  url.searchParams.set("height", "32");
+  return url.toString();
+}
+---
+
+<LayoutPagination
+  totalCount={teams.totalCount}
+  nextUrl={teams.nextUrl}
+  previousUrl={teams.previousUrl}
+  limit={limit}
+  offset={offset}
+  query={query}
+>
+  <ul
+    class="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-(--ak-container-p) py-(--ak-container-p)"
+  >
+    {
+      teams.data.map((team) => {
+        const orgUrl = `${clerkInstanceUrl}/organizations/${team.id}`;
+        return (
+          <Fragment>
+            <li>
+              <div class="ak-frame-card ak-layer size-full flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                  <img
+                    src={getTeamAvatarUrl(team)}
+                    alt=""
+                    class="size-[1em] object-cover rounded-full"
+                  />
+                  <div class="truncate">
+                    <span class="font-semibold">{team.name}</span>{" "}
+                    <span class="ak-text/80">({team.slug})</span>
+                  </div>
+                </div>
+                <div>
+                  <InlineLink
+                    newWindow
+                    href={`${orgUrl}?tab=members`}
+                    className="ak-text/80 text-sm"
+                  >
+                    {`${team.membersCount} members`}
+                  </InlineLink>
+                </div>
+                <div class="grid grid-flow-col gap-1 mt-auto ak-frame-cover/1">
+                  <a
+                    href={orgUrl}
+                    target="_blank"
+                    class="ak-button ak-layer-pop"
+                  >
+                    Clerk <Icon name="newWindow" />
+                  </a>
+                </div>
+              </div>
+            </li>
+          </Fragment>
+        );
+      })
+    }
+  </ul>
+</LayoutPagination>

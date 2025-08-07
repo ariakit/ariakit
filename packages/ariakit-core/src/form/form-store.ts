@@ -16,6 +16,7 @@ import {
   createStore,
   init,
   setup,
+  sync,
   throwOnConflictingProps,
 } from "../utils/store.ts";
 import type {
@@ -227,6 +228,13 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
 
   setup(form, () => init(callbacks));
 
+  setup(form, () =>
+    sync(form, ["validating", "errors"], (state) => {
+      if (state.validating) return;
+      form.setState("valid", !hasMessages(state.errors));
+    }),
+  );
+
   const validate = async () => {
     form.setState("validating", true);
     form.setState("errors", {});
@@ -349,6 +357,7 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       form.setState("submitting", false);
       form.setState("submitSucceed", 0);
       form.setState("submitFailed", 0);
+      form.setState("valid", !hasMessages(errors));
     },
 
     // @ts-expect-error Internal
@@ -540,7 +549,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    *   }
    * });
    */
-  onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => void;
+  onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => () => void;
   /**
    * Function that accepts a callback that will be used to submit the form when
    * [`submit`](https://ariakit.org/reference/use-form-store#submit) is called.
@@ -555,7 +564,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    *   }
    * });
    */
-  onSubmit: (callback: FormStoreCallback<FormStoreState<T>>) => void;
+  onSubmit: (callback: FormStoreCallback<FormStoreState<T>>) => () => void;
   /**
    * Validates the form.
    * @example

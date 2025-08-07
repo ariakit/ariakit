@@ -162,6 +162,11 @@ export function createCompositeStore<
 
   const initialState: CompositeStoreState<T> = {
     ...collection.getState(),
+    id: defaultValue(
+      props.id,
+      syncState?.id,
+      `id-${Math.random().toString(36).slice(2, 8)}`,
+    ),
     activeId,
     baseElement: defaultValue(syncState?.baseElement, null),
     includesBaseElement: defaultValue(
@@ -388,6 +393,12 @@ export interface CompositeStoreState<
   T extends CompositeStoreItem = CompositeStoreItem,
 > extends CollectionStoreState<T> {
   /**
+   * The ID of the composite store is used to reference elements within the
+   * composite widget before hydration. If not provided, a random ID will be
+   * generated.
+   */
+  id: string;
+  /**
    * The composite element itself. Typically, it's the wrapper element that
    * contains composite items. However, in a combobox, it's the input element.
    *
@@ -481,6 +492,8 @@ export interface CompositeStoreState<
    *
    * Live examples:
    * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusLoop: boolean | Orientation;
@@ -497,6 +510,10 @@ export interface CompositeStoreState<
    *   matches the value of `focusWrap`, it'll wrap between the last item in the
    *   last row or column and the first item in the first row or column and
    *   vice-versa.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusWrap: boolean | Orientation;
@@ -505,6 +522,10 @@ export interface CompositeStoreState<
    *
    * If enabled, moving up or down when there's no next item or when the next
    * item is disabled will shift to the item right before it.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusShift: boolean;
@@ -654,6 +675,7 @@ export interface CompositeStoreOptions<
 > extends CollectionStoreOptions<T>,
     StoreOptions<
       CompositeStoreState<T>,
+      | "id"
       | "virtualFocus"
       | "orientation"
       | "rtl"

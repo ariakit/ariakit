@@ -1,5 +1,24 @@
 # @ariakit/core
 
+## 0.4.15
+
+- Fixed `valid` state not updating on [Form](https://ariakit.org/components/form).
+
+## 0.4.14
+
+- Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
+- Fixed typings for [`onSubmit`](https://ariakit.org/reference/use-form-store#onsubmit) and [`onValidate`](https://ariakit.org/reference/use-form-store#onvalidate).
+- Improved JSDocs.
+
+## 0.4.13
+
+- Fixed the [`item`](https://ariakit.org/reference/use-collection-store#item) method to prevent it from returning items that have been removed from the collection store.
+- Fixed the [`item`](https://ariakit.org/reference/use-menu-store#item) method when keeping different menu stores in sync.
+- Added [`id`](https://ariakit.org/reference/use-composite-store#id) prop to composite stores.
+- Added `sortBasedOnDOMPosition` function.
+- Updated core utils.
+- Improved JSDocs.
+
 ## 0.4.12
 
 - Fixed regression in [`focusShift`](https://ariakit.org/reference/composite-provider#focusshift).

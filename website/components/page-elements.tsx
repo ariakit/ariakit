@@ -1,9 +1,3 @@
-import pageLinks from "@/build-pages/links.ts";
-import type { PageIndexDetail, TableOfContents } from "@/build-pages/types.ts";
-import { ArrowRight } from "@/icons/arrow-right.tsx";
-import { Hashtag } from "@/icons/hashtag.tsx";
-import { NewWindow } from "@/icons/new-window.tsx";
-import { isValidHref } from "@/lib/is-valid-href.ts";
 import type { Element, ElementContent } from "hast";
 import Image from "next/image.js";
 import Link from "next/link.js";
@@ -11,6 +5,12 @@ import type { ComponentPropsWithoutRef } from "react";
 import { Children, cloneElement, isValidElement, useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
+import pageLinks from "@/build-pages/links.ts";
+import type { PageIndexDetail, TableOfContents } from "@/build-pages/types.ts";
+import { ArrowRight } from "@/icons/arrow-right.tsx";
+import { Hashtag } from "@/icons/hashtag.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { isValidHref } from "@/lib/is-valid-href.ts";
 import {
   AuthDisabled,
   AuthEnabled,
@@ -568,7 +568,7 @@ export function PageImage({
   ...props
 }: PageImageProps) {
   const className = twJoin(
-    "overflow-hidden rounded-lg data-[large]:max-w-[--size-lg] data-[wide]:max-w-[--size-xl] md:rounded-xl data-[wide]:md:rounded-2xl",
+    "overflow-hidden rounded-lg max-w-[--size-md] data-[large]:max-w-[--size-lg] data-[wide]:max-w-[--size-xl] md:rounded-xl data-[wide]:md:rounded-2xl",
     props.className,
   );
   return (

@@ -1,0 +1,142 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { actions } from "astro:actions";
+import {
+  formatCurrency,
+  getCurrencySymbol,
+  getFlagEmoji,
+} from "#app/lib/locale.ts";
+import { InlineLink } from "#app/components/inline-link.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { nonNullable } from "#app/lib/object.ts";
+import { capitalize } from "#app/lib/string.ts";
+import SubmitButton from "#app/components/submit-button.astro";
+import type { PriceData } from "#app/lib/schemas.ts";
+import { getStripeDashboardUrl } from "./_utils.ts";
+
+interface Props {
+  personal: PriceData;
+  team: PriceData;
+  countryCode?: string;
+}
+
+const { personal, team, countryCode } = Astro.props;
+
+function formatAmount(price: PriceData) {
+  return formatCurrency({
+    amount: price.amount / 100,
+    currency: price.currency,
+  });
+}
+
+const priceTypes = [personal, team].filter(nonNullable);
+---
+
+<li class="ak-layer ak-frame-card ak-frame-border">
+  <div class="text-3xl ak-text-amber-400/0 ak-frame-cover flex items-center">
+    {formatAmount(personal).symbol}{" "}
+    {personal.currency.toUpperCase()}
+    <div class="ms-auto text-2xl">
+      {countryCode ? getFlagEmoji(countryCode) : "🌎"}
+    </div>
+  </div>
+  <div class="ak-frame-cover/0 ak-layer-current border-t">
+    <table class="w-full">
+      <tbody class="divide-y">
+        {
+          priceTypes.map((priceType) => {
+            const id = `${priceType.key}-modal`;
+            const fixedPrice = (priceType.amount / 100).toFixed(2);
+            return (
+              <tr class="ak-layer-current *:ak-frame/1.5">
+                <th class="text-end text-sm">{capitalize(priceType.type)}</th>
+                <td style={`anchor-name: --${id}-1`} class="w-min text-end">
+                  {priceType.amount ? (
+                    <InlineLink
+                      href={`${getStripeDashboardUrl()}/prices/${priceType.id}`}
+                      newWindow
+                    >
+                      {formatAmount(priceType).toString()}
+                    </InlineLink>
+                  ) : (
+                    <span class="ak-text/50">Not set</span>
+                  )}
+                </td>
+                <td
+                  style={`anchor-name: --${id}-2`}
+                  class="text-start text-xs ak-text-green-500"
+                >
+                  {priceType.type === "team" &&
+                    `${(priceType.amount / personal.amount).toFixed(2)}x`}
+                </td>
+                <td class="w-12">
+                  <button
+                    class="ak-button ak-layer-pop ak-button-square size-full"
+                    command="show-modal"
+                    commandfor={id}
+                  >
+                    <Icon name="edit" />
+                    <span class="sr-only">Edit</span>
+                  </button>
+                  <dialog
+                    id={id}
+                    closedby="any"
+                    popover
+                    style={`position-anchor: --${id}-1; inset-block-start: anchor(start); inset-inline-start: anchor(start); min-inline-size: calc(anchor-size() + anchor-size(--${id}-2));`}
+                    class="ak-frame/px m-1 backdrop:bg-black/20 backdrop:backdrop-blur-[2px]"
+                  >
+                    <form method="post" action={actions.admin.setPrice}>
+                      <input type="hidden" name="type" value={priceType.type} />
+                      <input
+                        type="hidden"
+                        name="currency"
+                        value={priceType.currency}
+                      />
+                      <input
+                        type="hidden"
+                        name="countryCode"
+                        value={countryCode}
+                      />
+                      <div
+                        class="ak-input flex items-center gap-1 ak-frame-field/1 justify-end-safe"
+                        onclick="this.querySelector('input').focus()"
+                      >
+                        <div class="size-4 flex items-center justify-end">
+                          {getCurrencySymbol(priceType.currency)}
+                        </div>
+                        <input
+                          type="text"
+                          aria-label="Price"
+                          inputmode="decimal"
+                          class="field-sizing-content"
+                          name="amount"
+                          placeholder={fixedPrice}
+                          value={fixedPrice}
+                          pattern="^\\d+(\\.\\d{1,2})?$"
+                          title="Enter a number with up to 2 decimal places"
+                          autofocus
+                          onfocus="this.select()"
+                        />
+                        <SubmitButton class="ak-button text-sm ak-frame-field/2">
+                          Set price
+                        </SubmitButton>
+                      </div>
+                    </form>
+                  </dialog>
+                </td>
+              </tr>
+            );
+          })
+        }
+      </tbody>
+    </table>
+  </div>
+</li>

@@ -1,0 +1,118 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import Sticky from "#app/components/sticky.astro";
+import { trimRight } from "#app/lib/string.ts";
+import type { ComponentProps, HTMLAttributes } from "astro/types";
+import { ApiReferenceLabel } from "./api-reference-label.react.tsx";
+
+interface LinkItem {
+  href: string;
+  label: string;
+  currentPage?: boolean;
+}
+
+interface ReferenceItem
+  extends LinkItem,
+    ComponentProps<typeof ApiReferenceLabel> {}
+
+interface HeadingItem {
+  label: string;
+}
+
+export type SidebarMenuItem = LinkItem | ReferenceItem | HeadingItem;
+
+interface Props extends HTMLAttributes<"div"> {
+  items: SidebarMenuItem[];
+  revealOnStuck?: boolean;
+}
+
+const { items, revealOnStuck = false, ...props } = Astro.props;
+
+function isLinkItem(item: SidebarMenuItem) {
+  return "href" in item;
+}
+
+function isReferenceItem(item: SidebarMenuItem): item is ReferenceItem {
+  return "kind" in item && item.kind !== undefined;
+}
+
+function getReferenceProps(item: SidebarMenuItem) {
+  if (!isReferenceItem(item)) return;
+  const { href: _, ...referenceProps } = item;
+  return referenceProps;
+}
+
+function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
+  if (!isLinkItem(item)) return false;
+  if (item.currentPage) return true;
+  // If any other link is forced current, this link is not current.
+  if (items.some((item) => isLinkItem(item) && item.currentPage)) return false;
+  const url = new URL(item.href, Astro.url.origin);
+  return trimRight(pathname, "/") === trimRight(url.pathname, "/");
+}
+---
+
+<div
+  class:list={[
+    "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size_+_--spacing(4))] max-w-full z-2 @max-5xl:hidden h-full ak-layer-current border-e",
+    props.class,
+  ]}
+  {...props}
+>
+  <Sticky
+    class="top-(--header-height) [--p:--spacing(2)] p-(--p)"
+    threshold={revealOnStuck ? 192 : 10}
+  >
+    <slot name="before" />
+    <ul
+      class:list={[
+        "flex flex-col gap-1",
+        revealOnStuck &&
+          "base:@overlap:pointer-events-none base:@overlap:opacity-0 in-data-stuck:pointer-events-auto in-data-stuck:opacity-100 transition-opacity duration-500",
+      ]}
+    >
+      {
+        items.map((item) => {
+          if (!isLinkItem(item)) {
+            return (
+              <li class="ak-text/0 font-medium p-field text-sm not-first-of-type:mt-2">
+                {item.label}
+              </li>
+            );
+          }
+          const { href, label } = item;
+          const referenceProps = getReferenceProps(item);
+
+          return (
+            <li class="relative">
+              <a
+                href={href}
+                aria-current={isCurrentPage(item) ? "page" : undefined}
+                class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop overflow-x-clip relative"
+              >
+                {referenceProps?.kind ? (
+                  <ApiReferenceLabel {...referenceProps} set:text={label} />
+                ) : (
+                  label
+                )}
+                <span class="absolute inset-y-0 end-0 w-(--ak-frame-padding) bg-gradient-to-l from-(--ak-layer) from-25% to-transparent z-10 rounded-r-[inherit]" />
+              </a>
+              <div
+                class="absolute inset-y-0 -right-[calc(var(--p)+1px)] w-[calc(2px+0.03rem*var(--contrast))] bg-current opacity-0 peer-aria-[current=page]:opacity-100"
+                data-indicator
+              />
+            </li>
+          );
+        })
+      }
+    </ul>
+  </Sticky>
+</div>

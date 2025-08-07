@@ -1,8 +1,4 @@
 "use client";
-import { ChevronDown } from "@/icons/chevron-down.tsx";
-import { ChevronUp } from "@/icons/chevron-up.tsx";
-import { NewWindow } from "@/icons/new-window.tsx";
-import { tsToJsFilename } from "@/lib/ts-to-js-filename.ts";
 import { invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
 import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
@@ -20,6 +16,10 @@ import {
 import { createPortal, flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
+import { ChevronDown } from "@/icons/chevron-down.tsx";
+import { ChevronUp } from "@/icons/chevron-up.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { tsToJsFilename } from "@/lib/ts-to-js-filename.ts";
 import {
   AuthEnabled,
   AuthLoaded,
@@ -65,13 +65,13 @@ export function PlaygroundClient({
   type = "wide",
 }: PlaygroundClientProps) {
   const getTabId = (file: string) =>
-    `${id}-${file.replace("/", "__").replace(/\.([^\.]+)$/, "-$1")}`;
+    `${id}-${file.replace("/", "__").replace(/\.([^.]+)$/, "-$1")}`;
 
   const getFileFromTabId = (tabId: string) =>
     tabId
       .replace(`${id}-`, "")
       .replace("__", "/")
-      .replace(/\-([^\-]+)$/, ".$1");
+      .replace(/-([^-]+)$/, ".$1");
 
   const firstFile = Object.keys(files)[0];
 
@@ -108,7 +108,7 @@ export function PlaygroundClient({
   const tabPanelRef = useRef<HTMLDivElement>(null);
   const collapseRef = useRef<HTMLButtonElement>(null);
   const expandRef = useRef<HTMLButtonElement>(null);
-  const isRadix = /\-radix/.test(id);
+  const isRadix = /-radix/.test(id);
 
   const [callToActionSlot, setCallToActionSlot] = useState<HTMLElement | null>(
     null,
@@ -315,7 +315,10 @@ export function PlaygroundClient({
                 </TooltipButton>
               )}
             </div>
-            <div className="flex size-full flex-col justify-center overflow-auto p-4 *:mx-auto">
+            <div
+              data-preview-render-target
+              className="flex size-full flex-col justify-center overflow-auto p-4 *:mx-auto"
+            >
               {preview}
             </div>
           </div>

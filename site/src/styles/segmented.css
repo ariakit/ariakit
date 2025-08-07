@@ -1,0 +1,67 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-segmented {
+  @apply ak-frame-container ak-layer-down;
+  @apply gap-(--ak-frame-padding) flex;
+  --ak-segmented-padding: var(--ak-frame-padding);
+}
+
+@utility ak-segmented-button_idle {
+  @apply ak-button_idle ak-text/70;
+  @apply relative font-medium;
+  input[type="radio"] {
+    @apply sr-only;
+  }
+  &:not(:last-child)::after {
+    @apply ak-layer-current;
+    @apply absolute -end-[calc(var(--ak-segmented-padding)/2+1px)] h-1/2 border-r bg-transparent content-[''];
+  }
+  &:has(+ * :checked)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_selected {
+  @apply ak-layer-2 ak-edge/0;
+  @apply z-1 ak-light:shadow ring;
+  &:not(:last-child)::after {
+    @apply content-none;
+  }
+  :has(+ &)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_hover {
+  @apply ak-button_hover;
+  &:not(:last-child)::after {
+    @apply content-none;
+  }
+  :has(+ &)::after {
+    @apply content-none;
+  }
+}
+
+@utility ak-segmented-button_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-segmented-button_active {
+  @apply ak-button_active;
+}
+
+@utility ak-segmented-button_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-segmented-button {
+  @apply ak-segmented-button_idle hover:ak-segmented-button_hover active:not-disabled:not-aria-disabled:ak-segmented-button_active disabled:ak-segmented-button_disabled;
+  @apply focus-visible:ak-segmented-button_focus has-focus-visible:ak-segmented-button_focus;
+  @apply aria-selected:ak-segmented-button_selected aria-checked:ak-segmented-button_selected has-checked:ak-segmented-button_selected;
+}

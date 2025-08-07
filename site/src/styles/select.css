@@ -1,0 +1,57 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-select_idle {
+  @apply ak-button_idle;
+  appearance: base-select;
+}
+
+@utility ak-select_hover {
+  @apply ak-button_hover;
+}
+
+@utility ak-select_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-select_active {
+  @apply ak-button_active;
+}
+
+@utility ak-select_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-select-picker_idle {
+  appearance: base-select;
+  top: calc(anchor(bottom) + --spacing(1));
+  inset-inline-start: calc(anchor(start) - --spacing(1));
+  position-try-fallbacks: flip-block, flip-inline;
+  @apply ak-popover_idle ak-frame-force-container min-w-20;
+}
+
+@utility ak-select-picker_open {
+  @apply ak-popover_open;
+}
+
+@utility ak-select-picker_closed {
+  @apply ak-popover_closed;
+}
+
+@utility ak-select {
+  @apply ak-select_idle hover:ak-select_hover focus-visible:ak-select_focus active:not-disabled:not-aria-disabled:ak-select_active aria-disabled:ak-select_disabled disabled:ak-select_disabled;
+  &::picker(select) {
+    @apply ak-select-picker_idle;
+  }
+  &::picker(select):popover-open {
+    @apply ak-select-picker_open;
+  }
+  &::picker(select):not(:popover-open) {
+    @apply ak-select-picker_closed;
+  }
+}

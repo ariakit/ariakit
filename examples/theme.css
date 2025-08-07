@@ -1,4 +1,5 @@
 /**
+ * @license
  * This file is part of Ariakit Plus. For the full license, see
  * https://ariakit.org/plus/license
  */
@@ -30,7 +31,7 @@
   depth. */
   .ak-clickable {
     --depth: 1px;
-    --padding-block: initial;
+    --padding-block: var(--depth);
   }
 
   /* Button */
@@ -43,7 +44,6 @@
   }
 
   .ak-button-default {
-    --depth: 2px;
     --outline-offset: -1px;
     @apply
       [--text:theme(colors.black)]
@@ -234,6 +234,8 @@
   with a popup class. */
   .ak-option {
     @apply
+      ak-clickable
+      flex-none
       [--option-background:transparent]
       data-[active-item]:[--option-background:theme(colors.black/8%)]
       dark:data-[active-item]:[--option-background:theme(colors.white/8%)]
@@ -272,7 +274,7 @@
       dark:[--border:oklch(from_var(--background)_calc(l+.15)_c_h)]
   }
 
-  .ak-tab-default {
+  .ak-tab-folder {
     --accent-background: var(--color-primary);
     --accent-text: var(--color-white);
     @apply
@@ -280,7 +282,7 @@
       dark:hover:aria-[selected=false]:[--tab-background:theme(colors.white/8%)]
   }
 
-  .ak-tab-default[aria-selected="false"] {
+  .ak-tab-folder[aria-selected="false"] {
     --border: transparent;
   }
 
@@ -328,8 +330,8 @@
   .ak-clickable:active,
   .ak-clickable[data-active] {
     padding-block:
-      calc(var(--padding-block-start, var(--padding-block, 0px)) + var(--depth, 0px))
-      calc(var(--padding-block-end, var(--padding-block, 0px)) - var(--depth, 0px));
+      calc(var(--padding-block-start, var(--padding-block)) + var(--depth, 0px))
+      calc(var(--padding-block-end, var(--padding-block)) - var(--depth, 0px));
   }
 
   /* Button */
@@ -348,6 +350,8 @@
     scroll-margin: var(--padding, 0px);
     border-radius: calc(var(--rounded, theme(borderRadius.lg)) - var(--padding, 0px));
     @apply
+      ak-focusable
+      ak-clickable
       text-base
       [box-shadow:inset_0_0_0_1px_var(--border),inset_0_2px_0_var(--light),inset_0_-1px_0_var(--shadow),0_1px_1px_var(--shadow)]
       dark:[box-shadow:inset_0_0_0_1px_var(--border),inset_0_-1px_0_1px_var(--shadow),inset_0_1px_0_var(--light)]
@@ -398,6 +402,8 @@
   /* Combobox */
   .ak-combobox {
     outline-width: 1px;
+
+    @apply ak-input ak-focusable ak-rounded-item;
   }
 
   .ak-combobox[data-active-item] {
@@ -424,6 +430,9 @@
     border-radius: var(--rounded);
     scroll-padding: var(--padding);
     box-shadow: 0 0 0 1px var(--border), var(--shadow-size) var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
   }
 
   .ak-popup-cover {
@@ -432,16 +441,47 @@
     padding: var(--padding);
     margin-inline: var(--negative-margin);
     scroll-padding: var(--padding);
-    overflow: hidden;
+    min-height: 0;
+    overflow: clip;
 
     &:first-child {
       margin-block-start: var(--negative-margin);
     }
 
-    &:has(+ &),
     &:not(:has(~ *:not([hidden]))) {
       margin-block-end: var(--negative-margin);
     }
+  }
+
+  .ak-popup-scroll {
+    overflow: auto;
+    overscroll-behavior: contain;
+
+    @apply
+      [--sticky-header-height:40px]
+      sm:[--sticky-header-height:32px]
+      has-[.ak-popup-sticky-header]:scroll-pt-[calc(var(--sticky-header-height)+var(--padding))]
+  }
+
+  .ak-popup-sticky-header {
+    position: sticky;
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    top: calc(var(--padding) * -1);
+    z-index: 10;
+    padding-inline: calc(var(--padding) + theme(spacing.2));
+    background-color: var(--popup-background, var(--background));
+    cursor: default;
+    border-bottom: 1px solid var(--border);
+    height: var(--sticky-header-height);
+
+    @apply
+      text-sm
+      font-medium
+      text-black/60
+      dark:text-white/60
+      [&+*]:scroll-pt-[100px]
   }
 
   .ak-popup-layer {
@@ -529,12 +569,15 @@
     display: flex;
     flex: none;
     overflow-x: auto;
+    scrollbar-width: none;
+    padding-block-end: 0;
+    background-color: var(--popup-background);
     background-image: linear-gradient(
       to bottom,
-      var(--popup-background) calc(100% - var(--padding) - 1px),
-      var(--border) calc(100% - var(--padding) - 1px),
-      var(--border) calc(100% - var(--padding)),
-      transparent calc(100% - var(--padding))
+      transparent calc(100% - var(--border-size) - 1px),
+      var(--border) calc(100% - var(--border-size) - 1px),
+      var(--border) calc(100% - var(--border-size)),
+      var(--background) calc(100% - var(--border-size))
     );
   }
 
@@ -548,7 +591,9 @@
     background-color: var(--tab-background, var(--popup-background, var(--background, transparent)));
     border-color: var(--border, transparent);
     border-width: var(--border-size, 0px) var(--border-size, 0px);
-    translate: 0 var(--border-size, 0px);
+
+    @apply
+      ak-clickable
   }
 
   .ak-tab[aria-disabled] {
@@ -568,7 +613,7 @@
     --background: var(--accent-background);
   }
 
-  .ak-tab-default {
+  .ak-tab-folder {
     --border-smooth: .1px;
     --corner-size: calc(var(--rounded) - var(--padding) - 4px);
     --margin: theme(spacing.1);
@@ -577,18 +622,16 @@
 
     background-color: var(--tab-background, var(--background, transparent));
     border-radius: var(--corner-size);
-    padding-block:
-      var(--padding-block-start, var(--padding-block))
-      var(--padding-block-end, var(--padding-block));
     padding-inline: theme(spacing.2);
     margin: var(--margin);
     margin-block-end: var(--margin-block-end);
     background-clip: padding-box;
     border-block-end-color: transparent;
     outline: none;
+    @apply ak-tab;
   }
 
-  .ak-tab-default[aria-selected="true"] {
+  .ak-tab-folder[aria-selected="true"] {
     --corner-size: calc(var(--rounded) - var(--padding));
     --padding-block: calc(theme(spacing.1) + var(--margin));
     --padding-block-end: var(--margin-block-end);
@@ -600,17 +643,17 @@
       inset 0 -2px 0 4px var(--background);
   }
 
-  .ak-tab-default:not([aria-selected="true"],[data-focus-visible],:hover) {
+  .ak-tab-folder:not([aria-selected="true"],[data-focus-visible],:hover) {
     --background: var(--popup-background);
   }
 
-  .ak-tab-default[aria-selected="true"]::before,
-  .ak-tab-default[aria-selected="true"]::after {
+  .ak-tab-folder[aria-selected="true"]::before,
+  .ak-tab-folder[aria-selected="true"]::after {
     display: block;
   }
 
-  .ak-tab-default::before,
-  .ak-tab-default::after {
+  .ak-tab-folder::before,
+  .ak-tab-folder::after {
     --circle-left: circle at 0 0, var(--transparency);
     --circle-right: circle at 100% 0, var(--transparency);
     --transparency: transparent calc(var(--corner-size) - var(--border-size, 0px) + var(--border-smooth));
@@ -629,7 +672,7 @@
     background-repeat: no-repeat;
   }
 
-  .ak-tab-default::before {
+  .ak-tab-folder::before {
     right: calc(100% - var(--corner-size));
     background-image:
       radial-gradient(var(--circle-left), var(--tab-border), var(--tab-bg)),
@@ -637,7 +680,7 @@
     background-position: 0, 100%;
   }
 
-  .ak-tab-default::after {
+  .ak-tab-folder::after {
     left: calc(100% - var(--corner-size));
     background-image:
       radial-gradient(var(--circle-right), var(--tab-border), var(--tab-bg)),
@@ -646,15 +689,16 @@
   }
 
   .ak-tab-chip {
+    --padding-block: theme(spacing.1);
+
     border-radius: 9999px;
     padding-inline: theme(spacing.3);
 
-    --padding-block: theme(spacing.1);
+    @apply ak-tab;
   }
 
   .ak-tab-panel {
     padding: var(--padding);
     scroll-padding: var(--padding);
-    box-shadow: 0 0 0 var(--border-size, 0px) var(--border, transparent);
   }
 }

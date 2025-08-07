@@ -1,0 +1,75 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import {
+  getOGImageItem,
+  type GetOGImageItemParams,
+} from "#app/pages/og-image/api.ts";
+
+interface Props extends GetOGImageItemParams {
+  title?: string;
+  description?: string;
+}
+
+const DEFAULT_TITLE = new String();
+
+const {
+  id,
+  type,
+  framework,
+  title: pageTitle = DEFAULT_TITLE,
+  description = "Toolkit with accessible components, styles, and examples for your next web app. Built for React, Solid, HTML, and more.",
+} = Astro.props;
+
+const ogImageItem = await getOGImageItem({ id, type, framework });
+
+const ogImage = ogImageItem?.imagePath
+  ? new URL(ogImageItem.imagePath, Astro.site).href
+  : new URL("/og-image/default.png", Astro.site).href;
+
+const title =
+  pageTitle === DEFAULT_TITLE
+    ? "Ariakit - Toolkit for building accessible UIs"
+    : `${pageTitle} - Ariakit`;
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="icon" type="image/svg+xml" href="/icon.svg" />
+<link
+  rel="icon"
+  type="image/svg+xml"
+  href="/icon-dark.svg"
+  media="(prefers-color-scheme: dark)"
+/>
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta
+  name="keywords"
+  content="react, accessibility, components, css, html, ui, a11y, accessible"
+/>
+
+<meta property="og:type" content="website" />
+<meta property="og:url" content={Astro.url.href} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:site" content="@ariakitjs" />
+<meta property="twitter:url" content={Astro.url.href} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={ogImage} />

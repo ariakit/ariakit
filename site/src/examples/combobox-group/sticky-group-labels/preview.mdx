@@ -1,0 +1,17 @@
+---
+title: Sticky Group Labels
+frameworks:
+  - react
+---
+
+import Preview from "../../../components/preview.astro";
+import ReactExample from "./index.react.tsx";
+import sourceReact from "./index.react.tsx?source";
+
+export const source = {
+  react: sourceReact,
+};
+
+<Preview>
+  <ReactExample client:load slot="react" />
+</Preview>

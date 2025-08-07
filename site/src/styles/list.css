@@ -1,0 +1,237 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+
+@custom-variant ak-list-blocks {
+  &:has(p, div, details, h1, h2, h3, h4) {
+    @slot;
+  }
+}
+
+@custom-variant ak-list-sections {
+  &:has(h1, h2, h3, h4) {
+    @slot;
+  }
+}
+
+/* ak-list configuration */
+@utility ak-list-gap-* {
+  --_ak-list-gap: --spacing(--value(number));
+  --_ak-list-gap: --value(--spacing, [*]);
+}
+
+@utility ak-list-leading-* {
+  --ak-list-leading: calc(1em * --value(--leading));
+  --ak-list-leading: --spacing(--value(number));
+  --ak-list-leading: --value([*]);
+  @apply leading-(--ak-list-leading);
+}
+
+/* ak-list variants */
+@utility ak-list-blocks {
+  --ak-list-gap: calc(var(--_ak-list-gap) * 1.25);
+}
+
+@utility ak-list-sections {
+  @apply not-first:mt-[1em];
+  --ak-list-gap: calc(var(--_ak-list-gap) * 2);
+}
+
+/* ak-list */
+@utility ak-list {
+  @apply ak-list-gap-6 ak-list-leading-normal;
+  @apply gap-(--ak-list-gap) flex flex-col;
+  --ak-list-gap: calc(var(--_ak-list-gap) * 0.5);
+  counter-reset: ak-list;
+  @variant ak-list-blocks {
+    @apply ak-list-blocks;
+  }
+  @variant ak-list-sections {
+    @apply ak-list-sections;
+  }
+}
+
+/* ak-list-item elements and variants */
+@utility ak-list-item-blocks {
+  @apply gap-(--ak-list-item-gap) flex flex-col;
+  --ak-list-item-gap: calc(var(--ak-list-gap) * 0.5);
+}
+
+@utility ak-list-item-ul-marker {
+  @apply ak-layer-current ak-edge/40;
+  @apply z-3 absolute left-0 w-4 border-b;
+  content: "";
+  top: calc(var(--ak-list-leading) * 0.5);
+}
+
+@utility ak-list-item-ul {
+  @apply before:ak-list-item-ul-marker;
+  --ak-list-item-ps: --spacing(6);
+  padding-inline-start: var(--ak-list-item-ps);
+}
+
+@utility ak-list-item-ol-marker {
+  @apply ak-layer-pop-2 ak-text;
+  @apply size-(--ak-list-item-ol-marker-size) pointer-events-none absolute top-0 -translate-x-1/2 rounded-full text-center font-semibold;
+  --ak-list-item-ol-marker-margin: 0.2em;
+  --ak-list-item-ol-marker-size: calc(
+    var(--ak-list-leading) - var(--ak-list-item-ol-marker-margin) * 2
+  );
+  content: counter(ak-list);
+  font-size-adjust: 0.45;
+  line-height: var(--ak-list-item-ol-marker-size);
+  margin: var(--ak-list-item-ol-marker-margin);
+  left: calc(
+    var(--ak-list-item-left-center) - var(--ak-list-item-ol-marker-margin)
+  );
+}
+
+@utility ak-list-item-ol-border {
+  --ak-list-border-gap: --spacing(1);
+  --ak-list-border-width: 1px;
+  --ak-list-border-top: calc(
+    var(--ak-list-leading) + var(--ak-list-border-gap)
+  );
+  /* Border segment */
+  &::after {
+    @apply ak-layer-pop-2;
+    @apply z-1 pointer-events-none absolute left-0 h-full;
+    content: "";
+    width: var(--ak-list-border-width);
+    top: var(--ak-list-border-top);
+    left: calc(
+      var(--ak-list-item-left-center) - var(--ak-list-border-width) / 2
+    );
+    height: calc(
+      100% - var(--ak-list-border-top) + var(--ak-list-gap) -
+        var(--ak-list-border-gap)
+    );
+  }
+  /* Make the final border segment match the content’s height */
+  &:last-of-type::after {
+    @apply from-(--ak-layer) bg-transparent bg-gradient-to-b from-[calc(100%-1rem)] to-transparent;
+    height: calc(100% - var(--ak-list-border-top));
+  }
+}
+
+@utility ak-list-item-ol {
+  --ak-list-item-ps: calc(var(--ak-list-leading) + --spacing(1));
+  padding-inline-start: var(--ak-list-item-ps);
+  counter-increment: ak-list;
+  &::before {
+    @apply ak-list-item-ol-marker;
+  }
+  @variant ak-list-blocks {
+    @apply ak-list-item-ol-border;
+  }
+}
+
+/* ak-list-item */
+@utility ak-list-item {
+  @apply relative;
+  --ak-list-item-left-center: calc(var(--ak-list-leading) / 2 - --spacing(1));
+  @variant ak-list-blocks {
+    @apply ak-list-item-blocks;
+  }
+  ul > & {
+    @apply ak-list-item-ul;
+  }
+  ol > & {
+    @apply ak-list-item-ol;
+  }
+  & > details {
+    @apply ak-list-item-disclosure;
+    & > :where(summary + *:only-of-type) {
+      @apply ak-list-item-disclosure-content;
+    }
+  }
+}
+
+@utility ak-list-item-disclosure_idle {
+  @apply ak-disclosure_idle;
+  @apply gap-(--ak-list-item-gap) -my-(--ak-frame-padding) -me-(--ak-frame-padding) z-2 flex-col;
+  margin-inline-start: calc(
+    (
+        var(--ak-list-item-ps) + var(--ak-list-item-left-center) +
+          var(--ak-frame-border)
+      ) *
+      -1
+  );
+  @layer base {
+    @apply ak-frame-card/(--ak-list-item-disclosure-padding);
+    --ak-list-item-disclosure-padding: calc(var(--ak-list-item-gap) / 1.5);
+  }
+  & > :where(summary) {
+    @apply ak-list-item-disclosure-button;
+  }
+}
+
+@utility ak-list-item-disclosure_open {
+  @apply ak-disclosure_open;
+}
+
+@utility ak-list-item-disclosure {
+  @apply ak-list-item-disclosure_idle;
+  @apply open:ak-list-item-disclosure_open;
+}
+
+@utility ak-list-item-disclosure-button_idle {
+  @apply ak-disclosure-button_idle after:ak-disclosure-arrow-end;
+  @apply after:ms-0;
+  --ak-button-leading: var(--ak-list-leading);
+  padding-inline-start: calc(
+    var(--ak-list-item-ps) + var(--ak-list-item-left-center)
+  );
+  /* Add back the markers for the list item. */
+  ul > li &::before {
+    @apply ak-list-item-ul-marker;
+    margin-top: var(--ak-frame-padding);
+    translate: var(--ak-list-item-left-center) 0;
+  }
+  ol > li &::before {
+    @apply ak-list-item-ol-marker;
+    top: var(--ak-frame-padding);
+    left: calc(
+      var(--ak-list-item-left-center) * 2 - var(--ak-list-item-ol-marker-margin)
+    );
+  }
+}
+
+@utility ak-list-item-disclosure-button_hover {
+  @apply ak-disclosure-button_hover;
+}
+
+@utility ak-list-item-disclosure-button_focus {
+  @apply ak-disclosure-button_focus;
+}
+
+@utility ak-list-item-disclosure-button_active {
+  @apply ak-disclosure-button_active;
+}
+
+@utility ak-list-item-disclosure-button_disabled {
+  @apply ak-disclosure-button_disabled;
+}
+
+@utility ak-list-item-disclosure-button {
+  @apply ak-list-item-disclosure-button_idle;
+  @apply ak-command-hover:ak-list-item-disclosure-button_hover;
+  @apply ak-command-focus:ak-list-item-disclosure-button_focus;
+  @apply ak-command-active:ak-list-item-disclosure-button_active;
+  @apply ak-command-disabled:ak-list-item-disclosure-button_disabled;
+}
+
+@utility ak-list-item-disclosure-content {
+  @apply ak-frame/4;
+  @apply gap-(--ak-list-item-gap) flex flex-col;
+  padding-block: var(--ak-list-item-gap);
+  padding-inline-start: calc(
+    var(--ak-list-item-ps) + var(--ak-list-item-left-center)
+  );
+  padding-inline-end: var(--ak-disclosure-padding);
+}

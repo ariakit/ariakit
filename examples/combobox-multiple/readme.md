@@ -17,7 +17,7 @@ Allowing [Combobox](/components/combobox) to select multiple options by passing 
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

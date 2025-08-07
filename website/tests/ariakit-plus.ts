@@ -1,6 +1,6 @@
 import { createClerkClient } from "@clerk/clerk-sdk-node";
-import { expect, test } from "@playwright/test";
 import type { FrameLocator, Locator, Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
 import { Stripe } from "stripe";
 
@@ -196,7 +196,7 @@ async function getDisplayedPrice(page: Page | Locator | FrameLocator) {
     .text(/^(US)?\$\d+(\.\d*)?$/)
     .first()
     .textContent())!;
-  return Math.ceil(Number.parseFloat(priceText.replace(/[^\d\.]/g, "")));
+  return Math.ceil(Number.parseFloat(priceText.replace(/[^\d.]/g, "")));
 }
 
 function frameLocator(page: Page) {
@@ -292,8 +292,10 @@ for (const plan of ["month", "year"] as const) {
       expect(subs.data.length).toBe(0);
     }).toPass({ intervals: [2000, 5000, 10000] });
 
-    await q.button("Back to page").click();
-    await page.waitForURL("/components");
+    await expect(async () => {
+      await q.button("Back to page").click();
+      await page.waitForURL("/components", { timeout: 2000 });
+    }).toPass({ intervals: [2000, 5000, 10000] });
 
     await q.button("Plus").click();
     await expect(q.menuitem("Billing")).toBeVisible();
@@ -349,7 +351,7 @@ test("purchase Plus from /plus, sign out, sign in again, and access the billing 
 
   await q.link("Unlock Ariakit Plus").click();
   await q.link("Sign in").click();
-  await page.waitForURL(/\/sign\-in/);
+  await page.waitForURL(/\/sign-in/);
   await fillSignIn(page, { email, redirectUrl: "/" });
 
   await q.button("Plus").click();
@@ -384,8 +386,10 @@ test("purchase Plus from /components, sign out, sign in again, and access the bi
   await fq.button("Pay").click();
   await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
-  await q.button("Back to page").click();
-  await page.waitForURL("/components");
+  await expect(async () => {
+    await q.button("Back to page").click();
+    await page.waitForURL("/components", { timeout: 2000 });
+  }).toPass({ intervals: [2000, 5000, 10000] });
 
   await q.button("Plus").click();
   await q.menuitem("Benefits").click();
@@ -398,7 +402,7 @@ test("purchase Plus from /components, sign out, sign in again, and access the bi
 
   await q.link("Unlock Ariakit Plus").click();
   await q.link("Sign in").click();
-  await page.waitForURL(/\/sign\-in/);
+  await page.waitForURL(/\/sign-in/);
   await fillSignIn(page, { email, redirectUrl: "/components" });
 
   await q.button("Plus").click();

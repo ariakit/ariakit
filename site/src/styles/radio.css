@@ -1,0 +1,52 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-radio_idle {
+  @apply ak-button_idle;
+
+  input {
+    @apply sr-only;
+  }
+
+  @variant before {
+    @apply ak-text/50;
+    @apply size-[1em] flex-none rounded-full border-2 border-current bg-clip-content p-0.5 content-[''];
+  }
+}
+
+@utility ak-radio_hover {
+  @apply ak-button_hover;
+}
+
+@utility ak-radio_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-radio_active {
+  @apply ak-button_active;
+}
+
+@utility ak-radio_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-radio_checked {
+  @variant before {
+    @apply ak-text-primary/50;
+    @apply bg-current;
+  }
+}
+
+@utility ak-radio {
+  @apply ak-radio_idle;
+  @apply hover:ak-radio_hover;
+  @apply has-focus-visible:ak-radio_focus;
+  @apply active:not-disabled:not-aria-disabled:ak-radio_active;
+  @apply aria-disabled:ak-radio_disabled disabled:ak-radio_disabled;
+  @apply has-checked:ak-radio_checked aria-checked:ak-radio_checked;
+}

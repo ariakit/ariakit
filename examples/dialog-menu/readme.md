@@ -16,7 +16,7 @@ Showing a nested dropdown [Menu](/components/menu) component inside a modal [Dia
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -36,7 +36,7 @@ Showing a nested dropdown [Menu](/components/menu) component inside a modal [Dia
 - [](/examples/dialog-hide-warning)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-react-toastify)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menu-nested)
 - [](/examples/menu-tooltip)
 

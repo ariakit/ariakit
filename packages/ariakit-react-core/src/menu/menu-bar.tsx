@@ -1,7 +1,7 @@
-import { useEffect } from "react";
 import type { ElementType } from "react";
-import { useMenubar } from "../menubar/menubar.tsx";
+import { useEffect } from "react";
 import type { MenubarOptions } from "../menubar/menubar.tsx";
+import { useMenubar } from "../menubar/menubar.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 

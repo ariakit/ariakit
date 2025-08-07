@@ -1,9 +1,9 @@
-import { createHovercardStore } from "../hovercard/hovercard-store.ts";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
 } from "../hovercard/hovercard-store.ts";
+import { createHovercardStore } from "../hovercard/hovercard-store.ts";
 import { defaultValue } from "../utils/misc.ts";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import { createStore } from "../utils/store.ts";

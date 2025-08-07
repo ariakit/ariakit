@@ -1,0 +1,175 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { InlineLink } from "#app/components/inline-link.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { Logo } from "#app/icons/logo.react.tsx";
+import {
+  getCurrentUserPlus,
+  getCurrentUserTeams,
+  isSignedIn,
+} from "#app/lib/auth.ts";
+import { URLSchema } from "#app/lib/schemas.ts";
+import type { GetPlusAccountURLParams } from "#app/lib/url.ts";
+import {
+  getPlusAccountPath,
+  getPlusAccountURL,
+  getPlusCheckoutPath,
+} from "#app/lib/url.ts";
+import "#app/styles/global.css";
+import { SignOutButton } from "@clerk/astro/components";
+import "@fontsource-variable/inter";
+import type { HTMLAttributes } from "astro/types";
+import { z } from "zod";
+
+const querySchema = z
+  .object({
+    redirect_url: URLSchema,
+  })
+  .transform((data) => ({
+    redirectUrl: data.redirect_url,
+  }));
+
+const { redirectUrl } = querySchema.parse(
+  Object.fromEntries(Astro.url.searchParams)
+);
+
+function removeTrailingSlash(path: string) {
+  return path.replace(/\/$/, "");
+}
+
+function getLinkProps(
+  path: GetPlusAccountURLParams["path"] = "",
+  redirectUrl?: string | URL
+) {
+  const url = getPlusAccountURL({ url: Astro.url, path, redirectUrl });
+  const href = url.toString().replace(url.origin, "");
+  const isCurrent =
+    removeTrailingSlash(Astro.url.pathname) ===
+    removeTrailingSlash(url.pathname);
+  return {
+    href,
+    "aria-current": isCurrent ? "page" : undefined,
+  } satisfies HTMLAttributes<"a">;
+}
+
+const signedIn = isSignedIn(Astro);
+const currentUserPlus = await getCurrentUserPlus(Astro);
+const teams = await getCurrentUserTeams(Astro);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Ariakit</title>
+  </head>
+  <body
+    class="[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] ak-container-size-[64rem]/3 flex flex-col"
+  >
+    <div
+      class="py-8 border-b ak-layer-current flex flex-col gap-4 ak-layer-down-0.5"
+    >
+      <div class="ak-container">
+        <div class="flex items-center gap-2">
+          <Logo iconOnly />
+          <h1 class="text-xl font-light">
+            My <span class="font-semibold">Ariakit Plus</span>
+          </h1>
+          {
+            signedIn &&
+              (currentUserPlus ? (
+                <span class="ak-badge-green-500">
+                  <Icon name="check" className="ak-badge-icon" />
+                  <span>
+                    {currentUserPlus === "team" || teams.size > 0
+                      ? "Team"
+                      : "Personal"}
+                  </span>
+                </span>
+              ) : (
+                <div class="flex items-center gap-2 text-sm ms-auto">
+                  <span class="ak-badge-yellow-500 text-[length:inherit]">
+                    <span>No license</span>
+                  </span>
+                  <InlineLink
+                    className="ak-text-yellow-500"
+                    set:text="Purchase now"
+                    href={getPlusCheckoutPath({ url: Astro.url })}
+                  >
+                    <Icon name="arrowRight" slot="iconRight" />
+                  </InlineLink>
+                </div>
+              ))
+          }
+        </div>
+      </div>
+      <div class="ak-container flex flex-col gap-2">
+        <nav class="grid md:grid-cols-[1fr_auto] gap-8 items-center">
+          <div>
+            <InlineLink href={redirectUrl ?? "/"} className="text-sm group"
+              ><Icon
+                name="arrowLeft"
+                slot="iconLeft"
+                className="group-hover:-translate-x-1 transition-transform"
+              />Back to site
+            </InlineLink>
+          </div>
+          {
+            signedIn && (
+              <ul class="flex items-center gap-2 font-medium">
+                <li>
+                  <a
+                    {...getLinkProps()}
+                    class="ak-button aria-[current]:ak-layer-pop"
+                  >
+                    Account
+                  </a>
+                </li>
+                <li>
+                  <a
+                    {...getLinkProps("team")}
+                    class="ak-button aria-[current]:ak-layer-pop"
+                  >
+                    Team
+                  </a>
+                </li>
+                <li>
+                  <a
+                    {...getLinkProps("billing", Astro.url)}
+                    target="_blank"
+                    class="ak-button"
+                  >
+                    Billing <Icon name="newWindow" />
+                  </a>
+                </li>
+                <li>
+                  <SignOutButton
+                    class="ak-button"
+                    redirectUrl={getPlusAccountPath({
+                      url: Astro.url,
+                      path: "login",
+                    })}
+                  />
+                </li>
+              </ul>
+            )
+          }
+        </nav>
+      </div>
+    </div>
+
+    <div class="ak-container py-12 flex-1">
+      <slot />
+    </div>
+  </body>
+</html>

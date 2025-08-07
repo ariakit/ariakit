@@ -1,8 +1,5 @@
-import { expect, test } from "@playwright/test";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/popover-flip", { waitUntil: "networkidle" });
-});
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 test("popover flip", async ({ page }) => {
   test.info().snapshotSuffix = "";

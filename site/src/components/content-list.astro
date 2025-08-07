@@ -1,0 +1,24 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { Polymorphic } from "astro/types";
+
+type ListTag = "ul" | "ol";
+type Props<T extends ListTag> = Polymorphic<{ as: T }>;
+
+const { as: Tag = "ul", ...props } = Astro.props as Props<ListTag>;
+---
+
+<Tag
+  class:list={["ak-container-size-content/0 ak-container", props.class]}
+  {...props}
+>
+  <slot />
+</Tag>

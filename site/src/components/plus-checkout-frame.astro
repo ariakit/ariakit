@@ -1,0 +1,53 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { createLogger } from "#app/lib/logger.ts";
+import type { PlusType } from "#app/lib/schemas.ts";
+import { createCheckout, getPlusPrice } from "#app/lib/stripe.ts";
+
+export const prerender = false;
+
+interface Props {
+  type: PlusType;
+}
+
+const logger = createLogger("plus-checkout-frame");
+
+const { type } = Astro.props;
+const price = await getPlusPrice({ context: Astro, type });
+
+if (!price) {
+  logger.error("Price not found");
+  return null;
+}
+
+const session = await createCheckout({ context: Astro, price });
+
+if (!session) {
+  logger.error("Session not found");
+  return null;
+}
+---
+
+<div class="ak-frame-card/0 overflow-clip">
+  <div id="checkout" data-client-secret={session.client_secret} class="w-full">
+  </div>
+</div>
+
+<script>
+  import { loadStripe } from "@stripe/stripe-js";
+  const checkoutDiv = document.querySelector<HTMLElement>("#checkout");
+  const { clientSecret } = checkoutDiv?.dataset || {};
+  const stripe = await loadStripe(
+    import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  );
+  const checkout = await stripe?.initEmbeddedCheckout({ clientSecret });
+  checkout?.mount(checkoutDiv!);
+</script>

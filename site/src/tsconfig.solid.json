@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../.types",
+    "rootDir": "../..",
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
+  },
+  "include": ["../.astro/types.d.ts", "env.d.ts", "**/*.solid.tsx", "**/*.ts"],
+  "exclude": ["content.config.ts"]
+}

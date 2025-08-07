@@ -16,14 +16,18 @@ function checkIsBrowser() {
 /**
  * Returns `element.ownerDocument || document`.
  */
-export function getDocument(node?: Node | null): Document {
-  return node ? node.ownerDocument || (node as Document) : document;
+export function getDocument(node?: Window | Document | Node | null): Document {
+  if (!node) return document;
+  if ("self" in node) return node.document;
+  return node.ownerDocument || document;
 }
 
 /**
  * Returns `element.ownerDocument.defaultView || window`.
  */
-export function getWindow(node?: Node | null): Window {
+export function getWindow(node?: Window | Document | Node | null): Window {
+  if (!node) return self;
+  if ("self" in node) return node.self;
   return getDocument(node).defaultView || window;
 }
 
@@ -137,7 +141,7 @@ export function isTextField(
       element instanceof HTMLInputElement && element.selectionStart !== null;
     const isTextArea = element.tagName === "TEXTAREA";
     return isTextInput || isTextArea || false;
-  } catch (error) {
+  } catch (_error) {
     // Safari throws an exception when trying to get `selectionStart` on
     // non-text <input> elements (which, understandably, don't have the text
     // selection API). We catch this via a try/catch block, as opposed to a more
@@ -317,4 +321,43 @@ export function setSelectionRange(
   if (/text|search|password|tel|url/i.test(element.type)) {
     element.setSelectionRange(...args);
   }
+}
+
+/**
+ * Sort the items based on their DOM position.
+ */
+export function sortBasedOnDOMPosition<T>(
+  items: T[],
+  getElement: (item: T) => Element | null | undefined,
+) {
+  const pairs = items.map((item, index) => [index, item] as const);
+  let isOrderDifferent = false;
+  pairs.sort(([indexA, a], [indexB, b]) => {
+    const elementA = getElement(a);
+    const elementB = getElement(b);
+    if (elementA === elementB) return 0;
+    if (!elementA || !elementB) return 0;
+    // a before b
+    if (isElementPreceding(elementA, elementB)) {
+      if (indexA > indexB) {
+        isOrderDifferent = true;
+      }
+      return -1;
+    }
+    // a after b
+    if (indexA < indexB) {
+      isOrderDifferent = true;
+    }
+    return 1;
+  });
+  if (isOrderDifferent) {
+    return pairs.map(([_, item]) => item);
+  }
+  return items;
+}
+
+function isElementPreceding(a: Element, b: Element) {
+  return Boolean(
+    b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING,
+  );
 }

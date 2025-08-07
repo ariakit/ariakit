@@ -1,0 +1,38 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-kbd {
+  @apply ak-layer-pop-1.5 ak-edge-5/100;
+  @apply font-sans;
+  border-radius: 0.27em 0.27em 0.34em 0.34em;
+  border-width: max(1px, 0.067em) 0 max(1px, 0.15em);
+  border-color: white transparent var(--ak-border);
+  background-image: linear-gradient(
+    to bottom,
+    transparent,
+    oklch(from var(--ak-layer) calc(l + 0.05) c h)
+  );
+  box-shadow: 0 0 0 max(1px, 0.034em) var(--ak-border);
+  padding: 0.1em 0.25em;
+  font-size-adjust: 0.49;
+
+  @variant ak-dark {
+    @apply ak-edge/16;
+    @apply rounded-b-[0.4em];
+    border-width: 0 0 max(1px, 0.2em);
+    border-bottom-color: oklch(from var(--ak-layer) calc(l - 0.08) c h);
+    background-image: linear-gradient(
+      to bottom,
+      transparent,
+      oklch(from var(--ak-layer) calc(l + 0.08) c h)
+    );
+    box-shadow:
+      0 min(-1px, -0.06em) var(--ak-border),
+      0 0 0 max(1px, 0.06em) var(--ak-border);
+  }
+}

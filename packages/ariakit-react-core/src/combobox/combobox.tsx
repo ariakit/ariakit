@@ -20,7 +20,6 @@ import type {
   BooleanOrCallback,
   StringWithValue,
 } from "@ariakit/core/utils/types";
-import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   AriaAttributes,
   ChangeEvent,
@@ -31,6 +30,7 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   SyntheticEvent,
 } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
@@ -357,7 +357,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
       if (!open) return;
-      if ((!autoSelect || !canAutoSelect) && !resetValueOnSelect) return;
+      if (!canAutoSelect && !resetValueOnSelect) return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribute is an internal state added by the Popover
@@ -383,7 +383,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // Test this.
         store.move(autoSelectId ?? null);
       } else {
-        const element = store.item(activeId)?.element;
+        // Reset the scroll position to the active item when an item is selected
+        // and the combobox value is reset, which might move the active item
+        // offscreen. Otherwise, if no item is selected, reset to the first
+        // item, such as when `autoSelect` is false.
+        const element = store.item(activeId || store.first())?.element;
         if (element && "scrollIntoView" in element) {
           element.scrollIntoView({ block: "nearest", inline: "nearest" });
         }
@@ -667,7 +671,8 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * prop.
    *
    * Live examples:
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
    * - [Combobox with links](https://ariakit.org/examples/combobox-links)
    * - [Textarea with inline

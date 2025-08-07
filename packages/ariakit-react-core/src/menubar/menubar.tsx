@@ -8,8 +8,8 @@ import {
   MenubarScopedContextProvider,
   useMenubarProviderContext,
 } from "./menubar-context.tsx";
-import { useMenubarStore } from "./menubar-store.ts";
 import type { MenubarStore, MenubarStoreProps } from "./menubar-store.ts";
+import { useMenubarStore } from "./menubar-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

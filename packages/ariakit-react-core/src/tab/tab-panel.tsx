@@ -1,7 +1,7 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import { useCallback, useEffect, useRef, useState } from "react";
 import type { ElementType, KeyboardEvent, RefObject } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
@@ -255,6 +255,8 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
    * - [Select with Combobox and
    *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   tabId?: string | null;
   /**

@@ -1,0 +1,23 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+interface Props {
+  framework?: typeof Astro.locals.framework;
+}
+
+const { framework = Astro.locals.framework } = Astro.props;
+---
+
+<div>
+  {framework === "react" && <slot name="react" />}
+  {framework === "solid" && <slot name="solid" />}
+  {framework === "vue" && <slot name="vue" />}
+  {framework === "svelte" && <slot name="svelte" />}
+</div>

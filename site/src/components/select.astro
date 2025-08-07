@@ -1,0 +1,48 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { ComponentProps, HTMLAttributes } from "astro/types";
+import SelectOption from "./select-option.astro";
+
+interface Props extends HTMLAttributes<"select"> {
+  options?: ComponentProps<typeof SelectOption>[];
+  submitOnChange?: boolean;
+}
+
+const { options, submitOnChange, ...props } = Astro.props;
+---
+
+<select
+  data-select
+  data-submit-on-change={submitOnChange || undefined}
+  class:list={["ak-select ak-layer-pop", props.class]}
+  {...props}
+>
+  <slot />
+  {options?.map((option) => <SelectOption {...option} />)}
+</select>
+
+<script>
+  const selects = document.querySelectorAll<HTMLSelectElement>("[data-select]");
+
+  for (const select of selects) {
+    select.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        if (event.target !== select) return;
+        event.preventDefault();
+        select.showPicker();
+      }
+    });
+    select.form?.addEventListener("change", () => {
+      if (!select.dataset.submitOnChange) return;
+      select.form?.submit();
+    });
+  }
+</script>

@@ -1,3 +1,5 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 // import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 import pagesConfig from "./build-pages/config.js";
 import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.js";
@@ -26,7 +28,6 @@ const nextConfig = {
   images: {
     remotePatterns: [{ protocol: "https", hostname: "img.clerk.com" }],
   },
-  reactStrictMode: true,
   transpilePackages: ["@ariakit/*"],
   eslint: {
     ignoreDuringBuilds: true,
@@ -75,6 +76,45 @@ const nextConfig = {
     };
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
+
+    // Solid support
+    const solidRule = {
+      use: [
+        {
+          loader: "babel-loader",
+          options: {
+            babelrc: false,
+            configFile: false,
+            presets: [
+              "@babel/preset-env",
+              [
+                "solid",
+                {
+                  generate: context.isServer ? "ssr" : "dom",
+                  hydratable: true,
+                },
+              ],
+              "@babel/preset-typescript",
+            ],
+          },
+        },
+      ],
+    };
+    config.module.rules.push({
+      // .solid.tsx files anywhere
+      test: /\.solid\.tsx$/,
+      ...solidRule,
+    });
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    config.module.rules.push({
+      // .tsx files in the @ariakit/solid and @ariakit/solid-core packages
+      test: /\.tsx?$/,
+      include: [
+        path.resolve(__dirname, "../packages/ariakit-solid"),
+        path.resolve(__dirname, "../packages/ariakit-solid-core"),
+      ],
+      ...solidRule,
+    });
 
     return config;
   },

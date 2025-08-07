@@ -1,22 +1,22 @@
 import { invariant } from "@ariakit/core/utils/misc";
-import { queries as baseQueries } from "@testing-library/dom";
 import type {
   ByRoleMatcher,
   ByRoleOptions,
   getQueriesForElement,
 } from "@testing-library/dom";
-import { roles } from "./__aria-role.ts";
+import { queries as baseQueries } from "@testing-library/dom";
 import type { AriaRole } from "./__aria-role.ts";
+import { roles } from "./__aria-role.ts";
 
 type RoleQueries = Record<AriaRole, ReturnType<typeof createRoleQuery>>;
 type ElementQueries = ReturnType<
   typeof getQueriesForElement<typeof baseQueries>
 >;
 
-function createQueries(container: HTMLElement = document.body) {
+function createQueries(container?: HTMLElement) {
   return Object.entries(baseQueries).reduce((queries, [key, query]) => {
     // @ts-expect-error
-    queries[key] = (...args) => query(container, ...args);
+    queries[key] = (...args) => query(container || document.body, ...args);
     return queries;
   }, {} as ElementQueries);
 }

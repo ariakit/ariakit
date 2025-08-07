@@ -1,10 +1,10 @@
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
   StoreState,
 } from "@ariakit/core/utils/store";
+import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   AnyFunction,
   AnyObject,
@@ -16,8 +16,9 @@ import * as React from "react";
 // This doesn't work in ESM, because use-sync-external-store only exposes CJS.
 // The following is a workaround until ESM is supported.
 import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
-const { useSyncExternalStore } = useSyncExternalStoreExports;
 import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.ts";
+
+const { useSyncExternalStore } = useSyncExternalStoreExports;
 
 export interface UseState<S> {
   /**
@@ -95,7 +96,7 @@ const noopSubscribe = () => () => {};
 export function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
 
 export function useStoreState<T extends CoreStore>(
-  store: T | null | undefined,
+  store: StateStore<T>,
 ): StoreState<T> | undefined;
 
 export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
@@ -104,7 +105,7 @@ export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
 ): StoreState<T>[K];
 
 export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
-  store: T | null | undefined,
+  store: StateStore<T>,
   key: K,
 ): StoreState<T>[K] | undefined;
 
@@ -114,7 +115,7 @@ export function useStoreState<T extends CoreStore, V>(
 ): V;
 
 export function useStoreState<T extends CoreStore, V>(
-  store: T | null | undefined,
+  store: StateStore<T>,
   selector: (state?: StoreState<T>) => V,
 ): V;
 
@@ -139,6 +140,93 @@ export function useStoreState(
     if (!key) return;
     if (!hasOwnProperty(state, key)) return;
     return state[key];
+  };
+
+  return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
+}
+
+type StoreStateObject<
+  T extends StateStore,
+  S extends StoreState<T> | undefined,
+> = Record<string, StateKey<T> | ((state: S) => any)>;
+
+type StoreStateObjectResult<
+  T extends StateStore,
+  S extends StoreState<T> | undefined,
+  O extends StoreStateObject<T, S>,
+> = {
+  [K in keyof O]: O[K] extends keyof StoreState<T>
+    ? O[K] extends keyof S
+      ? S[O[K]]
+      : StoreState<T>[O[K]] | undefined
+    : O[K] extends (state: S) => infer R
+      ? R
+      : never;
+};
+
+/**
+ * Receives an Ariakit store object (which can be `null` or `undefined`) and
+ * returns the current state. Unlike `useStoreState`, this hook receives an
+ * object with keys that map to store keys or selector functions.
+ */
+export function useStoreStateObject<
+  T extends CoreStore,
+  O extends StoreStateObject<T, StoreState<T>>,
+>(store: T, object: O): StoreStateObjectResult<T, StoreState<T>, O>;
+
+export function useStoreStateObject<
+  T extends StateStore,
+  O extends StoreStateObject<T, StoreState<T> | undefined>,
+>(store: T, object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
+
+export function useStoreStateObject(
+  store: StateStore,
+  object: StoreStateObject<StateStore, State | undefined>,
+) {
+  const objRef = React.useRef(
+    {} as StoreStateObjectResult<StateStore, State, any>,
+  );
+
+  const storeSubscribe = React.useCallback(
+    (callback: () => void) => {
+      if (!store) return noopSubscribe();
+      return subscribe(store as CoreStore, null, callback);
+    },
+    [store],
+  );
+
+  const getSnapshot = () => {
+    const state = store?.getState();
+    let updated = false;
+    const obj = objRef.current;
+
+    for (const prop in object) {
+      const keyOrSelector = object[prop];
+
+      if (typeof keyOrSelector === "function") {
+        const value = keyOrSelector(state);
+        if (value !== obj[prop]) {
+          obj[prop] = value;
+          updated = true;
+        }
+      }
+
+      if (typeof keyOrSelector === "string") {
+        if (!state) continue;
+        if (!hasOwnProperty(state, keyOrSelector)) continue;
+        const value = state[keyOrSelector];
+        if (value !== obj[prop]) {
+          obj[prop] = value;
+          updated = true;
+        }
+      }
+    }
+
+    if (updated) {
+      objRef.current = { ...obj };
+    }
+
+    return objRef.current;
   };
 
   return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);

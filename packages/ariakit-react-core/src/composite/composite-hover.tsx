@@ -6,8 +6,8 @@ import {
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { useCallback } from "react";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
+import { useCallback } from "react";
 import {
   useBooleanEvent,
   useEvent,
@@ -216,7 +216,8 @@ export interface CompositeHoverOptions<_T extends ElementType = TagName>
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    * - [Select with Combobox and
    *   Tabs](https://ariakit.org/examples/select-combobox-tab)
    */

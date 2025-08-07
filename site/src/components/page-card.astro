@@ -1,0 +1,84 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { importThumbnail } from "#app/lib/import-thumbnail.ts";
+import { generateId } from "#app/lib/string.ts";
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"a"> {
+  thumbnailId: string;
+  title: string;
+  description?: string;
+  plus?: boolean;
+}
+
+const { thumbnailId, title, description, plus, ...props } = Astro.props;
+
+const labelId = generateId("label-");
+const descriptionId = description ? generateId("description-") : undefined;
+---
+
+<a
+  class:list={[
+    "ak-button ak-command-depth-4 text-wrap ak-layer-(--ak-layer-parent) ak-command-focus:outline-0 ak-command-focus:ak-layer-hover ak-frame-card flex flex-col gap-2 items-stretch font-normal outline-offset-2 group/card justify-start",
+    props.class,
+  ]}
+  aria-labelledby={labelId}
+  aria-describedby={descriptionId}
+  {...props}
+>
+  <span class="ak-frame-cover/0">
+    <span
+      inert
+      class="ak-light:ak-layer-down ak-dark:ak-layer-down-0.3 ak-frame-border ak-frame/4 flex justify-center items-center-safe group-focus-visible/card:ak-layer-contrast-primary overflow-hidden h-48 relative [content-visibility:auto]"
+    >
+      <span
+        class="ak-frame-cover/1 [--padding:var(--ak-frame-padding)] contents"
+      >
+        {
+          plus && (
+            <span class="absolute top-(--padding) end-(--padding) ak-badge-primary border border-dashed px-(--ak-frame-padding)">
+              <span>Plus</span>
+            </span>
+          )
+        }
+      </span>
+      <span
+        class="group-ak-command-focus/card:ak-layer-white -mx-10 -mt-4 !bg-transparent block group-ak-command-hover/card:scale-75 scale-70 origin-[50%_5rem] relative transition-transform duration-600"
+      >
+        {
+          importThumbnail(thumbnailId).then((Thumbnail) => {
+            if (!Thumbnail) return null;
+            return <Thumbnail />;
+          })
+        }
+      </span>
+      <!-- <ProgressiveBlur
+        side="bottom"
+        strength={16}
+        steps={4}
+        tint="var(--ak-layer)"
+        className="translate-y-20"
+      /> -->
+    </span>
+  </span>
+  <span class="flex flex-col gap-1">
+    <span class="flex gap-2 items-center font-semibold">
+      <span id={labelId} class="truncate">{title}</span>
+    </span>
+    {
+      description && (
+        <span id={descriptionId} class="ak-text/70 text-sm">
+          {description}
+        </span>
+      )
+    }
+  </span>
+</a>

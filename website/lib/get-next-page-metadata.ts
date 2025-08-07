@@ -24,9 +24,9 @@ export function getNextPageMetadata({
   url = "https://ariakit.org",
   keywords = "react, accessibility, components, ui, a11y, accessible",
   type = "website",
-  image,
+  image = "/thumbnail.png",
   openGraph,
-  card = "summary",
+  card = "summary_large_image",
   twitter,
   index = true,
 }: Props = {}): Metadata {

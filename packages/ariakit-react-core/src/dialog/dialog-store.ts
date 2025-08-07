@@ -5,8 +5,8 @@ import type {
   DisclosureStoreState,
 } from "../disclosure/disclosure-store.ts";
 import { useDisclosureStoreProps } from "../disclosure/disclosure-store.ts";
-import { useStore } from "../utils/store.tsx";
 import type { Store } from "../utils/store.tsx";
+import { useStore } from "../utils/store.tsx";
 
 export function useDialogStoreProps<T extends Core.DialogStore>(
   store: T,

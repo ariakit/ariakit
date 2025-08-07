@@ -1,0 +1,73 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@import "tailwindcss";
+@import "@ariakit/tailwind";
+
+@import "./badge.css";
+@import "./command.css";
+@import "./button.css";
+@import "./checkbox.css";
+@import "./radio.css";
+@import "./option.css";
+@import "./tab.css";
+@import "./popover.css";
+@import "./dialog.css";
+@import "./disclosure.css";
+@import "./tooltip.css";
+@import "./select.css";
+@import "./container.css";
+@import "./input.css";
+@import "./kbd.css";
+@import "./link.css";
+@import "./list.css";
+@import "./heading.css";
+@import "./segmented.css";
+@import "./prose.css";
+
+@theme {
+  --color-canvas: oklch(99.33% 0.0011 197.14);
+  --color-primary: oklch(56.7% 0.154556 248.5156);
+  --color-secondary: oklch(65.59% 0.2118 354.31);
+
+  --radius-container: var(--radius-xl);
+  --spacing-container: --spacing(1);
+
+  --radius-tooltip: var(--radius-lg);
+  --spacing-tooltip: --spacing(1);
+
+  --radius-dialog: var(--radius-2xl);
+  --spacing-dialog: --spacing(4);
+
+  --radius-playground: calc(var(--radius) * 3.5);
+  --spacing-playground: --spacing(0);
+
+  --radius-field: var(--radius-lg);
+  --spacing-field: 0.75em;
+
+  --radius-card: var(--radius-xl);
+  --spacing-card: --spacing(4);
+
+  --radius-badge: var(--radius-full);
+  --spacing-badge: --spacing(1.5);
+
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+:root {
+  @variant dark {
+    --color-canvas: oklch(16.52% 0.0062 285.7);
+    /* --color-canvas: theme(--color-slate-900); */
+  }
+}
+
+body {
+  @apply ak-layer-canvas;
+}

@@ -23,7 +23,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm-${{ hashFiles('package-lock.json', '.nvmrc') }}
           restore-keys: npm-
 
       - name: Cache node_modules
@@ -33,7 +33,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -60,7 +60,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -93,7 +93,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -123,7 +123,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -157,7 +157,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -191,7 +191,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -224,7 +224,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -275,7 +275,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -286,7 +286,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ matrix.engine }}-${{ hashFiles('package-lock.json') }}
+          key: playwright-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
           restore-keys: playwright-${{ matrix.engine }}-
 
       - name: Install playwright
@@ -305,9 +305,9 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: ${{ matrix.project }}-test-results
           path: test-results
           retention-days: 30
 
@@ -337,7 +337,7 @@ jobs:
           path: |
             node_modules
             packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -347,7 +347,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ms-playwright
-          key: playwright-macos-${{ hashFiles('package-lock.json') }}
+          key: playwright-macos-${{ hashFiles('package-lock.json', '.nvmrc') }}
           restore-keys: playwright-macos-
 
       - name: Install playwright
@@ -365,8 +365,8 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: safari-test-results
           path: test-results
           retention-days: 30

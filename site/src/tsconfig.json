@@ -1,0 +1,15 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "outDir": "../.types",
+    "rootDir": "../..",
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"],
+    "noUncheckedIndexedAccess": true
+  },
+  "include": ["../.astro/types.d.ts", "env.d.ts", "**/*.astro"],
+  "exclude": [],
+  "references": [
+    { "path": "tsconfig.react.json" },
+    { "path": "tsconfig.solid.json" }
+  ]
+}

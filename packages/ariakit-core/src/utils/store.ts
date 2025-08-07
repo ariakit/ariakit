@@ -334,11 +334,13 @@ export function pick(store: Store, ...args: Parameters<StorePick>) {
 export function mergeStore<S extends State>(
   ...stores: Array<Store<S> | undefined>
 ): Store<S> {
-  const initialState = stores.reduce((state, store) => {
+  const initialState = {} as S;
+  for (const store of stores) {
     const nextState = store?.getState?.();
-    if (!nextState) return state;
-    return Object.assign(state, nextState);
-  }, {} as S);
+    if (nextState) {
+      Object.assign(initialState, nextState);
+    }
+  }
   const store = createStore(initialState, ...stores);
   return Object.assign({}, ...stores, store);
 }

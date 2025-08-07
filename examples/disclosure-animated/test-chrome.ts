@@ -1,16 +1,11 @@
 import { query } from "@ariakit/test/playwright";
-import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 function getWrapper(page: Page) {
   return page.locator(".content-wrapper");
 }
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/disclosure-animated", {
-    waitUntil: "networkidle",
-  });
-});
 
 test.describe.configure({ retries: 2 });
 

@@ -368,10 +368,12 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
+      // https://github.com/ariakit/ariakit/issues/4388
+      if (event.nativeEvent.isComposing) return;
       if (event.defaultPrevented) return;
       if (!store) return;
       if (!isSelfTarget(event)) return;
-      const { orientation, items, renderedItems, activeId } = store.getState();
+      const { orientation, renderedItems, activeId } = store.getState();
       const activeItem = getEnabledItem(store, activeId);
       if (activeItem?.element?.isConnected) return;
       const isVertical = orientation !== "horizontal";
@@ -388,7 +390,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (isHorizontalKey && isTextField(event.currentTarget)) return;
       const up = () => {
         if (grid) {
-          const item = items && findFirstEnabledItemInTheLastRow(items);
+          const item = findFirstEnabledItemInTheLastRow(renderedItems);
           return item?.id;
         }
         return store?.last();

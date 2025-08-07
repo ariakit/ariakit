@@ -20,7 +20,7 @@ Filtering options in a [Combobox](/components/combobox) component through an abs
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -86,7 +86,7 @@ const matches = React.useMemo(() => {
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
 - [](/examples/combobox-tabs)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menu-nested-combobox)
 
 </div>

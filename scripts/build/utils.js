@@ -1,8 +1,9 @@
-import { lstatSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { lstatSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { rimrafSync } from "rimraf";
+import { isSolid } from "./context.js";
 
 /**
  * @param {string} path
@@ -37,6 +38,7 @@ export function getPackageJson(rootPath, prod = false) {
   const sourceDir = getSourceDir();
   const cjsDir = getCJSDir();
   const esmDir = getESMDir();
+  const solidSourceDir = getSolidSourceDir();
 
   /** @param {string} path */
   const getExports = (path) => {
@@ -45,6 +47,7 @@ export function getPackageJson(rootPath, prod = false) {
     }
     path = removeExt(path).replace(sourcePath, "");
     return {
+      ...(isSolid && { solid: `./${join(solidSourceDir, path)}.jsx` }),
       import: `./${join(esmDir, path)}.js`,
       require: {
         types: `./${join(cjsDir, path)}.d.cts`,
@@ -108,6 +111,10 @@ export function getCJSDir() {
   return "cjs";
 }
 
+export function getSolidSourceDir() {
+  return "solid";
+}
+
 /**
  * @param {string} rootPath
  */
@@ -133,7 +140,7 @@ function isPublicModule(rootPath, filename) {
   const isPrivate = /^__/.test(filename);
   if (isPrivate) return false;
   if (isDirectory(join(rootPath, filename))) return true;
-  return /\.(j|t)sx?$/.test(filename);
+  return /\.[jt]sx?$/.test(filename);
 }
 
 /**
@@ -143,22 +150,30 @@ function isPublicModule(rootPath, filename) {
  * @returns {Record<string, string>}
  */
 export function getPublicFiles(sourcePath, prefix = "") {
-  return readdirSync(sourcePath)
+  /** @type {Record<string, string>} */
+  const files = {};
+
+  const sourceFiles = readdirSync(sourcePath)
     .filter((filename) => isPublicModule(sourcePath, filename))
-    .sort() // Ensure consistent order across platforms
-    .reduce((acc, filename) => {
-      const path = join(sourcePath, filename);
-      const childFiles =
-        isDirectory(path) && getPublicFiles(path, join(prefix, filename));
-      return {
-        ...(childFiles || {
-          [removeExt(normalizePath(join(prefix, filename)))]:
-            normalizePath(path),
-        }),
-        // biome-ignore lint/performance/noAccumulatingSpread: TODO
-        ...acc,
-      };
-    }, {});
+    .sort(); // Ensure consistent order across platforms
+
+  for (const filename of sourceFiles) {
+    const path = join(sourcePath, filename);
+    const childFiles =
+      isDirectory(path) && getPublicFiles(path, join(prefix, filename));
+
+    if (childFiles) {
+      Object.assign(files, childFiles);
+      continue;
+    }
+
+    const normalizedSource = normalizePath(path);
+    const normalizedExport = normalizePath(join(prefix, filename));
+
+    files[removeExt(normalizedExport)] = normalizedSource;
+  }
+
+  return files;
 }
 
 /**
@@ -181,7 +196,12 @@ export function getProxyFolders(rootPath) {
  * @returns {string[]}
  */
 export function getBuildFolders(rootPath) {
-  return [getCJSDir(), getESMDir(), ...Object.keys(getProxyFolders(rootPath))];
+  return [
+    getCJSDir(),
+    getESMDir(),
+    ...(isSolid ? [getSolidSourceDir()] : []),
+    ...Object.keys(getProxyFolders(rootPath)),
+  ];
 }
 
 /**

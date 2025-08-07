@@ -33,7 +33,7 @@ If you're searching for extra features such as filtering, multiple selections, a
 
 ## Live example
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -122,6 +122,6 @@ Here are a few things to keep in mind when assembling these components:
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-tabs)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 
 </div>

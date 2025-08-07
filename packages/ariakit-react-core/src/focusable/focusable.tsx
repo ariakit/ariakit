@@ -166,7 +166,9 @@ function useDisableEvent(
   });
 }
 
-// isKeyboardModality should be true by defaault.
+let hasInstalledGlobalEventListeners = false;
+
+// isKeyboardModality should be true by default.
 let isKeyboardModality = true;
 
 function onGlobalMouseDown(event: MouseEvent) {
@@ -210,8 +212,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     // keyboard to navigate the site or not.
     useEffect(() => {
       if (!focusable) return;
+      if (hasInstalledGlobalEventListeners) return;
       addGlobalEventListener("mousedown", onGlobalMouseDown, true);
       addGlobalEventListener("keydown", onGlobalKeyDown, true);
+      hasInstalledGlobalEventListeners = true;
     }, [focusable]);
 
     // Safari and Firefox on Apple devices don't focus on checkboxes or radio
@@ -393,6 +397,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       onBlurProp?.(event);
       if (!focusable) return;
       if (!isFocusEventOutside(event)) return;
+      // Since we set the data-focus-visible attribute on the element in the
+      // handleFocusVisible function, we remove it directly here. Otherwise, the
+      // attribute might not be removed on lower-end devices.
+      event.currentTarget.removeAttribute("data-focus-visible");
       setFocusVisible(false);
     });
 
@@ -568,6 +576,8 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    *
    * Live examples:
    * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   accessibleWhenDisabled?: boolean;
   /**

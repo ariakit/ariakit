@@ -10,6 +10,7 @@ import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.ts";
+import { useStoreStateObject } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -80,6 +81,17 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
+    const { resetValueOnSelectState, multiSelectable, selected } =
+      useStoreStateObject(store, {
+        resetValueOnSelectState: "resetValueOnSelect",
+        multiSelectable(state) {
+          return Array.isArray(state.selectedValue);
+        },
+        selected(state) {
+          return isSelected(state.selectedValue, value);
+        },
+      });
+
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {
         const nextItem = { ...item, value };
@@ -90,16 +102,6 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       },
       [value, getItemProp],
     );
-
-    const multiSelectable = store.useState((state) =>
-      Array.isArray(state.selectedValue),
-    );
-
-    const selected = store.useState((state) =>
-      isSelected(state.selectedValue, value),
-    );
-
-    const resetValueOnSelectState = store.useState("resetValueOnSelect");
 
     setValueOnClick = setValueOnClick ?? !multiSelectable;
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
@@ -300,6 +302,8 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * - [Submenu with
    *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
    * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
