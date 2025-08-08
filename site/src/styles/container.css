@@ -18,7 +18,7 @@
 }
 
 @utility ak-container {
-  width: calc(100% - var(--ak-container-p, 0) * 2);
+  width: calc(100% - var(--ak-container-p, 0px) * 2);
   max-width: min(var(--ak-container-max-width, auto), 100dvw);
   margin-inline: auto;
 }

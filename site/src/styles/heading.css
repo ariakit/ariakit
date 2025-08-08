@@ -33,7 +33,7 @@
     @apply mt-[1em];
   }
 
-  :is(h1, h2, h3, h4, h5) + & {
+  :where(h1, h2, h3, h4, h5) + & {
     @apply mt-[0.35em];
   }
 
@@ -45,19 +45,19 @@
     @apply mb-0;
   }
 
-  &:is(h1) {
+  &:where(h1) {
     @apply ak-heading-1;
   }
-  &:is(h2) {
+  &:where(h2) {
     @apply ak-heading-2;
   }
-  &:is(h3) {
+  &:where(h3) {
     @apply ak-heading-3;
   }
-  &:is(h4) {
+  &:where(h4) {
     @apply ak-heading-4;
   }
-  &:is(h5) {
+  &:where(h5) {
     @apply ak-heading-5;
   }
 }

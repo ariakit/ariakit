@@ -44,7 +44,7 @@ export function ContentDisclosureButton(props: ContentDisclosureButtonProps) {
     <ak.Disclosure
       {...props}
       className={clsx(
-        "ak-disclosure-button before:ak-disclosure-arrow-before",
+        "ak-disclosure-button before:ak-disclosure-arrow-before @max-3xl:px-0",
         props.className,
       )}
     />
@@ -57,10 +57,9 @@ export interface ContentDisclosureContentProps
 export function ContentDisclosureContent(props: ContentDisclosureContentProps) {
   return (
     <ak.DisclosureContent
-      unmountOnHide
       {...props}
       className={clsx(
-        "ak-disclosure-content *:ak-frame-force-card",
+        "ak-disclosure-content *:ak-frame-force-card @max-3xl:*:px-0",
         props.className,
       )}
     >
