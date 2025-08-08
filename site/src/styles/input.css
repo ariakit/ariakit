@@ -22,9 +22,6 @@
   &:is(input) {
     @apply box-content h-[1em];
   }
-  /* &:not(:is(input)):not(:has(input)) {
-    padding-block: calc(var(--ak-frame-padding) - 0.25em);
-  } */
   input {
     @apply -my-[0.25em] box-content h-[1.5em] outline-none;
   }

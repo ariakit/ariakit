@@ -8,14 +8,14 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { HTMLAttributes } from "astro/types";
+import type { HTMLTag, Polymorphic } from "astro/types";
 
-interface Props extends HTMLAttributes<"div"> {}
+type Props<T extends HTMLTag> = Polymorphic<{ as: T }>;
 
-const props = Astro.props;
+const { as: Tag = "div", ...props } = Astro.props as Props<HTMLTag>;
 ---
 
-<div
+<Tag
   data-container-right-menu="true"
   class:list={[
     "grid @3xl:grid-cols-[1fr_var(--container-sidebar)]",
@@ -48,4 +48,4 @@ const props = Astro.props;
   >
     <slot name="toc" />
   </div>
-</div>
+</Tag>

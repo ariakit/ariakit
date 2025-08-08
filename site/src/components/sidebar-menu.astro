@@ -62,12 +62,14 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
 
 <div
   class:list={[
-    "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size_+_--spacing(4))] max-w-full z-2 @max-5xl:hidden h-full ak-layer-current border-e",
+    "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size_+_--spacing(4))] max-w-full z-2 @max-5xl:hidden h-full ak-layer-current border-e max-h-[inherit]",
     props.class,
   ]}
   {...props}
 >
-  <div class="sticky top-(--header-height) [--p:--spacing(2)] p-(--p)">
+  <div
+    class="sticky top-(--header-height) [--p:--spacing(2)] p-(--p) overflow-y-auto overflow-x-clip max-h-[inherit]"
+  >
     <slot name="before" />
     <TimelineAnimate
       as="ul"

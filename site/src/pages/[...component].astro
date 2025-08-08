@@ -93,6 +93,7 @@ const {
   examples,
   references,
   reference,
+  main,
 } = Astro.props;
 const { Content, headings } = await render(entry);
 const { Content: Gallery } = gallery ? await render(gallery) : {};
@@ -113,6 +114,15 @@ const descriptionText = await descriptionToText(
   framework,
   components
 );
+
+// Build href to the full API reference page for the default reference
+// TODO: Add a function to the url.ts lib.
+let referenceHref: string | undefined = undefined;
+if (reference) {
+  const prefixRef = `${framework}/${entry.id}/`;
+  const slugRef = reference.id.replace(prefixRef, "");
+  referenceHref = `/${framework}/components/${entry.id}/${slugRef}/#api`;
+}
 
 function getFunctions() {
   return references.filter(
@@ -259,56 +269,94 @@ async function parseDescription(description: string) {
       </div>
     )
   }
-  <div class="relative mb-24 [--scroll-mt:calc(var(--header-height)-1px)]">
-    <TimelineAnchor name="anchor" />
-    <div
-      class="sticky border-b ak-layer-current top-(--scroll-mt) z-4 flex items-center h-14 [&+*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]"
-    >
-      <div class="ak-container-size-wider ak-container">
+  {
+    reference && (
+      <div class="relative mb-24 [--scroll-mt:calc(var(--header-height)-1px)]">
+        {!main && <TimelineAnchor name="anchor" />}
         <div
-          class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose"
+          class:list={[
+            "border-b ak-layer-current flex items-center h-14",
+            !main &&
+              "sticky top-(--scroll-mt) z-4 [&+*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]",
+          ]}
         >
-          <TimelineAnimate
-            as="h2"
-            anchor="anchor"
-            rangeStart="exit calc(var(--scroll-mt) * -3)"
-            rangeEnd="exit calc(var(--scroll-mt) * -1)"
-            keyframes={`to { font-size: 1.25rem; margin-bottom: 0; }`}
-            class="mb-[1em] relative ak-container ak-container-size-default/0"
-          >
-            <ContentLink href="#api">API Reference</ContentLink>
-          </TimelineAnimate>
+          <div class="ak-container-size-wider ak-container">
+            <div class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose">
+              <TimelineAnimate
+                as="h2"
+                id={main ? `api` : undefined}
+                enabled={!main}
+                anchor="anchor"
+                rangeStart="exit calc(var(--scroll-mt) * -3)"
+                rangeEnd="exit calc(var(--scroll-mt) * -1)"
+                keyframes={`to { font-size: 1.25rem; margin-bottom: 0; }`}
+                class="mb-[1em] ak-heading-2 relative ak-container ak-container-size-default/0 scroll-mt-[calc(var(--header-height)+1em)]"
+              >
+                <ContentLink href="#api">API Reference</ContentLink>
+              </TimelineAnimate>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="ak-layer-current border-b">
-      <ContainerLeftMenu>
-        <SidebarMenu items={referenceMenu}>
-          <div slot="before" class="p-2">
-            <button
-              class="ak-input flex items-center ak-frame-field/1 text-start w-full text-sm"
+        <div
+          class:list={[
+            "ak-layer-current border-b",
+            main &&
+              "max-h-[min(28rem,calc(100dvh-var(--scroll-mt)-8rem))] overflow-clip has-[[data-expand]:hover]:ak-layer-pop-0.5",
+          ]}
+        >
+          <ContainerLeftMenu>
+            <SidebarMenu items={referenceMenu}>
+              <div slot="before" class="p-2">
+                <button class="ak-input ak-frame-field/2 flex h-10 gap-2 items-center text-start w-full text-sm">
+                  <div class="flex items-center gap-2 flex-grow min-w-0 ak-frame/1">
+                    <Icon name="search" className="flex-none" />
+                    <div class="ak-input-placeholder truncate">
+                      Search API Reference
+                    </div>
+                  </div>
+                  <kbd class="ak-kbd grid place-items-center aspect-square h-full">
+                    &lt;
+                  </kbd>
+                </button>
+              </div>
+            </SidebarMenu>
+            <div
+              data-content="true"
+              class:list={["ak-layer-current relative max-h-[inherit]"]}
             >
               <div
-                class="flex items-center gap-2 ak-frame-field/2 flex-grow min-w-0"
+                inert={main ? "" : undefined}
+                class:list={[main && "opacity-70"]}
               >
-                <Icon name="search" className="flex-none" />
-                <div class="ak-input-placeholder truncate">
-                  Search API Reference
-                </div>
+                <ApiReferenceContent
+                  framework={framework}
+                  reference={reference}
+                  partialMain={main}
+                />
               </div>
-              <div class="flex-1 w-10"></div>
-              <kbd class="ak-text/0 ak-layer-pop-1.5 ak-frame-field/2">
-                &lt;
-              </kbd>
-            </button>
-          </div>
-        </SidebarMenu>
-        <div data-content="true" class="ak-layer-current">
-          <ApiReferenceContent framework={framework} reference={reference!} />
+              {main && referenceHref && (
+                <a
+                  data-expand="true"
+                  href={referenceHref}
+                  class="absolute group/expand outline-none inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-20% to-[calc(100%-2rem)] to-(--ak-layer) z-2"
+                >
+                  <ContainerRightMenu
+                    as="span"
+                    class="absolute inset-0 py-2 grid justify-items-center items-end"
+                  >
+                    <span class="ak-button px-6 ak-layer-pop sticky bottom-2 hover:ak-layer-hover group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
+                      Expand API Reference
+                      <Icon className="text-base" name="chevronDown" />
+                    </span>
+                  </ContainerRightMenu>
+                </a>
+              )}
+            </div>
+          </ContainerLeftMenu>
         </div>
-      </ContainerLeftMenu>
-    </div>
-  </div>
+      </div>
+    )
+  }
   <div data-content="true" class="ak-container-size-wider ak-container">
     <ContainerRightMenu>
       <div

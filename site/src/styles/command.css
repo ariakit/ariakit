@@ -37,7 +37,7 @@
   @apply not-[a]:cursor-default relative block select-none;
 
   /* Only apply cursor-pointer to submit buttons that are not disabled */
-  &:is([type="submit"], form button:only-of-type) {
+  &:where([type="submit"], form button:only-of-type, a &) {
     @variant not-ak-command-disabled {
       @apply cursor-pointer;
     }

@@ -38,12 +38,16 @@ export const getStaticPaths = (async () => {
     const path = `${framework}/components/${componentId}/${slug}/partial`;
     return {
       params: { reference: path },
-      props: { framework, reference },
+      props: {
+        framework,
+        reference,
+        partialMain: false as boolean | undefined,
+      },
     };
   });
 }) satisfies GetStaticPaths;
 
-const { reference } = Astro.props;
+const { reference, partialMain = false } = Astro.props;
 
 // Extract all headings including prop names for table of contents
 const extractHeadings = () => {
@@ -144,11 +148,11 @@ export const partial = true;
 ---
 
 <div class="@container">
-  <div id="api" class="scroll-mt-(--header-height)"></div>
+  {!partialMain && <div id="api" class="scroll-mt-(--header-height)" />}
   <div class="py-8 @default:pt-16">
     <ContainerRightMenu>
       <Fragment slot="prose">
-        <ContentHeading as="h3" id="api" class="mt-0 mb-8 ak-heading-2">
+        <ContentHeading as="h3" class="mt-0 mb-8 ak-heading-2">
           <ApiReferenceLabel
             symbols
             kind={reference.data.kind ?? "component"}
@@ -265,9 +269,26 @@ export const partial = true;
               });
             }
             if (!sections.length) return null;
+            const renderSections = partialMain
+              ? (() => {
+                  const firstWithItems = sections.find(
+                    (s) => (s.items && s.items.length > 0) || s.key === "return"
+                  );
+                  if (!firstWithItems) return [] as typeof sections;
+                  if (firstWithItems.items && firstWithItems.items.length > 0) {
+                    return [
+                      {
+                        ...firstWithItems,
+                        items: firstWithItems.items.slice(0, 1),
+                      },
+                    ];
+                  }
+                  return [firstWithItems];
+                })()
+              : sections;
             return (
               <Fragment>
-                {sections.map((section) => (
+                {renderSections.map((section) => (
                   <Fragment>
                     <ContentHeading
                       as="h4"
@@ -346,13 +367,17 @@ export const partial = true;
           })()
         }
       </Fragment>
-      <TableOfContents
-        slot="toc"
-        headings={headings}
-        title={tocTitle}
-        titleSlug="api"
-        class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
-      />
+      {
+        !partialMain && (
+          <TableOfContents
+            slot="toc"
+            headings={headings}
+            title={tocTitle}
+            titleSlug="api"
+            class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
+          />
+        )
+      }
     </ContainerRightMenu>
   </div>
 </div>
