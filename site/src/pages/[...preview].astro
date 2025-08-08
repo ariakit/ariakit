@@ -17,14 +17,14 @@ export const getStaticPaths = (async () => {
   const entries = await getCollection("previews");
   return entries.flatMap((entry) => {
     return entry.data.frameworks.map((framework) => ({
-      params: { framework, preview: entry.id },
-      props: { entry },
+      params: { preview: `${framework}/previews/${entry.id}` },
+      props: { framework, entry },
     }));
   });
 }) satisfies GetStaticPaths;
 
-const { framework, preview } = Astro.params;
-const { entry } = Astro.props;
+const { preview } = Astro.params;
+const { framework, entry } = Astro.props;
 const { Content } = await render(entry);
 
 Astro.locals.framework = framework;

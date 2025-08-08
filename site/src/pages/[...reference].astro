@@ -35,10 +35,10 @@ export const getStaticPaths = (async () => {
     const componentId = reference.data.componentId;
     const prefix = `${framework}/${componentId}/`;
     const slug = reference.id.replace(prefix, "");
-    const path = `components/${componentId}/${slug}/partial`;
+    const path = `${framework}/components/${componentId}/${slug}/partial`;
     return {
-      params: { framework, reference: path },
-      props: { reference },
+      params: { reference: path },
+      props: { framework, reference },
     };
   });
 }) satisfies GetStaticPaths;

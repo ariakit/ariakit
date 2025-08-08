@@ -57,6 +57,7 @@ export const getStaticPaths = (async () => {
         return reference.data.kind === "component";
       });
       const props = {
+        framework,
         entry,
         gallery,
         description,
@@ -65,8 +66,9 @@ export const getStaticPaths = (async () => {
         reference,
         main: true,
       } as const;
+      const component = `${framework}/components/${entry.id}`;
       const main = {
-        params: { framework, component: `components/${entry.id}` },
+        params: { component: component },
         props,
       };
       return [
@@ -74,7 +76,7 @@ export const getStaticPaths = (async () => {
         ...componentReferences.map((reference) => {
           const slug = reference.id.replace(prefix, "");
           return {
-            params: { framework, component: `components/${entry.id}/${slug}` },
+            params: { component: `${component}/${slug}` },
             props: { ...props, reference, main: false },
           };
         }),
@@ -83,9 +85,15 @@ export const getStaticPaths = (async () => {
   });
 }) satisfies GetStaticPaths;
 
-const { framework } = Astro.params;
-const { entry, gallery, description, examples, references, reference } =
-  Astro.props;
+const {
+  framework,
+  entry,
+  gallery,
+  description,
+  examples,
+  references,
+  reference,
+} = Astro.props;
 const { Content, headings } = await render(entry);
 const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};
@@ -296,7 +304,7 @@ async function parseDescription(description: string) {
           </div>
         </SidebarMenu>
         <div data-content="true" class="ak-layer-current">
-          <ApiReferenceContent reference={reference!} />
+          <ApiReferenceContent framework={framework} reference={reference!} />
         </div>
       </ContainerLeftMenu>
     </div>

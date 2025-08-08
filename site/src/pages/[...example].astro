@@ -31,14 +31,13 @@ export const getStaticPaths = (async () => {
     const gallery = galleries.find((gallery) => gallery.id === entry.id);
     const description = descriptions.find((header) => header.id === entry.id);
     return entry.data.frameworks.map((framework) => ({
-      params: { framework, example: `examples/${entry.id}` },
-      props: { entry, gallery, description } as const,
+      params: { example: `${framework}/examples/${entry.id}` },
+      props: { framework, entry, gallery, description } as const,
     }));
   });
 }) satisfies GetStaticPaths;
 
-const { framework } = Astro.params;
-const { entry, gallery, description } = Astro.props;
+const { framework, entry, gallery, description } = Astro.props;
 const { Content, headings } = await render(entry);
 const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};

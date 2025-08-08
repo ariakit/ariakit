@@ -74,10 +74,11 @@ export const getStaticPaths = (async () => {
           : typeEntries.filter(
               (entry) => !!entry.data.tags.find((t) => t === tag?.id)
             );
-        const index = tag ? `${type}/${tag.id}` : type;
+        const path = tag ? `${type}/${tag.id}` : type;
         return {
-          params: { framework, index },
+          params: { collection: `${framework}/${path}` },
           props: {
+            framework,
             type,
             entries: tagEntries,
             tag,
@@ -90,8 +91,7 @@ export const getStaticPaths = (async () => {
   });
 }) satisfies GetStaticPaths;
 
-const { type, frameworkLength, tags, tag, entries } = Astro.props;
-const { framework } = Astro.params;
+const { framework, type, frameworkLength, tags, tag, entries } = Astro.props;
 
 Astro.locals.framework = framework;
 
