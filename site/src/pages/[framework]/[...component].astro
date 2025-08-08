@@ -22,7 +22,6 @@ import Meta from "#app/components/meta.astro";
 import PageCardExample from "#app/components/page-card-example.astro";
 import type { SidebarMenuItem } from "#app/components/sidebar-menu.astro";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
-import Sticky from "#app/components/sticky.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import TimelineAnchor from "#app/components/timeline-anchor.astro";
 import TimelineAnimate from "#app/components/timeline-animate.astro";
@@ -254,9 +253,8 @@ async function parseDescription(description: string) {
   }
   <div class="relative mb-24 [--scroll-mt:calc(var(--header-height)-1px)]">
     <TimelineAnchor name="anchor" />
-    <Sticky
-      threshold={2}
-      class="border-b ak-layer-current top-(--scroll-mt) z-4 flex items-center h-14 [&+*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]"
+    <div
+      class="sticky border-b ak-layer-current top-(--scroll-mt) z-4 flex items-center h-14 [&+*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]"
     >
       <div class="ak-container-size-wider ak-container">
         <div
@@ -264,7 +262,7 @@ async function parseDescription(description: string) {
         >
           <TimelineAnimate
             as="h2"
-            timeline="anchor"
+            anchor="anchor"
             rangeStart="exit calc(var(--scroll-mt) * -3)"
             rangeEnd="exit calc(var(--scroll-mt) * -1)"
             keyframes={`to { font-size: 1.25rem; margin-bottom: 0; }`}
@@ -274,7 +272,7 @@ async function parseDescription(description: string) {
           </TimelineAnimate>
         </div>
       </div>
-    </Sticky>
+    </div>
     <div class="ak-layer-current border-b">
       <ContainerLeftMenu>
         <SidebarMenu items={referenceMenu}>

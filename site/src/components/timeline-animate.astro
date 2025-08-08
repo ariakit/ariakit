@@ -27,7 +27,7 @@ type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
    * Name of the view timeline to follow. Can include or omit "--".
    * Should match the `name` used in `timeline-anchor.astro`.
    */
-  timeline?: string;
+  anchor?: string;
   /**
    * Keyframes identifier. Provide a custom animation name that is defined
    * either globally or via the `keyframes` prop below.
@@ -70,7 +70,7 @@ type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
 const {
   as: Tag = "div",
   enabled = true,
-  timeline = "anchor",
+  anchor = "anchor",
   animation = undefined,
   keyframes = undefined,
   easing = "linear",
@@ -82,9 +82,7 @@ const {
   ...rest
 } = Astro.props as Props<HTMLTag>;
 
-const normalizedTimeline = timeline.startsWith("--")
-  ? timeline
-  : `--${timeline}`;
+const normalizedTimeline = anchor.startsWith("--") ? anchor : `--${anchor}`;
 
 // Create a per-instance identifier and generate CSS rules targeting it.
 const instanceId = `tl-${normalizedTimeline.replace(/^--/, "")}-${Math.random()

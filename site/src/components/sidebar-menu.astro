@@ -72,7 +72,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
     <TimelineAnimate
       as="ul"
       enabled={!!revealAnchorName}
-      timeline={revealAnchorName}
+      anchor={revealAnchorName}
       rangeStart={`exit calc(var(--header-height) * -1)`}
       rangeEnd={`exit calc(100% - var(--header-height))`}
       keyframes={`from { opacity: 0; display: none; }`}
