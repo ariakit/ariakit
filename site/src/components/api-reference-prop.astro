@@ -50,7 +50,7 @@ const ex = await getEntry("examples", "checkbox-card");
 <ContentHeading
   as="div"
   id={id}
-  class="flex gap-2 items-center ak-heading @max-3xl:flex-col @max-3xl:items-start"
+  class="flex gap-2 items-center mb-0 ak-heading @max-3xl:flex-col @max-3xl:items-start"
 >
   <h5 class:list={["text-xl! m-0", deprecated && "line-through decoration-1"]}>
     <ContentLink href={`#${id}`}><code>{name}</code></ContentLink>
@@ -84,7 +84,7 @@ const ex = await getEntry("examples", "checkbox-card");
     <ContentDisclosure
       client:load
       label={`${liveExamples.length} ${pluralize("example", liveExamples.length)}`}
-      className="-my-[calc(var(--ak-frame-padding)/2)]"
+      className="-mb-(--ak-frame-padding) -mt-[calc(var(--ak-frame-padding)/2)]"
     >
       <div
         class:list={[
