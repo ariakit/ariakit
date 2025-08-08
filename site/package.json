@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@astrojs/check": "0.9.4",
-    "@astrojs/cloudflare": "12.6.2",
+    "@astrojs/cloudflare": "12.6.3",
     "@astrojs/react": "4.3.0",
     "@astrojs/solid-js": "5.1.0",
     "@clerk/astro": "2.10.13",
