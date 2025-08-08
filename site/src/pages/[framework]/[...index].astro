@@ -28,6 +28,7 @@ import { uniq } from "#app/lib/array.ts";
 import Meta from "#app/components/meta.astro";
 import pluralize from "pluralize";
 import { capitalize } from "#app/lib/string.ts";
+import TimelineAnchor from "#app/components/timeline-anchor.astro";
 
 export const getStaticPaths = (async () => {
   const types = ["components", "examples"] as const;
@@ -119,13 +120,15 @@ const hasGuides = guides.length > 0;
     <div class="flex flex-col items-center gap-4">
       {
         !!guides[0] && (
-          <a
+          <TimelineAnchor
+            as="a"
+            name="sidebar-menu"
             href={guides[0].path}
             class="ak-button rounded-full ak-badge-primary text-sm"
           >
             <span>Tutorials, guides, and more</span>
             <Icon name="arrowRight" className="flex-none" />
-          </a>
+          </TimelineAnchor>
         )
       }
       <h1
@@ -182,9 +185,9 @@ const hasGuides = guides.length > 0;
     {
       hasGuides && (
         <SidebarMenu
-          revealOnStuck
+          revealAnchorName="sidebar-menu"
           items={[
-            { label: capitalize(type), href: groupPath },
+            { label: capitalize(type), href: groupPath, currentPage: !!tag },
             { label: "Guides" },
             ...guides.map((guide) => ({
               label: guide.data.title,
@@ -199,7 +202,7 @@ const hasGuides = guides.length > 0;
         "flex flex-col ak-layer-current z-1 min-h-[100dvh]",
         hasGuides
           ? "@5xl:border-e"
-          : "@default:border-e ak-container-size-[calc(var(--container-default)+var(--p)*2)]/0 ak-container",
+          : "@default:border-x ak-container-size-[calc(var(--container-default)+var(--p)*2)]/0 ak-container",
       ]}
     >
       <HorizontalScroll

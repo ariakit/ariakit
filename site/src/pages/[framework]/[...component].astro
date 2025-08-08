@@ -12,25 +12,36 @@ import {
   BoxPatternsLeftOnly,
   BoxPatternsRightOnly,
 } from "#app/components/box-patterns.react.tsx";
+import ContainerLeftMenu from "#app/components/container-left-menu.astro";
+import ContainerRightMenu from "#app/components/container-right-menu.astro";
 import { components } from "#app/components/content-components.astro";
 import ContentHeading from "#app/components/content-heading.astro";
 import ContentLink from "#app/components/content-link.astro";
 import ContentParagraph from "#app/components/content-paragraph.astro";
 import Meta from "#app/components/meta.astro";
 import PageCardExample from "#app/components/page-card-example.astro";
+import type { SidebarMenuItem } from "#app/components/sidebar-menu.astro";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
+import Sticky from "#app/components/sticky.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
+import TimelineAnchor from "#app/components/timeline-anchor.astro";
+import TimelineAnimate from "#app/components/timeline-animate.astro";
+import { Icon } from "#app/icons/icon.react.tsx";
 import { descriptionToText } from "#app/lib/content.ts";
+import { rehypeAsTagName } from "#app/lib/rehype.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
+import ApiReferenceContent from "./[...reference].astro";
 
 export const getStaticPaths = (async () => {
   const entries = await getCollection("components");
   const descriptions = await getCollection("descriptions");
   const galleries = await getCollection("galleries");
   const examples = await getCollection("examples");
+  const references = await getCollection("references");
   return entries.flatMap((entry) => {
     const id = `${entry.id}/_component`;
     const gallery = galleries.find((gallery) => gallery.id === id);
@@ -38,20 +49,44 @@ export const getStaticPaths = (async () => {
     const componentExamples = examples.filter((example) =>
       example.data.components.some((component) => component.id === entry.id)
     );
-    return entry.data.frameworks.map((framework) => ({
-      params: { framework, component: `components/${entry.id}` },
-      props: {
+    return entry.data.frameworks.flatMap((framework) => {
+      const prefix = `${framework}/${entry.id}/`;
+      const componentReferences = references.filter((reference) =>
+        reference.id.startsWith(prefix)
+      );
+      const reference = componentReferences.find((reference) => {
+        return reference.data.kind === "component";
+      });
+      const props = {
         entry,
         gallery,
         description,
         examples: componentExamples,
-      } as const,
-    }));
+        references: componentReferences,
+        reference,
+        main: true,
+      } as const;
+      const main = {
+        params: { framework, component: `components/${entry.id}` },
+        props,
+      };
+      return [
+        main,
+        ...componentReferences.map((reference) => {
+          const slug = reference.id.replace(prefix, "");
+          return {
+            params: { framework, component: `components/${entry.id}/${slug}` },
+            props: { ...props, reference, main: false },
+          };
+        }),
+      ];
+    });
   });
 }) satisfies GetStaticPaths;
 
 const { framework } = Astro.params;
-const { entry, gallery, description, examples } = Astro.props;
+const { entry, gallery, description, examples, references, reference } =
+  Astro.props;
 const { Content, headings } = await render(entry);
 const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};
@@ -71,9 +106,60 @@ const descriptionText = await descriptionToText(
   framework,
   components
 );
+
+function getFunctions() {
+  return references.filter(
+    (ref) => ref.data.kind === "function" || ref.data.kind === "store"
+  );
+}
+
+function getComponents() {
+  return references.filter((ref) => ref.data.kind === "component");
+}
+
+function getMenu(
+  references: ReturnType<typeof getFunctions> | ReturnType<typeof getComponents>
+) {
+  return references.map((ref) => {
+    const prefix = `${framework}/${entry.id}/`;
+    const slug = ref.id.replace(prefix, "");
+    return {
+      label: ref.data.name,
+      href: `/${framework}/components/${entry.id}/${slug}/#api`,
+      kind: ref.data.kind,
+      symbols: true,
+    } satisfies SidebarMenuItem;
+  });
+}
+
+const functionsMenu = getFunctions();
+const componentsMenu = getComponents();
+
+const referenceMenu = [
+  ...(functionsMenu.length ? [{ label: "Functions" }] : []),
+  ...getMenu(functionsMenu),
+  ...(componentsMenu.length ? [{ label: "Components" }] : []),
+  ...getMenu(componentsMenu),
+];
+
+// TODO: This should be a singleton.
+const processor = await createMarkdownProcessor({
+  syntaxHighlight: false,
+  rehypePlugins: [
+    [
+      rehypeAsTagName,
+      { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
+    ],
+  ],
+});
+
+async function parseDescription(description: string) {
+  const result = await processor.render(description);
+  return result.code;
+}
 ---
 
-<Layout {title} {headings}>
+<Layout title={title}>
   <Meta
     slot="meta"
     id={entry.id}
@@ -82,7 +168,8 @@ const descriptionText = await descriptionToText(
     framework={framework}
     description={descriptionText}
   />
-  <div class="_overflow-x-clip">
+
+  <div class="overflow-x-clip">
     <div class="ak-container-size-default ak-container py-24">
       <h1
         class="text-4xl font-semibold mb-5 ak-container-size-default/0 ak-container relative"
@@ -132,7 +219,7 @@ const descriptionText = await descriptionToText(
   </div>
   {
     !!examples.length && (
-      <div class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed ak-container-size-wider ak-container mb-24">
+      <div class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose ak-container-size-wider ak-container mb-24">
         <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
           <ContentHeading as="h2" id="examples">
             <ContentLink href="#examples">Examples</ContentLink>
@@ -165,81 +252,70 @@ const descriptionText = await descriptionToText(
       </div>
     )
   }
-  <div class="mb-24">
-    <div
-      class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed ak-container-size-wider ak-container"
+  <div class="relative mb-24 [--scroll-mt:calc(var(--header-height)-1px)]">
+    <TimelineAnchor name="anchor" />
+    <Sticky
+      threshold={2}
+      class="border-b ak-layer-current top-(--scroll-mt) z-4 flex items-center h-14 [&+*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]"
     >
-      <ContentHeading as="h2" id="api" hasSidebar={false}>
-        <ContentLink href="#api">API Reference</ContentLink>
-      </ContentHeading>
-      <div></div>
-    </div>
-    <div class="ak-layer-current border-y">
-      <div
-        class:list={[
-          "overflow-x-clip ak-layer-current @5xl:grid content-start",
-          "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)]",
-          "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),calc(var(--container-wide)---spacing(2)))]",
-        ]}
-      >
-        <SidebarMenu
-          items={[
-            { label: "Hooks" },
-            { label: "usePopoverStore()", href: `/` },
-            { label: "Components" },
-            { label: "<Popover>", href: `/` },
-            { label: "<PopoverDisclosure>", href: `/` },
-          ]}
-        />
-        <div data-content="true" class="ak-layer-current border-s">
-          <div class="@container">
-            <div
-              class="flex flex-col @max-3xl:[--container-sidebar:0] [--container-p:--spacing(3)]"
-            >
-              <div
-                class="ak-container-size-[calc(100cqi-var(--ak-container-p)*2-var(--container-sidebar))]/(--container-p) ak-container ms-(--container-p) pt-3"
-              >
-                <div
-                  class="ak-container-size-content/(--container-p) ak-container flex flex-col gap-4 ms-0"
-                >
-                  <h1 class="text-4xl font-semibold">{entry.data.title}</h1>
-                  <div class="ak-text/60 text-lg/relaxed">Description</div>
-                </div>
-              </div>
-              <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
-                <div
-                  class="ak-prose *:ms-0 @3xl:ak-container-size-[calc(100cqi-var(--container-sidebar))]/(--container-p) ak-container @5xl:ak-prose-text-lg/relaxed"
-                >
-                  <Content {framework} {components} />
-                </div>
-                <div class="hidden @3xl:block pe-(--container-p)">
-                  <TableOfContents
-                    {headings}
-                    title={entry.data.title}
-                    class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+      <div class="ak-container-size-wider ak-container">
+        <div
+          class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose"
+        >
+          <TimelineAnimate
+            as="h2"
+            timeline="anchor"
+            rangeStart="exit calc(var(--scroll-mt) * -3)"
+            rangeEnd="exit calc(var(--scroll-mt) * -1)"
+            keyframes={`to { font-size: 1.25rem; margin-bottom: 0; }`}
+            class="mb-[1em] relative scroll-mt-[calc(var(--header-height)+1.25em)] ak-container ak-container-size-default/0"
+          >
+            <ContentLink href="#api">API Reference</ContentLink>
+          </TimelineAnimate>
         </div>
       </div>
+    </Sticky>
+    <div id="api" class="ak-layer-current border-b scroll-mt-(--header-height)">
+      <ContainerLeftMenu>
+        <SidebarMenu items={referenceMenu}>
+          <div slot="before" class="p-2">
+            <button
+              class="ak-input flex items-center ak-frame-field/1 text-start w-full text-sm"
+            >
+              <div
+                class="flex items-center gap-2 ak-frame-field/2 flex-grow min-w-0"
+              >
+                <Icon name="search" className="flex-none" />
+                <div class="ak-input-placeholder truncate">
+                  Search API Reference
+                </div>
+              </div>
+              <div class="flex-1 w-10"></div>
+              <kbd class="ak-text/0 ak-layer-pop-1.5 ak-frame-field/2">
+                &lt;
+              </kbd>
+            </button>
+          </div>
+        </SidebarMenu>
+        <div data-content="true" class="ak-layer-current">
+          <ApiReferenceContent reference={reference!} />
+        </div>
+      </ContainerLeftMenu>
     </div>
   </div>
   <div data-content="true" class="ak-container-size-wider ak-container">
-    <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
+    <ContainerRightMenu>
       <div
-        class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/relaxed"
+        class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose"
       >
         <Content framework={framework} components={components} />
       </div>
-      <div class="hidden @3xl:block ps-3">
-        <TableOfContents
-          title={entry.data.title}
-          headings={headings}
-          class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
-        />
-      </div>
-    </div>
+      <TableOfContents
+        slot="toc"
+        title={entry.data.title}
+        headings={headings}
+        class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
+      />
+    </ContainerRightMenu>
   </div>
 </Layout>

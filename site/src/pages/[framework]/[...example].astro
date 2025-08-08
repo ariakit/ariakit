@@ -12,6 +12,7 @@ import {
   BoxPatternsLeftOnly,
   BoxPatternsRight,
 } from "#app/components/box-patterns.react.tsx";
+import ContainerRightMenu from "#app/components/container-right-menu.astro";
 import { components } from "#app/components/content-components.astro";
 import Meta from "#app/components/meta.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
@@ -54,7 +55,7 @@ const descriptionText = await descriptionToText(
 );
 ---
 
-<Layout {title} {headings}>
+<Layout title={title}>
   <Meta
     slot="meta"
     id={entry.id}
@@ -127,20 +128,19 @@ const descriptionText = await descriptionToText(
       {Gallery && <Gallery {framework} {components} />}
     </div>
     <div data-content="true" class="ak-container-size-wider ak-container">
-      <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
+      <ContainerRightMenu>
         <div
           class="ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose"
         >
           <Content {framework} {components} />
         </div>
-        <div class="hidden @3xl:block ps-3">
-          <TableOfContents
-            title={entry.data.title}
-            {headings}
-            class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
-          />
-        </div>
-      </div>
+        <TableOfContents
+          slot="toc"
+          title={entry.data.title}
+          {headings}
+          class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
+        />
+      </ContainerRightMenu>
     </div>
   </div>
 </Layout>

@@ -8,7 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import Sticky from "#app/components/sticky.astro";
+import TimelineAnimate from "#app/components/timeline-animate.astro";
 import { trimRight } from "#app/lib/string.ts";
 import type { ComponentProps, HTMLAttributes } from "astro/types";
 import { ApiReferenceLabel } from "./api-reference-label.react.tsx";
@@ -31,10 +31,10 @@ export type SidebarMenuItem = LinkItem | ReferenceItem | HeadingItem;
 
 interface Props extends HTMLAttributes<"div"> {
   items: SidebarMenuItem[];
-  revealOnStuck?: boolean;
+  revealAnchorName?: string;
 }
 
-const { items, revealOnStuck = false, ...props } = Astro.props;
+const { items, revealAnchorName, ...props } = Astro.props;
 
 function isLinkItem(item: SidebarMenuItem) {
   return "href" in item;
@@ -67,16 +67,18 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
   ]}
   {...props}
 >
-  <Sticky
-    class="top-(--header-height) [--p:--spacing(2)] p-(--p)"
-    threshold={revealOnStuck ? 192 : 10}
-  >
+  <div class="sticky top-(--header-height) [--p:--spacing(2)] p-(--p)">
     <slot name="before" />
-    <ul
+    <TimelineAnimate
+      as="ul"
+      enabled={!!revealAnchorName}
+      timeline={revealAnchorName}
+      rangeStart={`exit calc(var(--header-height) * -1)`}
+      rangeEnd={`exit calc(100% - var(--header-height))`}
+      keyframes={`from { opacity: 0; display: none; }`}
       class:list={[
         "flex flex-col gap-1",
-        revealOnStuck &&
-          "base:@overlap:pointer-events-none base:@overlap:opacity-0 in-data-stuck:pointer-events-auto in-data-stuck:opacity-100 transition-opacity duration-500",
+        !!revealAnchorName && "@max-overlap:flex! @max-overlap:opacity-100!",
       ]}
     >
       {
@@ -113,6 +115,6 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
           );
         })
       }
-    </ul>
-  </Sticky>
+    </TimelineAnimate>
+  </div>
 </div>

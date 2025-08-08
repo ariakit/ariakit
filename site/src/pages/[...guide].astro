@@ -8,6 +8,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import ContainerLeftMenu from "#app/components/container-left-menu.astro";
+import ContainerRightMenu from "#app/components/container-right-menu.astro";
 import { components } from "#app/components/content-components.astro";
 import Meta from "#app/components/meta.astro";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
@@ -43,7 +45,7 @@ if (framework) {
 const title = entry.data.title;
 ---
 
-<Layout {title} headerBorder {headings}>
+<Layout title={title} headerBorder>
   <Meta
     slot="meta"
     id={entry.id}
@@ -52,13 +54,7 @@ const title = entry.data.title;
     {title}
     description={entry.data.description}
   />
-  <div
-    class:list={[
-      "overflow-x-clip ak-layer-current @5xl:grid content-start",
-      "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)]",
-      "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),calc(var(--container-wide)---spacing(2)))]",
-    ]}
-  >
+  <ContainerLeftMenu>
     <SidebarMenu
       items={[
         { label: groupLabel, href: `${groupPath}/#tags` },
@@ -71,37 +67,24 @@ const title = entry.data.title;
     />
     <div data-content="true" class="ak-layer-current">
       <div class="@container min-h-[200dvh]">
-        <div
-          class="flex flex-col gap-16 @max-3xl:[--container-sidebar:0] @7xl:[--container-p:--spacing(14)] @5xl:[--container-p:--spacing(8)] @3xl:[--container-p:--spacing(6)] [--container-p:--spacing(3)]"
-        >
-          <div
-            class="ak-container-size-[calc(100cqi-var(--ak-container-p)*2-var(--container-sidebar))]/0 ak-container ms-0 pt-18"
-          >
-            <div
-              class="ak-container-size-content/(--container-p) ak-container flex flex-col gap-4"
-            >
-              <h1 class="text-4xl font-semibold">{entry.data.title}</h1>
-              <div class="ak-text/60 text-lg/loose">
-                {entry.data.description}
-              </div>
+        <ContainerRightMenu>
+          <Fragment slot="heading">
+            <h1 class="text-4xl font-semibold">{entry.data.title}</h1>
+            <div class="ak-text/60 text-lg/loose">
+              {entry.data.description}
             </div>
-          </div>
-          <div class="grid @3xl:grid-cols-[1fr_var(--container-sidebar)]">
-            <div
-              class="ak-prose @3xl:ak-container-size-[calc(100cqi-var(--container-sidebar))]/(--container-p) ak-container ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose flex flex-col"
-            >
-              <Content {framework} {components} />
-            </div>
-            <div class="hidden @3xl:block pe-(--container-p)">
-              <TableOfContents
-                {headings}
-                title={entry.data.title}
-                class="sticky top-[calc(var(--header-height)+--spacing(8))] max-h-[calc(100dvh---spacing(25))] overflow-y-auto"
-              />
-            </div>
-          </div>
-        </div>
+          </Fragment>
+        </ContainerRightMenu>
+        <ContainerRightMenu>
+          <Content slot="prose" {framework} {components} />
+          <TableOfContents
+            slot="toc"
+            headings={headings}
+            title={entry.data.title}
+            class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
+          />
+        </ContainerRightMenu>
       </div>
     </div>
-  </div>
+  </ContainerLeftMenu>
 </Layout>

@@ -20,17 +20,10 @@ import Meta from "#app/components/meta.astro";
 
 export interface Props {
   title?: string;
-  headings?: MarkdownHeading[];
-  toc?: boolean;
   headerBorder?: boolean;
 }
 
-const {
-  title,
-  headings,
-  toc = !!headings?.length,
-  headerBorder = false,
-} = Astro.props;
+const { title, headerBorder = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -49,7 +42,7 @@ const {
         <Sticky class="ak-container-size-default top-0 z-10">
           <header
             class:list={[
-              "ak-layer-current in-data-not-stuck:bg-transparent in-has-[:popover-open_[data-table-of-contents]]:ring in-data-stuck:ring ak-light:ak-layer ak-light:in-data-not-stuck:bg-transparent",
+              "ak-layer-current in-data-not-stuck:bg-transparent in-data-stuck:ring ak-light:ak-layer ak-light:in-data-not-stuck:bg-transparent",
               headerBorder ? "ring" : "",
             ]}
           >
@@ -87,37 +80,6 @@ const {
                 </button>
               </div>
               <div class="flex items-center gap-2 ms-auto">
-                {
-                  headings && headings.length > 0 && toc && (
-                    <div class="@3xl:hidden">
-                      <button
-                        class="ak-button ak-button-square-10"
-                        popovertarget="mobile-toc"
-                        aria-label="Table of contents"
-                      >
-                        <Icon name="list" />
-                      </button>
-                      <div
-                        id="mobile-toc"
-                        aria-labelledby="mobile-toc-title"
-                        popover
-                        class="in-has-[#theme-sidebar[data-state=open]]:end-(--theme-sidebar-width) fixed ak-layer-current starting:translate-x-full not-open:translate-x-full transition-discrete transition-[display,translate,overlay] start-auto h-[calc(100dvh-var(--header-height))] pe-3 pt-4 pb-8 box-border end-0 top-(--header-height) border-s"
-                      >
-                        <h2
-                          class="ak-text/0 font-medium text-sm pb-3 px-6"
-                          id="mobile-toc-title"
-                        >
-                          On this page
-                        </h2>
-                        <TableOfContents
-                          {title}
-                          {headings}
-                          class="h-max border-none"
-                        />
-                      </div>
-                    </div>
-                  )
-                }
                 <a
                   href="/plus"
                   class="ak-button ak-frame-field/1 hover:ak-layer-mix-primary/20"
@@ -161,7 +123,7 @@ const {
         transition:persist
         class="hidden data-[state=open]:block sticky w-(--theme-sidebar-width) h-[100dvh] top-0 z-10 ak-layer-current border-s -ms-px flex-none not-data-view-transitioning:starting:w-0 data-[state=closed]:w-0 transition-discrete transition-[display,width,min-width]"
       >
-        dsadas
+        Theme
       </div>
     </div>
   </body>
