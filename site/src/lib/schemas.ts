@@ -100,7 +100,6 @@ export type ReferenceProp = z.infer<typeof ReferencePropSchema>;
 const ReferenceReturnValueSchema = z.object({
   type: z.string(),
   description: z.string(),
-  liveExamples: z.array(z.string()),
   props: ReferencePropSchema.array().optional(),
 });
 

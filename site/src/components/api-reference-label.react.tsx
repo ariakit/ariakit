@@ -17,6 +17,17 @@ export interface ApiReferenceLabelProps {
   children?: ReactNode;
 }
 
+export function getApiReferencePlainLabel(
+  kind: Reference["kind"],
+  name: string,
+) {
+  const isFunction = kind === "function" || kind === "store";
+  const isComponent = kind === "component";
+  const left = isComponent ? "<" : "";
+  const right = isComponent ? ">" : isFunction ? "()" : "";
+  return `${left}${name}${right}`;
+}
+
 const labelColors = {
   component: { dark: "#4EC9B0", light: "#005CC5" },
   function: { dark: "#DCDCAA", light: "#6F42C1" },

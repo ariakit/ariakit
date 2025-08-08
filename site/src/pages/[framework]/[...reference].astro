@@ -8,16 +8,22 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { ApiReferenceLabel } from "#app/components/api-reference-label.react.tsx";
+import {
+  ApiReferenceLabel,
+  getApiReferencePlainLabel,
+} from "#app/components/api-reference-label.react.tsx";
 import ApiReferenceProp from "#app/components/api-reference-prop.astro";
 import ContainerRightMenu from "#app/components/container-right-menu.astro";
 import ContentAdmonition from "#app/components/content-admonition.astro";
 import ContentCodeBlock from "#app/components/content-code-block.astro";
 import ContentHeading from "#app/components/content-heading.astro";
+import ContentLink from "#app/components/content-link.astro";
 import ContentParagraph from "#app/components/content-paragraph.astro";
 import ContentSeparator from "#app/components/content-separator.astro";
 import Markdown from "#app/components/markdown.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
+import { getReferenceItemId } from "#app/lib/content.ts";
+import type { ReferenceProp } from "#app/lib/schemas.ts";
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import { encode } from "html-entities";
@@ -43,25 +49,28 @@ const { reference } = Astro.props;
 const extractHeadings = () => {
   const headings: Array<{ slug: string; depth: number; text: string }> = [];
 
-  // Add main sections
+  // State
   if (reference.data.state && reference.data.state.length > 0) {
     headings.push({ slug: "state", depth: 2, text: "State" });
     reference.data.state.forEach((prop) => {
-      headings.push({ slug: `state-${prop.name}`, depth: 3, text: prop.name });
+      headings.push({
+        slug: getReferenceItemId("state", prop.name),
+        depth: 3,
+        text: prop.name,
+      });
     });
   }
 
-  // Props sections
+  // Props (Required / Optional)
   if (
     reference.data.params.length === 1 &&
     reference.data.params[0]?.name === "props" &&
     reference.data.params[0]?.props
   ) {
     const props = reference.data.params[0].props;
-    const requiredProps = props.filter((prop) => !prop.optional);
-    const optionalProps = props.filter((prop) => prop.optional);
-
-    if (requiredProps.length > 0) {
+    const requiredProps = props.filter((p) => !p.optional);
+    const optionalProps = props.filter((p) => p.optional);
+    if (requiredProps.length) {
       headings.push({
         slug: "required-props",
         depth: 2,
@@ -69,14 +78,13 @@ const extractHeadings = () => {
       });
       requiredProps.forEach((prop) => {
         headings.push({
-          slug: `required-prop-${prop.name}`,
+          slug: getReferenceItemId("prop", prop.name),
           depth: 3,
           text: prop.name,
         });
       });
     }
-
-    if (optionalProps.length > 0) {
+    if (optionalProps.length) {
       headings.push({
         slug: "optional-props",
         depth: 2,
@@ -84,7 +92,7 @@ const extractHeadings = () => {
       });
       optionalProps.forEach((prop) => {
         headings.push({
-          slug: `optional-prop-${prop.name}`,
+          slug: getReferenceItemId("prop", prop.name),
           depth: 3,
           text: prop.name,
         });
@@ -92,7 +100,7 @@ const extractHeadings = () => {
     }
   }
 
-  // Parameters section
+  // Parameters (non-props)
   if (
     reference.data.params.length > 0 &&
     !(
@@ -103,293 +111,248 @@ const extractHeadings = () => {
     headings.push({ slug: "parameters", depth: 2, text: "Parameters" });
     reference.data.params.forEach((param) => {
       headings.push({
-        slug: `parameter-${param.name}`,
+        slug: getReferenceItemId("parameter", param.name),
         depth: 3,
         text: param.name,
       });
     });
   }
 
-  // Return Value section
-  if (reference.data.returnValue) {
+  // Return Value (only add heading if there are props)
+  if (reference.data.returnValue?.props?.length) {
     headings.push({ slug: "return-value", depth: 2, text: "Return Value" });
-    if (
-      reference.data.returnValue.props &&
-      reference.data.returnValue.props.length > 0
-    ) {
-      const props = reference.data.returnValue.props;
-      const requiredProps = props.filter((prop) => !prop.optional);
-      const optionalProps = props.filter((prop) => prop.optional);
-
-      if (requiredProps.length > 0) {
-        headings.push({
-          slug: "return-required-properties",
-          depth: 3,
-          text: "Required Properties",
-        });
-        requiredProps.forEach((prop) => {
-          headings.push({
-            slug: `return-required-prop-${prop.name}`,
-            depth: 4,
-            text: prop.name,
-          });
-        });
-      }
-
-      if (optionalProps.length > 0) {
-        headings.push({
-          slug: "return-optional-properties",
-          depth: 3,
-          text: "Optional Properties",
-        });
-        optionalProps.forEach((prop) => {
-          headings.push({
-            slug: `return-optional-prop-${prop.name}`,
-            depth: 4,
-            text: prop.name,
-          });
-        });
-      }
-    }
+    const rv = reference.data.returnValue;
+    rv.props!.forEach((prop) => {
+      headings.push({
+        slug: getReferenceItemId("return-prop", prop.name),
+        depth: 3,
+        text: prop.name,
+      });
+    });
   }
 
   return headings;
 };
 
 const headings = extractHeadings();
+const tocTitle = getApiReferencePlainLabel(
+  reference.data.kind ?? "component",
+  reference.data.name
+);
 
 export const partial = true;
 ---
 
 <div class="@container">
-  <ContainerRightMenu>
-    <Fragment slot="prose">
-      <ContentHeading as="h3" class="my-8 ak-heading-2 @default:mt-16">
-        <ApiReferenceLabel
-          symbols
-          kind={reference.data.kind ?? "component"}
-          set:text={reference.data.name}
-        />
-      </ContentHeading>
-    </Fragment>
-  </ContainerRightMenu>
-  <ContainerRightMenu>
-    <Fragment slot="prose">
-      {
-        reference.data.deprecated && (
-          <ContentAdmonition type="warning" title="Deprecated" class="mb-4">
-            {typeof reference.data.deprecated === "string" ? (
-              <Markdown content={reference.data.deprecated} />
-            ) : (
-              ""
-            )}
-          </ContentAdmonition>
-        )
-      }
-      <Markdown content={reference.data.description} />
-      {
-        reference.data.examples.map((example) => (
-          <Fragment>
-            {example.description && (
-              <ContentParagraph>{example.description}</ContentParagraph>
-            )}
-            <ContentCodeBlock
-              set:html={`<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${encode(example.code)}</code>`}
-            />
-          </Fragment>
-        ))
-      }
-
-      {/* State Section */}
-      {
-        reference.data.state && reference.data.state.length > 0 && (
-          <Fragment>
-            <ContentHeading as="h2" id="state">
-              State
-            </ContentHeading>
-            <ContentParagraph>
-              The state properties available for this store.
-            </ContentParagraph>
-            {reference.data.state.map((prop) => (
-              <Fragment>
-                <ContentSeparator />
-                <ApiReferenceProp prefix="state" {...prop} />
-              </Fragment>
-            ))}
-          </Fragment>
-        )
-      }
-
-      {/* Props Sections */}
-      {
-        reference.data.params.length === 1 &&
-          reference.data.params[0]?.name === "props" &&
-          reference.data.params[0]?.props && (
+  <div id="api" class="scroll-mt-(--header-height)"></div>
+  <div class="py-8 @default:pt-16">
+    <ContainerRightMenu>
+      <Fragment slot="prose">
+        <ContentHeading as="h3" id="api" class="mt-0 mb-8 ak-heading-2">
+          <ApiReferenceLabel
+            symbols
+            kind={reference.data.kind ?? "component"}
+            set:text={reference.data.name}
+          />
+        </ContentHeading>
+      </Fragment>
+    </ContainerRightMenu>
+    <ContainerRightMenu>
+      <Fragment slot="prose">
+        {
+          reference.data.deprecated && (
+            <ContentAdmonition type="warning" title="Deprecated" class="mb-4">
+              {typeof reference.data.deprecated === "string" ? (
+                <Markdown content={reference.data.deprecated} />
+              ) : (
+                ""
+              )}
+            </ContentAdmonition>
+          )
+        }
+        <Markdown content={reference.data.description} />
+        {
+          reference.data.examples.map((example) => (
             <Fragment>
-              {(() => {
-                const props = reference.data.params[0]?.props;
-                if (!props) return null;
-                const requiredProps = props.filter((prop) => !prop.optional);
-                const optionalProps = props.filter((prop) => prop.optional);
-                return (
+              {example.description && (
+                <ContentParagraph>{example.description}</ContentParagraph>
+              )}
+              <ContentCodeBlock
+                set:html={`<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${encode(example.code)}</code>`}
+              />
+            </Fragment>
+          ))
+        }
+        {
+          (() => {
+            const sections = [] as {
+              key:
+                | "state"
+                | "required-props"
+                | "optional-props"
+                | "parameters"
+                | "return";
+              title: string;
+              id: string;
+              items?: ReferenceProp[];
+              itemKind?: "state" | "prop" | "parameter" | "return-prop";
+              description?: string;
+              type?: string;
+            }[];
+            if (reference.data.state?.length) {
+              sections.push({
+                key: "state",
+                title: "State",
+                id: "state",
+                itemKind: "state",
+                items: reference.data.state,
+                description:
+                  "State values available on the store. You can subscribe to a specific key or derive values with a selector.",
+              });
+            }
+            if (
+              reference.data.params.length === 1 &&
+              reference.data.params[0]?.name === "props" &&
+              reference.data.params[0]?.props?.length
+            ) {
+              const allProps = reference.data.params[0].props;
+              const requiredProps = allProps.filter((p) => !p.optional);
+              const optionalProps = allProps.filter((p) => p.optional);
+              if (requiredProps.length) {
+                sections.push({
+                  key: "required-props",
+                  title: "Required Props",
+                  id: "required-props",
+                  itemKind: "prop",
+                  items: requiredProps,
+                });
+              }
+              if (optionalProps.length) {
+                sections.push({
+                  key: "optional-props",
+                  title: "Optional Props",
+                  id: "optional-props",
+                  itemKind: "prop",
+                  items: optionalProps,
+                });
+              }
+            }
+            if (
+              reference.data.params.length > 0 &&
+              !(
+                reference.data.params.length === 1 &&
+                reference.data.params[0]?.name === "props"
+              )
+            ) {
+              sections.push({
+                key: "parameters",
+                title: "Parameters",
+                id: "parameters",
+                itemKind: "parameter",
+                items: reference.data.params,
+              });
+            }
+            if (reference.data.returnValue) {
+              const rv = reference.data.returnValue;
+              sections.push({
+                key: "return",
+                title: "Return Value",
+                id: "return-value",
+                itemKind: "return-prop",
+                description: rv.description,
+                type: rv.type,
+                items: rv.props,
+              });
+            }
+            if (!sections.length) return null;
+            return (
+              <Fragment>
+                {sections.map((section) => (
                   <Fragment>
-                    {/* Required Props */}
-                    {requiredProps.length > 0 && (
+                    <ContentHeading
+                      as="h4"
+                      id={section.id}
+                      class="ak-heading-3 mb-0"
+                    >
+                      <ContentLink href={`#${section.id}`}>
+                        {section.title}
+                      </ContentLink>
+                    </ContentHeading>
+                    {/* State helper text */}
+                    {section.key === "state" && (
                       <Fragment>
-                        <ContentHeading as="h2" id="required-props">
-                          Required Props
-                        </ContentHeading>
-                        {requiredProps.map((prop) => (
+                        <ContentParagraph>
+                          {section.description}
+                        </ContentParagraph>
+                        <ContentCodeBlock
+                          set:html={`<code class=\"language-tsx\">const value = Ariakit.useStoreState(store, \"key\");</code>`}
+                        />
+                        <ContentCodeBlock
+                          set:html={`<code class=\"language-tsx\">const derived = Ariakit.useStoreState(store, (state) => state.key);</code>`}
+                        />
+                      </Fragment>
+                    )}
+                    {/* Regular items (state/props/parameters) */}
+                    {section.key !== "return" && (
+                      <Fragment>
+                        {(section.items || []).map((item, index, array) => (
                           <Fragment>
                             <ContentSeparator />
-                            <ApiReferenceProp prefix="required" {...prop} />
+                            <ApiReferenceProp
+                              prefix={section.itemKind}
+                              {...item}
+                            />
+                            {index >= array.length - 1 && <ContentSeparator />}
                           </Fragment>
                         ))}
                       </Fragment>
                     )}
-
-                    {/* Optional Props */}
-                    {optionalProps.length > 0 && (
+                    {/* Return value */}
+                    {section.key === "return" && (
                       <Fragment>
-                        <ContentHeading
-                          as="h4"
-                          id="optional-props"
-                          class="ak-heading-3!"
-                        >
-                          Optional Props
-                        </ContentHeading>
-                        {optionalProps.map((prop) => (
+                        {/* If there are props: show description (if any) and props. Do not render type. */}
+                        {section.items?.length ? (
                           <Fragment>
-                            <ContentSeparator />
-                            <ApiReferenceProp prefix="optional" {...prop} />
+                            {section.description && (
+                              <Markdown content={section.description} />
+                            )}
+                            {section.items.map((prop) => (
+                              <Fragment>
+                                <ContentSeparator />
+                                <ApiReferenceProp
+                                  prefix="return-prop"
+                                  {...prop}
+                                />
+                              </Fragment>
+                            ))}
                           </Fragment>
-                        ))}
+                        ) : (
+                          // No props: render type and description as a nameless prop (no anchor)
+                          <Fragment>
+                            <ContentCodeBlock
+                              set:html={`<code class=\"language-typescript\">${section.type}</code>`}
+                            />
+                            {section.description && (
+                              <Markdown content={section.description} />
+                            )}
+                          </Fragment>
+                        )}
                       </Fragment>
                     )}
                   </Fragment>
-                );
-              })()}
-            </Fragment>
-          )
-      }
-
-      {/* Parameters Section */}
-      {
-        reference.data.params.length > 0 &&
-          !(
-            reference.data.params.length === 1 &&
-            reference.data.params[0]?.name === "props"
-          ) && (
-            <Fragment>
-              <ContentHeading as="h2" id="parameters">
-                Parameters
-              </ContentHeading>
-              {reference.data.params.map((param) => (
-                <Fragment>
-                  <ContentHeading as="h3" id={`parameter-${param.name}`}>
-                    {param.name}
-                    {!param.optional && (
-                      <span class="text-red-500 ml-1">*</span>
-                    )}
-                  </ContentHeading>
-                  <ContentCodeBlock
-                    set:html={`<code class="language-typescript">${param.type}</code>`}
-                  />
-                  <Markdown content={param.description} />
-                  {param.defaultValue && (
-                    <ContentParagraph>
-                      <strong>Default:</strong>{" "}
-                      <code>{param.defaultValue}</code>
-                    </ContentParagraph>
-                  )}
-                  {param.deprecated && (
-                    <ContentAdmonition type="warning" title="Deprecated">
-                      {typeof param.deprecated === "string" ? (
-                        <Markdown content={param.deprecated} />
-                      ) : (
-                        ""
-                      )}
-                    </ContentAdmonition>
-                  )}
-                </Fragment>
-              ))}
-            </Fragment>
-          )
-      }
-
-      {/* Return Value Section */}
-      {
-        reference.data.returnValue && (
-          <Fragment>
-            <ContentHeading as="h2" id="return-value">
-              Return Value
-            </ContentHeading>
-            <ContentCodeBlock
-              set:html={`<code class="language-typescript">${reference.data.returnValue.type}</code>`}
-            />
-            {/* <Markdown content={reference.data.returnValue.description} /> */}
-
-            {/* Return Value Props */}
-            {reference.data.returnValue.props &&
-              reference.data.returnValue.props.length > 0 && (
-                <Fragment>
-                  {(() => {
-                    const props = reference.data.returnValue.props;
-                    const requiredProps = props.filter(
-                      (prop) => !prop.optional
-                    );
-                    const optionalProps = props.filter((prop) => prop.optional);
-                    return (
-                      <Fragment>
-                        {/* Required Return Value Props */}
-                        {requiredProps.length > 0 && (
-                          <Fragment>
-                            <ContentHeading
-                              as="h3"
-                              id="return-required-properties"
-                            >
-                              Required Properties
-                            </ContentHeading>
-                            {requiredProps.map((prop) => (
-                              <Fragment>
-                                <ContentSeparator />
-                                <ApiReferenceProp prefix="return" {...prop} />
-                              </Fragment>
-                            ))}
-                          </Fragment>
-                        )}
-
-                        {/* Optional Return Value Props */}
-                        {optionalProps.length > 0 && (
-                          <Fragment>
-                            <ContentHeading
-                              as="h3"
-                              id="return-optional-properties"
-                            >
-                              Optional Properties
-                            </ContentHeading>
-                            {optionalProps.map((prop) => (
-                              <Fragment>
-                                <ContentSeparator />
-                                <ApiReferenceProp prefix="return" {...prop} />
-                              </Fragment>
-                            ))}
-                          </Fragment>
-                        )}
-                      </Fragment>
-                    );
-                  })()}
-                </Fragment>
-              )}
-          </Fragment>
-        )
-      }
-    </Fragment>
-    <TableOfContents
-      slot="toc"
-      headings={headings}
-      title={reference.data.name}
-      class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
-    />
-  </ContainerRightMenu>
+                ))}
+              </Fragment>
+            );
+          })()
+        }
+      </Fragment>
+      <TableOfContents
+        slot="toc"
+        headings={headings}
+        title={tocTitle}
+        titleSlug="api"
+        class="sticky [--top:calc(var(--header-height)+--spacing(8))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
+      />
+    </ContainerRightMenu>
+  </div>
 </div>

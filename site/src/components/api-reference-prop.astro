@@ -8,6 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { getReferenceItemId } from "#app/lib/content.ts";
 import type { Framework, ReferenceProp } from "#app/lib/schemas.ts";
 import { getEntry } from "astro:content";
 import { encode } from "html-entities";
@@ -27,7 +28,7 @@ interface Props extends ReferenceProp {
 }
 
 const {
-  prefix,
+  prefix = "prop",
   name,
   type,
   description,
@@ -38,7 +39,7 @@ const {
   // framework = Astro.props.framework,
 } = Astro.props;
 
-const id = `${prefix}-${name}`;
+const id = getReferenceItemId(prefix, name);
 
 function getCodeBlockCode(example: ReferenceProp["examples"][number]) {
   return `<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${example.code}</code>`;

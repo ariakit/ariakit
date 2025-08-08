@@ -403,7 +403,6 @@ function getReturnValue(
     type,
     description: "",
     props: props.length > 0 ? props : undefined,
-    liveExamples: [],
   };
 }
 

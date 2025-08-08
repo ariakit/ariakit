@@ -268,14 +268,14 @@ async function parseDescription(description: string) {
             rangeStart="exit calc(var(--scroll-mt) * -3)"
             rangeEnd="exit calc(var(--scroll-mt) * -1)"
             keyframes={`to { font-size: 1.25rem; margin-bottom: 0; }`}
-            class="mb-[1em] relative scroll-mt-[calc(var(--header-height)+1.25em)] ak-container ak-container-size-default/0"
+            class="mb-[1em] relative ak-container ak-container-size-default/0"
           >
             <ContentLink href="#api">API Reference</ContentLink>
           </TimelineAnimate>
         </div>
       </div>
     </Sticky>
-    <div id="api" class="ak-layer-current border-b scroll-mt-(--header-height)">
+    <div class="ak-layer-current border-b">
       <ContainerLeftMenu>
         <SidebarMenu items={referenceMenu}>
           <div slot="before" class="p-2">

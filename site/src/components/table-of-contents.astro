@@ -15,14 +15,21 @@ import type { HTMLAttributes } from "astro/types";
 
 export interface Props extends HTMLAttributes<"ul"> {
   title?: string;
+  titleSlug?: string;
   headings: MarkdownHeading[];
   topOffset?: number;
 }
 
-const { title, headings, topOffset = 72, ...props } = Astro.props;
+const {
+  title,
+  titleSlug = "top",
+  headings,
+  topOffset = 72,
+  ...props
+} = Astro.props;
 
 const allHeadings = title
-  ? [{ depth: 1, slug: "top", text: title }, ...headings]
+  ? [{ depth: 1, slug: titleSlug, text: title }, ...headings]
   : headings;
 ---
 
@@ -42,7 +49,7 @@ const allHeadings = title
       return (
         <li class="relative" style={`--depth:${depth}`}>
           <a
-            class="block decoration-1 data-top-level:font-semibold data-top-level:ak-text underline-offset-[0.25em] ak-text/80 data-active:ak-text hover:ak-layer-current hover:underline data-active:ak-layer-pop font-normal justify-start ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))] pe-3"
+            class="block decoration-1 data-top-level:font-semibold data-top-level:ak-text underline-offset-[0.25em] ak-text/80 data-active:ak-text hover:ak-layer-current hover:underline data-active:ak-layer-pop font-normal justify-start ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))] pe-3 scroll-m-2"
             href={`#${heading.slug}`}
             data-heading-link={heading.slug}
             data-top-level={isTopLevel || undefined}
@@ -69,7 +76,9 @@ const allHeadings = title
    * This script handles the table of contents behavior.
    * - It highlights the current heading in the viewport.
    * - It shows an indicator for all visible headings.
-   * - It scrolls the active link into view in the table of contents.
+   * - It scrolls the visible link into view in the table of contents:
+   *   - when scrolling down: the last visible link
+   *   - when scrolling up: the first visible link
    *
    * The script is initialized on `DOMContentLoaded` and `astro:page-load`.
    */
@@ -78,6 +87,25 @@ const allHeadings = title
       "[data-table-of-contents]"
     );
     if (!tocElements.length) return;
+
+    // Finds the nearest scrollable ancestor on the Y axis.
+    function getScrollParent(element: Element): Element {
+      let parent: Element | null = element.parentElement;
+      while (parent) {
+        const style = window.getComputedStyle(parent);
+        const overflowY = style.overflowY;
+        const isScrollableY =
+          overflowY === "auto" ||
+          overflowY === "scroll" ||
+          // Some browsers may report overlay
+          overflowY === "overlay";
+        if (isScrollableY && parent.scrollHeight > parent.clientHeight) {
+          return parent;
+        }
+        parent = parent.parentElement;
+      }
+      return document.scrollingElement || document.documentElement;
+    }
 
     for (const tocElement of tocElements) {
       const topOffset = Number.parseInt(tocElement.dataset.topOffset || "0");
@@ -140,6 +168,8 @@ const allHeadings = title
       }
 
       let activeLink: Element | null = null;
+      let lastScrollY = window.scrollY;
+      let isScrollingDown = true;
 
       /**
        * This function is responsible for setting the `data-active` attribute on
@@ -166,11 +196,45 @@ const allHeadings = title
           if (indicator) {
             indicator.setAttribute("data-active", "true");
           }
-          // Scroll active link into view if it's not fully visible in the TOC.
-          const tocRect = tocElement!.getBoundingClientRect();
-          const linkRect = link.getBoundingClientRect();
-          if (linkRect.top < tocRect.top || linkRect.bottom > tocRect.bottom) {
-            link.scrollIntoView({ block: "nearest" });
+          // Scroll the last visible link (the one with a visible indicator)
+          // into view if it's not fully visible in the TOC. If there are no
+          // visible indicators, fall back to the active link.
+          const indicators = tocElement!.querySelectorAll<HTMLElement>(
+            "[data-indicator][data-visible]"
+          );
+          let linkToScroll: Element | null = null;
+          const scroller = getScrollParent(link);
+          const containerRect = scroller.getBoundingClientRect();
+          const activeLinkRect = link.getBoundingClientRect();
+
+          // When scrolling up, if the active link is above the scroller, bring
+          // it into view to avoid it staying hidden.
+          if (!isScrollingDown && activeLinkRect.top < containerRect.top) {
+            linkToScroll = link;
+          } else {
+            let visibleIndicator: HTMLElement | undefined;
+            if (indicators.length) {
+              visibleIndicator = isScrollingDown
+                ? indicators[indicators.length - 1]
+                : indicators[0];
+            }
+            if (visibleIndicator) {
+              linkToScroll =
+                visibleIndicator
+                  .closest("li")
+                  ?.querySelector("[data-heading-link]") ?? null;
+            } else {
+              linkToScroll = link;
+            }
+          }
+          if (linkToScroll) {
+            const linkRect = (linkToScroll as Element).getBoundingClientRect();
+            if (
+              linkRect.top < containerRect.top ||
+              linkRect.bottom > containerRect.bottom
+            ) {
+              (linkToScroll as Element).scrollIntoView({ block: "nearest" });
+            }
           }
         }
         activeLink = link;
@@ -183,6 +247,9 @@ const allHeadings = title
        * currently active and calls `setActiveLink`.
        */
       function onScroll() {
+        const currentScrollY = window.scrollY;
+        isScrollingDown = currentScrollY > lastScrollY;
+        lastScrollY = currentScrollY;
         // A special case for when the user has scrolled to the bottom of the
         // page. In this case, we always want to highlight the last heading.
         const scrollBottom = window.innerHeight + window.scrollY;
