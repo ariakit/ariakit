@@ -9,6 +9,8 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
+import ChipLinkList from "#app/components/chip-link-list.astro";
+import ChipLink from "#app/components/chip-link.astro";
 import HorizontalScroll from "#app/components/horizontal-scroll.astro";
 import Meta from "#app/components/meta.astro";
 import PageCardComponent from "#app/components/page-card-component.astro";
@@ -210,29 +212,25 @@ const hasGuides = guides.length > 0;
         id="tags-scroll"
         class="sticky top-(--header-height) z-2 ak-layer-current [box-shadow:0_1px_0_0_var(--ak-layer-border)]"
       >
-        <ul class="flex items-center gap-3 p-3 float-start">
+        <ChipLinkList>
           {
             [null, ...tags].map((t) => {
               const isCurrent = t?.id === tag?.id;
               const length = t?.length ?? frameworkLength;
               return (
                 <li>
-                  <a
-                    href={getTagPath(t)}
-                    aria-current={isCurrent ? "page" : undefined}
-                    class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1 scroll-m-4"
-                  >
-                    <span class="ps-2">{t?.label ?? "All"}</span>
-                    <span class="ak-text/0 rounded-full ak-edge/0 ring px-1.5 ak-layer-pop min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer-pop-3">
+                  <ChipLink href={getTagPath(t)} current={isCurrent}>
+                    {t?.label ?? "All"}
+                    <span slot="badge">
                       {length}
                       <span class="sr-only">{pluralize(type, length)}</span>
                     </span>
-                  </a>
+                  </ChipLink>
                 </li>
               );
             })
           }
-        </ul>
+        </ChipLinkList>
       </HorizontalScroll>
       <div
         class="grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4 p-4"

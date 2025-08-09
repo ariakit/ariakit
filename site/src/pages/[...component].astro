@@ -13,6 +13,8 @@ import {
   BoxPatternsLeftOnly,
   BoxPatternsRightOnly,
 } from "#app/components/box-patterns.react.tsx";
+import ChipLinkList from "#app/components/chip-link-list.astro";
+import ChipLink from "#app/components/chip-link.astro";
 import ContainerLeftMenu from "#app/components/container-left-menu.astro";
 import ContainerRightMenu from "#app/components/container-right-menu.astro";
 import { components } from "#app/components/content-components.astro";
@@ -354,17 +356,14 @@ async function parseDescription(description: string) {
             id="api-reference-menu-mobile"
             class="h-full grid items-center"
           >
-            <ul class="flex items-center gap-2 px-2">
+            <ChipLinkList>
               {apiLinks.map((item) => {
                 const referenceProps = getReferenceProps(item);
                 return (
                   <li>
-                    <a
+                    <ChipLink
                       href={item.href}
-                      aria-current={
-                        isCurrentHref(item.href) ? "page" : undefined
-                      }
-                      class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1 px-3 scroll-m-4"
+                      current={isCurrentHref(item.href)}
                     >
                       {referenceProps?.kind ? (
                         <ApiReferenceLabel
@@ -374,11 +373,11 @@ async function parseDescription(description: string) {
                       ) : (
                         item.label
                       )}
-                    </a>
+                    </ChipLink>
                   </li>
                 );
               })}
-            </ul>
+            </ChipLinkList>
           </HorizontalScroll>
         </div>
 
