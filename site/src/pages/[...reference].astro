@@ -48,327 +48,281 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { reference, partialMain = false } = Astro.props;
+const data = reference.data;
 
-// Extract all headings including prop names for table of contents
-const extractHeadings = () => {
-  const headings: Array<{ slug: string; depth: number; text: string }> = [];
-
-  // State
-  if (reference.data.state && reference.data.state.length > 0) {
-    headings.push({ slug: "state", depth: 2, text: "State" });
-    reference.data.state.forEach((prop) => {
-      headings.push({
-        slug: getReferenceItemId("state", prop.name),
-        depth: 3,
-        text: prop.name,
-      });
-    });
-  }
-
-  // Props (Required / Optional)
-  if (
-    reference.data.params.length === 1 &&
-    reference.data.params[0]?.name === "props" &&
-    reference.data.params[0]?.props
-  ) {
-    const props = reference.data.params[0].props;
-    const requiredProps = props.filter((p) => !p.optional);
-    const optionalProps = props.filter((p) => p.optional);
-    if (requiredProps.length) {
-      headings.push({
-        slug: "required-props",
-        depth: 2,
-        text: "Required Props",
-      });
-      requiredProps.forEach((prop) => {
-        headings.push({
-          slug: getReferenceItemId("prop", prop.name),
-          depth: 3,
-          text: prop.name,
-        });
-      });
-    }
-    if (optionalProps.length) {
-      headings.push({
-        slug: "optional-props",
-        depth: 2,
-        text: "Optional Props",
-      });
-      optionalProps.forEach((prop) => {
-        headings.push({
-          slug: getReferenceItemId("prop", prop.name),
-          depth: 3,
-          text: prop.name,
-        });
-      });
-    }
-  }
-
-  // Parameters (non-props)
-  if (
-    reference.data.params.length > 0 &&
-    !(
-      reference.data.params.length === 1 &&
-      reference.data.params[0]?.name === "props"
-    )
-  ) {
-    headings.push({ slug: "parameters", depth: 2, text: "Parameters" });
-    reference.data.params.forEach((param) => {
-      headings.push({
-        slug: getReferenceItemId("parameter", param.name),
-        depth: 3,
-        text: param.name,
-      });
-    });
-  }
-
-  // Return Value (only add heading if there are props)
-  if (reference.data.returnValue?.props?.length) {
-    headings.push({ slug: "return-value", depth: 2, text: "Return Value" });
-    const rv = reference.data.returnValue;
-    rv.props!.forEach((prop) => {
-      headings.push({
-        slug: getReferenceItemId("return-prop", prop.name),
-        depth: 3,
-        text: prop.name,
-      });
-    });
-  }
-
-  return headings;
+type SectionKey =
+  | "state"
+  | "required-props"
+  | "optional-props"
+  | "parameters"
+  | "return";
+type ItemKind = "state" | "prop" | "parameter" | "return-prop";
+type TocHeading = { slug: string; depth: number; text: string };
+type Section = {
+  key: SectionKey;
+  title: string;
+  id: string;
+  itemKind?: ItemKind;
+  items?: ReferenceProp[];
+  description?: string;
+  type?: string;
+  typeHtml?: string;
 };
 
-const headings = extractHeadings();
-const tocTitle = getApiReferencePlainLabel(
-  reference.data.kind ?? "component",
-  reference.data.name
-);
+// Basic info
+const kind = data.kind ?? "component";
+const name = data.name;
+const tocTitle = getApiReferencePlainLabel(kind, name);
+
+// Deprecation and description
+const isDeprecated = Boolean(data.deprecated);
+const deprecatedMarkdown =
+  typeof data.deprecated === "string" ? data.deprecated : undefined;
+const description = data.description;
+
+// Examples pre-formatted as HTML for ContentCodeBlock
+const formattedExamples = (data.examples || []).map((example) => ({
+  description: example.description,
+  codeHtml: `<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${encode(example.code)}</code>`,
+}));
+
+// Sections
+const hasPropsParam =
+  data.params.length === 1 && data.params[0]?.name === "props";
+const STATE_SECTION_DESCRIPTION =
+  "State values available on the store. You can subscribe to a specific key or derive values with a selector.";
+const sections: Section[] = [];
+if (data.state?.length) {
+  sections.push({
+    key: "state",
+    title: "State",
+    id: "state",
+    itemKind: "state",
+    items: data.state,
+    description: STATE_SECTION_DESCRIPTION,
+  });
+}
+
+if (hasPropsParam && data.params[0]?.props?.length) {
+  const allProps = data.params[0].props;
+  const requiredProps = allProps.filter((p) => !p.optional);
+  const optionalProps = allProps.filter((p) => p.optional);
+  if (requiredProps.length) {
+    sections.push({
+      key: "required-props",
+      title: "Required Props",
+      id: "required-props",
+      itemKind: "prop",
+      items: requiredProps,
+    });
+  }
+  if (optionalProps.length) {
+    sections.push({
+      key: "optional-props",
+      title: "Optional Props",
+      id: "optional-props",
+      itemKind: "prop",
+      items: optionalProps,
+    });
+  }
+}
+
+if (data.params.length > 0 && !hasPropsParam) {
+  sections.push({
+    key: "parameters",
+    title: "Parameters",
+    id: "parameters",
+    itemKind: "parameter",
+    items: data.params,
+  });
+}
+
+if (data.returnValue) {
+  const rv = data.returnValue;
+  sections.push({
+    key: "return",
+    title: "Return Value",
+    id: "return-value",
+    itemKind: "return-prop",
+    description: rv.description,
+    type: rv.type,
+    typeHtml: rv.type
+      ? `<code class="language-typescript">${rv.type}</code>`
+      : undefined,
+    items: rv.props,
+  });
+}
+
+const sectionsToRender: Section[] = partialMain
+  ? (() => {
+      const firstWithItems = sections.find(
+        (s) => (s.items && s.items.length > 0) || s.key === "return"
+      );
+      if (!firstWithItems) return [] as Section[];
+      if (firstWithItems.items && firstWithItems.items.length > 0) {
+        return [
+          {
+            ...firstWithItems,
+            items: firstWithItems.items.slice(0, 1),
+          },
+        ];
+      }
+      return [firstWithItems];
+    })()
+  : sections;
+
+const hasSectionsToRender = sectionsToRender.length > 0;
+
+// Generate headings for the Table of Contents from sections
+const headings = (() => {
+  const entries: TocHeading[] = [];
+  for (const section of sections) {
+    if (section.key === "return") {
+      if (section.items && section.items.length > 0) {
+        entries.push({ slug: section.id, depth: 2, text: section.title });
+        for (const prop of section.items) {
+          entries.push({
+            slug: getReferenceItemId("return-prop", prop.name),
+            depth: 3,
+            text: prop.name,
+          });
+        }
+      }
+      continue;
+    }
+    // Non-return sections (exist only if they have items)
+    entries.push({ slug: section.id, depth: 2, text: section.title });
+    for (const item of section.items || []) {
+      const kindForSlug = section.itemKind ?? "prop";
+      entries.push({
+        slug: getReferenceItemId(kindForSlug, item.name),
+        depth: 3,
+        text: item.name,
+      });
+    }
+  }
+  return entries;
+})();
+
+// View flags
+const showApiAnchor = !partialMain;
+
+// Helper code blocks for the state section
+const storeStateCodeExamplesHtml = [
+  `<code class="language-tsx">const value = Ariakit.useStoreState(store, "key");</code>`,
+  `<code class="language-tsx">const derived = Ariakit.useStoreState(store, (state) => state.key);</code>`,
+];
 
 export const partial = true;
 ---
 
 <div class="@container">
-  {!partialMain && <div id="api" class="scroll-mt-(--header-height)" />}
+  {showApiAnchor && <div id="api" class="scroll-mt-(--header-height)" />}
   <div class="py-8 @default:pt-16">
     <ContainerRightMenu>
       <Fragment slot="prose">
         <ContentHeading as="h3" class="mt-0 mb-8 ak-heading-2">
-          <ApiReferenceLabel
-            symbols
-            kind={reference.data.kind ?? "component"}
-            set:text={reference.data.name}
-          />
+          <ApiReferenceLabel symbols kind={kind} set:text={name} />
         </ContentHeading>
       </Fragment>
     </ContainerRightMenu>
     <ContainerRightMenu>
       <Fragment slot="prose">
         {
-          reference.data.deprecated && (
+          isDeprecated && (
             <ContentAdmonition type="warning" title="Deprecated" class="mb-4">
-              {typeof reference.data.deprecated === "string" ? (
-                <Markdown content={reference.data.deprecated} />
+              {deprecatedMarkdown ? (
+                <Markdown content={deprecatedMarkdown} />
               ) : (
                 ""
               )}
             </ContentAdmonition>
           )
         }
-        <Markdown content={reference.data.description} />
+        <Markdown content={description} />
         {
-          reference.data.examples.map((example) => (
+          formattedExamples.map((example) => (
             <Fragment>
               {example.description && (
                 <ContentParagraph>{example.description}</ContentParagraph>
               )}
-              <ContentCodeBlock
-                set:html={`<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${encode(example.code)}</code>`}
-              />
+              <ContentCodeBlock set:html={example.codeHtml} />
             </Fragment>
           ))
         }
         {
-          (() => {
-            const sections = [] as {
-              key:
-                | "state"
-                | "required-props"
-                | "optional-props"
-                | "parameters"
-                | "return";
-              title: string;
-              id: string;
-              items?: ReferenceProp[];
-              itemKind?: "state" | "prop" | "parameter" | "return-prop";
-              description?: string;
-              type?: string;
-            }[];
-            if (reference.data.state?.length) {
-              sections.push({
-                key: "state",
-                title: "State",
-                id: "state",
-                itemKind: "state",
-                items: reference.data.state,
-                description:
-                  "State values available on the store. You can subscribe to a specific key or derive values with a selector.",
-              });
-            }
-            if (
-              reference.data.params.length === 1 &&
-              reference.data.params[0]?.name === "props" &&
-              reference.data.params[0]?.props?.length
-            ) {
-              const allProps = reference.data.params[0].props;
-              const requiredProps = allProps.filter((p) => !p.optional);
-              const optionalProps = allProps.filter((p) => p.optional);
-              if (requiredProps.length) {
-                sections.push({
-                  key: "required-props",
-                  title: "Required Props",
-                  id: "required-props",
-                  itemKind: "prop",
-                  items: requiredProps,
-                });
-              }
-              if (optionalProps.length) {
-                sections.push({
-                  key: "optional-props",
-                  title: "Optional Props",
-                  id: "optional-props",
-                  itemKind: "prop",
-                  items: optionalProps,
-                });
-              }
-            }
-            if (
-              reference.data.params.length > 0 &&
-              !(
-                reference.data.params.length === 1 &&
-                reference.data.params[0]?.name === "props"
-              )
-            ) {
-              sections.push({
-                key: "parameters",
-                title: "Parameters",
-                id: "parameters",
-                itemKind: "parameter",
-                items: reference.data.params,
-              });
-            }
-            if (reference.data.returnValue) {
-              const rv = reference.data.returnValue;
-              sections.push({
-                key: "return",
-                title: "Return Value",
-                id: "return-value",
-                itemKind: "return-prop",
-                description: rv.description,
-                type: rv.type,
-                items: rv.props,
-              });
-            }
-            if (!sections.length) return null;
-            const renderSections = partialMain
-              ? (() => {
-                  const firstWithItems = sections.find(
-                    (s) => (s.items && s.items.length > 0) || s.key === "return"
-                  );
-                  if (!firstWithItems) return [] as typeof sections;
-                  if (firstWithItems.items && firstWithItems.items.length > 0) {
-                    return [
-                      {
-                        ...firstWithItems,
-                        items: firstWithItems.items.slice(0, 1),
-                      },
-                    ];
-                  }
-                  return [firstWithItems];
-                })()
-              : sections;
-            return (
-              <Fragment>
-                {renderSections.map((section) => (
-                  <Fragment>
-                    <ContentHeading
-                      as="h4"
-                      id={section.id}
-                      class="ak-heading-3 mb-0"
-                    >
-                      <ContentLink href={`#${section.id}`}>
-                        {section.title}
-                      </ContentLink>
-                    </ContentHeading>
-                    {/* State helper text */}
-                    {section.key === "state" && (
-                      <Fragment>
-                        <ContentParagraph>
-                          {section.description}
-                        </ContentParagraph>
-                        <ContentCodeBlock
-                          set:html={`<code class=\"language-tsx\">const value = Ariakit.useStoreState(store, \"key\");</code>`}
-                        />
-                        <ContentCodeBlock
-                          set:html={`<code class=\"language-tsx\">const derived = Ariakit.useStoreState(store, (state) => state.key);</code>`}
-                        />
-                      </Fragment>
-                    )}
-                    {/* Regular items (state/props/parameters) */}
-                    {section.key !== "return" && (
-                      <Fragment>
-                        {(section.items || []).map((item, index, array) => (
-                          <Fragment>
-                            <ContentSeparator />
-                            <ApiReferenceProp
-                              prefix={section.itemKind}
-                              {...item}
-                            />
-                            {index >= array.length - 1 && <ContentSeparator />}
-                          </Fragment>
-                        ))}
-                      </Fragment>
-                    )}
-                    {/* Return value */}
-                    {section.key === "return" && (
-                      <Fragment>
-                        {/* If there are props: show description (if any) and props. Do not render type. */}
-                        {section.items?.length ? (
-                          <Fragment>
-                            {section.description && (
-                              <Markdown content={section.description} />
-                            )}
-                            {section.items.map((prop) => (
-                              <Fragment>
-                                <ContentSeparator />
-                                <ApiReferenceProp
-                                  prefix="return-prop"
-                                  {...prop}
-                                />
-                              </Fragment>
-                            ))}
-                          </Fragment>
-                        ) : (
-                          // No props: render type and description as a nameless prop (no anchor)
-                          <Fragment>
-                            <ContentCodeBlock
-                              set:html={`<code class=\"language-typescript\">${section.type}</code>`}
-                            />
-                            {section.description && (
-                              <Markdown content={section.description} />
-                            )}
-                          </Fragment>
-                        )}
-                      </Fragment>
-                    )}
-                  </Fragment>
-                ))}
-              </Fragment>
-            );
-          })()
+          hasSectionsToRender && (
+            <Fragment>
+              {sectionsToRender.map((section) => (
+                <Fragment>
+                  <ContentHeading
+                    as="h4"
+                    id={section.id}
+                    class="ak-heading-3 mb-0"
+                  >
+                    <ContentLink href={`#${section.id}`}>
+                      {section.title}
+                    </ContentLink>
+                  </ContentHeading>
+                  {section.key === "state" && (
+                    <Fragment>
+                      <ContentParagraph>{section.description}</ContentParagraph>
+                      {storeStateCodeExamplesHtml.map((html) => (
+                        <ContentCodeBlock set:html={html} />
+                      ))}
+                    </Fragment>
+                  )}
+                  {section.key !== "return" && section.items?.length ? (
+                    <Fragment>
+                      <ContentSeparator />
+                      {section.items.map((item) => (
+                        <Fragment>
+                          <ApiReferenceProp
+                            prefix={section.itemKind}
+                            {...item}
+                          />
+                          <ContentSeparator />
+                        </Fragment>
+                      ))}
+                    </Fragment>
+                  ) : null}
+                  {section.key === "return" && (
+                    <Fragment>
+                      {section.items?.length ? (
+                        <Fragment>
+                          {section.description && (
+                            <Markdown content={section.description} />
+                          )}
+                          {section.items.map((prop) => (
+                            <Fragment>
+                              <ContentSeparator />
+                              <ApiReferenceProp
+                                prefix="return-prop"
+                                {...prop}
+                              />
+                            </Fragment>
+                          ))}
+                        </Fragment>
+                      ) : (
+                        <Fragment>
+                          {section.typeHtml && (
+                            <ContentCodeBlock set:html={section.typeHtml} />
+                          )}
+                          {section.description && (
+                            <Markdown content={section.description} />
+                          )}
+                        </Fragment>
+                      )}
+                    </Fragment>
+                  )}
+                </Fragment>
+              ))}
+            </Fragment>
+          )
         }
       </Fragment>
       {
-        !partialMain && (
+        showApiAnchor && (
           <TableOfContents
             slot="sidebar"
             headings={headings}
