@@ -49,7 +49,12 @@ const {
   is:inline
   define:vars={{ selector, currentSelector, behavior, inline, block }}
 >
-  const root = document.querySelector(selector);
-  const current = root?.querySelector(currentSelector);
-  current?.scrollIntoView({ behavior, inline, block });
+  function scroll() {
+    const root = document.querySelector(selector);
+    const current = root?.querySelector(currentSelector);
+    current?.scrollIntoView({ behavior, inline, block });
+  }
+
+  document.addEventListener("astro:page-load", scroll);
+  scroll();
 </script>

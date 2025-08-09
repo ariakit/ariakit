@@ -23,7 +23,7 @@ const { scrollAmount = 0.5, id, ...props } = Astro.props;
 <div
   data-horizontal-scroll={id}
   data-scroll-amount={scrollAmount}
-  class:list={["group relative overflow-x-hidden", props.class]}
+  class:list={["group relative overflow-hidden", props.class]}
   {...props}
 >
   <HorizontalScrollButton

@@ -343,7 +343,8 @@ async function parseDescription(description: string) {
           class:list={[
             "@5xl:hidden ak-layer-current border-b",
             "h-12 flex items-center",
-            "sticky top-(--header-height) z-4 @max-5xl:[&~*]:[--header-height:calc(var(--scroll-mt)+--spacing(14)+--spacing(12))]",
+            !main &&
+              "sticky top-(--header-height) z-4 @max-5xl:[&~*]:[--header-height:calc(var(--scroll-mt)+--spacing(14)+--spacing(12))]",
           ]}
         >
           <button
