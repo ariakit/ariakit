@@ -10,15 +10,24 @@
  */
 import type { HTMLTag, Polymorphic } from "astro/types";
 
-type Props<T extends HTMLTag> = Polymorphic<{ as: T }>;
+type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
+  keepSidebar?: boolean;
+};
 
-const { as: Tag = "div", ...props } = Astro.props as Props<HTMLTag>;
+const {
+  as: Tag = "div",
+  keepSidebar = false,
+  ...props
+} = Astro.props as Props<HTMLTag>;
 ---
 
 <Tag
   data-container-right-menu="true"
   class:list={[
-    "grid @3xl:grid-cols-[1fr_var(--container-sidebar)]",
+    "grid",
+    keepSidebar
+      ? "grid-cols-[1fr_var(--container-sidebar)] @max-3xl:[--container-sidebar:max-content]"
+      : "@3xl:grid-cols-[1fr_var(--container-sidebar)]",
     props.class,
   ]}
   {...props}
@@ -44,8 +53,11 @@ const { as: Tag = "div", ...props } = Astro.props as Props<HTMLTag>;
     )
   }
   <div
-    class="hidden @3xl:block ps-3 in-data-container-left-menu:ps-0 in-data-container-left-menu:pe-3"
+    class:list={[
+      "ps-3 in-data-container-left-menu:ps-0 in-data-container-left-menu:pe-3",
+      !keepSidebar && "hidden @3xl:block",
+    ]}
   >
-    <slot name="toc" />
+    <slot name="sidebar" />
   </div>
 </Tag>
