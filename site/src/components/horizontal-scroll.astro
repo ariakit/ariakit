@@ -10,16 +10,18 @@
  */
 import type { HTMLAttributes } from "astro/types";
 import HorizontalScrollButton from "./horizontal-scroll-button.astro";
+import ScrollCurrentIntoView from "./scroll-current-into-view.astro";
 
 interface Props extends HTMLAttributes<"div"> {
+  id: string;
   scrollAmount?: number;
 }
 
-const { scrollAmount = 0.5, ...props } = Astro.props;
+const { scrollAmount = 0.5, id, ...props } = Astro.props;
 ---
 
 <div
-  data-horizontal-scroll
+  data-horizontal-scroll={id}
   data-scroll-amount={scrollAmount}
   class:list={["group relative overflow-x-hidden", props.class]}
   {...props}
@@ -31,7 +33,7 @@ const { scrollAmount = 0.5, ...props } = Astro.props;
   />
 
   <div
-    data-scroll-container
+    data-scroll-container={id}
     class="[scrollbar-width:none] overflow-x-auto overscroll-x-contain"
   >
     <slot />
@@ -43,6 +45,8 @@ const { scrollAmount = 0.5, ...props } = Astro.props;
     class="@3xl:hidden @3xl:group-data-[scroll-end=false]:flex"
   />
 </div>
+
+<ScrollCurrentIntoView selector={`[data-scroll-container="${id}"]`} />
 
 <script>
   function setupHorizontalScroll(container: HTMLElement) {

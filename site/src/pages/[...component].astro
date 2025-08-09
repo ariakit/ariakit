@@ -8,6 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { ApiReferenceLabel } from "#app/components/api-reference-label.react.tsx";
 import {
   BoxPatternsLeftOnly,
   BoxPatternsRightOnly,
@@ -18,6 +19,7 @@ import { components } from "#app/components/content-components.astro";
 import ContentHeading from "#app/components/content-heading.astro";
 import ContentLink from "#app/components/content-link.astro";
 import ContentParagraph from "#app/components/content-paragraph.astro";
+import HorizontalScroll from "#app/components/horizontal-scroll.astro";
 import Meta from "#app/components/meta.astro";
 import PageCardExample from "#app/components/page-card-example.astro";
 import type { SidebarMenuItem } from "#app/components/sidebar-menu.astro";
@@ -28,6 +30,7 @@ import TimelineAnimate from "#app/components/timeline-animate.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { descriptionToText } from "#app/lib/content.ts";
 import { rehypeAsTagName } from "#app/lib/rehype.ts";
+import { trimRight } from "#app/lib/string.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import Layout from "#app/pages/_layout.astro";
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
@@ -159,6 +162,25 @@ const referenceMenu = [
   ...getMenu(componentsMenu),
 ];
 
+function isLinkItem(
+  item: SidebarMenuItem
+): item is Extract<SidebarMenuItem, { href: string; label: string }> {
+  return "href" in item;
+}
+
+function getReferenceProps(item: SidebarMenuItem) {
+  if (!("kind" in item) || item.kind === undefined) return;
+  const { href: _href, ...referenceProps } = item as any;
+  return referenceProps;
+}
+
+const apiLinks = referenceMenu.filter(isLinkItem);
+
+function isCurrentHref(href: string, pathname = Astro.url.pathname) {
+  const url = new URL(href, Astro.url.origin);
+  return trimRight(pathname, "/") === trimRight(url.pathname, "/");
+}
+
 // TODO: This should be a singleton.
 const processor = await createMarkdownProcessor({
   syntaxHighlight: false,
@@ -277,7 +299,7 @@ async function parseDescription(description: string) {
           class:list={[
             "border-b ak-layer-current flex items-center h-14",
             !main &&
-              "sticky top-(--scroll-mt) z-4 [&+*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]",
+              "sticky top-(--scroll-mt) z-4 [&~*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]",
           ]}
         >
           <ContainerRightMenu
@@ -317,13 +339,58 @@ async function parseDescription(description: string) {
         </div>
         <div
           class:list={[
+            "@5xl:hidden ak-layer-current border-b",
+            "h-12 flex items-center",
+            "sticky top-(--header-height) z-4 @max-5xl:[&~*]:[--header-height:calc(var(--scroll-mt)+--spacing(14)+--spacing(12))]",
+          ]}
+        >
+          <button
+            aria-label="Search API Reference"
+            class="ak-button ak-frame-none/1 ak-layer-current size-12 aspect-square border-e"
+          >
+            <Icon name="search" className="text-base" />
+          </button>
+          <HorizontalScroll
+            id="api-reference-menu-mobile"
+            class="h-full grid items-center"
+          >
+            <ul class="flex items-center gap-2 px-2">
+              {apiLinks.map((item) => {
+                const referenceProps = getReferenceProps(item);
+                return (
+                  <li>
+                    <a
+                      href={item.href}
+                      aria-current={
+                        isCurrentHref(item.href) ? "page" : undefined
+                      }
+                      class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1 px-3 scroll-m-4"
+                    >
+                      {referenceProps?.kind ? (
+                        <ApiReferenceLabel
+                          {...referenceProps}
+                          set:text={item.label}
+                        />
+                      ) : (
+                        item.label
+                      )}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </HorizontalScroll>
+        </div>
+
+        <div
+          class:list={[
             "ak-layer-current border-b",
             main &&
               "max-h-[min(28rem,calc(100dvh-var(--scroll-mt)-8rem))] overflow-clip has-[[data-expand]:hover]:ak-layer-pop-0.5",
           ]}
         >
           <ContainerLeftMenu>
-            <SidebarMenu items={referenceMenu}>
+            <SidebarMenu id="api-reference-menu" items={referenceMenu}>
               <div slot="before" class="p-2">
                 <button class="ak-input ak-frame-field/2 flex h-10 gap-2 items-center text-start w-full text-sm">
                   <div class="flex items-center gap-2 flex-grow min-w-0 ak-frame/1">

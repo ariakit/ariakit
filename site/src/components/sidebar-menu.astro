@@ -12,6 +12,7 @@ import TimelineAnimate from "#app/components/timeline-animate.astro";
 import { trimRight } from "#app/lib/string.ts";
 import type { ComponentProps, HTMLAttributes } from "astro/types";
 import { ApiReferenceLabel } from "./api-reference-label.react.tsx";
+import ScrollCurrentIntoView from "./scroll-current-into-view.astro";
 
 interface LinkItem {
   href: string;
@@ -30,11 +31,12 @@ interface HeadingItem {
 export type SidebarMenuItem = LinkItem | ReferenceItem | HeadingItem;
 
 interface Props extends HTMLAttributes<"div"> {
+  id: string;
   items: SidebarMenuItem[];
   revealAnchorName?: string;
 }
 
-const { items, revealAnchorName, ...props } = Astro.props;
+const { items, revealAnchorName, id, ...props } = Astro.props;
 
 function isLinkItem(item: SidebarMenuItem) {
   return "href" in item;
@@ -61,6 +63,8 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
 ---
 
 <div
+  id={id}
+  data-sidebar-menu={id}
   class:list={[
     "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size_+_--spacing(4))] z-3 @max-5xl:hidden ak-layer-current border-e max-h-[inherit] h-full",
     props.class,
@@ -68,6 +72,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
   {...props}
 >
   <div
+    data-sidebar-menu-content={id}
     class="sticky top-(--header-height) [--p:--spacing(2)] p-(--p) overflow-y-auto overflow-x-clip max-h-[min(100%,calc(100dvh-var(--header-height)))]"
   >
     <slot name="before" />
@@ -100,7 +105,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
               <a
                 href={href}
                 aria-current={isCurrentPage(item) ? "page" : undefined}
-                class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop overflow-x-clip relative"
+                class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop overflow-x-clip relative scroll-m-1"
               >
                 {referenceProps?.kind ? (
                   <ApiReferenceLabel {...referenceProps} set:text={label} />
@@ -120,3 +125,5 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
     </TimelineAnimate>
   </div>
 </div>
+
+<ScrollCurrentIntoView selector={`[data-sidebar-menu-content="${id}"]`} />

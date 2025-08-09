@@ -8,27 +8,27 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { getCollection } from "astro:content";
-import type { GetStaticPaths } from "astro";
-import { mapTags } from "#app/lib/tags.ts";
-import Layout from "#app/pages/_layout.astro";
-import HorizontalScroll from "#app/components/horizontal-scroll.astro";
-import { Icon } from "#app/icons/icon.react.tsx";
-import { getFramework } from "#app/lib/frameworks.ts";
 import { BoxPatternsMiddle } from "#app/components/box-patterns.react.tsx";
-import SidebarMenu from "#app/components/sidebar-menu.astro";
-import PageCardExample from "#app/components/page-card-example.astro";
+import HorizontalScroll from "#app/components/horizontal-scroll.astro";
+import Meta from "#app/components/meta.astro";
 import PageCardComponent from "#app/components/page-card-component.astro";
+import PageCardExample from "#app/components/page-card-example.astro";
+import SidebarMenu from "#app/components/sidebar-menu.astro";
+import TimelineAnchor from "#app/components/timeline-anchor.astro";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { uniq } from "#app/lib/array.ts";
 import {
   filterGuidesByGroup,
-  getGuideDetail,
   getGalleryLength,
+  getGuideDetail,
 } from "#app/lib/content.ts";
-import { uniq } from "#app/lib/array.ts";
-import Meta from "#app/components/meta.astro";
-import pluralize from "pluralize";
+import { getFramework } from "#app/lib/frameworks.ts";
 import { capitalize } from "#app/lib/string.ts";
-import TimelineAnchor from "#app/components/timeline-anchor.astro";
+import { mapTags } from "#app/lib/tags.ts";
+import Layout from "#app/pages/_layout.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import pluralize from "pluralize";
 
 export const getStaticPaths = (async () => {
   const types = ["components", "examples"] as const;
@@ -186,6 +186,7 @@ const hasGuides = guides.length > 0;
       hasGuides && (
         <SidebarMenu
           revealAnchorName="sidebar-menu"
+          id="tags-menu"
           items={[
             { label: capitalize(type), href: groupPath, currentPage: !!tag },
             { label: "Guides" },
@@ -206,6 +207,7 @@ const hasGuides = guides.length > 0;
       ]}
     >
       <HorizontalScroll
+        id="tags-scroll"
         class="sticky top-(--header-height) z-2 ak-layer-current [box-shadow:0_1px_0_0_var(--ak-layer-border)]"
       >
         <ul class="flex items-center gap-3 p-3 float-start">
@@ -218,7 +220,7 @@ const hasGuides = guides.length > 0;
                   <a
                     href={getTagPath(t)}
                     aria-current={isCurrent ? "page" : undefined}
-                    class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1"
+                    class="ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1 scroll-m-4"
                   >
                     <span class="ps-2">{t?.label ?? "All"}</span>
                     <span class="ak-text/0 rounded-full ak-edge/0 ring px-1.5 ak-layer-pop min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer-pop-3">
@@ -248,16 +250,3 @@ const hasGuides = guides.length > 0;
     </div>
   </div>
 </Layout>
-
-<script>
-  // Scroll to the current tag when the page loads
-  document.addEventListener("astro:page-load", () => {
-    const list = document.getElementById("tags");
-    const current = list?.querySelector<HTMLElement>('[aria-current="page"]');
-    current?.scrollIntoView({
-      behavior: "instant",
-      inline: "nearest",
-      block: "nearest",
-    });
-  });
-</script>
