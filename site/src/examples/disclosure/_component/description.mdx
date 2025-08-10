@@ -1,0 +1,10 @@
+export const links = {
+  show: `/components/disclosure/use-disclosure-store/#return-prop-show`,
+  hide: `/components/disclosure/use-disclosure-store/#return-prop-hide`,
+};
+
+export function Link(props) {
+  return <a href={"/" + props.framework + links[props.name]}>{props.name}</a>;
+}
+
+Click a button to either <Link {...props} name="show" /> (expand, open) or <Link {...props} name="hide" /> (collapse, close) a content element in React. This component is based on the [WAI-ARIA Disclosure Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/).
