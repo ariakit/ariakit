@@ -8,12 +8,15 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { getReferenceItemId } from "#app/lib/content.ts";
-import type { Framework, ReferenceProp } from "#app/lib/schemas.ts";
-import { getEntry } from "astro:content";
+import {
+  getReferenceItemId,
+  type ReferenceItemKind,
+} from "#app/lib/reference.ts";
+import type { ReferenceProp } from "#app/lib/schemas.ts";
+import { getReferencePath } from "#app/lib/url.ts";
+import { getEntry, type CollectionEntry } from "astro:content";
 import { encode } from "html-entities";
 import pluralize from "pluralize";
-import ApiReferencePropType from "./api-reference-prop-type.astro";
 import ContentAdmonition from "./content-admonition.astro";
 import ContentCodeBlock from "./content-code-block.astro";
 import { ContentDisclosure } from "./content-disclosure.react.tsx";
@@ -21,14 +24,16 @@ import ContentHeading from "./content-heading.astro";
 import ContentLink from "./content-link.astro";
 import Markdown from "./markdown.astro";
 import PageCardExample from "./page-card-example.astro";
+import ReferenceItemType from "./reference-item-type.astro";
 
 interface Props extends ReferenceProp {
-  prefix?: string;
-  framework?: Framework;
+  reference: CollectionEntry<"references">;
+  itemKind: ReferenceItemKind;
 }
 
 const {
-  prefix = "prop",
+  reference,
+  itemKind,
   name,
   type,
   description,
@@ -36,10 +41,10 @@ const {
   defaultValue,
   examples,
   liveExamples,
-  // framework = Astro.props.framework,
 } = Astro.props;
 
-const id = getReferenceItemId(prefix, name);
+const id = getReferenceItemId(itemKind, name);
+const path = getReferencePath({ reference, item: id });
 
 function getCodeBlockCode(example: ReferenceProp["examples"][number]) {
   return `<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${example.code}</code>`;
@@ -54,17 +59,25 @@ const ex = await getEntry("examples", "checkbox-card");
   class="flex gap-2 items-center mb-0 ak-heading @max-3xl:flex-col @max-3xl:items-start"
 >
   <h5 class:list={["text-xl! m-0", deprecated && "line-through decoration-1"]}>
-    <ContentLink href={`#${id}`}><code>{name}</code></ContentLink>
+    {
+      path ? (
+        <ContentLink href={path}>
+          <code>{name}</code>
+        </ContentLink>
+      ) : (
+        <code>{name}</code>
+      )
+    }
   </h5>
   <div class="flex gap-[inherit] max-w-full flex-shrink min-w-0">
-    <ApiReferencePropType
+    <ReferenceItemType
       class="flex-shrink"
       code={type}
       grammarContextCode="const type: "
     />
     {
       defaultValue && (
-        <ApiReferencePropType
+        <ReferenceItemType
           class="flex-none"
           code={`= ${defaultValue}`}
           grammarContextCode="const defaultValue"

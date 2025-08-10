@@ -8,7 +8,6 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { ApiReferenceLabel } from "#app/components/api-reference-label.react.tsx";
 import {
   BoxPatternsLeftOnly,
   BoxPatternsRightOnly,
@@ -24,6 +23,7 @@ import ContentParagraph from "#app/components/content-paragraph.astro";
 import HorizontalScroll from "#app/components/horizontal-scroll.astro";
 import Meta from "#app/components/meta.astro";
 import PageCardExample from "#app/components/page-card-example.astro";
+import { ReferenceLabel } from "#app/components/reference-label.react.tsx";
 import type { SidebarMenuItem } from "#app/components/sidebar-menu.astro";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
@@ -34,6 +34,7 @@ import { descriptionToText } from "#app/lib/content.ts";
 import { rehypeAsTagName } from "#app/lib/rehype.ts";
 import { trimRight } from "#app/lib/string.ts";
 import { mapTags } from "#app/lib/tags.ts";
+import { getReferencePath } from "#app/lib/url.ts";
 import Layout from "#app/pages/_layout.astro";
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import type { GetStaticPaths } from "astro";
@@ -121,13 +122,7 @@ const descriptionText = await descriptionToText(
 );
 
 // Build href to the full API reference page for the default reference
-// TODO: Add a function to the url.ts lib.
-let referenceHref: string | undefined = undefined;
-if (reference) {
-  const prefixRef = `${framework}/${entry.id}/`;
-  const slugRef = reference.id.replace(prefixRef, "");
-  referenceHref = `/${framework}/components/${entry.id}/${slugRef}/#api`;
-}
+const referenceHref = reference && `${getReferencePath({ reference })}#api`;
 
 function getFunctions() {
   return references.filter(
@@ -142,13 +137,11 @@ function getComponents() {
 function getMenu(
   references: ReturnType<typeof getFunctions> | ReturnType<typeof getComponents>
 ) {
-  return references.map((ref) => {
-    const prefix = `${framework}/${entry.id}/`;
-    const slug = ref.id.replace(prefix, "");
+  return references.map((reference) => {
     return {
-      label: ref.data.name,
-      href: `/${framework}/components/${entry.id}/${slug}/#api`,
-      kind: ref.data.kind,
+      label: reference.data.name,
+      href: `${getReferencePath({ reference })}#api`,
+      kind: reference.data.kind,
       symbols: true,
     } satisfies SidebarMenuItem;
   });
@@ -367,7 +360,7 @@ async function parseDescription(description: string) {
                       current={isCurrentHref(item.href)}
                     >
                       {referenceProps?.kind ? (
-                        <ApiReferenceLabel
+                        <ReferenceLabel
                           {...referenceProps}
                           set:text={item.label}
                         />

@@ -13,11 +13,11 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
-import kebabCase from "lodash-es/kebabCase.js";
 import { type FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";
 import type { Reference } from "./schemas.ts";
 import { type FrameworkSchema, ReferenceSchema } from "./schemas.ts";
+import { slugify } from "./string.ts";
 
 export interface JsDocFrameworkOptions {
   /** Framework name */
@@ -52,8 +52,8 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           framework: options.framework,
         });
         for (const data of references) {
-          const nameSlug = kebabCase(data.name);
-          const id = `${data.framework}/${data.componentId}/${nameSlug}`;
+          const nameSlug = slugify(data.name);
+          const id = `${data.framework}/${data.component}/${nameSlug}`;
           context.store.set({ id, data });
         }
         info(`Loaded ${references.length} references for ${options.framework}`);
@@ -445,7 +445,7 @@ function getSymbolName(node: Node): string {
 
 interface CreateReferenceParams {
   node: Node;
-  componentId: string;
+  component: string;
   framework: z.infer<typeof FrameworkSchema>;
   propsNode?: Node;
 }
@@ -455,7 +455,7 @@ interface CreateReferenceParams {
  */
 function createReference({
   node,
-  componentId,
+  component,
   framework,
   propsNode,
 }: CreateReferenceParams): Reference {
@@ -533,7 +533,7 @@ function createReference({
   const examples = getExamples(docNode);
   return {
     name,
-    componentId,
+    component,
     kind,
     framework,
     description,
@@ -547,7 +547,7 @@ function createReference({
 }
 
 interface GetPublicExportsParams {
-  componentId: string;
+  component: string;
   packagePath: string;
 }
 
@@ -555,10 +555,10 @@ interface GetPublicExportsParams {
  * Gets the exported names from an ariakit package module file
  */
 function getPublicExports({
-  componentId,
+  component,
   packagePath,
 }: GetPublicExportsParams): Set<string> {
-  const publicModulePath = join(packagePath, "src", `${componentId}.ts`);
+  const publicModulePath = join(packagePath, "src", `${component}.ts`);
   if (!existsSync(publicModulePath)) {
     return new Set();
   }
@@ -599,7 +599,7 @@ function getPublicExports({
 
 interface ParseReExportedReferencesParams {
   project: Project;
-  componentId: string;
+  component: string;
   publicExports: Set<string>;
   packagePath: string;
   corePath: string;
@@ -612,13 +612,13 @@ interface ParseReExportedReferencesParams {
  */
 function parseReExportedReferences({
   project,
-  componentId,
+  component,
   publicExports,
   packagePath,
   corePath,
   framework,
 }: ParseReExportedReferencesParams) {
-  const publicModulePath = join(packagePath, "src", `${componentId}.ts`);
+  const publicModulePath = join(packagePath, "src", `${component}.ts`);
   const content = readFileSync(publicModulePath, "utf-8");
   const references: Reference[] = [];
   // Parse all re-export statements to find source files
@@ -638,7 +638,7 @@ function parseReExportedReferences({
 
     const sourceReferences = parseSourceFileExports({
       project,
-      componentId,
+      component,
       fromPath,
       exportList,
       publicExports,
@@ -654,7 +654,7 @@ function parseReExportedReferences({
 
     const sourceReferences = parseSourceFileExports({
       project,
-      componentId,
+      component,
       fromPath,
       exportList,
       publicExports,
@@ -677,7 +677,7 @@ function parseReExportedReferences({
 
 interface ParseSourceFileExportsParams {
   project: Project;
-  componentId: string;
+  component: string;
   fromPath: string;
   exportList: string;
   publicExports: Set<string>;
@@ -690,7 +690,7 @@ interface ParseSourceFileExportsParams {
  */
 function parseSourceFileExports({
   project,
-  componentId,
+  component,
   fromPath,
   exportList,
   publicExports,
@@ -760,7 +760,7 @@ function parseSourceFileExports({
       references.push(
         createReference({
           node: decl,
-          componentId,
+          component,
           framework,
           propsNode: optionsType,
         }),
@@ -773,7 +773,7 @@ function parseSourceFileExports({
 
 interface ParseDirectExportReferencesParams {
   project: Project;
-  componentId: string;
+  component: string;
   publicExports: Set<string>;
   packagePath: string;
   corePath: string;
@@ -785,13 +785,13 @@ interface ParseDirectExportReferencesParams {
  */
 function parseDirectExportReferences({
   project,
-  componentId,
+  component,
   publicExports,
   packagePath,
   corePath,
   framework,
 }: ParseDirectExportReferencesParams) {
-  const publicModulePath = join(packagePath, "src", `${componentId}.ts`);
+  const publicModulePath = join(packagePath, "src", `${component}.ts`);
   const content = readFileSync(publicModulePath, "utf-8");
   const references: Reference[] = [];
 
@@ -807,7 +807,7 @@ function parseDirectExportReferences({
 
     const sourceReferences = parseSourceFileExports({
       project,
-      componentId,
+      component,
       fromPath,
       exportList,
       publicExports,
@@ -829,7 +829,7 @@ function parseDirectExportReferences({
 
 interface ParseComponentReferencesParams {
   project: Project;
-  componentId: string;
+  component: string;
   packagePath: string;
   corePath: string;
   framework: z.infer<typeof FrameworkSchema>;
@@ -840,25 +840,25 @@ interface ParseComponentReferencesParams {
  */
 function parseComponentReferences({
   project,
-  componentId,
+  component,
   packagePath,
   corePath,
   framework,
 }: ParseComponentReferencesParams) {
   // Get the list of publicly exported names from the ariakit package module
-  const publicExports = getPublicExports({ componentId, packagePath });
+  const publicExports = getPublicExports({ component, packagePath });
   if (publicExports.size === 0) {
-    console.warn(`No public exports found for component: ${componentId}`);
+    console.warn(`No public exports found for component: ${component}`);
     return [];
   }
   // Check if this is a direct export module (like store.ts)
-  const publicModulePath = join(packagePath, "src", `${componentId}.ts`);
+  const publicModulePath = join(packagePath, "src", `${component}.ts`);
   const publicContent = readFileSync(publicModulePath, "utf-8");
   // Handle direct exports (e.g., export { useStoreState } from "path")
   if (publicContent.includes('from "')) {
     return parseReExportedReferences({
       project,
-      componentId,
+      component,
       publicExports,
       packagePath,
       corePath,
@@ -868,7 +868,7 @@ function parseComponentReferences({
   // Handle direct function/const exports in the public module
   return parseDirectExportReferences({
     project,
-    componentId,
+    component,
     publicExports,
     packagePath,
     corePath,
@@ -914,10 +914,10 @@ function loadReferences({
   const componentModules = getComponentModules(packagePath);
   const allReferences: Reference[] = [];
 
-  for (const componentId of componentModules) {
+  for (const component of componentModules) {
     const references = parseComponentReferences({
       project,
-      componentId,
+      component,
       packagePath,
       corePath,
       framework,

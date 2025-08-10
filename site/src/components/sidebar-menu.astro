@@ -11,7 +11,7 @@
 import TimelineAnimate from "#app/components/timeline-animate.astro";
 import { trimRight } from "#app/lib/string.ts";
 import type { ComponentProps, HTMLAttributes } from "astro/types";
-import { ApiReferenceLabel } from "./api-reference-label.react.tsx";
+import { ReferenceLabel } from "./reference-label.react.tsx";
 import ScrollCurrentIntoView from "./scroll-current-into-view.astro";
 
 interface LinkItem {
@@ -22,7 +22,7 @@ interface LinkItem {
 
 interface ReferenceItem
   extends LinkItem,
-    ComponentProps<typeof ApiReferenceLabel> {}
+    ComponentProps<typeof ReferenceLabel> {}
 
 interface HeadingItem {
   label: string;
@@ -108,7 +108,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
                 class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop overflow-x-clip relative scroll-m-1"
               >
                 {referenceProps?.kind ? (
-                  <ApiReferenceLabel {...referenceProps} set:text={label} />
+                  <ReferenceLabel {...referenceProps} set:text={label} />
                 ) : (
                   label
                 )}

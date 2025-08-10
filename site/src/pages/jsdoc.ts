@@ -18,16 +18,16 @@ export const GET: APIRoute = async () => {
   // Group by component
   const byComponent = references.reduce(
     (acc, ref) => {
-      const componentId = ref.data.componentId;
-      if (!acc[componentId]) acc[componentId] = [];
-      acc[componentId].push(ref.data);
+      const component = ref.data.component;
+      if (!acc[component]) acc[component] = [];
+      acc[component].push(ref.data);
       return acc;
     },
     {} as Record<string, any[]>,
   );
 
   const frameworks = Object.keys(byFramework).sort();
-  const componentIds = Object.keys(byComponent).sort();
+  const components = Object.keys(byComponent).sort();
   const totalRefs = references.length;
 
   const stats = {
@@ -36,15 +36,14 @@ export const GET: APIRoute = async () => {
       name: framework,
       count: byFramework[framework]?.length || 0,
     })),
-    components: componentIds.map((componentId) => {
-      const refs = byComponent[componentId] || [];
+    components: components.map((component) => {
+      const refs = byComponent[component] || [];
       const hooks = refs.filter((r) => r.kind === "hook");
       const components = refs.filter((r) => r.kind === "component");
       const types = refs.filter((r) => r.kind === "type");
       const stores = refs.filter((r) => r.kind === "store");
-
       return {
-        name: componentId,
+        name: component,
         totalExports: refs.length,
         hooks: hooks.length,
         components: components.length,

@@ -10,17 +10,14 @@
 import type { ReactNode } from "react";
 import type { Reference } from "#app/lib/schemas.ts";
 
-export interface ApiReferenceLabelProps {
+export interface ReferenceLabelProps {
   kind: Reference["kind"];
   symbols?: boolean;
   colors?: boolean;
   children?: ReactNode;
 }
 
-export function getApiReferencePlainLabel(
-  kind: Reference["kind"],
-  name: string,
-) {
+export function getReferencePlainLabel(kind: Reference["kind"], name: string) {
   const isFunction = kind === "function" || kind === "store";
   const isComponent = kind === "component";
   const left = isComponent ? "<" : "";
@@ -39,7 +36,7 @@ const symbolColors = {
   brackets: { dark: "#808080", light: "#24292E" },
 };
 
-export function ApiReferenceLabel(props: ApiReferenceLabelProps) {
+export function ReferenceLabel(props: ReferenceLabelProps) {
   const kindColors = labelColors[props.kind];
   const className = props.colors
     ? "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"

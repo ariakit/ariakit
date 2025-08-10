@@ -18,7 +18,6 @@ import reactRenderer from "@astrojs/react/server.js";
 import { experimental_AstroContainer } from "astro/container";
 import type { Element } from "hast";
 import { toText } from "hast-util-to-text";
-import kebabCase from "lodash-es/kebabCase.js";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { isFramework } from "./frameworks.ts";
@@ -100,11 +99,6 @@ export function getGalleryLength(
     const gallery = galleries.find((g) => g.id === example.id);
     return acc + (gallery?.data.length || 1);
   }, 0);
-}
-
-export function getReferenceItemId(prefix: string, name?: string) {
-  if (!name) return prefix;
-  return `${prefix}-${kebabCase(name)}`;
 }
 
 let markdownProcessor: MarkdownProcessor | null = null;

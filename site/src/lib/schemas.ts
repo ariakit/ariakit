@@ -105,7 +105,7 @@ const ReferenceReturnValueSchema = z.object({
 
 export const ReferenceSchema = z.object({
   name: z.string(),
-  componentId: z.string(),
+  component: z.string(),
   kind: z.enum(["component", "function", "store"]),
   framework: FrameworkSchema,
   description: z.string(),
