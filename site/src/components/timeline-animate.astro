@@ -47,12 +47,6 @@ type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
    */
   fillMode?: string;
   /**
-   * Animation duration. With scroll-linked animations the duration is driven
-   * by the timeline; this is mostly ignored but kept for completeness.
-   * Defaults to "1s".
-   */
-  duration?: string;
-  /**
    * Optional range configuration. Can be a full shorthand string or an object
    * with `start` and `end` parts.
    */
@@ -75,7 +69,6 @@ const {
   keyframes = undefined,
   easing = "linear",
   fillMode = "both",
-  duration = "1ms",
   range = undefined,
   rangeStart = undefined,
   rangeEnd = undefined,
@@ -102,7 +95,6 @@ if (enabled) {
   cssParts.push(`animation-timeline:${normalizedTimeline};`);
   cssParts.push(`animation-timing-function:${easing};`);
   cssParts.push(`animation-fill-mode:${fillMode};`);
-  cssParts.push(`animation-duration:${duration};`);
   cssParts.push(`animation-name:${animationName};`);
   if (rangeStart) cssParts.push(`animation-range-start:${rangeStart};`);
   if (rangeEnd) cssParts.push(`animation-range-end:${rangeEnd};`);

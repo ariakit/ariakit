@@ -47,7 +47,7 @@
 @utility ak-disclosure-button_idle {
   @apply ak-command-depth-x-3 ak-button_idle ak-text;
   @apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding);
-  @apply w-full justify-start text-wrap;
+  @apply w-full justify-start text-wrap text-start;
   --ak-disclosure-button-radius: calc(
     var(--ak-disclosure-radius) - var(--ak-disclosure-border)
   );
@@ -120,6 +120,10 @@
   transition-behavior: allow-discrete;
   interpolate-size: allow-keywords;
 
+  @starting-style {
+    @apply h-0!;
+  }
+
   @supports (interpolate-size: allow-keywords) {
     @apply duration-300;
   }
@@ -132,7 +136,8 @@
 @utility ak-disclosure-content_idle {
   @apply ak-disclosure-content-base_idle;
   > * {
-    @apply p-(--ak-frame-padding);
+    padding: var(--ak-frame-padding);
+    padding-block-start: calc(var(--ak-frame-padding) / 4);
   }
 }
 

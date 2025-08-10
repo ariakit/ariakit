@@ -18,6 +18,7 @@ export interface Props extends HTMLAttributes<"ul"> {
   titleSlug?: string;
   headings: MarkdownHeading[];
   topOffset?: number;
+  inert?: boolean;
 }
 
 const {
@@ -25,6 +26,7 @@ const {
   titleSlug = "top",
   headings,
   topOffset = 72,
+  inert = false,
   ...props
 } = Astro.props;
 
@@ -34,6 +36,7 @@ const allHeadings = title
 ---
 
 <ul
+  data-inert={inert || undefined}
   class:list={[
     "ak-layer-current ps-3 flex flex-col text-sm w-fit",
     props.class,
@@ -108,6 +111,7 @@ const allHeadings = title
     }
 
     for (const tocElement of tocElements) {
+      if (tocElement.dataset.inert) continue;
       const topOffset = Number.parseInt(tocElement.dataset.topOffset || "0");
 
       // Get all the links within the table of contents.

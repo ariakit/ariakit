@@ -227,9 +227,7 @@
 }
 
 @utility ak-list-item-disclosure-content {
-  @apply ak-frame/4;
   @apply gap-(--ak-list-item-gap) flex flex-col;
-  padding-block: var(--ak-list-item-gap);
   padding-inline-start: calc(
     var(--ak-list-item-ps) + var(--ak-list-item-left-center)
   );

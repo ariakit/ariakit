@@ -204,9 +204,6 @@ const headings = (() => {
   return entries;
 })();
 
-// View flags
-const showApiAnchor = !partialMain;
-
 // Helper code blocks for the state section
 const storeStateCodeExamplesHtml = [
   `<code class="language-tsx">const value = Ariakit.useStoreState(store, "key");</code>`,
@@ -217,7 +214,7 @@ export const partial = true;
 ---
 
 <div class="@container">
-  {showApiAnchor && <div id="api" class="scroll-mt-(--header-height)" />}
+  {!partialMain && <div id="api" class="scroll-mt-(--header-height)" />}
   <div class="py-8 @default:pt-16">
     <ContainerRightMenu>
       <Fragment slot="prose">
@@ -321,17 +318,14 @@ export const partial = true;
           )
         }
       </Fragment>
-      {
-        showApiAnchor && (
-          <TableOfContents
-            slot="sidebar"
-            headings={headings}
-            title={tocTitle}
-            titleSlug="api"
-            class="sticky [--top:calc(var(--header-height)+--spacing(2))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
-          />
-        )
-      }
+      <TableOfContents
+        slot="sidebar"
+        headings={headings}
+        title={tocTitle}
+        titleSlug="api"
+        inert={partialMain}
+        class="sticky [--top:calc(var(--header-height)+--spacing(2))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
+      />
     </ContainerRightMenu>
   </div>
 </div>
