@@ -109,6 +109,41 @@ const { tokens } = highlighter.codeToTokens(code.trim(), {
 
 let diffInfo: DiffInfo | null = null;
 
+// Reusable UI class constants (template-only consumers)
+const REMOVED_TOKEN_CLASS =
+  "ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
+const HIGHLIGHT_CHIP_CLASS = "ring rounded px-[0.25em] py-0.5";
+const HIGHLIGHT_ADDED_CHIP_CLASS =
+  "ak-layer-mix-green-500/30 ak-edge-green-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5";
+const MULTI_TOKEN_HIGHLIGHT_CLASS = "ak-layer-pop ak-edge/25";
+const LINE_DIV_BASE_CLASS = "pe-14 [content-visibility:auto] h-(--line-height)";
+
+function getTokenColors(token: ThemedToken) {
+  const style = token.htmlStyle as any;
+  const dark = style?.["--shiki-dark"] || token.color;
+  const light = style?.color || token.color;
+  return { dark, light } as const;
+}
+
+function mergeHighlightRanges<
+  T extends { start: number; end: number; isDiff?: boolean },
+>(ranges: T[]) {
+  if (ranges.length === 0) return [] as T[];
+  const sorted = [...ranges].sort((a, b) => a.start - b.start);
+  const merged: T[] = [];
+  for (const current of sorted) {
+    const last = merged[merged.length - 1];
+    if (last && current.start <= last.end) {
+      // merge
+      last.end = Math.max(last.end, current.end);
+      if (current.isDiff) last.isDiff = true;
+    } else {
+      merged.push({ ...(current as T) });
+    }
+  }
+  return merged;
+}
+
 if (previousCode) {
   const changes = diffLines(previousCode.trim(), code.trim());
   diffInfo = [];
@@ -479,17 +514,7 @@ const linesToRender = (() => {
           }
 
           // Sort and merge highlights for this part
-          highlightsInPart.sort((a, b) => a.start - b.start);
-          const mergedHighlights: typeof highlightsInPart = [];
-          highlightsInPart.forEach((current) => {
-            const last = mergedHighlights[mergedHighlights.length - 1];
-            if (last && current.start <= last.end) {
-              last.end = Math.max(last.end, current.end);
-              if (current.isDiff) last.isDiff = true;
-            } else {
-              mergedHighlights.push(current);
-            }
-          });
+          const mergedHighlights = mergeHighlightRanges(highlightsInPart);
 
           const subTokens =
             getTokensForSubstring(
@@ -535,20 +560,7 @@ const linesToRender = (() => {
       }
 
       // Sort and merge highlights
-      highlights.sort((a, b) => a.start - b.start);
-      const merged: typeof highlights = [];
-      highlights.forEach((current) => {
-        const last = merged[merged.length - 1];
-        if (last && current.start <= last.end) {
-          // Merge overlapping highlights
-          last.end = Math.max(last.end, current.end);
-          if (current.isDiff) {
-            last.isDiff = true;
-          }
-        } else {
-          merged.push(current);
-        }
-      });
+      const merged = mergeHighlightRanges(highlights);
 
       const { isEmpty, segments } = createHighlightSegments(lineTokens, merged);
       return { ...line, renderType: "segments" as const, isEmpty, segments };
@@ -578,6 +590,8 @@ const linesToRender = (() => {
 const hasAddedOrRemoved = diffInfo?.some(
   (line) => line.type === "added" || line.type === "removed"
 );
+const showGutter = lineNumbers || hasAddedOrRemoved;
+const showGridColumns = lineNumbers || Boolean(diffInfo);
 ---
 
 <Fragment>
@@ -585,14 +599,14 @@ const hasAddedOrRemoved = diffInfo?.some(
     class:list={[
       "grid whitespace-pre **:data-highlight:ak-edge/25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0625rem*var(--contrast,0))_0_var(--ak-border)]",
       "*:*:ps-4 *:*:in-data-admonition:ps-3",
-      (lineNumbers || diffInfo) && {
+      showGridColumns && {
         "sm:grid-cols-[max-content_1fr]": !hasAddedOrRemoved,
         "grid-cols-[max-content_1fr]": hasAddedOrRemoved,
       },
     ]}
   >
     {
-      (lineNumbers || hasAddedOrRemoved) && (
+      showGutter && (
         <div
           aria-hidden
           class:list={[
@@ -650,8 +664,6 @@ const hasAddedOrRemoved = diffInfo?.some(
             "ak-layer-mix-green-500/25": isAdded,
             "ak-layer-mix-red-500/25 ak-text/0": lineInfo.type === "removed",
           };
-          const removedTokenClass =
-            "ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
 
           if (lineInfo.renderType === "removed") {
             return (
@@ -671,7 +683,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                       return (
                         <del
                           class:list={{
-                            [removedTokenClass]: part.removed,
+                            [REMOVED_TOKEN_CLASS]: part.removed,
                             "[text-decoration:none]": !part.removed,
                           }}
                         >
@@ -689,7 +701,7 @@ const hasAddedOrRemoved = diffInfo?.some(
               <div
                 data-highlight={highlightLine || undefined}
                 class:list={[
-                  "pe-14 [content-visibility:auto] h-(--line-height)",
+                  LINE_DIV_BASE_CLASS,
                   lineClass,
                   isHighlighted(lineInfo.i) && "ak-layer-pop",
                   isCollapsed(lineInfo.i) && "in-data-collapsed:hidden",
@@ -698,7 +710,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                 {lineInfo.parts.map((part) => {
                   if (part.renderType === "removed") {
                     return (
-                      <del class={removedTokenClass}>
+                      <del class={REMOVED_TOKEN_CLASS}>
                         <span class="relative z-1">{part.content}</span>
                       </del>
                     );
@@ -709,9 +721,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                     return segments.map((segment: Segment) => {
                       const segmentElements = segment.fragments.map(
                         ({ content, token }: TokenFragment) => {
-                          const style = token.htmlStyle as any;
-                          const dark = style?.["--shiki-dark"] || token.color;
-                          const light = style?.color || token.color;
+                          const { dark, light } = getTokenColors(token);
                           return (
                             <span
                               style={`--dark:${dark}; --light:${light}`}
@@ -725,12 +735,10 @@ const hasAddedOrRemoved = diffInfo?.some(
 
                       // Apply highlighting if needed
                       if (segment.isHighlighted) {
-                        const highlightClass =
-                          "ring rounded px-[0.25em] py-0.5";
-
+                        const highlightClass = HIGHLIGHT_CHIP_CLASS;
                         if (isAdded || segment.isDiff) {
                           return (
-                            <span class="ak-layer-mix-green-500/30 ak-edge-green-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5">
+                            <span class={HIGHLIGHT_ADDED_CHIP_CLASS}>
                               {segmentElements}
                             </span>
                           );
@@ -741,7 +749,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                           return (
                             <span
                               class:list={[
-                                "ak-layer-pop ak-edge/25",
+                                MULTI_TOKEN_HIGHLIGHT_CLASS,
                                 highlightClass,
                               ]}
                             >
@@ -752,17 +760,16 @@ const hasAddedOrRemoved = diffInfo?.some(
                         // Single token highlight - use token colors for background
                         const firstFragment = segment.fragments[0];
                         invariant(firstFragment, "First fragment is required");
-                        const style = firstFragment.token.htmlStyle as any;
-                        const dark =
-                          style?.["--shiki-dark"] || firstFragment.token.color;
-                        const light = style?.color || firstFragment.token.color;
+                        const { dark, light } = getTokenColors(
+                          firstFragment.token
+                        );
 
                         return (
                           <span
                             style={`--dark:${dark}; --light:${light}`}
                             class:list={[
                               "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
-                              highlightClass,
+                              HIGHLIGHT_CHIP_CLASS,
                             ]}
                           >
                             {segmentElements}
@@ -786,7 +793,7 @@ const hasAddedOrRemoved = diffInfo?.some(
               <div
                 data-highlight={highlightLine || undefined}
                 class:list={[
-                  "pe-14 [content-visibility:auto] h-(--line-height)",
+                  LINE_DIV_BASE_CLASS,
                   lineClass,
                   isHighlighted(lineInfo.i) &&
                     !addedOrRemoved &&
@@ -799,10 +806,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                   : segments.map((segment) => {
                       const segmentElements = segment.fragments.map(
                         ({ content, token }: TokenFragment) => {
-                          // TODO: Fix this after we merge the site folder into root
-                          const style = token.htmlStyle as any;
-                          const dark = style?.["--shiki-dark"] || token.color;
-                          const light = style?.color || token.color;
+                          const { dark, light } = getTokenColors(token);
                           return (
                             <span
                               style={`--dark:${dark}; --light:${light}`}
@@ -816,12 +820,11 @@ const hasAddedOrRemoved = diffInfo?.some(
 
                       // Apply highlighting if needed
                       if (segment.isHighlighted) {
-                        const highlightClass =
-                          "ring rounded px-[0.25em] py-0.5";
+                        const highlightClass = HIGHLIGHT_CHIP_CLASS;
 
                         if (isAdded || segment.isDiff) {
                           return (
-                            <span class="ak-layer-mix-green-500/30 ak-edge-green-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5">
+                            <span class={HIGHLIGHT_ADDED_CHIP_CLASS}>
                               {segmentElements}
                             </span>
                           );
@@ -832,7 +835,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                           return (
                             <span
                               class:list={[
-                                "ak-layer-pop ak-edge/25",
+                                MULTI_TOKEN_HIGHLIGHT_CLASS,
                                 highlightClass,
                               ]}
                             >
@@ -843,17 +846,16 @@ const hasAddedOrRemoved = diffInfo?.some(
                         // Single token highlight - use token colors for background
                         const firstFragment = segment.fragments[0];
                         invariant(firstFragment, "First fragment is required");
-                        const style = firstFragment.token.htmlStyle as any;
-                        const dark =
-                          style?.["--shiki-dark"] || firstFragment.token.color;
-                        const light = style?.color || firstFragment.token.color;
+                        const { dark, light } = getTokenColors(
+                          firstFragment.token
+                        );
 
                         return (
                           <span
                             style={`--dark:${dark}; --light:${light}`}
                             class:list={[
                               "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
-                              highlightClass,
+                              HIGHLIGHT_CHIP_CLASS,
                             ]}
                           >
                             {segmentElements}
