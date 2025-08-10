@@ -7,6 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import kebabCase from "lodash-es/kebabCase.js";
+
 export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -25,4 +27,8 @@ export function trim(str: string, chars: string) {
 
 export function generateId(prefix = "ak-") {
   return `${prefix}${Math.random().toString(36).substring(2, 10)}`;
+}
+
+export function slugify(str: string) {
+  return kebabCase(str);
 }
