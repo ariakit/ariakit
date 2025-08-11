@@ -17,9 +17,23 @@ interface Props extends HTMLAttributes<"a"> {
   title: string;
   description?: string;
   plus?: boolean;
+  size?: "sm" | "md" | "lg";
 }
 
-const { thumbnailId, title, description, plus, ...props } = Astro.props;
+const {
+  thumbnailId,
+  title,
+  description,
+  plus,
+  size = "md",
+  ...props
+} = Astro.props;
+
+const sizeClass = {
+  sm: "h-32",
+  md: "h-48",
+  lg: "h-64",
+}[size];
 
 const labelId = generateId("label-");
 const descriptionId = description ? generateId("description-") : undefined;
@@ -37,7 +51,10 @@ const descriptionId = description ? generateId("description-") : undefined;
   <span class="ak-frame-cover/0">
     <span
       inert
-      class="ak-light:ak-layer-down ak-dark:ak-layer-down-0.3 ak-frame-border ak-frame/4 flex justify-center items-center-safe group-focus-visible/card:ak-layer-contrast-primary overflow-hidden h-48 relative [content-visibility:auto]"
+      class:list={[
+        "ak-light:ak-layer-down ak-dark:ak-layer-down-0.3 ak-frame-border ak-frame/4 flex justify-center items-center-safe group-focus-visible/card:ak-layer-contrast-primary overflow-hidden relative [content-visibility:auto]",
+        sizeClass,
+      ]}
     >
       {
         plus && (

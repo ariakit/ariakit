@@ -80,7 +80,7 @@ const tabsFromSource = source
   : [];
 
 const tabs = tabsProp || tabsFromSource;
-const example = exampleProp ?? source?.name ?? Astro.locals.example;
+const example = exampleProp ?? source?.name;
 const isMainPreview =
   !source?.name.includes("/") || source.name.includes("_component");
 const title = await getVariantTitle(source);

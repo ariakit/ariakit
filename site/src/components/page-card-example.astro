@@ -12,13 +12,14 @@ import PageCard from "#app/components/page-card.astro";
 import type { Framework } from "#app/lib/schemas.ts";
 import { type CollectionEntry, getEntry } from "astro:content";
 import pluralize from "pluralize";
+import type { ComponentProps } from "react";
 
-interface Props {
+interface Props extends Partial<ComponentProps<typeof PageCard>> {
   entry: CollectionEntry<"examples">;
   framework?: Framework;
 }
 
-const { entry, framework = Astro.locals.framework } = Astro.props;
+const { entry, framework = Astro.locals.framework, ...props } = Astro.props;
 
 const gallery = await getEntry("galleries", entry.id);
 const length = gallery?.data.length || 1;
@@ -28,6 +29,7 @@ const plus = !!entry.data.tags?.includes("plus");
 ---
 
 <PageCard
+  {...props}
   href={href}
   plus={plus}
   title={entry.data.title}

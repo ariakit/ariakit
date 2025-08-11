@@ -9,6 +9,7 @@
  */
 
 import type { CollectionEntry } from "astro:content";
+import { isFramework } from "./frameworks.ts";
 import { getReferenceItemIds, getReferenceSlug } from "./reference.ts";
 import {
   type PlusAccountPath,
@@ -154,4 +155,25 @@ export async function parseReferenceURL(
     return null;
   }
   return { reference, item };
+}
+
+/**
+ * Returns true if the given URL has the shape of a reference page, regardless
+ * of whether the reference actually exists.
+ * Pattern: /{framework}/components/{component}/{slug}/[#item]
+ */
+export function isReferenceURLLike(url: string | URL): boolean {
+  try {
+    const nextUrl = new URL(url, DEFAULT_URL);
+    const segments = nextUrl.pathname.split("/").filter(Boolean);
+    if (segments.length < 4) return false;
+    const [framework, collection, component, slug] = segments;
+    if (!slug) return false;
+    if (!component) return false;
+    if (!isFramework(framework)) return false;
+    if (`/${collection}` !== COMPONENTS_PATH) return false;
+    return true;
+  } catch {
+    return false;
+  }
 }
