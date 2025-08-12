@@ -11,24 +11,17 @@ import type { ReactNode } from "react";
 import type { Reference } from "#app/lib/schemas.ts";
 
 export interface ReferenceLabelProps {
-  kind: Reference["kind"];
+  kind: Reference["kind"] | "prop";
   symbols?: boolean;
   colors?: boolean;
   children?: ReactNode;
-}
-
-export function getReferencePlainLabel(kind: Reference["kind"], name: string) {
-  const isFunction = kind === "function" || kind === "store";
-  const isComponent = kind === "component";
-  const left = isComponent ? "<" : "";
-  const right = isComponent ? ">" : isFunction ? "()" : "";
-  return `${left}${name}${right}`;
 }
 
 const labelColors = {
   component: { dark: "#4EC9B0", light: "#005CC5" },
   function: { dark: "#DCDCAA", light: "#6F42C1" },
   store: { dark: "#DCDCAA", light: "#6F42C1" },
+  prop: { dark: "#9CDCFE", light: "#6F42C1" },
 };
 
 const symbolColors = {
@@ -36,22 +29,40 @@ const symbolColors = {
   brackets: { dark: "#808080", light: "#24292E" },
 };
 
-export function ReferenceLabel(props: ReferenceLabelProps) {
-  const kindColors = labelColors[props.kind];
-  const className = props.colors
-    ? "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
-    : "ak-text/0";
+export function getReferenceLabelText(
+  kind: ReferenceLabelProps["kind"],
+  name: string,
+) {
+  const isFunction = kind === "function" || kind === "store";
+  const isComponent = kind === "component";
+  const left = isComponent ? "<" : "";
+  const right = isComponent ? ">" : isFunction ? "()" : "";
+  return `${left}${name}${right}`;
+}
 
+export function getReferenceLabelColors(kind: ReferenceLabelProps["kind"]) {
+  const kindColors = labelColors[kind];
+  const className = "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65";
   const getStyle = (color: typeof kindColors) => {
-    if (!props.colors) return {};
     return {
       "--dark": color.dark,
       "--light": color.light,
     } as React.CSSProperties;
   };
+  return { kindColors, className, style: getStyle(kindColors), getStyle };
+}
 
+export function ReferenceLabel(props: ReferenceLabelProps) {
+  const labelColors = getReferenceLabelColors(props.kind);
   const isFunction = props.kind === "function" || props.kind === "store";
   const isComponent = props.kind === "component";
+
+  const className = props.colors ? labelColors.className : "ak-text/0";
+
+  const getStyle = (kindColors = labelColors.kindColors) => {
+    if (!props.colors) return {};
+    return labelColors.getStyle(kindColors);
+  };
 
   return (
     <span>
@@ -60,10 +71,7 @@ export function ReferenceLabel(props: ReferenceLabelProps) {
           &lt;
         </span>
       )}
-      <span
-        style={getStyle(kindColors)}
-        className={props.colors ? className : ""}
-      >
+      <span style={getStyle()} className={props.colors ? className : ""}>
         {props.children}
       </span>
       {props.symbols && isComponent && (

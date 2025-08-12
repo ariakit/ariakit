@@ -12,6 +12,16 @@
   font-size-adjust: 0.48;
 }
 
+@utility ak-separator {
+  @apply ak-layer-current ak-edge/20;
+  @apply border-t border-dashed;
+  margin-block: calc(var(--ak-prose-gap) * 0.5);
+
+  + * {
+    @apply mt-0;
+  }
+}
+
 @utility ak-strong {
   @apply ak-text font-medium;
 }
@@ -81,5 +91,9 @@
 
   :where(kbd) {
     @apply ak-kbd;
+  }
+
+  :where(hr) {
+    @apply ak-separator;
   }
 }

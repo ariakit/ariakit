@@ -12,17 +12,39 @@ import type { CollectionEntry } from "astro:content";
 import type { Reference, ReferenceProp } from "./schemas.ts";
 import { slugify } from "./string.ts";
 
-export type ReferenceSectionItem = ReferenceProp;
+const sectionIdToKindMap = {
+  state: "state",
+  "required-props": "prop",
+  "optional-props": "prop",
+  parameters: "parameter",
+  "return-value": "return-prop",
+} as const;
 
-export type ReferenceItemKind = "state" | "prop" | "parameter" | "return-prop";
+const sectionIdToTitleMap = {
+  state: "State",
+  "required-props": "Required Props",
+  "optional-props": "Optional Props",
+  parameters: "Parameters",
+  "return-value": "Return Value",
+} as const satisfies Record<ReferenceSectionId, string>;
+
+export type ReferenceSectionId = keyof typeof sectionIdToKindMap;
+export type ReferenceItemKind = (typeof sectionIdToKindMap)[ReferenceSectionId];
+export type ReferenceSectionTitle =
+  (typeof sectionIdToTitleMap)[ReferenceSectionId];
+
+export interface ReferenceItem extends ReferenceProp {
+  id: string;
+  kind: ReferenceItemKind;
+  sectionId: ReferenceSectionId;
+}
 
 export interface ReferenceSection {
-  id: string;
+  id: ReferenceSectionId;
+  title: ReferenceSectionTitle;
   type?: string;
-  title: string;
-  items?: ReferenceSectionItem[];
-  itemKind?: ReferenceItemKind;
   description?: string;
+  items?: ReferenceItem[];
 }
 
 export interface ReferenceContent extends Reference {
@@ -41,58 +63,100 @@ export function getPropsParam(data: Reference) {
   };
 }
 
-export function getReferenceSections(data: Reference) {
+export function getReferenceItemKind(sectionId: ReferenceSectionId) {
+  return sectionIdToKindMap[sectionId];
+}
+
+export function getReferenceItemId(itemKind: ReferenceItemKind, name?: string) {
+  if (!name) return itemKind;
+  return `${itemKind}-${slugify(name)}`;
+}
+
+export function getReferenceItemFromProp(
+  sectionId: ReferenceSectionId,
+  prop: ReferenceProp,
+): ReferenceItem {
+  const kind = getReferenceItemKind(sectionId);
+  return {
+    ...prop,
+    id: getReferenceItemId(kind, prop.name),
+    kind,
+    sectionId,
+  };
+}
+
+export function getReferenceSections(reference: Reference) {
   const sections: ReferenceSection[] = [];
-  if (data.state?.length) {
+  const pushSection = (
+    id: ReferenceSectionId,
+    items: ReferenceProp[] = [],
+    init: Partial<ReferenceSection> = {},
+  ) => {
     sections.push({
-      id: "state",
-      title: "State",
-      itemKind: "state",
-      items: data.state,
+      id,
+      title: sectionIdToTitleMap[id],
+      items: items.map((item) => getReferenceItemFromProp(id, item)),
+      ...init,
+    });
+  };
+  if (reference.state?.length) {
+    pushSection("state", reference.state, {
       description:
         "State values available on the store. You can subscribe to a specific key or derive values with a selector.",
     });
   }
-  const propsParam = getPropsParam(data);
+  const propsParam = getPropsParam(reference);
   if (propsParam) {
-    const requiredProps = propsParam.props.filter((p) => !p.optional);
-    const optionalProps = propsParam.props.filter((p) => p.optional);
+    const requiredProps = propsParam.props.filter((prop) => !prop.optional);
+    const optionalProps = propsParam.props.filter((prop) => prop.optional);
     if (requiredProps.length) {
-      sections.push({
-        id: "required-props",
-        title: "Required Props",
-        itemKind: "prop",
-        items: requiredProps,
-      });
+      pushSection("required-props", requiredProps);
     }
     if (optionalProps.length) {
-      sections.push({
-        id: "optional-props",
-        title: "Optional Props",
-        itemKind: "prop",
-        items: optionalProps,
-      });
+      pushSection("optional-props", optionalProps);
     }
-  } else if (data.params.length > 0) {
-    sections.push({
-      id: "parameters",
-      title: "Parameters",
-      itemKind: "parameter",
-      items: data.params,
-    });
+  } else if (reference.params.length) {
+    pushSection("parameters", reference.params);
   }
-  if (data.returnValue) {
-    const rv = data.returnValue;
-    sections.push({
-      id: "return-value",
-      title: "Return Value",
-      itemKind: "return-prop",
+  if (reference.returnValue) {
+    const rv = reference.returnValue;
+    pushSection("return-value", rv.props, {
       description: rv.description,
       type: rv.type,
-      items: rv.props,
     });
   }
   return sections;
+}
+
+export function getReferenceItem(
+  reference: Reference | ReferenceSection[],
+  itemId: string,
+) {
+  const sections = Array.isArray(reference)
+    ? reference
+    : getReferenceSections(reference);
+  for (const section of sections) {
+    for (const sectionItem of section.items ?? []) {
+      if (
+        sectionItem.id !== itemId &&
+        sectionItem.id.replace(`${sectionItem.kind}-`, "").replace(/-/g, "") !==
+          itemId
+      ) {
+        continue;
+      }
+      return sectionItem;
+    }
+  }
+  return;
+}
+
+export function getReferenceItems(
+  reference: Reference | ReferenceSection[],
+): ReferenceItem[] {
+  const sections = Array.isArray(reference)
+    ? reference
+    : getReferenceSections(reference);
+  return sections.flatMap((section) => section.items ?? []);
 }
 
 export function getReferenceContent(
@@ -103,39 +167,8 @@ export function getReferenceContent(
   return { ...data, sections };
 }
 
-export function getReferenceItemId(prefix: string, name?: string) {
-  if (!name) return prefix;
-  return `${prefix}-${slugify(name)}`;
-}
-
-export function getReferenceSlug(reference: CollectionEntry<"references">) {
-  const { framework, component } = reference.data;
+export function getReferenceSlug(entry: CollectionEntry<"references">) {
+  const { framework, component } = entry.data;
   const prefix = `${framework}/${component}/`;
-  return reference.id.replace(prefix, "");
-}
-
-export function getReferenceItemIds(reference: CollectionEntry<"references">) {
-  const anchors = new Set<string>();
-  const data = reference.data;
-  if (data.state?.length) {
-    for (const prop of data.state) {
-      anchors.add(getReferenceItemId("state", prop.name));
-    }
-  }
-  const propsParam = getPropsParam(data);
-  if (propsParam) {
-    for (const prop of propsParam.props) {
-      anchors.add(getReferenceItemId("prop", prop.name));
-    }
-  } else if (data.params.length > 0) {
-    for (const param of data.params) {
-      anchors.add(getReferenceItemId("parameter", param.name));
-    }
-  }
-  if (data.returnValue) {
-    for (const prop of data.returnValue.props ?? []) {
-      anchors.add(getReferenceItemId("return-prop", prop.name));
-    }
-  }
-  return anchors;
+  return entry.id.replace(prefix, "");
 }

@@ -1,0 +1,201 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import * as Core from "@ariakit/core/hovercard/hovercard-store";
+import { invariant } from "@ariakit/core/utils/misc";
+import * as ak from "@ariakit/react";
+import { QueryClient, useQuery } from "@tanstack/react-query";
+import clsx from "clsx";
+import * as React from "react";
+import {
+  getReferenceLabelColors,
+  type ReferenceLabelProps,
+} from "#app/components/reference-label.react.tsx";
+import { getPortalRoot } from "#app/lib/get-portal-root.ts";
+
+const hovercardStore = Core.createHovercardStore({ timeout: 250 });
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity,
+      refetchOnMount: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+async function fetchPartialPath(partialPath: string | null) {
+  invariant(partialPath, "No partial path");
+  const response = await fetch(partialPath);
+  if (response.status !== 200) {
+    throw new Error(`Failed to load ${partialPath}`);
+  }
+  return response.text();
+}
+
+function getQueryKey(partialPath: string | null) {
+  return ["reference-partial", partialPath];
+}
+
+function getPartialPathFromAnchor(
+  anchor: HTMLElement | HTMLAnchorElement | null,
+) {
+  if (!anchor) return null;
+  if (!("href" in anchor)) return null;
+  try {
+    const url = new URL(anchor.href, window.location.href);
+    const pathWithHash = `${url.pathname}${url.hash}`;
+    const partialPath = `/partials${pathWithHash.replace("#", "?item=")}`;
+    return partialPath;
+  } catch {
+    return null;
+  }
+}
+
+export interface ReferenceHovercardAnchorProps extends ak.HovercardAnchorProps {
+  inHovercard?: boolean;
+  kind?: ReferenceLabelProps["kind"];
+}
+
+export function ReferenceHovercardAnchor({
+  inHovercard,
+  kind,
+  className,
+  children,
+  ...props
+}: ReferenceHovercardAnchorProps) {
+  const store = ak.useHovercardStore({
+    store: inHovercard ? undefined : hovercardStore,
+    placement: inHovercard ? "right" : "top",
+  });
+  const prefetchRef = React.useRef(false);
+
+  const labelColors = kind ? getReferenceLabelColors(kind) : null;
+
+  return (
+    <>
+      <ak.HovercardAnchor
+        {...props}
+        store={store}
+        style={labelColors?.style}
+        className={clsx(
+          "ak-link not-hover:decoration-dotted",
+          labelColors?.className,
+          className,
+        )}
+        showOnHover={(event) => {
+          const partialPath = getPartialPathFromAnchor(event.currentTarget);
+          if (!partialPath) return false;
+          if (prefetchRef.current) return true;
+          prefetchRef.current = true;
+          queryClient.prefetchQuery({
+            queryKey: getQueryKey(partialPath),
+            queryFn: () => fetchPartialPath(partialPath),
+          });
+          return true;
+        }}
+      >
+        <code className="text-inherit!">{children}</code>
+      </ak.HovercardAnchor>
+      {inHovercard && <ReferenceHovercard inHovercard store={store} />}
+    </>
+  );
+}
+
+export interface ReferenceHovercardProps extends ak.HovercardProps {
+  inHovercard?: boolean;
+}
+
+export function ReferenceHovercard({
+  store: storeProp,
+  className,
+  inHovercard,
+  ...props
+}: ReferenceHovercardProps) {
+  const store = ak.useHovercardStore({ store: storeProp || hovercardStore });
+  const open = ak.useStoreState(store, "mounted");
+  const anchorElement = ak.useStoreState(store, "anchorElement");
+
+  const partialPath = React.useMemo(
+    () => getPartialPathFromAnchor(anchorElement),
+    [anchorElement],
+  );
+
+  React.useEffect(() => {
+    const hide = () => {
+      store.hide();
+    };
+    document.addEventListener("astro:before-preparation", hide);
+    return () => {
+      document.removeEventListener("astro:before-preparation", hide);
+    };
+  }, [store]);
+
+  const { data, error } = useQuery(
+    {
+      enabled: open,
+      queryKey: getQueryKey(partialPath),
+      queryFn: () => fetchPartialPath(partialPath),
+    },
+    queryClient,
+  );
+
+  React.useEffect(() => {
+    if (!error) return;
+    store.hide();
+  }, [error, store]);
+
+  const portalElement = React.useCallback(
+    (element: HTMLElement) => {
+      if (!inHovercard) return getPortalRoot(element);
+      return element.closest<HTMLElement>("[data-dialog]") || null;
+    },
+    [inHovercard],
+  );
+
+  return (
+    <ak.Hovercard
+      store={store}
+      arrowPadding={10}
+      unmountOnHide
+      overlap
+      portal
+      portalElement={portalElement}
+      {...props}
+      className={clsx(
+        "ak-popover ak-edge/15 data-open:ak-popover_open origin-(--popover-transform-origin) ak-frame-force-dialog/0",
+        inHovercard && "ak-layer-(--ak-layer-parent)",
+        className,
+      )}
+    >
+      <ak.HovercardArrow />
+      <div className="ak-frame-cover/0 ak-frame-cover-start ak-frame-cover-end overflow-clip">
+        <div className="overflow-y-auto overscroll-contain max-h-[calc(100dvh/2.2)] w-124 @container">
+          {data ? (
+            <div dangerouslySetInnerHTML={{ __html: data }} />
+          ) : (
+            <div className="ak-prose ak-frame/2 animate-pulse">
+              <div className="ak-layer-pop-2 w-32 h-7 ak-frame"></div>
+              <div className="flex flex-col gap-3">
+                <div className="ak-layer-pop w-full h-4 rounded-sm"></div>
+                <div className="ak-layer-pop w-full h-4 rounded-sm"></div>
+                <div className="ak-layer-pop w-1/3 h-4 rounded-sm"></div>
+              </div>
+              <div className="flex flex-col gap-3">
+                <div className="ak-layer-pop w-full h-4 rounded-sm"></div>
+                <div className="ak-layer-pop w-1/2 h-4 rounded-sm"></div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </ak.Hovercard>
+  );
+}

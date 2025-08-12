@@ -23,6 +23,7 @@ import ContentParagraph from "#app/components/content-paragraph.astro";
 import HorizontalScroll from "#app/components/horizontal-scroll.astro";
 import Meta from "#app/components/meta.astro";
 import PageCardExample from "#app/components/page-card-example.astro";
+import ReferenceContent from "#app/components/reference-content.astro";
 import { ReferenceLabel } from "#app/components/reference-label.react.tsx";
 import type { SidebarMenuItem } from "#app/components/sidebar-menu.astro";
 import SidebarMenu from "#app/components/sidebar-menu.astro";
@@ -39,7 +40,6 @@ import Layout from "#app/pages/_layout.astro";
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
-import ApiReferenceContent from "./[...reference].astro";
 
 export const getStaticPaths = (async () => {
   const entries = await getCollection("components");
@@ -106,7 +106,6 @@ const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};
 
 Astro.locals.framework = framework;
-Astro.locals.example = entry.id;
 
 headings.unshift(
   { slug: "examples", text: "Examples", depth: 2 },
@@ -326,7 +325,9 @@ async function parseDescription(description: string) {
                 href={`/${framework}/components/${entry.id}/#api`}
                 class="ak-button text-sm ak-text-primary ms-3 justify-self-start"
               >
-                Collapse<span class="@max-3xl:sr-only"> API Reference</span>
+                <span>
+                  Collapse<span class="@max-3xl:sr-only"> API Reference</span>
+                </span>
                 <Icon name="arrowUp" className="ak-text/0" />
               </TimelineAnimate>
             )}
@@ -385,15 +386,15 @@ async function parseDescription(description: string) {
           <ContainerLeftMenu>
             <SidebarMenu id="api-reference-menu" items={referenceMenu}>
               <div slot="before" class="p-2">
-                <button class="ak-input ak-frame-field/2 flex h-10 gap-2 items-center text-start w-full text-sm">
+                <button class="ak-input ak-edge/15 ak-frame-field/2 flex h-10 gap-2 items-center text-start w-full text-sm">
                   <div class="flex items-center gap-2 flex-grow min-w-0 ak-frame/1">
-                    <Icon name="search" className="flex-none" />
+                    <Icon name="search" strokeWidth={2} className="flex-none" />
                     <div class="ak-input-placeholder truncate">
                       Search API Reference
                     </div>
                   </div>
                   <kbd class="ak-kbd grid place-items-center aspect-square h-full">
-                    &lt;
+                    <Icon name="chevronLeft" aria-label="<" />
                   </kbd>
                 </button>
               </div>
@@ -406,11 +407,7 @@ async function parseDescription(description: string) {
                 inert={main ? "" : undefined}
                 class:list={[main && "opacity-70"]}
               >
-                <ApiReferenceContent
-                  framework={framework}
-                  reference={reference}
-                  partialMain={main}
-                />
+                <ReferenceContent reference={reference} inert={main} />
               </div>
               {main && referenceHref && (
                 <a

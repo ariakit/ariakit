@@ -24,3 +24,24 @@ export const notFound = createResponse("Not found", { status: 404 });
 export const internalServerError = createResponse("Internal server error", {
   status: 500,
 });
+
+interface SetCacheControlOptions {
+  maxAge?: number;
+  sMaxAge?: number;
+  swr?: number;
+}
+
+export function setCache(
+  options: SetCacheControlOptions,
+  headers = new Headers(),
+) {
+  if (!import.meta.env.PROD) return headers;
+  const { maxAge, sMaxAge, swr } = options;
+  const publicStr = "public";
+  const maxAgeStr = maxAge ? `max-age=${maxAge}` : "";
+  const sMaxAgeStr = sMaxAge ? `s-maxage=${sMaxAge}` : "";
+  const swrStr = swr ? `stale-while-revalidate=${swr}` : "";
+  const parts = [publicStr, maxAgeStr, sMaxAgeStr, swrStr].filter(Boolean);
+  headers.set("Cache-Control", parts.join(", "));
+  return headers;
+}

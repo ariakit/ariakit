@@ -16,9 +16,6 @@ const props = Astro.props;
 ---
 
 <hr
-  class:list={[
-    "border-t border-dashed ak-edge/20 ak-layer-current ak-container ak-container-size-content/0 my-4 [&+*]:mt-0",
-    props.class,
-  ]}
+  class:list={["ak-container ak-container-size-content/0", props.class]}
   {...props}
 />

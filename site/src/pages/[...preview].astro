@@ -23,12 +23,10 @@ export const getStaticPaths = (async () => {
   });
 }) satisfies GetStaticPaths;
 
-const { preview } = Astro.params;
 const { framework, entry } = Astro.props;
 const { Content } = await render(entry);
 
 Astro.locals.framework = framework;
-Astro.locals.example = preview;
 ---
 
 <!doctype html>

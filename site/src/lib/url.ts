@@ -10,7 +10,12 @@
 
 import type { CollectionEntry } from "astro:content";
 import { isFramework } from "./frameworks.ts";
-import { getReferenceItemIds, getReferenceSlug } from "./reference.ts";
+import {
+  getReferenceItem,
+  getReferenceItemId,
+  getReferenceSlug,
+  type ReferenceItem,
+} from "./reference.ts";
 import {
   type PlusAccountPath,
   type PlusCheckoutStep,
@@ -23,6 +28,7 @@ const DEFAULT_URL = new URL("http://localhost:4321");
 const PLUS_ACCOUNT_PATH = "/plus/account";
 const PLUS_CHECKOUT_PATH = "/plus/checkout";
 const COMPONENTS_PATH = "/components";
+const LEGACY_REFERENCE_PATH = "/reference";
 
 function leadingSlash(path?: string | null) {
   return path ? `/${path}` : "";
@@ -98,11 +104,6 @@ export function parsePlusCheckoutURL(url: string | URL) {
   return { step, type };
 }
 
-export interface GetReferencePathParams {
-  reference: CollectionEntry<"references">;
-  item?: string;
-}
-
 export interface GetReferenceURLParams {
   reference: CollectionEntry<"references">;
   item?: string;
@@ -116,7 +117,7 @@ export function getReferenceURL({
 }: GetReferenceURLParams) {
   const { framework, component } = reference.data;
   const slug = getReferenceSlug(reference);
-  if (item && !getReferenceItemIds(reference).has(item)) return;
+  if (item && !getReferenceItem(reference.data, item)) return;
   const nextUrl = new URL(url ?? DEFAULT_URL);
   const slugPath = slug ? `/${slug}` : "";
   nextUrl.pathname = `/${framework}${COMPONENTS_PATH}/${component}${slugPath}/`;
@@ -124,56 +125,97 @@ export function getReferenceURL({
   return nextUrl;
 }
 
+export interface GetReferencePathParams {
+  reference: CollectionEntry<"references">;
+  item?: string;
+}
+
 export function getReferencePath({ reference, item }: GetReferencePathParams) {
   const url = getReferenceURL({ reference, item });
   return url?.toString().replace(url.origin, "");
 }
 
-export interface ParseReferenceURLResult {
-  reference: CollectionEntry<"references">;
-  item?: string;
-}
-
-export async function parseReferenceURL(
-  url: string | URL,
-  references: CollectionEntry<"references">[],
-): Promise<ParseReferenceURLResult | null> {
+function getReferenceURLSegments(url: string | URL) {
   const nextUrl = new URL(url, DEFAULT_URL);
-  const [, framework, collection, component, slug] =
-    nextUrl.pathname.split("/");
+  const [framework, collection, component, slug, ...rest] = nextUrl.pathname
+    .split("/")
+    .filter(Boolean);
+  if (rest.length) return null;
   if (!framework) return null;
   if (!component) return null;
   if (!slug) return null;
   if (`/${collection}` !== COMPONENTS_PATH) return null;
-  const item = nextUrl.hash ? nextUrl.hash.replace(/^#/, "") : undefined;
-  const id = `${framework}/${component}/${slug}`;
-  const reference = references.find((r) => r.id === id);
-  if (!reference) return null;
-  if (!item) return { reference };
-  // If item provided, validate
-  if (item && !getReferenceItemIds(reference).has(item)) {
-    return null;
+  return { framework, collection, component, slug };
+}
+
+function getLegacyReferenceURLSegments(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const [maybeLegacy, slug, ...rest] = nextUrl.pathname
+    .split("/")
+    .filter(Boolean);
+  if (rest.length) return null;
+  if (maybeLegacy !== LEGACY_REFERENCE_PATH.slice(1)) return null;
+  if (!slug) return null;
+  return { slug };
+}
+
+export interface ParseReferenceURLResult {
+  reference: CollectionEntry<"references">;
+  item?: ReferenceItem;
+}
+
+export function parseReferenceURL(
+  url: string | URL,
+  references: CollectionEntry<"references">[],
+): ParseReferenceURLResult | null {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const segments = getReferenceURLSegments(nextUrl);
+  if (!segments) {
+    // Legacy: /reference/{slug}
+    const legacy = getLegacyReferenceURLSegments(nextUrl);
+    if (!legacy) return null;
+    const framework = "react";
+    const reference = references.find(
+      (r) =>
+        r.data.framework === framework && getReferenceSlug(r) === legacy.slug,
+    );
+    if (!reference) return null;
+    const itemId = nextUrl.hash ? nextUrl.hash.replace(/^#/, "") : undefined;
+    if (!itemId) return { reference };
+    // Legacy hashes may omit the item kind prefix. Assume kind "prop".
+    const item =
+      getReferenceItem(reference.data, itemId) ||
+      getReferenceItem(reference.data, getReferenceItemId("prop", itemId));
+    if (!item) return null;
+    return { reference, item };
   }
+  const { framework, component, slug } = segments;
+  const referenceId = `${framework}/${component}/${slug}`;
+  const reference = references.find((r) => r.id === referenceId);
+  if (!reference) return null;
+  const itemId = nextUrl.hash ? nextUrl.hash.replace(/^#/, "") : undefined;
+  if (!itemId) return { reference };
+  const item = getReferenceItem(reference.data, itemId);
+  if (!item) return null;
   return { reference, item };
 }
 
 /**
  * Returns true if the given URL has the shape of a reference page, regardless
- * of whether the reference actually exists.
- * Pattern: /{framework}/components/{component}/{slug}/[#item]
+ * of whether the reference actually exists. Pattern:
+ * /{framework}/components/{component}/{slug}/[#item]
  */
-export function isReferenceURLLike(url: string | URL): boolean {
-  try {
-    const nextUrl = new URL(url, DEFAULT_URL);
-    const segments = nextUrl.pathname.split("/").filter(Boolean);
-    if (segments.length < 4) return false;
-    const [framework, collection, component, slug] = segments;
-    if (!slug) return false;
-    if (!component) return false;
-    if (!isFramework(framework)) return false;
-    if (`/${collection}` !== COMPONENTS_PATH) return false;
+export function isReferenceURLLike(
+  url?: string | URL | null,
+): url is string | URL {
+  if (!url) return false;
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const segments = getReferenceURLSegments(nextUrl);
+  if (segments) {
+    if (!isFramework(segments.framework)) return false;
     return true;
-  } catch {
-    return false;
   }
+  // Accept legacy shape: /reference/{slug}
+  const legacy = getLegacyReferenceURLSegments(nextUrl);
+  return Boolean(legacy);
 }

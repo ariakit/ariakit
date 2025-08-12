@@ -92,7 +92,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
         items.map((item) => {
           if (!isLinkItem(item)) {
             return (
-              <li class="ak-text/0 font-medium p-field text-sm not-first-of-type:mt-2">
+              <li class="ak-text/0 font-medium p-field text-sm mt-2">
                 {item.label}
               </li>
             );

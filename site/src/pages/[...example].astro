@@ -43,7 +43,6 @@ const { Content: Gallery } = gallery ? await render(gallery) : {};
 const { Content: Description } = description ? await render(description) : {};
 
 Astro.locals.framework = framework;
-Astro.locals.example = entry.id;
 
 const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;

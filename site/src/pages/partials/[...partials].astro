@@ -1,0 +1,57 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import ReferenceContent from "#app/components/reference-content.astro";
+import ReferenceItem from "#app/components/reference-item.astro";
+import { notFound, setCache } from "#app/lib/response.ts";
+import { isReferenceURLLike, parseReferenceURL } from "#app/lib/url.ts";
+import { getCollection } from "astro:content";
+
+export const partial = true;
+export const prerender = false;
+
+const references = await getCollection("references");
+const itemId = Astro.url.searchParams.get("item");
+const path = itemId
+  ? Astro.params.partials + `#${itemId}`
+  : Astro.params.partials;
+
+// Cache 404s for 10 minutes
+const headers = setCache({ maxAge: 600 });
+
+if (!isReferenceURLLike(path)) {
+  return notFound(null, { headers });
+}
+
+const parsedUrl = parseReferenceURL(path, references);
+if (!parsedUrl) {
+  return notFound("Reference or item not found", { headers });
+}
+
+const { reference, item } = parsedUrl;
+
+// Cache 200s
+setCache({ maxAge: 86400, sMaxAge: 86400, swr: 86400 }, Astro.response.headers);
+
+Astro.locals.framework = reference.data.framework;
+Astro.locals.reference = reference.id;
+---
+
+{
+  item ? (
+    <div class="ak-frame/2 ak-prose">
+      <ReferenceItem reference={reference} {...item} standalone />
+    </div>
+  ) : (
+    <div class="ak-frame/2 p-0">
+      <ReferenceContent reference={reference} />
+    </div>
+  )
+}
