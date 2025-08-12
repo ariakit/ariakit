@@ -49,9 +49,22 @@ const {
   is:inline
   define:vars={{ selector, currentSelector, behavior, inline, block }}
 >
+  function isElementInViewport(element) {
+    const rect = element.getBoundingClientRect();
+    const viewportWidth =
+      window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight =
+      window.innerHeight || document.documentElement.clientHeight;
+    const horizontallyVisible = rect.left < viewportWidth && rect.right > 0;
+    const verticallyVisible = rect.top < viewportHeight && rect.bottom > 0;
+    return horizontallyVisible && verticallyVisible;
+  }
+
   function scroll() {
     const root = document.querySelector(selector);
-    const current = root?.querySelector(currentSelector);
+    if (!root) return;
+    if (!isElementInViewport(root)) return;
+    const current = root.querySelector(currentSelector);
     current?.scrollIntoView({ behavior, inline, block });
   }
 
