@@ -388,7 +388,7 @@ export function findCodeReferenceAnchors({
     let block: RegExpExecArray | null;
     while ((block = blockRe.exec(clause))) {
       const inside = block[1] || "";
-      const base = (imp.index || 0) + clause.indexOf("{" + inside + "}") + 1;
+      const base = (imp.index || 0) + clause.indexOf(`{${inside}}`) + 1;
       const specRe = /([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?/g;
       let s: RegExpExecArray | null;
       while ((s = specRe.exec(inside))) {
@@ -428,53 +428,56 @@ export function findCodeReferenceAnchors({
   }
 
   // 2) Component opening tags
-  const nsCompRe = /<([A-Za-z_$][\w$]*)\.([A-Z][\w$]*)(?=[\s/>])/g;
-  let mc: RegExpExecArray | null;
-  while ((mc = nsCompRe.exec(trimmed))) {
-    const full = mc[0]!;
-    const ns = mc[1]!;
-    const name = mc[2]!;
-    const dotPos = full.lastIndexOf(".");
-    const tokenStart = (mc.index || 0) + dotPos + 1;
-    const tokenEnd = tokenStart + name.length;
-    if (namespaceAliases.has(ns) || !hasAnyAriakit) {
-      anchorComponentToken(tokenStart, tokenEnd, name);
-    }
-    // Props inside this tag
-    const ref = nameToRef[name];
-    if (ref) {
-      const propRanges = findComponentPropRanges(trimmed, mc.index || 0, ref);
-      for (const r of propRanges) {
-        const href = getReferencePath({
-          reference: ref,
-          item: getReferenceItemId("prop", r.name),
-        });
-        pushRange(anchors, r.start, r.end, href, "prop");
+  // Quick reject for component scanning if there are no '<' or '>'
+  if (trimmed.includes("<")) {
+    const nsCompRe = /<([A-Za-z_$][\w$]*)\.([A-Z][\w$]*)(?=[\s/>])/g;
+    let mc: RegExpExecArray | null;
+    while ((mc = nsCompRe.exec(trimmed))) {
+      const full = mc[0]!;
+      const ns = mc[1]!;
+      const name = mc[2]!;
+      const dotPos = full.lastIndexOf(".");
+      const tokenStart = (mc.index || 0) + dotPos + 1;
+      const tokenEnd = tokenStart + name.length;
+      if (namespaceAliases.has(ns) || !hasAnyAriakit) {
+        anchorComponentToken(tokenStart, tokenEnd, name);
       }
-    }
-  }
-
-  const compRe = /<([A-Z][\w$]*)(?=[\s/>])/g;
-  let mcn: RegExpExecArray | null;
-  while ((mcn = compRe.exec(trimmed))) {
-    const name = mcn[1]!;
-    if (namedImports.has(name) || !hasAnyAriakit) {
-      const start = (mcn.index || 0) + 1; // after '<'
-      const end = start + name.length;
-      anchorComponentToken(start, end, name);
+      // Props inside this tag
       const ref = nameToRef[name];
       if (ref) {
-        const propRanges = findComponentPropRanges(
-          trimmed,
-          mcn.index || 0,
-          ref,
-        );
+        const propRanges = findComponentPropRanges(trimmed, mc.index || 0, ref);
         for (const r of propRanges) {
           const href = getReferencePath({
             reference: ref,
             item: getReferenceItemId("prop", r.name),
           });
           pushRange(anchors, r.start, r.end, href, "prop");
+        }
+      }
+    }
+
+    const compRe = /<([A-Z][\w$]*)(?=[\s/>])/g;
+    let mcn: RegExpExecArray | null;
+    while ((mcn = compRe.exec(trimmed))) {
+      const name = mcn[1]!;
+      if (namedImports.has(name) || !hasAnyAriakit) {
+        const start = (mcn.index || 0) + 1; // after '<'
+        const end = start + name.length;
+        anchorComponentToken(start, end, name);
+        const ref = nameToRef[name];
+        if (ref) {
+          const propRanges = findComponentPropRanges(
+            trimmed,
+            mcn.index || 0,
+            ref,
+          );
+          for (const r of propRanges) {
+            const href = getReferencePath({
+              reference: ref,
+              item: getReferenceItemId("prop", r.name),
+            });
+            pushRange(anchors, r.start, r.end, href, "prop");
+          }
         }
       }
     }
@@ -544,6 +547,7 @@ export function findCodeReferenceAnchors({
   }
 
   // Non-namespaced calls (named imports): useDisclosureStore(...)
+  // Quick reject if there are no parentheses at all
   const plainCallRe = /\b([A-Za-z_$][\w$]*)\s*\(/g;
   let pc: RegExpExecArray | null;
   while ((pc = plainCallRe.exec(trimmed))) {
