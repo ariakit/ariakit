@@ -19,14 +19,35 @@ const clerk = clerkMiddleware();
 async function cachePartials(context: APIContext, next: MiddlewareNext) {
   const runtime = context.locals.runtime;
   const cache = runtime.caches.default;
-  const cacheKey = new URL(context.request.url);
+  const cacheUrl = new URL(context.request.url);
+  // Ignore query strings
+  cacheUrl.search = "";
+  // Ignore trailing slashes except for root
+  if (cacheUrl.pathname.length > 1) {
+    cacheUrl.pathname = cacheUrl.pathname.replace(/\/+$/, "");
+  }
+  const cacheKey = cacheUrl.toString();
 
   if (context.request.method !== "GET") {
     return next();
   }
 
   const cached = await cache.match(cacheKey);
-  if (cached) return cached;
+  if (cached) {
+    // Recreate a mutable response so downstream code can safely set headers
+    const headerPairs: [string, string][] = [];
+    cached.headers.forEach((value, key) => {
+      if (key.toLowerCase() === "set-cookie") return;
+      headerPairs.push([key, value]);
+    });
+    headerPairs.push(["Cache-Status", "Cloudflare; hit; source=workers-cache"]);
+    const body = await cached.arrayBuffer();
+    return new Response(body, {
+      status: cached.status,
+      statusText: cached.statusText,
+      headers: headerPairs,
+    });
+  }
 
   const response = await next();
   if (!response.ok) return response;
