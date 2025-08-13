@@ -281,15 +281,64 @@ function findUseStoreStateStateRanges(code: string, callStartIndex: number) {
 
 function findClassTokenRanges(code: string) {
   const ranges: Array<{ start: number; end: number; name: string }> = [];
-  // Match class or className attributes with string or template literal content
-  const attrRe = /(className|class)\s*=\s*(\{\s*["'`]|["'`])/g;
-  let m: RegExpExecArray | null;
-  while ((m = attrRe.exec(code))) {
-    const after = m[2]!;
+  if (!code.includes("ak-")) return ranges;
+
+  function findAkTokensInRange(start: number, end: number) {
+    let i = start;
+    while (i < end) {
+      // Skip whitespace
+      const ws = /\s+/y;
+      ws.lastIndex = i;
+      const wsMatch = ws.exec(code);
+      if (wsMatch) {
+        i = ws.lastIndex;
+        if (i >= end) break;
+      }
+      const segRe = /\S+/y;
+      segRe.lastIndex = i;
+      const seg = segRe.exec(code);
+      if (!seg) break;
+      const segText = seg[0]!;
+      const segStart = seg.index!;
+      const segAbsEnd = Math.min(segStart + segText.length, end);
+
+      // Split by colons, but ignore colons inside [] or ()
+      let partStart = segStart;
+      let depthBrackets = 0;
+      let depthParens = 0;
+      for (let j = 0; j <= segText.length && segStart + j <= end; j++) {
+        const isEnd = j === segText.length || segStart + j === end;
+        const c = isEnd ? "" : segText[j]!;
+        if (!isEnd) {
+          if (c === "[") depthBrackets++;
+          else if (c === "]") depthBrackets = Math.max(0, depthBrackets - 1);
+          else if (c === "(") depthParens++;
+          else if (c === ")") depthParens = Math.max(0, depthParens - 1);
+        }
+        const isColonBoundary =
+          !isEnd && c === ":" && depthBrackets === 0 && depthParens === 0;
+        if (isColonBoundary || isEnd) {
+          const partEnd = Math.min(segStart + j, end);
+          const partText = code.slice(partStart, partEnd);
+          if (partText.startsWith("ak-")) {
+            ranges.push({ start: partStart, end: partEnd, name: partText });
+          }
+          partStart = segStart + j + 1; // skip colon
+        }
+      }
+      i = segAbsEnd + 1;
+    }
+  }
+
+  // Quoted: className="..." or className={"..."}
+  const attrQuotedRe = /(className|class)\s*=\s*(\{\s*["'`]|["'`])/g;
+  let mq: RegExpExecArray | null;
+  while ((mq = attrQuotedRe.exec(code))) {
+    const after = mq[2]!;
     const isWrapped = after.startsWith("{");
     const quote = after[isWrapped ? 1 : 0] as '"' | "'" | "`";
-    const contentStart = attrRe.lastIndex;
-    // Find closing quote strictly to bound scanning to the attribute value
+    const contentStart = attrQuotedRe.lastIndex;
+    // Find closing quote strictly within the attribute
     let k = contentStart;
     while (k < code.length) {
       const ch = code[k]!;
@@ -301,53 +350,128 @@ function findClassTokenRanges(code: string) {
       k++;
     }
     const contentEnd = k;
-    if (contentEnd <= contentStart) continue;
-
-    let i = contentStart;
-    while (i < contentEnd) {
-      // Skip whitespace
-      const ws = /\s+/y;
-      ws.lastIndex = i;
-      const wsMatch = ws.exec(code);
-      if (wsMatch) {
-        i = ws.lastIndex;
-        if (i >= contentEnd) break;
-      }
-      const segRe = /\S+/y;
-      segRe.lastIndex = i;
-      const seg = segRe.exec(code);
-      if (!seg) break;
-      const segText = seg[0]!;
-      const segStart = seg.index!;
-      const segAbsEnd = Math.min(segStart + segText.length, contentEnd);
-
-      // Split by colons, but ignore colons inside [] or ()
-      let partStart = segStart;
-      let depthBrackets = 0;
-      let depthParens = 0;
-      for (let j = 0; j <= segText.length && segStart + j <= contentEnd; j++) {
-        const isEnd = j === segText.length || segStart + j === contentEnd;
-        const c = isEnd ? "" : segText[j]!;
-        if (!isEnd) {
-          if (c === "[") depthBrackets++;
-          else if (c === "]") depthBrackets = Math.max(0, depthBrackets - 1);
-          else if (c === "(") depthParens++;
-          else if (c === ")") depthParens = Math.max(0, depthParens - 1);
-        }
-        const isColonBoundary =
-          !isEnd && c === ":" && depthBrackets === 0 && depthParens === 0;
-        if (isColonBoundary || isEnd) {
-          const partEnd = Math.min(segStart + j, contentEnd);
-          const partText = code.slice(partStart, partEnd);
-          if (partText.startsWith("ak-")) {
-            ranges.push({ start: partStart, end: partEnd, name: partText });
-          }
-          partStart = segStart + j + 1; // skip colon
-        }
-      }
-      i = segAbsEnd + 1;
+    if (contentEnd > contentStart) {
+      findAkTokensInRange(contentStart, contentEnd);
     }
   }
+
+  // Expression: className={ ... clsx("ak-...", cond && "ak-...") ... }
+  const attrExprRe = /(className|class)\s*=\s*\{/g;
+  for (let me = attrExprRe.exec(code); me; me = attrExprRe.exec(code)) {
+    const i = attrExprRe.lastIndex; // position right after '{'
+    // If the next non-space is a quote, it's already handled by the quoted path
+    const nextNonSpace = /\S/y;
+    nextNonSpace.lastIndex = i;
+    const nn = nextNonSpace.exec(code);
+    if (!nn) break;
+    if (nn[0] === '"' || nn[0] === "'" || nn[0] === "`") continue;
+
+    // Find matching closing '}' while respecting quotes and template ${}
+    let depth = 1;
+    let pos = i;
+    let inStr: false | '"' | "'" | "`" = false;
+    let templateExprDepth = 0;
+    while (pos < code.length && depth > 0) {
+      const ch = code[pos]!;
+      if (inStr) {
+        if (ch === "\\") {
+          pos += 2;
+          continue;
+        }
+        if (inStr === "`" && ch === "$" && code[pos + 1] === "{") {
+          templateExprDepth++;
+          pos += 2;
+          continue;
+        }
+        if (inStr === "`" && ch === "}" && templateExprDepth > 0) {
+          templateExprDepth--;
+          pos++;
+          continue;
+        }
+        if (ch === inStr && templateExprDepth === 0) {
+          inStr = false;
+          pos++;
+          continue;
+        }
+        pos++;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === "`") {
+        inStr = ch;
+        pos++;
+        continue;
+      }
+      if (ch === "{") depth++;
+      else if (ch === "}") depth--;
+      pos++;
+    }
+    const exprEnd = pos - 1; // position of matching '}'
+    const exprStart = i;
+    if (exprEnd <= exprStart) continue;
+
+    // Within the expression, find all string literal content ranges and scan for ak- tokens
+    let p = exprStart;
+    while (p < exprEnd) {
+      const c = code[p]!;
+      if (c === '"' || c === "'") {
+        // simple string
+        let j = p + 1;
+        while (j < exprEnd) {
+          const cj = code[j]!;
+          if (cj === "\\") {
+            j += 2;
+            continue;
+          }
+          if (cj === c) break;
+          j++;
+        }
+        const strStart = p + 1;
+        const strEnd = Math.min(j, exprEnd);
+        if (strEnd > strStart) findAkTokensInRange(strStart, strEnd);
+        p = j + 1;
+        continue;
+      }
+      if (c === "`") {
+        // template string with possible ${}
+        let j = p + 1;
+        let segStart = j;
+        let tplExprDepth = 0;
+        while (j < exprEnd) {
+          const cj = code[j]!;
+          if (cj === "\\") {
+            j += 2;
+            continue;
+          }
+          if (cj === "$" && code[j + 1] === "{") {
+            // flush current static segment
+            if (j > segStart) findAkTokensInRange(segStart, j);
+            // skip ${...}
+            j += 2;
+            tplExprDepth = 1;
+            while (j < exprEnd && tplExprDepth > 0) {
+              const ce = code[j]!;
+              if (ce === "\\") {
+                j += 2;
+                continue;
+              }
+              if (ce === "{") tplExprDepth++;
+              else if (ce === "}") tplExprDepth--;
+              j++;
+            }
+            segStart = j;
+            continue;
+          }
+          if (cj === "`") break;
+          j++;
+        }
+        if (j > segStart) findAkTokensInRange(segStart, j);
+        p = j + 1;
+        continue;
+      }
+      p++;
+    }
+  }
+
   return ranges;
 }
 
@@ -359,11 +483,50 @@ export function findCodeReferenceAnchors({
   const trimmed = code.trim();
   const anchors: CodeReferenceAnchorRange[] = [];
 
-  const { nameToRef } = getFrameworkReferences(references, framework);
-  const { hasAriakitImport, namedImports, namespaceAliases } =
-    parseAriakitImports(trimmed);
+  // Fast bailouts
+  if (!references.length) {
+    const lines = trimmed.split("\n");
+    return lines.map(() => []);
+  }
+  const likelyHasComponents = trimmed.indexOf("<") !== -1;
+  const likelyHasCalls = trimmed.indexOf("(") !== -1;
+  const likelyHasAkClasses = trimmed.indexOf("ak-") !== -1;
+  const likelyHasUseStoreState = trimmed.indexOf("useStoreState") !== -1;
+  const likelyHasAriakitImport = trimmed.indexOf("@ariakit/") !== -1;
+  if (
+    !likelyHasComponents &&
+    !likelyHasCalls &&
+    !likelyHasAkClasses &&
+    !likelyHasUseStoreState &&
+    !likelyHasAriakitImport
+  ) {
+    const lines = trimmed.split("\n");
+    return lines.map(() => []);
+  }
 
-  const hasAnyAriakit = hasAriakitImport;
+  const { nameToRef } = getFrameworkReferences(references, framework);
+
+  // Lazily parse imports only if present to avoid a regex pass otherwise
+  let hasAnyAriakit = false;
+  let namedImports: Map<string, string> = new Map();
+  let namespaceAliases: Set<string> = new Set();
+  if (likelyHasAriakitImport) {
+    const parsed = parseAriakitImports(trimmed);
+    hasAnyAriakit = parsed.hasAriakitImport;
+    namedImports = parsed.namedImports;
+    namespaceAliases = parsed.namespaceAliases;
+  }
+
+  // Memoize expensive lookups
+  const hrefCache = new Map<string, string>();
+  function getHref(reference: CollectionEntry<"references">, item?: string) {
+    const key = reference.id + (item ? `#${item}` : "");
+    const cached = hrefCache.get(key);
+    if (cached) return cached;
+    const href = getReferencePath({ reference, item });
+    if (href) hrefCache.set(key, href);
+    return href;
+  }
 
   // Helper: derive store ref from a callable name (e.g., useXxxContext -> useXxxStore)
   function getStoreRefFromCallableName(name: string) {
@@ -379,46 +542,48 @@ export function findCodeReferenceAnchors({
   }
 
   // 1) Named imports: anchor local identifiers
-  const namedImportRe =
-    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
-  let imp: RegExpExecArray | null;
-  while ((imp = namedImportRe.exec(trimmed))) {
-    const clause = imp[1] || "";
-    const blockRe = /\{([\s\S]*?)\}/g;
-    let block: RegExpExecArray | null;
-    while ((block = blockRe.exec(clause))) {
-      const inside = block[1] || "";
-      const full = imp[0] || "";
-      const clauseStartInFull = full.indexOf(clause);
-      const blockStartInClause = block.index || 0;
-      const base =
-        (imp.index || 0) +
-        (clauseStartInFull >= 0 ? clauseStartInFull : 0) +
-        blockStartInClause +
-        1; // position after '{'
-      const specRe = /([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?/g;
-      let s: RegExpExecArray | null;
-      while ((s = specRe.exec(inside))) {
-        const exported = s[1]!;
-        const local = (s[2] || s[1])!;
-        const ref = nameToRef[exported];
-        if (!ref) continue;
-        // Absolute start of the local name within code
-        const specText = s[0]!;
-        const exportedIdx = specText.indexOf(exported);
-        const localPosInSpec =
-          exportedIdx === 0 && s[2] ? specText.indexOf(local) : exportedIdx;
-        const start = base + (s.index || 0) + Math.max(0, localPosInSpec);
-        const end = start + local.length;
-        const href = getReferencePath({ reference: ref });
-        const labelKind = (
-          ref.data.kind === "component"
-            ? "component"
-            : ref.data.kind === "store"
-              ? "store"
-              : "function"
-        ) as ReferenceLabelKind;
-        pushRange(anchors, start, end, href, labelKind);
+  if (likelyHasAriakitImport) {
+    const namedImportRe =
+      /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
+    let imp: RegExpExecArray | null;
+    while ((imp = namedImportRe.exec(trimmed))) {
+      const clause = imp[1] || "";
+      const blockRe = /\{([\s\S]*?)\}/g;
+      let block: RegExpExecArray | null;
+      while ((block = blockRe.exec(clause))) {
+        const inside = block[1] || "";
+        const full = imp[0] || "";
+        const clauseStartInFull = full.indexOf(clause);
+        const blockStartInClause = block.index || 0;
+        const base =
+          (imp.index || 0) +
+          (clauseStartInFull >= 0 ? clauseStartInFull : 0) +
+          blockStartInClause +
+          1; // position after '{'
+        const specRe = /([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?/g;
+        let s: RegExpExecArray | null;
+        while ((s = specRe.exec(inside))) {
+          const exported = s[1]!;
+          const local = (s[2] || s[1])!;
+          const ref = nameToRef[exported];
+          if (!ref) continue;
+          // Absolute start of the local name within code
+          const specText = s[0]!;
+          const exportedIdx = specText.indexOf(exported);
+          const localPosInSpec =
+            exportedIdx === 0 && s[2] ? specText.indexOf(local) : exportedIdx;
+          const start = base + (s.index || 0) + Math.max(0, localPosInSpec);
+          const end = start + local.length;
+          const href = getHref(ref);
+          const labelKind = (
+            ref.data.kind === "component"
+              ? "component"
+              : ref.data.kind === "store"
+                ? "store"
+                : "function"
+          ) as ReferenceLabelKind;
+          pushRange(anchors, start, end, href, labelKind);
+        }
       }
     }
   }
@@ -438,7 +603,7 @@ export function findCodeReferenceAnchors({
 
   // 2) Component opening tags
   // Quick reject for component scanning if there are no '<' or '>'
-  if (trimmed.includes("<")) {
+  if (likelyHasComponents) {
     const nsCompRe = /<([A-Za-z_$][\w$]*)\.([A-Z][\w$]*)(?=[\s/>])/g;
     let mc: RegExpExecArray | null;
     while ((mc = nsCompRe.exec(trimmed))) {
@@ -456,10 +621,7 @@ export function findCodeReferenceAnchors({
       if (ref) {
         const propRanges = findComponentPropRanges(trimmed, mc.index || 0, ref);
         for (const r of propRanges) {
-          const href = getReferencePath({
-            reference: ref,
-            item: getReferenceItemId("prop", r.name),
-          });
+          const href = getHref(ref, getReferenceItemId("prop", r.name));
           pushRange(anchors, r.start, r.end, href, "prop");
         }
       }
@@ -481,10 +643,7 @@ export function findCodeReferenceAnchors({
             ref,
           );
           for (const r of propRanges) {
-            const href = getReferencePath({
-              reference: ref,
-              item: getReferenceItemId("prop", r.name),
-            });
+            const href = getHref(ref, getReferenceItemId("prop", r.name));
             pushRange(anchors, r.start, r.end, href, "prop");
           }
         }
@@ -497,123 +656,122 @@ export function findCodeReferenceAnchors({
   const nsCallRe = /\b([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\s*\(/g;
   let call: RegExpExecArray | null;
   const storeVarToRef = new Map<string, CollectionEntry<"references">>();
-  while ((call = nsCallRe.exec(trimmed))) {
-    const ns = call[1]!;
-    const fn = call[2]!;
-    if (!namespaceAliases.has(ns) && hasAnyAriakit) continue;
-    const ref = nameToRef[fn];
-    const storeRef = getStoreRefFromCallableName(fn);
-    if (!ref && !storeRef) continue;
-    const labelKind = (
-      (ref?.data.kind || storeRef?.data.kind) === "store"
-        ? "store"
-        : (ref?.data.kind || storeRef?.data.kind) === "component"
-          ? "component"
-          : "function"
-    ) as ReferenceLabelKind;
-    const start = (call.index || 0) + ns.length + 1; // after ns.
-    const end = start + fn.length;
-    pushRange(
-      anchors,
-      start,
-      end,
-      getReferencePath({ reference: ref || storeRef! }),
-      labelKind,
-    );
-
-    // If assigned to a variable, remember it
-    const leftSpan = trimmed.slice(
-      Math.max(0, (call.index || 0) - 60),
-      call.index,
-    );
-    const assignMatch = /(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/m.exec(
-      leftSpan,
-    );
-    if (assignMatch) {
-      const varName = assignMatch[2]!;
-      const refForVar =
-        storeRef || (ref?.data.kind === "store" ? ref : undefined);
-      if (refForVar) storeVarToRef.set(varName, refForVar);
-    }
-
-    // First-arg object literal props
-    const obj = findObjectLiteralAtFirstArg(trimmed, call.index || 0);
-    const refForProps = ref || storeRef;
-    if (obj && refForProps?.data.params?.[0]?.props?.length) {
-      const allowed = new Set(
-        refForProps.data.params[0]!.props!.map((p) => p.name),
+  if (likelyHasCalls)
+    while ((call = nsCallRe.exec(trimmed))) {
+      const ns = call[1]!;
+      const fn = call[2]!;
+      if (!namespaceAliases.has(ns) && hasAnyAriakit) continue;
+      const ref = nameToRef[fn];
+      const storeRef = getStoreRefFromCallableName(fn);
+      if (!ref && !storeRef) continue;
+      const labelKind = (
+        (ref?.data.kind || storeRef?.data.kind) === "store"
+          ? "store"
+          : (ref?.data.kind || storeRef?.data.kind) === "component"
+            ? "component"
+            : "function"
+      ) as ReferenceLabelKind;
+      const start = (call.index || 0) + ns.length + 1; // after ns.
+      const end = start + fn.length;
+      pushRange(
+        anchors,
+        start,
+        end,
+        getHref((ref || storeRef!) as any),
+        labelKind,
       );
-      const keys = findTopLevelObjectKeys(trimmed, obj.start, obj.end);
-      for (const k of keys) {
-        if (!allowed.has(k.name)) continue;
-        const href = getReferencePath({
-          reference: refForProps,
-          item: getReferenceItemId("prop", k.name),
-        });
-        pushRange(anchors, k.start, k.end, href, "prop");
+
+      // If assigned to a variable, remember it
+      const leftSpan = trimmed.slice(
+        Math.max(0, (call.index || 0) - 60),
+        call.index,
+      );
+      const assignMatch = /(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/m.exec(
+        leftSpan,
+      );
+      if (assignMatch) {
+        const varName = assignMatch[2]!;
+        const refForVar =
+          storeRef || (ref?.data.kind === "store" ? ref : undefined);
+        if (refForVar) storeVarToRef.set(varName, refForVar);
+      }
+
+      // First-arg object literal props
+      const obj = findObjectLiteralAtFirstArg(trimmed, call.index || 0);
+      const refForProps = ref || storeRef;
+      if (obj && refForProps?.data.params?.[0]?.props?.length) {
+        const allowed = new Set(
+          refForProps.data.params[0]!.props!.map((p) => p.name),
+        );
+        const keys = findTopLevelObjectKeys(trimmed, obj.start, obj.end);
+        for (const k of keys) {
+          if (!allowed.has(k.name)) continue;
+          const href = getHref(refForProps, getReferenceItemId("prop", k.name));
+          pushRange(anchors, k.start, k.end, href, "prop");
+        }
       }
     }
-  }
 
   // Non-namespaced calls (named imports): useDisclosureStore(...)
   // Quick reject if there are no parentheses at all
   const plainCallRe = /\b([A-Za-z_$][\w$]*)\s*\(/g;
   let pc: RegExpExecArray | null;
-  while ((pc = plainCallRe.exec(trimmed))) {
-    const local = pc[1]!;
-    const exported =
-      namedImports.get(local) || (!hasAnyAriakit ? local : undefined);
-    if (!exported) continue;
-    const ref = nameToRef[exported];
-    const storeRef = getStoreRefFromCallableName(exported);
-    if (!ref && !storeRef) continue;
-    const labelKind = (
-      (ref?.data.kind || storeRef?.data.kind) === "store"
-        ? "store"
-        : (ref?.data.kind || storeRef?.data.kind) === "component"
-          ? "component"
-          : "function"
-    ) as ReferenceLabelKind;
-    const start = pc.index || 0;
-    const end = start + local.length;
-    pushRange(
-      anchors,
-      start,
-      end,
-      getReferencePath({ reference: ref || storeRef! }),
-      labelKind,
-    );
-
-    // If assigned to a variable, remember it
-    const leftSpan = trimmed.slice(Math.max(0, (pc.index || 0) - 60), pc.index);
-    const assignMatch = /(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/m.exec(
-      leftSpan,
-    );
-    if (assignMatch) {
-      const varName = assignMatch[2]!;
-      const refForVar =
-        storeRef || (ref?.data.kind === "store" ? ref : undefined);
-      if (refForVar) storeVarToRef.set(varName, refForVar);
-    }
-
-    // First-arg object literal props
-    const obj = findObjectLiteralAtFirstArg(trimmed, pc.index || 0);
-    const refForProps = ref || storeRef;
-    if (obj && refForProps?.data.params?.[0]?.props?.length) {
-      const allowed = new Set(
-        refForProps.data.params[0]!.props!.map((p) => p.name),
+  if (likelyHasCalls)
+    while ((pc = plainCallRe.exec(trimmed))) {
+      const local = pc[1]!;
+      const exported =
+        namedImports.get(local) || (!hasAnyAriakit ? local : undefined);
+      if (!exported) continue;
+      const ref = nameToRef[exported];
+      const storeRef = getStoreRefFromCallableName(exported);
+      if (!ref && !storeRef) continue;
+      const labelKind = (
+        (ref?.data.kind || storeRef?.data.kind) === "store"
+          ? "store"
+          : (ref?.data.kind || storeRef?.data.kind) === "component"
+            ? "component"
+            : "function"
+      ) as ReferenceLabelKind;
+      const start = pc.index || 0;
+      const end = start + local.length;
+      pushRange(
+        anchors,
+        start,
+        end,
+        getHref((ref || storeRef!) as any),
+        labelKind,
       );
-      const keys = findTopLevelObjectKeys(trimmed, obj.start, obj.end);
-      for (const k of keys) {
-        if (!allowed.has(k.name)) continue;
-        const href = getReferencePath({
-          reference: refForProps,
-          item: getReferenceItemId("prop", k.name),
-        });
-        pushRange(anchors, k.start, k.end, href, "prop");
+
+      // If assigned to a variable, remember it
+      const leftSpan = trimmed.slice(
+        Math.max(0, (pc.index || 0) - 60),
+        pc.index,
+      );
+      const assignMatch = /(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/m.exec(
+        leftSpan,
+      );
+      if (assignMatch) {
+        const varName = assignMatch[2]!;
+        const refForVar =
+          storeRef || (ref?.data.kind === "store" ? ref : undefined);
+        if (refForVar) storeVarToRef.set(varName, refForVar);
+      }
+
+      // First-arg object literal props
+      const obj = findObjectLiteralAtFirstArg(trimmed, pc.index || 0);
+      const refForProps = ref || storeRef;
+      if (obj && refForProps?.data.params?.[0]?.props?.length) {
+        const allowed = new Set(
+          refForProps.data.params[0]!.props!.map((p) => p.name),
+        );
+        const keys = findTopLevelObjectKeys(trimmed, obj.start, obj.end);
+        for (const k of keys) {
+          if (!allowed.has(k.name)) continue;
+          const href = getHref(refForProps, getReferenceItemId("prop", k.name));
+          pushRange(anchors, k.start, k.end, href, "prop");
+        }
       }
     }
-  }
 
   // 4) useStoreState states (only if we imported it or namespaced alias exists)
   // Determine whether useStoreState is available
@@ -621,7 +779,7 @@ export function findCodeReferenceAnchors({
     namedImports.has("useStoreState") ||
     namespaceAliases.size > 0 ||
     !hasAnyAriakit;
-  if (hasUseStoreState) {
+  if (hasUseStoreState && likelyHasCalls) {
     const useStoreRe =
       /\buseStoreState\b|\b([A-Za-z_$][\w$]*)\.useStoreState\b/g;
     let ms: RegExpExecArray | null;
@@ -638,10 +796,7 @@ export function findCodeReferenceAnchors({
         const varName = firstArgVarMatch?.[1];
         const ref = (varName && storeVarToRef.get(varName)) || undefined;
         if (ref) {
-          const href = getReferencePath({
-            reference: ref,
-            item: getReferenceItemId("state", r.name),
-          });
+          const href = getHref(ref, getReferenceItemId("state", r.name));
           pushRange(anchors, r.start, r.end, href, "prop");
         }
       }
@@ -668,10 +823,7 @@ export function findCodeReferenceAnchors({
           trimmed.slice(rm.index || 0).indexOf(".") +
           1;
         const end = start + name.length;
-        const href = getReferencePath({
-          reference: ref,
-          item: getReferenceItemId("return-prop", name),
-        });
+        const href = getHref(ref, getReferenceItemId("return-prop", name));
         pushRange(anchors, start, end, href, "prop");
       }
     }
@@ -685,21 +837,38 @@ export function findCodeReferenceAnchors({
     pushRange(anchors, r.start, r.end, href, "prop");
   }
 
-  // Build per-line anchors
+  // Build per-line anchors (anchors-first, binary search per anchor)
   const lines = trimmed.split("\n");
   const byLine: CodeReferenceAnchorRange[][] = lines.map(() => []);
-  let charIndex = 0;
-  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-    const lineStart = charIndex;
-    const lineEnd = lineStart + lines[lineIndex]!.length;
-    for (const a of anchors) {
-      if (a.start < lineEnd && a.end > lineStart) {
-        const start = Math.max(0, a.start - lineStart);
-        const end = Math.min(lines[lineIndex]!.length, a.end - lineStart);
-        byLine[lineIndex]!.push({ ...a, start, end });
-      }
+  const lineStarts: number[] = new Array(lines.length);
+  {
+    let acc = 0;
+    for (let i = 0; i < lines.length; i++) {
+      lineStarts[i] = acc;
+      acc += lines[i]!.length + 1; // include \n
     }
-    charIndex = lineEnd + 1;
+  }
+  function findLineIndex(pos: number) {
+    let low = 0;
+    let high = lineStarts.length - 1;
+    while (low <= high) {
+      const mid = (low + high) >> 1;
+      const start = lineStarts[mid]!;
+      const next =
+        mid + 1 < lineStarts.length ? lineStarts[mid + 1]! : Infinity;
+      if (pos < start) high = mid - 1;
+      else if (pos >= next) low = mid + 1;
+      else return mid;
+    }
+    return Math.max(0, Math.min(lineStarts.length - 1, low));
+  }
+  for (const a of anchors) {
+    const li = findLineIndex(a.start);
+    const lineStart = lineStarts[li]!;
+    const lineLen = lines[li]!.length;
+    const start = Math.max(0, a.start - lineStart);
+    const end = Math.min(lineLen, a.end - lineStart);
+    if (end > start) byLine[li]!.push({ ...a, start, end });
   }
   // Sort by start index per line and merge if overlapping and identical target
   for (const list of byLine) {

@@ -78,7 +78,7 @@ export function ReferenceHovercardAnchor({
 
   return (
     <ak.HovercardProvider
-      placement={inHovercard ? "right" : "top"}
+      placement={inHovercard ? "right" : "bottom"}
       timeout={300}
       hideTimeout={150}
     >
@@ -181,7 +181,14 @@ export function ReferenceHovercard({
     >
       <ak.HovercardArrow />
       <div className="ak-frame-cover/0 ak-frame-cover-start ak-frame-cover-end overflow-clip">
-        <div className="overflow-y-auto overscroll-contain max-h-[calc(100dvh/2.2)] w-124 @container">
+        <div
+          className={clsx(
+            "overflow-y-auto overscroll-contain w-124 @container",
+            inHovercard
+              ? "max-h-[min(calc(100dvh*0.5),32rem)]"
+              : "max-h-[min(calc(100dvh*0.4),32rem)]",
+          )}
+        >
           {data ? (
             <div dangerouslySetInnerHTML={{ __html: data }} />
           ) : (

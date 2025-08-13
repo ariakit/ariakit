@@ -36,6 +36,11 @@ const { reference, item } = parsedUrl;
 
 Astro.locals.framework = reference.data.framework;
 Astro.locals.reference = reference.id;
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, s-maxage=86400, max-age=0"
+);
 ---
 
 {
@@ -45,7 +50,7 @@ Astro.locals.reference = reference.id;
     </div>
   ) : (
     <div class="ak-frame/2 p-0">
-      <ReferenceContent reference={reference} />
+      <ReferenceContent reference={reference} compact />
     </div>
   )
 }

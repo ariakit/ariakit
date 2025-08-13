@@ -29,15 +29,17 @@ import {
   type ReferenceSection,
 } from "#app/lib/reference.ts";
 import type { Reference } from "#app/lib/schemas.ts";
+import { getReferencePath } from "#app/lib/url.ts";
 import type { CollectionEntry } from "astro:content";
 import { encode } from "html-entities";
 
 interface Props {
   reference: CollectionEntry<"references">;
   inert?: boolean;
+  compact?: boolean;
 }
 
-const { reference, inert = false } = Astro.props;
+const { reference, inert = false, compact = false } = Astro.props;
 const data = reference.data;
 
 interface ReferenceSectionContent extends ReferenceSection {
@@ -119,7 +121,9 @@ const formattedExamples = formatExamplesToHtml(data.examples);
 const sections = getSectionsFromData(data);
 const sectionsToRender = getInertSections(sections, inert);
 const hasSectionsToRender = !!sectionsToRender.length;
-const headings = getHeadingsFromSections(sections);
+const headings = getHeadingsFromSections(
+  compact ? sections.map((s) => ({ ...s, items: [] })) : sections
+);
 const storeStateCodeExamplesHtml = [
   `<code class="language-tsx">const value = Ariakit.useStoreState(store, "key");</code>`,
   `<code class="language-tsx">const derived = Ariakit.useStoreState(store, (state) => state.key);</code>`,
@@ -180,30 +184,75 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                       {section.title}
                     </ContentLink>
                   </ContentHeading>
-                  {section.id === "state" && (
+                  {section.id === "state" && !compact && (
                     <Fragment>
-                      <ContentParagraph>{section.description}</ContentParagraph>
+                      {section.description && (
+                        <ContentParagraph>
+                          {section.description}
+                        </ContentParagraph>
+                      )}
                       {storeStateCodeExamplesHtml.map((html) => (
                         <ContentCodeBlock set:html={html} />
                       ))}
                     </Fragment>
                   )}
                   {section.id !== "return-value" && section.items?.length ? (
-                    <Fragment>
-                      <ContentSeparator />
-                      {section.items.map((item, j, b) => (
-                        <Fragment>
-                          <ReferenceItem reference={reference} {...item} />
-                          {canRenderSeparator(a.length - i, b.length - j) && (
-                            <ContentSeparator />
-                          )}
-                        </Fragment>
-                      ))}
-                    </Fragment>
+                    compact ? (
+                      <Fragment>
+                        <ContentParagraph class="grid gap-2">
+                          {section.items.map((item) => (
+                            <ContentLink
+                              className="block w-full [&_code]:block hover:ak-layer-pop bg-transparent!"
+                              href={getReferencePath({
+                                reference,
+                                item: item.id,
+                              })}
+                            >
+                              <code>{item.name}</code>
+                            </ContentLink>
+                          ))}
+                        </ContentParagraph>
+                      </Fragment>
+                    ) : (
+                      <Fragment>
+                        <ContentSeparator />
+                        {section.items.map((item, j, b) => (
+                          <Fragment>
+                            <ReferenceItem reference={reference} {...item} />
+                            {canRenderSeparator(a.length - i, b.length - j) && (
+                              <ContentSeparator />
+                            )}
+                          </Fragment>
+                        ))}
+                      </Fragment>
+                    )
                   ) : null}
                   {section.id === "return-value" && (
                     <Fragment>
-                      {section.items?.length ? (
+                      {compact ? (
+                        <Fragment>
+                          {section.description && (
+                            <Markdown content={section.description} />
+                          )}
+                          {section.items?.length ? (
+                            <Fragment>
+                              <ContentParagraph class="grid gap-2">
+                                {section.items.map((item) => (
+                                  <ContentLink
+                                    className="block w-full [&_code]:block hover:ak-layer-pop bg-transparent!"
+                                    href={getReferencePath({
+                                      reference,
+                                      item: item.id,
+                                    })}
+                                  >
+                                    <code>{item.name}</code>
+                                  </ContentLink>
+                                ))}
+                              </ContentParagraph>
+                            </Fragment>
+                          ) : null}
+                        </Fragment>
+                      ) : section.items?.length ? (
                         <Fragment>
                           {section.description && (
                             <Markdown content={section.description} />
