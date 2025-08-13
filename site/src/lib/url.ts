@@ -121,7 +121,7 @@ export function getReferenceURL({
   const nextUrl = new URL(url ?? DEFAULT_URL);
   const slugPath = slug ? `/${slug}` : "";
   nextUrl.pathname = `/${framework}${COMPONENTS_PATH}/${component}${slugPath}/`;
-  nextUrl.hash = item ? `#${item}` : "";
+  nextUrl.hash = item ? `#${item}` : "#api";
   return nextUrl;
 }
 

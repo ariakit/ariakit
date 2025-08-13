@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import * as Core from "@ariakit/core/hovercard/hovercard-store";
 import { invariant } from "@ariakit/core/utils/misc";
 import * as ak from "@ariakit/react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
@@ -18,8 +17,6 @@ import {
   type ReferenceLabelProps,
 } from "#app/components/reference-label.react.tsx";
 import { getPortalRoot } from "#app/lib/get-portal-root.ts";
-
-const hovercardStore = Core.createHovercardStore({ timeout: 250 });
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,7 +48,8 @@ function getPartialPathFromAnchor(
   if (!("href" in anchor)) return null;
   try {
     const url = new URL(anchor.href, window.location.href);
-    const pathWithHash = `${url.pathname}${url.hash}`;
+    const hash = url.hash.replace("#api", "");
+    const pathWithHash = `${url.pathname}${hash}`;
     const partialPath = `/partials${pathWithHash.replace("#", "?item=")}`;
     return partialPath;
   } catch {
@@ -73,23 +71,22 @@ export function ReferenceHovercardAnchor({
   children,
   ...props
 }: ReferenceHovercardAnchorProps) {
-  const store = ak.useHovercardStore({
-    store: inHovercard ? undefined : hovercardStore,
-    placement: inHovercard ? "right" : "top",
-  });
   const prefetchRef = React.useRef(false);
 
   const labelColors =
     kind && !inCodeBlock ? getReferenceLabelColors(kind) : null;
 
   return (
-    <>
+    <ak.HovercardProvider
+      placement={inHovercard ? "right" : "top"}
+      timeout={300}
+      hideTimeout={150}
+    >
       <ak.HovercardAnchor
         {...props}
-        store={store}
         style={labelColors?.style}
         className={clsx(
-          "ak-link not-hover:decoration-dotted",
+          "ak-link not-hover:decoration-dotted in-inert:no-underline",
           labelColors?.className,
           inCodeBlock && "text-inherit",
           className,
@@ -112,8 +109,8 @@ export function ReferenceHovercardAnchor({
           <code className="text-inherit!">{children}</code>
         )}
       </ak.HovercardAnchor>
-      {inHovercard && <ReferenceHovercard inHovercard store={store} />}
-    </>
+      <ReferenceHovercard inHovercard={inHovercard} />
+    </ak.HovercardProvider>
   );
 }
 
@@ -122,23 +119,22 @@ export interface ReferenceHovercardProps extends ak.HovercardProps {
 }
 
 export function ReferenceHovercard({
-  store: storeProp,
   className,
   inHovercard,
   ...props
 }: ReferenceHovercardProps) {
-  const store = ak.useHovercardStore({ store: storeProp || hovercardStore });
+  const store = ak.useHovercardContext();
   const open = ak.useStoreState(store, "mounted");
   const anchorElement = ak.useStoreState(store, "anchorElement");
 
-  const partialPath = React.useMemo(
-    () => getPartialPathFromAnchor(anchorElement),
-    [anchorElement],
-  );
+  const partialPath = React.useMemo(() => {
+    if (!anchorElement) return null;
+    return getPartialPathFromAnchor(anchorElement);
+  }, [anchorElement]);
 
   React.useEffect(() => {
     const hide = () => {
-      store.hide();
+      store?.hide();
     };
     document.addEventListener("astro:before-preparation", hide);
     return () => {
@@ -157,7 +153,7 @@ export function ReferenceHovercard({
 
   React.useEffect(() => {
     if (!error) return;
-    store.hide();
+    store?.hide();
   }, [error, store]);
 
   const portalElement = React.useCallback(

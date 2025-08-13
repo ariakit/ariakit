@@ -121,7 +121,7 @@ const descriptionText = await descriptionToText(
 );
 
 // Build href to the full API reference page for the default reference
-const referenceHref = reference && `${getReferencePath({ reference })}#api`;
+const referenceHref = reference && getReferencePath({ reference });
 
 function getFunctions() {
   return references.filter(
@@ -139,7 +139,7 @@ function getMenu(
   return references.map((reference) => {
     return {
       label: reference.data.name,
-      href: `${getReferencePath({ reference })}#api`,
+      href: getReferencePath({ reference }),
       kind: reference.data.kind,
       symbols: true,
     } satisfies SidebarMenuItem;

@@ -132,7 +132,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
 }
 ---
 
-<div class="@container">
+<div class="@container" inert={inert}>
   {!inert && <div id="api" class="scroll-mt-(--header-height)" />}
   <div class:list={[inHovercard ? "py-4" : "py-8 @default:pt-16"]}>
     <ContainerRightMenu>

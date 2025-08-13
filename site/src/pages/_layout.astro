@@ -14,7 +14,6 @@ import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import { ClientRouter } from "astro:transitions";
 import Meta from "#app/components/meta.astro";
-import { ReferenceHovercard } from "#app/components/reference-hovercard.react.tsx";
 
 export interface Props {
   title?: string;
@@ -122,7 +121,6 @@ const { title, headerBorder = false } = Astro.props;
         Theme
       </div>
     </div>
-    <ReferenceHovercard client:idle />
   </body>
 </html>
 
