@@ -10,7 +10,7 @@
  */
 import ReferenceContent from "#app/components/reference-content.astro";
 import ReferenceItem from "#app/components/reference-item.astro";
-import { notFound, setCache } from "#app/lib/response.ts";
+import { notFound } from "#app/lib/response.ts";
 import { isReferenceURLLike, parseReferenceURL } from "#app/lib/url.ts";
 import { getCollection } from "astro:content";
 
@@ -23,22 +23,16 @@ const path = itemId
   ? Astro.params.partials + `#${itemId}`
   : Astro.params.partials;
 
-// Cache 404s for 10 minutes
-const headers = setCache({ maxAge: 600 });
-
 if (!isReferenceURLLike(path)) {
-  return notFound(null, { headers });
+  return notFound();
 }
 
 const parsedUrl = parseReferenceURL(path, references);
 if (!parsedUrl) {
-  return notFound("Reference or item not found", { headers });
+  return notFound("Reference or item not found");
 }
 
 const { reference, item } = parsedUrl;
-
-// Cache 200s
-setCache({ maxAge: 86400, sMaxAge: 86400, swr: 86400 }, Astro.response.headers);
 
 Astro.locals.framework = reference.data.framework;
 Astro.locals.reference = reference.id;
