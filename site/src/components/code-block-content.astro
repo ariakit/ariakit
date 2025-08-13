@@ -8,8 +8,11 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { ReferenceHovercardAnchor } from "#app/components/reference-hovercard.react.tsx";
+import { findCodeReferenceAnchors } from "#app/lib/code-block-reference.ts";
 import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
 import { invariant } from "@ariakit/core/utils/misc";
+import { getCollection } from "astro:content";
 import { diffLines, diffWordsWithSpace } from "diff";
 import type { ThemedToken } from "shiki";
 import type { CodeBlockProps } from "./code-block.types";
@@ -24,6 +27,8 @@ interface TokenFragment {
   isHighlighted: boolean;
   tokenIndex: number;
   isDiff?: boolean;
+  charStart: number;
+  charEnd: number;
 }
 
 interface Segment {
@@ -353,7 +358,8 @@ function createHighlightSegments(
   line: ThemedToken[],
   textHighlights: Array<
     ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
-  >
+  >,
+  charOffset = 0
 ) {
   if (!line.some((token) => token.content)) {
     return { isEmpty: true, segments: [] as Segment[] };
@@ -380,6 +386,8 @@ function createHighlightSegments(
         token,
         isHighlighted: false,
         tokenIndex,
+        charStart: charOffset + tokenStart,
+        charEnd: charOffset + tokenEnd,
       });
     } else {
       // Token intersects with highlights - split it
@@ -421,6 +429,8 @@ function createHighlightSegments(
             isHighlighted: !!highlight,
             tokenIndex,
             isDiff: highlight?.isDiff,
+            charStart: charOffset + fragmentStart,
+            charEnd: charOffset + fragmentEnd,
           });
         }
       }
@@ -524,7 +534,8 @@ const linesToRender = (() => {
             ) || [];
           const { isEmpty, segments } = createHighlightSegments(
             subTokens,
-            mergedHighlights
+            mergedHighlights,
+            partStart
           );
           parts.push({ renderType: "segments", isEmpty, segments });
           charIndex += partContent.length;
@@ -581,7 +592,8 @@ const linesToRender = (() => {
     const highlights = highlightsByLine[line.i] || [];
     const { isEmpty, segments } = createHighlightSegments(
       lineTokens,
-      highlights.map((h) => ({ ...h, isDiff: false }))
+      highlights.map((h) => ({ ...h, isDiff: false })),
+      0
     );
     return { ...line, renderType: "segments" as const, isEmpty, segments };
   }) as LinesToRender;
@@ -592,6 +604,49 @@ const hasAddedOrRemoved = diffInfo?.some(
 );
 const showGutter = lineNumbers || hasAddedOrRemoved;
 const showGridColumns = lineNumbers || Boolean(diffInfo);
+
+// Reference hovercards: compute anchor ranges per line
+const references = await getCollection("references");
+const anchorsByLine = findCodeReferenceAnchors({
+  code: code.trim(),
+  references,
+  framework: Astro.locals.framework,
+});
+
+function getFragmentPieces(
+  fragment: TokenFragment,
+  lineZeroBasedIndex: number
+) {
+  const lineAnchors = anchorsByLine?.[lineZeroBasedIndex] || [];
+  const start = fragment.charStart;
+  const end = fragment.charEnd;
+  const pieces: Array<
+    | { type: "text"; start: number; end: number }
+    | { type: "anchor"; start: number; end: number; href: string; kind: any }
+  > = [];
+  let cursor = start;
+  const overlapping = lineAnchors
+    .filter((a) => a.start < end && a.end > start)
+    .sort((a, b) => a.start - b.start);
+  for (const a of overlapping) {
+    const aStart = Math.max(start, a.start);
+    const aEnd = Math.min(end, a.end);
+    if (cursor < aStart)
+      pieces.push({ type: "text", start: cursor, end: aStart });
+    if (aEnd > aStart) {
+      pieces.push({
+        type: "anchor",
+        start: aStart,
+        end: aEnd,
+        href: a.href,
+        kind: a.kind,
+      });
+      cursor = aEnd;
+    }
+  }
+  if (cursor < end) pieces.push({ type: "text", start: cursor, end });
+  return pieces;
+}
 ---
 
 <Fragment>
@@ -719,17 +774,40 @@ const showGridColumns = lineNumbers || Boolean(diffInfo);
                     const { isEmpty, segments } = part;
                     if (isEmpty) return null;
                     return segments.map((segment: Segment) => {
-                      const segmentElements = segment.fragments.map(
-                        ({ content, token }: TokenFragment) => {
-                          const { dark, light } = getTokenColors(token);
-                          return (
+                      const segmentElements = segment.fragments.flatMap(
+                        (fragment: TokenFragment) => {
+                          const { dark, light } = getTokenColors(
+                            fragment.token
+                          );
+                          const pieces = getFragmentPieces(
+                            fragment,
+                            (lineInfo.lineNum || 1) - 1
+                          );
+                          const textFrom = (a: number, b: number) =>
+                            fragment.content.slice(
+                              a - fragment.charStart,
+                              b - fragment.charStart
+                            );
+                          return pieces.map((piece) => (
                             <span
                               style={`--dark:${dark}; --light:${light}`}
                               class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
                             >
-                              {content || ""}
+                              {piece.type === "anchor" ? (
+                                <ReferenceHovercardAnchor
+                                  client:idle
+                                  inCodeBlock
+                                  href={piece.href}
+                                  kind={piece.kind}
+                                  inHovercard={!!Astro.locals.reference}
+                                >
+                                  {textFrom(piece.start, piece.end)}
+                                </ReferenceHovercardAnchor>
+                              ) : (
+                                textFrom(piece.start, piece.end) || ""
+                              )}
                             </span>
-                          );
+                          ));
                         }
                       );
 
@@ -804,17 +882,40 @@ const showGridColumns = lineNumbers || Boolean(diffInfo);
                 {isEmpty
                   ? "\n"
                   : segments.map((segment) => {
-                      const segmentElements = segment.fragments.map(
-                        ({ content, token }: TokenFragment) => {
-                          const { dark, light } = getTokenColors(token);
-                          return (
+                      const segmentElements = segment.fragments.flatMap(
+                        (fragment: TokenFragment) => {
+                          const { dark, light } = getTokenColors(
+                            fragment.token
+                          );
+                          const pieces = getFragmentPieces(
+                            fragment,
+                            (lineInfo.lineNum || 1) - 1
+                          );
+                          const textFrom = (a: number, b: number) =>
+                            fragment.content.slice(
+                              a - fragment.charStart,
+                              b - fragment.charStart
+                            );
+                          return pieces.map((piece) => (
                             <span
                               style={`--dark:${dark}; --light:${light}`}
                               class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
                             >
-                              {content || ""}
+                              {piece.type === "anchor" ? (
+                                <ReferenceHovercardAnchor
+                                  client:idle
+                                  inCodeBlock
+                                  href={piece.href}
+                                  kind={piece.kind}
+                                  inHovercard={!!Astro.locals.reference}
+                                >
+                                  {textFrom(piece.start, piece.end)}
+                                </ReferenceHovercardAnchor>
+                              ) : (
+                                textFrom(piece.start, piece.end) || ""
+                              )}
                             </span>
-                          );
+                          ));
                         }
                       );
 
