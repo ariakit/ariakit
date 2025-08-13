@@ -20,6 +20,11 @@ async function cachePartials(context: APIContext, next: MiddlewareNext) {
   const runtime = context.locals.runtime;
   const cache = runtime.caches.default;
   const cacheKey = new URL(context.request.url);
+
+  if (context.request.method !== "GET") {
+    return next();
+  }
+
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
@@ -33,15 +38,17 @@ async function cachePartials(context: APIContext, next: MiddlewareNext) {
   if (!response.headers.has("Cache-Control")) {
     response.headers.set("Cache-Control", "public, s-maxage=86400, max-age=0");
   }
-  // Store without adding latency if possible
+
   const responseForCache = response.clone() as unknown as CfResponse;
-  const putPromise = cache.put(cacheKey, responseForCache);
   const { waitUntil } = runtime.ctx;
-  waitUntil(putPromise);
+
+  waitUntil(cache.put(cacheKey, responseForCache));
+
   response.headers.set(
     "Cache-Status",
     "Cloudflare; miss; stored=workers-cache",
   );
+
   return response;
 }
 
