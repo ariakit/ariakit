@@ -35,7 +35,7 @@ astro-island,
 astro-slot,
 astro-static-slot {
   display: block !important;
-  :is(a, p, span) & {
+  :is(a, p, li, span, code) & {
     display: inline !important;
   }
 }
