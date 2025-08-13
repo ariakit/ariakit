@@ -66,7 +66,7 @@ function parseAriakitImports(code: string): ImportInfo {
   let hasAriakitImport = false;
 
   const importRe =
-    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/(?:react|solid))(?:-core)?["']/g;
+    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
   let m: RegExpExecArray | null;
   while ((m = importRe.exec(code))) {
     hasAriakitImport = true;
@@ -380,7 +380,7 @@ export function findCodeReferenceAnchors({
 
   // 1) Named imports: anchor local identifiers
   const namedImportRe =
-    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/(?:react|solid))(?:-core)?["']/g;
+    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
   let imp: RegExpExecArray | null;
   while ((imp = namedImportRe.exec(trimmed))) {
     const clause = imp[1] || "";
@@ -388,7 +388,14 @@ export function findCodeReferenceAnchors({
     let block: RegExpExecArray | null;
     while ((block = blockRe.exec(clause))) {
       const inside = block[1] || "";
-      const base = (imp.index || 0) + clause.indexOf(`{${inside}}`) + 1;
+      const full = imp[0] || "";
+      const clauseStartInFull = full.indexOf(clause);
+      const blockStartInClause = block.index || 0;
+      const base =
+        (imp.index || 0) +
+        (clauseStartInFull >= 0 ? clauseStartInFull : 0) +
+        blockStartInClause +
+        1; // position after '{'
       const specRe = /([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?/g;
       let s: RegExpExecArray | null;
       while ((s = specRe.exec(inside))) {
@@ -398,8 +405,10 @@ export function findCodeReferenceAnchors({
         if (!ref) continue;
         // Absolute start of the local name within code
         const specText = s[0]!;
-        const localPosInSpec = specText.lastIndexOf(local);
-        const start = base + (s.index || 0) + localPosInSpec;
+        const exportedIdx = specText.indexOf(exported);
+        const localPosInSpec =
+          exportedIdx === 0 && s[2] ? specText.indexOf(local) : exportedIdx;
+        const start = base + (s.index || 0) + Math.max(0, localPosInSpec);
         const end = start + local.length;
         const href = getReferencePath({ reference: ref });
         const labelKind = (
