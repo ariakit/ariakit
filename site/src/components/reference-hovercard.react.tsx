@@ -61,11 +61,13 @@ function getPartialPathFromAnchor(
 
 export interface ReferenceHovercardAnchorProps extends ak.HovercardAnchorProps {
   inHovercard?: boolean;
+  inCodeBlock?: boolean;
   kind?: ReferenceLabelProps["kind"];
 }
 
 export function ReferenceHovercardAnchor({
   inHovercard,
+  inCodeBlock,
   kind,
   className,
   children,
@@ -77,7 +79,8 @@ export function ReferenceHovercardAnchor({
   });
   const prefetchRef = React.useRef(false);
 
-  const labelColors = kind ? getReferenceLabelColors(kind) : null;
+  const labelColors =
+    kind && !inCodeBlock ? getReferenceLabelColors(kind) : null;
 
   return (
     <>
@@ -88,6 +91,7 @@ export function ReferenceHovercardAnchor({
         className={clsx(
           "ak-link not-hover:decoration-dotted",
           labelColors?.className,
+          inCodeBlock && "text-inherit",
           className,
         )}
         showOnHover={(event) => {
@@ -102,7 +106,11 @@ export function ReferenceHovercardAnchor({
           return true;
         }}
       >
-        <code className="text-inherit!">{children}</code>
+        {inCodeBlock ? (
+          children
+        ) : (
+          <code className="text-inherit!">{children}</code>
+        )}
       </ak.HovercardAnchor>
       {inHovercard && <ReferenceHovercard inHovercard store={store} />}
     </>
