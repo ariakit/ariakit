@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { AstroIntegrationLogger } from "astro";
-import kleur from "kleur";
+import * as kleur from "kleur/colors";
 
 type LogLevel = "info" | "warn" | "error";
 
@@ -53,7 +53,12 @@ function getEventPrefix({
 
 function getEventSuffix({ startTime }: LogOptions = {}) {
   if (!startTime) return;
-  return kleur.dim(`${Math.round(performance.now() - startTime)}ms`);
+  const timeDiff = performance.now() - startTime;
+  const timeDisplay =
+    timeDiff < 750
+      ? `${Math.round(timeDiff)}ms`
+      : `${(timeDiff / 1000).toFixed(2)}s`;
+  return kleur.dim(timeDisplay);
 }
 
 export function createLogger(
@@ -72,9 +77,9 @@ export function createLogger(
     const text =
       typeof message === "string" ? message : JSON.stringify(message, null, 2);
     const firstParam = prefix ? [prefix, text].join(" ") : text;
-    return [firstParam, ...optionalParams, suffix]
-      .filter((param) => param !== undefined)
-      .join(" ");
+    return [firstParam, ...optionalParams, suffix].filter(
+      (param) => param !== undefined,
+    );
   };
   const getLogFn = ({
     level = "info",
@@ -89,8 +94,12 @@ export function createLogger(
     return (...params: any[]) => {
       if (disableInProduction && import.meta.env.PROD) return;
       if (!params.length) return;
-      const log = logger?.[level].bind(logger) || fnMap[level];
-      log(parseParams({ level, timestamp, ...options }, ...params));
+      const args = parseParams({ level, timestamp, ...options }, ...params);
+      if (logger) {
+        logger[level](args.join(" "));
+      } else {
+        fnMap[level](...args);
+      }
     };
   };
   const getLogFns = (options: LogOptions) => {

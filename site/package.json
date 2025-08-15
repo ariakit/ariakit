@@ -5,14 +5,21 @@
   "license": "See license.md",
   "scripts": {
     "dev": "astro dev",
+    "dev-lite": "cross-env LITE=true astro dev",
     "dev-all": "concurrently -k -r 'npm:dev' 'npm:listen-*'",
+    "dev-all-lite": "concurrently -k -r 'npm:dev-lite' 'npm:listen-*'",
     "tsc": "astro check && tsc -b src",
     "build": "astro build",
+    "build-lite": "cross-env LITE=true npm run build",
+    "build-no-cache": "cross-env DISABLE_CACHE=true npm run build",
     "preview": "wrangler dev",
+    "preview-lite": "cross-env LITE=true npm run preview",
+    "preview-no-cache": "cross-env DISABLE_CACHE=true npm run preview",
     "preview-all": "concurrently -k -r 'npm:preview' 'npm:listen-*'",
     "listen-stripe": "stripe listen --forward-to http://localhost:4321/api/stripe-webhook",
     "og-image-clean": "rimraf public/og-image",
-    "og-image-generate": "npm run og-image-clean && node --experimental-strip-types src/pages/og-image/_generate-images.ts"
+    "og-image-generate": "npm run og-image-clean && node --experimental-strip-types src/pages/og-image/_generate-images.ts",
+    "generate-partials-hashes": "node --experimental-strip-types src/scripts/generate-partials-hashes.ts"
   },
   "imports": {
     "#app/*": "./src/*"

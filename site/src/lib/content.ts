@@ -13,13 +13,11 @@ import {
   createMarkdownProcessor,
   type MarkdownProcessor,
 } from "@astrojs/markdown-remark";
-import mdxRenderer from "@astrojs/mdx/server.js";
-import reactRenderer from "@astrojs/react/server.js";
-import { experimental_AstroContainer } from "astro/container";
 import type { Element } from "hast";
 import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
+import { createContainer } from "./astro.ts";
 import { isFramework } from "./frameworks.ts";
 import { rehypeAsTagName } from "./rehype.ts";
 import type { Framework } from "./schemas.ts";
@@ -136,19 +134,10 @@ export async function contentToText(
   component: RenderResult["Content"],
   props: Record<string, any>,
 ) {
-  const container = await experimental_AstroContainer.create();
-  const getServerRenderer = (renderer: typeof mdxRenderer) => ({
-    name: renderer.name,
-    renderer: renderer,
+  const container = await createContainer({
+    renderers: ["mdx", "react"],
+    client: true,
   });
-  container.addServerRenderer(getServerRenderer(mdxRenderer));
-  container.addServerRenderer(getServerRenderer(reactRenderer));
-
-  container.addClientRenderer({
-    name: "@astrojs/react",
-    entrypoint: "@astrojs/react/client.js",
-  });
-
   const result = await container.renderToString(component, { props });
   const sections = parseContentToSections(result);
   return sections;

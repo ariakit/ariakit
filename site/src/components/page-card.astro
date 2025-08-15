@@ -8,92 +8,16 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { importThumbnail } from "#app/lib/import-thumbnail.ts";
-import { generateId } from "#app/lib/string.ts";
-import type { HTMLAttributes } from "astro/types";
+import { renderThumbnail } from "#app/lib/thumbnail.ts";
+import type { ComponentProps } from "astro/types";
+import { PageCard as ReactPageCard } from "./page-card.react.tsx";
 
-interface Props extends HTMLAttributes<"a"> {
+interface Props extends ComponentProps<typeof ReactPageCard> {
   thumbnailId: string;
-  title: string;
-  description?: string;
-  plus?: boolean;
-  size?: "sm" | "md" | "lg";
 }
 
-const {
-  thumbnailId,
-  title,
-  description,
-  plus,
-  size = "md",
-  ...props
-} = Astro.props;
-
-const sizeClass = {
-  sm: "h-32",
-  md: "h-48",
-  lg: "h-64",
-}[size];
-
-const labelId = generateId("label-");
-const descriptionId = description ? generateId("description-") : undefined;
+const { thumbnailId, ...props } = Astro.props;
+const thumbnail = thumbnailId ? await renderThumbnail(thumbnailId) : null;
 ---
 
-<a
-  class:list={[
-    "ak-button ak-command-depth-4 text-wrap ak-layer-(--ak-layer-parent) ak-command-focus:outline-0 ak-command-focus:ak-layer-hover ak-frame-card flex flex-col gap-2 items-stretch font-normal outline-offset-2 group/card justify-start",
-    props.class,
-  ]}
-  aria-labelledby={labelId}
-  aria-describedby={descriptionId}
-  {...props}
->
-  <span class="ak-frame-cover/0">
-    <span
-      inert
-      class:list={[
-        "ak-light:ak-layer-down ak-dark:ak-layer-down-0.3 ak-frame-border ak-frame/4 flex justify-center items-center-safe group-focus-visible/card:ak-layer-contrast-primary overflow-hidden relative [content-visibility:auto]",
-        sizeClass,
-      ]}
-    >
-      {
-        plus && (
-          <span class="ak-frame-cover/1 [--padding:var(--ak-frame-padding)] contents">
-            <span class="absolute top-(--padding) end-(--padding) ak-badge-primary border border-dashed px-(--ak-frame-padding)">
-              <span>Plus</span>
-            </span>
-          </span>
-        )
-      }
-      <span
-        class="group-ak-command-focus/card:ak-layer-white -m-10 !bg-transparent grid content-center-safe group-ak-command-hover/card:scale-75 scale-70 origin-center relative transition-transform duration-600"
-      >
-        {
-          importThumbnail(thumbnailId).then((Thumbnail) => {
-            if (!Thumbnail) return null;
-            return <Thumbnail />;
-          })
-        }
-      </span>
-      <!-- <ProgressiveBlur
-        side="bottom"
-        strength={16}
-        steps={4}
-        tint="var(--ak-layer)"
-        className="translate-y-20"
-      /> -->
-    </span>
-  </span>
-  <span class="flex flex-col gap-1">
-    <span class="flex gap-2 items-center font-semibold">
-      <span id={labelId} class="truncate">{title}</span>
-    </span>
-    {
-      description && (
-        <span id={descriptionId} class="ak-text/70 text-sm">
-          {description}
-        </span>
-      )
-    }
-  </span>
-</a>
+<ReactPageCard thumbnail={thumbnail} {...props} />

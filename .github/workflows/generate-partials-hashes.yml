@@ -1,0 +1,90 @@
+name: Generate partials hashes
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # every day at 4 am
+  push:
+    branches: [main]
+    paths:
+      - "packages/**"
+  workflow_dispatch: {}
+
+jobs:
+  generate-shards:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/4", "2/4", "3/4", "4/4"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build-no-cache -w site
+
+      - name: Start preview server
+        run: npm run preview-no-cache -w site &
+
+      - name: Generate shard partials hashes
+        env:
+          PARTIALS_SHARD: ${{ matrix.shard }}
+          PARTIALS_SHARD_OUT_DIR: partials-shards
+        run: npm run generate-partials-hashes -w site
+
+      - name: Upload shard artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: partials-shard-${{ matrix.shard }}
+          path: site/partials-shards/shard-*.json
+
+  merge-and-commit:
+    runs-on: ubuntu-latest
+    needs: generate-shards
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Download shard artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: partials-shard-*
+          merge-multiple: true
+          path: site/partials-shards
+
+      - name: Merge shard JSON into site/src/partials-hashes.json
+        run: |
+          # Combine shard patches into a single delta
+          jq -s 'add | to_entries | sort_by(.key) | from_entries' site/partials-shards/shard-*.json > site/partials-shards/merged.json
+          # Merge delta into existing file (update only changed keys, preserve others)
+          if [[ -f site/src/partials-hashes.json ]]; then
+            jq -s '.[0] * .[1] | to_entries | sort_by(.key) | from_entries' site/src/partials-hashes.json site/partials-shards/merged.json > site/src/partials-hashes.json.new
+          else
+            cp site/partials-shards/merged.json site/src/partials-hashes.json.new
+          fi
+          mv site/src/partials-hashes.json.new site/src/partials-hashes.json
+
+      - name: Commit and push changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add site/src/partials-hashes.json
+            git commit -m "Update partials"
+            git push
+          else
+            echo "No changes to commit"
+          fi
