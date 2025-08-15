@@ -23,12 +23,14 @@ import {
   type PlusType,
   PlusTypeSchema,
 } from "./schemas.ts";
+import { trimRight } from "./string.ts";
 
 const DEFAULT_URL = new URL("http://localhost:4321");
 const PLUS_ACCOUNT_PATH = "/plus/account";
 const PLUS_CHECKOUT_PATH = "/plus/checkout";
 const COMPONENTS_PATH = "/components";
 const LEGACY_REFERENCE_PATH = "/reference";
+const PARTIALS_PATH = "/partials";
 
 function leadingSlash(path?: string | null) {
   return path ? `/${path}` : "";
@@ -193,7 +195,7 @@ export function parseReferenceURL(
   const referenceId = `${framework}/${component}/${slug}`;
   const reference = references.find((r) => r.id === referenceId);
   if (!reference) return null;
-  const itemId = nextUrl.hash ? nextUrl.hash.replace(/^#/, "") : undefined;
+  const itemId = getReferenceURLItemId(url);
   if (!itemId) return { reference };
   const item = getReferenceItem(reference.data, itemId);
   if (!item) return null;
@@ -218,4 +220,39 @@ export function isReferenceURLLike(
   // Accept legacy shape: /reference/{slug}
   const legacy = getLegacyReferenceURLSegments(nextUrl);
   return Boolean(legacy);
+}
+
+export function getReferenceURLItemId(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const itemId = nextUrl.hash.replace(/^#/, "");
+  if (!itemId) return null;
+  if (itemId === "api") return null;
+  return itemId;
+}
+
+export function referenceURLToPartialPath(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const itemId = getReferenceURLItemId(url);
+  const pathname = `${PARTIALS_PATH}${trimRight(nextUrl.pathname, "/")}/`;
+  if (itemId) {
+    return `${pathname}?item=${itemId}`;
+  }
+  return pathname;
+}
+
+export function getPartialURLItemId(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const itemId = nextUrl.searchParams.get("item");
+  if (!itemId) return null;
+  return itemId;
+}
+
+export function partialURLToReferencePath(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const pathname = `${trimRight(nextUrl.pathname.replace(PARTIALS_PATH, ""), "/")}/`;
+  const item = getPartialURLItemId(url);
+  if (item) {
+    return `${pathname}#${item}`;
+  }
+  return `${pathname}`;
 }

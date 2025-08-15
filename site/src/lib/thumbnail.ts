@@ -7,10 +7,11 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { ComponentType } from "react";
+import { type ComponentType, createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 
 export async function importThumbnail(name?: string) {
-  if (!name) return undefined;
+  if (!name) return;
   const example = name.split("/").shift();
   try {
     const { default: Thumbnail } = await import(
@@ -19,6 +20,12 @@ export async function importThumbnail(name?: string) {
     return Thumbnail as ComponentType;
   } catch (_error) {
     console.log(`Missing thumbnail for ${name}`);
-    return undefined;
+    return;
   }
+}
+
+export async function renderThumbnail(name?: string) {
+  const Thumbnail = await importThumbnail(name);
+  if (!Thumbnail) return;
+  return renderToStaticMarkup(createElement(Thumbnail));
 }

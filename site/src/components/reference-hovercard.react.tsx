@@ -86,7 +86,7 @@ export function ReferenceHovercardAnchor({
         {...props}
         style={labelColors?.style}
         className={clsx(
-          "ak-link not-hover:decoration-dotted in-inert:no-underline",
+          "ak-link not-hover:decoration-dashed decoration-0 in-inert:no-underline",
           labelColors?.className,
           inCodeBlock && "text-inherit",
           className,

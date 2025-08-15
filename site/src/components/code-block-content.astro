@@ -19,6 +19,7 @@ import type { CodeBlockProps } from "./code-block.types";
 
 interface Props extends CodeBlockProps {
   grammarContextCode?: string;
+  lite?: boolean;
 }
 
 interface TokenFragment {
@@ -101,16 +102,23 @@ const {
   highlightLines = [],
   highlightTokens = [],
   grammarContextCode,
+  lite = !!import.meta.env.LITE,
 } = Astro.props;
 
-const { tokens } = highlighter.codeToTokens(code.trim(), {
-  lang,
-  grammarContextCode,
-  themes: {
-    light: "github-light",
-    dark: "dark-plus",
-  },
-});
+function getTokens() {
+  if (lite) return null;
+  const { tokens } = highlighter.codeToTokens(code.trim(), {
+    lang,
+    grammarContextCode,
+    themes: {
+      light: "github-light",
+      dark: "dark-plus",
+    },
+  });
+  return tokens;
+}
+
+const tokens = getTokens();
 
 let diffInfo: DiffInfo | null = null;
 
@@ -149,7 +157,7 @@ function mergeHighlightRanges<
   return merged;
 }
 
-if (previousCode) {
+if (previousCode && tokens) {
   const changes = diffLines(previousCode.trim(), code.trim());
   diffInfo = [];
   let newCodeLineIndex = 0;
@@ -254,7 +262,9 @@ function getTokensForSubstring(
   length: number
 ) {
   const resultTokens: ThemedToken[] = [];
-  if (!lineTokens) return resultTokens;
+  if (!lineTokens) {
+    return resultTokens;
+  }
   let currentPos = 0;
   for (const token of lineTokens) {
     const tokenStart = currentPos;
@@ -474,111 +484,107 @@ function createHighlightSegments(
   return { isEmpty: false, segments };
 }
 
-const linesToRender = (() => {
-  if (diffInfo) {
-    const linesData = diffInfo.map((line, i) => ({
-      ...line,
-      i,
-      key: `diff-${i}`,
-    }));
-    return linesData.map((line) => {
-      if (line.type === "removed") {
-        return { ...line, renderType: line.type };
-      }
+function buildLinesToRenderFromDiff(
+  diff: DiffInfo,
+  lineHighlightsByLine: ReturnType<typeof findAllTextHighlights>[]
+): LinesToRender {
+  const linesData = diff.map((line, i) => ({ ...line, i, key: `diff-${i}` }));
+  return linesData.map((line) => {
+    if (line.type === "removed") {
+      return { ...line, renderType: line.type };
+    }
 
-      if (line.type === "modified-inline") {
-        const parts = [];
-        let charIndex = 0;
-        const lineHighlights =
-          (line.lineNum &&
-            highlightsByLine[line.lineNum - 1]?.map((h) => ({ ...h }))) ||
-          [];
-
-        for (const part of line.diffs || []) {
-          if (part.removed) {
-            parts.push({ renderType: "removed", content: part.value });
-            continue;
-          }
-
-          const partContent = part.value;
-          const partStart = charIndex;
-          const partEnd = partStart + partContent.length;
-
-          const highlightsInPart: Array<
-            ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
-          > = lineHighlights
-            .filter((h) => h.start < partEnd && h.end > partStart)
-            .map((h) => ({
-              ...h,
-              start: h.start - partStart,
-              end: h.end - partStart,
-            }));
-
-          if (part.added) {
-            highlightsInPart.push({
-              start: 0,
-              end: partContent.length,
-              text: partContent,
-              isDiff: true,
-            });
-          }
-
-          // Sort and merge highlights for this part
-          const mergedHighlights = mergeHighlightRanges(highlightsInPart);
-
-          const subTokens =
-            getTokensForSubstring(
-              line.tokens || [],
-              partStart,
-              partContent.length
-            ) || [];
-          const { isEmpty, segments } = createHighlightSegments(
-            subTokens,
-            mergedHighlights,
-            partStart
-          );
-          parts.push({ renderType: "segments", isEmpty, segments });
-          charIndex += partContent.length;
-        }
-        return { ...line, renderType: "parts", parts };
-      }
-
-      const lineTokens = line.tokens || [];
-
-      const highlights: Array<
-        ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
-      > =
+    if (line.type === "modified-inline") {
+      const parts: LinePart[] = [];
+      let charIndex = 0;
+      const lineHighlights =
         (line.lineNum &&
-          highlightsByLine[line.lineNum - 1]?.map((h) => ({ ...h }))) ||
+          lineHighlightsByLine[line.lineNum - 1]?.map((h) => ({ ...h }))) ||
         [];
 
-      if (line.diffs) {
-        // With diff, `highlights` are the added parts of the line
-        let currentPos = 0;
-        for (const part of line.diffs) {
-          if (part.added) {
-            highlights.push({
-              start: currentPos,
-              end: currentPos + part.value.length,
-              text: part.value,
-              isDiff: true,
-            });
-          }
-          if (!part.removed) {
-            currentPos += part.value.length;
-          }
+      for (const part of line.diffs || []) {
+        if (part.removed) {
+          parts.push({ renderType: "removed", content: part.value });
+          continue;
+        }
+
+        const partContent = part.value;
+        const partStart = charIndex;
+        const partEnd = partStart + partContent.length;
+
+        const highlightsInPart: Array<
+          ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
+        > = lineHighlights
+          .filter((h) => h.start < partEnd && h.end > partStart)
+          .map((h) => ({
+            ...h,
+            start: h.start - partStart,
+            end: h.end - partStart,
+          }));
+
+        if (part.added) {
+          highlightsInPart.push({
+            start: 0,
+            end: partContent.length,
+            text: partContent,
+            isDiff: true,
+          });
+        }
+
+        const mergedHighlights = mergeHighlightRanges(highlightsInPart);
+        const subTokens =
+          getTokensForSubstring(
+            line.tokens || [],
+            partStart,
+            partContent.length
+          ) || [];
+        const { isEmpty, segments } = createHighlightSegments(
+          subTokens,
+          mergedHighlights,
+          partStart
+        );
+        parts.push({ renderType: "segments", isEmpty, segments });
+        charIndex += partContent.length;
+      }
+      return { ...line, renderType: "parts", parts };
+    }
+
+    const lineTokens = line.tokens || [];
+    const highlights: Array<
+      ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
+    > =
+      (line.lineNum &&
+        lineHighlightsByLine[line.lineNum - 1]?.map((h) => ({ ...h }))) ||
+      [];
+
+    if (line.diffs) {
+      let currentPos = 0;
+      for (const part of line.diffs) {
+        if (part.added) {
+          highlights.push({
+            start: currentPos,
+            end: currentPos + part.value.length,
+            text: part.value,
+            isDiff: true,
+          });
+        }
+        if (!part.removed) {
+          currentPos += part.value.length;
         }
       }
+    }
 
-      // Sort and merge highlights
-      const merged = mergeHighlightRanges(highlights);
+    const merged = mergeHighlightRanges(highlights);
+    const { isEmpty, segments } = createHighlightSegments(lineTokens, merged);
+    return { ...line, renderType: "segments" as const, isEmpty, segments };
+  }) as LinesToRender;
+}
 
-      const { isEmpty, segments } = createHighlightSegments(lineTokens, merged);
-      return { ...line, renderType: "segments" as const, isEmpty, segments };
-    }) as LinesToRender;
-  }
-
-  const linesData = tokens.map((line, i) => ({
+function buildLinesToRenderFromTokens(
+  tokenLines: ThemedToken[][],
+  lineHighlightsByLine: ReturnType<typeof findAllTextHighlights>[]
+): LinesToRender {
+  const linesData = tokenLines.map((line, i) => ({
     key: `token-${i}`,
     i,
     type: "unchanged" as const,
@@ -589,7 +595,7 @@ const linesToRender = (() => {
 
   return linesData.map((line) => {
     const lineTokens = line.tokens || [];
-    const highlights = highlightsByLine[line.i] || [];
+    const highlights = lineHighlightsByLine[line.i] || [];
     const { isEmpty, segments } = createHighlightSegments(
       lineTokens,
       highlights.map((h) => ({ ...h, isDiff: false })),
@@ -597,6 +603,33 @@ const linesToRender = (() => {
     );
     return { ...line, renderType: "segments" as const, isEmpty, segments };
   }) as LinesToRender;
+}
+
+function buildLinesToRenderFromCode(codeString: string): LinesToRender {
+  const lines = codeString.trim().split("\n");
+  return lines.map((content, i) => {
+    const token = { content, color: "currentColor" } as unknown as ThemedToken;
+    const { isEmpty, segments } = createHighlightSegments([token], []);
+    return {
+      key: `lite-${i}`,
+      i,
+      type: "unchanged" as const,
+      renderType: "segments" as const,
+      isEmpty,
+      segments,
+      lineNum: i + 1,
+    };
+  }) as LinesToRender;
+}
+
+const linesToRender: LinesToRender = (() => {
+  if (lite) {
+    return buildLinesToRenderFromCode(code);
+  }
+  if (diffInfo) {
+    return buildLinesToRenderFromDiff(diffInfo, highlightsByLine);
+  }
+  return buildLinesToRenderFromTokens(tokens || [], highlightsByLine);
 })();
 
 const hasAddedOrRemoved = diffInfo?.some(
@@ -605,13 +638,16 @@ const hasAddedOrRemoved = diffInfo?.some(
 const showGutter = lineNumbers || hasAddedOrRemoved;
 const showGridColumns = lineNumbers || Boolean(diffInfo);
 
-// Reference hovercards: compute anchor ranges per line
-const references = await getCollection("references");
-const anchorsByLine = findCodeReferenceAnchors({
-  code: code.trim(),
-  references,
-  framework: Astro.locals.framework,
-});
+// Reference hovercards: compute anchor ranges per line (disabled in lite mode)
+let anchorsByLine: ReturnType<typeof findCodeReferenceAnchors> = [];
+if (!lite) {
+  const references = await getCollection("references");
+  anchorsByLine = findCodeReferenceAnchors({
+    code: code.trim(),
+    references,
+    framework: Astro.locals.framework,
+  });
+}
 
 function getFragmentPieces(
   fragment: TokenFragment,
@@ -644,7 +680,9 @@ function getFragmentPieces(
       cursor = aEnd;
     }
   }
-  if (cursor < end) pieces.push({ type: "text", start: cursor, end });
+  if (cursor < end) {
+    pieces.push({ type: "text", start: cursor, end });
+  }
   return pieces;
 }
 ---
