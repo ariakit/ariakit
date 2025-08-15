@@ -40,10 +40,18 @@ jobs:
           PARTIALS_SHARD_OUT_DIR: partials-shards
         run: npm run generate-partials-hashes -w site
 
+      - name: Compute sanitized artifact name
+        id: artifact_name
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          SAFE_NAME="partials-shard-${SHARD//\//-}"
+          echo "name=$SAFE_NAME" >> "$GITHUB_OUTPUT"
+
       - name: Upload shard artifact
         uses: actions/upload-artifact@v4
         with:
-          name: partials-shard-${{ matrix.shard }}
+          name: ${{ steps.artifact_name.outputs.name }}
           path: site/partials-shards/shard-*.json
 
   merge-and-commit:
