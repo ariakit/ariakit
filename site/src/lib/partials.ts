@@ -54,6 +54,18 @@ function ensureCacheHeaders(headers: Headers) {
   }
 }
 
+function cloneResponse(
+  response: Response | CfResponse,
+  body: BodyInit,
+  headers?: Headers,
+) {
+  return new Response(body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  }) as unknown as CfResponse;
+}
+
 interface CachePartialsParams {
   context: APIContext;
   hashes: Record<string, string>;
@@ -89,36 +101,27 @@ export async function cachePartials({
     }
     const expectedHash = hashes[hashKey];
     if (expectedHash === cachedHash) {
-      return new Response(body, {
-        status: cached.status,
-        statusText: cached.statusText,
-        headers: cachedHeaders,
-      });
+      return cloneResponse(cached, body, cachedHeaders);
     }
     // If no expected hash or mismatch, fall through to regenerate
   }
 
   const response = await next();
-  if (!response.ok) return response;
+  if (!response.ok) {
+    return response;
+  }
 
-  const responseHeaders = new Headers(Array.from(response.headers.entries()));
-  ensureCacheHeaders(responseHeaders);
+  const headers = new Headers(Array.from(response.headers.entries()));
+  ensureCacheHeaders(headers);
 
   const buffer = await response.arrayBuffer();
   const hash = await getHash(buffer);
-  setHashToHeader(responseHeaders, hash);
-
-  const nextResponse = new Response(buffer, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: responseHeaders,
-  });
+  setHashToHeader(headers, hash);
 
   if (cache) {
-    const responseForCache = nextResponse as unknown as CfResponse;
     const waitUntil = runtime.ctx.waitUntil;
-    waitUntil(cache.put(cacheKey, responseForCache));
+    waitUntil(cache.put(cacheKey, cloneResponse(response, buffer, headers)));
   }
 
-  return nextResponse;
+  return cloneResponse(response, buffer, headers);
 }

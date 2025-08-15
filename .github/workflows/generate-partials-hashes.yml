@@ -29,10 +29,10 @@ jobs:
         run: npm ci
 
       - name: Build site
-        run: npm run build -w site
+        run: npm run build-no-cache -w site
 
       - name: Start preview server
-        run: npm run preview -w site &
+        run: npm run preview-no-cache -w site &
 
       - name: Generate shard partials hashes
         env:
