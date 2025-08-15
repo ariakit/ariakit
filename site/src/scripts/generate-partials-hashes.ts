@@ -147,7 +147,7 @@ async function atomicWriteJson(filePath: string, object: PartialHashes) {
 async function fetchHashEntry(
   partialPath: string,
   baseUrl: string,
-  timeoutMs = 10_000,
+  timeoutMs = 30_000,
 ) {
   const url = new URL(partialPath, baseUrl);
   const key = getHashKey(url);
