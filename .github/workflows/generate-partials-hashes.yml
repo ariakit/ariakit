@@ -7,16 +7,7 @@ on:
     branches: [main]
     paths:
       - "packages/**"
-  workflow_dispatch:
-    inputs:
-      build_mode:
-        description: "Build mode"
-        required: false
-        default: "lite"
-        type: choice
-        options:
-          - lite
-          - full
+  workflow_dispatch: {}
 
 jobs:
   generate-shards:
@@ -38,10 +29,10 @@ jobs:
         run: npm ci
 
       - name: Build site
-        run: npm run build${{ github.event.inputs.build_mode == 'lite' && '-lite' || '' }} -w site
+        run: npm run build -w site
 
       - name: Start preview server
-        run: npm run preview${{ github.event.inputs.build_mode == 'lite' && '-lite' || '' }} -w site &
+        run: npm run preview -w site &
 
       - name: Generate shard partials hashes
         env:

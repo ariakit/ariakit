@@ -1,6 +1,5 @@
 import type { Response as CfResponse } from "@cloudflare/workers-types";
 import type { APIContext, MiddlewareNext } from "astro";
-import partialHashes from "../partials-hashes.json" with { type: "json" };
 import { trimRight } from "./string.ts";
 import { getPartialURLItemId } from "./url.ts";
 
@@ -38,7 +37,7 @@ function normalizeHtmlForHash(html: string) {
   return text;
 }
 
-async function computeStableHtmlAwareHash(bodyBuffer: ArrayBuffer) {
+async function getHash(bodyBuffer: ArrayBuffer) {
   const html = new TextDecoder("utf-8").decode(bodyBuffer);
   const normalized = normalizeHtmlForHash(html);
   const bytes = new TextEncoder().encode(normalized);
@@ -55,7 +54,17 @@ function ensureCacheHeaders(headers: Headers) {
   }
 }
 
-export async function cachePartials(context: APIContext, next: MiddlewareNext) {
+interface CachePartialsParams {
+  context: APIContext;
+  hashes: Record<string, string>;
+  next: MiddlewareNext;
+}
+
+export async function cachePartials({
+  context,
+  hashes,
+  next,
+}: CachePartialsParams) {
   if (context.request.method !== "GET") {
     return next();
   }
@@ -73,21 +82,13 @@ export async function cachePartials(context: APIContext, next: MiddlewareNext) {
   if (cached) {
     const cachedHeaders = new Headers(Array.from(cached.headers.entries()));
     const body = await cached.arrayBuffer();
-
     let cachedHash = getHashFromHeader(cachedHeaders);
     if (!cachedHash) {
-      cachedHash = await computeStableHtmlAwareHash(body);
+      cachedHash = await getHash(body);
       setHashToHeader(cachedHeaders, cachedHash);
     }
-
-    const expectedHash = (partialHashes as unknown as Record<string, string>)[
-      hashKey
-    ];
-
-    if (
-      expectedHash === undefined ||
-      (cachedHash && expectedHash === cachedHash)
-    ) {
+    const expectedHash = hashes[hashKey];
+    if (expectedHash === cachedHash) {
       return new Response(body, {
         status: cached.status,
         statusText: cached.statusText,
@@ -104,22 +105,20 @@ export async function cachePartials(context: APIContext, next: MiddlewareNext) {
   ensureCacheHeaders(responseHeaders);
 
   const buffer = await response.arrayBuffer();
-  const hash = await computeStableHtmlAwareHash(buffer);
+  const hash = await getHash(buffer);
   setHashToHeader(responseHeaders, hash);
 
-  if (cache) {
-    const responseForCache = new Response(buffer, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: responseHeaders,
-    }) as unknown as CfResponse;
-    const waitUntil = runtime.ctx.waitUntil;
-    waitUntil(cache.put(cacheKey, responseForCache));
-  }
-
-  return new Response(buffer, {
+  const nextResponse = new Response(buffer, {
     status: response.status,
     statusText: response.statusText,
     headers: responseHeaders,
   });
+
+  if (cache) {
+    const responseForCache = nextResponse as unknown as CfResponse;
+    const waitUntil = runtime.ctx.waitUntil;
+    waitUntil(cache.put(cacheKey, responseForCache));
+  }
+
+  return nextResponse;
 }

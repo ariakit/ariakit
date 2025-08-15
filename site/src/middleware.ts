@@ -21,7 +21,8 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
   const isPartialPath = /^\/partials\/.+/.test(context.url.pathname);
 
   if (isPartialPath) {
-    return cachePartials(context, next);
+    const { default: partialHashes } = await import("./partials-hashes.json");
+    return cachePartials({ context, next, hashes: partialHashes });
   }
 
   const isAdminAction = action?.name.startsWith("admin");
