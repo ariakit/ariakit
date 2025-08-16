@@ -32,6 +32,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -59,6 +60,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -92,6 +94,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -122,6 +125,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -156,6 +160,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -190,6 +195,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -223,6 +229,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -260,6 +267,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -311,6 +319,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
@@ -373,6 +382,7 @@ jobs:
         with:
           path: |
             node_modules
+            site/node_modules
             packages/*/node_modules
           key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
