@@ -284,6 +284,7 @@ jobs:
           name: app-dist
           path: site/dist
           retention-days: 7
+          include-hidden-files: true
 
   test-chrome:
     name: Test ${{ matrix.name }}
