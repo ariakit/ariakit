@@ -11,19 +11,12 @@ import { getActionContext } from "astro:actions";
 import { clerkMiddleware } from "@clerk/astro/server";
 import type { APIContext, MiddlewareNext } from "astro";
 import { isAdmin } from "./lib/auth.ts";
-import { cachePartials } from "./lib/partials.ts";
 import { unauthorized } from "./lib/response.ts";
 
 const clerk = clerkMiddleware();
 
 export async function onRequest(context: APIContext, next: MiddlewareNext) {
   const { action } = getActionContext(context);
-  const isPartialPath = /^\/partials\/.+/.test(context.url.pathname);
-
-  if (isPartialPath) {
-    const { default: partialHashes } = await import("./partials-hashes.json");
-    return cachePartials({ context, next, hashes: partialHashes });
-  }
 
   const isAdminAction = action?.name.startsWith("admin");
 

@@ -26,10 +26,6 @@
   @apply ak-text font-medium;
 }
 
-@utility ak-paragraph {
-  @apply text-pretty;
-}
-
 @utility ak-prose-leading-* {
   --ak-prose-leading: calc(1em * --value(--leading));
   --ak-prose-leading: --spacing(--value(number));
@@ -63,10 +59,6 @@
 @utility ak-prose-elements {
   :where(h1, h2, h3, h4, h5) {
     @apply ak-heading;
-  }
-
-  :where(p) {
-    @apply ak-paragraph;
   }
 
   :where(ul, ol) {

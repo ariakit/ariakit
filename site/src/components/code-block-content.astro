@@ -19,7 +19,8 @@ import type { CodeBlockProps } from "./code-block.types";
 
 interface Props extends CodeBlockProps {
   grammarContextCode?: string;
-  lite?: boolean;
+  disableSyntaxHighlighting?: boolean;
+  disableReferenceLinks?: boolean;
 }
 
 interface TokenFragment {
@@ -102,11 +103,12 @@ const {
   highlightLines = [],
   highlightTokens = [],
   grammarContextCode,
-  lite = !!import.meta.env.LITE,
+  disableSyntaxHighlighting = !!import.meta.env.DISABLE_SYNTAX_HIGHLIGHTING,
+  disableReferenceLinks = !!import.meta.env.DISABLE_REFERENCE_LINKS,
 } = Astro.props;
 
 function getTokens() {
-  if (lite) return null;
+  if (disableSyntaxHighlighting) return null;
   const { tokens } = highlighter.codeToTokens(code.trim(), {
     lang,
     grammarContextCode,
@@ -623,7 +625,7 @@ function buildLinesToRenderFromCode(codeString: string): LinesToRender {
 }
 
 const linesToRender: LinesToRender = (() => {
-  if (lite) {
+  if (disableSyntaxHighlighting) {
     return buildLinesToRenderFromCode(code);
   }
   if (diffInfo) {
@@ -640,7 +642,7 @@ const showGridColumns = lineNumbers || Boolean(diffInfo);
 
 // Reference hovercards: compute anchor ranges per line (disabled in lite mode)
 let anchorsByLine: ReturnType<typeof findCodeReferenceAnchors> = [];
-if (!lite) {
+if (!disableReferenceLinks) {
   const references = await getCollection("references");
   anchorsByLine = findCodeReferenceAnchors({
     code: code.trim(),

@@ -9,7 +9,6 @@
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'npm:dev-package-json' 'npm:dev -w website'",
     "dev-lite": "cross-env DISABLE_SHIKI=true npm run dev",
-    "dev-site": "npm run dev-all -w site",
     "generate-images": "playwright test -u -c generate-images.config.ts",
     "test": "vitest",
     "test-solid": "ARIAKIT_TEST_LOADER=solid vitest",

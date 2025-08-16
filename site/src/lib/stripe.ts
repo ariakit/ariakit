@@ -60,7 +60,7 @@ function createHttpClient(enabled: boolean) {
   );
 }
 
-const key = import.meta.env?.STRIPE_SECRET_KEY;
+const key = import.meta.env.STRIPE_SECRET_KEY;
 const stripe = key
   ? new Stripe(key, {
       maxNetworkRetries: 2,
