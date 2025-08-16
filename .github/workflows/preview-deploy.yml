@@ -23,15 +23,29 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const jobUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
               state: 'pending',
-              target_url: runUrl,
+              target_url: jobUrl,
               context: 'Preview (commit)'
             });
+
+      - name: Cache node_modules
+        uses: actions/cache/restore@v4
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            site/node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
 
       - name: Download app artifact
         uses: actions/download-artifact@v4
@@ -48,7 +62,6 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          wranglerVersion: latest
           command: versions upload --env preview
 
       - name: Set commit status (result)
@@ -57,9 +70,9 @@ jobs:
         with:
           script: |
             const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const jobUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}';
             const deploymentUrl = '${{ steps.upload.outputs.deployment-url }}';
-            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : runUrl;
+            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : jobUrl;
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -86,27 +99,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Sanitize preview alias
-        id: alias
-        run: |
-          SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
-          echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
-        env:
-          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
-
       - name: Set commit status (pending)
         uses: actions/github-script@v7
         with:
           script: |
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const jobUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
               state: 'pending',
-              target_url: runUrl,
+              target_url: jobUrl,
               context: 'Preview (branch)'
             });
+
+      - name: Cache node_modules
+        uses: actions/cache/restore@v4
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            site/node_modules
+            packages/*/node_modules
+          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+      - name: Sanitize preview alias
+        id: alias
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
+          echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
 
       - name: Download app artifact
         uses: actions/download-artifact@v4
@@ -125,8 +152,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: latest
           command: >-
-            deploy --env preview
-            ${{ github.event.workflow_run.head_branch != 'main' && format('--preview-alias {0}', steps.alias.outputs.slug) || '' }}
+            ${{ github.event.workflow_run.head_branch == 'main' && 'deploy --env preview' || format('versions upload --env preview --preview-alias {0}', steps.alias.outputs.slug) || '' }}
 
       - name: Set commit status (result)
         if: always()
@@ -134,9 +160,9 @@ jobs:
         with:
           script: |
             const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const jobUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}';
             const deploymentUrl = '${{ steps.deploy.outputs.deployment-url }}';
-            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : runUrl;
+            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : jobUrl;
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
