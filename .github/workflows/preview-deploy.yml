@@ -23,13 +23,13 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const jobUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}';
+            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
               state: 'pending',
-              target_url: jobUrl,
+              target_url: runUrl,
               context: 'Preview (commit)'
             });
 
@@ -70,9 +70,9 @@ jobs:
         with:
           script: |
             const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            const jobUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}';
+            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             const deploymentUrl = '${{ steps.upload.outputs.deployment-url }}';
-            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : jobUrl;
+            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : runUrl;
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -103,13 +103,13 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const jobUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}';
+            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
               state: 'pending',
-              target_url: jobUrl,
+              target_url: runUrl,
               context: 'Preview (branch)'
             });
 
@@ -160,9 +160,9 @@ jobs:
         with:
           script: |
             const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            const jobUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}';
+            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             const deploymentUrl = '${{ steps.deploy.outputs.deployment-url }}';
-            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : jobUrl;
+            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : runUrl;
             await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
