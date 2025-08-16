@@ -12,7 +12,6 @@ jobs:
     environment: Preview
     concurrency:
       group: deploy-preview-${{ github.event.workflow_run.head_branch }}
-      cancel-in-progress: true
     permissions:
       actions: read
       contents: read
@@ -21,6 +20,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Check repository
+        id: check-repo
+        run: |
+          if [ "${{ github.event.workflow_run.head_repository.full_name }}" = "${{ github.repository }}" ]; then
+            echo "same_repo=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "same_repo=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set commit status (pending)
         uses: actions/github-script@v7
@@ -34,11 +42,14 @@ jobs:
               state: 'pending',
               target_url: runUrl,
             };
-            github.rest.repos.createCommitStatus({ ...args, context: 'Preview (commit)' });
-            github.rest.repos.createCommitStatus({ ...args, context: 'Preview (branch)' });
+            await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (commit)' });
+            if ('${{ steps.check-repo.outputs.same_repo }}' === 'true') {
+              await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (branch)' });
+            }
 
-      - name: Sanitize preview alias
+      - name: Generate preview alias
         id: alias
+        if: steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch != 'main'
         env:
           HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
@@ -68,40 +79,63 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload app version
-        id: upload
+        id: versions
         uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: >-
-            ${{ github.event.workflow_run.head_branch == 'main' && 'deploy --env preview' || format('versions upload --env preview --preview-alias {0}', steps.alias.outputs.slug) }}
+            versions upload --env preview
+            ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
+
+      - name: Deploy app version
+        if: steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: deploy --env preview
 
       - name: Set commit status (result)
         if: always()
         uses: actions/github-script@v7
         with:
           script: |
-            const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
             const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-            const deploymentUrl = '${{ steps.upload.outputs.deployment-url }}';
-            const aliasUrl = 'https://${{ steps.alias.outputs.slug }}-ariakit-preview.ariakit.workers.dev/';
-            const commitTarget = (state === 'success' && deploymentUrl) ? deploymentUrl : runUrl;
-            const branchTarget = (state === 'success' && aliasUrl) ? aliasUrl : runUrl;
+            const versionsOutcome = '${{ steps.versions.outcome }}';
+            const deployOutcome = '${{ steps.deploy.outcome }}';
+            const deployUrl = '${{ steps.deploy.outputs.deployment-url }}';
+            const versionUrl = '${{ steps.versions.outputs.deployment-url }}';
+            const aliasUrl = '${{ steps.alias.outputs.slug }}' && versionUrl
+              ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${{ steps.alias.outputs.slug }}`)
+              : '';
+            const commitTarget = (versionsOutcome === 'success' && versionUrl)
+              ? versionUrl
+              : '';
+            const branchTarget = (versionsOutcome === 'success' && aliasUrl)
+              ? aliasUrl
+              : (deployOutcome === 'success' && deployUrl) ? deployUrl : '';
             const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
-              state,
-              target_url: commitTarget,
             };
             await github.rest.repos.createCommitStatus({
               ...args,
-              target_url: commitTarget,
+              state: commitTarget ? 'success' : 'failure',
+              target_url: commitTarget || runUrl,
               context: 'Preview (commit)',
             });
-            await github.rest.repos.createCommitStatus({
-              ...args,
-              target_url: branchTarget,
-              context: 'Preview (branch)',
-            });
+            if ('${{ steps.check-repo.outputs.same_repo }}' === 'true') {
+              await github.rest.repos.createCommitStatus({
+                ...args,
+                state: branchTarget ? 'success' : 'failure',
+                target_url: branchTarget || runUrl,
+                context: 'Preview (branch)',
+              });
+            }
