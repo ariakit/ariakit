@@ -10,10 +10,10 @@
     "includes": [
       "**",
       "!**/package.json",
-      "!**/website/.next/**",
-      "!**/website/.pages/**",
-      "!**/site/.astro/**",
-      "!**/site/.types/**",
+      "!**/website/.next",
+      "!**/website/.pages",
+      "!**/site/.astro",
+      "!**/site/.types",
       "!**/*.astro",
       "!**/*.css"
     ]
@@ -48,7 +48,9 @@
         "noShadowRestrictedNames": "off",
         "noConfusingVoidType": "off",
         "noArrayIndexKey": "off",
-        "noAssignInExpressions": "off"
+        "noAssignInExpressions": "off",
+        "noTsIgnore": "off",
+        "useIterableCallbackReturn": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "off",

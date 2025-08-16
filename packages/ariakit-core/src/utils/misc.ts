@@ -132,7 +132,6 @@ export function chain<T>(...fns: T[]) {
   return (...args: T extends AnyFunction ? Parameters<T> : never) => {
     for (const fn of fns) {
       if (typeof fn === "function") {
-        // @ts-ignore
         fn(...args);
       }
     }

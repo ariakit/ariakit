@@ -807,7 +807,7 @@ export function findCodeReferenceAnchors({
   if (storeVarToRef.size) {
     for (const [varName, ref] of storeVarToRef) {
       const re = new RegExp(
-        String.raw`\b${varName.replace(/[$]/g, "\$")}\s*\.\s*([A-Za-z_$][\w$]*)`,
+        String.raw`\b${varName.replace(/[$]/g, "$")}\s*\.\s*([A-Za-z_$][\w$]*)`,
         "g",
       );
       let rm: RegExpExecArray | null;
