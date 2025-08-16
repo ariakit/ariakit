@@ -5,9 +5,10 @@ on:
 
 jobs:
   deploy-production:
+    name: Deploy to production
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    environment: production
+    environment: Production
     permissions:
       contents: read
     steps:
@@ -31,4 +32,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          command: deploy
+          command: deploy --env=""

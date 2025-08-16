@@ -13,7 +13,7 @@ jobs:
       actions: read
       contents: read
       deployments: write
-    environment: preview
+    environment: Preview
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,6 +33,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: latest
           command: versions upload --env preview
 
   deploy-preview:
@@ -46,7 +47,7 @@ jobs:
       actions: read
       contents: read
       deployments: write
-    environment: preview
+    environment: Preview
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -65,4 +66,5 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: latest
           command: deploy --env preview
