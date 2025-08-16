@@ -7,16 +7,29 @@ on:
 
 jobs:
   deploy-preview-version:
-    name: Deploy preview version
+    name: Deploy preview (commit)
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       deployments: write
+      statuses: write
     environment: Preview
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set commit status (pending)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.workflow_run.head_sha }}',
+              state: 'pending',
+              context: 'Preview (commit)'
+            });
 
       - name: Download app artifact
         uses: actions/download-artifact@v4
@@ -36,9 +49,24 @@ jobs:
           wranglerVersion: latest
           command: versions upload --env preview
 
-  deploy-preview:
-    name: Deploy preview
-    if: ${{ github.event.workflow_run.head_branch == 'main' }}
+      - name: Set commit status (result)
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
+            await github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.workflow_run.head_sha }}',
+              state,
+              target_url: '${{ steps.upload.outputs.deployment-url }}',
+              context: 'Preview (commit)'
+            });
+
+  deploy-preview-branch:
+    name: Deploy preview (branch)
+    if: ${{ github.event.workflow_run.head_repository.full_name == github.repository }}
     runs-on: ubuntu-latest
     concurrency:
       group: deploy-preview-${{ github.event.workflow_run.head_branch }}
@@ -47,10 +75,31 @@ jobs:
       actions: read
       contents: read
       deployments: write
+      statuses: write
     environment: Preview
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Sanitize preview alias
+        id: alias
+        run: |
+          SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
+          echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Set commit status (pending)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.workflow_run.head_sha }}',
+              state: 'pending',
+              context: 'Preview (branch)'
+            });
 
       - name: Download app artifact
         uses: actions/download-artifact@v4
@@ -61,10 +110,28 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy app
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: latest
-          command: deploy --env preview
+          command: >-
+            deploy --env preview
+            ${{ github.event.workflow_run.head_branch != 'main' && format('--preview-alias {0}', steps.alias.outputs.slug) || '' }}
+
+      - name: Set commit status (result)
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
+            await github.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: '${{ github.event.workflow_run.head_sha }}',
+              state,
+              target_url: '${{ steps.deploy.outputs.deployment-url }}',
+              context: 'Preview (branch)'
+            });
