@@ -9,8 +9,13 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { ReferenceHovercardAnchor } from "#app/components/reference-hovercard.react.tsx";
-import { parseReferenceURL } from "#app/lib/url.ts";
+import {
+  isLegacyReferenceURLLike,
+  legacyToReferencePath,
+  parseReferenceURL,
+} from "#app/lib/url.ts";
 import type { ComponentProps } from "astro/types";
+import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import { InlineLink } from "./inline-link.react.tsx";
 
@@ -19,8 +24,7 @@ interface Props extends Omit<ComponentProps<typeof InlineLink>, "ref"> {
 }
 
 const {
-  reference = "auto",
-  href,
+  reference = !!import.meta.env.DISABLE_REFERENCE_LINKS ? false : "auto",
   newWindow,
   iconLeft,
   iconRight,
@@ -74,16 +78,24 @@ async function getReferenceText() {
     .trim();
 }
 
-async function getReferenceKind() {
+async function getReferenceKind(
+  convertedHref: string | undefined,
+  references: CollectionEntry<"references">[]
+) {
   if (!reference) return null;
-  const parsed = href
-    ? parseReferenceURL(href, await getCollection("references"))
+  const parsed = convertedHref
+    ? parseReferenceURL(convertedHref, references)
     : null;
   return parsed?.item?.kind ? "prop" : parsed?.reference.data.kind;
 }
 
 const referenceText = await getReferenceText();
-const referenceKind = await getReferenceKind();
+const references = await getCollection("references");
+const href =
+  props.href && isLegacyReferenceURLLike(props.href)
+    ? legacyToReferencePath(props.href, references)
+    : props.href;
+const referenceKind = await getReferenceKind(href, references);
 const shouldOpenInNewWindow = newWindow ?? isExternalLink(href);
 ---
 
@@ -91,20 +103,20 @@ const shouldOpenInNewWindow = newWindow ?? isExternalLink(href);
   referenceText && referenceKind ? (
     <ReferenceHovercardAnchor
       client:idle
-      href={href}
       kind={referenceKind}
       inHovercard={!!Astro.locals.reference}
       {...props}
+      href={href}
     >
       {referenceText}
     </ReferenceHovercardAnchor>
   ) : (
     <InlineLink
-      {...props}
-      href={href}
       newWindow={shouldOpenInNewWindow}
       iconLeft={iconLeft}
       iconRight={iconRight}
+      {...props}
+      href={href}
     >
       <slot />
     </InlineLink>

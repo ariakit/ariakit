@@ -17,6 +17,7 @@ import {
   type ReferenceLabelProps,
 } from "#app/components/reference-label.react.tsx";
 import { getPortalRoot } from "#app/lib/get-portal-root.ts";
+import { trimRight } from "#app/lib/string.ts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,8 +50,8 @@ function getPartialPathFromAnchor(
   try {
     const url = new URL(anchor.href, window.location.href);
     const hash = url.hash.replace("#api", "");
-    const pathWithHash = `${url.pathname}${hash}`;
-    const partialPath = `/partials${pathWithHash.replace("#", "?item=")}`;
+    const pathWithHash = `${trimRight(url.pathname, "/")}/${hash}`;
+    const partialPath = `/partials${pathWithHash.replace("#", "")}`;
     return partialPath;
   } catch {
     return null;

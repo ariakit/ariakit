@@ -172,25 +172,7 @@ export function parseReferenceURL(
 ): ParseReferenceURLResult | null {
   const nextUrl = new URL(url, DEFAULT_URL);
   const segments = getReferenceURLSegments(nextUrl);
-  if (!segments) {
-    // Legacy: /reference/{slug}
-    const legacy = getLegacyReferenceURLSegments(nextUrl);
-    if (!legacy) return null;
-    const framework = "react";
-    const reference = references.find(
-      (r) =>
-        r.data.framework === framework && getReferenceSlug(r) === legacy.slug,
-    );
-    if (!reference) return null;
-    const itemId = nextUrl.hash ? nextUrl.hash.replace(/^#/, "") : undefined;
-    if (!itemId) return { reference };
-    // Legacy hashes may omit the item kind prefix. Assume kind "prop".
-    const item =
-      getReferenceItem(reference.data, itemId) ||
-      getReferenceItem(reference.data, getReferenceItemId("prop", itemId));
-    if (!item) return null;
-    return { reference, item };
-  }
+  if (!segments) return null;
   const { framework, component, slug } = segments;
   const referenceId = `${framework}/${component}/${slug}`;
   const reference = references.find((r) => r.id === referenceId);
@@ -213,13 +195,55 @@ export function isReferenceURLLike(
   if (!url) return false;
   const nextUrl = new URL(url, DEFAULT_URL);
   const segments = getReferenceURLSegments(nextUrl);
-  if (segments) {
-    if (!isFramework(segments.framework)) return false;
-    return true;
-  }
-  // Accept legacy shape: /reference/{slug}
+  if (!segments) return false;
+  return isFramework(segments.framework);
+}
+
+export function isLegacyReferenceURLLike(
+  url?: string | URL | null,
+): url is string | URL {
+  if (!url) return false;
+  const nextUrl = new URL(url, DEFAULT_URL);
   const legacy = getLegacyReferenceURLSegments(nextUrl);
   return Boolean(legacy);
+}
+
+export function legacyToReferenceURL(
+  url: string | URL,
+  references: CollectionEntry<"references">[],
+) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const legacy = getLegacyReferenceURLSegments(nextUrl);
+  if (!legacy) return null;
+  const framework = "react";
+  const reference = references.find(
+    (r) =>
+      r.data.framework === framework && getReferenceSlug(r) === legacy.slug,
+  );
+  if (!reference) return null;
+  const rawItemId = nextUrl.hash ? nextUrl.hash.replace(/^#/, "") : undefined;
+  let itemId: string | undefined;
+  if (rawItemId) {
+    const matchedItem = getReferenceItem(reference.data, rawItemId);
+    if (matchedItem) {
+      itemId = matchedItem.id;
+    } else {
+      const propPrefixed = getReferenceItemId("prop", rawItemId);
+      const propItem = getReferenceItem(reference.data, propPrefixed);
+      if (propItem) {
+        itemId = propItem.id;
+      }
+    }
+  }
+  return getReferenceURL({ reference, item: itemId, url: nextUrl }) ?? null;
+}
+
+export function legacyToReferencePath(
+  url: string | URL,
+  references: CollectionEntry<"references">[],
+) {
+  const referenceUrl = legacyToReferenceURL(url, references);
+  return referenceUrl?.toString().replace(referenceUrl.origin, "");
 }
 
 export function getReferenceURLItemId(url: string | URL) {
@@ -235,7 +259,7 @@ export function referenceURLToPartialPath(url: string | URL) {
   const itemId = getReferenceURLItemId(url);
   const pathname = `${PARTIALS_PATH}${trimRight(nextUrl.pathname, "/")}/`;
   if (itemId) {
-    return `${pathname}?item=${itemId}`;
+    return `${pathname}${itemId}/`;
   }
   return pathname;
 }
