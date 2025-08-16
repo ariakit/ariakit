@@ -23,7 +23,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
@@ -55,7 +55,7 @@ jobs:
         with:
           script: |
             const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
@@ -93,7 +93,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
@@ -127,7 +127,7 @@ jobs:
         with:
           script: |
             const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            await github.repos.createCommitStatus({
+            await github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
