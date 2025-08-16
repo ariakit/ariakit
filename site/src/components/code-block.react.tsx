@@ -145,7 +145,7 @@ export function CodeBlock({
           // "transition-[max-height] duration-300 transition-discrete [interpolate-size:allow-keywords]",
           "[font-size-adjust:0.55]",
           expanded &&
-            "overflow-auto overscroll-contain max-h-[min(calc(100svh-12rem),60rem)]",
+            "overflow-auto overscroll-x-contain max-h-[min(calc(100svh-12rem),60rem)]",
           collapsed &&
             "max-h-[calc(var(--max-lines)*var(--line-height))] overflow-hidden",
           !collapsible && "overflow-auto overscroll-x-contain",
