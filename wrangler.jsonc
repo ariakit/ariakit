@@ -35,8 +35,7 @@
   ],
   "env": {
     "preview": {
-      "name": "ariakit-preview",
-      "main": "./site/dist/_worker.js/index.js"
+      "name": "ariakit-preview"
     }
   }
 }
