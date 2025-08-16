@@ -6,15 +6,18 @@ on:
     types: [completed]
 
 jobs:
-  deploy-preview-version:
-    name: Deploy preview (commit)
+  deploy-preview:
+    name: Deploy preview
     runs-on: ubuntu-latest
+    environment: Preview
+    concurrency:
+      group: deploy-preview-${{ github.event.workflow_run.head_branch }}
+      cancel-in-progress: true
     permissions:
       actions: read
       contents: read
       deployments: write
       statuses: write
-    environment: Preview
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -24,14 +27,23 @@ jobs:
         with:
           script: |
             const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-            await github.rest.repos.createCommitStatus({
+            const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
               state: 'pending',
               target_url: runUrl,
-              context: 'Preview (commit)'
-            });
+            };
+            github.rest.repos.createCommitStatus({ ...args, context: 'Preview (commit)' });
+            github.rest.repos.createCommitStatus({ ...args, context: 'Preview (branch)' });
+
+      - name: Sanitize preview alias
+        id: alias
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
+          echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
 
       - name: Cache node_modules
         uses: actions/cache/restore@v4
@@ -62,7 +74,8 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          command: versions upload --env preview
+          command: >-
+            ${{ github.event.workflow_run.head_branch == 'main' && 'deploy --env preview' || format('versions upload --env preview --preview-alias {0}', steps.alias.outputs.slug) }}
 
       - name: Set commit status (result)
         if: always()
@@ -72,102 +85,23 @@ jobs:
             const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
             const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
             const deploymentUrl = '${{ steps.upload.outputs.deployment-url }}';
-            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : runUrl;
-            await github.rest.repos.createCommitStatus({
+            const aliasUrl = 'https://${{ steps.alias.outputs.slug }}-ariakit-preview.ariakit.workers.dev/';
+            const commitTarget = (state === 'success' && deploymentUrl) ? deploymentUrl : runUrl;
+            const branchTarget = (state === 'success' && aliasUrl) ? aliasUrl : runUrl;
+            const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
               sha: '${{ github.event.workflow_run.head_sha }}',
               state,
-              target_url: target,
-              context: 'Preview (commit)'
-            });
-
-  deploy-preview-branch:
-    name: Deploy preview (branch)
-    if: ${{ github.event.workflow_run.head_repository.full_name == github.repository }}
-    runs-on: ubuntu-latest
-    concurrency:
-      group: deploy-preview-${{ github.event.workflow_run.head_branch }}
-      cancel-in-progress: true
-    permissions:
-      actions: read
-      contents: read
-      deployments: write
-      statuses: write
-    environment: Preview
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set commit status (pending)
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+              target_url: commitTarget,
+            };
             await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: '${{ github.event.workflow_run.head_sha }}',
-              state: 'pending',
-              target_url: runUrl,
-              context: 'Preview (branch)'
+              ...args,
+              target_url: commitTarget,
+              context: 'Preview (commit)',
             });
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
-
-      - name: Sanitize preview alias
-        id: alias
-        env:
-          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
-        run: |
-          SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
-          echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
-
-      - name: Download app artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-dist
-          path: site/dist
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Deploy app
-        id: deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          wranglerVersion: latest
-          command: >-
-            ${{ github.event.workflow_run.head_branch == 'main' && 'deploy --env preview' || format('versions upload --env preview --preview-alias {0}', steps.alias.outputs.slug) || '' }}
-
-      - name: Set commit status (result)
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const state = '${{ job.status }}' === 'success' ? 'success' : 'failure';
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-            const deploymentUrl = '${{ steps.deploy.outputs.deployment-url }}';
-            const target = (state === 'success' && deploymentUrl) ? deploymentUrl : runUrl;
             await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: '${{ github.event.workflow_run.head_sha }}',
-              state,
-              target_url: target,
-              context: 'Preview (branch)'
+              ...args,
+              target_url: branchTarget,
+              context: 'Preview (branch)',
             });
