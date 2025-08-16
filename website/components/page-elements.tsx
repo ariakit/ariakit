@@ -318,7 +318,7 @@ export function PageSection({
   level =
     level ??
     ("data-level" in props
-      ? Number.parseInt(props["data-level"] as string)
+      ? Number.parseInt(props["data-level"] as string, 10)
       : undefined);
 
   const section = (

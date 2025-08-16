@@ -18,8 +18,7 @@
   "editor.snippetSuggestions": "bottom",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll.biome": "explicit"
   },
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

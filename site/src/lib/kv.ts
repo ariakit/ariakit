@@ -147,5 +147,5 @@ export async function getAdminLastSync(context: APIContext) {
   const store = getAdminStore(context);
   const lastSync = await store.get("last-sync");
   if (!lastSync) return;
-  return Number.parseInt(lastSync);
+  return Number.parseInt(lastSync, 10);
 }
