@@ -29,6 +29,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.2.0
         version: 2.2.0
+      '@changesets/apply-release-plan':
+        specifier: 7.0.12
+        version: 7.0.12
       '@changesets/cli':
         specifier: 2.29.6
         version: 2.29.6(@types/node@22.17.2)
