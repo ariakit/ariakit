@@ -19,12 +19,17 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Cache npm
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Cache pnpm store
         uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
+          restore-keys: pnpm-store-
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -34,11 +39,11 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Create PR or publish to npm
         uses: changesets/action@v1

@@ -7,7 +7,7 @@
 This guide is intended to help you get started with contributing to the project. By following these steps — **which should take no more than 30 minutes** —, you will understand the development process and workflow.
 
 1. [Cloning the repository](#cloning-the-repository)
-2. [Installing Node.js and npm](#installing-nodejs-and-npm)
+2. [Installing Node.js and pnpm](#installing-nodejs-and-pnpm)
 3. [Installing dependencies](#installing-dependencies)
 4. [Starting the development server](#starting-the-development-server)
 5. [Creating a component](#creating-a-component)
@@ -56,20 +56,20 @@ Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://g
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
-## Installing Node.js and npm
+## Installing Node.js and pnpm
 
-This repository uses [npm workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces) to manage multiple ESM projects. You need to install **npm v7 or higher** and **Node.js v18 or higher**.
+This repository uses [pnpm workspaces](https://pnpm.io/workspaces) to manage multiple ESM projects. You need to install **pnpm v9 or higher** and **Node.js v18 or higher**.
 
-You can run the following commands in your terminal to check your local Node.js and npm versions:
+You can run the following commands in your terminal to check your local Node.js and pnpm versions:
 
 ```bash
 node -v
-npm -v
+pnpm -v
 ```
 
-If the versions are not correct or you don't have Node.js or npm installed, download them from https://nodejs.org.
+If the versions are not correct or you don't have Node.js or pnpm installed, download Node.js from https://nodejs.org and install pnpm globally with `npm install -g pnpm`.
 
-Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js and npm versions. Once in the project's root directory, run the following command in your terminal:
+Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js version. Once in the project's root directory, run the following command in your terminal:
 
 ```bash
 nvm use
@@ -86,7 +86,7 @@ nvm use
 Once in the project's root directory, run the following command to install the project's dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 <div align="right">
@@ -98,7 +98,7 @@ npm install
 After installing the project's dependencies, run the following command to start the development server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 > If you're on Windows, we recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or [Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit).

@@ -19,12 +19,17 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Cache npm
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Cache pnpm store
         uses: actions/cache@v4
         with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
+          restore-keys: pnpm-store-
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -34,11 +39,11 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
   lint:
     name: Lint
@@ -54,6 +59,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -62,17 +72,17 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Lint CSS
-        run: npm run lint-css
+        run: pnpm run lint-css
 
   typescript:
     name: Type check
@@ -88,6 +98,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -96,14 +111,14 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Type check
-        run: npm run tsc
+        run: pnpm run tsc
 
   build:
     name: Build packages
@@ -119,6 +134,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -127,14 +147,14 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
   test:
     name: Test (${{ matrix.shard }})
@@ -154,6 +174,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -162,14 +187,14 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Test
-        run: npm test -- --shard ${{ matrix.shard }}
+        run: pnpm test -- --shard ${{ matrix.shard }}
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -189,6 +214,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -197,17 +227,17 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Install React 17
-        run: npm run react17
+        run: pnpm run react17
 
       - name: Test
-        run: npm test -- --shard ${{ matrix.shard }}
+        run: pnpm test -- --shard ${{ matrix.shard }}
 
   website:
     name: Build website
@@ -223,6 +253,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -231,11 +266,11 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Cache Next.js
         uses: actions/cache@v4
@@ -245,7 +280,7 @@ jobs:
           restore-keys: nextjs-
 
       - name: Build website
-        run: npm run build-website-lite
+        run: pnpm run build-website-lite
 
   app:
     name: Build app
@@ -261,6 +296,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -269,14 +309,14 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Build app
-        run: npm run build-lite -w site
+        run: pnpm --filter site run build-lite
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v4
@@ -314,6 +354,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -322,18 +367,18 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Cache playwright
         id: cache-playwright
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: playwright-${{ matrix.engine }}-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
           restore-keys: playwright-${{ matrix.engine }}-
 
       - name: Install playwright
@@ -348,7 +393,7 @@ jobs:
 
       - name: Test
         id: test
-        run: xvfb-run npm run playwright -- --project ${{ matrix.project }}
+        run: xvfb-run pnpm run playwright -- --project ${{ matrix.project }}
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -377,6 +422,11 @@ jobs:
         with:
           node-version-file: .nvmrc
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Cache node_modules
         uses: actions/cache/restore@v4
         id: cache-node-modules
@@ -385,17 +435,17 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: pnpm install --frozen-lockfile
 
       - name: Cache playwright
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ms-playwright
-          key: playwright-macos-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: playwright-macos-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
           restore-keys: playwright-macos-
 
       - name: Install playwright
@@ -409,7 +459,7 @@ jobs:
 
       - name: Test
         id: test
-        run: npm run playwright -- --project safari --project ios
+        run: pnpm run playwright -- --project safari --project ios
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
