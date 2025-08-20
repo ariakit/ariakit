@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { execSync } from "child_process";
-import { readFileSync, writeFileSync } from "fs";
+import { execSync } from "node:child_process";
+import { readFileSync, writeFileSync } from "node:fs";
 
 const [, , version] = process.argv;
 
@@ -30,7 +30,10 @@ try {
   console.log(`Installing React ${version}...`);
   execSync("pnpm install --no-frozen-lockfile", { stdio: "inherit" });
 } catch (error) {
-  console.error("Error:", error.message);
+  console.error(
+    "Error:",
+    error instanceof Error ? error.message : String(error),
+  );
   // Always restore original package.json on error
   writeFileSync(packageJsonPath, originalContent);
   process.exit(1);

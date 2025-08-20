@@ -39,6 +39,9 @@
     "website",
     "site",
     "packages/*solid*",
+    "packages/*/cjs/**/*",
+    "packages/*/esm/**/*",
+    "packages/*/dist/**/*",
     "examples/**/*.solid.tsx"
   ]
 }

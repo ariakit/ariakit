@@ -5,10 +5,11 @@
     "jsxImportSource": "solid-js",
     "types": []
   },
-  "include": ["packages/*solid*/**/*"],
+  "include": ["packages/*solid*/src/**/*"],
   "exclude": [
     "packages/*solid*/cjs/**/*",
     "packages/*solid*/esm/**/*",
-    "packages/*solid*/dist/**/*"
+    "packages/*solid*/dist/**/*",
+    "packages/*solid*/solid/**/*"
   ]
 }
