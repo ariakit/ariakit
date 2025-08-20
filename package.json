@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "pnpm start --filter website",
-    "react17": "rm -rf node_modules && npm i --no-save --legacy-peer-deps react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
-    "reactnext": "rm -rf node_modules && npm i --no-save --legacy-peer-deps react@next react-dom@next",
+    "react17": "npm i --no-save --legacy-peer-deps react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
+    "reactnext": "npm i --no-save --legacy-peer-deps react@next react-dom@next",
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm --filter website dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
