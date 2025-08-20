@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "npm install",
-  "buildCommand": "npm run build-website",
-  "devCommand": "npm run dev -- --port $PORT",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm run build-website",
+  "devCommand": "pnpm run dev -- --port $PORT",
   "outputDirectory": "website/.next",
   "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" == \"changeset-release/main\" ]; then exit 0; else exit 1; fi",
   "headers": [
