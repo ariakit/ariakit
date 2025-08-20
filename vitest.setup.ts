@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 
+import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { createElement, Suspense as ReactSuspense, version } from "react";
 import {
@@ -8,7 +9,6 @@ import {
   Suspense as SolidSuspense,
 } from "solid-js/web";
 import failOnConsole from "vitest-fail-on-console";
-import { render as renderReact } from "./packages/ariakit-test/esm/react.js";
 import type { AllowedTestLoader } from "./vitest.config.ts";
 
 if (!version.startsWith("17")) {

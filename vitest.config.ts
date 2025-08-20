@@ -38,26 +38,6 @@ const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
 
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
-  resolve: {
-    alias: {
-      "@ariakit/test": new URL("./packages/ariakit-test/esm", import.meta.url)
-        .pathname,
-      "@ariakit/core": new URL("./packages/ariakit-core/esm", import.meta.url)
-        .pathname,
-      "@ariakit/react": new URL("./packages/ariakit-react/esm", import.meta.url)
-        .pathname,
-      "@ariakit/react-core": new URL(
-        "./packages/ariakit-react-core/esm",
-        import.meta.url,
-      ).pathname,
-      "@ariakit/solid": new URL("./packages/ariakit-solid/esm", import.meta.url)
-        .pathname,
-      "@ariakit/solid-core": new URL(
-        "./packages/ariakit-solid-core/esm",
-        import.meta.url,
-      ).pathname,
-    },
-  },
   test: {
     globals: true,
     watch: false,
