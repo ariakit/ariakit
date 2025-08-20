@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "pnpm start --filter website",
-    "react17": "pnpm add --no-save react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
-    "reactnext": "pnpm add --no-save react@next react-dom@next",
+    "react17": "pnpm add react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
+    "reactnext": "pnpm add react@next react-dom@next",
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm --filter website dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
@@ -92,6 +92,7 @@
     "@playwright/test": "1.54.2",
     "@radix-ui/react-popover": "1.1.15",
     "@radix-ui/react-select": "2.2.6",
+    "@solid-primitives/utils": "6.3.2",
     "@stackblitz/sdk": "1.11.0",
     "@stripe/react-stripe-js": "3.9.0",
     "@stripe/stripe-js": "6.1.0",

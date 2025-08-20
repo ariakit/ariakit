@@ -26,6 +26,7 @@
   "dependencies": {
     "@astrojs/check": "0.9.4",
     "@astrojs/cloudflare": "12.6.4",
+    "@astrojs/markdown-remark": "^6.3.6",
     "@astrojs/react": "4.3.0",
     "@astrojs/solid-js": "5.1.0",
     "@clerk/astro": "2.11.3",
