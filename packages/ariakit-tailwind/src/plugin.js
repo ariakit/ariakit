@@ -57,14 +57,20 @@ const AriakitTailwind = plugin(
       /** @type {Record<string, string>} */
       const values = {};
 
-      if (DEFAULT) values.DEFAULT = DEFAULT;
+      if (DEFAULT) {
+        values.DEFAULT = DEFAULT;
+      }
 
       // Precompute numeric level values
       if (levels) {
-        if (downLevels) values.down = "down-1";
+        if (downLevels) {
+          values.down = "down-1";
+        }
         for (let i = 0; i <= MAX_NON_BARE_LEVELS; i++) {
           values[i] = `${i}`;
-          if (downLevels) values[`down-${i}`] = `down-${i}`;
+          if (downLevels) {
+            values[`down-${i}`] = `down-${i}`;
+          }
         }
       }
 
@@ -893,8 +899,9 @@ const AriakitTailwind = plugin(
             withParentL((parentL) => {
               const step = 100 / LIGHTNESS_LEVELS;
               const threshold = Math.round(SCHEME_THRESHOLD_L / step) * step;
-              if (parentL >= threshold - step && parentL <= threshold + step)
+              if (parentL >= threshold - step && parentL <= threshold + step) {
                 return;
+              }
               const isDark = parentL < SCHEME_THRESHOLD_L;
               const t = isDark ? 1 : -1;
               const multiplier = `(max(53, ${modifier || 75}) * ${t})`;
