@@ -125,8 +125,8 @@ const headings = getHeadingsFromSections(
   compact ? sections.map((s) => ({ ...s, items: [] })) : sections
 );
 const storeStateCodeExamplesHtml = [
-  `<code class="language-tsx">const value = Ariakit.useStoreState(store, "key");</code>`,
-  `<code class="language-tsx">const derived = Ariakit.useStoreState(store, (state) => state.key);</code>`,
+  `<code class="language-tsx">const value = ak.useStoreState(store, "key");</code>`,
+  `<code class="language-tsx">const derived = ak.useStoreState(store, (state) => state.key);</code>`,
 ];
 
 const inHovercard = !!Astro.locals.reference;

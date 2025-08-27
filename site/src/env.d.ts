@@ -10,6 +10,11 @@
 /// <reference types="astro/client" />
 /// <reference types="@clerk/astro/env" />
 
+declare module "*?source" {
+  const source: import("./lib/types.ts").Source;
+  export default source;
+}
+
 type PlusType = import("./lib/schemas.ts").PlusType;
 type Framework = import("./lib/schemas.ts").Framework;
 type User = import("@clerk/astro/server").User;

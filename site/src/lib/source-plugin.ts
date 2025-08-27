@@ -58,10 +58,22 @@ function removeFrameworkSuffixes(filePath: string) {
 }
 
 /**
+ * Whether an import path uses the `#app/*` alias
+ */
+function isAppAliasPath(importPath: string) {
+  return importPath.startsWith("#app/");
+}
+
+/**
  * Remove framework-specific suffixes and replace ../ with ./
  */
 function normalizeImportPath(importPath: string) {
-  return removeFrameworkSuffixes(importPath).replace(/^(\.\.\/)+/, "./");
+  const noFrameworkSuffix = removeFrameworkSuffixes(importPath);
+  // Treat #app alias as local and collapse path to just the filename
+  if (isAppAliasPath(noFrameworkSuffix)) {
+    return `./${basename(noFrameworkSuffix)}`;
+  }
+  return noFrameworkSuffix.replace(/^(\.\.\/)+/, "./");
 }
 
 /**
@@ -107,8 +119,19 @@ async function resolveImport(
   importer: string,
 ) {
   const { resolvedModule } = ts.resolveModuleName(id, importer, {}, host);
-  const external =
-    resolvedModule?.isExternalLibraryImport ?? !id.startsWith(".");
+  let external = resolvedModule?.isExternalLibraryImport ?? !id.startsWith(".");
+  // Any #app/* import is considered local
+  if (isAppAliasPath(id)) {
+    external = false;
+  }
+  if (external) {
+    return {
+      id,
+      external: true,
+      resolvedPath: resolveFrom(dirname(importer), id),
+      resolvedModule,
+    };
+  }
   const resolved = await context.resolve(id, importer);
   if (!resolved) return null;
   const resolvedPath = external
@@ -177,6 +200,7 @@ async function processFile(
   id: string,
   baseDir = dirname(id),
   processedModules = new Set<string>(),
+  preferBasename = false,
 ) {
   // Skip if already processed to avoid circular dependencies
   if (processedModules.has(id)) return;
@@ -184,7 +208,8 @@ async function processFile(
   context.addWatchFile(id);
 
   const content = await fs.promises.readFile(id, "utf-8");
-  const filename = normalizeFilename(getRelativePath(baseDir, id));
+  const relativeName = normalizeFilename(getRelativePath(baseDir, id));
+  const filename = preferBasename ? basename(relativeName) : relativeName;
   source.files[filename] = content;
 
   await addFrameworkDependencies(context, id, source);
@@ -211,6 +236,9 @@ async function processFile(
         resolved.id,
         baseDir,
         processedModules,
+        // If we're already preferring basenames (from a #app root) or the
+        // current import uses the #app alias, keep storing by basename.
+        preferBasename || isAppAliasPath(importPath),
       );
     }
   }

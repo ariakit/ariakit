@@ -80,9 +80,6 @@ const galleries = defineCollection({
     base: join(import.meta.dirname, "examples"),
     generateId: generateExampleId,
   }),
-  schema: z.object({
-    length: z.number().default(1),
-  }),
 });
 
 const previews = defineCollection({

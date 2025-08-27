@@ -97,6 +97,47 @@ function parseAriakitImports(code: string): ImportInfo {
   return { hasAriakitImport, namespaceAliases, namedImports };
 }
 
+function parseLocalImports(code: string) {
+  const localToSource = new Map<string, string>();
+  const allImportRe =
+    /import\s+(type\s+)?([\s\S]*?)\s+from\s*["']([^"']+)["']/g;
+  let m: RegExpExecArray | null;
+  while ((m = allImportRe.exec(code))) {
+    const isType = Boolean(m[1]);
+    if (isType) continue;
+    const clause = m[2] || "";
+    const source = m[3] || "";
+
+    // Namespace import: * as X
+    const nsRe = /\*\s+as\s+([A-Za-z_$][\w$]*)/g;
+    let nsm: RegExpExecArray | null;
+    while ((nsm = nsRe.exec(clause))) {
+      localToSource.set(nsm[1]!, source);
+    }
+
+    // Default import: Name, optionally followed by ,
+    const defRe = /^\s*([A-Za-z_$][\w$]*)\s*(?:,|$)/;
+    const def = defRe.exec(clause);
+    if (def) {
+      localToSource.set(def[1]!, source);
+    }
+
+    // Named imports: { A, B as C }
+    const namedBlockRe = /\{([\s\S]*?)\}/g;
+    let nb: RegExpExecArray | null;
+    while ((nb = namedBlockRe.exec(clause))) {
+      const inside = nb[1] || "";
+      const specRe = /([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?/g;
+      let s: RegExpExecArray | null;
+      while ((s = specRe.exec(inside))) {
+        const local = (s[2] || s[1])!;
+        localToSource.set(local, source);
+      }
+    }
+  }
+  return localToSource;
+}
+
 function pushRange(
   ranges: CodeReferenceAnchorRange[],
   start: number,
@@ -507,15 +548,20 @@ export function findCodeReferenceAnchors({
   const { nameToRef } = getFrameworkReferences(references, framework);
 
   // Lazily parse imports only if present to avoid a regex pass otherwise
-  let hasAnyAriakit = false;
+  // Note: we no longer branch on "has any Ariakit". Keep local imports and
+  // a generic no-import fallback instead.
   let namedImports: Map<string, string> = new Map();
   let namespaceAliases: Set<string> = new Set();
+  let localImports: Map<string, string> = new Map();
   if (likelyHasAriakitImport) {
     const parsed = parseAriakitImports(trimmed);
-    hasAnyAriakit = parsed.hasAriakitImport;
     namedImports = parsed.namedImports;
     namespaceAliases = parsed.namespaceAliases;
   }
+  // Always parse local imports (cheap), so we can avoid false positives when
+  // components are locally imported from non-Ariakit sources.
+  localImports = parseLocalImports(trimmed);
+  const hasAnyImport = /(^|\n)\s*import\b/.test(trimmed);
 
   // Memoize expensive lookups
   const hrefCache = new Map<string, string>();
@@ -590,15 +636,10 @@ export function findCodeReferenceAnchors({
 
   // Helper to anchor component by name with start/end
   function anchorComponentToken(start: number, end: number, name: string) {
-    const ref = nameToRef[name];
+    const exportedName = namedImports.get(name) || name;
+    const ref = nameToRef[exportedName];
     if (!ref) return;
-    pushRange(
-      anchors,
-      start,
-      end,
-      getReferencePath({ reference: ref }),
-      "component",
-    );
+    pushRange(anchors, start, end, getHref(ref), "component");
   }
 
   // 2) Component opening tags
@@ -613,7 +654,9 @@ export function findCodeReferenceAnchors({
       const dotPos = full.lastIndexOf(".");
       const tokenStart = (mc.index || 0) + dotPos + 1;
       const tokenEnd = tokenStart + name.length;
-      if (namespaceAliases.has(ns) || !hasAnyAriakit) {
+      const nsSource = localImports.get(ns);
+      const allowNs = nsSource?.startsWith("@ariakit/") || !hasAnyImport;
+      if (allowNs) {
         anchorComponentToken(tokenStart, tokenEnd, name);
       }
       // Props inside this tag
@@ -631,11 +674,23 @@ export function findCodeReferenceAnchors({
     let mcn: RegExpExecArray | null;
     while ((mcn = compRe.exec(trimmed))) {
       const name = mcn[1]!;
-      if (namedImports.has(name) || !hasAnyAriakit) {
+      // Avoid tokenizing function declarations (export function Name(...))
+      // Check for patterns like: export function Name( or function Name(
+      const beforeIdx = mcn.index || 0;
+      const pre = trimmed.slice(
+        Math.max(0, beforeIdx - 64),
+        beforeIdx + name.length + 1,
+      );
+      if (/\bexport\s+function\s+\w+\s*\(|\bfunction\s+\w+\s*\(/.test(pre))
+        continue;
+      const importedSource = localImports.get(name);
+      const isFromAriakit = importedSource?.startsWith("@ariakit/");
+      if (isFromAriakit || (!importedSource && !hasAnyImport)) {
         const start = (mcn.index || 0) + 1; // after '<'
         const end = start + name.length;
         anchorComponentToken(start, end, name);
-        const ref = nameToRef[name];
+        const exportedName = namedImports.get(name) || name;
+        const ref = nameToRef[exportedName];
         if (ref) {
           const propRanges = findComponentPropRanges(
             trimmed,
@@ -660,7 +715,11 @@ export function findCodeReferenceAnchors({
     while ((call = nsCallRe.exec(trimmed))) {
       const ns = call[1]!;
       const fn = call[2]!;
-      if (!namespaceAliases.has(ns) && hasAnyAriakit) continue;
+      const nsSource = localImports.get(ns);
+      if (!(nsSource?.startsWith("@ariakit/") || !hasAnyImport)) continue;
+      const importedSourceFn = localImports.get(fn);
+      if (importedSourceFn && !importedSourceFn.startsWith("@ariakit/"))
+        continue;
       const ref = nameToRef[fn];
       const storeRef = getStoreRefFromCallableName(fn);
       if (!ref && !storeRef) continue;
@@ -719,8 +778,16 @@ export function findCodeReferenceAnchors({
   if (likelyHasCalls)
     while ((pc = plainCallRe.exec(trimmed))) {
       const local = pc[1]!;
+      // Skip function declarations: export function Local( ... ) or function Local(
+      const beforeIdx = pc.index || 0;
+      const pre = trimmed.slice(Math.max(0, beforeIdx - 64), beforeIdx);
+      if (/(?:^|[^\w])(export\s+)?(?:async\s+)?function\s*$/.test(pre))
+        continue;
+      const localSource = localImports.get(local);
+      // If the local identifier is imported from a non-Ariakit source, skip
+      if (localSource && !localSource.startsWith("@ariakit/")) continue;
       const exported =
-        namedImports.get(local) || (!hasAnyAriakit ? local : undefined);
+        namedImports.get(local) || (!hasAnyImport ? local : undefined);
       if (!exported) continue;
       const ref = nameToRef[exported];
       const storeRef = getStoreRefFromCallableName(exported);
@@ -778,7 +845,7 @@ export function findCodeReferenceAnchors({
   const hasUseStoreState =
     namedImports.has("useStoreState") ||
     namespaceAliases.size > 0 ||
-    !hasAnyAriakit;
+    !hasAnyImport;
   if (hasUseStoreState && likelyHasCalls) {
     const useStoreRe =
       /\buseStoreState\b|\b([A-Za-z_$][\w$]*)\.useStoreState\b/g;
@@ -817,11 +884,9 @@ export function findCodeReferenceAnchors({
       while ((rm = re.exec(trimmed))) {
         const name = rm[1]!;
         if (!allowed.has(name)) continue;
-        const start =
-          (rm.index || 0) +
-          varName.length +
-          trimmed.slice(rm.index || 0).indexOf(".") +
-          1;
+        const matchText = rm[0] || ""; // e.g., "disclosure.getState"
+        const groupStartInMatch = Math.max(0, matchText.lastIndexOf(name));
+        const start = (rm.index || 0) + groupStartInMatch;
         const end = start + name.length;
         const href = getHref(ref, getReferenceItemId("return-prop", name));
         pushRange(anchors, start, end, href, "prop");

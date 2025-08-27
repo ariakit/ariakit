@@ -13,12 +13,52 @@
   }
 }
 
+@custom-variant ak-disclosure-hover {
+  &:has(> :first-child :where(summary, button):hover),
+  &:has(> :where(summary, button):hover),
+  &:where(summary, button):hover {
+    @slot;
+  }
+}
+
+@custom-variant ak-disclosure-group {
+  @container style(--ak-disclosure-group: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ak-not-disclosure-group {
+  @container not style(--ak-disclosure-group: 1) {
+    @slot;
+  }
+}
+
+/* ak-disclosure-group */
+@utility ak-disclosure-group {
+  @apply ak-frame-none/card;
+  --ak-disclosure-group: 1;
+}
+
 /* ak-disclosure */
+@utility ak-disclosure-split {
+  --ak-disclosure-split: 1;
+  @variant ak-disclosure-hover {
+    @apply ak-layer-hover-0;
+  }
+}
+
 @utility ak-disclosure_idle {
-  @apply p-0!;
+  @apply p-0! max-w-[inherit] transition-none duration-300;
+  --ak-disclosure-open: 0;
   --ak-disclosure-padding: var(--ak-frame-padding);
   --ak-disclosure-radius: var(--ak-frame-radius);
-  --ak-disclosure-border: var(--ak-frame-border);
+  --ak-disclosure-border: var(--ak-bordering, var(--ak-frame-border));
+  --ak-disclosure-duration: var(--tw-duration);
+
+  @variant ak-disclosure-group {
+    @apply ak-frame-cover p-0;
+  }
+
   :where(summary) {
     @apply ak-disclosure-button;
   }
@@ -26,12 +66,15 @@
     @apply ak-disclosure-content-base_idle;
   }
   :where(summary ~ *) {
-    @apply p-(--ak-frame-padding);
+    @apply ak-disclosure-content-child;
+  }
+
+  @variant ak-disclosure-hover {
+    @apply base:ak-layer-(--ak-layer-parent) ak-layer-hover;
   }
 }
 
 @utility ak-disclosure_open {
-  @apply delay-0 duration-0;
   --ak-disclosure-open: 1;
   &::details-content {
     @apply ak-disclosure-content-base_open;
@@ -45,17 +88,22 @@
 
 /* ak-disclosure-button */
 @utility ak-disclosure-button_idle {
-  @apply ak-command-depth-x-3 ak-button_idle ak-text;
+  @apply ak-command-depth-x-3 ak-button_idle ak-text ak-layer-current;
   @apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding);
-  @apply w-full justify-start text-wrap text-start;
+  @apply w-full justify-start text-wrap text-start -outline-offset-2 transition-[border-radius];
   --ak-disclosure-button-radius: calc(
     var(--ak-disclosure-radius) - var(--ak-disclosure-border)
   );
+  padding-inline-start: var(--ak-disclosure-ps, var(--ak-frame-padding));
+  transition-duration: calc(var(--ak-disclosure-duration) * 0.5);
+  transition-delay: calc(var(--ak-disclosure-duration) / 1.5);
+  @variant ak-disclosure-group {
+    @apply rounded-[inherit];
+  }
 }
 
-@utility ak-disclosure-button_hover {
-  /* TODO: Fix this in @ariait/tailwind */
-  @apply base:ak-layer-(--ak-layer-parent) ak-layer-hover;
+@utility ak-disclosure-button_open {
+  @apply rounded-b-none delay-0;
 }
 
 @utility ak-disclosure-button_focus {
@@ -72,72 +120,115 @@
 
 @utility ak-disclosure-button {
   @apply ak-disclosure-button_idle;
-  @apply ak-command-hover:ak-disclosure-button_hover;
+  @apply ak-disclosure-open:ak-disclosure-button_open;
   @apply ak-command-focus:ak-disclosure-button_focus;
   @apply ak-command-active:ak-disclosure-button_active;
   @apply ak-command-disabled:ak-disclosure-button_disabled;
 }
 
 /* ak-disclosure-arrow */
-@utility ak-disclosure-arrow-before_idle {
-  @apply h-(--ak-button-leading) w-4 flex-none -rotate-90 self-start bg-current transition-transform duration-300;
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' stroke-width='1.25' stroke='black' fill='none'%3E%3Cpolyline stroke-linecap='round' stroke-linejoin='round' points='4,6 8,10 12,6'%3E%3C/polyline%3E%3C/svg%3E");
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-type: alpha;
-  mask-size: --spacing(4);
+@utility ak-disclosure-chevron-before_idle {
+  @apply ak-icon-chevron;
+  @apply h-(--ak-button-leading) w-(--ak-disclosure-chevron-size) -rotate-90 self-start transition-transform;
+  --ak-disclosure-chevron-size: 1.1em;
+  mask-size: var(--ak-disclosure-chevron-size);
+  transition-duration: var(--ak-disclosure-duration);
 }
 
-@utility ak-disclosure-arrow-before_open {
+@utility ak-disclosure-chevron-before_open {
   @apply rotate-0;
 }
 
-@utility ak-disclosure-arrow-before {
-  @apply ak-disclosure-arrow-before_idle;
+@utility ak-disclosure-chevron-before {
+  @apply ak-disclosure-chevron-before_idle;
   @variant ak-disclosure-open {
-    @apply ak-disclosure-arrow-before_open;
+    @apply ak-disclosure-chevron-before_open;
   }
 }
 
-@utility ak-disclosure-arrow-after_idle {
-  @apply ak-disclosure-arrow-before_idle w-(--ak-button-leading) ms-auto rotate-0;
+@utility ak-disclosure-chevron-after_idle {
+  @apply ak-disclosure-chevron-before_idle ms-auto aspect-square rotate-0;
 }
 
-@utility ak-disclosure-arrow-after_open {
+@utility ak-disclosure-chevron-after_open {
   @apply rotate-180;
 }
 
-@utility ak-disclosure-arrow-after {
-  @apply ak-disclosure-arrow-after_idle;
+@utility ak-disclosure-chevron-after {
+  @apply ak-disclosure-chevron-after_idle;
   @variant ak-disclosure-open {
-    @apply ak-disclosure-arrow-after_open;
+    @apply ak-disclosure-chevron-after_open;
+  }
+}
+
+/* ak-disclosure-plus */
+@utility ak-disclosure-plus-before_idle {
+  @apply h-(--ak-button-leading) w-(--ak-button-leading) flex-none self-start rounded-full transition-[rotate,background-size];
+  --ak-plus-line-thickness: 2px;
+  transition-duration:
+    var(--ak-disclosure-duration), calc(var(--ak-disclosure-duration) / 3);
+  background-image:
+    linear-gradient(currentColor 0 0), linear-gradient(currentColor 0 0);
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size:
+    60% var(--ak-plus-line-thickness),
+    var(--ak-plus-line-thickness) 60%;
+}
+
+@utility ak-disclosure-plus-before_open {
+  @apply rotate-90;
+  background-size: var(--ak-plus-line-thickness) 60%;
+}
+
+@utility ak-disclosure-plus-before {
+  @apply ak-disclosure-plus-before_idle;
+  @variant ak-disclosure-open {
+    @apply ak-disclosure-plus-before_open;
+  }
+}
+
+@utility ak-disclosure-plus-after_idle {
+  @apply ak-disclosure-plus-before_idle ms-auto;
+}
+
+@utility ak-disclosure-plus-after_open {
+  @apply ak-disclosure-plus-before_open;
+}
+
+@utility ak-disclosure-plus-after {
+  @apply ak-disclosure-plus-after_idle;
+  @variant ak-disclosure-open {
+    @apply ak-disclosure-plus-after_open;
   }
 }
 
 /* ak-disclosure-content */
 @utility ak-disclosure-content-base_idle {
-  @apply h-0 overflow-y-clip p-0 transition-[content-visibility,height];
+  @apply z-1 max-h-0 overflow-y-clip rounded-b-[inherit] p-0 transition-[content-visibility,height,max-height];
+  --ak-disclosure-group: 0;
   transition-behavior: allow-discrete;
   interpolate-size: allow-keywords;
 
-  @starting-style {
-    @apply h-0!;
+  html:focus-within & {
+    @starting-style {
+      @apply max-h-0;
+    }
   }
 
   @supports (interpolate-size: allow-keywords) {
-    @apply duration-300;
+    transition-duration: var(--ak-disclosure-duration);
   }
 }
 
 @utility ak-disclosure-content-base_open {
-  @apply h-auto;
+  @apply max-h-max;
 }
 
 @utility ak-disclosure-content_idle {
   @apply ak-disclosure-content-base_idle;
-  > * {
-    padding: var(--ak-frame-padding);
-    padding-block-start: calc(var(--ak-frame-padding) / 4);
+  :where(& > *) {
+    @apply ak-disclosure-content-child;
   }
 }
 
@@ -153,4 +244,17 @@
   @variant ak-disclosure-open {
     @apply ak-disclosure-content_open;
   }
+}
+
+@utility ak-disclosure-content-child {
+  @apply ak-layer-current;
+  @apply rounded-b-[inherit];
+  padding: var(--ak-frame-padding);
+  padding-inline-start: var(--ak-disclosure-ps, var(--ak-frame-padding));
+  padding-block-start: calc(
+    var(--ak-frame-padding) * var(--ak-disclosure-split, 0)
+  );
+  border-block-start-width: calc(
+    var(--ak-disclosure-border) * var(--ak-disclosure-split, 0)
+  );
 }

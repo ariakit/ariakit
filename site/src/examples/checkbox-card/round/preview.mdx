@@ -4,14 +4,6 @@ frameworks:
   - react
 ---
 
-import Preview from "#app/components/preview.astro";
-import ReactExample from "./index.react.tsx";
-import sourceReact from "./index.react.tsx?source";
+import Preview from "./preview.astro";
 
-export const source = {
-  react: sourceReact,
-};
-
-<Preview>
-  <ReactExample client:load slot="react" />
-</Preview>
+<Preview />

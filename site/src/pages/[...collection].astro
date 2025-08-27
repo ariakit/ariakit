@@ -21,7 +21,7 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import { uniq } from "#app/lib/array.ts";
 import {
   filterGuidesByGroup,
-  getGalleryLength,
+  filterPreviews,
   getGuideDetail,
 } from "#app/lib/content.ts";
 import { getFramework } from "#app/lib/frameworks.ts";
@@ -34,29 +34,24 @@ import pluralize from "pluralize";
 
 export const getStaticPaths = (async () => {
   const types = ["components", "examples"] as const;
-  const allEntries = (
-    await Promise.all(types.map((type) => getCollection(type)))
+  const entries = (
+    await Promise.all(types.map((t) => getCollection(t)))
   ).flat();
-  // Get all galleries so we can count the number of items in each gallery.
-  const allGalleries = await getCollection("galleries");
-  // Get all unique frameworks from the entries.
-  const frameworks = uniq(allEntries.flatMap((entry) => entry.data.frameworks));
-  // Create a page for each framework.
+  const previews = await getCollection("previews");
+  const frameworks = uniq(entries.flatMap((entry) => entry.data.frameworks));
+
   return frameworks.flatMap((framework) => {
-    const frameworkEntries = allEntries
+    const frameworkEntries = entries
       .filter((entry) => entry.data.frameworks.includes(framework))
       .sort((a, b) => a.data.title.localeCompare(b.data.title));
-    // Create a page for each type (components, examples).
+
     return types.flatMap((type) => {
       const typeEntries = frameworkEntries.filter(
         (entry) => entry.collection === type
       );
-      const ids = typeEntries.map((entry) => entry.id);
-      const galleries = allGalleries.filter((entry) => ids.includes(entry.id));
-      // Count the total number of gallery items for the current framework and
-      // type.
-      const frameworkLength = getGalleryLength(typeEntries, galleries);
-      // Get all unique tags for the current entries.
+      const typePreviews = previews.filter(filterPreviews({ framework, type }));
+      const frameworkLength = typePreviews.length;
+
       const tags = mapTags(
         typeEntries.flatMap((entry) => entry.data.tags),
         [framework]
@@ -66,7 +61,10 @@ export const getStaticPaths = (async () => {
         const tagEntries = typeEntries.filter(
           (entry) => !!entry.data.tags.find((t) => t === tag?.id)
         );
-        const tagLength = getGalleryLength(tagEntries, galleries);
+        const tagPreviews = typePreviews.filter(
+          filterPreviews({ entries: tagEntries })
+        );
+        const tagLength = tagPreviews.length;
         return { ...tag, length: tagLength };
       });
       // Create a page for each tag, plus a page for all entries (null tag).

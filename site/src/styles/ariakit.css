@@ -9,6 +9,7 @@
 @import "tailwindcss";
 @import "@ariakit/tailwind";
 
+@import "./icon.css";
 @import "./badge.css";
 @import "./command.css";
 @import "./button.css";
@@ -25,9 +26,11 @@
 @import "./input.css";
 @import "./kbd.css";
 @import "./link.css";
+@import "./progress.css";
 @import "./list.css";
 @import "./heading.css";
 @import "./segmented.css";
+@import "./table.css";
 @import "./prose.css";
 
 @theme {
@@ -64,7 +67,8 @@
 :root {
   @variant dark {
     --color-canvas: oklch(16.52% 0.0062 285.7);
-    /* --color-canvas: theme(--color-slate-900); */
+    /* --color-canvas: theme(--color-slate-950); */
+    --color-canvas: oklch(16.34% 0.0091 264.28);
   }
 }
 

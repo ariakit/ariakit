@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 @utility ak-option_idle {
-  @apply ak-frame-field/2 ak-command_idle;
+  @apply ak-command_idle ak-frame-field/2;
 }
 
 @utility ak-option_hover {
@@ -15,7 +15,8 @@
 }
 
 @utility ak-option_focus {
-  @apply ak-layer-contrast-primary outline-none;
+  @apply ak-command_focus ak-layer-contrast-primary;
+  @apply outline-none;
 }
 
 @utility ak-option_active {

@@ -75,6 +75,7 @@
 }
 
 @utility ak-tab-folder_focus {
+  @apply ak-command_focus;
   @apply outline-none;
   &:not(:last-child)::after {
     @apply border-transparent;

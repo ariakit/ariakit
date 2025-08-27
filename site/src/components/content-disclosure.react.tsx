@@ -44,7 +44,7 @@ export function ContentDisclosureButton(props: ContentDisclosureButtonProps) {
     <ak.Disclosure
       {...props}
       className={clsx(
-        "ak-disclosure-button before:ak-disclosure-arrow-before @max-3xl:px-0",
+        "ak-disclosure-button before:ak-disclosure-chevron-before @max-3xl:px-0",
         props.className,
       )}
     />

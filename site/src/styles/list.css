@@ -8,13 +8,25 @@
  */
 
 @custom-variant ak-list-blocks {
-  &:has(p, div, details, h1, h2, h3, h4) {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
     @slot;
   }
 }
 
 @custom-variant ak-list-sections {
-  &:has(h1, h2, h3, h4) {
+  &:has(:where(h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+@custom-variant ak-list-ol {
+  @container style(--ak-list-ol: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ak-list-ul {
+  @container style(--ak-list-ul: 1) {
     @slot;
   }
 }
@@ -32,22 +44,59 @@
   @apply leading-(--ak-list-leading);
 }
 
+@utility ak-list-item-padding-* {
+  --ak-list-item-padding: --spacing(--value(number));
+  --ak-list-item-padding: --value(--spacing, [*]);
+}
+
+@utility ak-list-item-border-* {
+  --ak-list-border-width-number: --value(number);
+  --ak-list-border-width: calc(--value(number) * 1px);
+}
+
 /* ak-list variants */
 @utility ak-list-blocks {
-  --ak-list-gap: calc(var(--_ak-list-gap) * 1.25);
+  --ak-list-gap: calc(var(--_ak-list-gap) * 0.75 - var(--ak-list-item-padding));
+  @apply ak-list-item-padding-2;
+  &:where(ol) {
+    @apply ak-list-item-border-1;
+  }
+  &:where(ul) {
+    @apply ak-list-item-border-0;
+  }
 }
 
 @utility ak-list-sections {
-  @apply not-first:mt-[1em];
-  --ak-list-gap: calc(var(--_ak-list-gap) * 2);
+  --ak-list-gap: calc(var(--_ak-list-gap) * 1 - var(--ak-list-item-padding));
+}
+
+@utility ak-list-ol {
+  --ak-list-ol: 1;
+  --ak-list-ul: 0;
+}
+
+@utility ak-list-ul {
+  --ak-list-ol: 0;
+  --ak-list-ul: 1;
 }
 
 /* ak-list */
 @utility ak-list {
-  @apply ak-list-gap-6 ak-list-leading-normal;
-  @apply gap-(--ak-list-gap) flex flex-col;
-  --ak-list-gap: calc(var(--_ak-list-gap) * 0.5);
-  counter-reset: ak-list;
+  @apply ak-list-gap-4 ak-list-leading-normal ak-list-counter-reset ak-list-item-padding-1;
+  @apply gap-(--ak-list-gap) grid;
+  --ak-list-gap: calc(var(--_ak-list-gap) * 0.5 - var(--ak-list-item-padding));
+  --ak-list-item-ps: calc(var(--ak-list-leading) + --spacing(1.5));
+  --ak-list-item-marker-center: calc(var(--ak-list-leading) * 0.5);
+  --ak-list-counter-margin: 0.2em;
+  &:where(ul) {
+    @apply ak-list-ul;
+  }
+  &:where(ol) {
+    @apply ak-list-ol;
+  }
+  & & {
+    @apply ak-list-gap-2;
+  }
   @variant ak-list-blocks {
     @apply ak-list-blocks;
   }
@@ -56,180 +105,221 @@
   }
 }
 
-/* ak-list-item elements and variants */
-@utility ak-list-item-blocks {
-  @apply gap-(--ak-list-item-gap) flex flex-col;
-  --ak-list-item-gap: calc(var(--ak-list-gap) * 0.5);
+/* ak-list-counter */
+@utility ak-list-counter-reset {
+  counter-reset: ak-list;
 }
 
+@utility ak-list-counter-increment {
+  counter-increment: ak-list;
+}
+
+@utility ak-list-counter-content {
+  content: counter(ak-list) !important;
+}
+
+@utility ak-list-counter {
+  @apply ak-layer-pop-2 ak-list-counter-content;
+  @apply size-(--ak-list-counter-size) relative flex-none self-start rounded-full text-center font-semibold;
+  --_ak-list-counter-margin: var(--ak-list-counter-margin, 0.2em);
+  --ak-list-counter-leading: var(--ak-button-leading, --spacing(6));
+  --ak-list-counter-size: calc(
+    var(--ak-list-counter-leading) - var(--_ak-list-counter-margin) * 2
+  );
+  font-size-adjust: 0.4;
+  line-height: var(--ak-list-counter-size);
+  margin: var(--_ak-list-counter-margin);
+}
+
+/* ak-list-item elements and variants */
 @utility ak-list-item-ul-marker {
   @apply ak-layer-current ak-edge/40;
-  @apply z-3 absolute left-0 w-4 border-b;
+  @apply absolute left-0 border-b;
   content: "";
-  top: calc(var(--ak-list-leading) * 0.5);
+  width: calc(var(--ak-list-leading) * 0.5);
+  top: calc(var(--ak-list-leading) * 0.5 + var(--ak-frame-padding));
+  left: calc(var(--ak-list-leading) * 0.25 + var(--ak-frame-padding));
 }
 
 @utility ak-list-item-ul {
   @apply before:ak-list-item-ul-marker;
-  --ak-list-item-ps: --spacing(6);
-  padding-inline-start: var(--ak-list-item-ps);
 }
 
 @utility ak-list-item-ol-marker {
-  @apply ak-layer-pop-2 ak-text;
-  @apply size-(--ak-list-item-ol-marker-size) pointer-events-none absolute top-0 -translate-x-1/2 rounded-full text-center font-semibold;
-  --ak-list-item-ol-marker-margin: 0.2em;
-  --ak-list-item-ol-marker-size: calc(
-    var(--ak-list-leading) - var(--ak-list-item-ol-marker-margin) * 2
-  );
-  content: counter(ak-list);
+  @apply ak-list-counter;
+  @apply pointer-events-none absolute border-0;
+  --ak-list-counter-leading: var(--ak-list-leading);
   font-size-adjust: 0.45;
-  line-height: var(--ak-list-item-ol-marker-size);
-  margin: var(--ak-list-item-ol-marker-margin);
-  left: calc(
-    var(--ak-list-item-left-center) - var(--ak-list-item-ol-marker-margin)
-  );
+  top: var(--ak-frame-padding);
+  left: var(--ak-frame-padding);
 }
 
 @utility ak-list-item-ol-border {
+  @apply relative;
   --ak-list-border-gap: --spacing(1);
-  --ak-list-border-width: 1px;
   --ak-list-border-top: calc(
-    var(--ak-list-leading) + var(--ak-list-border-gap)
+    var(--ak-list-leading) + var(--ak-list-border-gap) + var(--ak-frame-padding)
   );
   /* Border segment */
   &::after {
     @apply ak-layer-pop-2;
-    @apply z-1 pointer-events-none absolute left-0 h-full;
+    @apply z-2 pointer-events-none absolute h-full;
     content: "";
     width: var(--ak-list-border-width);
     top: var(--ak-list-border-top);
     left: calc(
-      var(--ak-list-item-left-center) - var(--ak-list-border-width) / 2
+      var(--ak-list-item-marker-center) - var(--ak-list-border-width) / 2 +
+        var(--ak-frame-padding)
     );
     height: calc(
-      100% - var(--ak-list-border-top) + var(--ak-list-gap) -
-        var(--ak-list-border-gap)
+      100% + max(0px, var(--ak-list-gap)) +
+        max(var(--ak-list-gap), var(--ak-frame-padding)) -
+        var(--ak-list-border-gap) - var(--ak-list-border-top)
     );
   }
   /* Make the final border segment match the content’s height */
-  &:last-of-type::after {
+  li:last-of-type > &::after,
+  &:is(li):last-of-type::after {
     @apply from-(--ak-layer) bg-transparent bg-gradient-to-b from-[calc(100%-1rem)] to-transparent;
     height: calc(100% - var(--ak-list-border-top));
   }
 }
 
 @utility ak-list-item-ol {
-  --ak-list-item-ps: calc(var(--ak-list-leading) + --spacing(1));
-  padding-inline-start: var(--ak-list-item-ps);
-  counter-increment: ak-list;
+  @apply ak-list-counter-increment;
   &::before {
     @apply ak-list-item-ol-marker;
   }
   @variant ak-list-blocks {
     @apply ak-list-item-ol-border;
   }
+  &:has(~ :is(p, div, details, h1, h2, h3, h4)),
+  *:has(p, div, details, h1, h2, h3, h4) ~ & {
+    @apply ak-list-item-ol-border;
+  }
+}
+
+@utility ak-list-item_base {
+  @apply ak-frame-card/(--ak-list-item-padding);
+  @apply leading-(--ak-list-leading) relative;
+  --ak-list-item-base-ps: calc(
+    var(--ak-frame-padding) + var(--ak-list-item-ps)
+  );
+  padding-inline-start: var(--ak-list-item-base-ps);
+  @variant ak-list-ul {
+    @apply ak-list-item-ul;
+  }
+  @variant ak-list-ol {
+    @apply ak-list-item-ol;
+  }
+}
+
+@utility ak-list-item-blocks {
+  @apply gap-(--ak-list-item-gap) grid;
+  --ak-list-item-gap: calc(
+    var(--ak-list-gap) + var(--ak-list-item-padding) * 0.5
+  );
 }
 
 /* ak-list-item */
 @utility ak-list-item {
-  @apply relative;
-  --ak-list-item-left-center: calc(var(--ak-list-leading) / 2 - --spacing(1));
-  @variant ak-list-blocks {
-    @apply ak-list-item-blocks;
-  }
-  ul > & {
-    @apply ak-list-item-ul;
-  }
-  ol > & {
-    @apply ak-list-item-ol;
+  &:not(:has(> details)) {
+    @apply ak-list-item_base;
+    @variant ak-list-blocks {
+      @apply ak-list-item-blocks;
+    }
   }
   & > details {
-    @apply ak-list-item-disclosure;
-    & > :where(summary + *:only-of-type) {
-      @apply ak-list-item-disclosure-content;
+    @apply ak-disclosure ak-list-disclosure;
+    > summary {
+      @apply ak-list-disclosure-button;
+      + * {
+        @apply ak-list-disclosure-content-child;
+      }
     }
   }
 }
 
-@utility ak-list-item-disclosure_idle {
-  @apply ak-disclosure_idle;
-  @apply gap-(--ak-list-item-gap) -my-(--ak-frame-padding) -me-(--ak-frame-padding) z-2 flex-col;
-  margin-inline-start: calc(
-    (
-        var(--ak-list-item-ps) + var(--ak-list-item-left-center) +
-          var(--ak-frame-border)
-      ) *
-      -1
+@utility ak-list-disclosure {
+  @apply ak-list-item_base;
+  --ak-disclosure-ps: calc(
+    var(--ak-frame-padding) + var(--ak-list-item-ps) *
+      min(1, var(--ak-list-border-width-number))
   );
-  @layer base {
-    @apply ak-frame-card/(--ak-list-item-disclosure-padding);
-    --ak-list-item-disclosure-padding: calc(var(--ak-list-item-gap) / 1.5);
-  }
-  & > :where(summary) {
-    @apply ak-list-item-disclosure-button;
-  }
 }
 
-@utility ak-list-item-disclosure_open {
-  @apply ak-disclosure_open;
-}
-
-@utility ak-list-item-disclosure {
-  @apply ak-list-item-disclosure_idle;
-  @apply open:ak-list-item-disclosure_open;
-}
-
-@utility ak-list-item-disclosure-button_idle {
-  @apply ak-disclosure-button_idle after:ak-disclosure-arrow-after;
-  @apply after:ms-0;
-  --ak-button-leading: var(--ak-list-leading);
-  padding-inline-start: calc(
-    var(--ak-list-item-ps) + var(--ak-list-item-left-center)
-  );
-  /* Add back the markers for the list item. */
-  ul > li &::before {
-    @apply ak-list-item-ul-marker;
-    margin-top: var(--ak-frame-padding);
-    translate: var(--ak-list-item-left-center) 0;
+@utility ak-list-disclosure-button {
+  @apply after:ak-disclosure-chevron-after after:ms-0;
+  --ak-button-leading: var(--ak-list-leading) !important;
+  --ak-disclosure-ps: var(--ak-list-item-base-ps);
+  @variant ak-list-ol {
+    @apply before:ak-list-item-ol-marker;
   }
-  ol > li &::before {
-    @apply ak-list-item-ol-marker;
-    top: var(--ak-frame-padding);
-    left: calc(
-      var(--ak-list-item-left-center) * 2 - var(--ak-list-item-ol-marker-margin)
-    );
+  @variant ak-list-ul {
+    @apply before:ak-list-item-ul-marker;
   }
 }
 
-@utility ak-list-item-disclosure-button_hover {
-  @apply ak-disclosure-button_hover;
+@utility ak-list-disclosure-content {
+  :where(& > *) {
+    @apply ak-list-disclosure-content-child;
+  }
 }
 
-@utility ak-list-item-disclosure-button_focus {
-  @apply ak-disclosure-button_focus;
+@utility ak-list-disclosure-content-child {
+  @apply ak-list-item-blocks;
+  padding-block-start: calc(var(--ak-list-item-gap) - var(--ak-frame-padding));
 }
 
-@utility ak-list-item-disclosure-button_active {
-  @apply ak-disclosure-button_active;
+/* ak-list-item-check */
+@utility ak-list-item-check-base {
+  @apply ak-list-item-ol-marker ak-layer-pop ak-edge/25;
+  @apply ring ring-inset;
+  &::before {
+    content: "" / "Unchecked" !important;
+  }
 }
 
-@utility ak-list-item-disclosure-button_disabled {
-  @apply ak-disclosure-button_disabled;
+@utility ak-list-item-check-ul {
+  @apply ak-list-item-check-base;
+  li:has(&) {
+    @apply before:hidden after:hidden;
+  }
 }
 
-@utility ak-list-item-disclosure-button {
-  @apply ak-list-item-disclosure-button_idle;
-  @apply ak-command-hover:ak-list-item-disclosure-button_hover;
-  @apply ak-command-focus:ak-list-item-disclosure-button_focus;
-  @apply ak-command-active:ak-list-item-disclosure-button_active;
-  @apply ak-command-disabled:ak-list-item-disclosure-button_disabled;
+@utility ak-list-item-check-ol {
+  @apply ak-list-item-check-base;
+  @apply bg-transparent ring-0;
 }
 
-@utility ak-list-item-disclosure-content {
-  @apply gap-(--ak-list-item-gap) flex flex-col;
-  padding-inline-start: calc(
-    var(--ak-list-item-ps) + var(--ak-list-item-left-center)
-  );
-  padding-inline-end: var(--ak-disclosure-padding);
+@utility ak-list-item-check {
+  @variant ak-list-ol {
+    @apply ak-list-item-check-ol;
+  }
+  @variant ak-list-ul {
+    @apply ak-list-item-check-ul;
+  }
+}
+
+@utility ak-list-item-check_checked {
+  @apply ak-layer-contrast-primary;
+  @apply ring-0;
+  &::before {
+    @apply ak-icon-check;
+    mask-size: 60%;
+    content: "" / "Checked";
+  }
+}
+
+@utility ak-list-item-check-progress-* {
+  @apply before:ak-progress-circular-fill ak-progress-value-(--value);
+  --value: calc(--value(number) / 100);
+  --value: calc(--value(ratio));
+  --value: --value(percentage, [*]);
+  @variant ak-list-ol {
+    @apply ak-progress-thickness-[0.15em];
+  }
+  @variant ak-list-ul {
+    @apply ak-progress-thickness-[calc(30%+5%*var(--contrast,0))];
+  }
 }

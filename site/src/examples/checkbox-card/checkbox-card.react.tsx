@@ -63,21 +63,10 @@ export function CheckboxCardCheck({
   ...props
 }: CheckboxCardCheckProps) {
   return (
-    <div {...props} className={clsx("ak-checkbox-card-check", props.className)}>
-      <svg
-        role="presentation"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={3}
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="m4.5 12.75 6 6 9-13.5"
-        />
-      </svg>
-    </div>
+    <div
+      {...props}
+      className={clsx("ak-checkbox-card-check", props.className)}
+    />
   );
 }
 

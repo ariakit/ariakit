@@ -5,11 +5,11 @@ export default function Example() {
     <div className="w-100 max-w-[100cqi]">
       <ak.DisclosureProvider defaultOpen>
         <div className="ak-disclosure has-data-open:ak-disclosure_open ak-layer ak-frame-card ring">
-          <ak.Disclosure className="ak-disclosure-button before:ak-disclosure-arrow-before">
+          <ak.Disclosure className="ak-disclosure-button before:ak-disclosure-chevron-before">
             How do I get started?
           </ak.Disclosure>
           <ak.DisclosureContent className="ak-disclosure-content">
-            <div className="ak-prose">
+            <div className="ak-prose ak-prose-gap-(--ak-frame-padding)">
               <p>
                 Create an account, verify your email, and follow the setup
                 wizard to create your first workspace.

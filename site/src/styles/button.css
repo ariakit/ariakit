@@ -21,7 +21,7 @@
 }
 
 @utility ak-button_focus {
-  @apply outline-2;
+  @apply ak-command_focus outline-2;
 }
 
 @utility ak-button_active {

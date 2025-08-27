@@ -8,16 +8,17 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { invariant } from "@ariakit/core/utils/misc";
+
 interface Props {
   framework?: typeof Astro.locals.framework;
 }
 
 const { framework = Astro.locals.framework } = Astro.props;
+
+invariant(framework, "Framework is required");
+
+const html = await Astro.slots.render(framework);
 ---
 
-<div>
-  {framework === "react" && <slot name="react" />}
-  {framework === "solid" && <slot name="solid" />}
-  {framework === "vue" && <slot name="vue" />}
-  {framework === "svelte" && <slot name="svelte" />}
-</div>
+<Fragment set:html={html} />

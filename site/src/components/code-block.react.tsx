@@ -61,7 +61,7 @@ function getPreviewUrl(
   preview?: boolean | "full",
 ) {
   return preview && framework && example
-    ? `/${framework}/previews/${example}`
+    ? `/${framework}/previews/${example}/`
     : null;
 }
 
@@ -172,7 +172,7 @@ export function CodeBlock({
     >
       <div
         className={clsx(
-          "ak-layer-0.5 ak-light:ak-layer group peer ak-light:ak-edge/15 ak-frame-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
+          "ak-layer-0.5 ak-light:ak-layer group peer ak-light:ak-edge/15 ak-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
           collapsed && "has-[[data-expand]:hover]:ak-layer-hover-0.5",
           collapsibleClassName,
         )}
@@ -222,7 +222,7 @@ function CodeBlockTab({
               "ak-segmented-button aria-selected:ak-edge/0 aria-selected:ak-layer-pop aria-selected:shadow-none",
               fullPreview
                 ? "aria-selected:ak-layer-down aria-selected:ak-light:ak-edge/0 px-2 not-aria-selected:px-3"
-                : "px-1.5 not-aria-selected:px-2.5 not-aria-selected:sm:px-3 sm:px-2",
+                : "not-aria-selected:px-2.5 not-aria-selected:sm:px-3 px-[calc(var(--spacing-field)---spacing(1.5))] sm:px-[calc(var(--spacing-field)---spacing(1))]",
             ]
           : "ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm",
         props.className,
@@ -829,7 +829,7 @@ export function CodeBlockTabs({
         {preview && previewUrl && (
           <div
             className={clsx(
-              "relative ak-frame-border ak-frame-container/0 overflow-clip ak-layer-canvas-down-0.15 ak-light:ak-edge/15 ak-dark:ak-edge/13",
+              "group relative ak-border ak-frame-container/0 overflow-clip ak-layer-canvas-down-0.15 ak-light:ak-edge/15 ak-dark:ak-edge/13",
               props.wide ? "hidden" : "@max-[64rem]:hidden",
             )}
           >

@@ -89,14 +89,46 @@ export function filterGuidesByGroup(groupPath: string) {
   };
 }
 
-export function getGalleryLength(
-  entries: CollectionEntry<"components" | "examples">[],
-  galleries: CollectionEntry<"galleries">[],
+export interface FilterPreviewsParams {
+  type?: "examples" | "components";
+  entries?: CollectionEntry<"examples" | "components">[];
+  framework?: Framework;
+}
+
+export function filterPreviews(
+  params: FilterPreviewsParams,
+): (preview: CollectionEntry<"previews">) => boolean;
+
+export function filterPreviews(
+  previews: CollectionEntry<"previews">[],
+  params: FilterPreviewsParams,
+): CollectionEntry<"previews">[];
+
+export function filterPreviews(
+  previewsOrParams: CollectionEntry<"previews">[] | FilterPreviewsParams,
+  params: FilterPreviewsParams = {},
 ) {
-  return entries.reduce((acc, example) => {
-    const gallery = galleries.find((g) => g.id === example.id);
-    return acc + (gallery?.data.length || 1);
-  }, 0);
+  const hasPreviews = Array.isArray(previewsOrParams);
+  params = !Array.isArray(previewsOrParams) ? previewsOrParams : params;
+  const filter = (preview: CollectionEntry<"previews">) => {
+    if (params.type) {
+      const isComponentPreview = preview.id.endsWith("_component");
+      if (params.type === "examples" && isComponentPreview) return false;
+      if (params.type === "components" && !isComponentPreview) return false;
+    }
+    if (params.framework) {
+      if (!preview.data.frameworks.includes(params.framework)) return false;
+    }
+    if (params.entries) {
+      const isEntryPreview = params.entries.some((entry) => {
+        if (preview.id === entry.id) return true;
+        return preview.id.startsWith(`${entry.id}/`);
+      });
+      if (!isEntryPreview) return false;
+    }
+    return true;
+  };
+  return hasPreviews ? previewsOrParams.filter(filter) : filter;
 }
 
 let markdownProcessor: MarkdownProcessor | null = null;

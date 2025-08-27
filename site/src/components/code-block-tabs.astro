@@ -50,8 +50,8 @@ function isTsxFramework(
 function getSource(source: typeof sourceProp) {
   if (!source) return;
   if ("files" in source) return source;
-  if (!framework) return;
-  return source[framework];
+  if (!framework) return null;
+  return source[framework] || null;
 }
 
 async function getVariantTitle(source?: Source) {
@@ -61,6 +61,12 @@ async function getVariantTitle(source?: Source) {
 }
 
 const source = getSource(sourceProp);
+
+// The source prop is available for multiple frameworks, but it doesn't include
+// the current one.
+if (source === null) {
+  return null;
+}
 
 const tabsFromSource = source
   ? Object.entries(source.files).map(([filename, code]) => {

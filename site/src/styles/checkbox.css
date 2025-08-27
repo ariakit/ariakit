@@ -50,10 +50,10 @@
 }
 
 @utility ak-checkbox-card_idle {
-  @apply ak-button_idle ak-layer ak-frame-card ak-dark:ak-frame-border ak-light:ring;
+  @apply ak-button_idle ak-layer ak-frame-card ak-bordering;
   @apply outline-offset-3 flex flex-wrap content-start justify-start text-wrap;
 
-  --edge: var(--ak-layer-border);
+  --ak-checkbox-card-edge: var(--ak-layer-border);
   gap: calc(var(--ak-frame-padding) / 2) calc(var(--ak-frame-padding) * 0.75);
 
   input[type="checkbox"] {
@@ -124,8 +124,8 @@
 }
 
 @utility ak-checkbox-card-check_idle {
-  @apply ak-layer-down ak-frame-force-full/1;
-  @apply size-6 flex-none self-start ring *:hidden;
+  @apply ak-layer-down ak-frame-force-full/1 ak-bordering;
+  @apply size-6 flex-none self-start *:hidden;
   @variant ak-checkbox-vertical {
     @apply justify-self-end;
     grid-column: 1;
@@ -134,7 +134,8 @@
 }
 
 @utility ak-checkbox-card-check_checked {
-  @apply ring-(--ak-layer) ak-layer-(--edge) *:block;
+  @apply ring-(--ak-layer) ak-layer-(--ak-checkbox-card-edge) empty:before:ak-icon-check border-0 ring;
+  @apply *:block;
 }
 
 @utility ak-checkbox-card-check_disabled {

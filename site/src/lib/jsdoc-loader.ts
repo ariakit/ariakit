@@ -282,6 +282,57 @@ function getTypeText(node: Node) {
 }
 
 /**
+ * Gets all direct base interface declarations for a given interface declaration
+ */
+function getBaseInterfaces(iface: Node) {
+  const bases: Node[] = [];
+  if (!Node.isInterfaceDeclaration(iface)) {
+    return bases;
+  }
+  const extendsList = iface.getExtends();
+  for (const ext of extendsList) {
+    const type = ext.getType();
+    const symbol = type.getSymbol();
+    const decls = symbol?.getDeclarations() || [];
+    for (const d of decls) {
+      if (!Node.isInterfaceDeclaration(d)) continue;
+      bases.push(d);
+    }
+  }
+  return bases;
+}
+
+/**
+ * Finds property declarations for a given prop name across base interfaces
+ * of the provided owner interface, in nearest-first order.
+ */
+function findPropDeclsInBaseHierarchy(owner: Node, propName: string) {
+  const results: Node[] = [];
+  if (!Node.isInterfaceDeclaration(owner)) {
+    return results;
+  }
+  const visited = new Set<Node>();
+  const queue = getBaseInterfaces(owner);
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current) break;
+    if (visited.has(current)) continue;
+    visited.add(current);
+    const type = current.getType();
+    const sym = type.getProperty(propName);
+    const decl = sym?.getDeclarations()?.[0];
+    if (decl) {
+      results.push(decl);
+    }
+    const bases = getBaseInterfaces(current);
+    for (const base of bases) {
+      queue.push(base);
+    }
+  }
+  return results;
+}
+
+/**
  * Extracts props from a type or interface
  */
 function getProps(node: Node) {
@@ -291,16 +342,47 @@ function getProps(node: Node) {
   for (const prop of nodeProps) {
     const decl = prop.getDeclarations().at(0);
     if (!decl) continue;
-    if (isPrivate(decl)) continue;
-    const { description, liveExamples } = getDescriptionAndLiveExamples(decl);
-    // Skip undocumented props
+    // Skip only if all candidates are private later; start from local decl
+    const propName = Node.isPropertySignature(decl)
+      ? decl.getName() || prop.getEscapedName()
+      : prop.getEscapedName();
+
+    // Build candidate declarations with local-first precedence
+    const decls = [decl];
+    decls.push(...findPropDeclsInBaseHierarchy(node, propName));
+
+    // Description/liveExamples come from the first visible declaration that has a description
+    let description = "";
+    let liveExamples: string[] = [];
+    for (const decl of decls) {
+      const res = getDescriptionAndLiveExamples(decl);
+      if (!res.description) continue;
+      description = res.description;
+      liveExamples = res.liveExamples;
+    }
     if (!description) continue;
-    const type = getTypeText(decl);
-    const deprecated = getDeprecated(decl);
-    const defaultValue = getDefaultValue(decl);
-    const examples = getExamples(decl);
+
+    const primaryDecl = decls[0];
+    if (!primaryDecl) continue;
+    const type = getTypeText(primaryDecl);
+
+    // Tags merging: treat all tags as a unit. If the local (nearest visible)
+    // declaration has any tags, those override all base tags. Otherwise, use
+    // the first base declaration that has tags.
+    const localHasTags = !!getTags(primaryDecl).length;
+    const tagsDecl = localHasTags
+      ? primaryDecl
+      : decls.slice(1).find((d) => !!getTags(d).length);
+
+    const hasPrivateTag = tagsDecl ? isPrivate(tagsDecl) : false;
+    if (hasPrivateTag) continue;
+
+    const deprecated = tagsDecl ? getDeprecated(tagsDecl) : false;
+    const defaultValue = tagsDecl ? getDefaultValue(tagsDecl) : undefined;
+    const examples = tagsDecl ? getExamples(tagsDecl) : [];
+
     // Get nested props if this prop is an object type
-    const nestedProps = getProps(decl);
+    const nestedProps = getProps(primaryDecl);
     // Extract only serializable data
     props.push({
       name: prop.getEscapedName(),

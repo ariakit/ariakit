@@ -50,9 +50,13 @@
   @apply gap-(--ak-prose-gap) flex flex-col;
 }
 
+@utility ak-prose-text {
+  @apply ak-dark:ak-text/75 ak-light:ak-text/90;
+}
+
 @utility ak-prose {
   --ak-prose-gap: 1.25em;
-  @apply ak-dark:ak-text/75 ak-light:ak-text/90 ak-prose-text-base/relaxed ak-prose-elements;
+  @apply ak-prose-text ak-prose-text-base/relaxed ak-prose-elements;
   @apply ak-prose-content;
 }
 
@@ -61,8 +65,12 @@
     @apply ak-heading;
   }
 
+  :where(p) {
+    @apply ak-prose-text;
+  }
+
   :where(ul, ol) {
-    @apply ak-list ak-list-gap-(--ak-prose-gap) ak-list-leading-(--ak-prose-leading);
+    @apply ak-prose-text ak-list ak-list-leading-(--ak-prose-leading) ak-list-gap-(--ak-prose-gap);
   }
 
   :where(li) {
