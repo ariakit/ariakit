@@ -124,7 +124,7 @@
     "astro": "5.13.4",
     "autoprefixer": "10.4.21",
     "babel-loader": "10.0.0",
-    "babel-plugin-transform-rewrite-imports": "1.5.3",
+    "babel-plugin-transform-rewrite-imports": "1.5.4",
     "babel-preset-solid": "1.9.9",
     "babylon": "6.18.0",
     "canvas-confetti": "1.9.3",
