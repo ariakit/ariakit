@@ -1,5 +1,10 @@
 # @ariakit/tailwind
 
+## 0.1.8
+
+- Added new `ak-bordering` utility.
+- Adjusted the border color in light mode to be slightly darker.
+
 ## 0.1.7
 
 - Fixed `ak-edge-contrast` for mid-tone colors.
