@@ -30,9 +30,16 @@ function relativeFromRepo(p: string) {
 
 function renderTable(summary: DiffSummary) {
   const rows: string[] = [];
+  const pageUrl = process.env.PAGE_URL || "";
+  const pageUrlTrimmed = pageUrl.replace(/\/$/, "");
   rows.push(
     "<details><summary><strong>Visual diffs detected</strong> — review and approve if expected</summary>\n\n",
   );
+  if (pageUrl) {
+    rows.push(
+      `View images on Pages: <a href="${pageUrl}">visual diffs</a>\n\n`,
+    );
+  }
   rows.push(
     "To update the baseline snapshots, add a PR comment containing: <code>Approve app visual</code>. This triggers the <code>App Visual Approvals</code> workflow to update snapshots for failing tests.\n\n",
   );
@@ -42,9 +49,19 @@ function renderTable(summary: DiffSummary) {
   for (const [suite, files] of Object.entries(summary.byTest)) {
     rows.push(`<tr><td colspan=3><strong>${suite}</strong></td></tr>`);
     for (const f of files) {
-      const base = f.base ? relativeFromRepo(f.base) : "";
-      const actual = relativeFromRepo(f.actual);
-      const diff = f.diff ? relativeFromRepo(f.diff) : "";
+      const base = f.base
+        ? pageUrl
+          ? `${pageUrlTrimmed}/${f.base}`
+          : relativeFromRepo(f.base)
+        : "";
+      const actual = pageUrl
+        ? `${pageUrlTrimmed}/${f.actual}`
+        : relativeFromRepo(f.actual);
+      const diff = f.diff
+        ? pageUrl
+          ? `${pageUrlTrimmed}/${f.diff}`
+          : relativeFromRepo(f.diff)
+        : "";
       rows.push(
         `<tr><td>${base ? `<img alt="baseline" src="${base}"/>` : "(none)"}</td><td><img alt="new" src="${actual}"/></td><td>${diff ? `<img alt="diff" src="${diff}"/>` : "(none)"}</td></tr>`,
       );
