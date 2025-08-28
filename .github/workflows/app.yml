@@ -147,6 +147,31 @@ jobs:
         if: always()
         run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
 
+      - name: Prepare failed tests list
+        if: always()
+        run: |
+          node -e "const fs=require('node:fs'); const s=JSON.parse(fs.readFileSync('site-diff-summary.json','utf8')); const tests=Object.keys(s.byTest||{}); console.log(JSON.stringify(tests.map(t=>t.replace(/-.+$/,''))));" > tests.json
+
+      - name: Update baseline screenshots for failed tests (-u)
+        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
+        run: |
+          TESTS=$(node -e "const list=JSON.parse(require('fs').readFileSync('tests.json','utf8')); process.stdout.write(list.map(t=>`--grep ${t}`).join(' '))")
+          xvfb-run npx playwright test -u -c site/playwright.config.ts --project ${{ matrix.project }} $TESTS
+
+      - name: Collect updated baselines
+        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
+        run: |
+          node -e "const fs=require('node:fs'); const path=require('path'); const s=JSON.parse(fs.readFileSync('site-diff-summary.json','utf8')); const out='updated-snapshots'; fs.mkdirSync(out,{recursive:true}); for(const [suite,files] of Object.entries(s.byTest||{})){ const project=suite.split('-').pop(); for(const f of files){ const stem=path.basename(f.actual).replace(/-actual\\.png$/,''); const src=path.join('site','src','tests','screenshots',`${stem}-${project}.png`); const dstDir=path.join(out,suite); fs.mkdirSync(dstDir,{recursive:true}); if(fs.existsSync(src)) fs.copyFileSync(src,path.join(dstDir,`${stem}-${project}.png`)); }}"
+
+      - name: Upload updated baselines artifact
+        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-visual-updated-${{ matrix.project }}
+          path: updated-snapshots/**
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
@@ -218,6 +243,31 @@ jobs:
       - name: Collect visual diffs summary
         if: always()
         run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
+
+      - name: Prepare failed tests list
+        if: always()
+        run: |
+          node -e "const fs=require('node:fs'); const s=JSON.parse(fs.readFileSync('site-diff-summary.json','utf8')); const tests=Object.keys(s.byTest||{}); console.log(JSON.stringify(tests.map(t=>t.replace(/-.+$/,''))));" > tests.json
+
+      - name: Update baseline screenshots for failed tests (-u)
+        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
+        run: |
+          TESTS=$(node -e "const list=JSON.parse(require('fs').readFileSync('tests.json','utf8')); process.stdout.write(list.map(t=>`--grep ${t}`).join(' '))")
+          npx playwright test -u -c site/playwright.config.ts --project safari --project ios $TESTS
+
+      - name: Collect updated baselines
+        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
+        run: |
+          node -e "const fs=require('node:fs'); const path=require('path'); const s=JSON.parse(fs.readFileSync('site-diff-summary.json','utf8')); const out='updated-snapshots'; fs.mkdirSync(out,{recursive:true}); for(const [suite,files] of Object.entries(s.byTest||{})){ const project=suite.split('-').pop(); for(const f of files){ const stem=path.basename(f.actual).replace(/-actual\\.png$/,''); const src=path.join('site','src','tests','screenshots',`${stem}-${project}.png`); const dstDir=path.join(out,suite); fs.mkdirSync(dstDir,{recursive:true}); if(fs.existsSync(src)) fs.copyFileSync(src,path.join(dstDir,`${stem}-${project}.png`)); }}"
+
+      - name: Upload updated baselines artifact (safari-ios)
+        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-visual-updated-safari-ios
+          path: updated-snapshots/**
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'

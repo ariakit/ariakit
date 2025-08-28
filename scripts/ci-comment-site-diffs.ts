@@ -41,7 +41,7 @@ function renderTable(summary: DiffSummary) {
     );
   }
   rows.push(
-    "To update the baseline snapshots, add a PR comment containing: <code>Approve app visual</code>. This triggers the <code>App Visual Approvals</code> workflow to update snapshots for failing tests.\n\n",
+    "To update the baseline snapshots, either: (1) add a PR comment containing <code>Approve app visual</code>, or (2) push an empty commit with message <code>chore(site): approve app visual</code>. Option (2) will rerun tests with -u and commit updated snapshots automatically.\n\n",
   );
   rows.push(
     "<table><thead><tr><th>Baseline</th><th>New</th><th>Diff</th></tr></thead><tbody>",
