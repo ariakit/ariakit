@@ -1,0 +1,72 @@
+---
+title: Disclosure
+frameworks:
+  - html
+  - react
+components:
+  - disclosure
+tags:
+  - ariakit-react
+---
+
+import ContentInstallation from "#app/components/content-installation.astro";
+import ContentList from "#app/components/content-list.astro";
+import ContentListItem from "#app/components/content-list-item.astro";
+
+import { sources } from "./gallery.mdx";
+
+## Testing
+
+1. <details open>
+     <summary>
+       <input type="checkbox" checked disabled />
+       <span>Add a `DisclosureTrigger` component</span>
+     </summary>
+     <div>
+       <ContentList as="ul">
+         <ContentListItem>
+           <input type="checkbox" checked disabled />
+           <a href="https://www.google.com">Pqp component</a>
+         </ContentListItem>
+         <ContentListItem>
+           <input type="checkbox" disabled /> Pqp component
+         </ContentListItem>
+       </ContentList>
+     </div>
+   </details>
+2. [ ] Add a `DisclosureContent` component
+3. [x] Add a `DisclosureDescription` component
+
+---
+
+1. [x] Add a `DisclosureTrigger` component
+2. [ ] Add a `DisclosureContent` component
+3. [ ] Add a `DisclosureDescription` component
+
+---
+
+1. [x] Add a `DisclosureTrigger` component
+
+   dsadsa
+
+2. [ ] Add a `DisclosureContent` component
+3. [ ] Add a `DisclosureDescription` component
+
+---
+
+- [x] Add a `Disclosure` component
+
+  dsads
+
+- [ ] Add a `DisclosureGroup` component
+- [ ] Add a `DisclosureList` component
+
+---
+
+- [ ] Add a `DisclosureTrigger` component
+- [ ] Add a `DisclosureContent` component
+- [ ] Add a `DisclosureDescription` component
+
+## Manual Installation
+
+<ContentInstallation sources={sources} />

@@ -1,0 +1,34 @@
+import CodeBlockTabs from "#app/components/code-block-tabs.astro";
+import PreviewGallery from "#app/components/preview-gallery.astro";
+import Preview, { source } from "./preview.astro";
+import Description, {
+  source as description,
+} from "./description/preview.astro";
+import Actions, { source as actions } from "./actions/preview.astro";
+import Group, { source as group } from "./group/preview.astro";
+import Checklist, { source as checklist } from "./checklist/preview.astro";
+import Nested, { source as nested } from "./nested/preview.astro";
+
+export const sources = [source, group, checklist, nested, description];
+
+<CodeBlockTabs source={source}>
+  <Preview />
+</CodeBlockTabs>
+
+<PreviewGallery>
+  <CodeBlockTabs source={description} wide>
+    <Description />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={actions}>
+    <Actions />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={group}>
+    <Group />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={checklist}>
+    <Checklist />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={nested}>
+    <Nested />
+  </CodeBlockTabs>
+</PreviewGallery>

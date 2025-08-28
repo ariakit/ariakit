@@ -1,0 +1,18 @@
+---
+import PreviewFramework from "#app/components/preview-framework.astro";
+import HtmlExample from "./index.html";
+import ReactExample from "./index.react.tsx";
+
+import sourceHtml from "./index.html?source";
+import sourceReact from "./index.react.tsx?source";
+
+export const source = {
+  html: sourceHtml,
+  react: sourceReact,
+};
+---
+
+<PreviewFramework>
+  <HtmlExample client:load slot="html" />
+  <ReactExample client:load slot="react" />
+</PreviewFramework>
