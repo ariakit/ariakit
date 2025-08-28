@@ -290,19 +290,21 @@ jobs:
           node -e "const s=JSON.parse(require('fs').readFileSync('site-diff-summary.json','utf8')); console.log(Object.keys(s.byTest||{}).length ? 'has_diffs=true' : 'has_diffs=false')" >> $GITHUB_OUTPUT
 
       - name: Configure GitHub Pages
-        if: steps.check.outputs.has_diffs == 'true'
+        if: steps.check.outputs.has_diffs == 'true' && github.event_name == 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload pages artifact (visual diffs)
-        if: steps.check.outputs.has_diffs == 'true'
+        if: steps.check.outputs.has_diffs == 'true' && github.event_name == 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: public
 
       - name: Deploy to GitHub Pages
-        if: steps.check.outputs.has_diffs == 'true'
+        if: steps.check.outputs.has_diffs == 'true' && github.event_name == 'pull_request'
         id: deploy
         uses: actions/deploy-pages@v4
+        with:
+          preview: true
 
       - name: Comment diffs
         if: steps.check.outputs.has_diffs == 'true'

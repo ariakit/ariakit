@@ -126,20 +126,42 @@ async function main() {
   const prNumberEnv = env("PR_NUMBER", false);
   const summaryPath = process.argv[2] || "site-diff-summary.json";
 
-  const summary = readSummary(summaryPath);
-  if (!Object.keys(summary.byTest).length) return;
+  // Read summary if present; otherwise proceed without it
+  let summary: DiffSummary = { byTest: {} };
+  if (fs.existsSync(summaryPath)) {
+    summary = readSummary(summaryPath);
+  }
 
-  const body = renderTable(summary);
+  const hasDiffs = Object.keys(summary.byTest).length > 0;
+  const body = hasDiffs ? renderTable(summary) : "";
   const octokit = new Octokit({ auth: token });
+
+  const eventName = env("GITHUB_EVENT_NAME");
+
+  // Handle issue_comment: only detect approval and expose flag
+  if (eventName === "issue_comment") {
+    const payloadPath = env("GITHUB_EVENT_PATH");
+    const payload = JSON.parse(fs.readFileSync(payloadPath, "utf8"));
+    const issue_number = payload.issue.number as number;
+    const approved = await isApprovedCommentPresent(
+      octokit,
+      owner,
+      repo!,
+      issue_number,
+    );
+    process.stdout.write(`APP_VISUAL_APPROVED=${approved ? "true" : "false"}`);
+    return;
+  }
 
   // If PR_NUMBER is explicitly provided (e.g., from workflow_run), use it
   if (prNumberEnv) {
     const issue_number = Number(prNumberEnv);
-    await upsertComment(octokit, owner, repo!, issue_number, body);
+    if (hasDiffs) {
+      await upsertComment(octokit, owner, repo!, issue_number, body);
+    }
     return;
   }
 
-  const eventName = env("GITHUB_EVENT_NAME");
   if (eventName === "pull_request" || eventName === "pull_request_target") {
     const payloadPath = env("GITHUB_EVENT_PATH");
     const payload = JSON.parse(fs.readFileSync(payloadPath, "utf8"));
@@ -153,8 +175,9 @@ async function main() {
       issue_number,
     );
     process.stdout.write(`APP_VISUAL_APPROVED=${approved ? "true" : "false"}`);
-
-    await upsertComment(octokit, owner, repo!, issue_number, body);
+    if (hasDiffs) {
+      await upsertComment(octokit, owner, repo!, issue_number, body);
+    }
     return;
   }
 

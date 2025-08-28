@@ -3,6 +3,12 @@ name: App Visual Approvals
 on:
   issue_comment:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to update snapshots for
+        required: true
+        type: string
 
 jobs:
   update-snapshots:
@@ -16,7 +22,8 @@ jobs:
             os: ubuntu-latest
           - project: safari
             os: macos-latest
-    if: ${{ github.event.issue.pull_request }}
+    # Run on PR comments or manual dispatch
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.issue.pull_request }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,8 +33,9 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npx playwright install --with-deps ${{ matrix.project == 'safari' && 'webkit' || matrix.project }}
-      - name: Check for approval comment
+      - name: Check for approval comment (issue_comment only)
         id: approval
+        if: ${{ github.event_name == 'issue_comment' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -38,13 +46,25 @@ jobs:
         run: |
           node --experimental-strip-types scripts/ci-comment-site-diffs.ts site-diff-summary.json | tee approval.out
           echo "approved=$(grep -o 'APP_VISUAL_APPROVED=\(true\|false\)' approval.out | cut -d= -f2)" >> $GITHUB_OUTPUT
-      - name: Exit if not approved
-        if: steps.approval.outputs.approved != 'true'
+      - name: Exit if not approved (issue_comment only)
+        if: ${{ github.event_name == 'issue_comment' && steps.approval.outputs.approved != 'true' }}
         run: |
           echo "No approval comment found (write 'Approve app visual' in a PR comment)." && exit 0
+      - name: Find latest app workflow run for PR
+        id: find_run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          PR_NUMBER: ${{ github.event_name == 'workflow_dispatch' && inputs.pr_number || github.event.issue.number }}
+        run: |
+          node -e "const {Octokit}=require('@octokit/rest'); const token=process.env.GITHUB_TOKEN; const [owner,repo]=process.env.GITHUB_REPOSITORY.split('/'); const prNum=Number(process.env.PR_NUMBER); const oct=new Octokit({auth:token}); (async()=>{ const runs=await oct.rest.actions.listWorkflowRuns({owner, repo, workflow_id:'app.yml', event:'pull_request', per_page:50}); const run=runs.data.workflow_runs.find(r=>Array.isArray(r.pull_requests) && r.pull_requests.some(p=>p.number===prNum)); if(!run){ console.log('run_id='); return; } console.log('run_id='+run.id); })().catch(e=>{ console.error(e); process.exitCode=1; });" >> $GITHUB_OUTPUT
       - name: Download diffs artifact
         uses: actions/download-artifact@v4
+        if: ${{ steps.find_run.outputs.run_id != '' }}
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ steps.find_run.outputs.run_id }}
           name: app-visual-diffs-${{ matrix.project }}
           path: downloaded
       - name: Filter failed tests
