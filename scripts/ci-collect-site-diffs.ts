@@ -18,7 +18,11 @@ function isPng(file: string) {
 }
 
 function findDiffTriples(dir: string): DiffFile[] {
-  const files = fs.readdirSync(dir).filter(isPng);
+  const files = fs
+    .readdirSync(dir)
+    .filter(isPng)
+    // Ignore generic failure screenshots that are not snapshot outputs
+    .filter((f) => !/^test-failed/i.test(f));
   const byStem = new Map<string, Partial<DiffFile>>();
   for (const file of files) {
     const full = path.join(dir, file);
@@ -46,7 +50,11 @@ function findDiffTriples(dir: string): DiffFile[] {
   for (const [, v] of byStem) {
     if (v.actual && v.diff)
       results.push({ ...(v as DiffFile), kind: "changed" });
-    else if (v.actual && !v.diff)
+    else if (
+      v.actual &&
+      !v.diff &&
+      /-actual$/i.test((v.actual || "").replace(/\.(?:png)$/i, ""))
+    )
       results.push({ ...(v as DiffFile), kind: "new" });
   }
   return results;
@@ -57,6 +65,8 @@ function collectSiteDiffs(root = process.cwd()) {
   if (!fs.existsSync(resultsDir)) return { byTest: {} } as DiffSummary;
   const byTest: Record<string, DiffFile[]> = {};
   for (const entry of fs.readdirSync(resultsDir)) {
+    // Skip retry attempt folders; we only show the primary attempt
+    if (/-retry\d+$/i.test(entry)) continue;
     const dir = path.join(resultsDir, entry);
     if (!fs.statSync(dir).isDirectory()) continue;
     const triples = findDiffTriples(dir);
