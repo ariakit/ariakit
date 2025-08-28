@@ -143,13 +143,27 @@ jobs:
         id: test
         run: xvfb-run npx playwright test -c site/playwright.config.ts --project ${{ matrix.project }}
 
+      - name: Collect visual diffs summary
+        if: always()
+        run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
+
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.project }}-test-results
-          path: test-results
+          path: site/test-results
           retention-days: 30
+
+      - name: Upload visual diffs artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-visual-diffs-${{ matrix.project }}
+          path: |
+            site/test-results/**
+            site-diff-summary.json
+          retention-days: 7
 
   test-macos:
     name: Test macOS
@@ -201,10 +215,69 @@ jobs:
         id: test
         run: npx playwright test -c site/playwright.config.ts --project safari --project ios
 
+      - name: Collect visual diffs summary
+        if: always()
+        run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
+
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: safari-test-results
-          path: test-results
+          path: site/test-results
           retention-days: 30
+
+      - name: Upload visual diffs artifact (safari)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-visual-diffs-safari
+          path: |
+            site/test-results/**
+            site-diff-summary.json
+          retention-days: 7
+
+  visual-comment:
+    name: Visual comment
+    needs: [test-chrome, test-macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Download visual diffs artifacts
+        uses: actions/download-artifact@v5
+        with:
+          pattern: app-visual-diffs-*
+          path: artifacts
+          merge-multiple: false
+
+      - name: Merge summaries
+        id: merge
+        run: |
+          node -e "const fs=require('node:fs'); const path=require('node:path'); const dir='artifacts'; const byTest={}; if(fs.existsSync(dir)){ for(const a of fs.readdirSync(dir)){const p=path.join(dir,a,'site-diff-summary.json'); if(fs.existsSync(p)){const s=JSON.parse(fs.readFileSync(p,'utf8')); Object.assign(byTest, s.byTest||{});} } } fs.writeFileSync('site-diff-summary.json', JSON.stringify({byTest}));"
+
+      - name: Check if there are diffs
+        id: check
+        run: |
+          echo "has_diffs=$(node -e \"const s=JSON.parse(require('fs').readFileSync('site-diff-summary.json','utf8')); process.stdout.write(Object.keys(s.byTest||{}).length ? 'true' : 'false')\")" >> $GITHUB_OUTPUT
+
+      - name: Comment diffs
+        if: steps.check.outputs.has_diffs == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: node --experimental-strip-types scripts/ci-comment-site-diffs.ts site-diff-summary.json

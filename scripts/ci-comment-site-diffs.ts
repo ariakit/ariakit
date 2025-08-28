@@ -100,8 +100,7 @@ async function main() {
   const token = env("GITHUB_TOKEN");
   const owner = env("GITHUB_REPOSITORY_OWNER");
   const [_, repo] = env("GITHUB_REPOSITORY").split("/");
-  // const prNumber =
-  //   Number(env("PR_NUMBER", false)) || Number(env("GITHUB_REF_NAME", false));
+  const prNumberEnv = env("PR_NUMBER", false);
   const summaryPath = process.argv[2] || "site-diff-summary.json";
 
   const summary = readSummary(summaryPath);
@@ -109,6 +108,13 @@ async function main() {
 
   const body = renderTable(summary);
   const octokit = new Octokit({ auth: token });
+
+  // If PR_NUMBER is explicitly provided (e.g., from workflow_run), use it
+  if (prNumberEnv) {
+    const issue_number = Number(prNumberEnv);
+    await upsertComment(octokit, owner, repo!, issue_number, body);
+    return;
+  }
 
   const eventName = env("GITHUB_EVENT_NAME");
   if (eventName === "pull_request" || eventName === "pull_request_target") {
