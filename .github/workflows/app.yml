@@ -414,10 +414,22 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Commit updated snapshots (if any)
         run: |
-          if git status --porcelain=all -- site/src/tests/screenshots | grep .; then
+          if [ -n "$(git status --porcelain site/src/tests/screenshots)" ]; then
             git add site/src/tests/screenshots
-            git commit -m "chore(site): update visual snapshots"
+            git commit -m "chore(site): update visual snapshots [update-visual]"
             git push
           else
             echo "No visual snapshot updates to commit."
           fi
+      - name: Capture new commit SHA
+        id: newsha
+        run: echo "new_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      - name: Update PR comment (snapshots updated)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          UPDATE_MESSAGE: Snapshots updated in commit https://github.com/${{ github.repository }}/commit/${{ steps.newsha.outputs.new_sha }}. The workflow will rerun tests without -u.
+        run: node --experimental-strip-types scripts/ci-comment-site-diffs.ts
