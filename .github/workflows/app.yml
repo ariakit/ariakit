@@ -90,9 +90,9 @@ jobs:
           - name: Chrome
             engine: chromium
             project: chrome
-          - name: Android
-            engine: chromium
-            project: android
+          # - name: Android
+          #   engine: chromium
+          #   project: android
           - name: Firefox
             engine: firefox
             project: firefox
