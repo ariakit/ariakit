@@ -16,7 +16,6 @@ function testMatchersFor(...kinds: string[]): RegExp[] {
 
 export default defineConfig({
   fullyParallel: !HEADED,
-  ignoreSnapshots: HEADED,
   workers: HEADED ? 1 : CI ? "100%" : "80%",
   forbidOnly: CI,
   reportSlowTests: null,

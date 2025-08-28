@@ -141,7 +141,7 @@ jobs:
 
       - name: Test
         id: test
-        run: xvfb-run npm run playwright -c site/playwright.config.ts --project ${{ matrix.project }}
+        run: xvfb-run npx playwright test -c site/playwright.config.ts --project ${{ matrix.project }}
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -199,7 +199,7 @@ jobs:
 
       - name: Test
         id: test
-        run: npm run playwright -c site/playwright.config.ts --project safari --project ios
+        run: npx playwright test -c site/playwright.config.ts --project safari --project ios
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
