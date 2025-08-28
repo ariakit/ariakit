@@ -185,8 +185,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: updated-snapshots-${{ matrix.project }}
-          path: |
-            site/src/tests/screenshots/**
+          path: site/src/tests/screenshots
+          if-no-files-found: ignore
           retention-days: 3
 
       - name: Collect visual diffs summary
@@ -275,8 +275,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: updated-snapshots-safari
-          path: |
-            site/src/tests/screenshots/**
+          path: site/src/tests/screenshots
+          if-no-files-found: ignore
           retention-days: 3
 
       - name: Collect visual diffs summary
@@ -304,7 +304,7 @@ jobs:
   visual-comment:
     name: Visual comment
     needs: [test-chrome, test-macos, gate]
-    if: ${{ always() && needs.gate.outputs.is_approve_commit != 'true' && needs.gate.outputs.is_update_commit != 'true' }}
+    if: always()
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -392,44 +392,49 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          fetch-depth: 0
+          node-version-file: .nvmrc
+
       - name: Download updated snapshots artifacts
         uses: actions/download-artifact@v5
         with:
           pattern: updated-snapshots-*
           path: downloaded
-          merge-multiple: false
+          merge-multiple: true
       - name: Merge snapshots into workspace
         run: |
           mkdir -p site/src/tests/screenshots
-          for d in downloaded/*/site/src/tests/screenshots; do
-            if [ -d "$d" ]; then
-              cp -R "$d/"* site/src/tests/screenshots/ || true
-            fi
-          done
+          if [ -d "downloaded/site/src/tests/screenshots" ]; then
+            cp -R downloaded/site/src/tests/screenshots/. site/src/tests/screenshots/
+          else
+            echo "No downloaded snapshots directory found"
+          fi
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Commit updated snapshots (if any)
         run: |
-          if [ -n "$(git status --porcelain site/src/tests/screenshots)" ]; then
+          git add -A site/src/tests/screenshots
+          if git diff --cached --quiet; then
             git add site/src/tests/screenshots
             git commit -m "chore(site): update visual snapshots [update-visual]"
             git push
           else
             echo "No visual snapshot updates to commit."
           fi
-      - name: Capture new commit SHA
-        id: newsha
-        run: echo "new_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Update PR comment (snapshots updated)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
-          UPDATE_MESSAGE: Snapshots updated in commit https://github.com/${{ github.repository }}/commit/${{ steps.newsha.outputs.new_sha }}. The workflow will rerun tests without -u.
-        run: node --experimental-strip-types scripts/ci-comment-site-diffs.ts
+      # - name: Capture new commit SHA
+      #   id: newsha
+      #   run: echo "new_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      # - name: Update PR comment (snapshots updated)
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     GITHUB_REPOSITORY: ${{ github.repository }}
+      #     GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+      #     GITHUB_EVENT_NAME: ${{ github.event_name }}
+      #     GITHUB_EVENT_PATH: ${{ github.event_path }}
+      #     UPDATE_MESSAGE: Snapshots updated in commit https://github.com/${{ github.repository }}/commit/${{ steps.newsha.outputs.new_sha }}. The workflow will rerun tests without -u.
+      #   run: node --experimental-strip-types scripts/ci-comment-site-diffs.ts
