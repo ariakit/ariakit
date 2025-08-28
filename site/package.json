@@ -38,7 +38,7 @@
     "rehype-autolink-headings": "7.1.0",
     "rehype-parse": "9.0.1",
     "shiki": "3.9.2",
-    "stripe": "18.4.0",
+    "stripe": "18.5.0",
     "tailwindcss": "4.1.12",
     "unified": "11.0.5",
     "unist-util-visit": "5.0.0",
