@@ -6,6 +6,31 @@ on:
   pull_request:
 
 jobs:
+  gate:
+    name: Determine workflow mode
+    runs-on: ubuntu-latest
+    outputs:
+      is_approve_commit: ${{ steps.determine.outputs.is_approve_commit }}
+      is_update_commit: ${{ steps.determine.outputs.is_update_commit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
+      - name: Determine mode from commit message
+        id: determine
+        run: |
+          MSG=$(git log -1 --pretty=%B)
+          if echo "$MSG" | grep -qiE '^chore\(site\): approve app visual'; then
+            echo "is_approve_commit=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_approve_commit=false" >> $GITHUB_OUTPUT
+          fi
+          if echo "$MSG" | grep -qiE '^chore\(site\): update visual snapshots'; then
+            echo "is_update_commit=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_update_commit=false" >> $GITHUB_OUTPUT
+          fi
   install:
     name: Install node modules
     runs-on: ubuntu-latest
@@ -81,7 +106,7 @@ jobs:
 
   test-chrome:
     name: Test ${{ matrix.name }}
-    needs: build
+    needs: [build, gate]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -141,36 +166,16 @@ jobs:
 
       - name: Test
         id: test
+        if: needs.gate.outputs.is_approve_commit != 'true'
         run: xvfb-run npx playwright test -c site/playwright.config.ts --project ${{ matrix.project }}
+
+      - name: Update snapshots (approve commit)
+        if: needs.gate.outputs.is_approve_commit == 'true'
+        run: xvfb-run npx playwright test -u -c site/playwright.config.ts --project ${{ matrix.project }}
 
       - name: Collect visual diffs summary
         if: always()
         run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
-
-      - name: Prepare failed tests list
-        if: always()
-        run: |
-          node -e "const fs=require('node:fs'); const s=JSON.parse(fs.readFileSync('site-diff-summary.json','utf8')); const tests=Object.keys(s.byTest||{}); console.log(JSON.stringify(tests.map(t=>t.replace(/-.+$/,''))));" > tests.json
-
-      - name: Update baseline screenshots for failed tests (-u)
-        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
-        run: |
-          TESTS=$(node -e "const list=JSON.parse(require('fs').readFileSync('tests.json','utf8')); process.stdout.write(list.map(t=>`--grep ${t}`).join(' '))")
-          xvfb-run npx playwright test -u -c site/playwright.config.ts --project ${{ matrix.project }} $TESTS
-
-      - name: Collect updated baselines
-        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
-        run: |
-          node -e "const fs=require('node:fs'); const path=require('path'); const s=JSON.parse(fs.readFileSync('site-diff-summary.json','utf8')); const out='updated-snapshots'; fs.mkdirSync(out,{recursive:true}); for(const [suite,files] of Object.entries(s.byTest||{})){ const project=suite.split('-').pop(); for(const f of files){ const stem=path.basename(f.actual).replace(/-actual\\.png$/,''); const src=path.join('site','src','tests','screenshots',`${stem}-${project}.png`); const dstDir=path.join(out,suite); fs.mkdirSync(dstDir,{recursive:true}); if(fs.existsSync(src)) fs.copyFileSync(src,path.join(dstDir,`${stem}-${project}.png`)); }}"
-
-      - name: Upload updated baselines artifact
-        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-visual-updated-${{ matrix.project }}
-          path: updated-snapshots/**
-          if-no-files-found: ignore
-          retention-days: 7
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -192,7 +197,7 @@ jobs:
 
   test-macos:
     name: Test macOS
-    needs: build
+    needs: [build, gate]
     runs-on: macos-latest
 
     steps:
@@ -238,36 +243,16 @@ jobs:
 
       - name: Test
         id: test
+        if: needs.gate.outputs.is_approve_commit != 'true'
         run: npx playwright test -c site/playwright.config.ts --project safari --project ios
+
+      - name: Update snapshots (approve commit)
+        if: needs.gate.outputs.is_approve_commit == 'true'
+        run: npx playwright test -u -c site/playwright.config.ts --project safari --project ios
 
       - name: Collect visual diffs summary
         if: always()
         run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
-
-      - name: Prepare failed tests list
-        if: always()
-        run: |
-          node -e "const fs=require('node:fs'); const s=JSON.parse(fs.readFileSync('site-diff-summary.json','utf8')); const tests=Object.keys(s.byTest||{}); console.log(JSON.stringify(tests.map(t=>t.replace(/-.+$/,''))));" > tests.json
-
-      - name: Update baseline screenshots for failed tests (-u)
-        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
-        run: |
-          TESTS=$(node -e "const list=JSON.parse(require('fs').readFileSync('tests.json','utf8')); process.stdout.write(list.map(t=>`--grep ${t}`).join(' '))")
-          npx playwright test -u -c site/playwright.config.ts --project safari --project ios $TESTS
-
-      - name: Collect updated baselines
-        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
-        run: |
-          node -e "const fs=require('node:fs'); const path=require('path'); const s=JSON.parse(fs.readFileSync('site-diff-summary.json','utf8')); const out='updated-snapshots'; fs.mkdirSync(out,{recursive:true}); for(const [suite,files] of Object.entries(s.byTest||{})){ const project=suite.split('-').pop(); for(const f of files){ const stem=path.basename(f.actual).replace(/-actual\\.png$/,''); const src=path.join('site','src','tests','screenshots',`${stem}-${project}.png`); const dstDir=path.join(out,suite); fs.mkdirSync(dstDir,{recursive:true}); if(fs.existsSync(src)) fs.copyFileSync(src,path.join(dstDir,`${stem}-${project}.png`)); }}"
-
-      - name: Upload updated baselines artifact (safari-ios)
-        if: steps.test.outcome == 'failure' && hashFiles('tests.json') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-visual-updated-safari-ios
-          path: updated-snapshots/**
-          if-no-files-found: ignore
-          retention-days: 7
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -289,8 +274,8 @@ jobs:
 
   visual-comment:
     name: Visual comment
-    needs: [test-chrome, test-macos]
-    if: ${{ always() }}
+    needs: [test-chrome, test-macos, gate]
+    if: ${{ always() && needs.gate.outputs.is_approve_commit != 'true' && needs.gate.outputs.is_update_commit != 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -367,3 +352,29 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           PAGE_URL: ${{ steps.deploy.outputs.page_url }}
         run: node --experimental-strip-types scripts/ci-comment-site-diffs.ts site-diff-summary.json
+
+  commit-snapshots:
+    name: Commit updated snapshots
+    needs: [test-chrome, test-macos, gate]
+    if: ${{ needs.gate.outputs.is_approve_commit == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Commit updated snapshots (if any)
+        run: |
+          if git status --porcelain=all -- site/src/tests/screenshots | grep .; then
+            git add site/src/tests/screenshots
+            git commit -m "chore(site): update visual snapshots"
+            git push
+          else
+            echo "No visual snapshot updates to commit."
+          fi
