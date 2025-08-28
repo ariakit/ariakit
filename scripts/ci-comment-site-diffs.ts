@@ -4,9 +4,10 @@ import path from "node:path";
 import { Octokit } from "@octokit/rest";
 
 interface DiffFile {
-  base: string;
+  base?: string;
   actual: string;
-  diff: string;
+  diff?: string;
+  kind: "changed" | "new";
 }
 interface DiffSummary {
   byTest: Record<string, DiffFile[]>;
@@ -31,16 +32,16 @@ function renderTable(summary: DiffSummary) {
   const rows: string[] = [];
   rows.push("<details><summary>App visual diffs</summary>\n\n");
   rows.push(
-    "<table><thead><tr><th>Baseline</th><th>New</th><th>Diff</th></tr></thead><tbody>",
+    "<table><thead><tr><th>Baseline</th><th>New</th><th>Diff</th><th>Type</th></tr></thead><tbody>",
   );
   for (const [suite, files] of Object.entries(summary.byTest)) {
     rows.push(`<tr><td colspan=3><strong>${suite}</strong></td></tr>`);
     for (const f of files) {
-      const base = relativeFromRepo(f.base);
+      const base = f.base ? relativeFromRepo(f.base) : "";
       const actual = relativeFromRepo(f.actual);
-      const diff = relativeFromRepo(f.diff);
+      const diff = f.diff ? relativeFromRepo(f.diff) : "";
       rows.push(
-        `<tr><td><img alt="baseline" src="${base}"/></td><td><img alt="new" src="${actual}"/></td><td><img alt="diff" src="${diff}"/></td></tr>`,
+        `<tr><td>${base ? `<img alt="baseline" src="${base}"/>` : "(none)"}</td><td><img alt="new" src="${actual}"/></td><td>${diff ? `<img alt="diff" src="${diff}"/>` : "(none)"}</td><td>${f.kind}</td></tr>`,
       );
     }
   }

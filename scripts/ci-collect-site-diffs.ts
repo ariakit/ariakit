@@ -3,9 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 interface DiffFile {
-  base: string;
+  base?: string;
   actual: string;
-  diff: string;
+  diff?: string;
+  kind: "changed" | "new";
 }
 
 interface DiffSummary {
@@ -41,11 +42,14 @@ function findDiffTriples(dir: string): DiffFile[] {
     item.actual = full;
     byStem.set(key, item);
   }
-  const triples: DiffFile[] = [];
+  const results: DiffFile[] = [];
   for (const [, v] of byStem) {
-    if (v.base && v.actual && v.diff) triples.push(v as DiffFile);
+    if (v.actual && v.diff)
+      results.push({ ...(v as DiffFile), kind: "changed" });
+    else if (v.actual && !v.diff)
+      results.push({ ...(v as DiffFile), kind: "new" });
   }
-  return triples;
+  return results;
 }
 
 function collectSiteDiffs(root = process.cwd()) {
