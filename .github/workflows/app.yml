@@ -229,8 +229,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ms-playwright
-          key: playwright-macos-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: playwright-macos-
+          key: playwright-macos-app-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          restore-keys: playwright-macos-app-
 
       - name: Install playwright
         run: npx playwright install --with-deps webkit
