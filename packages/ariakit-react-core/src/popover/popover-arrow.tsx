@@ -105,7 +105,8 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
       const ringWidth = getRingWidth(style);
       if (ringWidth) return [Number.parseInt(ringWidth, 10), true];
       const borderWidth = style.getPropertyValue(`border-${dir}-width`);
-      if (borderWidth) return [Number.parseInt(borderWidth, 10), false];
+      if (borderWidth)
+        return [Math.ceil(Number.parseFloat(borderWidth)), false];
       return [0, false];
     }, [borderWidthProp, style, dir]);
 
