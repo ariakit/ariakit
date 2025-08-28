@@ -33,22 +33,6 @@ function renderTable(summary: DiffSummary) {
   const pageUrl = process.env.PAGE_URL || "";
   const pageUrlTrimmed = pageUrl.replace(/\/$/, "");
   const updateMsg = process.env.UPDATE_MESSAGE || "";
-  let approveLink = "";
-  try {
-    const eventName = process.env.GITHUB_EVENT_NAME || "";
-    if (eventName === "pull_request" || eventName === "pull_request_target") {
-      const payloadPath = process.env.GITHUB_EVENT_PATH || "";
-      const payload = JSON.parse(fs.readFileSync(payloadPath, "utf8"));
-      const branch = payload.pull_request?.head?.ref as string;
-      const [owner, repo] = (process.env.GITHUB_REPOSITORY || "").split("/");
-      const filename = ".github/approve-visual";
-      const message = encodeURIComponent("[approve-visual]");
-      const value = encodeURIComponent("approve");
-      if (owner && repo && branch) {
-        approveLink = `https://github.com/${owner}/${repo}/new/${branch}?filename=${encodeURIComponent(filename)}&message=${message}&value=${value}`;
-      }
-    }
-  } catch {}
   rows.push(
     "<details><summary><strong>Visual diffs detected</strong> — review and approve if expected</summary>\n\n",
   );
@@ -63,10 +47,9 @@ function renderTable(summary: DiffSummary) {
   rows.push(
     "To update the baseline snapshots, push a commit whose message contains <code>[approve-visual]</code>.\n",
   );
-  if (approveLink)
-    rows.push(
-      `Quick action: <a href="${approveLink}">create approve commit in UI</a>\n\n`,
-    );
+  rows.push("Run this locally on your PR branch:\n\n```bash\n");
+  rows.push('git commit --allow-empty -m "[approve-visual]" && git push\n');
+  rows.push("```\n\n");
   rows.push(
     "<table><thead><tr><th>Baseline</th><th>New</th><th>Diff</th></tr></thead><tbody>",
   );

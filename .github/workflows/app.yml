@@ -390,7 +390,14 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout PR head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
       - name: Checkout repository
+        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/checkout@v5
 
       - name: Set up Node
@@ -402,16 +409,8 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           pattern: updated-snapshots-*
-          path: downloaded
+          path: site/src/tests/screenshots
           merge-multiple: true
-      - name: Merge snapshots into workspace
-        run: |
-          mkdir -p site/src/tests/screenshots
-          if [ -d "downloaded/site/src/tests/screenshots" ]; then
-            cp -R downloaded/site/src/tests/screenshots/. site/src/tests/screenshots/
-          else
-            echo "No downloaded snapshots directory found"
-          fi
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
@@ -419,12 +418,11 @@ jobs:
       - name: Commit updated snapshots (if any)
         run: |
           git add -A site/src/tests/screenshots
-          if git diff --cached --quiet; then
-            git add site/src/tests/screenshots
+          if git diff --cached --quiet --exit-code; then
+            echo "No visual snapshot updates to commit."
+          else
             git commit -m "chore(site): update visual snapshots [update-visual]"
             git push
-          else
-            echo "No visual snapshot updates to commit."
           fi
       # - name: Capture new commit SHA
       #   id: newsha
