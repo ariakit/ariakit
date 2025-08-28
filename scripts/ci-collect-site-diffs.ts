@@ -41,20 +41,19 @@ function findDiffTriples(dir: string): DiffFile[] {
       byStem.set(key, item);
       continue;
     }
-    const key = stem;
-    const item = byStem.get(key) ?? {};
-    item.actual = full;
-    byStem.set(key, item);
+    if (file.includes("-actual")) {
+      const key = stem.replace(/-actual$/, "");
+      const item = byStem.get(key) ?? {};
+      item.actual = full;
+      byStem.set(key, item);
+    }
+    // Skip other png files in the folder
   }
   const results: DiffFile[] = [];
   for (const [, v] of byStem) {
     if (v.actual && v.diff)
       results.push({ ...(v as DiffFile), kind: "changed" });
-    else if (
-      v.actual &&
-      !v.diff &&
-      /-actual$/i.test((v.actual || "").replace(/\.(?:png)$/i, ""))
-    )
+    else if (v.actual && !v.diff)
       results.push({ ...(v as DiffFile), kind: "new" });
   }
   return results;
@@ -63,15 +62,63 @@ function findDiffTriples(dir: string): DiffFile[] {
 function collectSiteDiffs(root = process.cwd()) {
   const resultsDir = path.join(root, "site", "test-results");
   if (!fs.existsSync(resultsDir)) return { byTest: {} } as DiffSummary;
+  const entries = fs
+    .readdirSync(resultsDir)
+    .filter((e) => fs.statSync(path.join(resultsDir, e)).isDirectory());
+  // Group attempts by base suite (without -retryN suffix)
+  const grouped = new Map<string, string[]>();
+  for (const entry of entries) {
+    const base = entry.replace(/-retry\d+$/i, "");
+    const list = grouped.get(base) ?? [];
+    list.push(entry);
+    grouped.set(base, list);
+  }
   const byTest: Record<string, DiffFile[]> = {};
-  for (const entry of fs.readdirSync(resultsDir)) {
-    // Skip retry attempt folders; we only show the primary attempt
-    if (/-retry\d+$/i.test(entry)) continue;
-    const dir = path.join(resultsDir, entry);
-    if (!fs.statSync(dir).isDirectory()) continue;
-    const triples = findDiffTriples(dir);
-    if (!triples.length) continue;
-    byTest[entry] = triples;
+  for (const [baseSuite, attempts] of grouped) {
+    // Prefer the latest retry attempt
+    attempts.sort((a, b) => {
+      const ra = (a.match(/-retry(\d+)$/i) || ["", "-1"])[1];
+      const rb = (b.match(/-retry(\d+)$/i) || ["", "-1"])[1];
+      return Number(rb) - Number(ra);
+    });
+    let chosen: DiffFile[] | null = null;
+    // First pass: pick an attempt with at least one changed (has diff)
+    for (const attempt of attempts) {
+      const dir = path.join(resultsDir, attempt);
+      const triples = findDiffTriples(dir);
+      if (!triples.length) continue;
+      const hasChanged = triples.some((t) => !!t.diff);
+      if (hasChanged) {
+        chosen = triples;
+        break;
+      }
+      // Keep as fallback if nothing has a diff
+      if (!chosen) chosen = triples;
+    }
+    if (!chosen || !chosen.length) continue;
+    // Fallback baseline: if -expected is missing in test-results, resolve from repo snapshots
+    const projectMatch = baseSuite.match(
+      /-(chrome|firefox|safari|ios|android)$/i,
+    );
+    const project = projectMatch ? projectMatch[1] : "";
+    for (const t of chosen) {
+      if (!t.base && t.actual && project) {
+        const arg = path
+          .basename(t.actual)
+          .replace(/\.(?:png)$/i, "")
+          .replace(/-actual$/i, "");
+        const baseline = path.join(
+          root,
+          "site",
+          "src",
+          "tests",
+          "screenshots",
+          `${arg}-${project}.png`,
+        );
+        if (fs.existsSync(baseline)) t.base = baseline;
+      }
+    }
+    byTest[baseSuite] = chosen;
   }
   return { byTest } as DiffSummary;
 }
