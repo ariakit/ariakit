@@ -2,7 +2,7 @@ name: main
 
 on:
   push:
-    branches: [main, next]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -246,45 +246,6 @@ jobs:
 
       - name: Build website
         run: npm run build-website-lite
-
-  app:
-    name: Build app
-    needs: install
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
-
-      - name: Build app
-        run: npm run build-lite -w site
-
-      - name: Upload app artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-dist
-          path: site/dist
-          retention-days: 7
-          include-hidden-files: true
 
   test-chrome:
     name: Test ${{ matrix.name }}

@@ -271,7 +271,7 @@ jobs:
       - name: Check if there are diffs
         id: check
         run: |
-          echo "has_diffs=$(node -e \"const s=JSON.parse(require('fs').readFileSync('site-diff-summary.json','utf8')); process.stdout.write(Object.keys(s.byTest||{}).length ? 'true' : 'false')\")" >> $GITHUB_OUTPUT
+          node -e "const s=JSON.parse(require('fs').readFileSync('site-diff-summary.json','utf8')); console.log(Object.keys(s.byTest||{}).length ? 'has_diffs=true' : 'has_diffs=false')" >> $GITHUB_OUTPUT
 
       - name: Comment diffs
         if: steps.check.outputs.has_diffs == 'true'

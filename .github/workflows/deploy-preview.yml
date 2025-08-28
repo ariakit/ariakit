@@ -1,4 +1,4 @@
-name: preview-deploy
+name: deploy-preview
 
 on:
   workflow_run:
@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 jobs:
-  deploy-preview:
+  deploy:
     name: Deploy preview
     runs-on: ubuntu-latest
     environment: Preview
