@@ -1,0 +1,94 @@
+name: App Visual Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  app-visual-chrome:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Run app tests (Chrome)
+        run: npx playwright test -c site/playwright.config.ts --project=chrome
+      - name: Collect diffs
+        run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: app-visual-diffs-chrome
+          path: |
+            site/test-results/**
+            site-diff-summary.json
+
+  app-visual-firefox:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps firefox
+      - name: Run app tests (Firefox)
+        run: npx playwright test -c site/playwright.config.ts --project=firefox
+      - name: Collect diffs
+        run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: app-visual-diffs-firefox
+          path: |
+            site/test-results/**
+            site-diff-summary.json
+
+  app-visual-safari:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps webkit
+      - name: Run app tests (Safari)
+        run: npx playwright test -c site/playwright.config.ts --project=safari
+      - name: Collect diffs
+        run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: app-visual-diffs-safari
+          path: |
+            site/test-results/**
+            site-diff-summary.json
+
+  app-visual-comment:
+    needs: [app-visual-chrome, app-visual-firefox, app-visual-safari]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Merge summaries
+        run: |
+          node -e "const fs=require('node:fs'); const path=require('node:path'); const dir='artifacts'; const byTest={}; for(const a of fs.readdirSync(dir)){const p=path.join(dir,a,'site-diff-summary.json'); if(fs.existsSync(p)){const s=JSON.parse(fs.readFileSync(p,'utf8')); Object.assign(byTest, s.byTest||{});} } fs.writeFileSync('site-diff-summary.json', JSON.stringify({byTest}));"
+      - name: Comment diffs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: node --experimental-strip-types scripts/ci-comment-site-diffs.ts site-diff-summary.json

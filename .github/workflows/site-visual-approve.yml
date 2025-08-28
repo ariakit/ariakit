@@ -1,0 +1,66 @@
+name: App Visual Approvals
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  update-snapshots:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - project: chrome
+            os: ubuntu-latest
+          - project: firefox
+            os: ubuntu-latest
+          - project: safari
+            os: macos-latest
+    if: ${{ github.event.issue.pull_request }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.project == 'safari' && 'webkit' || matrix.project }}
+      - name: Check for approval comment
+        id: approval
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          node --experimental-strip-types scripts/ci-comment-site-diffs.ts site-diff-summary.json | tee approval.out
+          echo "approved=$(grep -o 'APP_VISUAL_APPROVED=\(true\|false\)' approval.out | cut -d= -f2)" >> $GITHUB_OUTPUT
+      - name: Exit if not approved
+        if: steps.approval.outputs.approved != 'true'
+        run: |
+          echo "No approval comment found (write 'Approve app visual' in a PR comment)." && exit 0
+      - name: Download diffs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-visual-diffs-${{ matrix.project }}
+          path: downloaded
+      - name: Filter failed tests
+        run: |
+          node -e "const fs=require('node:fs'); const s=JSON.parse(fs.readFileSync('downloaded/site-diff-summary.json','utf8')); const tests=Object.keys(s.byTest||{}); console.log(JSON.stringify(tests.map(t=>t.replace(/-.+$/,''))));" > tests.json
+      - name: Update snapshots only for failed tests
+        if: ${{ hashFiles('tests.json') != '' }}
+        run: |
+          TESTS=$(node -e "const list=JSON.parse(require('fs').readFileSync('tests.json','utf8')); process.stdout.write(list.map(t=>`--grep ${t}`).join(' '))")
+          npx playwright test -u -c site/playwright.config.ts --project=${{ matrix.project }} $TESTS
+      - name: Create PR with updated screenshots
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(site): update visual snapshots for ${{ matrix.project }}"
+          title: "chore(site): update visual snapshots for ${{ matrix.project }}"
+          body: "Automated update of site visual snapshots for ${{ matrix.project }}."
+          add-paths: |
+            site/src/tests/**/__snapshots__/**

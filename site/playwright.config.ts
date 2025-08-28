@@ -22,17 +22,13 @@ export default defineConfig({
   reportSlowTests: null,
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
-  testIgnore: ["site/**"],
+  testDir: "src",
+  snapshotPathTemplate: "src/tests/screenshots/{arg}-{projectName}{ext}",
   webServer: {
-    command: "npm start",
+    command: "npm run preview -w site",
     reuseExistingServer: !CI,
     stdout: CI ? "pipe" : "ignore",
-    port: 3000,
-  },
-  expect: {
-    toMatchSnapshot: {
-      maxDiffPixelRatio: 0.05,
-    },
+    port: 4321,
   },
   use: {
     screenshot: "only-on-failure",
@@ -68,12 +64,6 @@ export default defineConfig({
       name: "android",
       testMatch: testMatchersFor("android", "mobile"),
       use: devices["Pixel 5"],
-    },
-    {
-      name: "plus",
-      testMatch: [/website\/tests\/ariakit-plus/],
-      retries: CI ? 3 : 1,
-      use: devices["Desktop Chrome"],
     },
   ],
 });
