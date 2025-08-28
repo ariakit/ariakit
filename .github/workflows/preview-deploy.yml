@@ -2,7 +2,7 @@ name: preview-deploy
 
 on:
   workflow_run:
-    workflows: ["main"]
+    workflows: ["app"]
     types: [completed]
 
 jobs:
