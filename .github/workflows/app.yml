@@ -240,6 +240,7 @@ jobs:
   visual-comment:
     name: Visual comment
     needs: [test-chrome, test-macos]
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -256,6 +257,7 @@ jobs:
 
       - name: Download visual diffs artifacts
         uses: actions/download-artifact@v5
+        continue-on-error: true
         with:
           pattern: app-visual-diffs-*
           path: artifacts
