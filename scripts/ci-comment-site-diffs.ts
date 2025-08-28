@@ -30,9 +30,14 @@ function relativeFromRepo(p: string) {
 
 function renderTable(summary: DiffSummary) {
   const rows: string[] = [];
-  rows.push("<details><summary>App visual diffs</summary>\n\n");
   rows.push(
-    "<table><thead><tr><th>Baseline</th><th>New</th><th>Diff</th><th>Type</th></tr></thead><tbody>",
+    "<details><summary><strong>Visual diffs detected</strong> — review and approve if expected</summary>\n\n",
+  );
+  rows.push(
+    "To update the baseline snapshots, add a PR comment containing: <code>Approve app visual</code>. This triggers the <code>App Visual Approvals</code> workflow to update snapshots for failing tests.\n\n",
+  );
+  rows.push(
+    "<table><thead><tr><th>Baseline</th><th>New</th><th>Diff</th></tr></thead><tbody>",
   );
   for (const [suite, files] of Object.entries(summary.byTest)) {
     rows.push(`<tr><td colspan=3><strong>${suite}</strong></td></tr>`);
@@ -41,7 +46,7 @@ function renderTable(summary: DiffSummary) {
       const actual = relativeFromRepo(f.actual);
       const diff = f.diff ? relativeFromRepo(f.diff) : "";
       rows.push(
-        `<tr><td>${base ? `<img alt="baseline" src="${base}"/>` : "(none)"}</td><td><img alt="new" src="${actual}"/></td><td>${diff ? `<img alt="diff" src="${diff}"/>` : "(none)"}</td><td>${f.kind}</td></tr>`,
+        `<tr><td>${base ? `<img alt="baseline" src="${base}"/>` : "(none)"}</td><td><img alt="new" src="${actual}"/></td><td>${diff ? `<img alt="diff" src="${diff}"/>` : "(none)"}</td></tr>`,
       );
     }
   }

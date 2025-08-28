@@ -280,7 +280,7 @@ jobs:
       - name: Merge summaries
         id: merge
         run: |
-          node -e "const fs=require('node:fs'); const path=require('node:path'); const dir='artifacts'; const byTest={}; if(fs.existsSync(dir)){ for(const a of fs.readdirSync(dir)){const p=path.join(dir,a,'site-diff-summary.json'); if(fs.existsSync(p)){const s=JSON.parse(fs.readFileSync(p,'utf8')); Object.assign(byTest, s.byTest||{});} } } fs.writeFileSync('site-diff-summary.json', JSON.stringify({byTest}));"
+          node -e "const fs=require('node:fs'); const path=require('node:path'); const dir='artifacts'; const byTest={}; if(fs.existsSync(dir)){ for(const a of fs.readdirSync(dir)){const sumPath=path.join(dir,a,'site-diff-summary.json'); if(!fs.existsSync(sumPath)) continue; const s=JSON.parse(fs.readFileSync(sumPath,'utf8')); for(const [suite, files] of Object.entries(s.byTest||{})){ byTest[suite] = (byTest[suite]||[]).concat(files.map(f=>{ const fix=(p)=>{ if(!p) return p; const m=p.match(/[\\\/]site[\\\/]test-results[\\\/](.*)$/); if(!m) return p; return path.join(dir,a,'site','test-results',m[1]); }; return { base: fix(f.base), actual: fix(f.actual), diff: fix(f.diff), kind: f.kind||'changed' }; })); } } } fs.writeFileSync('site-diff-summary.json', JSON.stringify({byTest}));"
 
       - name: Check if there are diffs
         id: check
