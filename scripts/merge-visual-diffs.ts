@@ -13,16 +13,15 @@ function normalizeSlashes(filePath: string) {
   return filePath.split(path.sep).join("/");
 }
 
-function rewriteAndCopyDiff(
+function rewriteAndCopyFromArtifacts(
   artifactsRootDir: string,
   artifactName: string,
   originalPath: string,
   outputRootDir: string,
 ) {
-  if (!originalPath) return "";
-  const match = originalPath.match(/[\\/ ]site[\\/]test-results[\\/](.*)$/);
+  const match = originalPath.match(/[\\/]site[\\/]test-results[\\/](.*)$/);
   if (!match) return "";
-  const relativeRest = match[1]!;
+  const relativeRest = match[1] as string;
   const relativeOutput = path.join("test-results", artifactName, relativeRest);
   const sourcePath = path.join(
     artifactsRootDir,
@@ -35,8 +34,49 @@ function rewriteAndCopyDiff(
   ensureDir(path.dirname(destinationPath));
   if (fs.existsSync(sourcePath)) {
     fs.copyFileSync(sourcePath, destinationPath);
+    return normalizeSlashes(relativeOutput);
   }
-  return normalizeSlashes(relativeOutput);
+  return "";
+}
+
+function rewriteAndCopyFromRepo(originalPath: string, outputRootDir: string) {
+  const match = originalPath.match(
+    /[\\/]site[\\/]src[\\/]tests[\\/]screenshots[\\/](.*)$/,
+  );
+  if (!match) return "";
+  const relativeRest = match[1] as string;
+  const relativeOutput = path.join("baselines", relativeRest);
+  const sourcePath = path.join(
+    "site",
+    "src",
+    "tests",
+    "screenshots",
+    relativeRest,
+  );
+  const destinationPath = path.join(outputRootDir, relativeOutput);
+  ensureDir(path.dirname(destinationPath));
+  if (fs.existsSync(sourcePath)) {
+    fs.copyFileSync(sourcePath, destinationPath);
+    return normalizeSlashes(relativeOutput);
+  }
+  return "";
+}
+
+function copyAndRewrite(
+  artifactsRootDir: string,
+  artifactName: string,
+  originalPath: string | undefined,
+  outputRootDir: string,
+) {
+  if (!originalPath) return "";
+  return (
+    rewriteAndCopyFromArtifacts(
+      artifactsRootDir,
+      artifactName,
+      originalPath,
+      outputRootDir,
+    ) || rewriteAndCopyFromRepo(originalPath, outputRootDir)
+  );
 }
 
 function mergeVisualDiffs(
@@ -64,15 +104,26 @@ function mergeVisualDiffs(
     for (const [suite, files] of Object.entries(summary.byTest || {})) {
       const list = byTest[suite] || [];
       for (const item of files) {
-        // Only publish the diff image. Keep base/actual empty to avoid broken links.
-        const diff = rewriteAndCopyDiff(
+        const base = copyAndRewrite(
           artifactsRootDir,
           artifactName,
-          item.diff || "",
+          item.base,
           outputRootDir,
         );
-        if (!diff) continue;
-        list.push({ actual: "", base: "", diff });
+        const actual = copyAndRewrite(
+          artifactsRootDir,
+          artifactName,
+          item.actual,
+          outputRootDir,
+        );
+        const diff = copyAndRewrite(
+          artifactsRootDir,
+          artifactName,
+          item.diff,
+          outputRootDir,
+        );
+        if (!diff) continue; // we only care about changed/new
+        list.push({ actual, base, diff });
       }
       if (list.length) {
         byTest[suite] = list;

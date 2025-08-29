@@ -357,7 +357,7 @@ jobs:
         run: |
           PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           if [ -d public ]; then
-            find public -type f -name '*-diff.png' -print0 | while IFS= read -r -d '' file; do
+            find public -type f -name '*.png' -print0 | while IFS= read -r -d '' file; do
               key="${PREFIX}/${file#public/}"
               npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png" --remote
             done
