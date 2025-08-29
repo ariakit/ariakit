@@ -355,18 +355,34 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          if [ -n "$PR_NUMBER" ]; then
+            PREFIX="pr-$PR_NUMBER"
+          elif [ -n "$GITHUB_REF_NAME" ]; then
+            PREFIX="branch-$GITHUB_REF_NAME"
+          else
+            PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          fi
           if [ -d public ]; then
-            export PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            export PREFIX
             find public -type f -name '*.png' -print0 | xargs -0 -n 1 -P 16 -I {} bash -c 'file="$1"; prefix="$2"; key="${prefix}/${file#public/}"; npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png" --remote' _ {} "$PREFIX"
           fi
 
       - name: Compute R2 URL
         if: steps.merge.outputs.has_diffs == 'true'
         id: r2url
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          echo "page_url=${{ vars.R2_PUBLIC_URL }}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
+          BASE_URL="${{ vars.R2_PUBLIC_URL }}"
+          if [ -n "$PR_NUMBER" ]; then
+            echo "page_url=${BASE_URL}/pr-${PR_NUMBER}" >> $GITHUB_OUTPUT
+          elif [ -n "$GITHUB_REF_NAME" ]; then
+            echo "page_url=${BASE_URL}/branch-${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+          else
+            echo "page_url=${BASE_URL}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Comment diffs
         env:
