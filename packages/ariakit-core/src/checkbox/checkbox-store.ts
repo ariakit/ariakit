@@ -39,7 +39,7 @@ export type CheckboxStoreValue =
   | boolean
   | string
   | number
-  | Array<string | number>;
+  | ReadonlyArray<string | number>;
 
 export interface CheckboxStoreState<
   T extends CheckboxStoreValue = CheckboxStoreValue,
