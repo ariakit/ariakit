@@ -350,7 +350,6 @@ jobs:
 
       - name: Upload visual diffs to Cloudflare R2 (wrangler)
         if: steps.merge.outputs.has_diffs == 'true'
-        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
@@ -358,8 +357,21 @@ jobs:
         run: |
           PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           if [ -d public ]; then
-            export PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-            find public -type f -name '*.png' -print0 | xargs -0 -n 1 -P 16 -I {} bash -c 'file="$1"; prefix="$2"; key="${prefix}/${file#public/}"; npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png" --remote' _ {} "$PREFIX"
+            export PREFIX
+            find public -type f -name '*.png' -print0 | xargs -0 -n 1 -P 6 -I {} bash -c '
+              set -e
+              file="$1"
+              prefix="$2"
+              key="${prefix}/${file#public/}"
+              for attempt in 1 2 3 4 5; do
+                if npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png" --remote; then
+                  exit 0
+                fi
+                sleep $((2 ** attempt))
+              done
+              echo "Failed to upload $file after retries" >&2
+              exit 1
+            ' _ {} "$PREFIX"
           fi
 
       - name: Compute R2 URL
