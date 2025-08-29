@@ -122,7 +122,8 @@ function mergeVisualDiffs(
           item.diff,
           outputRootDir,
         );
-        if (!diff) continue; // we only care about changed/new
+        // Include rows if there is at least an actual or a diff image
+        if (!actual && !diff) continue;
         list.push({ actual, base, diff });
       }
       if (list.length) {
