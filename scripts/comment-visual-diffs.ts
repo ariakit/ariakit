@@ -1,5 +1,6 @@
 #!/usr/bin/env node --experimental-strip-types
 import fs from "node:fs";
+import path from "node:path";
 import { Octokit } from "@octokit/rest";
 import type { DiffSummary } from "./collect-visual-diffs.ts";
 
@@ -18,13 +19,20 @@ function readSummary(file: string): DiffSummary {
   return JSON.parse(json);
 }
 
+function labelFromPath(p: string) {
+  if (!p) return "";
+  const base = path.basename(p);
+  return base.replace(/-(expected|actual|diff)\.png$/i, "");
+}
+
 function renderContent(summary: DiffSummary) {
   const rows: string[] = [];
   const entries = Object.entries(summary.byTest);
+  const total = entries.reduce((acc, [, files]) => acc + files.length, 0);
 
   rows.push("## Visual regression tests\n");
 
-  if (!entries.length) {
+  if (!total) {
     rows.push("✅ No visual diffs detected.");
     return rows.join("\n");
   }
@@ -39,12 +47,13 @@ function renderContent(summary: DiffSummary) {
 
   const pageUrl = env("PAGE_URL").replace(/\/$/, "");
   rows.push(
-    `<details><summary><strong>${entries.length} visual diff${entries.length === 1 ? "" : "s"} detected</strong></summary>\n\n`,
+    `<details><summary><strong>${total} visual diff${total === 1 ? "" : "s"} detected</strong></summary>\n\n`,
   );
   rows.push(
     "<table><thead><tr><th>Baseline</th><th>Actual</th><th>Diff</th></tr></thead><tbody>",
   );
-  for (const [suite, files] of Object.entries(summary.byTest)) {
+  for (const [suite, files] of entries) {
+    // Keep suite header for grouping
     rows.push(
       `<tr><td colspan=3 align=center><strong>${suite}</strong></td></tr>`,
     );
@@ -52,6 +61,9 @@ function renderContent(summary: DiffSummary) {
       const base = f.base ? `${pageUrl}/${f.base}` : "";
       const diff = f.diff ? `${pageUrl}/${f.diff}` : "";
       const actual = f.actual ? `${pageUrl}/${f.actual}` : "";
+      const title = labelFromPath(f.diff || f.actual || f.base || "");
+      // Per-file title row
+      rows.push(`<tr><td colspan=3 align=center><em>${title}</em></td></tr>`);
       rows.push(
         `<tr><td>${base ? `<img alt="baseline" src="${base}"/>` : "—"}</td><td>${actual ? `<img alt="actual" src="${actual}"/>` : "—"}</td><td>${diff ? `<img alt="diff" src="${diff}"/>` : "—"}</td></tr>`,
       );
@@ -106,8 +118,8 @@ async function main() {
     summary = readSummary(summaryPath);
   }
 
-  const hasDiffs = Object.keys(summary.byTest).length > 0;
-  const body = hasDiffs ? renderContent(summary) : "";
+  const hasRows = Object.values(summary.byTest || {}).some((l) => l.length);
+  const body = hasRows ? renderContent(summary) : "";
   const octokit = new Octokit({ auth: token });
 
   const eventName = env("GITHUB_EVENT_NAME");
@@ -115,7 +127,7 @@ async function main() {
   // If PR_NUMBER is explicitly provided (e.g., from workflow_run), use it
   if (prNumberEnv) {
     const issue_number = Number(prNumberEnv);
-    if (hasDiffs) {
+    if (hasRows) {
       await upsertComment(octokit, owner, repo!, issue_number, body);
     }
     return;
@@ -125,7 +137,7 @@ async function main() {
     const payloadPath = env("GITHUB_EVENT_PATH");
     const payload = JSON.parse(fs.readFileSync(payloadPath, "utf8"));
     const issue_number = payload.pull_request.number as number;
-    if (hasDiffs) {
+    if (hasRows) {
       await upsertComment(octokit, owner, repo!, issue_number, body);
     }
     return;

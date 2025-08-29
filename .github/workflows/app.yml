@@ -357,7 +357,8 @@ jobs:
         run: |
           PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           if [ -d public ]; then
-            find public -type f -name '*.png' -print0 | xargs -0 -n 1 -P 16 -I {} bash -c 'file="$1"; key="${PREFIX}/${file#public/}"; npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png" --remote' _ {}
+            export PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            find public -type f -name '*.png' -print0 | xargs -0 -n 1 -P 16 -I {} bash -c 'file="$1"; prefix="$2"; key="${prefix}/${file#public/}"; npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png" --remote' _ {} "$PREFIX"
           fi
 
       - name: Compute R2 URL
