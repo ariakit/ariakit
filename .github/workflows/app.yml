@@ -346,7 +346,8 @@ jobs:
         id: merge
         run: |
           node --experimental-strip-types scripts/merge-visual-diffs.ts
-          echo "has_diffs=$(node -e \"const s=JSON.parse(require('fs').readFileSync('site-diff-summary.json','utf8')); process.stdout.write(Object.keys(s.byTest||{}).length ? 'true' : 'false');\")" >> $GITHUB_OUTPUT
+          HAS_DIFFS=$(node -e 'const s=JSON.parse(require("fs").readFileSync("site-diff-summary.json","utf8")); process.stdout.write(Object.keys(s.byTest||{}).length ? "true" : "false");')
+          echo "has_diffs=$HAS_DIFFS" >> "$GITHUB_OUTPUT"
 
       - name: Upload visual diffs to Cloudflare R2 (wrangler)
         if: steps.merge.outputs.has_diffs == 'true'
