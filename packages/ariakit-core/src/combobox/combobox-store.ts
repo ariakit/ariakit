@@ -209,7 +209,7 @@ export function createComboboxStore({
   };
 }
 
-export type ComboboxStoreSelectedValue = string | string[];
+export type ComboboxStoreSelectedValue = string | readonly string[];
 
 export interface ComboboxStoreItem extends CompositeStoreItem {
   value?: string;

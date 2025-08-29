@@ -149,7 +149,7 @@ export function createMenuStore({
 
 export type MenuStoreValues = Record<
   string,
-  string | boolean | number | Array<string | number>
+  string | boolean | number | ReadonlyArray<string | number>
 >;
 
 export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
