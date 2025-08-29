@@ -190,11 +190,11 @@ jobs:
           retention-days: 3
 
       - name: Collect visual diffs summary
-        if: always()
+        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
         run: node --experimental-strip-types scripts/collect-visual-diffs.ts > site-diff-summary.json
 
       - name: Upload test results to GitHub
-        if: failure() && steps.test.outcome == 'failure'
+        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.project }}-test-results
@@ -202,7 +202,7 @@ jobs:
           retention-days: 30
 
       - name: Upload visual diffs artifact
-        if: always()
+        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: app-visual-diffs-${{ matrix.project }}
@@ -280,11 +280,11 @@ jobs:
           retention-days: 3
 
       - name: Collect visual diffs summary
-        if: always()
+        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
         run: node --experimental-strip-types scripts/collect-visual-diffs.ts > site-diff-summary.json
 
       - name: Upload test results to GitHub
-        if: failure() && steps.test.outcome == 'failure'
+        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: safari-test-results
@@ -292,7 +292,7 @@ jobs:
           retention-days: 30
 
       - name: Upload visual diffs artifact (safari)
-        if: always()
+        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: app-visual-diffs-safari
@@ -405,8 +405,16 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           pattern: updated-snapshots-*
-          path: site/src/tests/screenshots
-          merge-multiple: true
+          path: artifacts
+          merge-multiple: false
+      - name: Merge updated snapshots into repo
+        run: |
+          if [ -d artifacts ]; then
+            shopt -s nullglob
+            for src in artifacts/*/site/src/tests/screenshots; do
+              rsync -a "$src"/ site/src/tests/screenshots/
+            done
+          fi
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
