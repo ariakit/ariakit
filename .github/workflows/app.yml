@@ -190,11 +190,11 @@ jobs:
           retention-days: 3
 
       - name: Collect visual diffs summary
-        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
+        if: failure() && steps.test.outcome == 'failure'
         run: node --experimental-strip-types scripts/collect-visual-diffs.ts > site-diff-summary.json
 
       - name: Upload test results to GitHub
-        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
+        if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.project }}-test-results
@@ -202,7 +202,7 @@ jobs:
           retention-days: 30
 
       - name: Upload visual diffs artifact
-        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
+        if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: app-visual-diffs-${{ matrix.project }}
@@ -280,11 +280,11 @@ jobs:
           retention-days: 3
 
       - name: Collect visual diffs summary
-        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
+        if: failure() && steps.test.outcome == 'failure'
         run: node --experimental-strip-types scripts/collect-visual-diffs.ts > site-diff-summary.json
 
       - name: Upload test results to GitHub
-        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
+        if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: safari-test-results
@@ -292,7 +292,7 @@ jobs:
           retention-days: 30
 
       - name: Upload visual diffs artifact (safari)
-        if: needs.gate.outputs.is_approve_commit != 'true' && steps.test.outcome == 'failure'
+        if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: app-visual-diffs-safari
