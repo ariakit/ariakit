@@ -86,6 +86,10 @@ function mergeVisualDiffs(
 if (process.argv[1] === new URL(import.meta.url).pathname) {
   const summary = mergeVisualDiffs();
   fs.writeFileSync("site-diff-summary.json", JSON.stringify(summary));
+  const hasDiffs = Object.values(summary.byTest || {}).some(
+    (list) => list.length > 0,
+  );
+  process.stdout.write(hasDiffs ? "true" : "false");
 }
 
 export { mergeVisualDiffs };

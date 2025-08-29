@@ -24,6 +24,22 @@ function findDiffTriples(dir: string): DiffFile[] {
     .filter((f) => !/^test-failed/i.test(f));
   const byStem = new Map<string, DiffFile>();
 
+  const suffixes = ["expected", "actual", "diff"] as const;
+
+  // Seed map with all stems we will track
+  for (const file of files) {
+    for (const suffix of suffixes) {
+      if (!file.includes(suffix)) continue;
+      const stem = file
+        .replace(/\.(?:png)$/, "")
+        .replace(new RegExp(`-${suffix}$`), "");
+      if (!byStem.has(stem)) {
+        byStem.set(stem, { actual: "" });
+      }
+      break;
+    }
+  }
+
   const processFileWithSuffix = (
     file: string,
     suffix: string,
