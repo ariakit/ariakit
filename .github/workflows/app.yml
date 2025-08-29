@@ -409,6 +409,7 @@ jobs:
           merge-multiple: false
       - name: Merge updated snapshots into repo
         run: |
+          mkdir -p site/src/tests/screenshots
           if [ -d artifacts ]; then
             shopt -s nullglob
             for src in artifacts/*/site/src/tests/screenshots; do
@@ -421,7 +422,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
       - name: Commit updated snapshots (if any)
         run: |
-          git add -A site/src/tests/screenshots
+          if [ -d site/src/tests/screenshots ]; then
+            git add -A site/src/tests/screenshots
+          fi
           if git diff --cached --quiet --exit-code; then
             echo "No visual snapshot updates to commit."
           else
