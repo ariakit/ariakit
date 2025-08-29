@@ -2,14 +2,13 @@
 import fs from "node:fs";
 import path from "node:path";
 
-interface DiffFile {
-  base?: string;
+export interface DiffFile {
   actual: string;
+  base?: string;
   diff?: string;
-  kind: "changed" | "new";
 }
 
-interface DiffSummary {
+export interface DiffSummary {
   byTest: Record<string, DiffFile[]>;
 }
 
@@ -23,48 +22,43 @@ function findDiffTriples(dir: string): DiffFile[] {
     .filter(isPng)
     // Ignore generic failure screenshots that are not snapshot outputs
     .filter((f) => !/^test-failed/i.test(f));
-  const byStem = new Map<string, Partial<DiffFile>>();
-  for (const file of files) {
+  const byStem = new Map<string, DiffFile>();
+
+  const processFileWithSuffix = (
+    file: string,
+    suffix: string,
+    property: keyof DiffFile,
+  ) => {
+    if (!file.includes(suffix)) return false;
     const full = path.join(dir, file);
     const stem = file.replace(/\.(?:png)$/, "");
-    if (file.includes("-expected")) {
-      const key = stem.replace(/-expected$/, "");
-      const item = byStem.get(key) ?? {};
-      item.base = full;
-      byStem.set(key, item);
-      continue;
-    }
-    if (file.includes("-diff")) {
-      const key = stem.replace(/-diff$/, "");
-      const item = byStem.get(key) ?? {};
-      item.diff = full;
-      byStem.set(key, item);
-      continue;
-    }
-    if (file.includes("-actual")) {
-      const key = stem.replace(/-actual$/, "");
-      const item = byStem.get(key) ?? {};
-      item.actual = full;
-      byStem.set(key, item);
-    }
+    const key = stem.replace(new RegExp(`-${suffix}$`), "");
+    const item = byStem.get(key);
+    if (!item) return false;
+    (item as any)[property] = full;
+    byStem.set(key, item);
+    return true;
+  };
+
+  for (const file of files) {
+    if (processFileWithSuffix(file, "expected", "base")) continue;
+    if (processFileWithSuffix(file, "actual", "actual")) continue;
+    if (processFileWithSuffix(file, "diff", "diff")) continue;
     // Skip other png files in the folder
   }
-  const results: DiffFile[] = [];
-  for (const [, v] of byStem) {
-    if (v.actual && v.diff)
-      results.push({ ...(v as DiffFile), kind: "changed" });
-    else if (v.actual && !v.diff)
-      results.push({ ...(v as DiffFile), kind: "new" });
-  }
-  return results;
+
+  return Array.from(byStem.values());
 }
 
-function collectSiteDiffs(root = process.cwd()) {
+function collectSiteDiffs(root = process.cwd()): DiffSummary {
   const resultsDir = path.join(root, "site", "test-results");
-  if (!fs.existsSync(resultsDir)) return { byTest: {} } as DiffSummary;
+  if (!fs.existsSync(resultsDir)) {
+    return { byTest: {} };
+  }
   const entries = fs
     .readdirSync(resultsDir)
     .filter((e) => fs.statSync(path.join(resultsDir, e)).isDirectory());
+
   // Group attempts by base suite (without -retryN suffix)
   const grouped = new Map<string, string[]>();
   for (const entry of entries) {
@@ -73,7 +67,9 @@ function collectSiteDiffs(root = process.cwd()) {
     list.push(entry);
     grouped.set(base, list);
   }
+
   const byTest: Record<string, DiffFile[]> = {};
+
   for (const [baseSuite, attempts] of grouped) {
     // Prefer the latest retry attempt
     attempts.sort((a, b) => {
@@ -93,34 +89,40 @@ function collectSiteDiffs(root = process.cwd()) {
         break;
       }
       // Keep as fallback if nothing has a diff
-      if (!chosen) chosen = triples;
+      if (!chosen) {
+        chosen = triples;
+      }
     }
     if (!chosen || !chosen.length) continue;
-    // Fallback baseline: if -expected is missing in test-results, resolve from repo snapshots
+    // Fallback baseline: if -expected is missing in test-results, resolve from
+    // repo snapshots
     const projectMatch = baseSuite.match(
       /-(chrome|firefox|safari|ios|android)$/i,
     );
     const project = projectMatch ? projectMatch[1] : "";
     for (const t of chosen) {
-      if (!t.base && t.actual && project) {
-        const arg = path
-          .basename(t.actual)
-          .replace(/\.(?:png)$/i, "")
-          .replace(/-actual$/i, "");
-        const baseline = path.join(
-          root,
-          "site",
-          "src",
-          "tests",
-          "screenshots",
-          `${arg}-${project}.png`,
-        );
-        if (fs.existsSync(baseline)) t.base = baseline;
+      if (t.base) continue;
+      if (!project) continue;
+      if (!t.actual) continue;
+      const arg = path
+        .basename(t.actual)
+        .replace(/\.(?:png)$/i, "")
+        .replace(/-actual$/i, "");
+      const baseline = path.join(
+        root,
+        "site",
+        "src",
+        "tests",
+        "screenshots",
+        `${arg}-${project}.png`,
+      );
+      if (fs.existsSync(baseline)) {
+        t.base = baseline;
       }
     }
     byTest[baseSuite] = chosen;
   }
-  return { byTest } as DiffSummary;
+  return { byTest };
 }
 
 if (process.argv[1] === new URL(import.meta.url).pathname) {

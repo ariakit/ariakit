@@ -191,7 +191,7 @@ jobs:
 
       - name: Collect visual diffs summary
         if: always()
-        run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
+        run: node --experimental-strip-types scripts/collect-visual-diffs.ts > site-diff-summary.json
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -281,7 +281,7 @@ jobs:
 
       - name: Collect visual diffs summary
         if: always()
-        run: node --experimental-strip-types scripts/ci-collect-site-diffs.ts > site-diff-summary.json
+        run: node --experimental-strip-types scripts/collect-visual-diffs.ts > site-diff-summary.json
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -306,12 +306,11 @@ jobs:
     needs: [test-chrome, test-macos, gate]
     if: always()
     runs-on: ubuntu-latest
+    environment: Visual Test
     permissions:
       contents: read
       pull-requests: write
       issues: write
-      pages: write
-      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -346,32 +345,32 @@ jobs:
       - name: Merge summaries
         id: merge
         run: |
-          node -e "const fs=require('node:fs'); const path=require('node:path'); const dir='artifacts'; const outDir='public'; fs.mkdirSync(outDir,{recursive:true}); const byTest={}; if(fs.existsSync(dir)){ for(const a of fs.readdirSync(dir)){const sumPath=path.join(dir,a,'site-diff-summary.json'); if(!fs.existsSync(sumPath)) continue; const s=JSON.parse(fs.readFileSync(sumPath,'utf8')); const rewrite=(p)=>{ if(!p) return ''; const m=p.match(/[\\\/]site[\\\/]test-results[\\\/](.*)$/); if(!m) return ''; const rel=path.join('test-results',a,m[1]); const src=path.join(dir,a,'site','test-results',m[1]); const dst=path.join(outDir,rel); fs.mkdirSync(path.dirname(dst),{recursive:true}); if(fs.existsSync(src)) fs.copyFileSync(src,dst); return rel.split(path.sep).join('/'); }; for(const [suite, files] of Object.entries(s.byTest||{})){ byTest[suite] = (byTest[suite]||[]).concat(files.map(f=>({ base: rewrite(f.base), actual: rewrite(f.actual), diff: rewrite(f.diff), kind: f.kind||'changed' }))); } } } fs.writeFileSync('site-diff-summary.json', JSON.stringify({byTest}));"
+          node --experimental-strip-types scripts/merge-visual-diffs.ts
+          echo "has_diffs=$(node -e \"const s=JSON.parse(require('fs').readFileSync('site-diff-summary.json','utf8')); process.stdout.write(Object.keys(s.byTest||{}).length ? 'true' : 'false');\")" >> $GITHUB_OUTPUT
 
-      - name: Check if there are diffs
-        id: check
+      - name: Upload visual diffs to Cloudflare R2 (wrangler)
+        if: steps.merge.outputs.has_diffs == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
-          node -e "const s=JSON.parse(require('fs').readFileSync('site-diff-summary.json','utf8')); console.log(Object.keys(s.byTest||{}).length ? 'has_diffs=true' : 'has_diffs=false')" >> $GITHUB_OUTPUT
+          PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          if [ -d public ]; then
+            find public -type f -name '*-diff.png' -print0 | while IFS= read -r -d '' file; do
+              key="${PREFIX}/${file#public/}"
+              npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png"
+            done
+          fi
 
-      - name: Configure GitHub Pages
-        if: steps.check.outputs.has_diffs == 'true' && github.event_name == 'pull_request'
-        uses: actions/configure-pages@v5
-
-      - name: Upload pages artifact (visual diffs)
-        if: steps.check.outputs.has_diffs == 'true' && github.event_name == 'pull_request'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
-
-      - name: Deploy to GitHub Pages
-        if: steps.check.outputs.has_diffs == 'true' && github.event_name == 'pull_request'
-        id: deploy
-        uses: actions/deploy-pages@v4
-        with:
-          preview: true
+      - name: Compute R2 URL
+        if: steps.merge.outputs.has_diffs == 'true'
+        id: r2url
+        run: |
+          echo "page_url=${{ vars.R2_PUBLIC_URL }}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
 
       - name: Comment diffs
-        if: steps.check.outputs.has_diffs == 'true'
+        if: steps.merge.outputs.has_diffs == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -379,8 +378,8 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           GITHUB_SHA: ${{ github.sha }}
-          PAGE_URL: ${{ steps.deploy.outputs.page_url }}
-        run: node --experimental-strip-types scripts/ci-comment-site-diffs.ts site-diff-summary.json
+          PAGE_URL: ${{ steps.r2url.outputs.page_url }}
+        run: node --experimental-strip-types scripts/comment-visual-diffs.ts site-diff-summary.json
 
   commit-snapshots:
     name: Commit updated snapshots
@@ -435,4 +434,4 @@ jobs:
       #     GITHUB_EVENT_NAME: ${{ github.event_name }}
       #     GITHUB_EVENT_PATH: ${{ github.event_path }}
       #     UPDATE_MESSAGE: Snapshots updated in commit https://github.com/${{ github.repository }}/commit/${{ steps.newsha.outputs.new_sha }}. The workflow will rerun tests without -u.
-      #   run: node --experimental-strip-types scripts/ci-comment-site-diffs.ts
+      #   run: node --experimental-strip-types scripts/comment-site-diffs.ts
