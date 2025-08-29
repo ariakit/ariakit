@@ -73,35 +73,38 @@ function renderContent(summary: DiffSummary) {
   return rows.join("\n");
 }
 
-async function upsertComment(
+async function updateOrCreateCommentIfNeeded(
   octokit: Octokit,
   owner: string,
   repo: string,
-  issue: number,
+  issue_number: number,
   body: string,
+  hasRows: boolean,
 ) {
   const { data: comments } = await octokit.issues.listComments({
     owner,
     repo,
-    issue_number: issue,
+    issue_number,
     per_page: 100,
   });
   const existing = comments.find((c) => c.body?.includes(MARKER));
-  const finalBody = `${MARKER}\n\n${body}`;
-  if (existing) {
-    await octokit.issues.updateComment({
-      owner,
-      repo,
-      comment_id: existing.id,
-      body: finalBody,
-    });
-  } else {
-    await octokit.issues.createComment({
-      owner,
-      repo,
-      issue_number: issue,
-      body: finalBody,
-    });
+  if (hasRows || existing) {
+    const finalBody = `${MARKER}\n\n${body}`;
+    if (existing) {
+      await octokit.issues.updateComment({
+        owner,
+        repo,
+        comment_id: existing.id,
+        body: finalBody,
+      });
+    } else {
+      await octokit.issues.createComment({
+        owner,
+        repo,
+        issue_number,
+        body: finalBody,
+      });
+    }
   }
 }
 
@@ -118,18 +121,22 @@ async function main() {
     summary = readSummary(summaryPath);
   }
 
+  const body = renderContent(summary);
   const hasRows = Object.values(summary.byTest || {}).some((l) => l.length);
-  const body = hasRows ? renderContent(summary) : "";
   const octokit = new Octokit({ auth: token });
 
   const eventName = env("GITHUB_EVENT_NAME");
 
-  // If PR_NUMBER is explicitly provided (e.g., from workflow_run), use it
   if (prNumberEnv) {
     const issue_number = Number(prNumberEnv);
-    if (hasRows) {
-      await upsertComment(octokit, owner, repo!, issue_number, body);
-    }
+    await updateOrCreateCommentIfNeeded(
+      octokit,
+      owner,
+      repo!,
+      issue_number,
+      body,
+      hasRows,
+    );
     return;
   }
 
@@ -137,9 +144,14 @@ async function main() {
     const payloadPath = env("GITHUB_EVENT_PATH");
     const payload = JSON.parse(fs.readFileSync(payloadPath, "utf8"));
     const issue_number = payload.pull_request.number as number;
-    if (hasRows) {
-      await upsertComment(octokit, owner, repo!, issue_number, body);
-    }
+    await updateOrCreateCommentIfNeeded(
+      octokit,
+      owner,
+      repo!,
+      issue_number,
+      body,
+      hasRows,
+    );
     return;
   }
 
