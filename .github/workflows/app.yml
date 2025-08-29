@@ -359,7 +359,7 @@ jobs:
           if [ -d public ]; then
             find public -type f -name '*-diff.png' -print0 | while IFS= read -r -d '' file; do
               key="${PREFIX}/${file#public/}"
-              npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png"
+              npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png" --remote
             done
           fi
 
