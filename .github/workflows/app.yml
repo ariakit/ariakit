@@ -7,8 +7,16 @@ on:
 
 jobs:
   install:
-    name: Install node modules
-    runs-on: ubuntu-latest
+    name: Install node modules on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Linux
+          - os: macos-latest
+            name: macOS
 
     steps:
       - name: Checkout repository
@@ -23,8 +31,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-
+          key: npm-${{ matrix.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          restore-keys: npm-${{ matrix.os }}-
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -34,7 +42,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ matrix.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -134,7 +142,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ matrix.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
