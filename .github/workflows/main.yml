@@ -23,8 +23,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          restore-keys: npm-${{ runner.os }}-
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -34,7 +34,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -62,7 +62,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -96,7 +96,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -127,7 +127,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -162,7 +162,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -197,7 +197,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -231,7 +231,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -283,7 +283,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -294,8 +294,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: playwright-${{ matrix.engine }}-
+          key: playwright-${{ runner.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-${{ matrix.engine }}-
+            playwright-${{ runner.os }}-
 
       - name: Install playwright
         if: steps.cache-playwright.outputs.cache-hit != 'true'
@@ -346,7 +348,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -356,8 +358,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ms-playwright
-          key: playwright-macos-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: playwright-macos-
+          key: playwright-${{ runner.os }}-webkit-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-webkit-
+            playwright-${{ runner.os }}-
 
       - name: Install playwright
         run: npx playwright install --with-deps webkit

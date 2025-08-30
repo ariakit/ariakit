@@ -4,28 +4,11 @@ on:
   workflow_run:
     workflows: ["app"]
     types: [completed]
-  workflow_dispatch:
-    inputs:
-      run_id:
-        description: app workflow run ID
-        required: true
-      head_repo:
-        description: head repository (owner/repo)
-        required: true
-      head_ref:
-        description: head branch
-        required: true
 
 jobs:
   update-screenshots:
     name: Update screenshots
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      (
-        github.event.workflow_run.conclusion != 'skipped' &&
-        github.event.workflow_run.conclusion != 'cancelled' &&
-        (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'push')
-      )
+    if: github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -35,16 +18,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0
-          repository: ${{ github.event_name == 'workflow_dispatch' && inputs.head_repo || github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_ref || github.event.workflow_run.head_branch }}
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: true
 
       - name: Download screenshots artifacts
         uses: actions/download-artifact@v5
         with:
-          run-id: ${{ github.event_name == 'workflow_dispatch' && inputs.run_id || github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pattern: app-screenshots-*
           merge-multiple: true
@@ -65,10 +47,10 @@ jobs:
           git commit -m "Update screenshots"
 
       - name: Push to PR head branch
-        if: github.event.workflow_run.event == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.head_ref != 'main')
+        if: github.event.workflow_run.event == 'pull_request'
         run: |
           set +e
-          HEAD_REF='${{ github.event_name == 'workflow_dispatch' && inputs.head_ref || github.event.workflow_run.head_branch }}'
+          HEAD_REF='${{ github.event.workflow_run.head_branch }}'
           git push origin HEAD:"${HEAD_REF}"
           status=$?
           if [ $status -ne 0 ]; then
@@ -77,7 +59,7 @@ jobs:
           fi
 
       - name: Create PR with screenshots
-        if: github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'main'
+        if: github.event.workflow_run.event == 'push'
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: Update screenshots
