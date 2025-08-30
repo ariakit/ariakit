@@ -6,17 +6,43 @@ on:
   pull_request:
 
 jobs:
-  install:
-    name: Install node modules on ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-latest
-            name: Linux
-          - os: macos-latest
-            name: macOS
+  install-linux:
+    name: Install node modules on Linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          restore-keys: npm-${{ runner.os }}-
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: cache-node-modules
+        with:
+          path: |
+            node_modules
+            site/node_modules
+            packages/*/node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci --no-audit
+
+  install-macos:
+    name: Install node modules on macOS
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -50,7 +76,7 @@ jobs:
 
   build:
     name: Build app
-    needs: install
+    needs: install-linux
     runs-on: ubuntu-latest
 
     steps:
@@ -70,7 +96,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -89,7 +115,7 @@ jobs:
 
   test:
     name: Test ${{ matrix.name }}
-    needs: build
+    needs: [build, install-macos]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -194,19 +220,19 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      # - name: Checkout PR head (same-repo)
-      #   if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
-      #   uses: actions/checkout@v5
-      #   with:
-      #     repository: ${{ github.event.pull_request.head.repo.full_name }}
-      #     ref: ${{ github.event.pull_request.head.ref }}
-      #     fetch-depth: 0
-
-      - name: Checkout repository
-        # if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
+      - name: Checkout
+        # if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
         uses: actions/checkout@v5
-        # with:
-        #   fetch-depth: 0
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      # - name: Checkout repository
+      #   if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
+      #   uses: actions/checkout@v5
+      #   # with:
+      #   #   fetch-depth: 0
 
       - name: Download screenshots artifacts
         uses: actions/download-artifact@v5
