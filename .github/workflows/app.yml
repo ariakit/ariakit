@@ -6,38 +6,6 @@ on:
   pull_request:
 
 jobs:
-  gate:
-    name: Determine workflow mode
-    runs-on: ubuntu-latest
-    outputs:
-      is_approve_commit: ${{ steps.determine.outputs.is_approve_commit }}
-      is_update_commit: ${{ steps.determine.outputs.is_update_commit }}
-    steps:
-      - name: Checkout PR head
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 2
-      - name: Checkout repository
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 2
-      - name: Determine mode from commit message
-        id: determine
-        run: |
-          MSG=$(git log -1 --pretty=%B)
-          if echo "$MSG" | grep -qi '\[approve-visual\]'; then
-            echo "is_approve_commit=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_approve_commit=false" >> $GITHUB_OUTPUT
-          fi
-          if echo "$MSG" | grep -qi '\[update-visual\]'; then
-            echo "is_update_commit=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_update_commit=false" >> $GITHUB_OUTPUT
-          fi
   install:
     name: Install node modules
     runs-on: ubuntu-latest
@@ -111,28 +79,47 @@ jobs:
           retention-days: 7
           include-hidden-files: true
 
-  test-chrome:
+  test:
     name: Test ${{ matrix.name }}
-    needs: [build, gate]
-    runs-on: ubuntu-latest
+    needs: build
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: Chrome
+          - os: ubuntu-latest
+            name: Chrome
             engine: chromium
             project: chrome
-          # - name: Android
-          #   engine: chromium
-          #   project: android
-          - name: Firefox
+            run: xvfb-run npx playwright
+            cache_path: ~/.cache/ms-playwright
+          - os: ubuntu-latest
+            name: Firefox
             engine: firefox
             project: firefox
+            run: xvfb-run npx playwright
+            cache_path: ~/.cache/ms-playwright
+          # - os: ubuntu-latest
+          #   name: Android
+          #   engine: chromium
+          #   project: android
+          #   run: xvfb-run npx playwright
+          #   cache_path: ~/.cache/ms-playwright
+          - os: macos-latest
+            name: Safari
+            engine: webkit
+            project: safari
+            run: npx playwright
+            cache_path: ~/Library/Caches/ms-playwright
+          # - os: macos-latest
+          #   name: iOS
+          #   engine: webkit
+          #   project: ios
+          #   run: npx playwright
+          #   cache_path: ~/Library/Caches/ms-playwright
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 2
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -153,15 +140,17 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit
 
-      - name: Cache playwright
+      - name: Cache Playwright
         id: cache-playwright
         uses: actions/cache@v4
         with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: playwright-${{ matrix.engine }}-
+          path: ${{ matrix.cache_path }}
+          key: playwright-${{ matrix.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          restore-keys: |
+            playwright-${{ matrix.os }}-${{ matrix.engine }}-
+            playwright-${{ matrix.os }}-
 
-      - name: Install playwright
+      - name: Install Playwright
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps ${{ matrix.engine }}
 
@@ -173,265 +162,57 @@ jobs:
 
       - name: Test
         id: test
-        if: needs.gate.outputs.is_approve_commit != 'true'
-        run: xvfb-run npx playwright test -c site/playwright.config.ts --project ${{ matrix.project }}
+        continue-on-error: true
+        run: ${{ matrix.run }} test -c site/playwright.config.ts --project ${{ matrix.project }}
 
-      - name: Update snapshots (approve commit)
-        if: needs.gate.outputs.is_approve_commit == 'true'
-        run: xvfb-run npx playwright test -u -c site/playwright.config.ts --project ${{ matrix.project }}
+      - name: Update snapshots for failed tests
+        if: steps.test.outcome == 'failure'
+        run: ${{ matrix.run }} test -c site/playwright.config.ts --last-failed -u --project ${{ matrix.project }}
 
-      - name: Upload updated snapshots
-        if: needs.gate.outputs.is_approve_commit == 'true'
+      - name: Upload screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: updated-snapshots-${{ matrix.project }}
+          name: app-screenshots-${{ matrix.project }}
           path: site/src/tests/screenshots
           if-no-files-found: ignore
           retention-days: 3
-
-      - name: Collect visual diffs summary
-        if: failure() && steps.test.outcome == 'failure'
-        run: node --experimental-strip-types scripts/collect-visual-diffs.ts > site-diff-summary.json
-
-      - name: Upload test results to GitHub
-        if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.project }}-test-results
-          path: site/test-results
-          retention-days: 30
-
-      - name: Upload visual diffs artifact
-        if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-visual-diffs-${{ matrix.project }}
-          path: |
-            site/test-results/**
-            site-diff-summary.json
-          retention-days: 7
-
-  test-macos:
-    name: Test macOS
-    needs: [build, gate]
-    runs-on: macos-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 2
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
-
-      - name: Install wrangler
-        if: steps.cache-node-modules.outputs.cache-hit == 'true'
-        run: npm install wrangler
-
-      - name: Cache playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/Library/Caches/ms-playwright
-          key: playwright-macos-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: playwright-macos-
-
-      - name: Install playwright
-        run: npx playwright install --with-deps webkit
-
-      - name: Download app artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: app-dist
-          path: site/dist
-
-      - name: Test
-        id: test
-        if: needs.gate.outputs.is_approve_commit != 'true'
-        run: npx playwright test -c site/playwright.config.ts --project safari --project ios
-
-      - name: Update snapshots (approve commit)
-        if: needs.gate.outputs.is_approve_commit == 'true'
-        run: npx playwright test -u -c site/playwright.config.ts --project safari --project ios
-
-      - name: Upload updated snapshots (safari/ios)
-        if: needs.gate.outputs.is_approve_commit == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: updated-snapshots-safari
-          path: site/src/tests/screenshots
-          if-no-files-found: ignore
-          retention-days: 3
-
-      - name: Collect visual diffs summary
-        if: failure() && steps.test.outcome == 'failure'
-        run: node --experimental-strip-types scripts/collect-visual-diffs.ts > site-diff-summary.json
-
-      - name: Upload test results to GitHub
-        if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v4
-        with:
-          name: safari-test-results
-          path: site/test-results
-          retention-days: 30
-
-      - name: Upload visual diffs artifact (safari)
-        if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-visual-diffs-safari
-          path: |
-            site/test-results/**
-            site-diff-summary.json
-          retention-days: 7
-
-  visual-comment:
-    name: Visual comment
-    needs: [test-chrome, test-macos, gate]
-    if: always()
-    runs-on: ubuntu-latest
-    environment: Visual Test
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
-
-      - name: Download visual diffs artifacts
-        uses: actions/download-artifact@v5
-        continue-on-error: true
-        with:
-          pattern: app-visual-diffs-*
-          path: artifacts
-          merge-multiple: false
-
-      - name: Merge summaries
-        id: merge
-        run: |
-          HAS_DIFFS=$(node --experimental-strip-types scripts/merge-visual-diffs.ts)
-          echo "has_diffs=$HAS_DIFFS" >> "$GITHUB_OUTPUT"
-
-      - name: Upload visual diffs to Cloudflare R2 (wrangler)
-        if: steps.merge.outputs.has_diffs == 'true'
-        continue-on-error: true
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          R2_BUCKET: ${{ secrets.R2_BUCKET }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ -n "$PR_NUMBER" ]; then
-            PREFIX="pr-$PR_NUMBER"
-          elif [ -n "$GITHUB_REF_NAME" ]; then
-            PREFIX="branch-$GITHUB_REF_NAME"
-          else
-            PREFIX="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          fi
-          if [ -d public ]; then
-            export PREFIX
-            find public -type f -name '*.png' -print0 | xargs -0 -n 1 -P 16 -I {} bash -c 'file="$1"; prefix="$2"; key="${prefix}/${file#public/}"; npx --yes wrangler r2 object put "${R2_BUCKET}/${key}" --file "$file" --content-type "image/png" --remote' _ {} "$PREFIX"
-          fi
-
-      - name: Compute R2 URL
-        if: steps.merge.outputs.has_diffs == 'true'
-        id: r2url
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          BASE_URL="${{ vars.R2_PUBLIC_URL }}"
-          if [ -n "$PR_NUMBER" ]; then
-            echo "page_url=${BASE_URL}/pr-${PR_NUMBER}" >> $GITHUB_OUTPUT
-          elif [ -n "$GITHUB_REF_NAME" ]; then
-            echo "page_url=${BASE_URL}/branch-${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
-          else
-            echo "page_url=${BASE_URL}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Comment diffs
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GITHUB_EVENT_PATH: ${{ github.event_path }}
-          GITHUB_SHA: ${{ github.sha }}
-          PAGE_URL: ${{ steps.r2url.outputs.page_url }}
-        run: node --experimental-strip-types scripts/comment-visual-diffs.ts site-diff-summary.json
 
   commit-snapshots:
     name: Commit updated snapshots
-    needs: [test-chrome, test-macos, gate]
-    if: ${{ needs.gate.outputs.is_approve_commit == 'true' }}
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
-      - name: Checkout PR head
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
+      # - name: Checkout PR head
+      #   if: ${{ github.event_name == 'pull_request' }}
+      #   uses: actions/checkout@v5
+      #   with:
+      #     repository: ${{ github.event.pull_request.head.repo.full_name }}
+      #     ref: ${{ github.event.pull_request.head.ref }}
+      #     fetch-depth: 0
+
       - name: Checkout repository
-        if: ${{ github.event_name != 'pull_request' }}
+        # if: ${{ github.event_name != 'pull_request' }}
         uses: actions/checkout@v5
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
         with:
-          node-version-file: .nvmrc
+          fetch-depth: 0
 
-      - name: Download updated snapshots artifacts
+      - name: Download screenshots artifacts
         uses: actions/download-artifact@v5
         with:
-          pattern: updated-snapshots-*
-          path: site/src/tests/screenshots
+          pattern: app-screenshots-*
+          path: .
           merge-multiple: true
-      - name: Ensure screenshots dir exists
-        run: |
-          mkdir -p site/src/tests/screenshots
+
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - name: Commit updated snapshots (if any)
+
+      - name: Commit screenshots to pull request
+        if: github.event_name == 'pull_request'
         run: |
           if [ -d site/src/tests/screenshots ]; then
             git add -A site/src/tests/screenshots
@@ -439,6 +220,20 @@ jobs:
           if git diff --cached --quiet --exit-code; then
             echo "No visual snapshot updates to commit."
           else
-            git commit -m "chore(site): update visual snapshots [update-visual]"
+            git pull --rebase origin "${GITHUB_HEAD_REF}"
+            git commit -m "Update screenshots"
             git push
           fi
+
+      - name: Create or update PR with screenshots (main)
+        if: github.event_name != 'pull_request'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Update screenshots"
+          title: "Update screenshots"
+          body: |
+            Update screenshots generated by CI.
+          branch: chore/update-screenshots-${{ github.run_id }}
+          delete-branch: true
+          add-paths: |
+            site/src/tests/screenshots/**
