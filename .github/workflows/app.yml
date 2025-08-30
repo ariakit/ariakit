@@ -7,7 +7,7 @@ on:
 
 jobs:
   install:
-    name: Install node modules on ${{ matrix.os }}
+    name: Install node modules on ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -31,8 +31,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ matrix.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-${{ matrix.os }}-
+          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          restore-keys: npm-${{ runner.os }}-
 
       - name: Cache node_modules
         uses: actions/cache@v4
@@ -42,7 +42,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ matrix.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -142,7 +142,7 @@ jobs:
             node_modules
             site/node_modules
             packages/*/node_modules
-          key: node-modules-${{ matrix.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
 
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -153,10 +153,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ matrix.cache_path }}
-          key: playwright-${{ matrix.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+          key: playwright-${{ runner.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
           restore-keys: |
-            playwright-${{ matrix.os }}-${{ matrix.engine }}-
-            playwright-${{ matrix.os }}-
+            playwright-${{ runner.os }}-${{ matrix.engine }}-
+            playwright-${{ runner.os }}-
 
       - name: Install Playwright
         if: steps.cache-playwright.outputs.cache-hit != 'true'
@@ -194,8 +194,8 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      # - name: Checkout PR head
-      #   if: ${{ github.event_name == 'pull_request' }}
+      # - name: Checkout PR head (same-repo)
+      #   if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
       #   uses: actions/checkout@v5
       #   with:
       #     repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -203,16 +203,16 @@ jobs:
       #     fetch-depth: 0
 
       - name: Checkout repository
-        # if: ${{ github.event_name != 'pull_request' }}
+        # if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository }}
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
+        # with:
+        #   fetch-depth: 0
 
       - name: Download screenshots artifacts
         uses: actions/download-artifact@v5
         with:
           pattern: app-screenshots-*
-          path: .
+          path: site/src/tests/screenshots
           merge-multiple: true
 
       - name: Configure git
