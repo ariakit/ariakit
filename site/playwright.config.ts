@@ -24,7 +24,7 @@ export default defineConfig({
   testDir: "src",
   snapshotPathTemplate: "src/tests/screenshots/{arg}-{projectName}{ext}",
   webServer: {
-    command: "npm run preview -w site",
+    command: "npm run preview-lite -w site",
     reuseExistingServer: !CI,
     stdout: CI ? "pipe" : "ignore",
     port: 4321,
