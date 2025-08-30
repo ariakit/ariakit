@@ -1,0 +1,17 @@
+name: pr
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+jobs:
+  check-maintainer-edits:
+    name: Check maintainer edits
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if "Allow edits by maintainers" is off
+        run: |
+          if [ "${{ github.event.pull_request.maintainer_can_modify }}" != "true" ]; then
+            echo "Please enable \"Allow edits by maintainers\" in this PR's sidebar."
+            exit 1
+          fi

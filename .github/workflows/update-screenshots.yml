@@ -8,12 +8,7 @@ on:
 jobs:
   update-screenshots:
     name: Update screenshots
-    if: |
-      (
-        github.event.workflow_run.conclusion != 'skipped' &&
-        github.event.workflow_run.conclusion != 'cancelled' &&
-        (github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'push')
-      )
+    if: github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -23,7 +18,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
