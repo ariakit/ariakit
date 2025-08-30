@@ -170,14 +170,14 @@ jobs:
 
       - name: Test
         id: test
-        continue-on-error: true
         run: ${{ matrix.run }} test -c site/playwright.config.ts --project ${{ matrix.project }}
 
       - name: Update snapshots for failed tests
-        if: steps.test.outcome == 'failure'
+        if: failure() && steps.test.outcome == 'failure'
         run: ${{ matrix.run }} test -c site/playwright.config.ts --last-failed -u --project ${{ matrix.project }}
 
       - name: Upload screenshots
+        if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: app-screenshots-${{ matrix.project }}
@@ -185,8 +185,9 @@ jobs:
           if-no-files-found: ignore
           retention-days: 3
 
-  commit-snapshots:
-    name: Commit updated snapshots
+  commit-screenshots:
+    name: Commit screenshots
+    if: always()
     needs: test
     runs-on: ubuntu-latest
     permissions:
