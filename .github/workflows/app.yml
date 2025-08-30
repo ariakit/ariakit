@@ -255,12 +255,9 @@ jobs:
           if git diff --cached --quiet --exit-code; then
             echo "No screenshots to commit."
           else
-            # Ensure we are on the correct branch
-            git fetch origin "${GITHUB_HEAD_REF}:${GITHUB_HEAD_REF}"
-            git checkout "${GITHUB_HEAD_REF}"
             git commit -m "Update screenshots"
-            git pull --rebase origin "${GITHUB_HEAD_REF}"
-            git push origin "HEAD:${GITHUB_HEAD_REF}"
+            git pull --rebase origin head
+            git push
           fi
 
       - name: Create or update PR with screenshots (main)
