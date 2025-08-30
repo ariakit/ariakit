@@ -211,8 +211,8 @@ jobs:
           if-no-files-found: ignore
           retention-days: 3
 
-  commit-screenshots:
-    name: Commit screenshots
+  update-screenshots:
+    name: Update screenshots
     if: always()
     needs: test
     runs-on: ubuntu-latest
@@ -253,11 +253,14 @@ jobs:
             git add -A site/src/tests/screenshots
           fi
           if git diff --cached --quiet --exit-code; then
-            echo "No visual snapshot updates to commit."
+            echo "No screenshots to commit."
           else
-            git pull --rebase origin "${GITHUB_HEAD_REF}"
+            # Ensure we are on the correct branch
+            git fetch origin "${GITHUB_HEAD_REF}:${GITHUB_HEAD_REF}"
+            git checkout "${GITHUB_HEAD_REF}"
             git commit -m "Update screenshots"
-            git push
+            git pull --rebase origin "${GITHUB_HEAD_REF}"
+            git push origin "HEAD:${GITHUB_HEAD_REF}"
           fi
 
       - name: Create or update PR with screenshots (main)
