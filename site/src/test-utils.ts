@@ -133,10 +133,10 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
   const rects = await page.evaluate(() => {
     const viewportWidth = document.documentElement.clientWidth;
     const rects: Rect[] = [];
-    const walk = (el: Element) => {
+    const walk = (el: Element, padded = true) => {
       const rect = el.getBoundingClientRect();
       const isSized = rect.width > 0 && rect.height > 0;
-      if (isSized && Math.round(rect.width) < viewportWidth) {
+      if (isSized && (!padded || Math.round(rect.width) < viewportWidth)) {
         rects.push(rect);
         // stop descending this branch once a non-full-width element is found
         return;
@@ -147,6 +147,12 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
     };
     for (const child of document.body.children) {
       walk(child);
+    }
+    // If no elements were found, walk the body without padding.
+    if (rects.length === 0) {
+      for (const child of document.body.children) {
+        walk(child, false);
+      }
     }
     return rects;
   });
