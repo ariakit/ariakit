@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { visualTest } from "#app/test-utils.ts";
+import { screenshot } from "#app/test-utils/screenshot.ts";
 
 const TIMEOUT_PER_STEP = 10_000;
 
@@ -11,7 +11,7 @@ async function getPreviewPaths(baseURL: string) {
   return (await resPreviews.json()) as string[];
 }
 
-test("previews", async ({ page, baseURL }, testInfo) => {
+test("previews", async ({ page, baseURL }) => {
   test.skip(!process.env.VISUAL_TEST);
   if (!baseURL) {
     throw new Error("Missing baseURL");
@@ -25,7 +25,7 @@ test("previews", async ({ page, baseURL }, testInfo) => {
       async () => {
         await page.goto(path);
         const id = path.replace(/^\/+/, "");
-        await visualTest(page, testInfo, { id });
+        await screenshot(page, { id });
       },
       { timeout: TIMEOUT_PER_STEP },
     );
