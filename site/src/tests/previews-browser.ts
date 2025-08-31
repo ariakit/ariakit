@@ -1,6 +1,8 @@
 import { test } from "@playwright/test";
 import { visualTest } from "#app/test-utils.ts";
 
+const TIMEOUT_PER_STEP = 10_000;
+
 async function getPreviewPaths(baseURL: string) {
   const resPreviews = await fetch(new URL("/previews", baseURL));
   if (!resPreviews.ok) {
@@ -15,13 +17,17 @@ test("previews", async ({ page, baseURL }, testInfo) => {
     throw new Error("Missing baseURL");
   }
   const paths = await getPreviewPaths(baseURL);
-  test.setTimeout(paths.length * 10_000);
+  test.setTimeout(paths.length * TIMEOUT_PER_STEP);
 
   for (const path of paths) {
-    await test.step(path, async () => {
-      await page.goto(path);
-      const id = path.replace(/^\/+/, "");
-      await visualTest(page, testInfo, { id, element: "body astro-island" });
-    });
+    await test.step(
+      path,
+      async () => {
+        await page.goto(path);
+        const id = path.replace(/^\/+/, "");
+        await visualTest(page, testInfo, { id });
+      },
+      { timeout: TIMEOUT_PER_STEP },
+    );
   }
 });

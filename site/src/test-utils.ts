@@ -114,20 +114,13 @@ function applyClipMargin(rect: Rect, margin = DEFAULT_CLIP_MARGIN) {
 }
 
 function getRectsClip(rects: Rect[], margin = DEFAULT_CLIP_MARGIN) {
-  const filtered = rects.filter((r) => r.width > 0 && r.height > 0);
-  if (!filtered.length) {
+  const [first, ...rest] = rects;
+  if (!first) {
     throw new Error("No elements to capture");
   }
-  let combinedRect: Rect | null = null;
-  for (const rect of filtered) {
-    if (!combinedRect) {
-      combinedRect = rect;
-      continue;
-    }
+  let combinedRect = first;
+  for (const rect of rest) {
     combinedRect = getCombinedClip(combinedRect, rect);
-  }
-  if (!combinedRect) {
-    throw new Error("No elements to capture");
   }
   const x = Math.max(0, Math.floor(combinedRect.x));
   const y = Math.max(0, Math.floor(combinedRect.y));
@@ -138,10 +131,24 @@ function getRectsClip(rects: Rect[], margin = DEFAULT_CLIP_MARGIN) {
 
 async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
   const rects = await page.evaluate(() => {
-    const elements = Array.from<HTMLElement>(
-      document.querySelectorAll("body *"),
-    );
-    return elements.map((el) => el.getBoundingClientRect());
+    const viewportWidth = document.documentElement.clientWidth;
+    const rects: Rect[] = [];
+    const walk = (el: Element) => {
+      const rect = el.getBoundingClientRect();
+      const isSized = rect.width > 0 && rect.height > 0;
+      if (isSized && Math.round(rect.width) < viewportWidth) {
+        rects.push(rect);
+        // stop descending this branch once a non-full-width element is found
+        return;
+      }
+      for (const child of el.children) {
+        walk(child);
+      }
+    };
+    for (const child of document.body.children) {
+      walk(child);
+    }
+    return rects;
   });
   return getRectsClip(rects, margin);
 }
@@ -176,7 +183,7 @@ async function withStyles(
   }
   const originalStyles = await page.evaluate((styles) => {
     const el = document.documentElement;
-    const originalStyles = el.style.getPropertyValue("style");
+    const originalStyles = el.getAttribute("style");
     for (const [k, v] of Object.entries(styles)) {
       el.style.setProperty(k, String(v));
     }
