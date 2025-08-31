@@ -57,7 +57,7 @@
   },
   "yaml.schemas": {
     "https://json.schemastore.org/github-action.json": [
-      ".github/actions/*.y*ml"
+      ".github/workflows/*/action.y*ml"
     ]
   }
 }
