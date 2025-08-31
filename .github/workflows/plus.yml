@@ -26,17 +26,10 @@ jobs:
         with:
           cache-npm: true
 
-      - name: Cache playwright
-        id: cache-playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: playwright-chromium-
-
       - name: Install playwright
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: chromium
 
       - name: Cache Next.js
         uses: actions/cache@v4

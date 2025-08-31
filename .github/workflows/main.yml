@@ -155,19 +155,10 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Cache playwright
-        id: cache-playwright
-        uses: actions/cache@v4
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
         with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-${{ matrix.engine }}-
-            playwright-${{ runner.os }}-
-
-      - name: Install playwright
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.engine }}
+          engine: ${{ matrix.engine }}
 
       - name: Restore website
         uses: actions/cache/restore@v4
@@ -204,17 +195,10 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Cache playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/Library/Caches/ms-playwright
-          key: playwright-${{ runner.os }}-webkit-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-webkit-
-            playwright-${{ runner.os }}-
-
       - name: Install playwright
-        run: npx playwright install --with-deps webkit
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: webkit
 
       - name: Restore website
         uses: actions/cache/restore@v4

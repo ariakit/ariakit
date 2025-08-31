@@ -2,9 +2,6 @@ name: install-playwright
 description: Install Playwright
 
 inputs:
-  cache-path:
-    description: Cache path
-    required: true
   engine:
     description: Engine
     required: true
@@ -16,7 +13,8 @@ runs:
       id: cache-playwright
       uses: actions/cache@v4
       with:
-        path: ${{ inputs.cache_path }}
+        path: |
+          ${{ runner.os == 'macOS' && '~/Library/Caches/ms-playwright' || runner.os == 'Windows' && '~\\AppData\\Local\\ms-playwright' || '~/.cache/ms-playwright' }}
         key: playwright-${{ runner.os }}-${{ inputs.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
         restore-keys: |
           playwright-${{ runner.os }}-${{ inputs.engine }}-
