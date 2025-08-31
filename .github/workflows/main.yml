@@ -7,38 +7,7 @@ on:
 
 jobs:
   install:
-    name: Install node modules
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-${{ runner.os }}-
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+    uses: ./.github/workflows/install-node-modules-linux.yml
 
   lint:
     name: Lint
