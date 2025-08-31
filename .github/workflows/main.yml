@@ -7,7 +7,16 @@ on:
 
 jobs:
   install:
-    uses: ./.github/workflows/install-node-modules-linux.yml
+    name: Install node modules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+        with:
+          cache-npm: true
 
   lint:
     name: Lint
@@ -18,24 +27,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Lint
         run: npm run lint
@@ -52,24 +45,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Type check
         run: npm run tsc
@@ -83,24 +60,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Build
         run: npm run build
@@ -118,24 +79,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Test
         run: npm test -- --shard ${{ matrix.shard }}
@@ -153,24 +98,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Install React 17
         run: npm run react17
@@ -187,24 +116,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Cache Next.js
         uses: actions/cache@v4
@@ -239,24 +152,8 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Cache playwright
         id: cache-playwright
@@ -304,24 +201,8 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Cache playwright
         uses: actions/cache@v4
