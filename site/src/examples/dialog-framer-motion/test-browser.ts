@@ -9,7 +9,7 @@ withFramework(import.meta.dirname, async () => {
     await screenshot(page);
     await q.button("Show modal").click();
     await expect(q.dialog()).toBeVisible();
-    await (await q.dialog().elementHandle())?.waitForElementState("stable");
+    await page.waitForTimeout(1000);
     await screenshot(page);
   });
 });
