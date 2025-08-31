@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.4.16
+
+- Updated `Array` types to `ReadonlyArray` for better compatibility.
+
 ## 0.4.15
 
 - Fixed `valid` state not updating on [Form](https://ariakit.org/components/form).

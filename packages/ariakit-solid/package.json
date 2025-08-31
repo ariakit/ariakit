@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/solid",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Toolkit for building accessible web apps with Solid",
   "sideEffects": false,
   "license": "MIT",
@@ -44,7 +44,7 @@
     "components"
   ],
   "dependencies": {
-    "@ariakit/solid-core": "0.1.1"
+    "@ariakit/solid-core": "0.1.2"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
