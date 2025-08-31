@@ -32,7 +32,10 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-function isSelected(storeValue?: string | string[], itemValue?: string) {
+function isSelected(
+  storeValue?: string | readonly string[],
+  itemValue?: string,
+) {
   if (itemValue == null) return;
   if (storeValue == null) return false;
   if (Array.isArray(storeValue)) {

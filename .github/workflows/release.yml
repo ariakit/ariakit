@@ -14,31 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
         with:
-          node-version-file: .nvmrc
+          cache-npm: true
 
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Configure git
+        run: |
+          git config user.name "ariakit-bot"
+          git config user.email "ariakit-bot@users.noreply.github.com"
 
       - name: Create PR or publish to npm
         uses: changesets/action@v1
@@ -47,6 +31,7 @@ jobs:
           commit: Publish
           version: node scripts/release/version.js
           publish: node scripts/release/publish.js
+          setupGitUser: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
