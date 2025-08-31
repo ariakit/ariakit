@@ -36,7 +36,7 @@ export function withFramework(
   }
   const frameworkNames = getPreviewFramworks(dirname);
   for (const framework of frameworkNames) {
-    test.describe(framework, () => {
+    test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page }) => {
         await page.goto(`/${framework}/previews/${id}`, {
           waitUntil: "networkidle",
