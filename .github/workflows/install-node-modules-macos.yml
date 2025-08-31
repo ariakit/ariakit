@@ -27,6 +27,9 @@ jobs:
       node-modules-cache-key: ${{ steps.install.outputs.node-modules-cache-key }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
       - name: Install node modules
         id: install
-        uses: ./.github/workflows/install-node-modules/action.yml
+        uses: ./.github/workflows/install-node-modules
