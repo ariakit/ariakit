@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
