@@ -7,7 +7,7 @@ jobs:
   deploy-production:
     name: Deploy to production
     if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: deploy
+    runs-on: ubuntu-latest
     environment: Production
     permissions:
       contents: read
