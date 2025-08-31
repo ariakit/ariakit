@@ -1,0 +1,65 @@
+name: install-node-modules
+description: Install node modules
+
+inputs:
+  npm-cache-path:
+    description: Path to cache npm
+    default: ~/.npm
+  node-modules-cache-path:
+    description: Path to cache node modules
+    default: |
+      node_modules
+      site/node_modules
+      packages/*/node_modules
+
+outputs:
+  npm-cache-path:
+    description: Path to cache npm
+    value: ${{ inputs.npm-cache-path }}
+  npm-cache-key:
+    description: Key to cache npm
+    value: ${{ steps.cache-key.outputs.npm }}
+  node-modules-cache-path:
+    description: Path to cache node modules
+    value: ${{ inputs.node-modules-cache-path }}
+  node-modules-cache-key:
+    description: Key to cache node modules
+    value: ${{ steps.cache-key.outputs.node-modules }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+
+    - name: Cache key
+      id: cache-key
+      shell: bash
+      run: |
+        echo "npm=npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}" >> $GITHUB_OUTPUT
+        echo "node-modules=node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}" >> $GITHUB_OUTPUT
+
+    - name: Cache npm
+      id: cache-npm
+      uses: actions/cache@v4
+      with:
+        path: ${{ inputs.npm-cache-path }}
+        key: ${{ steps.cache-key.outputs.npm }}
+        restore-keys: npm-${{ runner.os }}-
+
+    - name: Cache node_modules
+      uses: actions/cache@v4
+      id: cache-node-modules
+      with:
+        path: ${{ inputs.node-modules-cache-path }}
+        key: ${{ steps.cache-key.outputs.node-modules }}
+
+    - name: Install dependencies
+      if: steps.cache-node-modules.outputs.cache-hit != 'true'
+      shell: bash
+      run: npm ci --no-audit
