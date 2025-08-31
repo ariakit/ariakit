@@ -32,4 +32,4 @@ jobs:
 
       - name: Install node modules
         id: install
-        uses: ./.github/workflows/actions/install-node-modules.yml
+        uses: ./.github/workflows/install-node-modules
