@@ -19,6 +19,11 @@ jobs:
         with:
           cache-npm: true
 
+      - name: Configure git
+        run: |
+          git config user.name "ariakit-bot"
+          git config user.email "ariakit-bot@users.noreply.github.com"
+
       - name: Create PR or publish to npm
         uses: changesets/action@v1
         with:
@@ -26,7 +31,6 @@ jobs:
           commit: Publish
           version: node scripts/release/version.js
           publish: node scripts/release/publish.js
-          commitMode: github-api
           setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
