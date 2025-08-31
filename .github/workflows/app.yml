@@ -99,18 +99,10 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Cache Playwright
-        id: cache-playwright
-        uses: actions/cache@v4
+        uses: ./.github/workflows/install-playwright
         with:
-          path: ${{ matrix.cache_path }}
-          key: playwright-${{ runner.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-${{ matrix.engine }}-
-            playwright-${{ runner.os }}-
-
-      - name: Install Playwright
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.engine }}
+          cache_path: ${{ matrix.cache_path }}
+          engine: ${{ matrix.engine }}
 
       - name: Download app artifact
         uses: actions/download-artifact@v5
