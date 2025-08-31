@@ -5,8 +5,9 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
-  check-maintainer-edits:
-    name: Check maintainer edits
+  check-allow-maintainer-edits:
+    if: ${{ github.event.pull_request.head.repo.fork }}
+    name: Check "Allow edits by maintainers"
     runs-on: ubuntu-latest
     steps:
       - name: Fail if "Allow edits by maintainers" is off
