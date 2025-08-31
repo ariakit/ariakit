@@ -86,7 +86,12 @@ function getSnapshotName(params: {
   variants?: string[];
 }) {
   const { testInfo, variants = [], id } = params;
-  const parts = [...testInfo.titlePath, id, ...variants].filter(Boolean);
+  const parts = [
+    ...testInfo.titlePath,
+    id,
+    ...variants,
+    testInfo.project.name,
+  ].filter(Boolean);
   const baseName = slugify(parts.join("-"));
   const count = countMap.get(baseName) || 0;
   countMap.set(baseName, count + 1);
