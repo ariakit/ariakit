@@ -54,5 +54,10 @@
   "[mdx]": {
     "editor.wordWrap": "on",
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-action.json": [
+      ".github/actions/*.y*ml"
+    ]
   }
 }

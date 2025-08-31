@@ -2,28 +2,16 @@ name: install-node-modules-linux
 
 on:
   workflow_call:
-    inputs:
-      npm-cache-path:
-        type: string
-        description: Path to cache npm
-        default: ~/.npm
-      node-modules-cache-path:
-        type: string
-        description: Path to cache node modules
-        default: |
-          node_modules
-          site/node_modules
-          packages/*/node_modules
     outputs:
       npm-cache-path:
         description: Path to cache npm
-        value: ${{ inputs.npm-cache-path }}
+        value: ${{ jobs.install.outputs.npm-cache-path }}
       npm-cache-key:
         description: Key to cache npm
         value: ${{ jobs.install.outputs.npm-cache-key }}
       node-modules-cache-path:
         description: Path to cache node modules
-        value: ${{ inputs.node-modules-cache-path }}
+        value: ${{ jobs.install.outputs.node-modules-cache-path }}
       node-modules-cache-key:
         description: Key to cache node modules
         value: ${{ jobs.install.outputs.node-modules-cache-key }}
@@ -33,39 +21,12 @@ jobs:
     name: Install node modules (Linux)
     runs-on: ubuntu-latest
     outputs:
-      npm-cache-key: ${{ steps.cache-key.outputs.npm }}
-      node-modules-cache-key: ${{ steps.cache-key.outputs.node-modules }}
+      npm-cache-path: ${{ steps.install.outputs.npm-cache-path }}
+      npm-cache-key: ${{ steps.install.outputs.npm-cache-key }}
+      node-modules-cache-path: ${{ steps.install.outputs.node-modules-cache-path }}
+      node-modules-cache-key: ${{ steps.install.outputs.node-modules-cache-key }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache key
-        id: cache-key
-        run: |
-          echo "npm=npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}" >> $GITHUB_OUTPUT
-          echo "node-modules=node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}" >> $GITHUB_OUTPUT
-
-      - name: Cache npm
-        id: cache-npm
-        uses: actions/cache@v4
-        with:
-          path: ${{ inputs.npm-cache-path }}
-          key: ${{ steps.cache-key.outputs.npm }}
-          restore-keys: npm-${{ runner.os }}-
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: cache-node-modules
-        with:
-          path: ${{ inputs.node-modules-cache-path }}
-          key: ${{ steps.cache-key.outputs.node-modules }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        id: install
+        uses: ./.github/actions/install-node-modules.yml
