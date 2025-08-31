@@ -16,6 +16,7 @@ type Frameworks = Record<
     icon: keyof typeof icons;
     dependencies: string[];
     url: string;
+    indexFile?: string;
   }
 >;
 
@@ -25,42 +26,49 @@ export const frameworks = {
     icon: "astro",
     dependencies: ["astro"],
     url: "https://astro.build",
+    indexFile: "index.astro",
   },
   html: {
     label: "HTML",
     icon: "html",
     dependencies: [],
     url: "https://developer.mozilla.org/en-US/docs/Web/HTML",
+    indexFile: "index.html",
   },
   preact: {
     label: "Preact",
     icon: "preact",
     dependencies: ["preact"],
     url: "https://preactjs.com",
+    indexFile: "index.preact.tsx",
   },
   react: {
     label: "React",
     icon: "react",
     dependencies: ["react", "react-dom"],
     url: "https://react.dev",
+    indexFile: "index.react.tsx",
   },
   solid: {
     label: "Solid",
     icon: "solid",
     dependencies: ["solid-js"],
     url: "https://www.solidjs.com",
+    indexFile: "index.solid.tsx",
   },
   svelte: {
     label: "Svelte",
     icon: "svelte",
     dependencies: ["svelte"],
     url: "https://svelte.dev",
+    indexFile: "index.svelte",
   },
   vue: {
     label: "Vue",
     icon: "vue",
     dependencies: ["vue"],
     url: "https://vuejs.org",
+    indexFile: "index.vue",
   },
   tailwind: {
     label: "Tailwind",
@@ -98,4 +106,10 @@ export function getFrameworkByFilename(
   if (filename.includes(".svelte")) return "svelte";
   if (filename.includes(".vue")) return "vue";
   return "html";
+}
+
+export function getIndexFile(framework: keyof typeof frameworks) {
+  const frameworkDetail = getFramework(framework);
+  if (!("indexFile" in frameworkDetail)) return null;
+  return frameworkDetail.indexFile;
 }

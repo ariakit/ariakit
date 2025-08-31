@@ -22,7 +22,7 @@ export default defineConfig({
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   testDir: "src",
-  snapshotPathTemplate: "src/tests/screenshots/{arg}-{projectName}{ext}",
+  snapshotPathTemplate: "src/tests/screenshots/{arg}{ext}",
   webServer: {
     command: "npm run preview-lite -w site",
     reuseExistingServer: !CI,

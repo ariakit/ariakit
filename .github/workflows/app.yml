@@ -9,70 +9,26 @@ jobs:
   install-linux:
     name: Install node modules (Linux)
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
         with:
-          node-version-file: .nvmrc
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-${{ runner.os }}-
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+          cache-npm: true
 
   install-macos:
     name: Install node modules (macOS)
     runs-on: macos-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
         with:
-          node-version-file: .nvmrc
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-${{ runner.os }}-
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+          cache-npm: true
 
   build:
     name: Build app
@@ -83,24 +39,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Build app
         run: npm run build-lite -w site
@@ -125,68 +65,38 @@ jobs:
             name: Chrome
             engine: chromium
             project: chrome
-            run: xvfb-run npx playwright
-            cache_path: ~/.cache/ms-playwright
+            run: xvfb-run npm run test-visual -w site --
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
-            run: xvfb-run npx playwright
-            cache_path: ~/.cache/ms-playwright
+            run: xvfb-run npm run test-visual -w site --
           # - os: ubuntu-latest
           #   name: Android
           #   engine: chromium
           #   project: android
-          #   run: xvfb-run npx playwright
-          #   cache_path: ~/.cache/ms-playwright
+          #   run: xvfb-run npm run test-visual -w site --
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari
-            run: npx playwright
-            cache_path: ~/Library/Caches/ms-playwright
+            run: npm run test-visual -w site --
           # - os: macos-latest
           #   name: iOS
           #   engine: webkit
           #   project: ios
-          #   run: npx playwright
-          #   cache_path: ~/Library/Caches/ms-playwright
+          #   run: npm run test-visual -w site --
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache node_modules
-        uses: actions/cache/restore@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            site/node_modules
-            packages/*/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
-
-      - name: Cache Playwright
-        id: cache-playwright
-        uses: actions/cache@v4
-        with:
-          path: ${{ matrix.cache_path }}
-          key: playwright-${{ runner.os }}-${{ matrix.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-${{ matrix.engine }}-
-            playwright-${{ runner.os }}-
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Install Playwright
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps ${{ matrix.engine }}
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: ${{ matrix.engine }}
 
       - name: Download app artifact
         uses: actions/download-artifact@v5
@@ -196,11 +106,11 @@ jobs:
 
       - name: Test
         id: test
-        run: ${{ matrix.run }} test -c site/playwright.config.ts --project ${{ matrix.project }}
+        run: ${{ matrix.run }} --project ${{ matrix.project }}
 
       - name: Update snapshots for failed tests
         if: failure() && steps.test.outcome == 'failure'
-        run: ${{ matrix.run }} test -c site/playwright.config.ts --last-failed -u --project ${{ matrix.project }}
+        run: ${{ matrix.run }} --last-failed -u --project ${{ matrix.project }}
 
       - name: Upload screenshots
         if: failure() && steps.test.outcome == 'failure'
