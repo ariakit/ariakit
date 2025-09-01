@@ -53,6 +53,8 @@
     "build-website-lite": "cross-env DISABLE_SHIKI=true npm run build-website",
     "clean": "npm run clean -ws --if-present",
     "changeset": "changeset",
+    "version": "changeset version && npm i --package-lock-only --ignore-scripts",
+    "publish": "npm run build && changeset publish",
     "prepare": "husky",
     "postinstall": "patch-package"
   },
