@@ -6,9 +6,44 @@ on:
     types: [completed]
 
 jobs:
+  precheck:
+    name: Precheck latest commit
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'failure'
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      is_latest: ${{ steps.check_latest.outputs.is_latest }}
+    steps:
+      - name: Check if run is latest commit
+        id: check_latest
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          script: |
+            const run = context.payload.workflow_run;
+            const [owner, repo] = run.head_repository.full_name.split("/");
+            try {
+              const { data } = await github.rest.repos.getBranch({
+                owner,
+                repo,
+                branch: run.head_branch,
+              });
+              const latestSha = data.commit && data.commit.sha;
+              core.info(`Latest sha on ${run.head_branch}: ${latestSha}`);
+              core.info(`Workflow run head_sha: ${run.head_sha}`);
+              const isLatest = latestSha === run.head_sha;
+              core.setOutput("is_latest", String(isLatest));
+            } catch (error) {
+              core.warning(`Failed to fetch branch info: ${error.message}`);
+              core.setOutput("is_latest", "false");
+            }
+
   update-screenshots:
     name: Update screenshots
-    if: github.event.workflow_run.conclusion == 'failure'
+    needs: precheck
+    if: needs.precheck.outputs.is_latest == 'true'
     runs-on: ubuntu-latest
     permissions:
       actions: read
