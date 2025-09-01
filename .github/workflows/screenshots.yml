@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 concurrency:
-  group: screenshots-${{ github.event.workflow_run.head_branch }}
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:

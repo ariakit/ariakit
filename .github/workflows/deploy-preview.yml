@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Preview
     concurrency:
-      group: deploy-preview-${{ github.event.workflow_run.head_branch }}
+      group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
     permissions:
       actions: read
       contents: read

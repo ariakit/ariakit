@@ -6,7 +6,7 @@ on:
   pull_request:
 
 concurrency:
-  group: og-images-${{ github.head_ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
