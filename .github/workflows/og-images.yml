@@ -1,0 +1,65 @@
+name: og-images
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: og-images-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    name: Generate OG images
+    runs-on: macos-latest
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: true
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: chromium
+
+      - name: Run app dev server
+        shell: bash
+        run: |
+          npm run dev -w site &
+          echo "Waiting for dev server (http://localhost:4321)..."
+          ready=0
+          for i in {1..90}; do
+            if curl -sSf http://localhost:4321/og-image/api > /dev/null; then
+              echo "Dev server is up."
+              ready=1
+              break
+            fi
+            echo "Waiting... ($i)"
+            sleep 2
+          done
+          if [ "$ready" != "1" ]; then
+            echo "Dev server failed to start in time."
+            exit 1
+          fi
+
+      - name: Generate OG images
+        run: npm run og-image-generate -w site
+
+      - name: Commit or create PR
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          event: ${{ github.event_name }}
+          message: Update OG images
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: chore/update-og-images
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}

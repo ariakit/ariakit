@@ -1,0 +1,71 @@
+name: commit-or-pr
+description: Commit or create a pull request
+
+inputs:
+  event:
+    description: Event type (push or pull_request)
+    required: true
+  message:
+    description: Commit message and PR title
+    required: true
+  head-branch:
+    description: Branch name when committing to existing PR
+    required: true
+  new-branch:
+    description: Branch name when creating a new PR
+    required: true
+  token:
+    description: Token used for PR creation (defaults to GITHUB_TOKEN)
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure git
+      shell: bash
+      run: |
+        git config user.name "ariakit-bot"
+        git config user.email "ariakit-bot@users.noreply.github.com"
+
+    - name: Commit changes
+      id: commit
+      shell: bash
+      if: inputs.event == 'pull_request'
+      run: |
+        git add -A
+        if git diff --cached --quiet --exit-code; then
+          echo "No files to commit."
+          echo "did_commit=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        git commit -m "${{ inputs.message }}"
+        echo "did_commit=true" >> "$GITHUB_OUTPUT"
+
+    - name: Push to PR head branch
+      shell: bash
+      if: ${{ inputs.event == 'pull_request' && steps.commit.outputs.did_commit == 'true' }}
+      run: |
+        set +e
+        HEAD_REF='${{ inputs.head-branch }}'
+        git fetch origin "$HEAD_REF"
+        git rebase "origin/$HEAD_REF" || true
+        git push origin HEAD:"${HEAD_REF}"
+        status=$?
+        if [ $status -ne 0 ]; then
+          echo "Failed to push to PR head."
+          exit 1
+        fi
+
+    - name: Create PR
+      if: inputs.event == 'push'
+      uses: peter-evans/create-pull-request@v7
+      with:
+        commit-message: ${{ inputs.message }}
+        title: ${{ inputs.message }}
+        base: ${{ inputs.head-branch }}
+        branch: ${{ inputs.new-branch }}
+        delete-branch: true
+        token: ${{ inputs.token != '' && inputs.token || github.token }}
+        author: ariakit-bot <ariakit-bot@users.noreply.github.com>
+        committer: ariakit-bot <ariakit-bot@users.noreply.github.com>

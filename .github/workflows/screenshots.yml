@@ -1,0 +1,56 @@
+name: screenshots
+
+on:
+  workflow_run:
+    workflows: ["app"]
+    types: [completed]
+
+concurrency:
+  group: screenshots-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Ignore stale commits
+    if: github.event.workflow_run.conclusion == 'failure'
+    uses: ./.github/workflows/ignore-stale-commits.yml
+    with:
+      head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
+      head_branch: ${{ github.event.workflow_run.head_branch }}
+      head_sha: ${{ github.event.workflow_run.head_sha }}
+
+  update-screenshots:
+    name: Update screenshots
+    needs: gate
+    if: needs.gate.outputs.is_latest == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_branch }}
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: true
+
+      - name: Download screenshots artifacts
+        uses: actions/download-artifact@v5
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: app-screenshots-*
+          merge-multiple: true
+          path: site/src/tests/screenshots
+
+      - name: Commit or create PR
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          event: ${{ github.event.workflow_run.event }}
+          message: Update screenshots
+          head-branch: ${{ github.event.workflow_run.head_branch }}
+          new-branch: chore/update-screenshots
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
