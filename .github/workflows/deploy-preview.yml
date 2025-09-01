@@ -123,8 +123,7 @@ jobs:
             const deployOutcome = DEPLOY_OUTCOME;
             const deployUrl = DEPLOY_URL;
             const versionUrl = VERSION_URL;
-            const aliasUrl = ALIAS_URL && versionUrl
-              ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${{ steps.alias.outputs.slug }}`)
+              ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${ALIAS_URL}`)
               : '';
             const commitTarget = (versionsOutcome === 'success' && versionUrl)
               ? versionUrl
