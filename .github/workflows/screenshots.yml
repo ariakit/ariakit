@@ -53,3 +53,4 @@ jobs:
           message: Update screenshots
           head-branch: ${{ github.event.workflow_run.head_branch }}
           new-branch: chore/update-screenshots
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}

@@ -62,3 +62,4 @@ jobs:
           message: Update OG images
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-og-images
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}

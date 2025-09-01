@@ -14,6 +14,10 @@ inputs:
   new-branch:
     description: Branch name when creating a new PR
     required: true
+  token:
+    description: Token used for PR creation (defaults to GITHUB_TOKEN)
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -57,4 +61,4 @@ runs:
         base: ${{ inputs.head-branch }}
         branch: ${{ inputs.new-branch }}
         delete-branch: true
-        token: ${{ secrets.ARIAKIT_BOT_PAT }}
+        token: ${{ inputs.token != '' && inputs.token || github.token }}
