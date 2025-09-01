@@ -59,6 +59,10 @@
     @apply ak-frame-cover p-0;
   }
 
+  @variant motion-reduce {
+    @apply duration-0;
+  }
+
   :where(summary) {
     @apply ak-disclosure-button;
   }

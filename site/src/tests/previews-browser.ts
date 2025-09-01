@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { screenshot } from "#app/test-utils/screenshot.ts";
+import { screenshot, viewports } from "#app/test-utils/screenshot.ts";
 
 const TIMEOUT_PER_STEP = 10_000;
 
@@ -28,7 +28,7 @@ test("previews", async ({ page, baseURL }) => {
       async () => {
         await page.goto(path);
         const id = path.replace(/^\/+/, "");
-        await screenshot(page, { id });
+        await screenshot(page, { id, viewports });
       },
       { timeout: TIMEOUT_PER_STEP },
     );

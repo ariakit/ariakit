@@ -24,23 +24,19 @@ interface ViewportSize {
   height: number;
 }
 
-type Styles = Record<string, string | number>;
-
-interface SizeVariant {
-  viewport?: ViewportSize;
-}
-
-interface StyleVariant {
-  styles?: Styles;
-}
-
-type Variants = Record<string, SizeVariant | StyleVariant>;
+type CSSProperties = Record<string, string | number>;
+type Viewports = Record<string, ViewportSize>;
+type Styles = Record<string, CSSProperties>;
 
 interface ScreenshotOptions {
   /**
-   * Variants to capture.
+   * Viewports to capture.
    */
-  variants?: Variants;
+  viewports?: Viewports;
+  /**
+   * Styles to capture.
+   */
+  styles?: Styles;
   /**
    * Element or selector to capture. If not provided, all the children of the
    * body element will be captured.
@@ -49,7 +45,7 @@ interface ScreenshotOptions {
   /**
    * Optional CSS properties to apply to <html> for all variants.
    */
-  styles?: Styles;
+  style?: CSSProperties;
   /**
    * Additional identifier to disambiguate snapshots (e.g., path slug).
    */
@@ -66,19 +62,15 @@ interface ScreenshotOptions {
   fullPage?: boolean;
 }
 
-export const variants = {
-  desktop: { viewport: { width: 1280, height: 800 } },
-  mobile: { viewport: { width: 390, height: 844 } },
-  light: { styles: { "--color-canvas": "oklch(99.33% 0.0011 197.14)" } },
-  dark: { styles: { "--color-canvas": "oklch(16.34% 0.0091 264.28)" } },
-} satisfies Variants;
+export const viewports = {
+  desktop: { width: 1280, height: 800 },
+  mobile: { width: 390, height: 844 },
+} satisfies Viewports;
 
-export const defaultVariants = {
-  desktop: variants.desktop,
-  mobile: variants.mobile,
-  light: variants.light,
-  dark: variants.dark,
-};
+export const defaultStyles = {
+  light: { "--color-canvas": "oklch(99.33% 0.0011 197.14)" },
+  dark: { "--color-canvas": "oklch(16.34% 0.0091 264.28)" },
+} satisfies Styles;
 
 function getSnapshotName(params: {
   id?: string;
@@ -182,7 +174,7 @@ async function captureScreenshotBuffer(
 
 async function withStyles(
   page: Page,
-  styles?: Styles,
+  styles?: CSSProperties,
   fn?: () => Promise<void>,
 ) {
   if (!styles) {
@@ -231,53 +223,42 @@ async function withViewport(
   }
 }
 
-function splitVariants(variants: Variants) {
-  const viewports: Record<string, ViewportSize> = {};
-  const styles: Record<string, Styles> = {};
-  for (const [k, v] of Object.entries(variants)) {
-    if ("viewport" in v && v.viewport) {
-      viewports[k] = v.viewport;
-    }
-    if ("styles" in v && v.styles) {
-      styles[k] = v.styles;
-    }
-  }
-  return { viewports, styles };
-}
-
 export async function screenshot(page: Page, options: ScreenshotOptions = {}) {
   if (!process.env.VISUAL_TEST) {
     return;
   }
+  await page.emulateMedia({ reducedMotion: "reduce" });
   const {
     id,
-    variants = defaultVariants,
-    styles: additionalStyles,
+    viewports = { default: page.viewportSize()! },
+    styles = defaultStyles,
+    style: defaultStyle = {},
     element,
     clipMargin = DEFAULT_CLIP_MARGIN,
     fullPage = false,
   } = options;
-  const { viewports, styles } = splitVariants(variants);
 
-  for (const [viewportName, viewport] of Object.entries(viewports)) {
+  const viewportEntries = Object.entries(viewports);
+  const stylesEntries = Object.entries(styles);
+
+  if (!stylesEntries.length) {
+    stylesEntries.push(["default", defaultStyle]);
+  }
+
+  for (const [viewportName, viewport] of viewportEntries) {
     await withViewport(page, viewport, async () => {
-      for (const [styleName, style] of Object.entries(styles)) {
-        await withStyles(page, { ...style, ...additionalStyles }, async () => {
+      for (const [styleName, style] of stylesEntries) {
+        await withStyles(page, { ...style, ...defaultStyle }, async () => {
           const testInfo = test.info();
-          const name = getSnapshotName({
-            id,
-            testInfo,
-            variants: [viewportName, styleName],
-          });
+          const variants = [viewportName, styleName];
+          const name = getSnapshotName({ id, testInfo, variants });
           await page.waitForLoadState("domcontentloaded");
           await page.evaluate(() => document.fonts?.ready?.catch(() => {}));
-
           const buffer = await captureScreenshotBuffer(page, {
             element,
             clipMargin,
             fullPage,
           });
-
           expect.soft(buffer).toMatchSnapshot(name);
         });
       }
