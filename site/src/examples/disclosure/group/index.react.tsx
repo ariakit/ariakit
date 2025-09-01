@@ -5,11 +5,6 @@ import {
   DisclosureGroup,
 } from "../disclosure.react.tsx";
 
-// TODO
-// with buttons/actions (https://docs.stripe.com/stripe-apps/components/accordion?app-sdk-version=8#actions)
-// navigation panel (sidebar menus)
-// With icons (see https://www.tarkui.com/components/react/accordion/)
-
 export default function Example() {
   return (
     <div className="w-140 max-w-[100cqi] grid gap-4">

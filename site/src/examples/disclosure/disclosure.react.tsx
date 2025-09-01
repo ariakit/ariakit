@@ -84,7 +84,7 @@ export function DisclosureButton({
           <span id={labelId}>{props.children}</span>
           <span
             id={descriptionId}
-            className="grid gap-[inherit] ak-text/60 font-normal text-sm"
+            className="ak-text/60 grid gap-[inherit] font-normal text-sm"
           >
             {description}
           </span>
