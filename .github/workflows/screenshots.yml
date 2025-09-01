@@ -12,6 +12,7 @@ concurrency:
 jobs:
   gate:
     name: Ignore stale commits
+    permissions: {}
     if: github.event.workflow_run.conclusion == 'failure'
     uses: ./.github/workflows/ignore-stale-commits.yml
     with:
