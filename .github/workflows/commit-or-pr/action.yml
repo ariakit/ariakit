@@ -29,22 +29,27 @@ runs:
         git config user.email "ariakit-bot@users.noreply.github.com"
 
     - name: Commit changes
+      id: commit
       shell: bash
       if: inputs.event == 'pull_request'
       run: |
         git add -A
         if git diff --cached --quiet --exit-code; then
           echo "No files to commit."
+          echo "did_commit=false" >> "$GITHUB_OUTPUT"
           exit 0
         fi
         git commit -m "${{ inputs.message }}"
+        echo "did_commit=true" >> "$GITHUB_OUTPUT"
 
     - name: Push to PR head branch
       shell: bash
-      if: inputs.event == 'pull_request'
+      if: ${{ inputs.event == 'pull_request' && steps.commit.outputs.did_commit == 'true' }}
       run: |
         set +e
         HEAD_REF='${{ inputs.head-branch }}'
+        git fetch origin "$HEAD_REF"
+        git rebase "origin/$HEAD_REF" || true
         git push origin HEAD:"${HEAD_REF}"
         status=$?
         if [ $status -ne 0 ]; then
