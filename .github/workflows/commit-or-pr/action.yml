@@ -62,13 +62,14 @@ runs:
       if: ${{ inputs.event == 'pull_request' && steps.commit.outputs.did_commit == 'true' }}
       env:
         HEAD_REF: ${{ inputs.head-branch }}
-        PUSH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
+        GH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
       run: |
         set +e
-        token_header=$(printf "x-access-token:%s" "$PUSH_TOKEN" | base64 | tr -d '\n')
-        git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $token_header" fetch origin "$HEAD_REF"
+        printf "%s" "$GH_TOKEN" | gh auth login --with-token
+        gh auth setup-git
+        git fetch origin "$HEAD_REF"
         git rebase "origin/$HEAD_REF" || true
-        git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $token_header" push origin HEAD:"${HEAD_REF}"
+        git push origin HEAD:"${HEAD_REF}"
         status=$?
         if [ $status -ne 0 ]; then
           echo "Failed to push to PR head."
