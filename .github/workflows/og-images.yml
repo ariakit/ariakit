@@ -1,28 +1,17 @@
 name: og-images
 
 on:
-  workflow_run:
-    workflows: ["app"]
-    types: [completed]
+  push:
+    branches: [main]
+  pull_request:
 
 concurrency:
-  group: og-images-${{ github.event.workflow_run.head_branch }}
+  group: og-images-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  gate:
-    name: Ignore stale commits
-    if: github.event.workflow_run.conclusion == 'failure'
-    uses: ./.github/workflows/ignore-stale-commits.yml
-    with:
-      head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
-      head_branch: ${{ github.event.workflow_run.head_branch }}
-      head_sha: ${{ github.event.workflow_run.head_sha }}
-
   generate:
     name: Generate OG images
-    needs: gate
-    if: needs.gate.outputs.is_latest == 'true'
     runs-on: macos-latest
     permissions:
       actions: read
@@ -32,18 +21,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: true
-
-      - name: Download app artifact
-        uses: actions/download-artifact@v5
-        with:
-          name: app-dist
-          path: site/dist
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
@@ -53,13 +32,33 @@ jobs:
         with:
           engine: chromium
 
+      - name: Run app dev server
+        shell: bash
+        run: |
+          npm run dev -w site &
+          echo "Waiting for dev server (http://localhost:4321)..."
+          ready=0
+          for i in {1..90}; do
+            if curl -sSf http://localhost:4321/og-image/api > /dev/null; then
+              echo "Dev server is up."
+              ready=1
+              break
+            fi
+            echo "Waiting... ($i)"
+            sleep 2
+          done
+          if [ "$ready" != "1" ]; then
+            echo "Dev server failed to start in time."
+            exit 1
+          fi
+
       - name: Generate OG images
         run: npm run og-image-generate -w site
 
       - name: Commit or create PR
         uses: ./.github/workflows/commit-or-pr
         with:
-          event: ${{ github.event.workflow_run.event }}
+          event: ${{ github.event_name }}
           message: Update OG images
-          head-branch: ${{ github.event.workflow_run.head_branch }}
+          head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-og-images
