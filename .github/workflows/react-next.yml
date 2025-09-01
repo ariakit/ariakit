@@ -1,4 +1,6 @@
 name: react-next
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:

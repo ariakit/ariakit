@@ -1,8 +1,11 @@
 name: pr
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
 
 jobs:
   check-allow-maintainer-edits:
@@ -14,8 +17,10 @@ jobs:
         run: echo "PR is not from a fork; passing."
       - name: Fail if "Allow edits by maintainers" is off
         if: ${{ github.event.pull_request.head.repo.fork }}
+        env:
+          MAINTAINER_CAN_MODIFY: ${{ github.event.pull_request.maintainer_can_modify }}
         run: |
-          if [ "${{ github.event.pull_request.maintainer_can_modify }}" != "true" ]; then
+          if [ "$MAINTAINER_CAN_MODIFY" != "true" ]; then
             echo "Please enable \"Allow edits by maintainers\" in this PR's sidebar."
             exit 1
           fi

@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: Preview
     concurrency:
-      group: deploy-preview-${{ github.event.workflow_run.head_branch }}
+      group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
     permissions:
       actions: read
       contents: read
@@ -23,8 +23,12 @@ jobs:
 
       - name: Check repository
         id: check-repo
+        env:
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          REPO: ${{ github.repository }}
         run: |
-          if [ "${{ github.event.workflow_run.head_repository.full_name }}" = "${{ github.repository }}" ]; then
+          set -euo pipefail
+          if [ "$HEAD_REPO" = "$REPO" ]; then
             echo "same_repo=true" >> "$GITHUB_OUTPUT"
           else
             echo "same_repo=false" >> "$GITHUB_OUTPUT"
@@ -32,18 +36,25 @@ jobs:
 
       - name: Set commit status (pending)
         uses: actions/github-script@v7
+        env:
+          SERVER_URL: ${{ github.server_url }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SAME_REPO: ${{ steps.check-repo.outputs.same_repo }}
         with:
           script: |
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, SAME_REPO } = process.env;
+            const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
             const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ github.event.workflow_run.head_sha }}',
+              sha: HEAD_SHA,
               state: 'pending',
               target_url: runUrl,
             };
             await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (commit)' });
-            if ('${{ steps.check-repo.outputs.same_repo }}' === 'true') {
+            if (SAME_REPO === 'true') {
               await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (branch)' });
             }
 
@@ -93,15 +104,27 @@ jobs:
       - name: Set commit status (result)
         if: always()
         uses: actions/github-script@v7
+        env:
+          SERVER_URL: ${{ github.server_url }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SAME_REPO: ${{ steps.check-repo.outputs.same_repo }}
+          VERSIONS_OUTCOME: ${{ steps.versions.outcome }}
+          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
+          VERSION_URL: ${{ steps.versions.outputs.deployment-url }}
+          ALIAS_URL: ${{ steps.alias.outputs.slug }}
         with:
           script: |
-            const runUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
-            const versionsOutcome = '${{ steps.versions.outcome }}';
-            const deployOutcome = '${{ steps.deploy.outcome }}';
-            const deployUrl = '${{ steps.deploy.outputs.deployment-url }}';
-            const versionUrl = '${{ steps.versions.outputs.deployment-url }}';
-            const aliasUrl = '${{ steps.alias.outputs.slug }}' && versionUrl
-              ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${{ steps.alias.outputs.slug }}`)
+            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, SAME_REPO, VERSIONS_OUTCOME, DEPLOY_OUTCOME, DEPLOY_URL, VERSION_URL, ALIAS_URL } = process.env;
+            const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
+            const versionsOutcome = VERSIONS_OUTCOME;
+            const deployOutcome = DEPLOY_OUTCOME;
+            const deployUrl = DEPLOY_URL;
+            const versionUrl = VERSION_URL;
+            const aliasUrl = ALIAS_URL && versionUrl
+              ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${ALIAS_URL}`)
               : '';
             const commitTarget = (versionsOutcome === 'success' && versionUrl)
               ? versionUrl
@@ -112,7 +135,7 @@ jobs:
             const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
-              sha: '${{ github.event.workflow_run.head_sha }}',
+              sha: HEAD_SHA,
             };
             await github.rest.repos.createCommitStatus({
               ...args,
@@ -120,7 +143,7 @@ jobs:
               target_url: commitTarget || runUrl,
               context: 'Preview (commit)',
             });
-            if ('${{ steps.check-repo.outputs.same_repo }}' === 'true') {
+            if (SAME_REPO === 'true') {
               await github.rest.repos.createCommitStatus({
                 ...args,
                 state: branchTarget ? 'success' : 'failure',
