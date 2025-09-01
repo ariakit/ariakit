@@ -1,4 +1,6 @@
 name: ignore-stale-commits
+permissions:
+  contents: read
 
 on:
   workflow_call:
