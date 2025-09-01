@@ -42,6 +42,11 @@ interface ImportInfo {
   namedImports: Map<string, string>; // localName -> exportedName
 }
 
+function escapeRegExp(str: string) {
+  // $& = the matched character; prefix each with a backslash
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function getFrameworkReferences(
   references: CollectionEntry<"references">[],
   framework?: Framework,
@@ -874,7 +879,7 @@ export function findCodeReferenceAnchors({
   if (storeVarToRef.size) {
     for (const [varName, ref] of storeVarToRef) {
       const re = new RegExp(
-        String.raw`\b${varName.replace(/[$]/g, "$")}\s*\.\s*([A-Za-z_$][\w$]*)`,
+        String.raw`\b${escapeRegExp(varName)}\s*\.\s*([A-Za-z_$][\w$]*)`,
         "g",
       );
       let rm: RegExpExecArray | null;
