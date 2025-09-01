@@ -109,11 +109,15 @@ jobs:
 
       - name: Test
         id: test
-        run: ${{ matrix.run }} --project ${{ matrix.project }}
+        run: ${{ matrix.run }} --project ${{ matrix.project }} -x
 
-      - name: Update snapshots for failed tests
+      - name: Reset snapshots
         if: failure() && steps.test.outcome == 'failure'
-        run: ${{ matrix.run }} --last-failed -u --project ${{ matrix.project }}
+        run: rm -rf site/src/tests/screenshots
+
+      - name: Update snapshots
+        if: failure() && steps.test.outcome == 'failure'
+        run: ${{ matrix.run }} --project ${{ matrix.project }} -u
 
       - name: Upload screenshots
         if: failure() && steps.test.outcome == 'failure'
@@ -122,4 +126,4 @@ jobs:
           name: app-screenshots-${{ matrix.project }}
           path: site/src/tests/screenshots
           if-no-files-found: ignore
-          retention-days: 3
+          retention-days: 1

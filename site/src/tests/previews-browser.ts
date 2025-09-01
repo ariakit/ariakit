@@ -11,6 +11,8 @@ async function getPreviewPaths(baseURL: string) {
   return (await resPreviews.json()) as string[];
 }
 
+test.describe.configure({ retries: 0 });
+
 test("previews", async ({ page, baseURL }) => {
   test.skip(!process.env.VISUAL_TEST);
   if (!baseURL) {
