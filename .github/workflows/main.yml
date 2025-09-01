@@ -182,6 +182,8 @@ jobs:
     name: Test macOS
     needs: website
     runs-on: macos-latest
+    permissions:
+      contents: read
     # concurrency:
     #   group: test-macos-${{ github.head_ref || github.run_id }}
     #   cancel-in-progress: true
