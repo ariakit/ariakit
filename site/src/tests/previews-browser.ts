@@ -23,7 +23,7 @@ test("previews", async ({ page, baseURL }) => {
     await test.step(
       path,
       async () => {
-        await page.goto(path);
+        await page.goto(path, { waitUntil: "networkidle" });
         const id = path.replace(/^\/+/, "");
         await screenshot(page, { id });
       },
