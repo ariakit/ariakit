@@ -19,11 +19,14 @@ test("previews", async ({ page, baseURL }) => {
   const paths = await getPreviewPaths(baseURL);
   test.setTimeout(paths.length * TIMEOUT_PER_STEP);
 
+  // Set prefers-reduced-motion to reduce flakiness from animations
+  await page.emulateMedia({ reducedMotion: "reduce" });
+
   for (const path of paths) {
     await test.step(
       path,
       async () => {
-        await page.goto(path, { waitUntil: "networkidle" });
+        await page.goto(path);
         const id = path.replace(/^\/+/, "");
         await screenshot(page, { id });
       },
