@@ -2,7 +2,7 @@ name: release
 
 on:
   push:
-    branches: [main, next]
+    branches: [main]
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -10,6 +10,8 @@ jobs:
   version:
     name: Version or publish
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -31,9 +33,10 @@ jobs:
         with:
           title: Publish
           commit: Publish
-          version: node scripts/release/version.js
-          publish: node scripts/release/publish.js
+          version: npx changeset version && npm i --package-lock-only
+          publish: npm run build && npx changeset publish
           setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
