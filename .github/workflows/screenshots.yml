@@ -6,7 +6,7 @@ on:
     types: [completed]
 
 concurrency:
-  group: screenshots-${{ github.event.workflow_run.head_branch }}
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
@@ -36,7 +36,12 @@ jobs:
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          persist-credentials: true
+          persist-credentials: false
+
+      - name: Prepare screenshots directory
+        run: |
+          rm -rf site/src/tests/screenshots
+          mkdir -p site/src/tests/screenshots
 
       - name: Download screenshots artifacts
         uses: actions/download-artifact@v5
