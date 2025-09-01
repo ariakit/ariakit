@@ -1,0 +1,60 @@
+name: commit-or-pr
+description: Commit or create a pull request
+
+inputs:
+  event:
+    description: Event type (push or pull_request)
+    required: true
+  message:
+    description: Commit message and PR title
+    required: true
+  head-branch:
+    description: Branch name when committing to existing PR
+    required: true
+  new-branch:
+    description: Branch name when creating a new PR
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure git
+      shell: bash
+      run: |
+        git config user.name "ariakit-bot"
+        git config user.email "ariakit-bot@users.noreply.github.com"
+
+    - name: Commit changes
+      shell: bash
+      if: inputs.event == 'pull_request'
+      run: |
+        git add -A
+        if git diff --cached --quiet --exit-code; then
+          echo "No files to commit."
+          exit 0
+        fi
+        git commit -m "${{ inputs.message }}"
+
+    - name: Push to PR head branch
+      shell: bash
+      if: inputs.event == 'pull_request'
+      run: |
+        set +e
+        HEAD_REF='${{ inputs.head-branch }}'
+        git push origin HEAD:"${HEAD_REF}"
+        status=$?
+        if [ $status -ne 0 ]; then
+          echo "Failed to push to PR head."
+          exit 1
+        fi
+
+    - name: Create PR
+      if: inputs.event == 'push'
+      uses: peter-evans/create-pull-request@v7
+      with:
+        commit-message: ${{ inputs.message }}
+        title: ${{ inputs.message }}
+        base: ${{ inputs.head-branch }}
+        branch: ${{ inputs.new-branch }}
+        delete-branch: true
+        token: ${{ secrets.ARIAKIT_BOT_PAT }}
