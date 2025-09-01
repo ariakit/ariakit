@@ -28,6 +28,19 @@ runs:
         git config user.name "ariakit-bot"
         git config user.email "ariakit-bot@users.noreply.github.com"
 
+    - name: Create PR
+      if: inputs.event == 'push'
+      uses: peter-evans/create-pull-request@v7
+      with:
+        commit-message: ${{ inputs.message }}
+        title: ${{ inputs.message }}
+        base: ${{ inputs.head-branch }}
+        branch: ${{ inputs.new-branch }}
+        delete-branch: true
+        token: ${{ inputs.token != '' && inputs.token || github.token }}
+        author: ariakit-bot <ariakit-bot@users.noreply.github.com>
+        committer: ariakit-bot <ariakit-bot@users.noreply.github.com>
+
     - name: Commit changes
       id: commit
       shell: bash
@@ -56,16 +69,3 @@ runs:
           echo "Failed to push to PR head."
           exit 1
         fi
-
-    - name: Create PR
-      if: inputs.event == 'push'
-      uses: peter-evans/create-pull-request@v7
-      with:
-        commit-message: ${{ inputs.message }}
-        title: ${{ inputs.message }}
-        base: ${{ inputs.head-branch }}
-        branch: ${{ inputs.new-branch }}
-        delete-branch: true
-        token: ${{ inputs.token != '' && inputs.token || github.token }}
-        author: ariakit-bot <ariakit-bot@users.noreply.github.com>
-        committer: ariakit-bot <ariakit-bot@users.noreply.github.com>
