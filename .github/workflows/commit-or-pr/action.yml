@@ -67,3 +67,5 @@ runs:
         branch: ${{ inputs.new-branch }}
         delete-branch: true
         token: ${{ inputs.token != '' && inputs.token || github.token }}
+        author: ariakit-bot <ariakit-bot@users.noreply.github.com>
+        committer: ariakit-bot <ariakit-bot@users.noreply.github.com>
