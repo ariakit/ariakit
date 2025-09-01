@@ -41,8 +41,11 @@ jobs:
 
       - name: Compare with triggering run SHA
         id: check
+        env:
+          HEAD_SHA: ${{ inputs.head_sha }}
+          TIP_SHA: ${{ steps.tip.outputs.tip_sha }}
         run: |
-          if [ "${{ inputs.head_sha }}" = "${{ steps.tip.outputs.tip_sha }}" ]; then
+          if [ "$HEAD_SHA" = "$TIP_SHA" ]; then
             echo "is_latest=true" >> "$GITHUB_OUTPUT"
           else
             echo "is_latest=false" >> "$GITHUB_OUTPUT"

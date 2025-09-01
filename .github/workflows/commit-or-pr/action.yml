@@ -45,6 +45,8 @@ runs:
       id: commit
       shell: bash
       if: inputs.event == 'pull_request'
+      env:
+        MESSAGE: ${{ inputs.message }}
       run: |
         git add -A
         if git diff --cached --quiet --exit-code; then
@@ -52,15 +54,19 @@ runs:
           echo "did_commit=false" >> "$GITHUB_OUTPUT"
           exit 0
         fi
-        git commit -m "${{ inputs.message }}"
+        git commit -m "$MESSAGE"
         echo "did_commit=true" >> "$GITHUB_OUTPUT"
 
     - name: Push to PR head branch
       shell: bash
       if: ${{ inputs.event == 'pull_request' && steps.commit.outputs.did_commit == 'true' }}
+      env:
+        HEAD_REF: ${{ inputs.head-branch }}
+        GH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
       run: |
         set +e
-        HEAD_REF='${{ inputs.head-branch }}'
+        printf "%s" "$GH_TOKEN" | gh auth login --with-token
+        gh auth setup-git
         git fetch origin "$HEAD_REF"
         git rebase "origin/$HEAD_REF" || true
         git push origin HEAD:"${HEAD_REF}"

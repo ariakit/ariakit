@@ -12,6 +12,7 @@ concurrency:
 jobs:
   gate:
     name: Ignore stale commits
+    permissions: {}
     if: github.event.workflow_run.conclusion == 'failure'
     uses: ./.github/workflows/ignore-stale-commits.yml
     with:
@@ -35,7 +36,12 @@ jobs:
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          persist-credentials: true
+          persist-credentials: false
+
+      - name: Prepare screenshots directory
+        run: |
+          rm -rf site/src/tests/screenshots
+          mkdir -p site/src/tests/screenshots
 
       - name: Download screenshots artifacts
         uses: actions/download-artifact@v5
