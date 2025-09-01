@@ -5,45 +5,41 @@ on:
     workflows: ["app"]
     types: [completed]
 
+concurrency:
+  group: update-screenshots-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
 jobs:
-  precheck:
-    name: Precheck latest commit
+  gate:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'failure'
-    permissions:
-      actions: read
-      contents: read
     outputs:
-      is_latest: ${{ steps.check_latest.outputs.is_latest }}
+      is_latest: ${{ steps.check.outputs.is_latest }}
     steps:
-      - name: Check if run is latest commit
-        id: check_latest
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          script: |
-            const run = context.payload.workflow_run;
-            const [owner, repo] = run.head_repository.full_name.split("/");
-            try {
-              const { data } = await github.rest.repos.getBranch({
-                owner,
-                repo,
-                branch: run.head_branch,
-              });
-              const latestSha = data.commit && data.commit.sha;
-              core.info(`Latest sha on ${run.head_branch}: ${latestSha}`);
-              core.info(`Workflow run head_sha: ${run.head_sha}`);
-              const isLatest = latestSha === run.head_sha;
-              core.setOutput("is_latest", String(isLatest));
-            } catch (error) {
-              core.warning(`Failed to fetch branch info: ${error.message}`);
-              core.setOutput("is_latest", "false");
-            }
+      - name: Read tip SHA on the branch
+        id: tip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          # Get current tip commit of the branch in the head repo
+          tip_sha=$(gh api repos/$HEAD_REPO/commits/$HEAD_BRANCH --jq .sha)
+          echo "tip_sha=$tip_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Compare with triggering run SHA
+        id: check
+        run: |
+          if [ "${{ github.event.workflow_run.head_sha }}" = "${{ steps.tip.outputs.tip_sha }}" ]; then
+            echo "is_latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_latest=false" >> "$GITHUB_OUTPUT"
+          fi
 
   update-screenshots:
     name: Update screenshots
-    needs: precheck
-    if: needs.precheck.outputs.is_latest == 'true'
+    needs: gate
+    if: needs.gate.outputs.is_latest == 'true'
     runs-on: ubuntu-latest
     permissions:
       actions: read
