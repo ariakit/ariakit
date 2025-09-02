@@ -223,11 +223,18 @@ async function withViewport(
   }
 }
 
-export async function screenshot(page: Page, options: ScreenshotOptions = {}) {
+export async function visual(page: Page, options: ScreenshotOptions = {}) {
+  expect(
+    test.info().title,
+    "When running visual tests, the test title should contain @visual",
+  ).toContain("@visual");
+
   if (!process.env.VISUAL_TEST) {
     return;
   }
+
   await page.emulateMedia({ reducedMotion: "reduce" });
+
   const {
     id,
     viewports = { default: page.viewportSize()! },
