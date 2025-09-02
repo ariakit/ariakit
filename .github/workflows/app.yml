@@ -109,17 +109,25 @@ jobs:
 
       - name: Test
         id: test
-        run: ${{ matrix.run }} --project ${{ matrix.project }}
+        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep-invert @visual --pass-with-no-tests
 
-      - name: Update snapshots for failed tests
-        if: failure() && steps.test.outcome == 'failure'
-        run: ${{ matrix.run }} --last-failed -u --project ${{ matrix.project }}
+      - name: Test visual
+        id: test-visual
+        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests
 
-      - name: Upload screenshots
-        if: failure() && steps.test.outcome == 'failure'
+      - name: Reset snapshots
+        if: failure() && steps.test-visual.outcome == 'failure'
+        run: rm -rf site/src/tests/visual/*-${{ matrix.project }}-*.png
+
+      - name: Update snapshots
+        if: failure() && steps.test-visual.outcome == 'failure'
+        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual -u
+
+      - name: Upload snapshots
+        if: failure() && steps.test-visual.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
-          name: app-screenshots-${{ matrix.project }}
-          path: site/src/tests/screenshots
+          name: app-visual-${{ matrix.project }}
+          path: site/src/tests/visual
           if-no-files-found: ignore
           retention-days: 3

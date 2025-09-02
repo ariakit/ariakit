@@ -1,4 +1,4 @@
-name: screenshots
+name: visual
 
 on:
   workflow_run:
@@ -21,8 +21,8 @@ jobs:
       head_branch: ${{ github.event.workflow_run.head_branch }}
       head_sha: ${{ github.event.workflow_run.head_sha }}
 
-  update-screenshots:
-    name: Update screenshots
+  update-snapshots:
+    name: Update snapshots
     needs: gate
     if: needs.gate.outputs.is_latest == 'true'
     runs-on: ubuntu-latest
@@ -39,25 +39,25 @@ jobs:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
-      - name: Prepare screenshots directory
+      - name: Prepare visual directory
         run: |
-          rm -rf site/src/tests/screenshots
-          mkdir -p site/src/tests/screenshots
+          rm -rf site/src/tests/visual
+          mkdir -p site/src/tests/visual
 
-      - name: Download screenshots artifacts
+      - name: Download snapshots
         uses: actions/download-artifact@v5
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          pattern: app-screenshots-*
+          pattern: app-visual-*
           merge-multiple: true
-          path: site/src/tests/screenshots
+          path: site/src/tests/visual
 
       - name: Commit or create PR
         uses: ./.github/workflows/commit-or-pr
         with:
           event: ${{ github.event.workflow_run.event }}
-          message: Update screenshots
+          message: Update snapshots
           head-branch: ${{ github.event.workflow_run.head_branch }}
-          new-branch: chore/update-screenshots
+          new-branch: visual/update-snapshots
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
