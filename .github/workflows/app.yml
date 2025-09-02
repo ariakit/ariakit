@@ -113,7 +113,7 @@ jobs:
 
       - name: Reset snapshots
         if: failure() && steps.test.outcome == 'failure'
-        run: rm -rf site/src/tests/screenshots
+        run: rm -rf site/src/tests/screenshots/*-${{ matrix.project }}-*.png
 
       - name: Update snapshots
         if: failure() && steps.test.outcome == 'failure'
