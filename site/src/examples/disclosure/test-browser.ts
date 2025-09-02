@@ -1,7 +1,7 @@
 import { query } from "@ariakit/test/playwright";
 import { expect, type Page, test } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { screenshot } from "#app/test-utils/screenshot.ts";
+import { visual } from "#app/test-utils/visual.ts";
 
 async function getContent(page: Page) {
   const q = query(page);
@@ -11,18 +11,19 @@ async function getContent(page: Page) {
 }
 
 withFramework(import.meta.dirname, async () => {
-  test("hover", async ({ page }) => {
+  test("hover @visual", async ({ page }) => {
     const q = query(page);
     await q.button().hover();
-    await screenshot(page);
+    await visual(page);
   });
 
-  test("hide", async ({ page }) => {
+  test("hide @visual", async ({ page }) => {
     const q = query(page);
+    await page.emulateMedia({ reducedMotion: "reduce" });
     const content = await getContent(page);
     expect(content).toBeVisible();
     await q.button().click();
     expect(content).toBeHidden();
-    await screenshot(page);
+    await visual(page);
   });
 });
