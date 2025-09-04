@@ -40,7 +40,7 @@
     "@astrojs/cloudflare": "12.6.7",
     "@astrojs/react": "4.3.0",
     "@astrojs/solid-js": "5.1.0",
-    "@clerk/astro": "2.11.8",
+    "@clerk/astro": "2.11.11",
     "@stripe/stripe-js": "7.9.0",
     "@types/pluralize": "0.0.33",
     "astro-remote": "0.3.4",
