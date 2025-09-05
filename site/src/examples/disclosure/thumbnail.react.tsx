@@ -3,7 +3,7 @@ import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 export default function Thumbnail() {
   return (
     <div className="h-full grid place-items-center-safe">
-      <div className="ak-disclosure ak-disclosure_open ak-frame-card ak-layer ring">
+      <div className="ak-disclosure ak-disclosure_open ak-frame-card ak-layer ak-bordering">
         <div className="ak-disclosure-button before:ak-disclosure-chevron-before">
           How do I get started?
         </div>

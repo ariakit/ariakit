@@ -21,6 +21,9 @@ test("previews @visual", async ({ page, baseURL }) => {
   const paths = await getPreviewPaths(baseURL);
   test.setTimeout(paths.length * TIMEOUT_PER_STEP);
 
+  // Set prefers-reduced-motion to reduce flakiness from animations
+  await page.emulateMedia({ reducedMotion: "reduce" });
+
   for (const path of paths) {
     await test.step(
       path,

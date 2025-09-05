@@ -108,12 +108,11 @@ jobs:
           path: site/dist
 
       - name: Test
-        id: test
         run: ${{ matrix.run }} --project ${{ matrix.project }} --grep-invert @visual --pass-with-no-tests
 
       - name: Test visual
         id: test-visual
-        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests
+        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
 
       - name: Reset snapshots
         if: failure() && steps.test-visual.outcome == 'failure'
@@ -130,4 +129,4 @@ jobs:
           name: app-visual-${{ matrix.project }}
           path: site/src/tests/visual
           if-no-files-found: ignore
-          retention-days: 3
+          retention-days: 1
