@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
+import { createRenderElement } from "#app/examples/_shared/react/utils.ts";
 
 export interface DisclosureGroupProps extends React.ComponentProps<"div"> {}
 
@@ -17,9 +18,11 @@ export function DisclosureGroup(props: DisclosureGroupProps) {
 }
 
 export interface DisclosureProps
-  extends React.ComponentProps<"div">,
+  extends Omit<React.ComponentProps<"div">, "content">,
     Pick<ak.DisclosureProviderProps, "open" | "setOpen" | "defaultOpen"> {
   split?: boolean;
+  button?: React.ReactNode | DisclosureButtonProps;
+  content?: React.ReactElement | DisclosureContentProps;
 }
 
 export function Disclosure({
@@ -27,10 +30,14 @@ export function Disclosure({
   setOpen,
   defaultOpen,
   split,
+  button,
+  content,
   ...props
 }: DisclosureProps) {
   const disclosure = ak.useDisclosureStore({ open, setOpen, defaultOpen });
   const isOpen = ak.useStoreState(disclosure, "open");
+  const buttonEl = createRenderElement(DisclosureButton, button);
+  const contentEl = createRenderElement(DisclosureContent, content);
   return (
     <ak.DisclosureProvider store={disclosure}>
       <div
@@ -41,13 +48,21 @@ export function Disclosure({
           split && "ak-disclosure-split",
           props.className,
         )}
-      />
+      >
+        {button != null ? (
+          <>
+            <ak.Role render={buttonEl} />
+            <ak.Role render={contentEl}>{props.children}</ak.Role>
+          </>
+        ) : (
+          props.children
+        )}
+      </div>
     </ak.DisclosureProvider>
   );
 }
 
 export interface DisclosureButtonProps extends ak.DisclosureProps {
-  checked?: boolean | number;
   actions?: React.ReactNode;
   description?: React.ReactNode;
   icon?:
@@ -64,12 +79,13 @@ export interface DisclosureButtonProps extends ak.DisclosureProps {
 }
 
 export function DisclosureButton({
-  checked,
   actions,
   description,
   icon = "chevron-right-start",
   ...props
 }: DisclosureButtonProps) {
+  const store = ak.useDisclosureContext();
+  const isOpen = ak.useStoreState(store, "open");
   const baseId = React.useId();
   const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;
@@ -90,10 +106,11 @@ export function DisclosureButton({
     <>
       <ak.Disclosure
         render={actionsElement ? <div /> : undefined}
-        {...props}
         data-disclosure-button
         aria-labelledby={description ? labelId : undefined}
         aria-describedby={description ? descriptionId : undefined}
+        data-open={isOpen || undefined}
+        {...props}
         className={clsx(
           "ak-disclosure-button",
           description && "ak-command-depth-2",
@@ -114,7 +131,7 @@ export function DisclosureButton({
       >
         {description ? (
           <span className="grid w-full gap-[min(var(--ak-frame-padding)/2,--spacing(2))]">
-            <span className="min-w-0 flex gap-2 w-full items-start">
+            <span className="min-w-0 flex gap-2 items-start">
               {labelElement}
               {actionsElement}
             </span>
@@ -126,7 +143,7 @@ export function DisclosureButton({
             </span>
           </span>
         ) : (
-          <span className="min-w-0 flex gap-2 w-full items-start">
+          <span className="min-w-0 flex gap-2 items-start">
             {labelElement}
             {actionsElement}
           </span>

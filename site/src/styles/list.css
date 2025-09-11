@@ -249,7 +249,7 @@
 }
 
 @utility ak-list-disclosure-button {
-  @apply after:ak-disclosure-chevron-after after:ms-0;
+  @apply after:ak-disclosure-chevron-down after:ms-0;
   --ak-button-leading: var(--ak-list-leading) !important;
   --ak-disclosure-ps: var(--ak-list-item-base-ps);
   @variant ak-list-ol {

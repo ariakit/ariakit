@@ -3,7 +3,7 @@ import {
   DisclosureButton,
   DisclosureContent,
   DisclosureGroup,
-} from "../disclosure.react.tsx";
+} from "#app/examples/_shared/ariakit/disclosure.react.tsx";
 
 export default function Example() {
   return (
@@ -11,7 +11,7 @@ export default function Example() {
       <h2 className="ak-heading text-center">Frequently Asked Questions</h2>
       <DisclosureGroup>
         <Disclosure>
-          <DisclosureButton icon="plus-after">
+          <DisclosureButton icon="plus-end">
             How do I access Ariakit Plus after purchasing?
           </DisclosureButton>
           <DisclosureContent prose>
@@ -28,7 +28,7 @@ export default function Example() {
           </DisclosureContent>
         </Disclosure>
         <Disclosure>
-          <DisclosureButton icon="plus-after">
+          <DisclosureButton icon="plus-end">
             What do &quot;lifetime access&quot; and &quot;free updates&quot;
             mean?
           </DisclosureButton>
@@ -41,7 +41,7 @@ export default function Example() {
           </DisclosureContent>
         </Disclosure>
         <Disclosure>
-          <DisclosureButton icon="plus-after">
+          <DisclosureButton icon="plus-end">
             How does the Team license work?
           </DisclosureButton>
           <DisclosureContent prose>
@@ -58,7 +58,7 @@ export default function Example() {
           </DisclosureContent>
         </Disclosure>
         <Disclosure>
-          <DisclosureButton icon="plus-after">
+          <DisclosureButton icon="plus-end">
             Can I upgrade to a Team license later?
           </DisclosureButton>
           <DisclosureContent prose>
@@ -76,7 +76,7 @@ export default function Example() {
           </DisclosureContent>
         </Disclosure>
         <Disclosure>
-          <DisclosureButton icon="plus-after">
+          <DisclosureButton icon="plus-end">
             Can I use Ariakit Plus for multiple projects?
           </DisclosureButton>
           <DisclosureContent prose>

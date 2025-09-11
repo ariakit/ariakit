@@ -1,5 +1,6 @@
 import { query } from "@ariakit/test/playwright";
-import { expect, type Page, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { visual } from "#app/test-utils/visual.ts";
 

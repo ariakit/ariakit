@@ -1,16 +1,16 @@
-import clsx from "clsx";
-import { type CSSProperties, useState } from "react";
+import { useState } from "react";
+import type { ListDisclosureProps } from "#app/examples/_shared/ariakit/list.react.tsx";
 import {
-  Disclosure,
-  DisclosureButton,
-  DisclosureContent,
-  type DisclosureProps,
-} from "../disclosure.react.tsx";
+  List,
+  ListDisclosure,
+  ListDisclosureButton,
+  ListItem,
+} from "#app/examples/_shared/ariakit/list.react.tsx";
 
-const data = [
+const tasks = [
   {
     title: "Set up payments",
-    items: [
+    tasks: [
       { title: "Choose how to accept payments", checked: true },
       { title: "Create a one-off product", checked: true },
       { title: "View Checkout docs", checked: true },
@@ -18,29 +18,29 @@ const data = [
   },
   {
     title: "Set up invoices",
-    items: [
+    tasks: [
       { title: "Add your branding", checked: true },
       { title: "Create an invoice", checked: true },
     ],
   },
   {
     title: "Get started with local payment methods",
-    items: [{ title: "Get started with local payment methods", checked: true }],
+    tasks: [{ title: "Get started with local payment methods", checked: true }],
   },
   {
     title: "Verify your business",
-    items: [
+    tasks: [
       { title: "Verify your email", checked: true },
       { title: "Complete your profile", checked: false },
     ],
   },
   {
     title: "Go live",
-    items: [{ title: "Send your invoice", checked: false }],
+    tasks: [{ title: "Send your invoice", checked: false }],
   },
   {
     title: "Set up Tax",
-    items: [
+    tasks: [
       { title: "Enable Tax", checked: true },
       { title: "Review your head office address", checked: true },
       { title: "Review your preset tax code", checked: false },
@@ -51,23 +51,21 @@ const data = [
 ];
 
 export default function Example() {
-  const firstUncompleted = data.find(
-    (item) => !item.items.every((item) => item.checked),
-  );
-  const totalCompleted = data.reduce(
-    (acc, item) => acc + item.items.filter((item) => item.checked).length,
+  const firstPending = tasks.find((t) => !t.tasks.every((t) => t.checked));
+  const totalTasks = tasks.reduce((total, t) => total + t.tasks.length, 0);
+  const totalCompleted = tasks.reduce(
+    (total, t) => total + t.tasks.filter((t) => t.checked).length,
     0,
   );
-  const totalItems = data.reduce((acc, item) => acc + item.items.length, 0);
-  const progress = totalCompleted / totalItems;
+  const progress = totalCompleted / totalTasks;
 
-  const [open, setOpen] = useState(firstUncompleted?.title ?? "");
+  const [open, setOpen] = useState(firstPending?.title ?? "");
 
   const getDisclosureProps = (name: string) => {
     return {
       open: name === open,
       setOpen: (open) => setOpen(open ? name : ""),
-    } satisfies DisclosureProps;
+    } satisfies ListDisclosureProps;
   };
 
   return (
@@ -77,65 +75,48 @@ export default function Example() {
           <h2 className="font-semibold">Setup guide</h2>
           <progress value={progress} className="ak-progress" />
         </label>
-        <ul className="ak-list ak-list-gap-4 ak-list-leading-relaxed">
-          {data.map((item) => {
-            const length = item.items.length;
-            const checked = item.items.filter((item) => item.checked).length;
+        <List>
+          {tasks.map((task) => {
+            const length = task.tasks.length;
+            const checked = task.tasks.filter((task) => task.checked).length;
             const progress = checked / length;
             const completed = progress === 1;
+            const buttonClassName = completed
+              ? "not-data-open:ak-text/0 not-data-open:line-through not-data-open:font-normal"
+              : "";
             return (
-              <li
-                key={item.title}
-                style={{ "--progress": progress } as CSSProperties}
-              >
-                <Disclosure
-                  {...getDisclosureProps(item.title)}
-                  className={clsx("data-open:ak-layer-pop ak-list-disclosure")}
+              <li key={task.title}>
+                <ListDisclosure
+                  {...getDisclosureProps(task.title)}
+                  className="data-open:ak-layer-pop"
+                  button={
+                    <ListDisclosureButton
+                      icon="chevron-down-end"
+                      progress={progress}
+                      className={buttonClassName}
+                    >
+                      {task.title}
+                    </ListDisclosureButton>
+                  }
                 >
-                  <DisclosureButton
-                    data-open={open === item.title || undefined}
-                    icon="chevron-after"
-                    className={clsx(
-                      "ak-list-disclosure-button",
-                      completed &&
-                        "not-data-open:line-through not-data-open:ak-text/0 not-data-open:font-normal",
-                    )}
-                  >
-                    <span
-                      className={clsx(
-                        "ak-list-item-check",
-                        completed
-                          ? "ak-list-item-check_checked"
-                          : "ak-list-item-check-progress-(--progress)",
-                      )}
-                    />
-                    {item.title}
-                  </DisclosureButton>
-                  <DisclosureContent className="ak-list-disclosure-content">
-                    <ul className="ak-list ak-list-gap-0 ak-list-item-padding-1 ak-frame-cover/1 ak-list-leading-relaxed mt-0! pt-0">
-                      {item.items.map((item) => (
-                        <li key={item.title}>
-                          <a
-                            href=""
-                            className="ak-button hover:ak-layer-hover_ justify-start text-wrap ak-list-item font-normal"
-                          >
-                            <span
-                              className={clsx(
-                                "ak-list-item-check",
-                                item.checked && "ak-list-item-check_checked",
-                              )}
-                            />
-                            {item.title}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </DisclosureContent>
-                </Disclosure>
+                  <List className="ak-list-gap-0 ak-list-item-padding-1 ak-frame-cover/1 mt-0! pt-0">
+                    {task.tasks.map((task) => (
+                      <li key={task.title}>
+                        <ListItem
+                          render={<a href="" />}
+                          checked={task.checked}
+                          className="ak-button justify-start text-wrap font-normal"
+                        >
+                          {task.title}
+                        </ListItem>
+                      </li>
+                    ))}
+                  </List>
+                </ListDisclosure>
               </li>
             );
           })}
-        </ul>
+        </List>
       </div>
     </div>
   );

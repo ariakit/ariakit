@@ -116,12 +116,12 @@ export function ListItemDisclosureButton({
       {...props}
       className={clsx(
         "ak-list-item-disclosure-button",
-        icon === "chevron-before" && "before:ak-disclosure-chevron-before",
-        icon === "chevron-after" && "after:ak-disclosure-chevron-after",
+        icon === "chevron-before" && "before:ak-disclosure-chevron-right",
+        icon === "chevron-after" && "after:ak-disclosure-chevron-down",
         icon === "chevron-next" &&
-          "after:ak-disclosure-chevron-after after:ms-0",
-        icon === "plus-before" && "before:ak-disclosure-plus-before",
-        icon === "plus-after" && "after:ak-disclosure-plus-after",
+          "after:ak-disclosure-chevron-down after:ms-0",
+        icon === "plus-before" && "before:ak-disclosure-plus",
+        icon === "plus-after" && "after:ak-disclosure-plus",
         props.className,
       )}
     >

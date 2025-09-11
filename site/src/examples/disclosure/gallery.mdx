@@ -9,7 +9,7 @@ import Group, { source as group } from "./group/preview.astro";
 import Checklist, { source as checklist } from "./checklist/preview.astro";
 import Nested, { source as nested } from "./nested/preview.astro";
 
-export const sources = [source, group, checklist, nested, description];
+export const sources = [source, description, actions, group, checklist, nested];
 
 <CodeBlockTabs source={source}>
   <Preview />

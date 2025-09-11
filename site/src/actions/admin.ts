@@ -24,11 +24,8 @@ import {
 import { formatCurrency } from "#app/lib/locale.ts";
 import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object.ts";
-import {
-  type PlusType,
-  PlusTypeSchema,
-  type PriceData,
-} from "#app/lib/schemas.ts";
+import type { PlusType, PriceData } from "#app/lib/schemas.ts";
+import { PlusTypeSchema } from "#app/lib/schemas.ts";
 import {
   createSalePromo,
   expanded,

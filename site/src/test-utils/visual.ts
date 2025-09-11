@@ -1,11 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
-import {
-  expect,
-  type Locator,
-  type Page,
-  type TestInfo,
-  test,
-} from "@playwright/test";
+import type { Locator, Page, TestInfo } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;

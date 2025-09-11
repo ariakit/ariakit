@@ -5,6 +5,7 @@
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.experimental.configFile": {
     "site/src/styles/global.css": "site/**/*",
     "tailwind.config.cjs": "**/*"

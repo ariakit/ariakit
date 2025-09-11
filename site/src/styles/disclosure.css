@@ -14,9 +14,8 @@
 }
 
 @custom-variant ak-disclosure-hover {
-  &:has(> :first-child :where(summary, button):hover),
-  &:has(> :where(summary, button):hover),
-  &:where(summary, button):hover {
+  &:has(> :where(summary, button, [data-disclosure-button]):hover),
+  &:where(summary, button, [data-disclosure-button]):hover {
     @slot;
   }
 }
@@ -72,10 +71,10 @@
   :where(summary ~ *) {
     @apply ak-disclosure-content-child;
   }
+}
 
-  @variant ak-disclosure-hover {
-    @apply base:ak-layer-(--ak-layer-parent) ak-layer-hover;
-  }
+@utility ak-disclosure_hover {
+  @apply ak-layer-hover;
 }
 
 @utility ak-disclosure_open {
@@ -88,11 +87,12 @@
 @utility ak-disclosure {
   @apply ak-disclosure_idle;
   @apply open:ak-disclosure_open;
+  @apply ak-disclosure-hover:ak-disclosure_hover;
 }
 
 /* ak-disclosure-button */
 @utility ak-disclosure-button_idle {
-  @apply ak-command-depth-x-3 ak-button_idle ak-text ak-layer-current;
+  @apply ak-command-depth-x-3 ak-button_idle ak-text overflow-clip;
   @apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding);
   @apply w-full justify-start text-wrap text-start -outline-offset-2 transition-[border-radius];
   --ak-disclosure-button-radius: calc(
@@ -103,6 +103,12 @@
   transition-delay: calc(var(--ak-disclosure-duration) / 1.5);
   @variant ak-disclosure-group {
     @apply rounded-[inherit];
+  }
+}
+
+@utility ak-disclosure-button_hover {
+  @container style(--ak-disclosure-split: 1) {
+    @apply ak-layer-hover;
   }
 }
 
@@ -125,13 +131,14 @@
 @utility ak-disclosure-button {
   @apply ak-disclosure-button_idle;
   @apply ak-disclosure-open:ak-disclosure-button_open;
+  @apply ak-disclosure-hover:ak-command-hover:ak-disclosure-button_hover;
   @apply ak-command-focus:ak-disclosure-button_focus;
   @apply ak-command-active:ak-disclosure-button_active;
   @apply ak-command-disabled:ak-disclosure-button_disabled;
 }
 
 /* ak-disclosure-arrow */
-@utility ak-disclosure-chevron-before_idle {
+@utility ak-disclosure-chevron-right_idle {
   @apply ak-icon-chevron;
   @apply h-(--ak-button-leading) w-(--ak-disclosure-chevron-size) -rotate-90 self-start transition-transform;
   --ak-disclosure-chevron-size: 1.1em;
@@ -139,34 +146,34 @@
   transition-duration: var(--ak-disclosure-duration);
 }
 
-@utility ak-disclosure-chevron-before_open {
+@utility ak-disclosure-chevron-right_open {
   @apply rotate-0;
 }
 
-@utility ak-disclosure-chevron-before {
-  @apply ak-disclosure-chevron-before_idle;
+@utility ak-disclosure-chevron-right {
+  @apply ak-disclosure-chevron-right_idle;
   @variant ak-disclosure-open {
-    @apply ak-disclosure-chevron-before_open;
+    @apply ak-disclosure-chevron-right_open;
   }
 }
 
-@utility ak-disclosure-chevron-after_idle {
-  @apply ak-disclosure-chevron-before_idle ms-auto aspect-square rotate-0;
+@utility ak-disclosure-chevron-down_idle {
+  @apply ak-disclosure-chevron-right_idle rotate-0;
 }
 
-@utility ak-disclosure-chevron-after_open {
+@utility ak-disclosure-chevron-down_open {
   @apply rotate-180;
 }
 
-@utility ak-disclosure-chevron-after {
-  @apply ak-disclosure-chevron-after_idle;
+@utility ak-disclosure-chevron-down {
+  @apply ak-disclosure-chevron-down_idle;
   @variant ak-disclosure-open {
-    @apply ak-disclosure-chevron-after_open;
+    @apply ak-disclosure-chevron-down_open;
   }
 }
 
 /* ak-disclosure-plus */
-@utility ak-disclosure-plus-before_idle {
+@utility ak-disclosure-plus_idle {
   @apply h-(--ak-button-leading) w-(--ak-button-leading) flex-none self-start rounded-full transition-[rotate,background-size];
   --ak-plus-line-thickness: 2px;
   transition-duration:
@@ -180,36 +187,21 @@
     var(--ak-plus-line-thickness) 60%;
 }
 
-@utility ak-disclosure-plus-before_open {
+@utility ak-disclosure-plus_open {
   @apply rotate-90;
   background-size: var(--ak-plus-line-thickness) 60%;
 }
 
-@utility ak-disclosure-plus-before {
-  @apply ak-disclosure-plus-before_idle;
+@utility ak-disclosure-plus {
+  @apply ak-disclosure-plus_idle;
   @variant ak-disclosure-open {
-    @apply ak-disclosure-plus-before_open;
-  }
-}
-
-@utility ak-disclosure-plus-after_idle {
-  @apply ak-disclosure-plus-before_idle ms-auto;
-}
-
-@utility ak-disclosure-plus-after_open {
-  @apply ak-disclosure-plus-before_open;
-}
-
-@utility ak-disclosure-plus-after {
-  @apply ak-disclosure-plus-after_idle;
-  @variant ak-disclosure-open {
-    @apply ak-disclosure-plus-after_open;
+    @apply ak-disclosure-plus_open;
   }
 }
 
 /* ak-disclosure-content */
 @utility ak-disclosure-content-base_idle {
-  @apply z-1 max-h-0 overflow-y-clip rounded-b-[inherit] p-0 transition-[content-visibility,height,max-height];
+  @apply z-1 max-h-0 overflow-clip rounded-b-[inherit] p-0 transition-[content-visibility,height,max-height];
   --ak-disclosure-group: 0;
   transition-behavior: allow-discrete;
   interpolate-size: allow-keywords;
@@ -261,4 +253,13 @@
   border-block-start-width: calc(
     var(--ak-disclosure-border) * var(--ak-disclosure-split, 0)
   );
+}
+
+/* ak-disclosure-actions */
+@utility ak-disclosure-actions {
+  @apply h-(--ak-button-leading) relative -mt-[0.1875rem] ms-auto;
+  &::before {
+    @apply absolute -inset-4 start-0;
+    content: "";
+  }
 }

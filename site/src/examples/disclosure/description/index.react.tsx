@@ -28,8 +28,8 @@ export default function Example() {
         className="ak-frame-card ak-layer ak-bordering ak-disclosure-split"
       >
         <DisclosureButton
-          icon="chevron-after"
-          className="ak-command-depth-2 text-lg hover:ak-layer-pop"
+          icon="chevron-down-end"
+          className="text-lg"
           description={
             <>
               <span>Current billing period: Aug 10, 2025 - Sep 10, 2025</span>

@@ -35,7 +35,7 @@
 
 @utility ak-button {
   @apply ak-button_idle;
-  @apply hover:ak-button_hover;
+  @apply ak-command-hover:ak-button_hover;
   @apply ak-command-focus:ak-button_focus;
   @apply ak-command-active:ak-button_active;
   @apply ak-command-disabled:ak-button_disabled;

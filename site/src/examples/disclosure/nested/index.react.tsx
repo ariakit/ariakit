@@ -2,7 +2,7 @@ import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
-} from "../disclosure.react.tsx";
+} from "#app/examples/_shared/ariakit/disclosure.react.tsx";
 
 export default function Example() {
   return (
@@ -11,7 +11,7 @@ export default function Example() {
         defaultOpen
         className="overflow-hidden ak-frame-card ak-layer ak-bordering"
       >
-        <DisclosureButton icon="chevron-next">Thinking</DisclosureButton>
+        <DisclosureButton icon="chevron-right-next">Thinking</DisclosureButton>
         <DisclosureContent
           prose
           className="*:ak-prose-text-sm data-open:max-h-140 overflow-y-auto"
@@ -23,7 +23,7 @@ export default function Example() {
           </p>
           <div className="ak-frame-cover/1 -my-[calc(var(--ak-disclosure-padding)*0.6)]">
             <Disclosure className="ak-frame-field/3 data-open:ak-layer-pop">
-              <DisclosureButton icon="chevron-next">
+              <DisclosureButton icon="chevron-right-next">
                 Deconstructing the Core Request
               </DisclosureButton>
               <DisclosureContent className="*:ak-prose-content _data-open:max-h-60 _overflow-y-auto">
@@ -72,7 +72,7 @@ export default function Example() {
           </div>
           <div className="ak-frame-cover/1 -my-[calc(var(--ak-disclosure-padding)*0.6)]">
             <Disclosure className="ak-frame-field/3 data-open:ak-layer-pop">
-              <DisclosureButton icon="chevron-next">
+              <DisclosureButton icon="chevron-right-next">
                 State and Structural Planning
               </DisclosureButton>
               <DisclosureContent className="*:ak-prose-content _data-open:max-h-60 _overflow-y-auto">
@@ -123,7 +123,7 @@ export default function Example() {
           </p>
           <div className="ak-frame-cover/1 -my-[calc(var(--ak-disclosure-padding)*0.6)]">
             <Disclosure className="ak-frame-field/3 data-open:ak-layer-pop">
-              <DisclosureButton icon="chevron-next">
+              <DisclosureButton icon="chevron-right-next">
                 Handling User Interactions and Side Effects
               </DisclosureButton>
               <DisclosureContent className="*:ak-prose-content _data-open:max-h-60 _overflow-y-auto">
@@ -160,7 +160,7 @@ export default function Example() {
           </div>
           <div className="ak-frame-cover/1 -my-[calc(var(--ak-disclosure-padding)*0.6)]">
             <Disclosure className="ak-frame-field/3 data-open:ak-layer-pop">
-              <DisclosureButton icon="chevron-next">
+              <DisclosureButton icon="chevron-right-next">
                 Ensuring Accessibility and Semantics
               </DisclosureButton>
               <DisclosureContent className="*:ak-prose-content _data-open:max-h-60 _overflow-y-auto">
