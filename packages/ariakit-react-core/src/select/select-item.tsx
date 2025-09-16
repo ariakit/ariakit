@@ -74,7 +74,16 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
         "SelectItem must be wrapped in a SelectList or SelectPopover component.",
     );
 
-    const id = useId(props.id);
+    /**
+     * Remove the id from the rest of the props and use useId hook as a source of truth.
+     * We destructure the provided id separately to prevent the undefined id from
+     * overriding the generated id during props merging, which could cause infinite
+     * loops in focus management (issue #4593).
+     */
+    const { id: providedId, ...restPropsWithoutId } = props;
+    props = { ...restPropsWithoutId };
+
+    const id = useId(providedId);
     const disabled = disabledFromProps(props);
 
     const { listElement, multiSelectable, selected, autoFocus } =
