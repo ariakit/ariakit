@@ -8,7 +8,8 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import path from "node:path";
-import { type Browser, chromium } from "playwright";
+import type { Browser } from "playwright";
+import { chromium } from "playwright";
 import type { OGImageItem } from "./api.ts";
 
 const BASE_URL = "http://localhost:4321";

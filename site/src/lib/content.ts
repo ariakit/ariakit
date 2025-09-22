@@ -9,10 +9,8 @@
  */
 import type { CollectionEntry, RenderResult } from "astro:content";
 import { invariant } from "@ariakit/core/utils/misc";
-import {
-  createMarkdownProcessor,
-  type MarkdownProcessor,
-} from "@astrojs/markdown-remark";
+import type { MarkdownProcessor } from "@astrojs/markdown-remark";
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import type { Element } from "hast";
 import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";

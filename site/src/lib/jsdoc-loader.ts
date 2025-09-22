@@ -13,10 +13,11 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
-import { type FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
+import type { FunctionLikeDeclaration } from "ts-morph";
+import { Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";
-import type { Reference } from "./schemas.ts";
-import { type FrameworkSchema, ReferenceSchema } from "./schemas.ts";
+import type { FrameworkSchema, Reference } from "./schemas.ts";
+import { ReferenceSchema } from "./schemas.ts";
 import { slugify } from "./string.ts";
 
 export interface JsDocFrameworkOptions {

@@ -10,19 +10,14 @@
 
 import type { CollectionEntry } from "astro:content";
 import { isFramework } from "./frameworks.ts";
+import type { ReferenceItem } from "./reference.ts";
 import {
   getReferenceItem,
   getReferenceItemId,
   getReferenceSlug,
-  type ReferenceItem,
 } from "./reference.ts";
-import {
-  type PlusAccountPath,
-  type PlusCheckoutStep,
-  PlusCheckoutStepSchema,
-  type PlusType,
-  PlusTypeSchema,
-} from "./schemas.ts";
+import type { PlusAccountPath, PlusCheckoutStep, PlusType } from "./schemas.ts";
+import { PlusCheckoutStepSchema, PlusTypeSchema } from "./schemas.ts";
 import { trimRight } from "./string.ts";
 
 const DEFAULT_URL = new URL("http://localhost:4321");

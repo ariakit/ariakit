@@ -39,11 +39,18 @@
   --ak-table-py: --value(--spacing, [*]);
 }
 
+@utility ak-table-p-* {
+  --ak-table-padding: --spacing(--value(number));
+  --ak-table-padding: --value(--spacing, [*]);
+  --ak-table-px: var(--ak-table-padding);
+  --ak-table-py: var(--ak-table-padding);
+}
+
 @utility ak-table {
   @apply ak-frame-field;
   @apply p-0! relative w-full border-separate border-spacing-0 overflow-x-hidden;
 
-  :where(tbody, tfoot) {
+  :where(tbody) {
     @apply ak-table-rowgroup;
   }
 
@@ -55,12 +62,16 @@
     @apply ak-table-foot;
   }
 
-  :where(tr:not(:where(thead > *))) {
+  :where(tr:not(:where(thead, tfoot) > *)) {
     @apply ak-table-row;
   }
 
   :where(tr:where(thead > *)) {
     @apply ak-table-head-row;
+  }
+
+  :where(tr:where(tfoot > *)) {
+    @apply ak-table-foot-row;
   }
 
   :where(td, th) {
@@ -93,7 +104,7 @@
 
 @utility ak-table-head {
   @apply ak-table-rowgroup ak-layer-pop-0.5;
-  @apply whitespace-nowrap;
+  @apply whitespace-nowrap text-sm;
 }
 
 @utility ak-table-head-row {
@@ -101,7 +112,11 @@
 }
 
 @utility ak-table-foot {
-  @apply ak-table-rowgroup z-2 relative;
+  @apply ak-table-rowgroup;
+}
+
+@utility ak-table-foot-row {
+  @apply ak-table-row_idle;
 }
 
 @utility ak-table-row_idle {
@@ -117,7 +132,7 @@
 }
 
 @utility ak-table-row_hover {
-  @apply ak-layer-hover z-2 *:z-2;
+  @apply ak-layer-hover-0.5 z-2 *:z-2;
 }
 
 @utility ak-table-row {
@@ -130,7 +145,7 @@
 }
 
 @utility ak-table-column-header {
-  @apply ak-text/70 text-start text-sm font-semibold;
+  @apply ak-text/70 text-start font-semibold;
 }
 
 @utility ak-table-cell {

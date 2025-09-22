@@ -223,7 +223,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       const height = win.visualViewport?.height ?? win.innerHeight;
       dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
     };
-    setViewportHeight();
+    // setViewportHeight();
     viewport.addEventListener("resize", setViewportHeight);
     return () => {
       viewport.removeEventListener("resize", setViewportHeight);

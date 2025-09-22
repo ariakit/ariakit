@@ -16,8 +16,12 @@
   }
 }
 
+@utility ak-popover_starting-style {
+  @apply scale-95 opacity-0;
+}
+
 @utility ak-popover_open {
-  @apply starting:scale-95 starting:opacity-0 duration-500;
+  @apply starting:ak-popover_starting-style duration-500;
   /* https://easingwizard.com */
   @apply ease-[linear(0,_0.008_1.1%,_0.031_2.2%,_0.129_4.8%,_0.257_7.2%,_0.671_14.2%,_0.789_16.5%,_0.881_18.6%,_0.957_20.7%,_1.019_22.9%,_1.063_25.1%,_1.094_27.4%,_1.114_30.7%,_1.112_34.5%,_1.018_49.9%,_0.99_59.1%,_1)];
   @variant backdrop {

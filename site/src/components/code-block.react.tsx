@@ -465,7 +465,7 @@ export function CodeBlockPreview({
       tabIndex={-1}
       aria-label={title ? `${title} Preview` : "Preview"}
       className={clsx(
-        "size-full group-focus-within:overflow-auto overflow-hidden max-h-[calc(100svh-var(--header-height)---spacing(16))] ak-frame-container/0 focus-visible:ak-outline-primary",
+        "size-full isolate group-focus-within:overflow-auto [scrollbar-gutter:stable_both-edges] overflow-hidden max-h-[calc(100svh-var(--header-height)---spacing(16))] ak-frame-container/0 focus-visible:ak-outline-primary",
         props.className,
       )}
       style={{ minHeight, ...props.style }}
