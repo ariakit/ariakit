@@ -134,8 +134,8 @@
 }
 
 @utility ak-checkbox-card-check_checked {
-  @apply ring-(--ak-layer) ak-layer-(--ak-checkbox-card-edge) empty:before:ak-icon-check border-0 ring;
-  @apply *:block;
+  @apply ak-layer-(--ak-checkbox-card-edge) empty:before:ak-icon-check;
+  @apply ring-(--ak-layer) border-0 ring *:block;
 }
 
 @utility ak-checkbox-card-check_disabled {

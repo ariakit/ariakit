@@ -9,6 +9,7 @@
 @import "tailwindcss";
 @import "@ariakit/tailwind";
 
+@import "./aurora.css";
 @import "./icon.css";
 @import "./badge.css";
 @import "./command.css";
@@ -20,6 +21,7 @@
 @import "./popover.css";
 @import "./dialog.css";
 @import "./disclosure.css";
+@import "./nav.css";
 @import "./tooltip.css";
 @import "./select.css";
 @import "./container.css";
@@ -31,6 +33,7 @@
 @import "./heading.css";
 @import "./segmented.css";
 @import "./table.css";
+@import "./sidebar.css";
 @import "./prose.css";
 
 @theme {
@@ -66,7 +69,7 @@
 
 :root {
   @variant dark {
-    --color-canvas: oklch(16.52% 0.0062 285.7);
+    /* --color-canvas: oklch(16.52% 0.0062 285.7); */
     /* --color-canvas: theme(--color-slate-950); */
     --color-canvas: oklch(16.34% 0.0091 264.28);
   }

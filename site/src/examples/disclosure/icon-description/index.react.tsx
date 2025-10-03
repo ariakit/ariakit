@@ -1,3 +1,4 @@
+import * as icons from "lucide-react";
 import {
   Disclosure,
   DisclosureButton,
@@ -7,8 +8,16 @@ import {
 export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi]">
-      <Disclosure defaultOpen className="ak-frame-card ak-layer ak-bordering">
-        <DisclosureButton>How do I get started?</DisclosureButton>
+      <Disclosure
+        split
+        className="ak-frame-card ak-layer ak-bordering ak-disclosure-icon-5"
+      >
+        <DisclosureButton
+          icon={<icons.Rocket className="ak-text-primary" />}
+          description="Account, email, setup"
+        >
+          How do I get started?
+        </DisclosureButton>
         <DisclosureContent prose>
           <p>
             Create an account, verify your email, and follow the setup wizard to

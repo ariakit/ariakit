@@ -51,7 +51,8 @@
 
 /* ak-select-arrow */
 @utility ak-select-arrow {
-  @apply ak-icon-chevron ms-auto size-4;
+  @apply ak-icon-chevron;
+  @apply ms-auto size-4;
 }
 
 /* ak-select-popover */
@@ -115,7 +116,8 @@
 
 /* ak-select-item-check */
 @utility ak-select-item-check {
-  @apply ak-icon-check invisible size-4;
+  @apply ak-icon-check;
+  @apply invisible size-4;
   @variant ak-select-item-selected {
     @apply visible;
   }

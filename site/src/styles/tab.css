@@ -53,12 +53,12 @@
   --ak-tab-folder-padding: var(--ak-frame-padding);
 
   &:not(:last-child)::after {
-    @apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r content-[''];
+    @apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r transition-colors content-[''];
   }
 
   > * {
     @apply ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))];
-    @apply flex h-full items-center gap-1.5 whitespace-nowrap;
+    @apply flex h-full items-center gap-1.5 whitespace-nowrap transition-colors;
   }
 }
 

@@ -11,8 +11,7 @@
     "tailwind.config.cjs": "**/*"
   },
   "tailwindCSS.experimental.classRegex": [
-    "tw`([^`]*)`",
-    ["(?:twMerge|twJoin)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
+    ["(?:twMerge|twJoin|clsx)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
   ],
   "css.validate": false,
   "stylelint.enable": true,

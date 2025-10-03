@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { ListDisclosureProps } from "#app/examples/_shared/ariakit/list.react.tsx";
+import type { ListDisclosureProps } from "#app/examples/_lib/ariakit/list.react.tsx";
 import {
   List,
   ListDisclosure,
   ListDisclosureButton,
   ListItem,
-} from "#app/examples/_shared/ariakit/list.react.tsx";
+} from "#app/examples/_lib/ariakit/list.react.tsx";
 
 const tasks = [
   {
@@ -91,7 +91,7 @@ export default function Example() {
                   className="data-open:ak-layer-pop"
                   button={
                     <ListDisclosureButton
-                      icon="chevron-down-end"
+                      indicator="chevron-down-end"
                       progress={progress}
                       className={buttonClassName}
                     >

@@ -10,7 +10,7 @@
  */
 import {
   BoxPatternsLeftOnly,
-  BoxPatternsRight,
+  BoxPatternsRightOnly,
 } from "#app/components/box-patterns.react.tsx";
 import ContainerRightMenu from "#app/components/container-right-menu.astro";
 import { components } from "#app/components/content-components.astro";
@@ -78,7 +78,7 @@ const descriptionText = await descriptionToText(
         >
           {
             Description && (
-              <div class="ak-text/60 ak-prose-elements text-lg/[1.8] [&_code]:ak-text/60">
+              <div class="ak-text/70 ak-prose-elements text-lg/[1.8] [&_p]:ak-text/70 [&_a]:not-hover:ak-text/70 [&_code]:ring-0">
                 <Description {framework} {components} />
               </div>
             )
@@ -100,20 +100,30 @@ const descriptionText = await descriptionToText(
             )
           }
         </div>
-        <div class="ms-auto flex gap-2 items-center relative">
-          <BoxPatternsRight />
-          <div class="flex gap-2">
+        <div class="ms-auto relative @3xl:max-w-70 @max-3xl:w-full">
+          <BoxPatternsRightOnly />
+          <div class="grid gap-2">
             <button
-              class="ak-button ak-light:ak-layer-contrast-primary ak-dark:ak-layer-contrast-primary-down-3 flex-1"
+              class="ak-button ak-layer-current ak-border ak-light:ak-border-2 ak-command-depth-x-3 ak-button-aurora-primary/secondary grid grid-cols-[1fr_auto_1fr]"
             >
-              <Icon name="copyAi" strokeWidth={2} /> Copy AI prompt
-              <kbd class="ak-text/0 ms-1">
+              <Icon name="copyAi" />
+              Copy AI prompt
+              <kbd class="ak-text/0 justify-self-end">
                 <span class="font-sans">⌘</span>I
               </kbd>
             </button>
-            <button class="ak-button ak-layer-pop ak-frame-border">
-              <Icon name="shadcn" />
-              <span class="sr-only">Copy shadcn command</span>
+            <button
+              class="ak-button ak-layer-pop ak-command-depth-x-3 font-mono grid grid-cols-[1fr_auto_1fr]"
+            >
+              <Icon name="terminal" />
+              <span class="overflow-hidden text-sm"
+                >npx shadcn@latest add https://ariakit.com/r/disclosure.json</span
+              >
+              <kbd
+                class="ak-text/0 justify-self-end relative after:absolute after:h-full after:end-full after:w-10 after:bg-gradient-to-l after:from-(--ak-layer) after:from-20%"
+              >
+                <span class="font-sans">⌘</span>S
+              </kbd>
             </button>
           </div>
         </div>

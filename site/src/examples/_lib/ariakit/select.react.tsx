@@ -1,16 +1,35 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import type * as React from "react";
-import { createRenderElement } from "../react/utils.ts";
+import { createRender } from "../react/utils.ts";
 
 export interface SelectProps
   extends Omit<SelectButtonProps, "value" | "defaultValue">,
     Pick<SelectProviderProps, "value" | "setValue" | "defaultValue"> {
+  /** Items to render in the popover when not provided as children. */
   items?: SelectItemProps[];
+  /** Custom label element or props to render a `SelectLabel`. */
   label?: React.ReactNode | SelectLabelProps;
+  /** Custom popover element or props to render a `SelectPopover`. */
   popover?: React.ReactElement | SelectPopoverProps;
 }
 
+/**
+ * High-level select that wires provider, button, label and popover.
+ * @example
+ * <Select popover={{ portal: true }}>
+ *   <SelectItem value="apple" />
+ *   <SelectItem value="orange" />
+ * </Select>
+ * @example
+ * <Select
+ *   label="Fruit"
+ *   items={[
+ *     { value: "apple" },
+ *     { value: "orange" },
+ *   ]}
+ * />
+ */
 export function Select({
   value,
   setValue,
@@ -21,9 +40,8 @@ export function Select({
   popover,
   ...props
 }: SelectProps) {
-  const labelEl =
-    label != null ? createRenderElement(SelectLabel, label) : null;
-  const popoverEl = createRenderElement(SelectPopover, popover);
+  const labelEl = label != null ? createRender(SelectLabel, label) : null;
+  const popoverEl = createRender(SelectPopover, popover);
   return (
     <SelectProvider
       value={value}
@@ -66,8 +84,14 @@ export function SelectLabel(props: SelectLabelProps) {
 }
 
 export interface SelectButtonProps extends ak.SelectProps {
+  /**
+   * Custom icon element that will be rendered before or after the display value
+   * depending on the `chevron` position.
+   */
   icon?: React.ReactNode;
+  /** Selects chevron/icon placement (before, after). Set `false` to hide. */
   chevron?: "before" | "after" | false;
+  /** Custom display value element. */
   displayValue?: React.ReactNode;
 }
 
@@ -113,7 +137,12 @@ export function SelectPopover(props: SelectPopoverProps) {
 }
 
 export interface SelectItemProps extends ak.SelectItemProps {
+  /**
+   * Custom icon element that will be rendered before or after the display value
+   * depending on the `checkmark` position.
+   */
   icon?: React.ReactNode;
+  /** Selects checkmark/icon placement (before, after). Set `false` to hide. */
   checkmark?: "before" | "after" | false;
 }
 

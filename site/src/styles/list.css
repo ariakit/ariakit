@@ -7,8 +7,17 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
+@custom-variant ak-list-item-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
 @custom-variant ak-list-blocks {
   &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+  @container style(--ak-list-blocks: 1) {
     @slot;
   }
 }
@@ -57,6 +66,7 @@
 /* ak-list variants */
 @utility ak-list-blocks {
   --ak-list-gap: calc(var(--_ak-list-gap) * 0.75 - var(--ak-list-item-padding));
+  --ak-list-blocks: 1;
   @apply ak-list-item-padding-2;
   &:where(ol) {
     @apply ak-list-item-border-1;
@@ -88,6 +98,7 @@
   --ak-list-item-ps: calc(var(--ak-list-leading) + --spacing(1.5));
   --ak-list-item-marker-center: calc(var(--ak-list-leading) * 0.5);
   --ak-list-counter-margin: 0.2em;
+  --ak-list-blocks: 0;
   &:where(ul) {
     @apply ak-list-ul;
   }
@@ -193,10 +204,6 @@
   @variant ak-list-blocks {
     @apply ak-list-item-ol-border;
   }
-  &:has(~ :is(p, div, details, h1, h2, h3, h4)),
-  *:has(p, div, details, h1, h2, h3, h4) ~ & {
-    @apply ak-list-item-ol-border;
-  }
 }
 
 @utility ak-list-item_base {
@@ -225,7 +232,7 @@
 @utility ak-list-item {
   &:not(:has(> details)) {
     @apply ak-list-item_base;
-    @variant ak-list-blocks {
+    @variant ak-list-item-blocks {
       @apply ak-list-item-blocks;
     }
   }
@@ -234,14 +241,14 @@
     > summary {
       @apply ak-list-disclosure-button;
       + * {
-        @apply ak-list-disclosure-content-child;
+        @apply ak-list-disclosure-content-body;
       }
     }
   }
 }
 
 @utility ak-list-disclosure {
-  @apply ak-list-item_base;
+  @apply ak-disclosure ak-list-item_base;
   --ak-disclosure-ps: calc(
     var(--ak-frame-padding) + var(--ak-list-item-ps) *
       min(1, var(--ak-list-border-width-number))
@@ -249,7 +256,7 @@
 }
 
 @utility ak-list-disclosure-button {
-  @apply after:ak-disclosure-chevron-down after:ms-0;
+  @apply ak-disclosure-button after:ak-disclosure-chevron-down after:ms-0;
   --ak-button-leading: var(--ak-list-leading) !important;
   --ak-disclosure-ps: var(--ak-list-item-base-ps);
   @variant ak-list-ol {
@@ -261,13 +268,14 @@
 }
 
 @utility ak-list-disclosure-content {
+  @apply ak-disclosure-content;
   :where(& > *) {
-    @apply ak-list-disclosure-content-child;
+    @apply ak-list-disclosure-content-body;
   }
 }
 
-@utility ak-list-disclosure-content-child {
-  @apply ak-list-item-blocks;
+@utility ak-list-disclosure-content-body {
+  @apply ak-disclosure-content-body ak-list-item-blocks;
   padding-block-start: calc(var(--ak-list-item-gap) - var(--ak-frame-padding));
 }
 

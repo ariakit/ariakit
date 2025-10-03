@@ -27,21 +27,33 @@ const { framework, entry } = Astro.props;
 const { Content } = await render(entry);
 
 Astro.locals.framework = framework;
+
+const title = entry.data.title;
+const fullscreen = entry.data.fullscreen;
 ---
 
 <!doctype html>
-<html lang="en" style="min-height: 200vh;">
+<html lang="en" class:list={[!fullscreen && "min-h-[200vh]!"]}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Preview - Ariakit</title>
+    <title>Preview {title} - Ariakit</title>
   </head>
-  <body class="flex items-center-safe justify-center-safe">
-    <div
-      class="p-3 size-full @container flex items-center-safe justify-center-safe"
-    >
-      <Content {framework} />
-    </div>
+  <body
+    class:list={[
+      "flex",
+      !fullscreen && "items-center-safe justify-center-safe",
+    ]}
+  >
+    {
+      fullscreen ? (
+        <Content {framework} />
+      ) : (
+        <div class="p-3 size-full @container flex items-center-safe justify-center-safe">
+          <Content {framework} />
+        </div>
+      )
+    }
   </body>
 </html>

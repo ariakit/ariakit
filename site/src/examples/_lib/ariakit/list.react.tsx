@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import type * as React from "react";
-import { createRenderElement } from "#app/examples/_shared/react/utils.ts";
+import { createRender } from "#app/examples/_lib/react/utils.ts";
 import type {
   DisclosureButtonProps,
   DisclosureContentProps,
@@ -14,9 +14,20 @@ import {
 } from "./disclosure.react.tsx";
 
 export interface ListProps extends React.ComponentProps<"ol"> {
+  /** Renders an ordered list (<ol>) when true; unordered (<ul>) when false. */
   ordered?: boolean;
 }
 
+/**
+ * List container that renders an ordered or unordered list with consistent
+ * styles.
+ * @example
+ * <List>
+ *   <ListItem>Item</ListItem>
+ *   <ListItem progress={0.5}>Item</ListItem>
+ *   <ListItem checked>Item</ListItem>
+ * </List>
+ */
 export function List({ ordered, ...props }: ListProps) {
   const Component = ordered ? "ol" : "ul";
   return (
@@ -46,7 +57,9 @@ export function ListItem({ checked, progress, ...props }: ListItemProps) {
 }
 
 export interface ListItemCheckProps extends React.ComponentProps<"span"> {
+  /** Progress percentage for the check. */
   progress?: number;
+  /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
   checked?: boolean;
 }
 
@@ -78,9 +91,21 @@ export interface ListDisclosureProps extends DisclosureProps {
   content?: React.ReactElement | ListDisclosureContentProps;
 }
 
+/**
+ * Disclosure adapted for lists, integrating with `ListItem` visuals.
+ * @example
+ * <ListDisclosure>
+ *   <ListDisclosureButton>Item</ListDisclosureButton>
+ *   <ListDisclosureContent>Details</ListDisclosureContent>
+ * </ListDisclosure>
+ * @example
+ * <ListDisclosure button="Item">
+ *   Details
+ * </ListDisclosure>
+ */
 export function ListDisclosure(props: ListDisclosureProps) {
-  const buttonEl = createRenderElement(ListDisclosureButton, props.button);
-  const contentEl = createRenderElement(ListDisclosureContent, props.content);
+  const buttonEl = createRender(ListDisclosureButton, props.button);
+  const contentEl = createRender(ListDisclosureContent, props.content);
   return (
     <Disclosure
       {...props}

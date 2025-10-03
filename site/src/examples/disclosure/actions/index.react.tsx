@@ -1,14 +1,14 @@
 import clsx from "clsx";
 import * as icons from "lucide-react";
 import { useState } from "react";
-import { Disclosure } from "#app/examples/_shared/ariakit/disclosure.react.tsx";
+import { Disclosure } from "#app/examples/_lib/ariakit/disclosure.react.tsx";
 import {
   Select,
   SelectItem,
-} from "#app/examples/_shared/ariakit/select.react.tsx";
-import { Table } from "#app/examples/_shared/ariakit/table.react.tsx";
-import type { Order, OrderStatus } from "#app/examples/_shared/data/orders.ts";
-import { orderStatuses, orders } from "#app/examples/_shared/data/orders.ts";
+} from "#app/examples/_lib/ariakit/select.react.tsx";
+import { Table, TableCell } from "#app/examples/_lib/ariakit/table.react.tsx";
+import type { Order, OrderStatus } from "#app/examples/_lib/data/orders.ts";
+import { orderStatuses, orders } from "#app/examples/_lib/data/orders.ts";
 
 function formatDate(isoString: string) {
   const date = new Date(isoString);
@@ -142,12 +142,12 @@ function OrderCard({ order }: OrderCardProps) {
         },
         ...order.items.map((item) => ({
           Item: (
-            <td className="grid">
+            <TableCell className="grid">
               <div className="truncate font-medium">{item.name}</div>
               <div className="ak-text/60">
                 Qty {item.quantity} • {formatCents(item.priceCents)} each
               </div>
-            </td>
+            </TableCell>
           ),
           Price: {
             className: "align-top font-medium",
@@ -218,6 +218,7 @@ function OrderCard({ order }: OrderCardProps) {
 export default function Example() {
   return (
     <div className="w-180 max-w-[100cqi] grid gap-4 items-start">
+      <h2 className="ak-heading text-center">Orders</h2>
       {orders.slice(0, 4).map((order: Order) => (
         <OrderCard key={order.id} order={order} />
       ))}

@@ -90,6 +90,7 @@ const previews = defineCollection({
   }),
   schema: z.object({
     title: z.string(),
+    fullscreen: z.boolean().optional(),
     frameworks: FrameworkSchema.array(),
   }),
 });

@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
-import { createRenderElement } from "#app/examples/_shared/react/utils.ts";
+import { createRender } from "#app/examples/_lib/react/utils.ts";
 
 type TableRowGroup = "head" | "body" | "foot";
 
@@ -9,21 +9,60 @@ export type TableRow<K extends keyof any> = {
   group?: TableRowGroup;
 } & Record<K, React.ReactNode | TableCellProps>;
 
+export type TableRows<K extends keyof any> = TableRow<K>[];
+
 const TableRowGroupContext = React.createContext<TableRowGroup>("body");
 
 export interface TableProps<K extends keyof any>
   extends React.ComponentProps<"table"> {
+  /** Custom container element or props to render a `TableContainer`. */
   container?: React.ReactElement | TableContainerProps;
+  /** Custom scroller element or props to render a `TableScroller`. */
   scroller?: React.ReactElement | TableScrollerProps;
+  /** Custom head row group element or props to render a `TableRowGroup`. */
   head?: React.ReactElement | TableRowGroupProps;
+  /** Custom body row group element or props to render a `TableRowGroup`. */
   body?: React.ReactElement | TableRowGroupProps;
+  /** Custom foot row group element or props to render a `TableRowGroup`. */
   foot?: React.ReactElement | TableRowGroupProps;
+  /** Custom row element or props to render a `TableRow` for body rows. */
   row?: React.ReactElement | TableRowProps;
+  /** Custom row element or props to render a `TableRow` for head rows. */
   headRow?: React.ReactElement | TableRowProps;
+  /** Custom row element or props to render a `TableRow` for foot rows. */
   footRow?: React.ReactElement | TableRowProps;
-  rows?: TableRow<K>[];
+  /**
+   * Declarative rows data. Keys map to columns; values are cell content or
+   * props.
+   */
+  rows?: TableRows<K>;
 }
 
+/**
+ * Composable table with optional container/scroller and declarative rows.
+ * @example
+ * <Table>
+ *   <TableRowGroup group="head">
+ *     <TableRow>
+ *       <TableCell header>Name</TableCell>
+ *       <TableCell header numeric>Age</TableCell>
+ *     </TableRow>
+ *   </TableRowGroup>
+ *   <TableRowGroup>
+ *     <TableRow>
+ *       <TableCell>Ada</TableCell>
+ *       <TableCell numeric>37</TableCell>
+ *     </TableRow>
+ *   </TableRowGroup>
+ * </Table>
+ * @example
+ * <Table
+ *   rows={[
+ *     { group: "head", name: "Name", age: { children: "Age", numeric: true } },
+ *     { name: "Ada", age: 37 },
+ *   ]}
+ * />
+ */
 export function Table<K extends keyof any>({
   children,
   container,
@@ -37,14 +76,14 @@ export function Table<K extends keyof any>({
   rows,
   ...props
 }: TableProps<K>) {
-  const containerEl = createRenderElement(TableContainer, container);
-  const scrollerEl = createRenderElement(TableScroller, scroller);
-  const headEl = createRenderElement(TableRowGroup, head, { group: "head" });
-  const bodyEl = createRenderElement(TableRowGroup, body);
-  const footEl = createRenderElement(TableRowGroup, foot, { group: "foot" });
-  const rowEl = createRenderElement(TableRow, row);
-  const headRowEl = createRenderElement(TableRow, headRow, { group: "head" });
-  const footRowEl = createRenderElement(TableRow, footRow, { group: "foot" });
+  const containerEl = createRender(TableContainer, container);
+  const scrollerEl = createRender(TableScroller, scroller);
+  const headEl = createRender(TableRowGroup, head, { group: "head" });
+  const bodyEl = createRender(TableRowGroup, body);
+  const footEl = createRender(TableRowGroup, foot, { group: "foot" });
+  const rowEl = createRender(TableRow, row);
+  const headRowEl = createRender(TableRow, headRow, { group: "head" });
+  const footRowEl = createRender(TableRow, footRow, { group: "foot" });
   const headRows = rows?.filter((row) => row.group === "head");
   const bodyRows = rows?.filter((row) => row.group === "body" || !row.group);
   const footRows = rows?.filter((row) => row.group === "foot");
@@ -70,7 +109,7 @@ export function Table<K extends keyof any>({
         {Object.entries(row).map(([key, value]) => {
           if (key === "group") return null;
           if (value == null) return null;
-          const tableCellElement = createRenderElement(TableCell, value, {
+          const tableCellElement = createRender(TableCell, value, {
             numeric: !!headRows?.some((row) => isNumericColumn(row, key as K)),
             header: row.group === "head" ? "column" : false,
             children: key,
@@ -131,6 +170,7 @@ export function TableScroller(props: TableScrollerProps) {
 
 export interface TableRowGroupProps
   extends React.ComponentProps<"tbody" | "thead" | "tfoot"> {
+  /** The group of rows to render. */
   group?: TableRowGroup;
 }
 
@@ -156,6 +196,7 @@ export function TableRowGroup({
 }
 
 export interface TableRowProps extends React.ComponentProps<"tr"> {
+  /** The group of rows to render. */
   group?: TableRowGroup;
 }
 
@@ -176,7 +217,9 @@ export function TableRow({ group, ...props }: TableRowProps) {
 }
 
 export interface TableCellProps extends React.ComponentProps<"td"> {
+  /** Whether the cell is numeric. */
   numeric?: boolean;
+  /** Whether the cell is a header. */
   header?: "column" | "row" | boolean;
 }
 
