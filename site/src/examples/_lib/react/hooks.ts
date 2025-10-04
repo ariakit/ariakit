@@ -6,7 +6,7 @@ export function useIsMobile(defaultState = false, maxWidth = 768) {
   React.useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${maxWidth - 1}px)`);
     const onChange = () => {
-      setIsMobile(window.innerWidth < maxWidth);
+      setIsMobile(mql.matches);
     };
     onChange();
     mql.addEventListener("change", onChange);
