@@ -236,9 +236,18 @@ export function TableCell({ numeric, header, ...props }: TableCellProps) {
   const isRowHeader =
     header === "row" || (header && !isColumnHeader && group !== "head");
   const Component = header ? "th" : "td";
+
+  const getScope = () => {
+    if (!header) return;
+    if (isColumnHeader) return "col";
+    if (isRowHeader) return "row";
+    return;
+  };
+
   return (
     <Component
       {...props}
+      scope={getScope()}
       className={clsx(
         !header && "ak-table-cell",
         isColumnHeader && "ak-table-column-header",
