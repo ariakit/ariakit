@@ -87,7 +87,7 @@
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@babel/types": "7.28.4",
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.5",
     "@changesets/cli": "2.29.6",
     "@clerk/clerk-react": "4.32.5",
     "@clerk/nextjs": "4.31.8",
