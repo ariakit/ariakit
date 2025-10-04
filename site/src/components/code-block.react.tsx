@@ -277,7 +277,6 @@ export function CodeBlockPreviewIframe({
     if (!iframe) return;
     let timeout = 0;
     let raf = 0;
-    let removeLinkInterceptor: (() => void) | undefined;
 
     const triggerSelector =
       typeof clickAndWait === "string" ? clickAndWait : "input, button";
@@ -415,7 +414,6 @@ export function CodeBlockPreviewIframe({
       observer.disconnect();
       clearTimeout(timeout);
       cancelAnimationFrame(raf);
-      removeLinkInterceptor?.();
       iframe.removeEventListener("load", onLoad);
       iframe.contentWindow?.removeEventListener("focus", setDataFocus);
       iframe.contentWindow?.removeEventListener("blur", setDataFocus);
