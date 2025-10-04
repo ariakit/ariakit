@@ -66,7 +66,10 @@ export function ReasoningContent(props: ReasoningContentProps) {
         prose
         {...props}
         body={body}
-        className={clsx(!nested && "data-open:max-h-140 overflow-y-auto")}
+        className={clsx(
+          !nested && "data-open:max-h-140 overflow-y-auto",
+          props.className,
+        )}
       />
     </NestedReasoningContext.Provider>
   );
