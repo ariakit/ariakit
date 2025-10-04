@@ -241,7 +241,6 @@ export interface CodeBlockPreviewIframeProps {
   setLoaded?: (loaded: boolean) => void;
   minHeight?: string;
   title?: string;
-  anchorId?: string;
   fullscreen?: boolean;
 }
 
@@ -258,7 +257,6 @@ export function CodeBlockPreviewIframe({
   scrollTop,
   minHeight = "29.1rem",
   title,
-  anchorId,
   fullscreen,
 }: CodeBlockPreviewIframeProps) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
@@ -423,7 +421,7 @@ export function CodeBlockPreviewIframe({
         true,
       );
     };
-  }, [previewUrl, clickAndWait, scrollTop, anchorId, fullscreen]);
+  }, [previewUrl, clickAndWait, scrollTop, fullscreen]);
 
   return (
     <div className="relative h-full" style={{ minHeight }}>
@@ -831,7 +829,6 @@ export function CodeBlockTabs({
                   <CodeBlockPreviewIframe
                     title={title}
                     fallback={fallback}
-                    anchorId={exampleId}
                     scrollTop={scrollTop}
                     minHeight={minHeight}
                     fullscreen={fullscreen}
