@@ -376,6 +376,119 @@ function findClassTokenRanges(code: string) {
     }
   }
 
+  // Scan a generic JS expression starting at `start` (position right after ':'
+  // or after '{'), and extract string/template literal segments to look for ak-
+  // tokens. Returns the end index.
+  function scanExpressionStringSegments(start: number) {
+    let i = start;
+    let curly = 0;
+    let paren = 0;
+    let bracket = 0;
+    let inStr: false | '"' | "'" | "`" = false;
+    while (i < code.length) {
+      const ch = code[i]!;
+      if (inStr) {
+        if (inStr === '"' || inStr === "'") {
+          const quote = inStr;
+          let j = i + 1;
+          while (j < code.length) {
+            const cj = code[j]!;
+            if (cj === "\\") {
+              j += 2;
+              continue;
+            }
+            if (cj === quote) break;
+            j++;
+          }
+          const segStart = i + 1;
+          const segEnd = Math.min(j, code.length);
+          if (segEnd > segStart) findAkTokensInRange(segStart, segEnd);
+          inStr = false;
+          i = Math.min(j + 1, code.length);
+          continue;
+        }
+        if (inStr === "`") {
+          let j = i + 1;
+          let segStart = j;
+          let tplDepth = 0;
+          while (j < code.length) {
+            const cj = code[j]!;
+            if (cj === "\\") {
+              j += 2;
+              continue;
+            }
+            if (cj === "$" && code[j + 1] === "{") {
+              if (j > segStart) findAkTokensInRange(segStart, j);
+              j += 2;
+              tplDepth = 1;
+              while (j < code.length && tplDepth > 0) {
+                const ce = code[j]!;
+                if (ce === "\\") {
+                  j += 2;
+                  continue;
+                }
+                if (ce === "{") tplDepth++;
+                else if (ce === "}") tplDepth--;
+                j++;
+              }
+              segStart = j;
+              continue;
+            }
+            if (cj === "`") break;
+            j++;
+          }
+          if (j > segStart) findAkTokensInRange(segStart, j);
+          inStr = false;
+          i = Math.min(j + 1, code.length);
+        }
+      } else {
+        if (ch === '"' || ch === "'" || ch === "`") {
+          inStr = ch;
+          i++;
+          continue;
+        }
+        if (ch === "(") {
+          paren++;
+          i++;
+          continue;
+        }
+        if (ch === ")") {
+          if (paren > 0) paren--;
+          i++;
+          continue;
+        }
+        if (ch === "[") {
+          bracket++;
+          i++;
+          continue;
+        }
+        if (ch === "]") {
+          if (bracket > 0) bracket--;
+          i++;
+          continue;
+        }
+        if (ch === "{") {
+          curly++;
+          i++;
+          continue;
+        }
+        if (ch === "}") {
+          if (curly === 0 && paren === 0 && bracket === 0) {
+            return i;
+          }
+          if (curly > 0) curly--;
+          i++;
+          continue;
+        }
+        if (ch === "," && curly === 0 && paren === 0 && bracket === 0) {
+          return i;
+        }
+        i++;
+      }
+    }
+    return i;
+  }
+
   // Quoted: className="..." or className={"..."}
   const attrQuotedRe = /(className|class)\s*=\s*(\{\s*["'`]|["'`])/g;
   let mq: RegExpExecArray | null;
@@ -516,6 +629,14 @@ function findClassTokenRanges(code: string) {
       }
       p++;
     }
+  }
+
+  // Object literal: ... { className: "ak-..." | `...` | clsx("ak-...") }
+  const propClassRe = /\bclassName\b\s*:/g;
+  for (let m = propClassRe.exec(code); m; m = propClassRe.exec(code)) {
+    const valueStart = propClassRe.lastIndex;
+    const exprEnd = scanExpressionStringSegments(valueStart);
+    propClassRe.lastIndex = Math.max(propClassRe.lastIndex, exprEnd);
   }
 
   return ranges;
@@ -663,14 +784,18 @@ export function findCodeReferenceAnchors({
       const allowNs = nsSource?.startsWith("@ariakit/") || !hasAnyImport;
       if (allowNs) {
         anchorComponentToken(tokenStart, tokenEnd, name);
-      }
-      // Props inside this tag
-      const ref = nameToRef[name];
-      if (ref) {
-        const propRanges = findComponentPropRanges(trimmed, mc.index || 0, ref);
-        for (const r of propRanges) {
-          const href = getHref(ref, getReferenceItemId("prop", r.name));
-          pushRange(anchors, r.start, r.end, href, "prop");
+        // Props inside this tag
+        const ref = nameToRef[name];
+        if (ref) {
+          const propRanges = findComponentPropRanges(
+            trimmed,
+            mc.index || 0,
+            ref,
+          );
+          for (const r of propRanges) {
+            const href = getHref(ref, getReferenceItemId("prop", r.name));
+            pushRange(anchors, r.start, r.end, href, "prop");
+          }
         }
       }
     }
@@ -816,7 +941,7 @@ export function findCodeReferenceAnchors({
 
       // If assigned to a variable, remember it
       const leftSpan = trimmed.slice(
-        Math.max(0, (pc.index || 0) - 60),
+        Math.max(0, (pc.index || 0) - 200),
         pc.index,
       );
       const assignMatch = /(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/m.exec(
