@@ -10,10 +10,12 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
+import { SplitSquareHorizontal } from "lucide-react";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { Icon } from "#app/icons/icon.react.tsx";
 import type { Framework } from "#app/lib/schemas.ts";
+import { slugify } from "#app/lib/string.ts";
 import type { Source } from "#app/lib/types.ts";
 import { useControllableState } from "#app/lib/use-controllable-state.ts";
 import type {
@@ -42,7 +44,8 @@ function getFilename(id?: string | null) {
 }
 
 /**
- * Determines if preview should be shown based on framework, example, and preview settings
+ * Determines if preview should be shown based on framework, example, and
+ * preview settings
  */
 function getPreviewValue(
   framework?: string,
@@ -135,7 +138,7 @@ export function CodeBlock({
       <div className="absolute top-0 end-0 ak-frame-cover/1.5 z-3 pointer-events-none size-max">
         <CopyCode
           text={code}
-          className="pointer-events-auto [@media(hover:hover)]:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
+          className="pointer-events-auto supports-hover:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
         />
       </div>
       <pre
@@ -145,7 +148,7 @@ export function CodeBlock({
           // "transition-[max-height] duration-300 transition-discrete [interpolate-size:allow-keywords]",
           "[font-size-adjust:0.55]",
           expanded &&
-            "overflow-auto overscroll-x-contain max-h-[min(calc(100svh-12rem),60rem)]",
+            "overflow-auto overscroll-x-contain max-h-[min(calc(100svh-14rem),60rem)]",
           collapsed &&
             "max-h-[calc(var(--max-lines)*var(--line-height))] overflow-hidden",
           !collapsible && "overflow-auto overscroll-x-contain",
@@ -200,8 +203,7 @@ export function CodeBlock({
 }
 
 interface CodeBlockTabProps extends ak.TabProps {
-  isPreviewSelected: boolean;
-  fullPreview?: boolean;
+  isPreviewSelected?: boolean;
 }
 
 /**
@@ -209,7 +211,6 @@ interface CodeBlockTabProps extends ak.TabProps {
  */
 function CodeBlockTab({
   isPreviewSelected,
-  fullPreview,
   children,
   ...props
 }: CodeBlockTabProps) {
@@ -220,9 +221,7 @@ function CodeBlockTab({
         isPreviewSelected
           ? [
               "ak-segmented-button aria-selected:ak-edge/0 aria-selected:ak-layer-pop aria-selected:shadow-none",
-              fullPreview
-                ? "aria-selected:ak-layer-down aria-selected:ak-light:ak-edge/0 px-2 not-aria-selected:px-3"
-                : "not-aria-selected:px-2.5 not-aria-selected:sm:px-3 px-[calc(var(--spacing-field)---spacing(1.5))] sm:px-[calc(var(--spacing-field)---spacing(1))]",
+              "not-aria-selected:px-2.5 not-aria-selected:sm:px-3 px-[calc(var(--spacing-field)---spacing(1.5))] sm:px-[calc(var(--spacing-field)---spacing(1))]",
             ]
           : "ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm",
         props.className,
@@ -242,6 +241,7 @@ export interface CodeBlockPreviewIframeProps {
   setLoaded?: (loaded: boolean) => void;
   minHeight?: string;
   title?: string;
+  fullscreen?: boolean;
 }
 
 /**
@@ -257,6 +257,7 @@ export function CodeBlockPreviewIframe({
   scrollTop,
   minHeight = "29.1rem",
   title,
+  fullscreen,
 }: CodeBlockPreviewIframeProps) {
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useControllableState(
@@ -304,9 +305,11 @@ export function CodeBlockPreviewIframe({
       const html = iframe.contentDocument?.documentElement;
       if (!html) return;
       if (event.type === "focus" || event.type === "focusin") {
+        iframe.setAttribute("data-focus", "true");
         html.setAttribute("data-focus", "true");
       } else {
         html.removeAttribute("data-focus");
+        iframe.removeAttribute("data-focus");
       }
     };
 
@@ -324,7 +327,11 @@ export function CodeBlockPreviewIframe({
       const html = doc.documentElement;
       doc.body.classList.add("!ak-layer-canvas-down-0.15");
       html.classList.add("scheme-light", "dark:scheme-dark");
-      html.classList.add("[scrollbar-gutter:stable_both-edges]");
+      html.classList.add(
+        fullscreen
+          ? "[scrollbar-gutter:stable]"
+          : "[scrollbar-gutter:stable_both-edges]",
+      );
       html.classList.add(
         "not-data-focus:overflow-hidden",
         "not-data-focus:[&_.ak-popover-scroll]:overflow-hidden",
@@ -414,7 +421,7 @@ export function CodeBlockPreviewIframe({
         true,
       );
     };
-  }, [previewUrl, clickAndWait, scrollTop]);
+  }, [previewUrl, clickAndWait, scrollTop, fullscreen]);
 
   return (
     <div className="relative h-full" style={{ minHeight }}>
@@ -432,7 +439,7 @@ export function CodeBlockPreviewIframe({
           )}
         >
           <div
-            //@ts-expect-error
+            // @ts-expect-error
             inert="true"
             className="opacity-50 *:*:*:scale-100"
           >
@@ -447,6 +454,8 @@ export function CodeBlockPreviewIframe({
 export interface CodeBlockPreviewProps extends React.ComponentProps<"div"> {
   minHeight?: string;
   title?: string;
+  fullscreen?: boolean;
+  anchorId?: string;
 }
 
 /**
@@ -456,29 +465,60 @@ export function CodeBlockPreview({
   minHeight,
   children,
   title,
+  fullscreen,
+  anchorId,
   ...props
 }: CodeBlockPreviewProps) {
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!anchorId) return;
+    const container = containerRef.current;
+    if (!container) return;
+    const onClick = (event: MouseEvent) => {
+      const target = event.target as Element | null;
+      if (!target) return;
+      const link = target.closest("a") as HTMLAnchorElement | null;
+      if (!link) return;
+      if (link.target === "_blank") return;
+      event.preventDefault();
+      window.location.hash = `#${anchorId}`;
+    };
+    container.addEventListener("click", onClick);
+    return () => container.removeEventListener("click", onClick);
+  }, [anchorId]);
+
   return (
     <div
       {...props}
+      ref={containerRef}
       role="group"
       tabIndex={-1}
       aria-label={title ? `${title} Preview` : "Preview"}
       className={clsx(
-        "size-full group-focus-within:overflow-auto overflow-hidden max-h-[calc(100svh-var(--header-height)---spacing(16))] ak-frame-container/0 focus-visible:ak-outline-primary",
+        "size-full isolate group-focus-within:overflow-auto overflow-hidden max-h-[calc(100svh-var(--header-height)---spacing(16))] ak-frame-container/0 focus-visible:ak-outline-primary",
+        fullscreen
+          ? "[scrollbar-gutter:stable]"
+          : "[scrollbar-gutter:stable_both-edges]",
         props.className,
       )}
       style={{ minHeight, ...props.style }}
     >
-      <div className="py-16 @container w-full min-h-full flex items-center-safe justify-center-safe ak-frame/4 @max-3xl/main:pb-8 @max-3xl/main:px-3">
+      <div
+        className={clsx(
+          "@container w-full min-h-full",
+          !fullscreen &&
+            "ak-frame/14 @max-3xl/main:p-3 flex items-center-safe justify-center-safe",
+        )}
+      >
         {children}
       </div>
     </div>
   );
 }
 
-export interface CodeBlockTabsContentProps
-  extends Pick<CodeBlockPreviewProps, "title">,
+export interface CodeBlockTabsProps
+  extends Pick<CodeBlockPreviewProps, "title" | "fullscreen">,
     Pick<
       CodeBlockPreviewIframeProps,
       "fallback" | "clickAndWait" | "scrollTop" | "minHeight"
@@ -496,13 +536,13 @@ export interface CodeBlockTabsContentProps
     > {
   tabs: CodeBlockTabBaseProps[];
   persistTabKey?: string;
+  defaultView?: "preview" | "code";
+  showControlsOnHover?: boolean;
   framework?: Framework;
   example?: string;
   preview?: boolean | "full";
   source?: Source;
   iframe?: boolean;
-  ai?: boolean;
-  cli?: boolean;
   edit?: boolean;
   wide?: boolean;
   slot0?: React.ReactElement;
@@ -516,20 +556,20 @@ export interface CodeBlockTabsContentProps
 }
 
 /**
- * A component that manages the content of multiple tabs including preview and
- * code views
+ * The top-level component that handles the layout of code blocks and previews
+ * in a responsive grid
  */
-export function CodeBlockTabsContent({
+export function CodeBlockTabs({
   tabs,
   framework,
   example,
   fallback,
   clickAndWait,
   persistTabKey,
+  defaultView = "preview",
+  showControlsOnHover = false,
   source,
   iframe,
-  ai = false,
-  cli = false,
   edit = !!source,
   preview: previewProp,
   wide = false,
@@ -546,22 +586,20 @@ export function CodeBlockTabsContent({
   slot7,
   children,
   ...props
-}: CodeBlockTabsContentProps) {
+}: CodeBlockTabsProps) {
   const storeId = React.useId();
   const slots = [slot0, slot1, slot2, slot3, slot4, slot5, slot6, slot7];
 
   const [firstTab] = tabs;
   invariant(firstTab, "At least one tab is required");
 
-  const [loaded, setLoaded] = React.useState(false);
-
   const preview = getPreviewValue(framework, example, previewProp);
   const previewUrl = getPreviewUrl(framework, example, preview);
-  const fullPreview = preview === "full";
-  const hasToolbar = !!ai || !!cli || !!previewUrl || edit;
+  const fullscreen = preview === "full";
+  const hasToolbar = !!previewUrl || edit;
 
   const canPersist = persistTabKey !== undefined;
-  const defaultFilename = preview ? "preview" : firstTab.filename;
+  const defaultFilename = firstTab.filename;
   const [persistedFilename = defaultFilename, setPersistedFilename] =
     useLocalStorageState<string | undefined>(
       persistTabKey ?? "code-block-tabs",
@@ -576,7 +614,6 @@ export function CodeBlockTabsContent({
     }),
   });
   const selectedTabId = ak.useStoreState(tabStore, "selectedId");
-  const isPreviewSelected = selectedTabId === getTabId(storeId, "preview");
 
   const selectedTab = tabs.find(
     (tab) => getTabId(storeId, tab.filename) === selectedTabId,
@@ -585,284 +622,234 @@ export function CodeBlockTabsContent({
     (_, index) => getTabId(storeId, tabs[index]?.filename) === selectedTabId,
   );
 
-  const renderTopbar = () => (
-    <div
-      className={clsx(
-        hasToolbar && "[--height:--spacing(12)]",
-        !isPreviewSelected
-          ? "ak-layer-down-0.7 ak-light:ak-layer-down-0.5 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)"
-          : [
-              "flex items-start",
-              fullPreview
-                ? "ak-layer ak-frame-cover/1"
-                : "absolute z-1 inset-0 bottom-auto ak-frame-container/1 pointer-events-none *:pointer-events-auto transition-opacity [@media(hover:hover)]:not-group-hover:not-group-focus-within:opacity-0",
-            ],
-      )}
-    >
-      <ak.TabList
-        className={clsx(
-          isPreviewSelected
-            ? [
-                "ak-segmented ak-layer-(--ak-layer-parent) text-sm h-10 gap-1",
-                fullPreview
-                  ? "ak-frame-container/0"
-                  : "max-sm:ak-frame-container/0.5 sm:h-[calc(--spacing(10)+var(--ak-frame-padding))]",
-              ]
-            : [
-                "ak-tab-list ak-layer-(--ak-layer-parent) !rounded-b-none",
-                hasToolbar && !fullPreview && "sm:ak-frame-overflow/1",
-              ],
-        )}
-      >
-        {preview && (
-          <CodeBlockTab
-            id={getTabId(storeId, "preview")}
-            isPreviewSelected={isPreviewSelected}
-            fullPreview={fullPreview}
-          >
-            <Icon name="preview" />
-            Preview
-          </CodeBlockTab>
-        )}
-        {tabs.map((tab, index) => {
-          if (isPreviewSelected && index > 0) return null;
-          const filenameIcon = isPreviewSelected ? "code" : tab.filenameIcon;
-          const filename = isPreviewSelected
-            ? "Code"
-            : tab.filename || tab.lang;
-          return (
-            <CodeBlockTab
-              key={tab.filename}
-              id={getTabId(storeId, tab.filename)}
-              isPreviewSelected={isPreviewSelected}
-              fullPreview={fullPreview}
-            >
-              {filenameIcon && (
-                <Icon
-                  name={filenameIcon}
-                  className={!isPreviewSelected ? "max-sm:hidden" : ""}
-                />
-              )}
-              {filename}
-            </CodeBlockTab>
-          );
-        })}
-      </ak.TabList>
-      {hasToolbar && (
-        <div className="ms-auto ak-frame-cover/1 ak-frame-cover-start ak-frame-cover-end h-(--height) flex gap-1">
-          {ai && (
-            <Tooltip plus title="Copy prompt for AI agents">
-              <button
-                className={clsx(
-                  "ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80",
-                  preview &&
-                    !isPreviewSelected &&
-                    "ak-button-square ak-text-sm",
-                )}
-              >
-                <Icon name="copyAi" className="text-lg" />
-                <span
-                  className={clsx(
-                    "@max-xl:sr-only",
-                    preview && !isPreviewSelected && "sr-only",
-                  )}
-                >
-                  Copy AI prompt
-                </span>
-              </button>
-            </Tooltip>
-          )}
-          {cli && (
-            <Tooltip plus title="Copy shadcn CLI command">
-              <button className="ak-button ak-button-square h-full">
-                <Icon name="shadcn" className="text-lg" />
-                <span className="sr-only">Copy shadcn CLI command</span>
-              </button>
-            </Tooltip>
-          )}
-          {edit && (
-            <Tooltip plus title="Edit code">
-              <button className="ak-button ak-button-square h-full">
-                <Icon name="edit" className="text-lg" />
-                <span className="sr-only">Edit code</span>
-              </button>
-            </Tooltip>
-          )}
-          {previewUrl && preview && (
-            <Tooltip title="Open preview in new tab">
-              <a
-                href={previewUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="ak-button ak-button-square h-full"
-              >
-                <Icon name="newWindow" className="text-lg" />
-                <span className="sr-only">Open preview in new tab</span>
-              </a>
-            </Tooltip>
-          )}
-        </div>
-      )}
-    </div>
+  const defaultViewId = getTabId(storeId, defaultView);
+  const viewStore = ak.useTabStore({
+    defaultSelectedId: defaultViewId,
+  });
+  const viewSelectedId = ak.useStoreState(viewStore, "selectedId");
+  const isPreviewSelected = viewSelectedId === getTabId(storeId, "preview");
+
+  const className = clsx(
+    showControlsOnHover &&
+      "transition-[opacity,width] transition-discrete [interpolate-size:allow-keywords] supports-hover:w-0 group-hocus-within/code-block-tabs:w-auto supports-hover:opacity-0 group-hocus-within/code-block-tabs:opacity-100",
   );
+  const hasCodeToolbar = !!edit && !preview;
+  const exampleId = title ? `example-${slugify(title)}` : undefined;
 
   return (
-    <ak.TabProvider store={tabStore}>
-      <CodeBlock
-        {...props}
-        {...selectedTab}
-        topbar={renderTopbar()}
-        code={selectedTab?.code || ""}
-        collapsibleClassName={clsx(
-          isPreviewSelected &&
-            "ak-layer-canvas-down-0.15! ak-light:ak-edge/15 ak-dark:ak-edge/13",
-        )}
-        renderContent={(content) => {
-          return (
-            <>
-              {preview && previewUrl && (isPreviewSelected || loaded) && (
-                <ak.TabPanel
-                  tabId={getTabId(storeId, "preview")}
-                  focusable={false}
-                  scrollRestoration
-                  scrollElement={(panel) => {
-                    const iframe = panel.querySelector("iframe");
-                    return iframe?.contentDocument?.documentElement || null;
-                  }}
-                  render={
-                    <div
-                      className={clsx(!fullPreview && "ak-frame-cover-start")}
-                    >
-                      {iframe ? (
-                        <CodeBlockPreviewIframe
-                          previewUrl={previewUrl}
-                          fallback={fallback}
-                          clickAndWait={clickAndWait}
-                          loaded={loaded}
-                          setLoaded={setLoaded}
-                          scrollTop={scrollTop}
-                          minHeight={minHeight}
-                          title={title}
-                        />
-                      ) : (
-                        <CodeBlockPreview title={title} minHeight={minHeight}>
-                          {children}
-                        </CodeBlockPreview>
-                      )}
-                    </div>
-                  }
-                />
-              )}
-              {!isPreviewSelected && (
-                <SingleTabPanel
-                  render={content}
-                  scrollRestoration
-                  scrollElement={(panel) => panel.querySelector("pre")}
-                />
-              )}
-            </>
-          );
-        }}
-      >
-        {selectedSlot}
-      </CodeBlock>
-    </ak.TabProvider>
-  );
-}
-
-export interface CodeBlockTabsProps
-  extends Omit<CodeBlockTabsContentProps, "fallback"> {
-  iframe?: boolean;
-  hasFallback?: boolean;
-  fallback0?: React.ReactNode;
-  fallback1?: React.ReactNode;
-}
-
-/**
- * The top-level component that handles the layout of code blocks and previews
- * in a responsive grid
- */
-export function CodeBlockTabs({
-  hasFallback,
-  fallback0,
-  fallback1,
-  ...props
-}: CodeBlockTabsProps) {
-  const preview = getPreviewValue(
-    props.framework,
-    props.example,
-    props.preview,
-  );
-  const previewUrl = getPreviewUrl(props.framework, props.example, preview);
-  return (
-    <div className="@container">
+    <ak.TabProvider selectOnMove={false} store={viewStore}>
       <div
-        className={clsx(
-          "grid gap-4 relative",
-          preview && !props.wide && "@[64rem]:grid-cols-2",
-        )}
+        id={exampleId}
+        className="@container grid gap-2 group/code-block-tabs scroll-mt-[calc(var(--header-height)+--spacing(2))]"
       >
-        <div
-          className={clsx(
-            "h-max sticky top-[calc(var(--header-height)+--spacing(4))] z-1",
-            props.wide ? "hidden" : preview ? "@max-[64rem]:hidden" : "",
-          )}
-        >
-          <CodeBlockTabsContent {...props} preview={false} />
-          {preview && (
-            <div
-              className={clsx(
-                "absolute @max-[64rem]:hidden text-lg ak-text/0 top-1/2 end-0 -translate-y-1/2 translate-x-7 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full",
-              )}
-            >
-              <Icon name="chevronRight" />
-            </div>
-          )}
-        </div>
         {preview && (
-          <CodeBlockTabsContent
-            {...props}
-            fallback={hasFallback ? fallback0 : undefined}
-            className={props.wide ? "" : "@[64rem]:hidden"}
-          />
-        )}
-        {preview && previewUrl && (
-          <div
-            className={clsx(
-              "group relative ak-border ak-frame-container/0 overflow-clip ak-layer-canvas-down-0.15 ak-light:ak-edge/15 ak-dark:ak-edge/13",
-              props.wide ? "hidden" : "@max-[64rem]:hidden",
+          <div className="grid grid-cols-[auto_max-content_max-content] @lg:grid-cols-[1fr_auto_1fr] items-center @lg:gap-4 gap-1 @lg:text-sm">
+            {exampleId && (
+              <a
+                href={`#${exampleId}`}
+                className="ak-link not-hover:no-underline hover:decoration-1 @lg:row-1 @lg:col-2 @max-lg:px-4 ak-text/60 font-medium truncate transition-[color] group-hocus-within/code-block-tabs:ak-text"
+              >
+                {title}
+              </a>
             )}
-          >
-            <div className="ak-frame-cover/1 absolute top-0 end-0 z-1">
-              <Tooltip title="Open preview in new tab">
-                <a
-                  href={previewUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ak-button ak-button-square sm:h-10 h-9"
+            <div
+              className={clsx("flex justify-start gap-[inherit]", className)}
+            >
+              <ak.TabList className="flex @lg:ak-segmented @lg:ak-frame-full/1 @max-lg:gap-[inherit]">
+                <ak.Tab
+                  id={getTabId(storeId, "preview")}
+                  className="@lg:ak-segmented-button @max-lg:ak-button @max-lg:ak-segmented-button-selected:ak-layer-hover @max-lg:ak-button-square-10"
                 >
-                  <Icon name="newWindow" className="text-lg" />
-                  <span className="sr-only">Open preview in new tab</span>
-                </a>
-              </Tooltip>
+                  <Icon name="preview" className="@max-lg:text-lg" />
+                  <span className="@max-lg:sr-only">Preview</span>
+                </ak.Tab>
+                <ak.Tab
+                  id={getTabId(storeId, "code")}
+                  className="@lg:ak-segmented-button @max-lg:ak-button @max-lg:ak-segmented-button-selected:ak-layer-hover @max-lg:ak-button-square-10"
+                >
+                  <span
+                    className={clsx(
+                      "flex items-center gap-2",
+                      wide ? "@max-lg:hidden" : "hidden",
+                    )}
+                  >
+                    <SplitSquareHorizontal className="size-4" />
+                    <span className="@max-lg:sr-only flex gap-2 items-center">
+                      Code{" "}
+                      <span
+                        className="h-4 ak-layer-current border-e ak-edge/15"
+                        aria-label="and"
+                      />{" "}
+                      Preview
+                    </span>
+                  </span>
+                  <span
+                    className={clsx(
+                      "flex items-center gap-2",
+                      wide ? "@lg:hidden" : "",
+                    )}
+                  >
+                    <Icon name="code" className="@max-lg:text-lg" />
+                    <span className="@max-lg:sr-only">Code</span>
+                  </span>
+                </ak.Tab>
+              </ak.TabList>
             </div>
-            {props.iframe ? (
-              <CodeBlockPreviewIframe
-                previewUrl={previewUrl}
-                clickAndWait={props.clickAndWait}
-                fallback={hasFallback ? fallback1 : undefined}
-                scrollTop={props.scrollTop}
-                minHeight={props.minHeight}
-                title={props.title}
-              />
-            ) : (
-              <CodeBlockPreview title={props.title} minHeight={props.minHeight}>
-                {props.children}
-              </CodeBlockPreview>
+
+            {hasToolbar && (
+              <div
+                className={clsx("ms-auto flex gap-1 justify-end", className)}
+              >
+                {edit && (
+                  <Tooltip plus title="Edit code">
+                    <button className="ak-button ak-button-square-10 @max-lg:hidden">
+                      <Icon name="edit" className="text-lg" />
+                      <span className="sr-only">Edit code</span>
+                    </button>
+                  </Tooltip>
+                )}
+                {previewUrl && (
+                  <Tooltip title="Open preview in new tab">
+                    <a
+                      href={previewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ak-button ak-button-square-10"
+                    >
+                      <Icon name="newWindow" className="text-lg" />
+                      <span className="sr-only">Open preview in new tab</span>
+                    </a>
+                  </Tooltip>
+                )}
+              </div>
             )}
           </div>
         )}
+        <div
+          className={clsx(
+            "grid relative gap-4",
+            hasToolbar && "ak-frame-dialog/0",
+            preview && (!wide || !isPreviewSelected) && "@[64rem]:grid-cols-2",
+            "outline-primary in-target:outline-transparent in-target:outline transition-[outline-color] in-target:duration-1000 in-target:delay-500",
+          )}
+        >
+          <ak.TabPanel
+            tabId={getTabId(storeId, "code")}
+            focusable={false}
+            className="h-max sticky top-[calc(var(--header-height)+--spacing(4))] z-1"
+          >
+            <ak.TabProvider store={tabStore}>
+              <CodeBlock
+                {...props}
+                {...selectedTab}
+                topbar={
+                  <div
+                    className={clsx(
+                      hasToolbar && "[--height:--spacing(12)]",
+                      "ak-layer-down-0.7 ak-light:ak-layer-down-0.5 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
+                    )}
+                  >
+                    <ak.TabList
+                      className={clsx(
+                        "ak-tab-list ak-layer-(--ak-layer-parent) !rounded-b-none",
+                        hasToolbar && "sm:ak-frame-overflow/1",
+                      )}
+                    >
+                      {tabs.map((tab) => (
+                        <CodeBlockTab
+                          key={tab.filename}
+                          id={getTabId(storeId, tab.filename)}
+                        >
+                          {tab.filenameIcon && (
+                            <Icon
+                              name={tab.filenameIcon}
+                              className="max-sm:hidden"
+                            />
+                          )}
+                          {tab.filename || tab.lang}
+                        </CodeBlockTab>
+                      ))}
+                    </ak.TabList>
+                    {hasCodeToolbar && (
+                      <div className="ms-auto ak-frame-cover/1 ak-frame-cover-start ak-frame-cover-end h-(--height) flex gap-1">
+                        {edit && (
+                          <Tooltip plus title="Edit code">
+                            <button className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80">
+                              <Icon name="edit" className="text-lg" />
+                              <span className="sr-only">Edit code</span>
+                            </button>
+                          </Tooltip>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                }
+                code={selectedTab?.code || ""}
+                collapsibleClassName={clsx(
+                  isPreviewSelected &&
+                    "ak-layer-canvas-down-0.15! ak-light:ak-edge/15 ak-dark:ak-edge/13",
+                )}
+                renderContent={(content) => {
+                  return (
+                    <SingleTabPanel
+                      render={content}
+                      scrollRestoration
+                      scrollElement={(panel) => panel.querySelector("pre")}
+                    />
+                  );
+                }}
+              >
+                {selectedSlot}
+              </CodeBlock>
+              {preview && (
+                <div
+                  className={clsx(
+                    "absolute @max-[64rem]:hidden z-1 text-lg ak-text/0 top-1/2 end-0 -translate-y-1/2 translate-x-7 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full",
+                  )}
+                >
+                  <Icon name="chevronRight" />
+                </div>
+              )}
+            </ak.TabProvider>
+          </ak.TabPanel>
+          {preview && previewUrl && (
+            <ak.TabPanel
+              tabId={getTabId(storeId, "preview")}
+              alwaysVisible
+              focusable={false}
+              className="@[64rem]:block! not-data-open:hidden"
+            >
+              <div
+                className={clsx(
+                  "group relative ak-border ak-frame-container/0 overflow-clip ak-layer-canvas-down-0.15 ak-light:ak-edge/15 ak-dark:ak-edge/13",
+                  "max-sm:ak-frame-container/0 size-full",
+                )}
+              >
+                {iframe ? (
+                  <CodeBlockPreviewIframe
+                    title={title}
+                    fallback={fallback}
+                    scrollTop={scrollTop}
+                    minHeight={minHeight}
+                    fullscreen={fullscreen}
+                    previewUrl={previewUrl}
+                    clickAndWait={clickAndWait}
+                  />
+                ) : (
+                  <CodeBlockPreview
+                    title={title}
+                    anchorId={exampleId}
+                    minHeight={minHeight}
+                    fullscreen={fullscreen}
+                  >
+                    {children}
+                  </CodeBlockPreview>
+                )}
+              </div>
+            </ak.TabPanel>
+          )}
+        </div>
       </div>
-    </div>
+    </ak.TabProvider>
   );
 }

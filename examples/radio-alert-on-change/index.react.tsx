@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import { type ElementRef, forwardRef } from "react";
+import type { ElementRef } from "react";
+import { forwardRef } from "react";
 
 const Radio = forwardRef<ElementRef<typeof Ariakit.Radio>, Ariakit.RadioProps>(
   function Radio(props, ref) {

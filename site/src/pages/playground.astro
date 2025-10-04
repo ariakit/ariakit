@@ -19,7 +19,7 @@ import Layout from "./_layout.astro";
 <Layout>
   <CanvasColorPicker />
 
-  <div class="ak-segmented m-2 w-max">
+  <div class="ak-segmented m-2 w-80 grid grid-flow-col text-sm">
     <label class="ak-segmented-button">
       <input name="test" type="radio" />
       Button
@@ -64,7 +64,6 @@ import Layout from "./_layout.astro";
 
   <div class="my-20">
     <CodeBlockTabs
-      ai
       tabs={[
         {
           filename: "index.tsx",

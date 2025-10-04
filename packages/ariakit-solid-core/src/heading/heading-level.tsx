@@ -1,4 +1,5 @@
-import { type JSX, useContext } from "solid-js";
+import type { JSX } from "solid-js";
+import { useContext } from "solid-js";
 import { HeadingContext } from "./heading-context.tsx";
 import type { HeadingLevels } from "./utils.ts";
 

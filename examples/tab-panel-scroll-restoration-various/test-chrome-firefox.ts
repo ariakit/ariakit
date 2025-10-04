@@ -1,9 +1,5 @@
-import {
-  expect,
-  type Locator,
-  type Page,
-  query,
-} from "@ariakit/test/playwright";
+import type { Locator, Page } from "@ariakit/test/playwright";
+import { expect, query } from "@ariakit/test/playwright";
 import { test } from "../test-utils.ts";
 
 function getScrollElement(page: Page, name: string) {

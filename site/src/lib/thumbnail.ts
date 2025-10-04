@@ -7,7 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { type ComponentType, createElement } from "react";
+import type { ComponentType } from "react";
+import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
 export async function importThumbnail(name?: string) {

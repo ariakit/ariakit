@@ -9,6 +9,7 @@
  */
 import fs from "node:fs";
 import { basename, dirname, relative } from "node:path";
+import prettier from "prettier";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
 import type { PluginContext } from "rollup";
@@ -48,6 +49,13 @@ function getPackageName(source: string) {
 }
 
 /**
+ * Escape special regex characters in a string
+ */
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * Remove framework-specific suffixes from a path
  */
 function removeFrameworkSuffixes(filePath: string) {
@@ -73,7 +81,11 @@ function normalizeImportPath(importPath: string) {
   if (isAppAliasPath(noFrameworkSuffix)) {
     return `./${basename(noFrameworkSuffix)}`;
   }
-  return noFrameworkSuffix.replace(/^(\.\.\/)+/, "./");
+  // Any path starting with ../ should be reduced to just the basename
+  if (/^(?:\.\.\/)+/.test(noFrameworkSuffix)) {
+    return `./${basename(noFrameworkSuffix)}`;
+  }
+  return noFrameworkSuffix;
 }
 
 /**
@@ -81,6 +93,36 @@ function normalizeImportPath(importPath: string) {
  */
 function normalizeFilename(filename: string) {
   return removeFrameworkSuffixes(filename).replace(/^(\.\.\/)+/, "");
+}
+
+/**
+ * Choose a Prettier parser based on filename
+ */
+function getPrettierParserFromFilename(
+  filename: string,
+): "typescript" | "babel" | null {
+  if (/\.(ts|tsx)$/.test(filename)) return "typescript";
+  if (/\.(js|jsx)$/.test(filename)) return "babel";
+  return null;
+}
+
+/**
+ * Format code with Prettier respecting local configuration
+ */
+async function formatWithPrettier(
+  code: string,
+  filePath: string,
+  filenameForParser: string,
+) {
+  const parser = getPrettierParserFromFilename(filenameForParser);
+  if (!parser) return code;
+  try {
+    const resolvedConfig = (await prettier.resolveConfig(filePath)) ?? {};
+    return await prettier.format(code, { ...resolvedConfig, parser });
+  } catch {
+    // Fail silently: if Prettier isn't available or config fails, return unformatted code
+    return code;
+  }
 }
 
 /**
@@ -216,12 +258,30 @@ async function processFile(
 
   const imports = getImportPaths(content);
 
+  let importPathChanged = false;
+  let fileContent = source.files[filename];
+
   for (const importPath of imports) {
     const normalizedImportPath = normalizeImportPath(importPath);
-    source.files[filename] = source.files[filename].replaceAll(
-      importPath,
-      normalizedImportPath,
-    );
+    if (normalizedImportPath !== importPath) {
+      // Build a regex that matches import/export statements containing the
+      // original importPath. Matches: import ... from "path", export ... from
+      // 'path', import("path"), import('path'), import(`path`)
+      const escapedPath = escapeRegExp(importPath);
+      const importExportRegex = new RegExp(
+        `((?:import|export)\\s+(?:[^'"]*?\\s+from\\s+)?|import\\s*\\()(['"\`])${escapedPath}\\2`,
+        "g",
+      );
+      const updatedContent = fileContent.replace(
+        importExportRegex,
+        (_match, prefix, quote) =>
+          `${prefix}${quote}${normalizedImportPath}${quote}`,
+      );
+      if (updatedContent !== fileContent) {
+        fileContent = updatedContent;
+        importPathChanged = true;
+      }
+    }
 
     const resolved = await resolveImport(context, importPath, id);
     if (!resolved) continue;
@@ -241,6 +301,12 @@ async function processFile(
         preferBasename || isAppAliasPath(importPath),
       );
     }
+  }
+
+  // If we changed any import paths, run Prettier to normalize import formatting
+  if (importPathChanged) {
+    fileContent = await formatWithPrettier(fileContent, id, filename);
+    source.files[filename] = fileContent;
   }
 }
 

@@ -8,12 +8,13 @@
  */
 @utility ak-button_idle {
   @apply ak-command_idle ak-outline-primary ak-frame-field;
-  @apply leading-(--ak-button-leading) flex items-center justify-center gap-1.5 whitespace-nowrap font-[calc(500+50*var(--contrast))];
+  @apply leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+50*var(--contrast))];
   --ak-button-leading: 1.5em;
   --ak-button-padding-block: calc(
-    var(--ak-frame-padding) - (var(--ak-button-leading) - 1em) / 2
+    var(--ak-frame-padding) - (var(--ak-button-leading) - 1em) * 0.5
   );
   padding-block: var(--ak-button-padding-block);
+  gap: max(--spacing(2), var(--ak-frame-padding) * 0.5);
 }
 
 @utility ak-button_hover {
@@ -35,7 +36,7 @@
 
 @utility ak-button {
   @apply ak-button_idle;
-  @apply hover:ak-button_hover;
+  @apply ak-command-hover:ak-button_hover;
   @apply ak-command-focus:ak-button_focus;
   @apply ak-command-active:ak-button_active;
   @apply ak-command-disabled:ak-button_disabled;
@@ -141,4 +142,12 @@
   @apply ak-command-focus:ak-button-classic_focus;
   @apply ak-command-active:ak-button-classic_active;
   @apply ak-command-disabled:ak-button-classic_disabled;
+}
+
+@utility ak-button-aurora-* {
+  --ak-button-aurora-color-1: --value(--color, [*]);
+  --ak-button-aurora-color-2: --modifier(--color, [*]);
+
+  @apply ak-aurora-(--ak-button-aurora-color-1)/(--ak-button-aurora-color-2);
+  @apply ak-command-hover:ak-aurora_hover;
 }

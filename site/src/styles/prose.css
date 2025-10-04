@@ -56,8 +56,7 @@
 
 @utility ak-prose {
   --ak-prose-gap: 1.25em;
-  @apply ak-prose-text ak-prose-text-base/relaxed ak-prose-elements;
-  @apply ak-prose-content;
+  @apply ak-prose-text ak-prose-text-base/relaxed ak-prose-elements ak-prose-content;
 }
 
 @utility ak-prose-elements {

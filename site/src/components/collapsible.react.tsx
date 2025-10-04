@@ -79,10 +79,10 @@ export function useCollapsible<T extends HTMLElement>({
       )}
     >
       {collapsible && !collapsed && (
-        <div className="grid justify-center">
+        <div className="grid justify-center ak-frame-force-field/0">
           <button
             onClick={collapse}
-            className="ak-button ak-layer border h-9 text-sm/[1.5rem]"
+            className="ak-button ak-layer ak-bordering h-9 text-sm/[1.5rem]"
           >
             Collapse code
             <Icon className="text-base" name="chevronUp" />

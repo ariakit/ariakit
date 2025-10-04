@@ -34,14 +34,21 @@
     @apply ring-(--ak-progress-ring) ring ring-inset;
   }
   &::-webkit-progress-value {
-    @apply ak-progress-fill;
+    @apply ak-progress-fill_base;
+  }
+}
+
+@utility ak-progress-fill_base {
+  @apply ak-layer-contrast-primary ak-frame;
+  @apply starting:w-0! block h-full transition-[width] duration-1000;
+  @variant motion-reduce {
+    @apply duration-0;
   }
 }
 
 @utility ak-progress-fill {
-  @apply ak-layer-contrast-primary ak-frame;
-  @apply starting:w-0! block h-full transition-[width] duration-1000;
-  width: calc(var(--ak-progress-value, 0) * 100%);
+  @apply ak-progress-fill_base;
+  width: calc(var(--ak-progress-value) * 100%);
 }
 
 @utility ak-progress-circular {
@@ -76,4 +83,7 @@
     transparent calc(100% - var(--ak-progress-thickness) - var(--feather-px)),
     #000 calc(100% - var(--ak-progress-thickness) + var(--feather-px))
   );
+  @variant motion-reduce {
+    @apply duration-0;
+  }
 }

@@ -31,22 +31,35 @@
   }
 }
 
-astro-island,
+@custom-variant supports-hover {
+  @media (hover: hover) {
+    @slot;
+  }
+}
+
+@custom-variant hocus-within {
+  &:is(:hover, :focus-within),
+  &:has([data-focus]) {
+    @slot;
+  }
+}
+
+/* astro-island,
 astro-slot,
 astro-static-slot {
   display: block !important;
   :is(a, p, li, span, code) & {
     display: inline !important;
   }
-}
+} */
 
-.cl-cardBox {
+/* .cl-cardBox {
   @apply ak-layer border shadow-none;
 }
 
 .cl-organizationSwitcherTrigger {
   @apply ak-button !ak-layer-pop hover:!ak-layer-pop-2 ak-frame-field/2;
-}
+} */
 
 html,
 body {

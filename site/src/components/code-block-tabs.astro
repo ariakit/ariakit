@@ -54,12 +54,6 @@ function getSource(source: typeof sourceProp) {
   return source[framework] || null;
 }
 
-async function getVariantTitle(source?: Source) {
-  if (!source) return;
-  const preview = await getEntry("previews", source.name);
-  return preview?.data.title;
-}
-
 const source = getSource(sourceProp);
 
 // The source prop is available for multiple frameworks, but it doesn't include
@@ -87,39 +81,38 @@ const tabsFromSource = source
 
 const tabs = tabsProp || tabsFromSource;
 const example = exampleProp ?? source?.name;
+
 const isMainPreview =
   !source?.name.includes("/") || source.name.includes("_component");
-const title = await getVariantTitle(source);
+
+const preview = source && (await getEntry("previews", source.name));
+const fullscreen = !!preview?.data.fullscreen;
+const title = preview?.data.title;
 
 const Fallback = example ? await importThumbnail(example) : undefined;
 ---
 
 <div class:list={["h-full", span ? "col-span-full" : ""]}>
   <div
-    class="grid gap-4 content-start sticky top-[calc(var(--header-height)+--spacing(4))]"
+    class="grid gap-4 content-start sticky top-[calc(var(--header-height)+--spacing(2))]"
   >
-    {
-      title && !isMainPreview && (
-        <div class="ak-text/60 font-medium text-center">{title}</div>
-      )
-    }
     <CodeBlockTabsReact
-      wide={wide}
-      title={title}
-      client:visible={{ rootMargin: "50%" }}
-      hasFallback={!!Fallback}
-      iframe={!Astro.slots.has("default")}
       tabs={tabs}
+      wide={wide || isMainPreview}
+      title={title}
       source={source}
+      example={example}
       maxLines={maxLines}
       framework={framework}
-      example={example}
+      defaultView={isMainPreview ? "code" : "preview"}
+      showControlsOnHover={!isMainPreview}
+      iframe={!Astro.slots.has("default")}
       {...props}
-      preview={!!source}
+      preview={!!source ? (fullscreen ? "full" : true) : false}
+      client:visible={{ rootMargin: "50%" }}
     >
       <slot />
-      {Fallback && <Fallback slot="fallback0" />}
-      {Fallback && <Fallback slot="fallback1" />}
+      {Fallback && <Fallback slot="fallback" />}
       {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
       {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
       {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}

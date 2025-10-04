@@ -31,12 +31,8 @@ import {
 import { getCountryCode, getCurrency } from "./locale.ts";
 import { createLogger } from "./logger.ts";
 import { objectId } from "./object.ts";
-import {
-  type PlusType,
-  PlusTypeSchema,
-  type PriceData,
-  type PromoData,
-} from "./schemas.ts";
+import type { PlusType, PriceData, PromoData } from "./schemas.ts";
+import { PlusTypeSchema } from "./schemas.ts";
 
 const logger = createLogger("stripe");
 

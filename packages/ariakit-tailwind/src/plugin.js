@@ -229,9 +229,9 @@ const AriakitTailwind = plugin(
      * @param {object} params
      * @param {string | null | undefined} [params.token]
      * @param {string} [params.level]
-     * @param {boolean} [params.skipIdle]
+     * @param {boolean} [params.soft]
      */
-    function getLayerCss({ token, level = "0", skipIdle = false }) {
+    function getLayerCss({ token, level = "0", soft = false }) {
       const shadowAlpha = `calc(10% + (1 - l) * 2 * 25%)`;
       const isDown = level.startsWith("-") && !token;
 
@@ -240,7 +240,6 @@ const AriakitTailwind = plugin(
 
       const result = css(getCurrentLayerCss(), {
         [vars.layer]: prop(vars._layerIdle),
-        [vars.text]: textColor(prop(vars.layer)),
         [vars.shadow]: shadow(prop(vars.layer)),
 
         [vars._layerDown]: isDown ? "1" : "0",
@@ -260,9 +259,10 @@ const AriakitTailwind = plugin(
         });
       }
 
-      if (!skipIdle) {
+      if (!soft) {
         Object.assign(result, {
           [vars._layerIdle]: computedColor,
+          [vars.text]: textColor(prop(vars.layer)),
         });
       }
 
@@ -358,7 +358,7 @@ const AriakitTailwind = plugin(
             };
           }
           return {
-            ...getLayerCss({ token, level, skipIdle: true }),
+            ...getLayerCss({ token, level, soft: true }),
             [vars.layer]: mixColor,
           };
         },
@@ -381,7 +381,7 @@ const AriakitTailwind = plugin(
           return {
             ...(token
               ? getLayerCss({ token })
-              : getLayerCss({ token, level, skipIdle: true })),
+              : getLayerCss({ token, level, soft: true })),
             [vars.layer]: `oklch(from ${prop(vars._layerIdle)} ${getLayerPopOkL(level)} c h)`,
           };
         },
@@ -393,7 +393,7 @@ const AriakitTailwind = plugin(
           return {
             ...(token
               ? getLayerCss({ token })
-              : getLayerCss({ token, level, skipIdle: true })),
+              : getLayerCss({ token, level, soft: true })),
             [vars.layer]: `oklch(from ${colorWithSafeL} ${getLayerPopOkL(level)} c h)`,
           };
         },

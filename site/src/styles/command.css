@@ -7,9 +7,20 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
+@property --ak-command-depth-x {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --ak-command-depth-y {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 @custom-variant ak-command-focus {
-  &:focus-visible,
-  &:has(*:focus-visible) {
+  &:focus-visible {
     @slot;
   }
 }
@@ -22,13 +33,18 @@
 }
 
 @custom-variant ak-command-active {
-  &:not(:disabled, [aria-disabled="true"]):active {
+  &:not(:disabled, [aria-disabled="true"], :has(button:active)):active {
     @slot;
   }
 }
 
 @custom-variant ak-command-hover {
-  &:not(:disabled, [aria-disabled="true"]):hover {
+  &:not(
+      :disabled,
+      [aria-disabled="true"],
+      :has(button:hover),
+      :has(*:hover > button)
+    ):hover {
     @slot;
   }
 }
@@ -49,7 +65,7 @@
 }
 
 @utility ak-command_focus {
-  @apply z-10;
+  --ak-command-focus: 1;
 }
 
 @utility ak-command_active {
