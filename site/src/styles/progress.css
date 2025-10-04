@@ -48,7 +48,7 @@
 
 @utility ak-progress-fill {
   @apply ak-progress-fill_base;
-  width: calc(var(--ak-progress-value, 10) * 100%);
+  width: calc(var(--ak-progress-value) * 100%);
 }
 
 @utility ak-progress-circular {
