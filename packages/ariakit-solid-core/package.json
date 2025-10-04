@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/solid-core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Ariakit Solid core",
   "sideEffects": false,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "core"
   ],
   "dependencies": {
-    "@ariakit/core": "0.4.15",
+    "@ariakit/core": "0.4.16",
     "@solid-primitives/props": "3.2.2",
     "@solid-primitives/utils": "6.3.2"
   },
