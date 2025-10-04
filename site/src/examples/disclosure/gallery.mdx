@@ -14,7 +14,17 @@ import IconDescription, {
 } from "./icon-description/preview.astro";
 import Navigation, { source as navigation } from "./navigation/preview.astro";
 
-export const sources = [source, description, actions, group, checklist, nested];
+export const sources = [
+  source,
+  description,
+  actions,
+  group,
+  checklist,
+  nested,
+  icon,
+  iconDescription,
+  navigation,
+];
 
 <CodeBlockTabs source={source}>
   <Preview />
