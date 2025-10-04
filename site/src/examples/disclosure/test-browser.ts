@@ -20,11 +20,11 @@ withFramework(import.meta.dirname, async () => {
 
   test("hide @visual", async ({ page }) => {
     const q = query(page);
-    await page.emulateMedia({ reducedMotion: "reduce" });
     const content = await getContent(page);
-    expect(content).toBeVisible();
+    await q.document().click();
+    await expect(content).toBeVisible();
     await q.button().click();
-    expect(content).toBeHidden();
+    await expect(content).toBeHidden();
     await visual(page);
   });
 });
