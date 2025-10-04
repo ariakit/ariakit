@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
-import { createRender } from "#app/examples/_lib/react/utils.ts";
+import { createRender, isIterable } from "#app/examples/_lib/react/utils.ts";
 
 type TableRowGroup = "head" | "body" | "foot";
 
@@ -97,9 +97,14 @@ export function Table<K extends keyof any>({
   const isNumericColumn = (row: TableRow<K>, key: K) => {
     const cell = row[key];
     if (!cell) return false;
-    if (typeof cell === "string") return false;
-    if (!("numeric" in cell)) return false;
-    return cell.numeric;
+    if (typeof cell !== "object") return false;
+    if (React.isValidElement<TableCellProps>(cell)) {
+      return Boolean(cell.props.numeric);
+    }
+    if (isIterable(cell)) return false;
+    if (React.isValidElement<any>(cell)) return false;
+    if (!Object.hasOwn(cell, "numeric")) return false;
+    return Boolean(cell.numeric);
   };
 
   const renderRow = (row: TableRow<K>, index: number) => {
