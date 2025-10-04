@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "license": "See license.md",
+  "private": true,
   "scripts": {
     "dev": "astro dev",
     "dev-lite": "cross-env DISABLE_REFERENCE_LINKS=true npm run dev --",
