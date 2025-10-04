@@ -347,22 +347,6 @@ export function CodeBlockPreviewIframe({
       win?.addEventListener("blur", setDataFocus);
       win?.addEventListener("mousemove", disableHover, true);
 
-      // if (anchorId) {
-      //   const onDocClick = (event: MouseEvent) => {
-      //     const target = event.target as Element | null;
-      //     if (!target) return;
-      //     const link = target.closest("a") as HTMLAnchorElement | null;
-      //     if (!link) return;
-      //     if (link.target === "_blank") return;
-      //     event.preventDefault();
-      //     window.location.hash = `#${anchorId}`;
-      //   };
-      //   doc.body.addEventListener("click", onDocClick);
-      //   removeLinkInterceptor = () => {
-      //     doc.body.removeEventListener("click", onDocClick);
-      //   };
-      // }
-
       if (!clickAndWait) return setLoaded(true);
       // Make the iframe inert so we can interact with it without moving focus
       doc.body.inert = true;
@@ -664,9 +648,12 @@ export function CodeBlockTabs({
       >
         {preview && (
           <div className="grid grid-cols-[auto_max-content_max-content] @lg:grid-cols-[1fr_auto_1fr] items-center @lg:gap-4 gap-1 @lg:text-sm">
-            <div className="@lg:row-1 @lg:col-2 @max-lg:px-4 ak-text/60 font-medium truncate transition-[color] group-hocus-within/code-block-tabs:ak-text">
+            <a
+              href={`#${exampleId}`}
+              className="ak-link not-hover:no-underline hover:decoration-1 @lg:row-1 @lg:col-2 @max-lg:px-4 ak-text/60 font-medium truncate transition-[color] group-hocus-within/code-block-tabs:ak-text"
+            >
               {title}
-            </div>
+            </a>
             <div
               className={clsx("flex justify-start gap-[inherit]", className)}
             >
