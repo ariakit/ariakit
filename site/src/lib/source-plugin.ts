@@ -49,6 +49,13 @@ function getPackageName(source: string) {
 }
 
 /**
+ * Escape special regex characters in a string
+ */
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * Remove framework-specific suffixes from a path
  */
 function removeFrameworkSuffixes(filePath: string) {
@@ -252,14 +259,28 @@ async function processFile(
   const imports = getImportPaths(content);
 
   let importPathChanged = false;
+  let fileContent = source.files[filename];
+
   for (const importPath of imports) {
     const normalizedImportPath = normalizeImportPath(importPath);
     if (normalizedImportPath !== importPath) {
-      source.files[filename] = source.files[filename].replaceAll(
-        importPath,
-        normalizedImportPath,
+      // Build a regex that matches import/export statements containing the
+      // original importPath. Matches: import ... from "path", export ... from
+      // 'path', import("path"), import('path'), import(`path`)
+      const escapedPath = escapeRegExp(importPath);
+      const importExportRegex = new RegExp(
+        `((?:import|export)\\s+(?:[^'"]*?\\s+from\\s+)?|import\\s*\\()(['"\`])${escapedPath}\\2`,
+        "g",
       );
-      importPathChanged = true;
+      const updatedContent = fileContent.replace(
+        importExportRegex,
+        (_match, prefix, quote) =>
+          `${prefix}${quote}${normalizedImportPath}${quote}`,
+      );
+      if (updatedContent !== fileContent) {
+        fileContent = updatedContent;
+        importPathChanged = true;
+      }
     }
 
     const resolved = await resolveImport(context, importPath, id);
@@ -284,11 +305,8 @@ async function processFile(
 
   // If we changed any import paths, run Prettier to normalize import formatting
   if (importPathChanged) {
-    source.files[filename] = await formatWithPrettier(
-      source.files[filename],
-      id,
-      filename,
-    );
+    fileContent = await formatWithPrettier(fileContent, id, filename);
+    source.files[filename] = fileContent;
   }
 }
 
