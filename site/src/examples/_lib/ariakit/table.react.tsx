@@ -136,9 +136,9 @@ export function Table<K extends keyof any>({
                   {headRows.map((row, index) => renderRow(row, index))}
                 </ak.Role>
               )}
-              {!!bodyRows?.length && (
+              {!!(bodyRows?.length || children) && (
                 <ak.Role render={bodyEl}>
-                  {bodyRows.map((row, index) => renderRow(row, index))}
+                  {bodyRows?.map((row, index) => renderRow(row, index))}
                   {children}
                 </ak.Role>
               )}
