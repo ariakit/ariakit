@@ -3,7 +3,7 @@ import { Reasoning } from "./reasoning.react.tsx";
 export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi] grid gap-4">
-      <Reasoning defaultOpen>
+      <Reasoning defaultExpanded>
         <p>
           I will begin by breaking down this prompt into its fundamental
           requirements and then formulate a plan for implementation, considering

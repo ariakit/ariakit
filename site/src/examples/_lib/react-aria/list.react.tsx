@@ -1,4 +1,3 @@
-import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import type * as React from "react";
 import { createRender } from "#app/examples/_lib/react/utils.ts";
@@ -45,28 +44,31 @@ export function List({ ordered, baseClassName, ...props }: ListProps) {
 }
 
 export interface ListItemProps
-  extends ak.RoleProps<"li">,
+  extends React.ComponentProps<"li">,
     Pick<ListItemCheckProps, "checked" | "progress"> {
   /** Custom base class name. */
   baseClassName?: string;
+  render?: React.ReactElement;
 }
 
 export function ListItem({
   checked,
   progress,
   baseClassName,
+  render,
   ...props
 }: ListItemProps) {
   const hasCheck = checked != null || progress != null;
-  return (
-    <ak.Role.li
-      {...props}
-      className={clsx(baseClassName || "ak-list-item", props.className)}
-    >
-      {hasCheck && <ListItemCheck checked={checked} progress={progress} />}
-      {props.children}
-    </ak.Role.li>
-  );
+  return createRender("li", render, {
+    ...props,
+    className: clsx(baseClassName || "ak-list-item", props.className),
+    children: (
+      <>
+        {hasCheck && <ListItemCheck checked={checked} progress={progress} />}
+        {props.children}
+      </>
+    ),
+  });
 }
 
 export interface ListItemCheckProps extends React.ComponentProps<"span"> {
@@ -122,6 +124,7 @@ export interface ListDisclosureProps extends DisclosureProps {
 export function ListDisclosure(props: ListDisclosureProps) {
   const buttonEl = createRender(ListDisclosureButton, props.button);
   const contentEl = createRender(ListDisclosureContent, props.content);
+
   return (
     <Disclosure
       baseClassName="ak-list-disclosure"
@@ -139,24 +142,22 @@ export interface ListDisclosureButtonProps
 export function ListDisclosureButton({
   checked,
   progress,
+  children,
   ...props
 }: ListDisclosureButtonProps) {
   return (
-    <ak.Role.button
-      {...props}
+    <ListItem
+      checked={checked}
+      progress={progress}
       render={
-        <ListItem
-          checked={checked}
-          progress={progress}
-          render={
-            <DisclosureButton
-              baseClassName="ak-list-disclosure-button"
-              render={props.render}
-            />
-          }
+        <DisclosureButton
+          baseClassName="ak-list-disclosure-button"
+          {...props}
         />
       }
-    />
+    >
+      {children}
+    </ListItem>
   );
 }
 

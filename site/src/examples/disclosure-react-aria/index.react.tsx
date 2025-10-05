@@ -7,7 +7,10 @@ import {
 export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi]">
-      <Disclosure defaultOpen className="ak-frame-card ak-layer ak-bordering">
+      <Disclosure
+        defaultExpanded
+        className="ak-frame-card ak-layer ak-bordering"
+      >
         <DisclosureButton>How do I get started?</DisclosureButton>
         <DisclosureContent prose>
           <p>

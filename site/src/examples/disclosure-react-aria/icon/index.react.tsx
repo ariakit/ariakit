@@ -9,7 +9,7 @@ export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi]">
       <Disclosure
-        defaultOpen
+        defaultExpanded
         className="ak-frame-card ak-layer ak-bordering ak-disclosure-icon-5"
       >
         <DisclosureButton icon={<icons.Rocket className="ak-text-primary" />}>

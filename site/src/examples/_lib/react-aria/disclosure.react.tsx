@@ -3,53 +3,38 @@ import * as React from "react";
 import * as rac from "react-aria-components";
 import { createRender } from "#app/examples/_lib/react/utils.ts";
 
-export interface DisclosureProps extends rac.DisclosureProps {
-  open?: boolean;
-  setOpen?: (open: boolean) => void;
-  defaultOpen?: boolean;
+export interface DisclosureProps extends Omit<rac.DisclosureProps, "children"> {
   button?: React.ReactNode | DisclosureButtonProps;
   content?: React.ReactElement | DisclosureContentProps;
   split?: boolean;
   baseClassName?: string;
+  children?: React.ReactNode;
 }
 
 export function Disclosure({
-  open,
-  setOpen,
-  defaultOpen,
   split,
   baseClassName,
   button,
   content,
   children,
-  className,
   ...props
 }: DisclosureProps) {
   const buttonEl = createRender(DisclosureButton, button);
-  const contentEl = createRender(DisclosureContent, content);
-
+  const contentEl = createRender(DisclosureContent, content, { children });
   return (
     <rac.Disclosure
-      isExpanded={open}
-      defaultExpanded={defaultOpen}
-      onExpandedChange={setOpen}
       {...props}
-      // Let RAC manage focus/aria. We render our styled container inside.
       className={clsx(
-        "data-expanded:ak-disclosure_open relative",
+        "data-expanded:ak-disclosure_open",
         baseClassName || "ak-disclosure",
         split && "ak-disclosure-split",
-        className,
+        props.className,
       )}
     >
       {button != null ? (
         <>
           {buttonEl}
-          {React.cloneElement(
-            contentEl as React.ReactElement,
-            undefined,
-            children,
-          )}
+          {contentEl}
         </>
       ) : (
         children
@@ -58,32 +43,33 @@ export function Disclosure({
   );
 }
 
-export interface DisclosureGroupProps extends rac.DisclosureGroupProps {
+export interface DisclosureGroupProps extends React.ComponentProps<"div"> {
   baseClassName?: string;
+  render?: React.ReactElement;
 }
 
 export function DisclosureGroup({
   baseClassName,
-  className,
+  render,
   ...props
 }: DisclosureGroupProps) {
-  return (
-    <rac.DisclosureGroup
-      {...props}
-      className={clsx(
-        baseClassName || "ak-disclosure-group",
-        "ak-layer-current border-y divide-y divide-(--ak-layer-border)",
-        className,
-      )}
-    />
-  );
+  return createRender("div", render, {
+    ...props,
+    className: clsx(
+      baseClassName || "ak-disclosure-group",
+      "ak-layer-current border-y divide-y divide-(--ak-layer-border)",
+      props.className,
+    ),
+  });
 }
 
-export interface DisclosureButtonProps extends rac.ButtonProps {
+export interface DisclosureButtonProps
+  extends Omit<rac.ButtonProps, "children"> {
   actions?: React.ReactNode;
   description?: React.ReactNode;
   baseClassName?: string;
   icon?: React.ReactNode;
+  children?: React.ReactNode;
   indicator?:
     | "chevron-down-start"
     | "chevron-down-next"
@@ -104,9 +90,8 @@ export function DisclosureButton({
   icon,
   indicator = icon ? "chevron-down-end" : "chevron-right-start",
   children,
-  className,
-  ...rest
-}: DisclosureButtonProps & { onPress?: (e: any) => void }) {
+  ...props
+}: DisclosureButtonProps) {
   const baseId = React.useId();
   const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;
@@ -158,7 +143,7 @@ export function DisclosureButton({
         slot="trigger"
         aria-labelledby={description ? labelId : undefined}
         aria-describedby={description ? descriptionId : undefined}
-        onPress={(rest as any).onPress}
+        {...props}
         className={clsx(
           baseClassName || "ak-disclosure-button",
           description && "ak-command-depth-2",
@@ -177,7 +162,7 @@ export function DisclosureButton({
           indicator === "plus-start" && "before:ak-disclosure-plus",
           indicator === "plus-next" && "after:ak-disclosure-plus",
           indicator === "plus-end" && "after:ak-disclosure-plus after:ms-auto",
-          className,
+          props.className,
         )}
       >
         {content}
@@ -203,7 +188,7 @@ export function DisclosureContent({
   children,
   ...props
 }: DisclosureContentProps) {
-  const bodyEl = createRender(DisclosureContentBody, body, { prose });
+  const bodyEl = createRender(DisclosureContentBody, body, { prose, children });
   return (
     <rac.DisclosurePanel
       {...props}
@@ -214,7 +199,7 @@ export function DisclosureContent({
         props.className,
       )}
     >
-      {React.cloneElement(bodyEl as React.ReactElement, undefined, children)}
+      {bodyEl}
     </rac.DisclosurePanel>
   );
 }
@@ -228,7 +213,6 @@ export interface DisclosureContentBodyProps
 export function DisclosureContentBody({
   prose,
   baseClassName,
-  className,
   ...props
 }: DisclosureContentBodyProps) {
   return (
@@ -238,7 +222,7 @@ export function DisclosureContentBody({
         baseClassName || "ak-disclosure-content-body",
         prose &&
           "ak-prose ak-prose-gap-[min(var(--ak-frame-padding),--spacing(4))]",
-        className,
+        props.className,
       )}
     />
   );

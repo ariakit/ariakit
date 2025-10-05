@@ -17,7 +17,7 @@ export function isIterable(obj: any): obj is Iterable<any> {
  * const element = createRender(Component, <Component />, { children: "Hi" });
  */
 export function createRender<
-  T extends React.ComponentType<P>,
+  T extends React.ElementType<P> | React.ExoticComponent<P>,
   P extends object,
 >(Component: T, props?: P | React.ReactNode, defaultProps?: P) {
   if (props == null) {
