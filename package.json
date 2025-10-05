@@ -214,7 +214,7 @@
     "use-local-storage-state": "19.5.0",
     "vite-plugin-solid": "2.11.0",
     "vitest": "3.2.4",
-    "vitest-fail-on-console": "0.10.0",
+    "vitest-fail-on-console": "0.10.1",
     "webpack": "5.101.3",
     "wrangler": "4.42.0",
     "zod": "3.25.76"
