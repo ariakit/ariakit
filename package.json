@@ -212,7 +212,7 @@
     "unified": "10.1.2",
     "unist-util-visit": "5.0.0",
     "use-local-storage-state": "19.5.0",
-    "vite-plugin-solid": "2.11.0",
+    "vite-plugin-solid": "2.11.9",
     "vitest": "3.2.4",
     "vitest-fail-on-console": "0.10.0",
     "webpack": "5.101.3",
