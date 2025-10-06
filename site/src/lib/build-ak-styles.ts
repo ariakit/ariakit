@@ -76,7 +76,8 @@ interface StyleIndexJson {
 }
 
 // Files and discovery
-const STYLES_DIR = path.resolve(process.cwd(), "site/src/styles");
+const ROOT_DIR = path.resolve(import.meta.dirname, "../../../");
+const STYLES_DIR = path.resolve(ROOT_DIR, "site/src/styles");
 const ARIAKIT_CSS = path.join(STYLES_DIR, "ariakit.css");
 const OUTPUT_JSON = path.join(STYLES_DIR, "styles.json");
 
@@ -86,7 +87,7 @@ function toPosix(p: string) {
 }
 
 function toProjectRelativePosix(p: string) {
-  const rel = path.relative(process.cwd(), p);
+  const rel = path.relative(ROOT_DIR, p);
   return toPosix(rel);
 }
 
