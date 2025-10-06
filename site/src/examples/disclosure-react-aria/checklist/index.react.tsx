@@ -6,6 +6,7 @@ import {
   ListDisclosureButton,
   ListItem,
 } from "#app/examples/_lib/react-aria/list.react.tsx";
+import { Progress } from "#app/examples/_lib/react-aria/progress.react.tsx";
 
 const tasks = [
   {
@@ -71,10 +72,14 @@ export default function Example() {
   return (
     <div className="w-90 max-w-[100cqi] grid gap-4">
       <div className="ak-frame-card/1 ak-layer ak-bordering ak-list-counter-reset grid gap-(--ak-frame-padding)">
-        <label className="ak-frame-field grid gap-4">
+        <div className="ak-frame-field grid gap-4">
           <h2 className="font-semibold">Setup guide</h2>
-          <progress value={progress} className="ak-progress" />
-        </label>
+          <Progress
+            value={progress}
+            aria-label="Setup guide progress"
+            valueLabel={`${totalCompleted} of ${totalTasks} tasks completed`}
+          />
+        </div>
         <List>
           {tasks.map((task) => {
             const length = task.tasks.length;
@@ -82,7 +87,7 @@ export default function Example() {
             const progress = checked / length;
             const completed = progress === 1;
             const buttonClassName = completed
-              ? "not-data-expanded:ak-text/0 not-data-expanded:line-through not-data-expanded:font-normal"
+              ? "not-in-data-expanded:ak-text/0 not-in-data-expanded:line-through not-in-data-expanded:font-normal"
               : "";
             return (
               <li key={task.title}>
