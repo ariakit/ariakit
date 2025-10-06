@@ -50,7 +50,7 @@ export function Disclosure({
         {...props}
         data-open={isOpen || undefined}
         className={clsx(
-          "data-open:ak-disclosure_open relative",
+          "data-open:ak-disclosure_open",
           baseClassName || "ak-disclosure",
           split && "ak-disclosure-split",
           props.className,

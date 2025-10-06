@@ -16,6 +16,8 @@ import {
 export interface ListProps extends React.ComponentProps<"ol"> {
   /** Renders an ordered list (<ol>) when true; unordered (<ul>) when false. */
   ordered?: boolean;
+  /** Custom base class name. */
+  baseClassName?: string;
 }
 
 /**
@@ -28,14 +30,14 @@ export interface ListProps extends React.ComponentProps<"ol"> {
  *   <ListItem checked>Item</ListItem>
  * </List>
  */
-export function List({ ordered, ...props }: ListProps) {
+export function List({ ordered, baseClassName, ...props }: ListProps) {
   const Component = ordered ? "ol" : "ul";
   return (
     <Component
       {...props}
       className={clsx(
-        "ak-list ak-list-gap-4 ak-list-leading-relaxed",
-        ordered ? "ak-list-ol" : "ak-list-ul",
+        baseClassName || ["ak-list", ordered ? "ak-list-ol" : "ak-list-ul"],
+        "ak-list-gap-4 ak-list-leading-relaxed",
         props.className,
       )}
     />
@@ -44,12 +46,23 @@ export function List({ ordered, ...props }: ListProps) {
 
 export interface ListItemProps
   extends ak.RoleProps<"li">,
-    Pick<ListItemCheckProps, "checked" | "progress"> {}
+    Pick<ListItemCheckProps, "checked" | "progress"> {
+  /** Custom base class name. */
+  baseClassName?: string;
+}
 
-export function ListItem({ checked, progress, ...props }: ListItemProps) {
+export function ListItem({
+  checked,
+  progress,
+  baseClassName,
+  ...props
+}: ListItemProps) {
   const hasCheck = checked != null || progress != null;
   return (
-    <ak.Role.li {...props} className={clsx("ak-list-item", props.className)}>
+    <ak.Role.li
+      {...props}
+      className={clsx(baseClassName || "ak-list-item", props.className)}
+    >
       {hasCheck && <ListItemCheck checked={checked} progress={progress} />}
       {props.children}
     </ak.Role.li>
@@ -61,11 +74,14 @@ export interface ListItemCheckProps extends React.ComponentProps<"span"> {
   progress?: number;
   /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
   checked?: boolean;
+  /** Custom base class name. */
+  baseClassName?: string;
 }
 
 export function ListItemCheck({
   progress,
   checked,
+  baseClassName,
   ...props
 }: ListItemCheckProps) {
   const completed = progress === 1 || checked;
@@ -74,8 +90,8 @@ export function ListItemCheck({
       {...props}
       style={{ "--progress": progress } as React.CSSProperties}
       className={clsx(
+        baseClassName || "ak-list-item-check",
         props.className,
-        "ak-list-item-check",
         completed
           ? "ak-list-item-check_checked"
           : progress != null
@@ -104,14 +120,14 @@ export interface ListDisclosureProps extends DisclosureProps {
  * </ListDisclosure>
  */
 export function ListDisclosure(props: ListDisclosureProps) {
-  const buttonEl = createRender(ListDisclosureButton, props.button);
-  const contentEl = createRender(ListDisclosureContent, props.content);
+  const button = createRender(ListDisclosureButton, props.button);
+  const content = createRender(ListDisclosureContent, props.content);
   return (
     <Disclosure
+      baseClassName="ak-list-disclosure"
       {...props}
-      className={clsx("ak-list-disclosure", props.className)}
-      button={props.button && buttonEl}
-      content={props.content && contentEl}
+      button={props.button && button}
+      content={content}
     />
   );
 }
@@ -128,12 +144,16 @@ export function ListDisclosureButton({
   return (
     <ak.Role.button
       {...props}
-      className={clsx("ak-list-disclosure-button", props.className)}
       render={
         <ListItem
           checked={checked}
           progress={progress}
-          render={<DisclosureButton render={props.render} />}
+          render={
+            <DisclosureButton
+              baseClassName="ak-list-disclosure-button"
+              render={props.render}
+            />
+          }
         />
       }
     />
@@ -144,9 +164,6 @@ export interface ListDisclosureContentProps extends DisclosureContentProps {}
 
 export function ListDisclosureContent(props: ListDisclosureContentProps) {
   return (
-    <DisclosureContent
-      {...props}
-      className={clsx("ak-list-disclosure-content", props.className)}
-    />
+    <DisclosureContent baseClassName="ak-list-disclosure-content" {...props} />
   );
 }

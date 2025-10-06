@@ -6,6 +6,7 @@ import {
   ListDisclosureButton,
   ListItem,
 } from "#app/examples/_lib/ariakit/list.react.tsx";
+import { Progress } from "#app/examples/_lib/ariakit/progress.react.tsx";
 
 const tasks = [
   {
@@ -71,10 +72,14 @@ export default function Example() {
   return (
     <div className="w-90 max-w-[100cqi] grid gap-4">
       <div className="ak-frame-card/1 ak-layer ak-bordering ak-list-counter-reset grid gap-(--ak-frame-padding)">
-        <label className="ak-frame-field grid gap-4">
+        <div className="ak-frame-field grid gap-4">
           <h2 className="font-semibold">Setup guide</h2>
-          <progress value={progress} className="ak-progress" />
-        </label>
+          <Progress
+            value={progress}
+            aria-label="Setup guide progress"
+            aria-valuetext={`${totalCompleted} of ${totalTasks} tasks completed`}
+          />
+        </div>
         <List>
           {tasks.map((task) => {
             const length = task.tasks.length;
