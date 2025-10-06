@@ -122,15 +122,14 @@ export interface ListDisclosureProps extends DisclosureProps {
  * </ListDisclosure>
  */
 export function ListDisclosure(props: ListDisclosureProps) {
-  const buttonEl = createRender(ListDisclosureButton, props.button);
-  const contentEl = createRender(ListDisclosureContent, props.content);
-
+  const button = createRender(ListDisclosureButton, props.button);
+  const content = createRender(ListDisclosureContent, props.content);
   return (
     <Disclosure
       baseClassName="ak-list-disclosure"
       {...props}
-      button={props.button && buttonEl}
-      content={props.content && contentEl}
+      button={props.button && button}
+      content={content}
     />
   );
 }
