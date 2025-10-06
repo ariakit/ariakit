@@ -23,6 +23,11 @@ jobs:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
       - name: Build styles
         run: npm run build-styles -w site
 
