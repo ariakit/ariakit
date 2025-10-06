@@ -35,7 +35,7 @@ jobs:
           fi
 
       - name: Set commit status (pending)
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           SERVER_URL: ${{ github.server_url }}
           REPO: ${{ github.repository }}
@@ -103,7 +103,7 @@ jobs:
 
       - name: Set commit status (result)
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           SERVER_URL: ${{ github.server_url }}
           REPO: ${{ github.repository }}
