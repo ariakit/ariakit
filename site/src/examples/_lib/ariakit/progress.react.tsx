@@ -14,7 +14,10 @@ export function Progress(props: ProgressProps) {
       aria-valuemax={1}
       {...props}
       style={
-        { ...props.style, "--progress": props.value } as React.CSSProperties
+        {
+          ...props.style,
+          "--progress": props.value ?? 0,
+        } as React.CSSProperties
       }
       className={clsx(
         "ak-progress ak-progress-value-(--progress) after:ak-progress-fill",
