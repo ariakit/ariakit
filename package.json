@@ -151,7 +151,7 @@
     "husky": "9.1.7",
     "jsdom": "26.1.0",
     "kleur": "4.1.5",
-    "lerna": "8.2.4",
+    "lerna": "9.0.0",
     "lint-staged": "16.2.3",
     "lodash-es": "4.17.21",
     "lucide-react": "0.544.0",
