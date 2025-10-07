@@ -15,7 +15,8 @@
       "!**/site/.astro",
       "!**/site/.types",
       "!**/*.astro",
-      "!**/*.css"
+      "!**/*.css",
+      "!site/src/styles/styles.json"
     ]
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },

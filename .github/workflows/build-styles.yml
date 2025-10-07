@@ -1,0 +1,41 @@
+name: build-styles
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  generate:
+    name: Build styles
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      - name: Build styles
+        run: npm run build-styles -w site
+
+      - name: Commit or create PR
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          event: ${{ github.event_name }}
+          message: Update styles
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: chore/update-styles
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
