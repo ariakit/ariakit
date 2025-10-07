@@ -7,12 +7,11 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   generate:
     name: Build styles
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     permissions:
       actions: read
       contents: write
@@ -24,14 +23,13 @@ jobs:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
 
       - name: Build styles
         run: npm run build-styles -w site
-
-      - name: Fix lint
-        run: npm run lint-fix site/src/styles/styles.json
 
       - name: Commit or create PR
         uses: ./.github/workflows/commit-or-pr
