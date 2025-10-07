@@ -11,7 +11,7 @@ concurrency:
 jobs:
   generate:
     name: Build styles
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: write
