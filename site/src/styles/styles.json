@@ -66,9 +66,7 @@
           "name": "ak-icon",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "block size-full flex-none bg-current"
-            ],
+            "@apply": ["block size-full flex-none bg-current"],
             "mask-repeat": "no-repeat",
             "mask-position": "center",
             "mask-type": "alpha",
@@ -87,9 +85,7 @@
           "name": "ak-icon-chevron",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-icon"
-            ],
+            "@apply": ["ak-icon"],
             "mask-image": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' stroke-width='1.5' stroke='black' fill='none'%3E%3Cpolyline vector-effect='non-scaling-stroke' stroke-linecap='round' stroke-linejoin='round' points='4,6 8,10 12,6'%3E%3C/polyline%3E%3C/svg%3E\")"
           },
           "dependencies": [
@@ -111,9 +107,7 @@
           "name": "ak-icon-check",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-icon"
-            ],
+            "@apply": ["ak-icon"],
             "mask-image": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke-width='1.5' stroke='black' fill='none'%3E%3Cpath vector-effect='non-scaling-stroke' stroke-linecap='round' stroke-linejoin='round' d='m4.5 12.75 6 6 9-13.5'/%3E%3C/svg%3E\")"
           },
           "dependencies": [
@@ -168,9 +162,7 @@
           "name": "ak-badge",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-badge_base"
-            ]
+            "@apply": ["ak-badge_base"]
           },
           "dependencies": [
             {
@@ -197,9 +189,7 @@
             ],
             "--ak-badge-color": "--value(--color, [*])",
             "&::before,\n  &::after,\n  :where(& > *)": {
-              "@apply": [
-                "ak-text-(--ak-badge-color)/70"
-              ]
+              "@apply": ["ak-text-(--ak-badge-color)/70"]
             }
           },
           "dependencies": [
@@ -251,9 +241,7 @@
           "name": "ak-badge-icon",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "flex-none"
-            ],
+            "@apply": ["flex-none"],
             ":has(> &:first-child)": {
               "padding-inline-start": "calc(var(--spacing-badge))"
             },
@@ -309,20 +297,14 @@
           "name": "ak-command_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "not-[a]:cursor-default relative block"
-            ],
+            "@apply": ["not-[a]:cursor-default relative block"],
             "/* Only apply cursor-pointer to submit buttons that are not disabled */": "",
             "&:not(button)": {
-              "@apply": [
-                "select-none"
-              ]
+              "@apply": ["select-none"]
             },
             "&:where([type=\"submit\"], form button:only-of-type, a &)": {
               "@variant not-ak-command-disabled": {
-                "@apply": [
-                  "cursor-pointer"
-                ]
+                "@apply": ["cursor-pointer"]
               }
             }
           },
@@ -591,9 +573,7 @@
           "name": "ak-button_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-hover"
-            ]
+            "@apply": ["ak-layer-hover"]
           },
           "dependencies": [
             {
@@ -614,9 +594,7 @@
           "name": "ak-button_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-command_focus outline-2"
-            ]
+            "@apply": ["ak-command_focus outline-2"]
           },
           "dependencies": [
             {
@@ -637,9 +615,7 @@
           "name": "ak-button_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-command_active"
-            ]
+            "@apply": ["ak-command_active"]
           },
           "dependencies": [
             {
@@ -756,9 +732,7 @@
           "name": "ak-button-square",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "aspect-square p-0"
-            ]
+            "@apply": ["aspect-square p-0"]
           },
           "dependencies": [],
           "sources": [
@@ -773,9 +747,7 @@
           "name": "ak-button-square-*",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "aspect-square p-0"
-            ],
+            "@apply": ["aspect-square p-0"],
             "height": "--value(--spacing, [length])"
           },
           "dependencies": [],
@@ -836,9 +808,7 @@
           "name": "ak-button-classic_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_hover"
-            ],
+            "@apply": ["ak-button_hover"],
             "--ak-button-min-l": "0.35",
             "--ak-button-max-l": "1",
             "@variant ak-dark": {
@@ -865,9 +835,7 @@
           "name": "ak-button-classic_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_focus outline-offset-1"
-            ]
+            "@apply": ["ak-button_focus outline-offset-1"]
           },
           "dependencies": [
             {
@@ -921,9 +889,7 @@
           "name": "ak-button-classic_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_disabled"
-            ]
+            "@apply": ["ak-button_disabled"]
           },
           "dependencies": [
             {
@@ -1050,9 +1016,7 @@
           "name": "ak-checkbox-card-grid",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "grid auto-rows-fr gap-3"
-            ],
+            "@apply": ["grid auto-rows-fr gap-3"],
             "grid-template-columns": "repeat(\n    auto-fill,\n    minmax(var(--ak-checkbox-min-w, 10rem), 1fr)\n  )"
           },
           "dependencies": [],
@@ -1090,14 +1054,10 @@
             "--ak-checkbox-card-edge": "var(--ak-layer-border)",
             "gap": "calc(var(--ak-frame-padding) / 2) calc(var(--ak-frame-padding) * 0.75)",
             "input[type=\"checkbox\"]": {
-              "@apply": [
-                "sr-only absolute"
-              ]
+              "@apply": ["sr-only absolute"]
             },
             "&:has(> *:nth-child(4), > div > div)": {
-              "@apply": [
-                "ak-command-depth-4"
-              ]
+              "@apply": ["ak-command-depth-4"]
             }
           },
           "dependencies": [
@@ -1139,9 +1099,7 @@
           "name": "ak-checkbox-card_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_hover"
-            ]
+            "@apply": ["ak-button_hover"]
           },
           "dependencies": [
             {
@@ -1162,9 +1120,7 @@
           "name": "ak-checkbox-card_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_focus"
-            ]
+            "@apply": ["ak-button_focus"]
           },
           "dependencies": [
             {
@@ -1185,9 +1141,7 @@
           "name": "ak-checkbox-card_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_active"
-            ]
+            "@apply": ["ak-button_active"]
           },
           "dependencies": [
             {
@@ -1210,14 +1164,10 @@
           "properties": {
             "--ak-checkbox-disabled": "1",
             "&&": {
-              "@apply": [
-                "ak-edge/5 ak-layer-mix/20 ak-text/0"
-              ]
+              "@apply": ["ak-edge/5 ak-layer-mix/20 ak-text/0"]
             },
             "svg,\n  img": {
-              "@apply": [
-                "opacity-50"
-              ]
+              "@apply": ["opacity-50"]
             }
           },
           "dependencies": [
@@ -1336,9 +1286,7 @@
           "name": "ak-checkbox-card-vertical",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "grid justify-stretch"
-            ],
+            "@apply": ["grid justify-stretch"],
             "--ak-checkbox-vertical": "1"
           },
           "dependencies": [],
@@ -1354,9 +1302,7 @@
           "name": "ak-checkbox-card-round",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-frame-full/2"
-            ],
+            "@apply": ["ak-frame-full/2"],
             "--ak-checkbox-round": "1"
           },
           "dependencies": [
@@ -1378,19 +1324,13 @@
           "name": "ak-checkbox-card-label",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "me-auto flex-1 self-start truncate"
-            ],
+            "@apply": ["me-auto flex-1 self-start truncate"],
             "width": "calc-size(auto, size + --spacing(4))",
             "@variant ak-checkbox-round": {
-              "@apply": [
-                "text-center"
-              ]
+              "@apply": ["text-center"]
             },
             "@variant ak-checkbox-vertical": {
-              "@apply": [
-                "w-full text-center"
-              ]
+              "@apply": ["w-full text-center"]
             }
           },
           "dependencies": [],
@@ -1411,9 +1351,7 @@
               "size-6 flex-none self-start *:hidden"
             ],
             "@variant ak-checkbox-vertical": {
-              "@apply": [
-                "justify-self-end"
-              ],
+              "@apply": ["justify-self-end"],
               "grid-column": "1",
               "grid-row": "1"
             }
@@ -1476,9 +1414,7 @@
           "name": "ak-checkbox-card-check_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-(--ak-layer-parent) ak-text/0 ak-edge/10"
-            ]
+            "@apply": ["ak-layer-(--ak-layer-parent) ak-text/0 ak-edge/10"]
           },
           "dependencies": [
             {
@@ -1509,18 +1445,12 @@
           "name": "ak-checkbox-card-check",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-checkbox-card-check_idle"
-            ],
+            "@apply": ["ak-checkbox-card-check_idle"],
             "@variant ak-checkbox-checked": {
-              "@apply": [
-                "ak-checkbox-card-check_checked"
-              ]
+              "@apply": ["ak-checkbox-card-check_checked"]
             },
             "@variant ak-checkbox-disabled": {
-              "@apply": [
-                "ak-checkbox-card-check_disabled"
-              ]
+              "@apply": ["ak-checkbox-card-check_disabled"]
             }
           },
           "dependencies": [
@@ -1556,9 +1486,7 @@
               "ak-frame/2 flex h-full w-20 items-center justify-center"
             ],
             "@variant ak-checkbox-vertical": {
-              "@apply": [
-                "max-w-4/5 w-full justify-self-center"
-              ],
+              "@apply": ["max-w-4/5 w-full justify-self-center"],
               "grid-column": "1",
               "grid-row": "1"
             }
@@ -1582,14 +1510,9 @@
           "name": "ak-checkbox-card-description",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-text/70",
-              "w-full self-start font-normal"
-            ],
+            "@apply": ["ak-text/70", "w-full self-start font-normal"],
             "@variant ak-checkbox-disabled": {
-              "@apply": [
-                "ak-text/0"
-              ]
+              "@apply": ["ak-text/0"]
             }
           },
           "dependencies": [
@@ -1716,13 +1639,9 @@
           "name": "ak-radio_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_idle"
-            ],
+            "@apply": ["ak-button_idle"],
             "input": {
-              "@apply": [
-                "sr-only"
-              ]
+              "@apply": ["sr-only"]
             },
             "@variant before": {
               "@apply": [
@@ -1755,9 +1674,7 @@
           "name": "ak-radio_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_hover"
-            ]
+            "@apply": ["ak-button_hover"]
           },
           "dependencies": [
             {
@@ -1778,9 +1695,7 @@
           "name": "ak-radio_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_focus"
-            ]
+            "@apply": ["ak-button_focus"]
           },
           "dependencies": [
             {
@@ -1801,9 +1716,7 @@
           "name": "ak-radio_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_active"
-            ]
+            "@apply": ["ak-button_active"]
           },
           "dependencies": [
             {
@@ -1824,9 +1737,7 @@
           "name": "ak-radio_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_disabled"
-            ]
+            "@apply": ["ak-button_disabled"]
           },
           "dependencies": [
             {
@@ -1848,10 +1759,7 @@
           "type": "utility",
           "properties": {
             "@variant before": {
-              "@apply": [
-                "ak-text-primary/50",
-                "bg-current"
-              ]
+              "@apply": ["ak-text-primary/50", "bg-current"]
             }
           },
           "dependencies": [
@@ -1934,9 +1842,7 @@
           "name": "ak-option_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-command_idle ak-frame-field/2"
-            ]
+            "@apply": ["ak-command_idle ak-frame-field/2"]
           },
           "dependencies": [
             {
@@ -1962,9 +1868,7 @@
           "name": "ak-option_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-hover"
-            ]
+            "@apply": ["ak-layer-hover"]
           },
           "dependencies": [
             {
@@ -2014,9 +1918,7 @@
           "name": "ak-option_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-command_active"
-            ]
+            "@apply": ["ak-command_active"]
           },
           "dependencies": [
             {
@@ -2037,9 +1939,7 @@
           "name": "ak-option_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-text/50 ak-layer-mix/20"
-            ]
+            "@apply": ["ak-text/50 ak-layer-mix/20"]
           },
           "dependencies": [
             {
@@ -2183,9 +2083,7 @@
             },
             "&:dir(rtl)": {
               "&::after": {
-                "@apply": [
-                  "bg-gradient-to-r"
-                ]
+                "@apply": ["bg-gradient-to-r"]
               }
             }
           },
@@ -2334,19 +2232,13 @@
           "type": "utility",
           "properties": {
             "&:not(:last-child)::after": {
-              "@apply": [
-                "border-transparent"
-              ]
+              "@apply": ["border-transparent"]
             },
             ":has(+ &)::after": {
-              "@apply": [
-                "border-transparent"
-              ]
+              "@apply": ["border-transparent"]
             },
             "> *": {
-              "@apply": [
-                "ak-layer-hover"
-              ]
+              "@apply": ["ak-layer-hover"]
             }
           },
           "dependencies": [
@@ -2368,24 +2260,15 @@
           "name": "ak-tab-folder_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-command_focus",
-              "outline-none"
-            ],
+            "@apply": ["ak-command_focus", "outline-none"],
             "&:not(:last-child)::after": {
-              "@apply": [
-                "border-transparent"
-              ]
+              "@apply": ["border-transparent"]
             },
             ":has(+ &)::after": {
-              "@apply": [
-                "border-transparent"
-              ]
+              "@apply": ["border-transparent"]
             },
             "> *": {
-              "@apply": [
-                "ak-layer-contrast-primary"
-              ]
+              "@apply": ["ak-layer-contrast-primary"]
             }
           },
           "dependencies": [
@@ -2413,9 +2296,7 @@
           "type": "utility",
           "properties": {
             "> *": {
-              "@apply": [
-                "ak-command_active"
-              ]
+              "@apply": ["ak-command_active"]
             }
           },
           "dependencies": [
@@ -2599,9 +2480,7 @@
           "name": "ak-popover_starting-style",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "scale-95 opacity-0"
-            ]
+            "@apply": ["scale-95 opacity-0"]
           },
           "dependencies": [],
           "sources": [
@@ -2622,9 +2501,7 @@
               "ease-[linear(0,_0.008_1.1%,_0.031_2.2%,_0.129_4.8%,_0.257_7.2%,_0.671_14.2%,_0.789_16.5%,_0.881_18.6%,_0.957_20.7%,_1.019_22.9%,_1.063_25.1%,_1.094_27.4%,_1.114_30.7%,_1.112_34.5%,_1.018_49.9%,_0.99_59.1%,_1)]"
             ],
             "@variant backdrop": {
-              "@apply": [
-                "duration-250 opacity-100"
-              ]
+              "@apply": ["duration-250 opacity-100"]
             }
           },
           "dependencies": [
@@ -2646,13 +2523,9 @@
           "name": "ak-popover_closed",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "duration-250 scale-95 opacity-0"
-            ],
+            "@apply": ["duration-250 scale-95 opacity-0"],
             "@variant backdrop": {
-              "@apply": [
-                "duration-250 opacity-0"
-              ]
+              "@apply": ["duration-250 opacity-0"]
             }
           },
           "dependencies": [],
@@ -2668,13 +2541,9 @@
           "name": "ak-popover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-popover_idle"
-            ],
+            "@apply": ["ak-popover_idle"],
             "&:is(dialog, [popover])": {
-              "@apply": [
-                "open:ak-popover_open not-open:ak-popover_closed"
-              ]
+              "@apply": ["open:ak-popover_open not-open:ak-popover_closed"]
             }
           },
           "dependencies": [
@@ -2706,9 +2575,7 @@
           "name": "ak-popover-scroll",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-frame-cover overflow-auto overscroll-contain"
-            ]
+            "@apply": ["ak-frame-cover overflow-auto overscroll-contain"]
           },
           "dependencies": [
             {
@@ -2761,9 +2628,7 @@
             ],
             "--inset": "--spacing(3)",
             "@variant backdrop": {
-              "@apply": [
-                "overflow-auto overscroll-contain"
-              ]
+              "@apply": ["overflow-auto overscroll-contain"]
             }
           },
           "dependencies": [
@@ -2785,9 +2650,7 @@
           "name": "ak-dialog_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-popover_open"
-            ]
+            "@apply": ["ak-popover_open"]
           },
           "dependencies": [
             {
@@ -2808,9 +2671,7 @@
           "name": "ak-dialog_closed",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-popover_closed"
-            ]
+            "@apply": ["ak-popover_closed"]
           },
           "dependencies": [
             {
@@ -2831,13 +2692,9 @@
           "name": "ak-dialog",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-dialog_idle"
-            ],
+            "@apply": ["ak-dialog_idle"],
             "&:is(dialog, [popover])": {
-              "@apply": [
-                "open:ak-dialog_open not-open:ak-dialog_closed"
-              ]
+              "@apply": ["open:ak-dialog_open not-open:ak-dialog_closed"]
             }
           },
           "dependencies": [
@@ -2898,9 +2755,7 @@
           "name": "ak-dialog-scroll",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-popover-scroll"
-            ]
+            "@apply": ["ak-popover-scroll"]
           },
           "dependencies": [
             {
@@ -2929,9 +2784,7 @@
           "name": "ak-disclosure-group",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-frame-none/card"
-            ],
+            "@apply": ["ak-frame-none/card"],
             "--ak-disclosure-group": "1"
           },
           "dependencies": [
@@ -2955,9 +2808,7 @@
           "properties": {
             "--ak-disclosure-split": "1",
             "@variant ak-disclosure-hover": {
-              "@apply": [
-                "ak-layer-hover-0"
-              ]
+              "@apply": ["ak-layer-hover-0"]
             }
           },
           "dependencies": [
@@ -2979,38 +2830,26 @@
           "name": "ak-disclosure_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "p-0! max-w-[inherit] transition-none duration-300"
-            ],
+            "@apply": ["p-0! max-w-[inherit] transition-none duration-300"],
             "--ak-disclosure-open": "0",
             "--ak-disclosure-padding": "var(--ak-frame-padding)",
             "--ak-disclosure-radius": "var(--ak-frame-radius)",
             "--ak-disclosure-border": "var(--ak-bordering, var(--ak-frame-border))",
             "--ak-disclosure-duration": "var(--tw-duration)",
             "@variant ak-disclosure-group": {
-              "@apply": [
-                "ak-frame-cover p-0"
-              ]
+              "@apply": ["ak-frame-cover p-0"]
             },
             "@variant motion-reduce": {
-              "@apply": [
-                "duration-0"
-              ]
+              "@apply": ["duration-0"]
             },
             ":where(summary)": {
-              "@apply": [
-                "ak-disclosure-button"
-              ]
+              "@apply": ["ak-disclosure-button"]
             },
             "&::details-content": {
-              "@apply": [
-                "ak-disclosure-content-base_idle"
-              ]
+              "@apply": ["ak-disclosure-content-base_idle"]
             },
             ":where(summary ~ *)": {
-              "@apply": [
-                "ak-disclosure-content-body"
-              ]
+              "@apply": ["ak-disclosure-content-body"]
             }
           },
           "dependencies": [
@@ -3047,9 +2886,7 @@
           "name": "ak-disclosure_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-hover"
-            ]
+            "@apply": ["ak-layer-hover"]
           },
           "dependencies": [
             {
@@ -3072,9 +2909,7 @@
           "properties": {
             "--ak-disclosure-open": "1",
             "&::details-content": {
-              "@apply": [
-                "ak-disclosure-content-base_open"
-              ]
+              "@apply": ["ak-disclosure-content-base_open"]
             }
           },
           "dependencies": [
@@ -3155,9 +2990,7 @@
               "min-h-(--ak-button-leading) size-(--ak-disclosure-icon-size) flex-none self-start"
             ],
             "svg": {
-              "@apply": [
-                "size-full"
-              ]
+              "@apply": ["size-full"]
             }
           },
           "dependencies": [],
@@ -3183,9 +3016,7 @@
             "transition-duration": "calc(var(--ak-disclosure-duration) * 0.5)",
             "transition-delay": "calc(var(--ak-disclosure-duration) / 1.5)",
             "@variant ak-disclosure-group": {
-              "@apply": [
-                "rounded-[inherit]"
-              ]
+              "@apply": ["rounded-[inherit]"]
             },
             "@container style(--ak-disclosure-icon-size)": {
               "gap": "var(--ak-disclosure-padding)"
@@ -3226,9 +3057,7 @@
           "type": "utility",
           "properties": {
             "@container style(--ak-disclosure-split: 1)": {
-              "@apply": [
-                "ak-layer-hover"
-              ]
+              "@apply": ["ak-layer-hover"]
             }
           },
           "dependencies": [
@@ -3250,9 +3079,7 @@
           "name": "ak-disclosure-button_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "rounded-b-none delay-0"
-            ]
+            "@apply": ["rounded-b-none delay-0"]
           },
           "dependencies": [],
           "sources": [
@@ -3267,9 +3094,7 @@
           "name": "ak-disclosure-button_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_focus"
-            ]
+            "@apply": ["ak-button_focus"]
           },
           "dependencies": [
             {
@@ -3290,9 +3115,7 @@
           "name": "ak-disclosure-button_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_active"
-            ]
+            "@apply": ["ak-button_active"]
           },
           "dependencies": [
             {
@@ -3313,9 +3136,7 @@
           "name": "ak-disclosure-button_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_disabled"
-            ]
+            "@apply": ["ak-button_disabled"]
           },
           "dependencies": [
             {
@@ -3447,9 +3268,7 @@
           "name": "ak-disclosure-chevron-right_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "rotate-0"
-            ]
+            "@apply": ["rotate-0"]
           },
           "dependencies": [],
           "sources": [
@@ -3464,13 +3283,9 @@
           "name": "ak-disclosure-chevron-right",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-chevron-right_idle"
-            ],
+            "@apply": ["ak-disclosure-chevron-right_idle"],
             "@variant ak-disclosure-open": {
-              "@apply": [
-                "ak-disclosure-chevron-right_open"
-              ]
+              "@apply": ["ak-disclosure-chevron-right_open"]
             }
           },
           "dependencies": [
@@ -3497,9 +3312,7 @@
           "name": "ak-disclosure-chevron-down_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-chevron-right_idle rotate-0"
-            ]
+            "@apply": ["ak-disclosure-chevron-right_idle rotate-0"]
           },
           "dependencies": [
             {
@@ -3520,9 +3333,7 @@
           "name": "ak-disclosure-chevron-down_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "rotate-180"
-            ]
+            "@apply": ["rotate-180"]
           },
           "dependencies": [],
           "sources": [
@@ -3537,13 +3348,9 @@
           "name": "ak-disclosure-chevron-down",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-chevron-down_idle"
-            ],
+            "@apply": ["ak-disclosure-chevron-down_idle"],
             "@variant ak-disclosure-open": {
-              "@apply": [
-                "ak-disclosure-chevron-down_open"
-              ]
+              "@apply": ["ak-disclosure-chevron-down_open"]
             }
           },
           "dependencies": [
@@ -3594,9 +3401,7 @@
           "name": "ak-disclosure-plus_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "rotate-90"
-            ],
+            "@apply": ["rotate-90"],
             "background-size": "var(--ak-plus-line-thickness) 60%"
           },
           "dependencies": [],
@@ -3612,13 +3417,9 @@
           "name": "ak-disclosure-plus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-plus_idle"
-            ],
+            "@apply": ["ak-disclosure-plus_idle"],
             "@variant ak-disclosure-open": {
-              "@apply": [
-                "ak-disclosure-plus_open"
-              ]
+              "@apply": ["ak-disclosure-plus_open"]
             }
           },
           "dependencies": [
@@ -3648,10 +3449,7 @@
             "--ak-disclosure-guide-shift": "var(--ak-disclosure-icon-size, --spacing(4))",
             "--ak-disclosure-ps": "calc(\n    var(--ak-disclosure-guide-shift) + var(--ak-disclosure-padding) * 2\n  )",
             "&::before": {
-              "@apply": [
-                "ak-layer-current",
-                "absolute border-e"
-              ],
+              "@apply": ["ak-layer-current", "absolute border-e"],
               "content": "\"\"",
               "inset-block": "0",
               "inset-inline-start": "calc(\n      var(--ak-disclosure-padding) + var(--ak-disclosure-guide-shift) * 0.5\n    )"
@@ -3684,9 +3482,7 @@
             "interpolate-size": "allow-keywords",
             "html:focus-within &": {
               "@starting-style": {
-                "@apply": [
-                  "max-h-0"
-                ]
+                "@apply": ["max-h-0"]
               }
             },
             "@supports (interpolate-size: allow-keywords)": {
@@ -3709,9 +3505,7 @@
           "name": "ak-disclosure-content-base_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "max-h-max"
-            ]
+            "@apply": ["max-h-max"]
           },
           "dependencies": [],
           "sources": [
@@ -3726,13 +3520,9 @@
           "name": "ak-disclosure-content_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-content-base_idle"
-            ],
+            "@apply": ["ak-disclosure-content-base_idle"],
             ":where(& > *)": {
-              "@apply": [
-                "ak-disclosure-content-body"
-              ]
+              "@apply": ["ak-disclosure-content-body"]
             }
           },
           "dependencies": [
@@ -3759,9 +3549,7 @@
           "name": "ak-disclosure-content_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-content-base_open"
-            ]
+            "@apply": ["ak-disclosure-content-base_open"]
           },
           "dependencies": [
             {
@@ -3782,18 +3570,12 @@
           "name": "ak-disclosure-content",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-content_idle"
-            ],
+            "@apply": ["ak-disclosure-content_idle"],
             "details[open] > &": {
-              "@apply": [
-                "ak-disclosure-content_open"
-              ]
+              "@apply": ["ak-disclosure-content_open"]
             },
             "@variant ak-disclosure-open": {
-              "@apply": [
-                "ak-disclosure-content_open"
-              ]
+              "@apply": ["ak-disclosure-content_open"]
             }
           },
           "dependencies": [
@@ -3820,10 +3602,7 @@
           "name": "ak-disclosure-content-body",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-current",
-              "rounded-b-[inherit]"
-            ],
+            "@apply": ["ak-layer-current", "rounded-b-[inherit]"],
             "--ak-disclosure-icon-size": "unset",
             "padding": "var(--ak-frame-padding)",
             "padding-inline-start": "var(--ak-disclosure-ps, var(--ak-frame-padding))",
@@ -3853,9 +3632,7 @@
               "h-(--ak-button-leading) relative -mt-[0.1875rem] ms-auto"
             ],
             "&::before": {
-              "@apply": [
-                "absolute -inset-4 start-0"
-              ],
+              "@apply": ["absolute -inset-4 start-0"],
               "content": "\"\""
             }
           },
@@ -3979,13 +3756,9 @@
           "name": "ak-nav",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-nav-gap-1"
-            ],
+            "@apply": ["ak-nav-gap-1"],
             ":where(> ul)": {
-              "@apply": [
-                "ak-nav-list"
-              ]
+              "@apply": ["ak-nav-list"]
             }
           },
           "dependencies": [
@@ -4012,9 +3785,7 @@
           "name": "ak-nav-list",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "grid"
-            ]
+            "@apply": ["grid"]
           },
           "dependencies": [],
           "sources": [
@@ -4029,9 +3800,7 @@
           "name": "ak-nav-group",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "grid"
-            ]
+            "@apply": ["grid"]
           },
           "dependencies": [],
           "sources": [
@@ -4050,14 +3819,10 @@
               "h-(--ak-button-leading) w-(--ak-nav-icon-size) flex-none self-start transition-[height]"
             ],
             "svg": {
-              "@apply": [
-                "size-full"
-              ]
+              "@apply": ["size-full"]
             },
             "@variant ak-sidebar-collapsed": {
-              "@apply": [
-                "size-(--ak-nav-icon-size)"
-              ]
+              "@apply": ["size-(--ak-nav-icon-size)"]
             }
           },
           "dependencies": [],
@@ -4080,9 +3845,7 @@
             "--ak-button-padding-block": "calc(\n    var(--ak-disclosure-padding, var(--ak-frame-padding)) -\n      (var(--ak-button-leading) - 1em) / 2 + var(--ak-nav-gap)\n  )",
             "padding-block": "var(--ak-button-padding-block)",
             "@variant not-ak-nav-current": {
-              "@apply": [
-                "font-normal"
-              ]
+              "@apply": ["font-normal"]
             }
           },
           "dependencies": [
@@ -4115,9 +3878,7 @@
           "type": "utility",
           "properties": {
             "&&": {
-              "@apply": [
-                "bg-transparent"
-              ]
+              "@apply": ["bg-transparent"]
             },
             "&::before": {
               "@apply": [
@@ -4146,9 +3907,7 @@
           "name": "ak-nav-link_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_hover ak-nav-link-overlay"
-            ]
+            "@apply": ["ak-button_hover ak-nav-link-overlay"]
           },
           "dependencies": [
             {
@@ -4174,9 +3933,7 @@
           "name": "ak-nav-link_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_focus"
-            ]
+            "@apply": ["ak-button_focus"]
           },
           "dependencies": [
             {
@@ -4197,9 +3954,7 @@
           "name": "ak-nav-link_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_active"
-            ]
+            "@apply": ["ak-button_active"]
           },
           "dependencies": [
             {
@@ -4220,9 +3975,7 @@
           "name": "ak-nav-link_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_disabled"
-            ]
+            "@apply": ["ak-button_disabled"]
           },
           "dependencies": [
             {
@@ -4243,15 +3996,9 @@
           "name": "ak-nav-link_current",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-pop ak-nav-link-overlay",
-              "z-1"
-            ],
+            "@apply": ["ak-layer-pop ak-nav-link-overlay", "z-1"],
             "&::before": {
-              "@apply": [
-                "ak-edge/0",
-                "ring ring-inset"
-              ]
+              "@apply": ["ak-edge/0", "ring ring-inset"]
             }
           },
           "dependencies": [
@@ -4369,9 +4116,7 @@
             "transition-duration": "var(--ak-sidebar-duration)",
             "gap": "calc(0.75em + 1px)",
             "@variant ak-sidebar-collapsed": {
-              "@apply": [
-                "size-(--ak-nav-button-size) gap-0 after:opacity-0"
-              ],
+              "@apply": ["size-(--ak-nav-button-size) gap-0 after:opacity-0"],
               "--ak-nav-button-size": "calc(var(--ak-sidebar-min-width) - --spacing(2))",
               "padding": "calc(\n      (\n          var(--ak-nav-button-size) -\n            var(--ak-nav-icon-size, var(--ak-disclosure-icon-size))\n        ) *\n        0.5\n    )"
             }
@@ -4400,9 +4145,7 @@
           "name": "ak-nav-button_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_hover"
-            ]
+            "@apply": ["ak-button_hover"]
           },
           "dependencies": [
             {
@@ -4423,9 +4166,7 @@
           "name": "ak-nav-button_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_focus"
-            ]
+            "@apply": ["ak-button_focus"]
           },
           "dependencies": [
             {
@@ -4446,9 +4187,7 @@
           "name": "ak-nav-button_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_active"
-            ]
+            "@apply": ["ak-button_active"]
           },
           "dependencies": [
             {
@@ -4469,9 +4208,7 @@
           "name": "ak-nav-button_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_disabled"
-            ]
+            "@apply": ["ak-button_disabled"]
           },
           "dependencies": [
             {
@@ -4567,9 +4304,7 @@
             "transition-duration": "var(--ak-sidebar-duration)",
             "transition-delay": "0ms, calc(var(--ak-sidebar-duration)), 0ms",
             "@variant ak-sidebar-collapsed": {
-              "@apply": [
-                "h-(--ak-button-leading) opacity-0 delay-0"
-              ],
+              "@apply": ["h-(--ak-button-leading) opacity-0 delay-0"],
               "transition-duration": "var(--ak-sidebar-duration), 0ms, var(--ak-sidebar-duration)"
             }
           },
@@ -4586,13 +4321,9 @@
           "name": "ak-nav-disclosure",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure ak-disclosure-split ak-frame-field/2"
-            ],
+            "@apply": ["ak-disclosure ak-disclosure-split ak-frame-field/2"],
             "@container style(--ak-nav-icon-size)": {
-              "@apply": [
-                "ak-disclosure-icon-(--ak-nav-icon-size)"
-              ]
+              "@apply": ["ak-disclosure-icon-(--ak-nav-icon-size)"]
             }
           },
           "dependencies": [
@@ -4629,13 +4360,9 @@
           "name": "ak-nav-disclosure-button",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-nav-button"
-            ],
+            "@apply": ["ak-nav-button"],
             "@layer base": {
-              "@apply": [
-                "ak-disclosure-button"
-              ]
+              "@apply": ["ak-disclosure-button"]
             }
           },
           "dependencies": [
@@ -4662,18 +4389,12 @@
           "name": "ak-nav-disclosure-content",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-content"
-            ],
+            "@apply": ["ak-disclosure-content"],
             ":where(& > *)": {
-              "@apply": [
-                "ak-nav-disclosure-content-body"
-              ]
+              "@apply": ["ak-nav-disclosure-content-body"]
             },
             "@variant ak-sidebar-collapsed": {
-              "@apply": [
-                "h-0 w-0"
-              ]
+              "@apply": ["h-0 w-0"]
             },
             "@container style(--ak-disclosure-icon-size)": {
               "--ak-disclosure-ps": "calc(\n      var(--ak-disclosure-icon-size) + var(--ak-disclosure-padding) + 1px\n    )"
@@ -4790,9 +4511,7 @@
           "name": "ak-tooltip_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-popover_open"
-            ]
+            "@apply": ["ak-popover_open"]
           },
           "dependencies": [
             {
@@ -4813,9 +4532,7 @@
           "name": "ak-tooltip_closed",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-popover_closed"
-            ]
+            "@apply": ["ak-popover_closed"]
           },
           "dependencies": [
             {
@@ -4836,13 +4553,9 @@
           "name": "ak-tooltip",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-tooltip_idle"
-            ],
+            "@apply": ["ak-tooltip_idle"],
             "&:is(dialog, [popover])": {
-              "@apply": [
-                "open:ak-tooltip_open not-open:ak-tooltip_closed"
-              ]
+              "@apply": ["open:ak-tooltip_open not-open:ak-tooltip_closed"]
             }
           },
           "dependencies": [
@@ -4882,9 +4595,7 @@
           "name": "ak-select_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_idle"
-            ]
+            "@apply": ["ak-button_idle"]
           },
           "dependencies": [
             {
@@ -4905,9 +4616,7 @@
           "name": "ak-select_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_hover"
-            ]
+            "@apply": ["ak-button_hover"]
           },
           "dependencies": [
             {
@@ -4928,9 +4637,7 @@
           "name": "ak-select_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_focus"
-            ]
+            "@apply": ["ak-button_focus"]
           },
           "dependencies": [
             {
@@ -4951,9 +4658,7 @@
           "name": "ak-select_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_active"
-            ]
+            "@apply": ["ak-button_active"]
           },
           "dependencies": [
             {
@@ -4974,9 +4679,7 @@
           "name": "ak-select_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_disabled"
-            ]
+            "@apply": ["ak-button_disabled"]
           },
           "dependencies": [
             {
@@ -5064,10 +4767,7 @@
           "name": "ak-select-arrow",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-icon-chevron",
-              "ms-auto size-4"
-            ]
+            "@apply": ["ak-icon-chevron", "ms-auto size-4"]
           },
           "dependencies": [
             {
@@ -5125,9 +4825,7 @@
           "name": "ak-select-popover_open",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-popover_open"
-            ]
+            "@apply": ["ak-popover_open"]
           },
           "dependencies": [
             {
@@ -5148,9 +4846,7 @@
           "name": "ak-select-popover_closed",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-popover_closed"
-            ]
+            "@apply": ["ak-popover_closed"]
           },
           "dependencies": [
             {
@@ -5171,9 +4867,7 @@
           "name": "ak-select-popover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-select-popover_idle"
-            ],
+            "@apply": ["ak-select-popover_idle"],
             "&:is(dialog, [popover])": {
               "@apply": [
                 "open:ak-select-popover_open not-open:ak-select-popover_closed"
@@ -5209,10 +4903,7 @@
           "name": "ak-select-item_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-option_idle",
-              "flex items-center gap-2"
-            ]
+            "@apply": ["ak-option_idle", "flex items-center gap-2"]
           },
           "dependencies": [
             {
@@ -5248,9 +4939,7 @@
           "name": "ak-select-item_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-option_hover"
-            ]
+            "@apply": ["ak-option_hover"]
           },
           "dependencies": [
             {
@@ -5271,9 +4960,7 @@
           "name": "ak-select-item_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-option_focus"
-            ]
+            "@apply": ["ak-option_focus"]
           },
           "dependencies": [
             {
@@ -5294,9 +4981,7 @@
           "name": "ak-select-item_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-option_active"
-            ]
+            "@apply": ["ak-option_active"]
           },
           "dependencies": [
             {
@@ -5317,9 +5002,7 @@
           "name": "ak-select-item_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-option_disabled"
-            ]
+            "@apply": ["ak-option_disabled"]
           },
           "dependencies": [
             {
@@ -5418,14 +5101,9 @@
           "name": "ak-select-item-check",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-icon-check",
-              "invisible size-4"
-            ],
+            "@apply": ["ak-icon-check", "invisible size-4"],
             "@variant ak-select-item-selected": {
-              "@apply": [
-                "visible"
-              ]
+              "@apply": ["visible"]
             }
           },
           "dependencies": [
@@ -5532,9 +5210,7 @@
           "name": "ak-input-placeholder",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-text/0"
-            ]
+            "@apply": ["ak-text/0"]
           },
           "dependencies": [
             {
@@ -5560,29 +5236,19 @@
               "max-w-full cursor-text leading-[1em] -outline-offset-1"
             ],
             "@variant ak-light": {
-              "@apply": [
-                "ak-layer"
-              ]
+              "@apply": ["ak-layer"]
             },
             "@variant ak-dark": {
-              "@apply": [
-                "not-hover:not-focus-within:ak-layer-down-0.5"
-              ]
+              "@apply": ["not-hover:not-focus-within:ak-layer-down-0.5"]
             },
             "&:is(input)": {
-              "@apply": [
-                "box-content h-[1em]"
-              ]
+              "@apply": ["box-content h-[1em]"]
             },
             "input": {
-              "@apply": [
-                "-my-[0.25em] box-content h-[1.5em] outline-none"
-              ]
+              "@apply": ["-my-[0.25em] box-content h-[1.5em] outline-none"]
             },
             "&::placeholder,\n  ::placeholder": {
-              "@apply": [
-                "ak-input-placeholder"
-              ]
+              "@apply": ["ak-input-placeholder"]
             }
           },
           "dependencies": [
@@ -5629,18 +5295,12 @@
           "name": "ak-input_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "transition-[background-color]"
-            ],
+            "@apply": ["transition-[background-color]"],
             "@variant ak-light": {
-              "@apply": [
-                "ak-layer-hover-0.5"
-              ]
+              "@apply": ["ak-layer-hover-0.5"]
             },
             "@variant ak-dark": {
-              "@apply": [
-                "ak-layer-current"
-              ]
+              "@apply": ["ak-layer-current"]
             }
           },
           "dependencies": [
@@ -5667,18 +5327,12 @@
           "name": "ak-input_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-outline-primary outline-2"
-            ],
+            "@apply": ["ak-outline-primary outline-2"],
             "@variant ak-light": {
-              "@apply": [
-                "ak-layer"
-              ]
+              "@apply": ["ak-layer"]
             },
             "@variant ak-dark": {
-              "@apply": [
-                "ak-layer-current"
-              ]
+              "@apply": ["ak-layer-current"]
             }
           },
           "dependencies": [
@@ -5751,10 +5405,7 @@
           "name": "ak-kbd",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-pop-1.5 ak-edge-5/100",
-              "font-sans"
-            ],
+            "@apply": ["ak-layer-pop-1.5 ak-edge-5/100", "font-sans"],
             "border-radius": "0.27em 0.27em 0.34em 0.34em",
             "border-width": "max(1px, 0.067em) 0 max(1px, 0.15em)",
             "border-color": "white transparent var(--ak-border)",
@@ -5763,10 +5414,7 @@
             "padding": "0.1em 0.25em",
             "font-size-adjust": "0.49",
             "@variant ak-dark": {
-              "@apply": [
-                "ak-edge/16",
-                "rounded-b-[0.4em]"
-              ],
+              "@apply": ["ak-edge/16", "rounded-b-[0.4em]"],
               "border-width": "0 0 max(1px, 0.2em)",
               "border-bottom-color": "oklch(from var(--ak-layer) calc(l - 0.08) c h)",
               "background-image": "linear-gradient(\n      to bottom,\n      transparent,\n      oklch(from var(--ak-layer) calc(l + 0.08) c h)\n    )",
@@ -5839,9 +5487,7 @@
           "name": "ak-link_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "decoration-[3px]"
-            ]
+            "@apply": ["decoration-[3px]"]
           },
           "dependencies": [],
           "sources": [
@@ -5856,9 +5502,7 @@
           "name": "ak-link_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "outline-2"
-            ]
+            "@apply": ["outline-2"]
           },
           "dependencies": [],
           "sources": [
@@ -5970,9 +5614,7 @@
               ]
             },
             "&::-webkit-progress-value": {
-              "@apply": [
-                "ak-progress-fill_base"
-              ]
+              "@apply": ["ak-progress-fill_base"]
             }
           },
           "dependencies": [
@@ -6029,9 +5671,7 @@
               "starting:w-0! block h-full transition-[width] duration-1000"
             ],
             "@variant motion-reduce": {
-              "@apply": [
-                "duration-0"
-              ]
+              "@apply": ["duration-0"]
             }
           },
           "dependencies": [
@@ -6058,9 +5698,7 @@
           "name": "ak-progress-fill",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-progress-fill_base"
-            ],
+            "@apply": ["ak-progress-fill_base"],
             "width": "calc(var(--ak-progress-value) * 100%)"
           },
           "dependencies": [
@@ -6152,9 +5790,7 @@
               "--ak-progress-value": "0 !important"
             },
             "@variant motion-reduce": {
-              "@apply": [
-                "duration-0"
-              ]
+              "@apply": ["duration-0"]
             }
           },
           "dependencies": [
@@ -6204,9 +5840,7 @@
           "name": "ak-list-leading-*",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "leading-(--ak-list-leading)"
-            ],
+            "@apply": ["leading-(--ak-list-leading)"],
             "--ak-list-leading": "--value([*])"
           },
           "dependencies": [],
@@ -6253,20 +5887,14 @@
           "name": "ak-list-blocks",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-list-item-padding-2"
-            ],
+            "@apply": ["ak-list-item-padding-2"],
             "--ak-list-gap": "calc(var(--_ak-list-gap) * 0.75 - var(--ak-list-item-padding))",
             "--ak-list-blocks": "1",
             "&:where(ol)": {
-              "@apply": [
-                "ak-list-item-border-1"
-              ]
+              "@apply": ["ak-list-item-border-1"]
             },
             "&:where(ul)": {
-              "@apply": [
-                "ak-list-item-border-0"
-              ]
+              "@apply": ["ak-list-item-border-0"]
             }
           },
           "dependencies": [
@@ -6355,29 +5983,19 @@
             "--ak-list-counter-margin": "0.2em",
             "--ak-list-blocks": "0",
             "&:where(ul)": {
-              "@apply": [
-                "ak-list-ul"
-              ]
+              "@apply": ["ak-list-ul"]
             },
             "&:where(ol)": {
-              "@apply": [
-                "ak-list-ol"
-              ]
+              "@apply": ["ak-list-ol"]
             },
             "& &": {
-              "@apply": [
-                "ak-list-gap-2"
-              ]
+              "@apply": ["ak-list-gap-2"]
             },
             "@variant ak-list-blocks": {
-              "@apply": [
-                "ak-list-blocks"
-              ]
+              "@apply": ["ak-list-blocks"]
             },
             "@variant ak-list-sections": {
-              "@apply": [
-                "ak-list-sections"
-              ]
+              "@apply": ["ak-list-sections"]
             }
           },
           "dependencies": [
@@ -6564,9 +6182,7 @@
           "name": "ak-list-item-ul",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "before:ak-list-item-ul-marker"
-            ]
+            "@apply": ["before:ak-list-item-ul-marker"]
           },
           "dependencies": [
             {
@@ -6615,9 +6231,7 @@
           "name": "ak-list-item-ol-border",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "relative"
-            ],
+            "@apply": ["relative"],
             "--ak-list-border-gap": "--spacing(1)",
             "--ak-list-border-top": "calc(\n    var(--ak-list-leading) + var(--ak-list-border-gap) + var(--ak-frame-padding)\n  )",
             "/* Border segment */": "",
@@ -6659,18 +6273,12 @@
           "name": "ak-list-item-ol",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-list-counter-increment"
-            ],
+            "@apply": ["ak-list-counter-increment"],
             "&::before": {
-              "@apply": [
-                "ak-list-item-ol-marker"
-              ]
+              "@apply": ["ak-list-item-ol-marker"]
             },
             "@variant ak-list-blocks": {
-              "@apply": [
-                "ak-list-item-ol-border"
-              ]
+              "@apply": ["ak-list-item-ol-border"]
             }
           },
           "dependencies": [
@@ -6709,14 +6317,10 @@
             "--ak-list-item-base-ps": "calc(\n    var(--ak-frame-padding) + var(--ak-list-item-ps)\n  )",
             "padding-inline-start": "var(--ak-list-item-base-ps)",
             "@variant ak-list-ul": {
-              "@apply": [
-                "ak-list-item-ul"
-              ]
+              "@apply": ["ak-list-item-ul"]
             },
             "@variant ak-list-ol": {
-              "@apply": [
-                "ak-list-item-ol"
-              ]
+              "@apply": ["ak-list-item-ol"]
             }
           },
           "dependencies": [
@@ -6748,9 +6352,7 @@
           "name": "ak-list-item-blocks",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "gap-(--ak-list-item-gap) grid"
-            ],
+            "@apply": ["gap-(--ak-list-item-gap) grid"],
             "--ak-list-item-gap": "calc(\n    var(--ak-list-gap) + var(--ak-list-item-padding) * 0.5\n  )"
           },
           "dependencies": [],
@@ -6767,27 +6369,17 @@
           "type": "utility",
           "properties": {
             "&:not(:has(> details))": {
-              "@apply": [
-                "ak-list-item_base"
-              ],
+              "@apply": ["ak-list-item_base"],
               "@variant ak-list-item-blocks": {
-                "@apply": [
-                  "ak-list-item-blocks"
-                ]
+                "@apply": ["ak-list-item-blocks"]
               }
             },
             "& > details": {
-              "@apply": [
-                "ak-disclosure ak-list-disclosure"
-              ],
+              "@apply": ["ak-disclosure ak-list-disclosure"],
               "> summary": {
-                "@apply": [
-                  "ak-list-disclosure-button"
-                ],
+                "@apply": ["ak-list-disclosure-button"],
                 "+ *": {
-                  "@apply": [
-                    "ak-list-disclosure-content-body"
-                  ]
+                  "@apply": ["ak-list-disclosure-content-body"]
                 }
               }
             }
@@ -6836,9 +6428,7 @@
           "name": "ak-list-disclosure",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure ak-list-item_base"
-            ],
+            "@apply": ["ak-disclosure ak-list-item_base"],
             "--ak-disclosure-ps": "calc(\n    var(--ak-frame-padding) + var(--ak-list-item-ps) *\n      min(1, var(--ak-list-border-width-number))\n  )"
           },
           "dependencies": [
@@ -6871,14 +6461,10 @@
             "--ak-button-leading": "var(--ak-list-leading) !important",
             "--ak-disclosure-ps": "var(--ak-list-item-base-ps)",
             "@variant ak-list-ol": {
-              "@apply": [
-                "before:ak-list-item-ol-marker"
-              ]
+              "@apply": ["before:ak-list-item-ol-marker"]
             },
             "@variant ak-list-ul": {
-              "@apply": [
-                "before:ak-list-item-ul-marker"
-              ]
+              "@apply": ["before:ak-list-item-ul-marker"]
             }
           },
           "dependencies": [
@@ -6915,13 +6501,9 @@
           "name": "ak-list-disclosure-content",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-content"
-            ],
+            "@apply": ["ak-disclosure-content"],
             ":where(& > *)": {
-              "@apply": [
-                "ak-list-disclosure-content-body"
-              ]
+              "@apply": ["ak-list-disclosure-content-body"]
             }
           },
           "dependencies": [
@@ -6948,9 +6530,7 @@
           "name": "ak-list-disclosure-content-body",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-disclosure-content-body ak-list-item-blocks"
-            ],
+            "@apply": ["ak-disclosure-content-body ak-list-item-blocks"],
             "padding-block-start": "calc(var(--ak-list-item-gap) - var(--ak-frame-padding))"
           },
           "dependencies": [
@@ -7014,13 +6594,9 @@
           "name": "ak-list-item-check-ul",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-list-item-check-base"
-            ],
+            "@apply": ["ak-list-item-check-base"],
             "li:has(&)": {
-              "@apply": [
-                "before:hidden after:hidden"
-              ]
+              "@apply": ["before:hidden after:hidden"]
             }
           },
           "dependencies": [
@@ -7042,10 +6618,7 @@
           "name": "ak-list-item-check-ol",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-list-item-check-base",
-              "bg-transparent ring-0"
-            ]
+            "@apply": ["ak-list-item-check-base", "bg-transparent ring-0"]
           },
           "dependencies": [
             {
@@ -7067,14 +6640,10 @@
           "type": "utility",
           "properties": {
             "@variant ak-list-ol": {
-              "@apply": [
-                "ak-list-item-check-ol"
-              ]
+              "@apply": ["ak-list-item-check-ol"]
             },
             "@variant ak-list-ul": {
-              "@apply": [
-                "ak-list-item-check-ul"
-              ]
+              "@apply": ["ak-list-item-check-ul"]
             }
           },
           "dependencies": [
@@ -7101,14 +6670,9 @@
           "name": "ak-list-item-check_checked",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-contrast-primary",
-              "ring-0"
-            ],
+            "@apply": ["ak-layer-contrast-primary", "ring-0"],
             "&::before": {
-              "@apply": [
-                "ak-icon-check"
-              ],
+              "@apply": ["ak-icon-check"],
               "mask-size": "60%",
               "content": "\"\" / \"Checked\""
             }
@@ -7142,9 +6706,7 @@
             ],
             "--value": "--value(percentage, [*])",
             "@variant ak-list-ol": {
-              "@apply": [
-                "ak-progress-thickness-[0.15em]"
-              ]
+              "@apply": ["ak-progress-thickness-[0.15em]"]
             },
             "@variant ak-list-ul": {
               "@apply": [
@@ -7283,9 +6845,7 @@
           "name": "ak-heading-1",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "text-[2.25em]"
-            ]
+            "@apply": ["text-[2.25em]"]
           },
           "dependencies": [],
           "sources": [
@@ -7300,9 +6860,7 @@
           "name": "ak-heading-2",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "text-[1.75em]"
-            ]
+            "@apply": ["text-[1.75em]"]
           },
           "dependencies": [],
           "sources": [
@@ -7317,9 +6875,7 @@
           "name": "ak-heading-3",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "text-[1.4em]"
-            ]
+            "@apply": ["text-[1.4em]"]
           },
           "dependencies": [],
           "sources": [
@@ -7334,9 +6890,7 @@
           "name": "ak-heading-4",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "text-[1.2em]"
-            ]
+            "@apply": ["text-[1.2em]"]
           },
           "dependencies": [],
           "sources": [
@@ -7351,9 +6905,7 @@
           "name": "ak-heading-5",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "text-[1em]"
-            ]
+            "@apply": ["text-[1em]"]
           },
           "dependencies": [],
           "sources": [
@@ -7368,18 +6920,12 @@
           "name": "ak-heading",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-text mb-[0.5em] font-medium"
-            ],
+            "@apply": ["ak-text mb-[0.5em] font-medium"],
             "&:where(:not(:first-child))": {
-              "@apply": [
-                "mt-[1em]"
-              ]
+              "@apply": ["mt-[1em]"]
             },
             ":where(h1, h2, h3, h4, h5) + &": {
-              "@apply": [
-                "mt-[0.35em]"
-              ]
+              "@apply": ["mt-[0.35em]"]
             },
             "a": {
               "@apply": [
@@ -7387,34 +6933,22 @@
               ]
             },
             "li &": {
-              "@apply": [
-                "mb-0"
-              ]
+              "@apply": ["mb-0"]
             },
             "&:where(h1)": {
-              "@apply": [
-                "ak-heading-1"
-              ]
+              "@apply": ["ak-heading-1"]
             },
             "&:where(h2)": {
-              "@apply": [
-                "ak-heading-2"
-              ]
+              "@apply": ["ak-heading-2"]
             },
             "&:where(h3)": {
-              "@apply": [
-                "ak-heading-3"
-              ]
+              "@apply": ["ak-heading-3"]
             },
             "&:where(h4)": {
-              "@apply": [
-                "ak-heading-4"
-              ]
+              "@apply": ["ak-heading-4"]
             },
             "&:where(h5)": {
-              "@apply": [
-                "ak-heading-5"
-              ]
+              "@apply": ["ak-heading-5"]
             }
           },
           "dependencies": [
@@ -7611,14 +7145,10 @@
             ],
             "padding-block": "calc(var(--ak-button-padding-block) * 0.75)",
             "input[type=\"radio\"]": {
-              "@apply": [
-                "sr-only"
-              ]
+              "@apply": ["sr-only"]
             },
             "&:not(:first-of-type)::before": {
-              "@apply": [
-                "ak-segmented-separator"
-              ]
+              "@apply": ["ak-segmented-separator"]
             }
           },
           "dependencies": [
@@ -7651,21 +7181,14 @@
           "type": "utility",
           "properties": {
             "&::before,\n  & + *::before": {
-              "@apply": [
-                "opacity-0 delay-0"
-              ]
+              "@apply": ["opacity-0 delay-0"]
             },
             "@supports (anchor-name: --a)": {
-              "@apply": [
-                "ak-layer-2",
-                "bg-transparent!"
-              ],
+              "@apply": ["ak-layer-2", "bg-transparent!"],
               "anchor-name": "--ak-segmented-button_selected"
             },
             "@supports not (anchor-name: --a)": {
-              "@apply": [
-                "ak-segmented-indicator-base"
-              ]
+              "@apply": ["ak-segmented-indicator-base"]
             }
           },
           "dependencies": [
@@ -7692,13 +7215,9 @@
           "name": "ak-segmented-button_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_hover"
-            ],
+            "@apply": ["ak-button_hover"],
             "&::before,\n  & + *::before": {
-              "@apply": [
-                "opacity-0 delay-0"
-              ]
+              "@apply": ["opacity-0 delay-0"]
             }
           },
           "dependencies": [
@@ -7720,9 +7239,7 @@
           "name": "ak-segmented-button_focus",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_focus"
-            ]
+            "@apply": ["ak-button_focus"]
           },
           "dependencies": [
             {
@@ -7743,9 +7260,7 @@
           "name": "ak-segmented-button_active",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_active"
-            ]
+            "@apply": ["ak-button_active"]
           },
           "dependencies": [
             {
@@ -7766,9 +7281,7 @@
           "name": "ak-segmented-button_disabled",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-button_disabled"
-            ]
+            "@apply": ["ak-button_disabled"]
           },
           "dependencies": [
             {
@@ -7894,9 +7407,7 @@
           "name": "ak-table-sticky-top",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "z-3 sticky top-0"
-            ]
+            "@apply": ["z-3 sticky top-0"]
           },
           "dependencies": [],
           "sources": [
@@ -7911,9 +7422,7 @@
           "name": "ak-table-sticky-bottom",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "z-3 sticky bottom-0"
-            ]
+            "@apply": ["z-3 sticky bottom-0"]
           },
           "dependencies": [],
           "sources": [
@@ -7928,10 +7437,7 @@
           "name": "ak-table-container",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-frame-card/0 ak-layer-current",
-              "overflow-clip"
-            ],
+            "@apply": ["ak-frame-card/0 ak-layer-current", "overflow-clip"],
             "border-inline-start-width": "var(--ak-table-border-s, 0px)",
             "border-inline-end-width": "var(--ak-table-border-e, 0px)",
             "border-block-start-width": "var(--ak-table-border-t, 0px)",
@@ -8041,49 +7547,31 @@
               "p-0! relative w-full border-separate border-spacing-0 overflow-x-hidden"
             ],
             ":where(tbody)": {
-              "@apply": [
-                "ak-table-rowgroup"
-              ]
+              "@apply": ["ak-table-rowgroup"]
             },
             ":where(thead)": {
-              "@apply": [
-                "ak-table-head"
-              ]
+              "@apply": ["ak-table-head"]
             },
             ":where(tfoot)": {
-              "@apply": [
-                "ak-table-foot"
-              ]
+              "@apply": ["ak-table-foot"]
             },
             ":where(tr:not(:where(thead, tfoot) > *))": {
-              "@apply": [
-                "ak-table-row"
-              ]
+              "@apply": ["ak-table-row"]
             },
             ":where(tr:where(thead > *))": {
-              "@apply": [
-                "ak-table-head-row"
-              ]
+              "@apply": ["ak-table-head-row"]
             },
             ":where(tr:where(tfoot > *))": {
-              "@apply": [
-                "ak-table-foot-row"
-              ]
+              "@apply": ["ak-table-foot-row"]
             },
             ":where(td, th)": {
-              "@apply": [
-                "ak-table-cell"
-              ]
+              "@apply": ["ak-table-cell"]
             },
             ":where(> th, tbody th, tfoot th)": {
-              "@apply": [
-                "ak-table-row-header"
-              ]
+              "@apply": ["ak-table-row-header"]
             },
             ":where(thead th)": {
-              "@apply": [
-                "ak-table-column-header"
-              ]
+              "@apply": ["ak-table-column-header"]
             }
           },
           "dependencies": [
@@ -8150,10 +7638,7 @@
           "name": "ak-table-rowgroup",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-current",
-              "relative"
-            ],
+            "@apply": ["ak-layer-current", "relative"],
             "&:is(thead):first-of-type,\n  :not(:has(thead)) > &:first-child": {
               "--ak-table-rowgroup-first": "1"
             },
@@ -8209,9 +7694,7 @@
           "name": "ak-table-head-row",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-table-row_idle"
-            ]
+            "@apply": ["ak-table-row_idle"]
           },
           "dependencies": [
             {
@@ -8232,9 +7715,7 @@
           "name": "ak-table-foot",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-table-rowgroup"
-            ]
+            "@apply": ["ak-table-rowgroup"]
           },
           "dependencies": [
             {
@@ -8255,9 +7736,7 @@
           "name": "ak-table-foot-row",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-table-row_idle"
-            ]
+            "@apply": ["ak-table-row_idle"]
           },
           "dependencies": [
             {
@@ -8278,9 +7757,7 @@
           "name": "ak-table-row_idle",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-current"
-            ],
+            "@apply": ["ak-layer-current"],
             "&:first-of-type": {
               "--ak-table-row-first": "var(--ak-table-rowgroup-first, 0)"
             },
@@ -8307,9 +7784,7 @@
           "name": "ak-table-row_hover",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-hover-0.5 z-2 *:z-2"
-            ]
+            "@apply": ["ak-layer-hover-0.5 z-2 *:z-2"]
           },
           "dependencies": [
             {
@@ -8330,10 +7805,7 @@
           "name": "ak-table-row",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-table-row_idle",
-              "hover:ak-table-row_hover"
-            ]
+            "@apply": ["ak-table-row_idle", "hover:ak-table-row_hover"]
           },
           "dependencies": [
             {
@@ -8359,9 +7831,7 @@
           "name": "ak-table-row-header",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-table-cell text-start font-semibold"
-            ]
+            "@apply": ["ak-table-cell text-start font-semibold"]
           },
           "dependencies": [
             {
@@ -8382,9 +7852,7 @@
           "name": "ak-table-column-header",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-text/70 text-start font-semibold"
-            ]
+            "@apply": ["ak-text/70 text-start font-semibold"]
           },
           "dependencies": [
             {
@@ -8405,9 +7873,7 @@
           "name": "ak-table-cell",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-current z-1 relative"
-            ],
+            "@apply": ["ak-layer-current z-1 relative"],
             "padding-inline": "var(--ak-table-px, var(--ak-frame-padding, 0))",
             "padding-block": "var(--ak-table-py, var(--ak-frame-padding, 0))",
             "&::after": {
@@ -8454,9 +7920,7 @@
           "name": "ak-table-numeric",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "text-end tabular-nums"
-            ]
+            "@apply": ["text-end tabular-nums"]
           },
           "dependencies": [],
           "sources": [
@@ -8791,10 +8255,7 @@
           "name": "ak-sidebar-collapsed",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-frame-dialog/1",
-              "rounded-none"
-            ],
+            "@apply": ["ak-frame-dialog/1", "rounded-none"],
             "--ak-sidebar-collapsed": "1",
             "inline-size": "var(--ak-sidebar-min-width)"
           },
@@ -8817,10 +8278,7 @@
           "name": "ak-sidebar-section",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-frame-cover",
-              "gap-(--ak-sidebar-gap) grid"
-            ]
+            "@apply": ["ak-frame-cover", "gap-(--ak-sidebar-gap) grid"]
           },
           "dependencies": [
             {
@@ -8841,9 +8299,7 @@
           "name": "ak-sidebar-header",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-sidebar-section"
-            ]
+            "@apply": ["ak-sidebar-section"]
           },
           "dependencies": [
             {
@@ -8888,9 +8344,7 @@
           "name": "ak-sidebar-footer",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-sidebar-section"
-            ]
+            "@apply": ["ak-sidebar-section"]
           },
           "dependencies": [
             {
@@ -8967,15 +8421,10 @@
           "name": "ak-separator",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-layer-current ak-edge/20",
-              "border-t border-dashed"
-            ],
+            "@apply": ["ak-layer-current ak-edge/20", "border-t border-dashed"],
             "margin-block": "calc(var(--ak-prose-gap) * 0.5)",
             "+ *": {
-              "@apply": [
-                "mt-0"
-              ]
+              "@apply": ["mt-0"]
             }
           },
           "dependencies": [
@@ -9002,9 +8451,7 @@
           "name": "ak-strong",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-text font-medium"
-            ]
+            "@apply": ["ak-text font-medium"]
           },
           "dependencies": [
             {
@@ -9025,9 +8472,7 @@
           "name": "ak-prose-leading-*",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "leading-(--ak-prose-leading)"
-            ],
+            "@apply": ["leading-(--ak-prose-leading)"],
             "--ak-prose-leading": "--value([*])"
           },
           "dependencies": [],
@@ -9043,9 +8488,7 @@
           "name": "ak-prose-text-*",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "leading-(--ak-prose-leading)"
-            ],
+            "@apply": ["leading-(--ak-prose-leading)"],
             "--ak-prose-leading": "--spacing(--modifier(number))",
             "font-size": "--value(--text, [*])"
           },
@@ -9077,9 +8520,7 @@
           "name": "ak-prose-content",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "gap-(--ak-prose-gap) flex flex-col"
-            ]
+            "@apply": ["gap-(--ak-prose-gap) flex flex-col"]
           },
           "dependencies": [],
           "sources": [
@@ -9094,9 +8535,7 @@
           "name": "ak-prose-text",
           "type": "utility",
           "properties": {
-            "@apply": [
-              "ak-dark:ak-text/75 ak-light:ak-text/90"
-            ]
+            "@apply": ["ak-dark:ak-text/75 ak-light:ak-text/90"]
           },
           "dependencies": [
             {
@@ -9172,14 +8611,10 @@
           "type": "utility",
           "properties": {
             ":where(h1, h2, h3, h4, h5)": {
-              "@apply": [
-                "ak-heading"
-              ]
+              "@apply": ["ak-heading"]
             },
             ":where(p)": {
-              "@apply": [
-                "ak-prose-text"
-              ]
+              "@apply": ["ak-prose-text"]
             },
             ":where(ul, ol)": {
               "@apply": [
@@ -9187,34 +8622,22 @@
               ]
             },
             ":where(li)": {
-              "@apply": [
-                "ak-list-item"
-              ]
+              "@apply": ["ak-list-item"]
             },
             ":where(strong)": {
-              "@apply": [
-                "ak-strong"
-              ]
+              "@apply": ["ak-strong"]
             },
             ":where(code):not(:where(pre code))": {
-              "@apply": [
-                "ak-code"
-              ]
+              "@apply": ["ak-code"]
             },
             ":where(p a)": {
-              "@apply": [
-                "ak-link"
-              ]
+              "@apply": ["ak-link"]
             },
             ":where(kbd)": {
-              "@apply": [
-                "ak-kbd"
-              ]
+              "@apply": ["ak-kbd"]
             },
             ":where(hr)": {
-              "@apply": [
-                "ak-separator"
-              ]
+              "@apply": ["ak-separator"]
             }
           },
           "dependencies": [
