@@ -66,7 +66,6 @@ interface ModuleJson {
 
 interface StyleIndexJson {
   version: number;
-  generatedAt: string;
   modules: ModuleJson[];
   index: {
     utilities: Record<string, { module: string }>;
@@ -841,7 +840,6 @@ export async function buildAkStylesIndex(outputPath: string = OUTPUT_JSON) {
 
   const json: StyleIndexJson = {
     version: 2,
-    generatedAt: new Date().toISOString(),
     modules,
     index: buildIndexSection(modules),
   };
