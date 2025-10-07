@@ -7,11 +7,12 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   generate:
     name: Build styles
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: write
