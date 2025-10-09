@@ -1,6 +1,5 @@
 ---
-description: Coding style
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Ariakit Style Rules
@@ -56,6 +55,7 @@ These rules guide AI-assisted edits in this repository.
 
 ## TypeScript
 
+- Avoid any kind of type casting, especially `as any`.
 - Prefer `interface` over `type` for object shapes. Use `type` only when interfaces cannot express the shape (e.g., unions, tuples, conditional or mapped types).
 - Avoid abbreviated variable names (except conventional indices `i`, `j`, `k`). Use descriptive, intention-revealing names.
 - When indexing arrays, guard against `undefined`. Do not use non-null assertions with indexed access.

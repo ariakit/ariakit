@@ -1,3 +1,4 @@
+import type { StyleDependency } from "./styles.ts";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -12,4 +13,10 @@ export interface Source {
   files: Record<string, string>;
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
+  /**
+   * Styles referenced by the source code. This follows the same shape as items
+   * in `dependencies` arrays within `site/src/styles/styles.json` (name, type,
+   * and optionally module/import).
+   */
+  styles: StyleDependency[];
 }

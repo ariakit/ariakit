@@ -11,7 +11,7 @@
 import type { CollectionEntry } from "astro:content";
 import { findCodeReferenceAnchors } from "./reference-tokenizer.ts";
 
-type RefProp = {
+interface RefProp {
   name: string;
   type: string;
   description: string;
@@ -20,9 +20,9 @@ type RefProp = {
   examples: [];
   liveExamples: [];
   props?: RefProp[];
-};
+}
 
-type RefData = {
+interface RefData {
   name: string;
   component: string;
   kind: "component" | "function" | "store";
@@ -34,7 +34,7 @@ type RefData = {
   state: RefProp[];
   params: RefProp[];
   returnValue?: { type: string; description: string; props?: RefProp[] };
-};
+}
 
 function createProp(
   name: string,
