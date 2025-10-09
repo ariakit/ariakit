@@ -32,7 +32,7 @@
     "test-visual-android": "cross-env VISUAL_TEST=true playwright test --project=android",
     "og-image-clean": "rimraf public/og-image",
     "og-image-generate": "npm run og-image-clean && node --experimental-strip-types src/pages/og-image/_generate-images.ts",
-    "build-styles": "node --experimental-strip-types src/lib/build-ak-styles.ts"
+    "build-styles": "node --experimental-strip-types src/lib/build-styles.ts"
   },
   "imports": {
     "#app/*": "./src/*"

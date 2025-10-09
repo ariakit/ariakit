@@ -11,25 +11,20 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-interface SourceRange {
-  file: string;
-  start: number;
-  end: number;
-}
-
 interface AtPropertyDef {
   name: string;
   syntax: string | null;
   inherits: boolean | null;
   initialValue: string | null;
-  sources: SourceRange[];
 }
 
-// PropertiesMap is a mixed map: declarations (prop: value), comments, arrays
-// for @apply, and nested blocks
-type PropertiesMap = {
-  [key: string]: string | string[] | PropertiesMap;
-};
+// Ordered property entries to preserve duplicates and declaration order
+interface PropertyDecl {
+  name: string;
+  // string for declarations or special entries like "@apply", "@slot", comments
+  // array for nested blocks where name is the selector/header
+  value: string | PropertyDecl[];
+}
 
 type DependencyType = "utility" | "variant" | "at-property";
 
@@ -43,17 +38,15 @@ interface Dependency {
 interface UtilityDef {
   name: string;
   type: "utility";
-  properties: PropertiesMap;
+  properties: PropertyDecl[];
   dependencies: Dependency[];
-  sources: SourceRange[];
 }
 
 interface VariantDef {
   name: string;
   type: "variant";
-  properties: PropertiesMap;
+  properties: PropertyDecl[];
   dependencies: Dependency[];
-  sources: SourceRange[];
 }
 
 interface ModuleJson {
@@ -95,14 +88,6 @@ function stripLineComments(s: string) {
   return s.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ""));
 }
 
-function getLineAtOffset(text: string, offset: number) {
-  let line = 1;
-  for (let i = 0; i < offset && i < text.length; i++) {
-    if (text.charCodeAt(i) === 10) line++;
-  }
-  return line;
-}
-
 function uniqPreserveOrder<T>(arr: T[]) {
   const seen = new Set<T>();
   const out: T[] = [];
@@ -122,8 +107,6 @@ interface ExtractedBlock {
   // utility/variant name or variable name for @property
   name: string;
   body: string;
-  startLine: number;
-  endLine: number;
 }
 
 async function readFileText(filePath: string) {
@@ -137,7 +120,7 @@ function findMatchingBrace(text: string, openIndex: number) {
   let inStr: false | string = false;
   let inComment = false;
   while (i < text.length) {
-    const ch = text[i]!;
+    const ch = text.charAt(i);
     const next = text[i + 1];
     if (inComment) {
       if (ch === "*" && next === "/") {
@@ -153,7 +136,9 @@ function findMatchingBrace(text: string, openIndex: number) {
         i += 2;
         continue;
       }
-      if (ch === inStr) inStr = false;
+      if (ch === inStr) {
+        inStr = false;
+      }
       i++;
       continue;
     }
@@ -167,10 +152,14 @@ function findMatchingBrace(text: string, openIndex: number) {
       i++;
       continue;
     }
-    if (ch === "{") depth++;
+    if (ch === "{") {
+      depth++;
+    }
     if (ch === "}") {
       depth--;
-      if (depth === 0) return i;
+      if (depth === 0) {
+        return i;
+      }
     }
     i++;
   }
@@ -187,7 +176,7 @@ function extractTopLevelBlocks(
   let inStr: false | string = false;
   let inComment = false;
   while (i < n) {
-    const ch = rawCss[i]!;
+    const ch = rawCss.charAt(i);
     const next = rawCss[i + 1];
     if (inComment) {
       if (ch === "*" && next === "/") {
@@ -203,7 +192,9 @@ function extractTopLevelBlocks(
         i += 2;
         continue;
       }
-      if (ch === inStr) inStr = false;
+      if (ch === inStr) {
+        inStr = false;
+      }
       i++;
       continue;
     }
@@ -233,11 +224,21 @@ function extractTopLevelBlocks(
         nameMatch = /^@property\s+(--[A-Za-z0-9_-]+)/.exec(slice);
       }
       if (kind && nameMatch) {
-        const name = nameMatch[1]!;
+        const nameCaptured = nameMatch[1];
+        if (!nameCaptured) {
+          i++;
+          continue;
+        }
+        const name = nameCaptured;
         // advance to first '{' after skipping whitespace/comments
-        let j = i + nameMatch[0]!.length;
+        const prefix = nameMatch[0];
+        if (!prefix) {
+          i++;
+          continue;
+        }
+        let j = i + prefix.length;
         while (j < n) {
-          const cj = rawCss[j]!;
+          const cj = rawCss.charAt(j);
           const nj = rawCss[j + 1];
           if (/\s/.test(cj)) {
             j++;
@@ -264,9 +265,7 @@ function extractTopLevelBlocks(
           continue;
         }
         const body = rawCss.slice(braceOpen + 1, braceClose);
-        const startLine = getLineAtOffset(rawCss, i);
-        const endLine = getLineAtOffset(rawCss, braceClose);
-        blocks.push({ kind, name, body, startLine, endLine });
+        blocks.push({ kind, name, body });
         i = braceClose + 1;
         continue;
       }
@@ -284,18 +283,26 @@ function extractTopLevelBlocks(
 interface SplitBodyResult {
   declarations: string[]; // raw statements without trailing semicolon (include comments as separate items)
   blocks: { header: string; body: string }[];
+  items: (
+    | { kind: "decl"; content: string }
+    | { kind: "block"; header: string; body: string }
+  )[];
 }
 
 function splitBody(content: string): SplitBodyResult {
   const declarations: string[] = [];
   const blocks: { header: string; body: string }[] = [];
+  const items: (
+    | { kind: "decl"; content: string }
+    | { kind: "block"; header: string; body: string }
+  )[] = [];
   let i = 0;
   const n = content.length;
   let tokenStart = 0;
   let depth = 0;
   let inStr: false | string = false;
   while (i < n) {
-    const ch = content[i]!;
+    const ch = content.charAt(i);
     const next = content[i + 1];
     if (inStr) {
       if (ch === "\\") {
@@ -311,11 +318,14 @@ function splitBody(content: string): SplitBodyResult {
     // capture comments at depth 0 as individual declarations
     if (ch === "/" && next === "*" && depth === 0) {
       const pending = content.slice(tokenStart, i).trim();
-      if (pending) declarations.push(pending);
+      if (pending) {
+        declarations.push(pending);
+      }
       const end = content.indexOf("*/", i + 2);
       const commentEnd = end === -1 ? n - 2 : end;
       const comment = content.slice(i, commentEnd + 2);
       declarations.push(comment);
+      items.push({ kind: "decl", content: comment });
       i = commentEnd + 2;
       tokenStart = i;
       continue;
@@ -334,6 +344,7 @@ function splitBody(content: string): SplitBodyResult {
         if (braceClose === -1) break;
         const body = content.slice(braceOpen + 1, braceClose);
         blocks.push({ header, body });
+        items.push({ kind: "block", header, body });
         // Move after closing brace
         i = braceClose + 1;
         tokenStart = i;
@@ -352,6 +363,7 @@ function splitBody(content: string): SplitBodyResult {
       const stmt = content.slice(tokenStart, i).trim();
       if (stmt) {
         declarations.push(stmt);
+        items.push({ kind: "decl", content: stmt });
       }
       i++;
       tokenStart = i;
@@ -363,96 +375,76 @@ function splitBody(content: string): SplitBodyResult {
   const tail = content.slice(tokenStart).trim();
   if (tail) {
     declarations.push(tail);
+    items.push({ kind: "decl", content: tail });
   }
-  return { declarations, blocks };
+  return { declarations, blocks, items };
 }
 
 /**
  * Parse declarations into apply lines, custom properties, and non-custom props
  */
-interface ParsedDecls {
-  applyLines: string[];
-  customProps: Record<string, string>;
-  nonCustomProps: Record<string, string>;
-}
-
-function parseDeclarations(statements: string[]): ParsedDecls {
-  const applyLines: string[] = [];
-  const customProps: Record<string, string> = {};
-  const nonCustomProps: Record<string, string> = {};
-  let pendingApplyComments: string[] = [];
-  for (const stmt of statements) {
-    const s = stmt.trim();
-    if (!s) continue;
-    if (s.startsWith("/*") && s.endsWith("*/")) {
-      // Defer placing comment: attach to next @apply if present; otherwise
-      // we'll flush it into nonCustomProps when a non-apply declaration appears
-      // or at the end
-      pendingApplyComments.push(s);
-      continue;
-    }
-    if (s.startsWith("@apply ")) {
-      const raw = s.replace(/^@apply\s+/, "");
-      if (pendingApplyComments.length) {
-        for (const c of pendingApplyComments) applyLines.push(c);
-        pendingApplyComments = [];
-      }
-      applyLines.push(raw);
-      continue;
-    }
-    // Any non-apply declaration flushes pending comments into properties
-    if (pendingApplyComments.length) {
-      for (const c of pendingApplyComments) {
-        nonCustomProps[c] = "";
-      }
-      pendingApplyComments = [];
-    }
-    // @slot;
-    if (s === "@slot") {
-      nonCustomProps["@slot"] = "";
-      continue;
-    }
-    const colon = s.indexOf(":");
-    if (colon > 0) {
-      const prop = s.slice(0, colon).trim();
-      const value = s.slice(colon + 1).trim();
-      if (prop.startsWith("--")) {
-        customProps[prop] = value;
-      } else {
-        nonCustomProps[prop] = value;
-      }
-    }
-  }
-  // Flush any trailing comments that were not attached to an @apply
-  if (pendingApplyComments.length) {
-    for (const c of pendingApplyComments) {
-      nonCustomProps[c] = "";
-    }
-    pendingApplyComments = [];
-  }
-  return { applyLines, customProps, nonCustomProps };
-}
+// removed legacy parseDeclarations in favor of ordered PropertyDecl parsing
 
 /**
- * Recursive parse of a block body into a NestedRuleNode
+ * Parse a block body into ordered PropertyDecl[] preserving declaration and block order.
  */
-function parseNestedRule(body: string): PropertiesMap {
-  const { declarations, blocks } = splitBody(body);
-  const { applyLines, customProps, nonCustomProps } =
-    parseDeclarations(declarations);
-  const propsMap: PropertiesMap = {};
-  if (applyLines.length) propsMap["@apply"] = applyLines;
-  for (const [prop, value] of Object.entries(customProps)) {
-    propsMap[prop] = value;
+function parsePropertyDecls(body: string): PropertyDecl[] {
+  const { items } = splitBody(body);
+  const decls: PropertyDecl[] = [];
+  let pendingApplyComments: string[] = [];
+
+  const flushPendingComments = () => {
+    if (!pendingApplyComments.length) return;
+    for (const c of pendingApplyComments) {
+      decls.push({ name: c, value: "" });
+    }
+    pendingApplyComments = [];
+  };
+
+  for (const item of items) {
+    if (item.kind === "decl") {
+      const s = item.content.trim();
+      if (!s) continue;
+      if (s.startsWith("/*") && s.endsWith("*/")) {
+        pendingApplyComments.push(s);
+        continue;
+      }
+      if (s.startsWith("@apply ")) {
+        // Attach any pending comments immediately before @apply
+        flushPendingComments();
+        const raw = s.replace(/^@apply\s+/, "");
+        decls.push({ name: "@apply", value: raw });
+        continue;
+      }
+      // Any non-apply declaration flushes pending comments
+      if (s === "@slot") {
+        flushPendingComments();
+        decls.push({ name: "@slot", value: "" });
+        continue;
+      }
+      const colon = s.indexOf(":");
+      if (colon > 0) {
+        flushPendingComments();
+        const prop = s.slice(0, colon).trim();
+        const value = s.slice(colon + 1).trim();
+        decls.push({ name: prop, value });
+        continue;
+      }
+      // Fallback: keep raw as a named empty declaration
+      flushPendingComments();
+      decls.push({ name: s, value: "" });
+      continue;
+    }
+    if (item.kind === "block") {
+      flushPendingComments();
+      const hdr = item.header.trim();
+      const children = parsePropertyDecls(item.body);
+      decls.push({ name: hdr, value: children });
+    }
   }
-  for (const [prop, value] of Object.entries(nonCustomProps)) {
-    propsMap[prop] = value;
-  }
-  for (const { header, body: childBody } of blocks) {
-    const hdr = header.trim();
-    propsMap[hdr] = parseNestedRule(childBody);
-  }
-  return propsMap;
+  // Flush any trailing comments
+  flushPendingComments();
+  return decls;
 }
 
 /**
@@ -504,61 +496,26 @@ async function parseStyleModule(modulePath: string): Promise<ModuleJson> {
         syntax: parsed.syntax,
         inherits: parsed.inherits,
         initialValue: parsed.initial,
-        sources: [
-          {
-            file: toProjectRelativePosix(modulePath),
-            start: block.startLine,
-            end: block.endLine,
-          },
-        ],
       };
       continue;
     }
     if (block.kind === "utility") {
-      const { declarations, blocks: childBlocks } = splitBody(block.body);
-      const { applyLines, customProps, nonCustomProps } =
-        parseDeclarations(declarations);
-      const propsRoot: PropertiesMap = {};
-      if (applyLines.length) propsRoot["@apply"] = applyLines;
-      for (const [prop, value] of Object.entries(customProps)) {
-        propsRoot[prop] = value;
-      }
-      for (const [prop, value] of Object.entries(nonCustomProps)) {
-        propsRoot[prop] = value;
-      }
-      for (const child of childBlocks) {
-        const hdr = child.header.trim();
-        propsRoot[hdr] = parseNestedRule(child.body);
-      }
+      const propsRoot = parsePropertyDecls(block.body);
       utilities[block.name] = {
         name: block.name,
         type: "utility",
         properties: propsRoot,
         dependencies: [],
-        sources: [
-          {
-            file: toProjectRelativePosix(modulePath),
-            start: block.startLine,
-            end: block.endLine,
-          },
-        ],
       };
       continue;
     }
     if (block.kind === "custom-variant") {
-      const variantRules = parseNestedRule(block.body) || {};
+      const variantRules = parsePropertyDecls(block.body);
       variants[block.name] = {
         name: block.name,
         type: "variant",
         properties: variantRules,
         dependencies: [],
-        sources: [
-          {
-            file: toProjectRelativePosix(modulePath),
-            start: block.startLine,
-            end: block.endLine,
-          },
-        ],
       };
     }
   }
@@ -582,9 +539,14 @@ async function discoverModulePaths(): Promise<string[]> {
   const css = stripLineComments(raw);
   const paths: string[] = [];
   const re = /@import\s+"\.\/(ak-[^"]+\.css)"\s*;/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(css))) {
-    const rel = m[1]!;
+  let match: RegExpExecArray | null;
+  while (true) {
+    match = re.exec(css);
+    if (!match) break;
+    const rel = match[1];
+    if (!rel) {
+      continue;
+    }
     paths.push(path.join(STYLES_DIR, rel));
   }
   return paths;
@@ -626,7 +588,10 @@ function extractAkTokensFromApplyLine(line: string) {
     // keep any ak-* segments as potential variants or utilities
     const segments = tok.split(":");
     for (let i = 0; i < segments.length; i++) {
-      const seg = segments[i]!;
+      const seg = segments[i];
+      if (!seg) {
+        continue;
+      }
       if (seg.startsWith("ak-")) {
         akTokens.push(seg);
       }
@@ -638,27 +603,30 @@ function extractAkTokensFromApplyLine(line: string) {
 function findVarNamesInString(value: string) {
   const out: string[] = [];
   const re = /var\(\s*(--[A-Za-z0-9_-]+)\b[^)]*\)/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(value))) {
-    out.push(m[1]!);
+  let match: RegExpExecArray | null;
+  while (true) {
+    match = re.exec(value);
+    if (!match) break;
+    const name = match[1];
+    if (name) {
+      out.push(name);
+    }
   }
   return uniqPreserveOrder(out);
 }
 
-function collectAllValuesFromPropertiesMap(props?: PropertiesMap): string[] {
-  if (!props) return [];
+function collectAllValuesFromPropertyDecls(decls?: PropertyDecl[]): string[] {
+  if (!decls) {
+    return [];
+  }
   const out: string[] = [];
-  for (const [, val] of Object.entries(props)) {
-    if (typeof val === "string") {
-      out.push(val);
+  for (const d of decls) {
+    if (typeof d.value === "string") {
+      out.push(d.value);
       continue;
     }
-    if (Array.isArray(val)) {
-      out.push(...val);
-      continue;
-    }
-    if (typeof val === "object") {
-      out.push(...collectAllValuesFromPropertiesMap(val));
+    if (Array.isArray(d.value)) {
+      out.push(...collectAllValuesFromPropertyDecls(d.value));
     }
   }
   return out;
@@ -686,82 +654,36 @@ function resolveDependencies(modules: ModuleJson[]): void {
   for (const mod of modules) {
     for (const util of Object.values(mod.utilities)) {
       const deps: Dependency[] = [];
-      const applyLines = Array.isArray(util.properties["@apply"])
-        ? [...(util.properties["@apply"] as string[])]
-        : [];
-      // Collect nested apply lines and property values
-      const nestedValues = collectAllValuesFromPropertiesMap(util.properties);
+      const nestedValues = collectAllValuesFromPropertyDecls(util.properties);
       for (const v of nestedValues) {
         // Any nested apply lines are stored as entire lines in val.apply; others are declarations
         // We still scan all strings for ak-* tokens
         const akTokens = extractAkTokensFromApplyLine(v);
         for (const t of akTokens) {
-          if (index.utilToModule.has(t)) {
-            addDep(deps, {
-              type: "utility",
-              name: t,
-              module: index.utilToModule.get(t)!,
-            });
-          } else if (index.variantToModule.has(t)) {
-            addDep(deps, {
-              type: "variant",
-              name: t,
-              module: index.variantToModule.get(t)!,
-            });
-          } else if (t.startsWith("ak-")) {
-            addDep(deps, { type: "utility", name: t, import: externalImport });
+          const utilMod = index.utilToModule.get(t);
+          if (utilMod) {
+            addDep(deps, { type: "utility", name: t, module: utilMod });
+          } else {
+            const variantMod = index.variantToModule.get(t);
+            if (variantMod) {
+              addDep(deps, { type: "variant", name: t, module: variantMod });
+            } else if (t.startsWith("ak-")) {
+              addDep(deps, {
+                type: "utility",
+                name: t,
+                import: externalImport,
+              });
+            }
           }
         }
         // Also scan for var(--prop)
         for (const varName of findVarNamesInString(v)) {
-          if (index.atPropToModule.has(varName)) {
+          const propModule = index.atPropToModule.get(varName);
+          if (propModule) {
             addDep(deps, {
               type: "at-property",
               name: varName,
-              module: index.atPropToModule.get(varName)!,
-            });
-          }
-        }
-      }
-      // Root-level apply lines
-      for (const line of applyLines) {
-        const akTokens = extractAkTokensFromApplyLine(line);
-        for (const t of akTokens) {
-          if (index.utilToModule.has(t)) {
-            addDep(deps, {
-              type: "utility",
-              name: t,
-              module: index.utilToModule.get(t)!,
-            });
-          } else if (index.variantToModule.has(t)) {
-            addDep(deps, {
-              type: "variant",
-              name: t,
-              module: index.variantToModule.get(t)!,
-            });
-          } else if (t.startsWith("ak-")) {
-            addDep(deps, { type: "utility", name: t, import: externalImport });
-          }
-        }
-        for (const varName of findVarNamesInString(line)) {
-          if (index.atPropToModule.has(varName)) {
-            addDep(deps, {
-              type: "at-property",
-              name: varName,
-              module: index.atPropToModule.get(varName)!,
-            });
-          }
-        }
-      }
-      // Root-level custom props: scan only string values
-      for (const value of Object.values(util.properties)) {
-        if (typeof value !== "string") continue;
-        for (const varName of findVarNamesInString(value)) {
-          if (index.atPropToModule.has(varName)) {
-            addDep(deps, {
-              type: "at-property",
-              name: varName,
-              module: index.atPropToModule.get(varName)!,
+              module: propModule,
             });
           }
         }
@@ -771,32 +693,35 @@ function resolveDependencies(modules: ModuleJson[]): void {
     // Variants typically have no deps; leave empty unless their rules reference var() or ak-* tokens
     for (const variant of Object.values(mod.variants)) {
       const deps: Dependency[] = [];
-      const values = collectAllValuesFromPropertiesMap(variant.properties);
+      const values = collectAllValuesFromPropertyDecls(variant.properties);
       for (const v of values) {
         const akTokens = extractAkTokensFromApplyLine(v);
         for (const t of akTokens) {
-          if (index.utilToModule.has(t))
-            addDep(deps, {
-              type: "utility",
-              name: t,
-              module: index.utilToModule.get(t)!,
-            });
-          else if (index.variantToModule.has(t))
-            addDep(deps, {
-              type: "variant",
-              name: t,
-              module: index.variantToModule.get(t)!,
-            });
-          else if (t.startsWith("ak-"))
-            addDep(deps, { type: "utility", name: t, import: externalImport });
+          const utilMod = index.utilToModule.get(t);
+          if (utilMod) {
+            addDep(deps, { type: "utility", name: t, module: utilMod });
+          } else {
+            const variantMod = index.variantToModule.get(t);
+            if (variantMod) {
+              addDep(deps, { type: "variant", name: t, module: variantMod });
+            } else if (t.startsWith("ak-")) {
+              addDep(deps, {
+                type: "utility",
+                name: t,
+                import: externalImport,
+              });
+            }
+          }
         }
         for (const varName of findVarNamesInString(v)) {
-          if (index.atPropToModule.has(varName))
+          const propModule = index.atPropToModule.get(varName);
+          if (propModule) {
             addDep(deps, {
               type: "at-property",
               name: varName,
-              module: index.atPropToModule.get(varName)!,
+              module: propModule,
             });
+          }
         }
       }
       variant.dependencies = deps;
@@ -848,7 +773,38 @@ export async function buildAkStylesIndex(outputPath: string = OUTPUT_JSON) {
   return outputPath;
 }
 
-// Allow running directly via ts-node or tsx
-buildAkStylesIndex().then((out) => {
+// Allow running directly via node --experimental-strip-types
+async function main() {
+  const args = process.argv.slice(2);
+  const isCheck = args.includes("--check");
+  const tempOut = path.join(STYLES_DIR, ".styles.check.json");
+  const outPath = isCheck ? tempOut : OUTPUT_JSON;
+  const out = await buildAkStylesIndex(outPath);
+  if (isCheck) {
+    let expected = "";
+    try {
+      expected = await fs.readFile(OUTPUT_JSON, "utf8");
+    } catch {
+      // missing expected file counts as mismatch
+    }
+    const actual = await fs.readFile(out, "utf8");
+    if (expected !== actual) {
+      console.error(
+        "styles.json is out of date. Run: npm run build-styles -w site",
+      );
+      process.exitCode = 1;
+    }
+    // cleanup temp file
+    try {
+      await fs.unlink(tempOut);
+    } catch {}
+    return;
+  }
   console.log(`Wrote ${toPosix(out)}`);
-});
+}
+
+const isMain = import.meta.filename === path.resolve(process.argv[1] ?? "");
+if (isMain) {
+  // no void to preserve stack traces on unhandled rejections
+  main();
+}
