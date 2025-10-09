@@ -33,6 +33,23 @@ test("scanAkTokensInFiles finds ak-* tokens including bracketed", () => {
   );
 });
 
+test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () => {
+  const files = {
+    "a.tsx": `
+      <div className="ak-one"></div>
+      <div className="ak-two"></div>
+    `,
+    // Second file starts with a token at index 0 to expose lastIndex carry-over
+    "b.tsx": `ak-three <span class="ak-four"></span>`,
+  };
+  const tokens = scanAkTokensInFiles(files);
+  expect(tokens.has("ak-one")).toBe(true);
+  expect(tokens.has("ak-two")).toBe(true);
+  // These should be found in the second file even if the regex lastIndex carried over
+  expect(tokens.has("ak-three")).toBe(true);
+  expect(tokens.has("ak-four")).toBe(true);
+});
+
 test("styleDefToCss renders @property block", () => {
   const def = getStyleDefinition("--ak-tab-border-width", "at-property");
   expect(def).toBeTruthy();
