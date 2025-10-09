@@ -10,62 +10,17 @@
 
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import type {
+  AtPropertyDef,
+  ModuleJson,
+  PropertyDecl,
+  StyleDependency,
+  StylesJson,
+  UtilityDef,
+  VariantDef,
+} from "./styles.ts";
 
-interface AtPropertyDef {
-  name: string;
-  syntax: string | null;
-  inherits: boolean | null;
-  initialValue: string | null;
-}
-
-// Ordered property entries to preserve duplicates and declaration order
-interface PropertyDecl {
-  name: string;
-  // string for declarations or special entries like "@apply", "@slot", comments
-  // array for nested blocks where name is the selector/header
-  value: string | PropertyDecl[];
-}
-
-type DependencyType = "utility" | "variant" | "at-property";
-
-interface Dependency {
-  type: DependencyType;
-  name: string;
-  module?: string;
-  import?: string;
-}
-
-interface UtilityDef {
-  name: string;
-  type: "utility";
-  properties: PropertyDecl[];
-  dependencies: Dependency[];
-}
-
-interface VariantDef {
-  name: string;
-  type: "variant";
-  properties: PropertyDecl[];
-  dependencies: Dependency[];
-}
-
-interface ModuleJson {
-  id: string;
-  path: string;
-  atProperties: Record<string, AtPropertyDef>;
-  utilities: Record<string, UtilityDef>;
-  variants: Record<string, VariantDef>;
-}
-
-interface StyleIndexJson {
-  version: number;
-  modules: ModuleJson[];
-  index: {
-    utilities: Record<string, { module: string }>;
-    variants: Record<string, { module: string }>;
-    atProperties: Record<string, { module: string }>;
-  };
-}
+type Dependency = StyleDependency;
 
 // Files and discovery
 const ROOT_DIR = path.resolve(import.meta.dirname, "../../../");
@@ -281,7 +236,9 @@ function extractTopLevelBlocks(
  * - nested blocks headed by "<header>{...}"
  */
 interface SplitBodyResult {
-  declarations: string[]; // raw statements without trailing semicolon (include comments as separate items)
+  // raw statements without trailing semicolon (include comments as separate
+  // items)
+  declarations: string[];
   blocks: { header: string; body: string }[];
   items: (
     | { kind: "decl"; content: string }
@@ -379,11 +336,6 @@ function splitBody(content: string): SplitBodyResult {
   }
   return { declarations, blocks, items };
 }
-
-/**
- * Parse declarations into apply lines, custom properties, and non-custom props
- */
-// removed legacy parseDeclarations in favor of ordered PropertyDecl parsing
 
 /**
  * Parse a block body into ordered PropertyDecl[] preserving declaration and block order.
@@ -656,8 +608,8 @@ function resolveDependencies(modules: ModuleJson[]): void {
       const deps: Dependency[] = [];
       const nestedValues = collectAllValuesFromPropertyDecls(util.properties);
       for (const v of nestedValues) {
-        // Any nested apply lines are stored as entire lines in val.apply; others are declarations
-        // We still scan all strings for ak-* tokens
+        // Any nested apply lines are stored as entire lines in val.apply;
+        // others are declarations We still scan all strings for ak-* tokens
         const akTokens = extractAkTokensFromApplyLine(v);
         for (const t of akTokens) {
           const utilMod = index.utilToModule.get(t);
@@ -690,7 +642,8 @@ function resolveDependencies(modules: ModuleJson[]): void {
       }
       util.dependencies = deps;
     }
-    // Variants typically have no deps; leave empty unless their rules reference var() or ak-* tokens
+    // Variants typically have no deps; leave empty unless their rules reference
+    // var() or ak-* tokens
     for (const variant of Object.values(mod.variants)) {
       const deps: Dependency[] = [];
       const values = collectAllValuesFromPropertyDecls(variant.properties);
@@ -732,7 +685,7 @@ function resolveDependencies(modules: ModuleJson[]): void {
 /**
  * Build global index section
  */
-function buildIndexSection(modules: ModuleJson[]): StyleIndexJson["index"] {
+function buildIndexSection(modules: ModuleJson[]): StylesJson["index"] {
   const utilities: Record<string, { module: string }> = {};
   const variants: Record<string, { module: string }> = {};
   const atProperties: Record<string, { module: string }> = {};
@@ -763,7 +716,7 @@ export async function buildAkStylesIndex(outputPath: string = OUTPUT_JSON) {
   // Resolve dependencies after all modules are parsed
   resolveDependencies(modules);
 
-  const json: StyleIndexJson = {
+  const json: StylesJson = {
     version: 2,
     modules,
     index: buildIndexSection(modules),

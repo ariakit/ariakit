@@ -16,6 +16,7 @@ import type { PluginContext } from "rollup";
 import ts from "typescript";
 import type { Plugin } from "vite";
 import { getFramework, getFrameworkByFilename } from "./frameworks.ts";
+import { resolveStylesForFiles } from "./styles.ts";
 import type { Source } from "./types.ts";
 
 // Cache for package information to avoid repeated lookups
@@ -329,9 +330,13 @@ export function sourcePlugin(root?: string): Plugin {
         files: {},
         dependencies: {},
         devDependencies: {},
+        styles: [],
       };
 
       await processFile(this, source, realId);
+
+      // Resolve styles used by this source based on ak-* tokens found in files
+      source.styles = resolveStylesForFiles(source.files);
 
       return `export default ${JSON.stringify(source, null, 2)}`;
     },

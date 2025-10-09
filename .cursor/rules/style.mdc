@@ -1,6 +1,5 @@
 ---
-description: Coding style
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Ariakit Style Rules
@@ -56,6 +55,10 @@ These rules guide AI-assisted edits in this repository.
 
 ## TypeScript
 
+- Type assertions and casts: Use safe, explicit operators that preserve type intent; disallow unsafe/unchecked casts that bypass the type system.
+  - Allowed: `as const` to narrow literals; DOM-specific casts when preceded by runtime checks or guaranteed by well-typed APIs; `satisfies` to validate shapes without changing value types.
+  - Disallowed: `as any`; `unknown as T` used to silence type errors.
+  - Prefer proper typing with generics, discriminated unions, and user-defined type guards; when an assertion is truly necessary, keep it as narrow as possible and add a brief rationale above it.
 - Prefer `interface` over `type` for object shapes. Use `type` only when interfaces cannot express the shape (e.g., unions, tuples, conditional or mapped types).
 - Avoid abbreviated variable names (except conventional indices `i`, `j`, `k`). Use descriptive, intention-revealing names.
 - When indexing arrays, guard against `undefined`. Do not use non-null assertions with indexed access.

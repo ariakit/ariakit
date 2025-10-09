@@ -11,6 +11,7 @@
 import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import type { Framework } from "#app/lib/schemas.ts";
+import type { StyleDependency } from "#app/lib/styles.ts";
 import type { Source } from "#app/lib/types.ts";
 import { invariant } from "@ariakit/core/utils/misc";
 import ContentCodeBlock from "./content-code-block.astro";
@@ -44,6 +45,8 @@ const frameworkLookupDependencies = [
   ...frameworkDetail.dependencies.map((dependency) => `@types/${dependency}`),
 ];
 
+const frameworkStyles = new Map<string, StyleDependency>();
+
 for (const source of sources) {
   const frameworkSource = getSource(source);
   if (!frameworkSource) continue;
@@ -60,6 +63,10 @@ for (const source of sources) {
       continue;
     }
     devDependencies[key] = value;
+  }
+  for (const style of frameworkSource.styles) {
+    if ("import" in style) continue;
+    frameworkStyles.set(style.name, style);
   }
 }
 
