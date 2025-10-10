@@ -66,7 +66,7 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
       return getStackblitzFramework(framework, source);
     }, [stackblitzFrameworkProp, framework, source]);
 
-    const canOpen = Boolean(stackblitzFramework && source);
+    const canOpen = Boolean(stackblitzFramework && source && framework);
     const isDisabled = disabled || !canOpen;
 
     return (
@@ -81,7 +81,6 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
           if (event.defaultPrevented) return;
           if (!stackblitzFramework) return;
           if (!framework) return;
-          if (!example) return;
           if (!source) return;
           const id = example ?? source.name;
           if (!id) return;
