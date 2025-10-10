@@ -642,6 +642,17 @@ function findClassTokenRanges(code: string) {
   return ranges;
 }
 
+/**
+ * Scans the provided source code and computes per-line anchor ranges for
+ * Ariakit references. This powers reference hovercards by linking:
+ * - Named imports and their local identifiers
+ * - Component tags and allowed props
+ * - Store/function calls, including first-argument option props
+ * - ak- class tokens inside strings and template literals
+ *
+ * Returns a list of ranges for each line in the trimmed input, ready for
+ * rendering without additional position mapping.
+ */
 export function findCodeReferenceAnchors({
   code,
   references,
@@ -779,6 +790,10 @@ export function findCodeReferenceAnchors({
       const name = mc[2]!;
       const dotPos = full.lastIndexOf(".");
       const tokenStart = (mc.index || 0) + dotPos + 1;
+      // Heuristic: avoid matching generics like Foo<T> by requiring that the
+      // character before '<' is not an identifier character.
+      const beforeLt = trimmed[(mc.index || 0) - 1] || "";
+      if (/[_$A-Za-z0-9]/.test(beforeLt)) continue;
       const tokenEnd = tokenStart + name.length;
       const nsSource = localImports.get(ns);
       const allowNs = nsSource?.startsWith("@ariakit/") || !hasAnyImport;
@@ -804,15 +819,10 @@ export function findCodeReferenceAnchors({
     let mcn: RegExpExecArray | null;
     while ((mcn = compRe.exec(trimmed))) {
       const name = mcn[1]!;
-      // Avoid tokenizing function declarations (export function Name(...))
-      // Check for patterns like: export function Name( or function Name(
-      const beforeIdx = mcn.index || 0;
-      const pre = trimmed.slice(
-        Math.max(0, beforeIdx - 64),
-        beforeIdx + name.length + 1,
-      );
-      if (/\bexport\s+function\s+\w+\s*\(|\bfunction\s+\w+\s*\(/.test(pre))
-        continue;
+      // Heuristic: avoid matching TypeScript generics like function f<T>() by
+      // ensuring the character before '<' is not an identifier character.
+      const beforeLt = trimmed[(mcn.index || 0) - 1] || "";
+      if (/[_$A-Za-z0-9]/.test(beforeLt)) continue;
       const importedSource = localImports.get(name);
       const isFromAriakit = importedSource?.startsWith("@ariakit/");
       if (isFromAriakit || (!importedSource && !hasAnyImport)) {
@@ -862,13 +872,10 @@ export function findCodeReferenceAnchors({
       ) as ReferenceLabelKind;
       const start = (call.index || 0) + ns.length + 1; // after ns.
       const end = start + fn.length;
-      pushRange(
-        anchors,
-        start,
-        end,
-        getHref((ref || storeRef!) as any),
-        labelKind,
-      );
+      const targetRef = ref ?? storeRef;
+      if (targetRef) {
+        pushRange(anchors, start, end, getHref(targetRef), labelKind);
+      }
 
       // If assigned to a variable, remember it
       const leftSpan = trimmed.slice(
@@ -888,10 +895,10 @@ export function findCodeReferenceAnchors({
       // First-arg object literal props
       const obj = findObjectLiteralAtFirstArg(trimmed, call.index || 0);
       const refForProps = ref || storeRef;
-      if (obj && refForProps?.data.params?.[0]?.props?.length) {
-        const allowed = new Set(
-          refForProps.data.params[0]!.props!.map((p) => p.name),
-        );
+      const firstParam = refForProps?.data.params?.[0];
+      const firstParamProps = firstParam?.props;
+      if (obj && refForProps && firstParamProps && firstParamProps.length > 0) {
+        const allowed = new Set(firstParamProps.map((p) => p.name));
         const keys = findTopLevelObjectKeys(trimmed, obj.start, obj.end);
         for (const k of keys) {
           if (!allowed.has(k.name)) continue;
@@ -931,13 +938,10 @@ export function findCodeReferenceAnchors({
       ) as ReferenceLabelKind;
       const start = pc.index || 0;
       const end = start + local.length;
-      pushRange(
-        anchors,
-        start,
-        end,
-        getHref((ref || storeRef!) as any),
-        labelKind,
-      );
+      const targetRef = ref ?? storeRef;
+      if (targetRef) {
+        pushRange(anchors, start, end, getHref(targetRef), labelKind);
+      }
 
       // If assigned to a variable, remember it
       const leftSpan = trimmed.slice(
@@ -957,10 +961,10 @@ export function findCodeReferenceAnchors({
       // First-arg object literal props
       const obj = findObjectLiteralAtFirstArg(trimmed, pc.index || 0);
       const refForProps = ref || storeRef;
-      if (obj && refForProps?.data.params?.[0]?.props?.length) {
-        const allowed = new Set(
-          refForProps.data.params[0]!.props!.map((p) => p.name),
-        );
+      const firstParam = refForProps?.data.params?.[0];
+      const firstParamProps = firstParam?.props;
+      if (obj && refForProps && firstParamProps && firstParamProps.length > 0) {
+        const allowed = new Set(firstParamProps.map((p) => p.name));
         const keys = findTopLevelObjectKeys(trimmed, obj.start, obj.end);
         for (const k of keys) {
           if (!allowed.has(k.name)) continue;
