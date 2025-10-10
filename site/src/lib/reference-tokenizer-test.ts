@@ -26,7 +26,7 @@ interface RefData {
   name: string;
   component: string;
   kind: "component" | "function" | "store";
-  framework: "react";
+  framework: "react" | "solid";
   description: string;
   deprecated: string | boolean;
   examples: [];
@@ -56,13 +56,18 @@ function createRefData(
   kind: RefData["kind"],
   name: string,
   component: string,
-  opts: { state?: RefProp[]; params?: RefProp[]; returnProps?: RefProp[] } = {},
+  opts: {
+    state?: RefProp[];
+    params?: RefProp[];
+    returnProps?: RefProp[];
+    framework?: RefData["framework"];
+  } = {},
 ): RefData {
   return {
     name,
     component,
     kind,
-    framework: "react",
+    framework: opts.framework ?? "react",
     description: "",
     deprecated: false,
     examples: [],
@@ -153,6 +158,19 @@ function refs(): CollectionEntry<"references">[] {
     createRefData("component", "Separator", "separator"),
   );
 
+  const compSeparatorSolid = makeRef(
+    "solid/separator/component",
+    createRefData("component", "Separator", "separator", {
+      framework: "solid",
+      params: [
+        createProp("props", {
+          optional: true,
+          props: [createProp("orientation"), createProp("class")],
+        }),
+      ],
+    }),
+  );
+
   return [
     storeCombobox,
     ctxCombobox,
@@ -161,6 +179,7 @@ function refs(): CollectionEntry<"references">[] {
     ctxDisclosure,
     compDisclosureProvider,
     compSeparator,
+    compSeparatorSolid,
   ];
 }
 
@@ -309,6 +328,36 @@ import { Separator } from "@ariakit/react";
   expect(ts.some((t) => /port|\{\s*Se/.test(t.text))).toBe(false);
 });
 
+test("solid: tokenizes component usage after named import", () => {
+  const code = `
+import { Separator } from "@ariakit/solid";
+export default function Example() {
+  return <Separator orientation="horizontal" class="ak-layer-current" />;
+}
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "solid",
+  });
+  const ts = tokensAt(code, perLine);
+  const usageLine = 3;
+  expect(
+    ts.some(
+      (t) =>
+        t.line === usageLine &&
+        t.text === "Separator" &&
+        t.kind === "component",
+    ),
+  ).toBe(true);
+  expect(
+    ts.some(
+      (t) =>
+        t.line === usageLine && t.text === "orientation" && t.kind === "prop",
+    ),
+  ).toBe(true);
+});
+
 test("tokenizes return-prop without trailing punctuation", () => {
   const code = `
 import * as ak from "@ariakit/react";
@@ -351,5 +400,17 @@ export function DisclosureContent(){ return null }
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
+  expect(ts.some((t) => t.kind === "component")).toBe(false);
+});
+
+test("does not tokenize generic type parameters as JSX tags", () => {
+  const code = `export function Example<Disclosure>() {`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  // Ensure no component tokens produced
   expect(ts.some((t) => t.kind === "component")).toBe(false);
 });
