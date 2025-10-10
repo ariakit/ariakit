@@ -876,6 +876,11 @@
               "type": "utility",
               "name": "ak-layer",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
             }
           ]
         },
@@ -914,6 +919,11 @@
               "type": "utility",
               "name": "ak-button_hover",
               "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
             }
           ]
         },
@@ -985,6 +995,11 @@
               "type": "utility",
               "name": "ak-button_active",
               "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
             }
           ]
         },
@@ -1473,7 +1488,18 @@
               ]
             }
           ],
-          "dependencies": []
+          "dependencies": [
+            {
+              "type": "variant",
+              "name": "ak-checkbox-round",
+              "module": "checkbox"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-vertical",
+              "module": "checkbox"
+            }
+          ]
         },
         "ak-checkbox-card-check_idle": {
           "name": "ak-checkbox-card-check_idle",
@@ -1520,6 +1546,11 @@
               "type": "utility",
               "name": "ak-bordering",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-vertical",
+              "module": "checkbox"
             }
           ]
         },
@@ -1618,6 +1649,16 @@
               "type": "utility",
               "name": "ak-checkbox-card-check_disabled",
               "module": "checkbox"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-checked",
+              "module": "checkbox"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-disabled",
+              "module": "checkbox"
             }
           ]
         },
@@ -1652,6 +1693,11 @@
               "type": "utility",
               "name": "ak-frame/2",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-vertical",
+              "module": "checkbox"
             }
           ]
         },
@@ -1687,6 +1733,11 @@
               "type": "utility",
               "name": "ak-text/0",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-disabled",
+              "module": "checkbox"
             }
           ]
         },
@@ -3088,6 +3139,11 @@
               "type": "utility",
               "name": "ak-layer-hover-0",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-disclosure-hover",
+              "module": "disclosure"
             }
           ]
         },
@@ -3184,6 +3240,11 @@
             {
               "type": "utility",
               "name": "ak-disclosure-content-body",
+              "module": "disclosure"
+            },
+            {
+              "type": "variant",
+              "name": "ak-disclosure-group",
               "module": "disclosure"
             }
           ]
@@ -3377,6 +3438,11 @@
               "type": "utility",
               "name": "ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-disclosure-group",
+              "module": "disclosure"
             }
           ]
         },
@@ -3632,6 +3698,11 @@
               "type": "utility",
               "name": "ak-disclosure-chevron-right_open",
               "module": "disclosure"
+            },
+            {
+              "type": "variant",
+              "name": "ak-disclosure-open",
+              "module": "disclosure"
             }
           ]
         },
@@ -3690,6 +3761,11 @@
             {
               "type": "utility",
               "name": "ak-disclosure-chevron-down_open",
+              "module": "disclosure"
+            },
+            {
+              "type": "variant",
+              "name": "ak-disclosure-open",
               "module": "disclosure"
             }
           ]
@@ -3775,6 +3851,11 @@
             {
               "type": "utility",
               "name": "ak-disclosure-plus_open",
+              "module": "disclosure"
+            },
+            {
+              "type": "variant",
+              "name": "ak-disclosure-open",
               "module": "disclosure"
             }
           ]
@@ -3975,6 +4056,11 @@
             {
               "type": "utility",
               "name": "ak-disclosure-content_open",
+              "module": "disclosure"
+            },
+            {
+              "type": "variant",
+              "name": "ak-disclosure-open",
               "module": "disclosure"
             }
           ]
@@ -4227,7 +4313,13 @@
               ]
             }
           ],
-          "dependencies": []
+          "dependencies": [
+            {
+              "type": "variant",
+              "name": "ak-sidebar-collapsed",
+              "module": "sidebar"
+            }
+          ]
         },
         "ak-nav-link_idle": {
           "name": "ak-nav-link_idle",
@@ -4572,6 +4664,11 @@
               "type": "utility",
               "name": "ak-frame-force-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2))",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-sidebar-collapsed",
+              "module": "sidebar"
             }
           ]
         },
@@ -4754,7 +4851,13 @@
               ]
             }
           ],
-          "dependencies": []
+          "dependencies": [
+            {
+              "type": "variant",
+              "name": "ak-sidebar-collapsed",
+              "module": "sidebar"
+            }
+          ]
         },
         "ak-nav-disclosure": {
           "name": "ak-nav-disclosure",
@@ -4874,6 +4977,11 @@
               "type": "utility",
               "name": "ak-nav-disclosure-content-body",
               "module": "nav"
+            },
+            {
+              "type": "variant",
+              "name": "ak-sidebar-collapsed",
+              "module": "sidebar"
             }
           ]
         },
@@ -5550,6 +5658,11 @@
               "type": "utility",
               "name": "ak-icon-check",
               "module": "icon"
+            },
+            {
+              "type": "variant",
+              "name": "ak-select-item-selected",
+              "module": "select"
             }
           ]
         }
@@ -5753,6 +5866,16 @@
               "type": "utility",
               "name": "ak-input-placeholder",
               "module": "input"
+            },
+            {
+              "type": "variant",
+              "name": "ak-light",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
             }
           ]
         },
@@ -5792,6 +5915,16 @@
             {
               "type": "utility",
               "name": "ak-layer-current",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-light",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -5837,6 +5970,16 @@
             {
               "type": "utility",
               "name": "ak-layer-current",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-light",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -5960,6 +6103,11 @@
             {
               "type": "utility",
               "name": "ak-edge/16",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -6653,6 +6801,16 @@
               "type": "utility",
               "name": "ak-list-sections",
               "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-blocks",
+              "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-sections",
+              "module": "list"
             }
           ]
         },
@@ -6968,6 +7126,11 @@
               "type": "utility",
               "name": "ak-list-item-ol-border",
               "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-blocks",
+              "module": "list"
             }
           ]
         },
@@ -7024,6 +7187,16 @@
             {
               "type": "utility",
               "name": "ak-list-item-ol",
+              "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-ul",
+              "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-ol",
               "module": "list"
             }
           ]
@@ -7123,6 +7296,11 @@
               "type": "utility",
               "name": "ak-list-disclosure-content-body",
               "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-item-blocks",
+              "module": "list"
             }
           ]
         },
@@ -7206,6 +7384,16 @@
             {
               "type": "utility",
               "name": "ak-list-item-ul-marker",
+              "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-ol",
+              "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-ul",
               "module": "list"
             }
           ]
@@ -7387,6 +7575,16 @@
               "type": "utility",
               "name": "ak-list-item-check-ul",
               "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-ol",
+              "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-ul",
+              "module": "list"
             }
           ]
         },
@@ -7492,6 +7690,16 @@
               "type": "utility",
               "name": "ak-progress-thickness-[calc(30%+5%*var(--contrast,0))]",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-ol",
+              "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-ul",
+              "module": "list"
             }
           ]
         }

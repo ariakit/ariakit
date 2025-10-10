@@ -22,6 +22,10 @@ import type {
   CodeBlockProps as CodeBlockBaseProps,
   CodeBlockTabProps as CodeBlockTabBaseProps,
 } from "./code-block.types.ts";
+import {
+  CodeBlockEdit,
+  getStackblitzFramework,
+} from "./code-block-edit.react.tsx";
 import { useCollapsible } from "./collapsible.react.tsx";
 import { CopyCode } from "./copy-code.react.tsx";
 import { Tooltip } from "./tooltip.react.tsx";
@@ -597,6 +601,10 @@ export function CodeBlockTabs({
   const previewUrl = getPreviewUrl(framework, example, preview);
   const fullscreen = preview === "full";
   const hasToolbar = !!previewUrl || edit;
+  const stackblitzFramework = React.useMemo(() => {
+    if (!framework || !source) return null;
+    return getStackblitzFramework(framework, source);
+  }, [framework, source]);
 
   const canPersist = persistTabKey !== undefined;
   const defaultFilename = firstTab.filename;
@@ -702,14 +710,20 @@ export function CodeBlockTabs({
               <div
                 className={clsx("ms-auto flex gap-1 justify-end", className)}
               >
-                {edit && (
-                  <Tooltip plus title="Edit code">
-                    <button className="ak-button ak-button-square-10 @max-lg:hidden">
-                      <Icon name="edit" className="text-lg" />
-                      <span className="sr-only">Edit code</span>
-                    </button>
-                  </Tooltip>
-                )}
+                {edit &&
+                  source &&
+                  framework &&
+                  example &&
+                  stackblitzFramework && (
+                    <Tooltip plus title="Edit code">
+                      <CodeBlockEdit
+                        source={source}
+                        framework={framework}
+                        example={example}
+                        stackblitzFramework={stackblitzFramework}
+                      />
+                    </Tooltip>
+                  )}
                 {previewUrl && (
                   <Tooltip title="Open preview in new tab">
                     <a
@@ -776,10 +790,13 @@ export function CodeBlockTabs({
                       <div className="ms-auto ak-frame-cover/1 ak-frame-cover-start ak-frame-cover-end h-(--height) flex gap-1">
                         {edit && (
                           <Tooltip plus title="Edit code">
-                            <button className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80">
-                              <Icon name="edit" className="text-lg" />
-                              <span className="sr-only">Edit code</span>
-                            </button>
+                            <CodeBlockEdit
+                              source={source}
+                              framework={framework}
+                              example={example}
+                              stackblitzFramework={stackblitzFramework}
+                              className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80"
+                            />
                           </Tooltip>
                         )}
                       </div>

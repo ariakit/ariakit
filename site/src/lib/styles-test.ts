@@ -243,3 +243,15 @@ test("resolveStylesForFiles aggregates base + transitive, deduped by identity", 
     ),
   ).toBe(true);
 });
+test("utilities include variant dependencies from @variant blocks", () => {
+  const listItemOl = getStyleDefinition("ak-list-item-ol", "utility");
+  expect(listItemOl?.type).toBe("utility");
+  const variantDep = listItemOl?.dependencies.find(
+    (dep) => dep.type === "variant" && dep.name === "ak-list-blocks",
+  );
+  expect(variantDep).toEqual({
+    type: "variant",
+    name: "ak-list-blocks",
+    module: "list",
+  });
+});

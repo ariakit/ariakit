@@ -584,6 +584,38 @@ function collectAllValuesFromPropertyDecls(decls?: PropertyDecl[]): string[] {
   return out;
 }
 
+function collectVariantNamesFromPropertyDecls(
+  decls?: PropertyDecl[],
+): string[] {
+  if (!decls) {
+    return [];
+  }
+  const out: string[] = [];
+  const visit = (items: PropertyDecl[]) => {
+    for (const item of items) {
+      for (const variantName of extractVariantNamesFromDeclName(item.name)) {
+        out.push(variantName);
+      }
+      if (Array.isArray(item.value)) {
+        visit(item.value);
+      }
+    }
+  };
+  visit(decls);
+  return uniqPreserveOrder(out);
+}
+
+function extractVariantNamesFromDeclName(name: string): string[] {
+  if (!name.startsWith("@variant")) {
+    return [];
+  }
+  const raw = name.slice("@variant".length).trim();
+  if (!raw) {
+    return [];
+  }
+  return extractAkTokensFromApplyLine(raw);
+}
+
 function resolveDependencies(modules: ModuleJson[]): void {
   const index = buildGlobalIndex(modules);
   const externalImport = "@ariakit/tailwind";
@@ -638,6 +670,27 @@ function resolveDependencies(modules: ModuleJson[]): void {
               module: propModule,
             });
           }
+        }
+      }
+      const variantNames = collectVariantNamesFromPropertyDecls(
+        util.properties,
+      );
+      for (const variantName of variantNames) {
+        const variantModule = index.variantToModule.get(variantName);
+        if (variantModule) {
+          addDep(deps, {
+            type: "variant",
+            name: variantName,
+            module: variantModule,
+          });
+          continue;
+        }
+        if (variantName.startsWith("ak-")) {
+          addDep(deps, {
+            type: "variant",
+            name: variantName,
+            import: externalImport,
+          });
         }
       }
       util.dependencies = deps;

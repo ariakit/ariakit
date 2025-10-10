@@ -67,9 +67,7 @@ function normalizeProps(props: SiteStackblitzProps): NormalizedProps {
 }
 
 function getExampleName(id: SiteStackblitzProps["id"]) {
-  const [_category, ...names] = id.split("-");
-  const exampleName = names.join("-");
-  return exampleName.replace(/^.+-previews-(.+)$/, "$1");
+  return id.split("/").pop() ?? "";
 }
 
 function getFirstFilename(files: SiteStackblitzProps["files"]) {
@@ -220,7 +218,8 @@ function getStylesCss(styles?: StyleDependency[]) {
 function buildSourceFiles(exampleName: string, files: Record<string, string>) {
   return Object.entries(files).reduce<ProjectFiles>(
     (acc, [filename, content]) => {
-      acc[`${exampleName}/${filename}`] = content;
+      const sanitized = filename.replace(/^(?:\.\.\/)+/, "");
+      acc[`${exampleName}/${sanitized}`] = content;
       return acc;
     },
     {},
@@ -242,6 +241,7 @@ function getViteProject(props: NormalizedProps): ProjectResult {
   const templateDevDependencies = normalizeDeps({
     vite: "latest",
     "@vitejs/plugin-react": "latest",
+    "@tailwindcss/vite": "^4.0.0",
     tailwindcss: "^4.0.0",
     typescript: "5.4.4",
   });
@@ -288,9 +288,10 @@ if (root) {
 
   const viteConfig = `import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
 });
 `;
 
@@ -361,6 +362,7 @@ function getSolidProject(props: NormalizedProps): ProjectResult {
   const templateDevDependencies = normalizeDeps({
     vite: "latest",
     "vite-plugin-solid": "latest",
+    "@tailwindcss/vite": "^4.0.0",
     tailwindcss: "^4.0.0",
     typescript: "5.4.4",
   });
@@ -417,9 +419,10 @@ if (root) {
 
   const viteConfig = `import { defineConfig } from "vite";
 import solid from "vite-plugin-solid";
+import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [solid()],
+  plugins: [solid(), tailwindcss()],
 });
 `;
 
@@ -487,6 +490,7 @@ function getNextProject(props: NormalizedProps): ProjectResult {
 
   const templateDevDependencies = normalizeDeps({
     "@types/node": "latest",
+    "@tailwindcss/postcss": "^4.0.0",
     tailwindcss: "^4.0.0",
     typescript: "5.4.4",
   });
@@ -622,6 +626,14 @@ export default nextConfig;
       2,
     ),
     "tsconfig.json": JSON.stringify(tsConfig, null, 2),
+    "postcss.config.mjs": `const config = {
+  plugins: {
+    "@tailwindcss/postcss": {},
+  },
+};
+
+export default config;
+`,
     "next.config.js": nextConfig,
     "next-env.d.ts": nextEnv,
     "app/styles.css": stylesContent,
