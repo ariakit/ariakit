@@ -159,7 +159,7 @@
     "match-sorter": "8.1.0",
     "monaco-editor": "0.54.0",
     "monaco-editor-textmate": "4.0.0",
-    "monaco-editor-webpack-plugin": "7.1.0",
+    "monaco-editor-webpack-plugin": "7.1.1",
     "monaco-textmate": "3.0.1",
     "monaco-vscode-textmate-theme-converter": "0.1.7",
     "next": "14.2.33",
