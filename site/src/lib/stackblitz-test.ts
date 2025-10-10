@@ -26,19 +26,14 @@ afterEach(() => {
   embedProjectMock.mockReset();
 });
 
-function createReactFile(content: string) {
-  return {
-    "index.react.tsx": content,
-  } satisfies SiteStackblitzProps["files"];
-}
-
 test("react-vite project includes tailwind v4 setup", () => {
   const props: SiteStackblitzProps = {
-    id: "examples-accordion-basic",
+    id: "accordion-basic",
     framework: "react-vite",
-    files: createReactFile(
-      "export default function Example() { return <div>Example</div>; }\n",
-    ),
+    files: {
+      "index.tsx":
+        "export default function Example() { return <div>Example</div>; }\n",
+    },
   };
 
   const { project, sourceFiles } = getProject(props);
@@ -93,7 +88,7 @@ test("react-vite project includes tailwind v4 setup", () => {
     "import "./styles.css";
     import { StrictMode } from "react";
     import { createRoot } from "react-dom/client";
-    import Example from "./accordion-basic/index.react.tsx";
+    import Example from "./accordion-basic/index.tsx";
 
     const root = document.getElementById("root");
 
@@ -108,8 +103,8 @@ test("react-vite project includes tailwind v4 setup", () => {
   `);
   expect(project.files["package.json"]).toMatchInlineSnapshot(`
     "{
-      "name": "@ariakit/examples-accordion-basic",
-      "description": "examples-accordion-basic",
+      "name": "@ariakit/accordion-basic",
+      "description": "accordion-basic",
       "private": true,
       "version": "0.0.0",
       "type": "module",
@@ -128,21 +123,23 @@ test("react-vite project includes tailwind v4 setup", () => {
       "devDependencies": {
         "vite": "latest",
         "@vitejs/plugin-react": "latest",
+        "@tailwindcss/vite": "^4.0.0",
         "tailwindcss": "^4.0.0",
         "typescript": "5.4.4"
       }
     }"
   `);
-  expect(sourceFiles["accordion-basic/index.react.tsx"]).toBeDefined();
+  expect(sourceFiles["accordion-basic/index.tsx"]).toBeDefined();
 });
 
 test("react-nextjs project generates styles and query provider", () => {
   const props: SiteStackblitzProps = {
-    id: "examples-dialog-styled",
+    id: "dialog-styled",
     framework: "react-nextjs",
-    files: createReactFile(
-      'export default function Example() { return <div className="ak-badge">Badge</div>; }\n',
-    ),
+    files: {
+      "index.tsx":
+        "export default function Example() { return <div className='ak-badge'>Badge</div>; }\n",
+    },
     dependencies: {
       "@tanstack/react-query": "latest",
     },
@@ -195,10 +192,10 @@ test("react-nextjs project generates styles and query provider", () => {
 
 test("solid-vite project emits generated utilities", () => {
   const props: SiteStackblitzProps = {
-    id: "examples-separator-solid",
+    id: "separator-solid",
     framework: "solid-vite",
     files: {
-      "index.solid.tsx":
+      "index.tsx":
         'export default function Example() { return <div class="ak-badge-primary">Solid</div>; }\n',
     },
     styles: [{ type: "utility", name: "ak-badge-*" }],
@@ -272,7 +269,7 @@ test("solid-vite project emits generated utilities", () => {
   expect(project.files["index.tsx"]).toMatchInlineSnapshot(`
     "import "./styles.css";
     import { render } from "solid-js/web";
-    import Example from "./separator-solid/index.solid.tsx";
+    import Example from "./separator-solid/index.tsx";
 
     const root = document.getElementById("root");
 
@@ -285,25 +282,27 @@ test("solid-vite project emits generated utilities", () => {
 
 test("getSourceFiles returns example entries only", () => {
   const props: SiteStackblitzProps = {
-    id: "examples-checkbox-basic",
+    id: "checkbox-basic",
     framework: "react-vite",
-    files: createReactFile(
-      "export default function Example() { return <button>Checkbox</button>; }\n",
-    ),
+    files: {
+      "index.tsx":
+        "export default function Example() { return <button>Checkbox</button>; }\n",
+    },
   };
 
   const sourceFiles = getSourceFiles(props);
 
-  expect(Object.keys(sourceFiles)).toEqual(["checkbox-basic/index.react.tsx"]);
+  expect(Object.keys(sourceFiles)).toEqual(["checkbox-basic/index.tsx"]);
 });
 
 test("openInStackblitz forwards initialOpenFile", () => {
   const props: SiteStackblitzProps = {
-    id: "examples-tabs-initial",
+    id: "tabs-initial",
     framework: "react-vite",
-    files: createReactFile(
-      "export default function Example() { return <div>Tabs</div>; }\n",
-    ),
+    files: {
+      "index.tsx":
+        "export default function Example() { return <div>Tabs</div>; }\n",
+    },
     initialOpenFile: "index.tsx",
   };
 
@@ -316,11 +315,13 @@ test("openInStackblitz forwards initialOpenFile", () => {
 
 test("embedStackblitz configures preview view", () => {
   const props: SiteStackblitzProps = {
-    id: "examples-menu-preview",
+    id: "menu-preview",
     framework: "react-vite",
-    files: createReactFile(
-      "export default function Example() { return <div>Menu</div>; }\n",
-    ),
+    files: {
+      "index.tsx":
+        "export default function Example() { return <div>Menu</div>; }\n",
+    },
+    initialOpenFile: "index.tsx",
   };
 
   const element = {
