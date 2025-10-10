@@ -2,11 +2,11 @@ import clsx from "clsx";
 import { forwardRef, useMemo } from "react";
 
 import { Icon } from "#app/icons/icon.react.tsx";
-import { getFramework } from "../lib/frameworks.ts";
-import type { Framework } from "../lib/schemas.ts";
-import type { SiteStackblitzFramework } from "../lib/stackblitz.ts";
-import { openInStackblitz } from "../lib/stackblitz.ts";
-import type { Source } from "../lib/types.ts";
+import { getFramework } from "#app/lib/frameworks.ts";
+import type { Framework } from "#app/lib/schemas.ts";
+import type { SiteStackblitzFramework } from "#app/lib/stackblitz.ts";
+import { openInStackblitz } from "#app/lib/stackblitz.ts";
+import type { Source } from "#app/lib/types.ts";
 
 export interface CodeBlockEditProps
   extends React.ComponentPropsWithRef<"button"> {
@@ -57,7 +57,6 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
       stackblitzFramework: stackblitzFrameworkProp,
       children,
       disabled,
-      onClick,
       ...props
     },
     ref,
@@ -78,14 +77,12 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
         className={clsx("ak-button ak-button-square-10", className)}
         disabled={isDisabled}
         onClick={(event) => {
-          if (isDisabled) {
-            event.preventDefault();
-            return;
-          }
-          onClick?.(event);
+          props.onClick?.(event);
           if (event.defaultPrevented) return;
-          if (!stackblitzFramework || !source) return;
-          if (!framework || !example) return;
+          if (!stackblitzFramework) return;
+          if (!framework) return;
+          if (!example) return;
+          if (!source) return;
           const id = example ?? source.name;
           if (!id) return;
           openInStackblitz({

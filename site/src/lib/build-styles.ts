@@ -544,8 +544,25 @@ function extractAkTokensFromApplyLine(line: string) {
       if (!seg) {
         continue;
       }
+      // Handle direct ak-* tokens
       if (seg.startsWith("ak-")) {
         akTokens.push(seg);
+        continue;
+      }
+      // Tailwind not-* prefix support: normalize not-ak-* to ak-*
+      // This may appear at the beginning of the segment or after another
+      // hyphenated variant (e.g., "peer-not-ak-disabled"). We only care about
+      // extracting the underlying ak-* token for dependency resolution.
+      if (seg.startsWith("not-ak-")) {
+        akTokens.push(seg.slice(4));
+        continue;
+      }
+      const notIdx = seg.indexOf("not-ak-");
+      if (notIdx >= 0) {
+        const candidate = seg.slice(notIdx + 4);
+        if (candidate.startsWith("ak-")) {
+          akTokens.push(candidate);
+        }
       }
     }
   }

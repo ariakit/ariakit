@@ -363,7 +363,13 @@
               ]
             }
           ],
-          "dependencies": []
+          "dependencies": [
+            {
+              "type": "variant",
+              "name": "ak-command-disabled",
+              "module": "command"
+            }
+          ]
         },
         "ak-command_focus": {
           "name": "ak-command_focus",
@@ -4366,6 +4372,11 @@
               "type": "utility",
               "name": "ak-text/70",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-nav-current",
+              "module": "nav"
             }
           ]
         },
@@ -4566,6 +4577,11 @@
               "module": "command"
             },
             {
+              "type": "variant",
+              "name": "ak-nav-current",
+              "module": "nav"
+            },
+            {
               "type": "utility",
               "name": "ak-nav-link_hover",
               "module": "nav"
@@ -4598,11 +4614,6 @@
             {
               "type": "utility",
               "name": "ak-nav-link_disabled",
-              "module": "nav"
-            },
-            {
-              "type": "variant",
-              "name": "ak-nav-current",
               "module": "nav"
             },
             {
