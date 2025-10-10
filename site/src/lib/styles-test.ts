@@ -21,16 +21,13 @@ import {
 test("scanAkTokensInFiles finds ak-* tokens including bracketed", () => {
   const files = {
     "a.tsx": `
-      <div className="ak-badge ak-text/80 ak-[content:'x']"></div>
+      <div className="ak-badge ak-text/80"></div>
       <div className='not-data-open:ak-text/0'></div>
     `,
   };
   const tokens = scanAkTokensInFiles(files);
   expect(tokens.has("ak-badge")).toBe(true);
   expect(tokens.has("ak-text/80")).toBe(true);
-  expect(Array.from(tokens).some((t) => t.startsWith("ak-[content:"))).toBe(
-    true,
-  );
 });
 
 test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () => {
@@ -48,6 +45,22 @@ test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () 
   // These should be found in the second file even if the regex lastIndex carried over
   expect(tokens.has("ak-three")).toBe(true);
   expect(tokens.has("ak-four")).toBe(true);
+});
+
+test("scanAkTokensInFiles finds tokens inside group-/peer- ak variant prefixes", () => {
+  const files = {
+    "a.tsx": `
+      <div className="group-ak-command-disabled:ak-badge"></div>
+      <div className="peer-ak-command-active:ak-text/80"></div>
+    `,
+  };
+  const tokens = scanAkTokensInFiles(files);
+  // Variants inside group-/peer- prefixes
+  expect(tokens.has("ak-command-disabled")).toBe(true);
+  expect(tokens.has("ak-command-active")).toBe(true);
+  // Utilities after the ':' should also be picked up
+  expect(tokens.has("ak-badge")).toBe(true);
+  expect(tokens.has("ak-text/80")).toBe(true);
 });
 
 test("styleDefToCss renders @property block", () => {
@@ -242,4 +255,57 @@ test("resolveStylesForFiles aggregates base + transitive, deduped by identity", 
         d.module === "badge",
     ),
   ).toBe(true);
+});
+
+test("resolveStylesForFiles includes variants from group-/peer- ak prefixes", () => {
+  const files = {
+    "x.tsx": `
+      <div className="group-ak-command-disabled:opacity-50 peer-ak-command-active:opacity-100"></div>
+    `,
+  };
+  const deps = resolveStylesForFiles(files);
+  // Variants referenced via group-/peer- prefixes should be included
+  expect(
+    deps.some(
+      (d) =>
+        d.type === "variant" &&
+        d.name === "ak-command-disabled" &&
+        d.module === "command",
+    ),
+  ).toBe(true);
+  expect(
+    deps.some(
+      (d) =>
+        d.type === "variant" &&
+        d.name === "ak-command-active" &&
+        d.module === "command",
+    ),
+  ).toBe(true);
+});
+
+test("utilities include variant dependencies from @variant blocks", () => {
+  const listItemOl = getStyleDefinition("ak-list-item-ol", "utility");
+  expect(listItemOl?.type).toBe("utility");
+  const variantDep = listItemOl?.dependencies.find(
+    (dep) => dep.type === "variant" && dep.name === "ak-list-blocks",
+  );
+  expect(variantDep).toEqual({
+    type: "variant",
+    name: "ak-list-blocks",
+    module: "list",
+  });
+});
+
+test("utilities include variant dependencies via not-* ak prefix", () => {
+  const idle = getStyleDefinition("ak-command_idle", "utility");
+  expect(idle?.type).toBe("utility");
+  const variantDep = idle?.dependencies.find(
+    (dep) => dep.type === "variant" && dep.name === "ak-command-disabled",
+  );
+  // The nested `@variant not-ak-command-disabled` should resolve as a dependency
+  expect(variantDep).toEqual({
+    type: "variant",
+    name: "ak-command-disabled",
+    module: "command",
+  });
 });

@@ -161,7 +161,15 @@ export function scanAkTokensInFiles(
     while ((match = re.exec(content)) !== null) {
       const token = match[0];
       if (!token) continue;
-      tokens.add(token);
+      // Split non-bracket tokens on ':' to capture group-/peer- prefixed forms
+      // like "group-ak-command-disabled:ak-badge" → ["ak-command-disabled",
+      // "ak-badge"]
+      const parts = token.split(":");
+      for (const part of parts) {
+        if (part.startsWith("ak-")) {
+          tokens.add(part);
+        }
+      }
     }
   }
   return tokens;

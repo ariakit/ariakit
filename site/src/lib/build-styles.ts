@@ -544,8 +544,25 @@ function extractAkTokensFromApplyLine(line: string) {
       if (!seg) {
         continue;
       }
+      // Handle direct ak-* tokens
       if (seg.startsWith("ak-")) {
         akTokens.push(seg);
+        continue;
+      }
+      // Tailwind not-* prefix support: normalize not-ak-* to ak-*
+      // This may appear at the beginning of the segment or after another
+      // hyphenated variant (e.g., "peer-not-ak-disabled"). We only care about
+      // extracting the underlying ak-* token for dependency resolution.
+      if (seg.startsWith("not-ak-")) {
+        akTokens.push(seg.slice(4));
+        continue;
+      }
+      const notIdx = seg.indexOf("not-ak-");
+      if (notIdx >= 0) {
+        const candidate = seg.slice(notIdx + 4);
+        if (candidate.startsWith("ak-")) {
+          akTokens.push(candidate);
+        }
       }
     }
   }
@@ -582,6 +599,38 @@ function collectAllValuesFromPropertyDecls(decls?: PropertyDecl[]): string[] {
     }
   }
   return out;
+}
+
+function collectVariantNamesFromPropertyDecls(
+  decls?: PropertyDecl[],
+): string[] {
+  if (!decls) {
+    return [];
+  }
+  const out: string[] = [];
+  const visit = (items: PropertyDecl[]) => {
+    for (const item of items) {
+      for (const variantName of extractVariantNamesFromDeclName(item.name)) {
+        out.push(variantName);
+      }
+      if (Array.isArray(item.value)) {
+        visit(item.value);
+      }
+    }
+  };
+  visit(decls);
+  return uniqPreserveOrder(out);
+}
+
+function extractVariantNamesFromDeclName(name: string): string[] {
+  if (!name.startsWith("@variant")) {
+    return [];
+  }
+  const raw = name.slice("@variant".length).trim();
+  if (!raw) {
+    return [];
+  }
+  return extractAkTokensFromApplyLine(raw);
 }
 
 function resolveDependencies(modules: ModuleJson[]): void {
@@ -638,6 +687,27 @@ function resolveDependencies(modules: ModuleJson[]): void {
               module: propModule,
             });
           }
+        }
+      }
+      const variantNames = collectVariantNamesFromPropertyDecls(
+        util.properties,
+      );
+      for (const variantName of variantNames) {
+        const variantModule = index.variantToModule.get(variantName);
+        if (variantModule) {
+          addDep(deps, {
+            type: "variant",
+            name: variantName,
+            module: variantModule,
+          });
+          continue;
+        }
+        if (variantName.startsWith("ak-")) {
+          addDep(deps, {
+            type: "variant",
+            name: variantName,
+            import: externalImport,
+          });
         }
       }
       util.dependencies = deps;
