@@ -7,6 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import { basename, dirname, relative, resolve } from "node:path";
 import prettier from "prettier";
@@ -39,6 +41,16 @@ interface FlattenedCacheData {
   file: SourceFile; // flattened content and metadata
 }
 const flattenedFileCache = new Map<string, FlattenedCacheData>();
+/**
+ * Compute a stable hash for a given string content.
+ */
+function hashContent(content: string) {
+  return createHash("sha256").update(content).digest("hex");
+}
+
+function cacheKeyForFile(id: string, content: string) {
+  return `${id}?h=${hashContent(content)}`;
+}
 
 /**
  * Get the package version from the package.json
@@ -239,9 +251,10 @@ async function loadSourceFileCached(
   context: PluginContext,
   id: string,
 ): Promise<CachedFileData> {
-  const cached = fileProcessCache.get(id);
-  if (cached) return cached;
   const content = await fs.promises.readFile(id, "utf-8");
+  const cacheKey = cacheKeyForFile(id, content);
+  const cached = fileProcessCache.get(cacheKey);
+  if (cached) return cached;
   const fileRef: SourceFile = { id, content };
   fileRef.styles = resolveStyles(content);
   await addFrameworkDependenciesToFile(context, id, fileRef);
@@ -257,7 +270,7 @@ async function loadSourceFileCached(
     localDeps.push(resolved.id);
   }
   const data: CachedFileData = { file: fileRef, localDeps };
-  fileProcessCache.set(id, data);
+  fileProcessCache.set(cacheKey, data);
   return data;
 }
 
@@ -432,7 +445,8 @@ function computeSourceStylesFromSources(sources: Record<string, SourceFile>) {
  * Uses a cache keyed by absolute id.
  */
 async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
-  const cached = flattenedFileCache.get(file.id);
+  const cacheKey = cacheKeyForFile(file.id, file.content);
+  const cached = flattenedFileCache.get(cacheKey);
   if (cached) return cached;
   const rel = normalizeFilename(getRelativePath(baseDir, file.id));
   const filename = basename(rel);
@@ -450,7 +464,7 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
       devDependencies: file.devDependencies,
     },
   };
-  flattenedFileCache.set(file.id, out);
+  flattenedFileCache.set(cacheKey, out);
   return out;
 }
 
