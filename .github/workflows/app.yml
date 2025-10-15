@@ -108,9 +108,11 @@ jobs:
           path: site/dist
 
       - name: Test
+        id: test
         run: ${{ matrix.run }} --project ${{ matrix.project }} --grep-invert @visual --pass-with-no-tests
 
       - name: Test visual
+        if: success() || steps.test.outcome == 'failure'
         id: test-visual
         run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
 
