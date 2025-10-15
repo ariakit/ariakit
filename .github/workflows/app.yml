@@ -123,7 +123,7 @@ jobs:
         run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual -u
 
       - name: Upload snapshots
-        if: failure() && steps.test-visual.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-visual-${{ matrix.project }}
