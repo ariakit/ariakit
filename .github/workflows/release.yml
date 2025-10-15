@@ -39,5 +39,4 @@ jobs:
           setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+          NPM_TOKEN: ""
