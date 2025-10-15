@@ -24,6 +24,9 @@ jobs:
         with:
           cache-npm: true
 
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - name: Configure git
         run: |
           git config user.name "ariakit-bot"
