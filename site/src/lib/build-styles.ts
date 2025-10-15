@@ -348,7 +348,7 @@ function parsePropertyDecls(body: string): PropertyDecl[] {
   const flushPendingComments = () => {
     if (!pendingApplyComments.length) return;
     for (const c of pendingApplyComments) {
-      decls.push({ name: c, value: "" });
+      decls.push({ name: c, value: {} });
     }
     pendingApplyComments = [];
   };
@@ -365,13 +365,16 @@ function parsePropertyDecls(body: string): PropertyDecl[] {
         // Attach any pending comments immediately before @apply
         flushPendingComments();
         const raw = s.replace(/^@apply\s+/, "");
-        decls.push({ name: "@apply", value: raw });
+        // Store @apply as a valueless declaration with the full header on name
+        // and an empty object as value. This preserves the exact token string
+        // while normalizing the JSON shape for valueless declarations.
+        decls.push({ name: `@apply ${raw}`, value: {} });
         continue;
       }
       // Any non-apply declaration flushes pending comments
       if (s === "@slot") {
         flushPendingComments();
-        decls.push({ name: "@slot", value: "" });
+        decls.push({ name: "@slot", value: {} });
         continue;
       }
       const colon = s.indexOf(":");
@@ -384,7 +387,7 @@ function parsePropertyDecls(body: string): PropertyDecl[] {
       }
       // Fallback: keep raw as a named empty declaration
       flushPendingComments();
-      decls.push({ name: s, value: "" });
+      decls.push({ name: s, value: {} });
       continue;
     }
     if (item.kind === "block") {
@@ -404,14 +407,10 @@ function parsePropertyDecls(body: string): PropertyDecl[] {
  */
 function parseAtPropertyBody(body: string) {
   const { declarations } = splitBody(body);
-  const def: {
-    syntax: string | null;
-    inherits: boolean | null;
-    initial: string | null;
-  } = {
+  const def: Omit<AtPropertyDef, "name"> = {
     syntax: null,
     inherits: null,
-    initial: null,
+    initialValue: null,
   };
   for (const stmt of declarations) {
     const s = stmt.trim();
@@ -420,11 +419,11 @@ function parseAtPropertyBody(body: string) {
     const key = s.slice(0, colon).trim();
     const value = s.slice(colon + 1).trim();
     if (key === "syntax") {
-      def.syntax = value.replace(/^"|"$/g, "");
-    } else if (key === "inherits") {
-      def.inherits = /true/i.test(value);
+      def.syntax = value;
     } else if (key === "initial-value") {
-      def.initial = value;
+      def.initialValue = value;
+    } else if (key in def) {
+      def[key as keyof typeof def] = value;
     }
   }
   return def;
@@ -443,12 +442,7 @@ async function parseStyleModule(modulePath: string): Promise<ModuleJson> {
   for (const block of blocks) {
     if (block.kind === "property") {
       const parsed = parseAtPropertyBody(block.body);
-      atProperties[block.name] = {
-        name: block.name,
-        syntax: parsed.syntax,
-        inherits: parsed.inherits,
-        initialValue: parsed.initial,
-      };
+      atProperties[block.name] = { name: block.name, ...parsed };
       continue;
     }
     if (block.kind === "utility") {
@@ -596,7 +590,30 @@ function collectAllValuesFromPropertyDecls(decls?: PropertyDecl[]): string[] {
     }
     if (Array.isArray(d.value)) {
       out.push(...collectAllValuesFromPropertyDecls(d.value));
+      continue;
     }
+    // Valueless declarations (value is an empty object)
+    const name = d.name;
+    if (!name) {
+      continue;
+    }
+    // Skip comments and @slot declarations
+    if (name.startsWith("/*") && name.endsWith("*/")) {
+      continue;
+    }
+    if (name === "@slot") {
+      continue;
+    }
+    // Extract tokens from @apply declarations stored on name
+    if (name.startsWith("@apply")) {
+      const raw = name.slice("@apply".length).trim();
+      if (raw) {
+        out.push(raw);
+      }
+      continue;
+    }
+    // For other valueless declarations, include the name for token scanning
+    out.push(name);
   }
   return out;
 }

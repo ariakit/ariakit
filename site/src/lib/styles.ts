@@ -21,13 +21,13 @@ export interface StyleDependency {
 
 export interface PropertyDecl {
   name: string;
-  value: string | PropertyDecl[];
+  value: string | PropertyDecl[] | Record<string, never>;
 }
 
 export interface AtPropertyDef {
   name: string;
   syntax: string | null;
-  inherits: boolean | null;
+  inherits: string | null;
   initialValue: string | null;
 }
 
@@ -149,12 +149,10 @@ function getIndexMap(type: StyleType): IndexMap {
 /**
  * Scan ak-* tokens in multiple files.
  */
-export function scanAkTokensInFiles(
-  files: Record<string, string>,
-): Set<string> {
+export function scanAkTokens(...contents: string[]): Set<string> {
   const tokens = new Set<string>();
   const re = /ak-(?:\[[^\]]*\]|[^\s"'`])+/g;
-  for (const content of Object.values(files)) {
+  for (const content of contents) {
     if (!content) continue;
     let match: RegExpExecArray | null;
     // eslint-disable-next-line no-cond-assign
@@ -385,10 +383,8 @@ export function resolveDependenciesForAkToken(name: string): StyleDependency[] {
 /**
  * Resolve styles for a collection of files.
  */
-export function resolveStylesForFiles(
-  files: Record<string, string>,
-): StyleDependency[] {
-  const tokens = scanAkTokensInFiles(files);
+export function resolveStyles(...contents: string[]): StyleDependency[] {
+  const tokens = scanAkTokens(...contents);
   const baseDeps: StyleDependency[] = [];
   for (const token of tokens) {
     const deps = resolveDependenciesForAkToken(token);
@@ -436,24 +432,21 @@ function renderPropertyDecls(decls: PropertyDecl[], indentLevel = 0): string {
       continue;
     }
     const name = decl.name;
-    const value = decl.value;
-    if (!name) {
-      continue;
-    }
+    if (!name) continue;
+    // Comments
     if (name.startsWith("/*") && name.endsWith("*/")) {
       // Raw comment preserved as its own line
       lines.push(`${indent(indentLevel)}${name}`);
       continue;
     }
-    if (name === "@slot") {
-      lines.push(`${indent(indentLevel)}@slot;`);
+    // String value: standard CSS declaration
+    if (typeof decl.value === "string") {
+      const value = decl.value;
+      lines.push(`${indent(indentLevel)}${name}: ${value};`);
       continue;
     }
-    if (name === "@apply") {
-      lines.push(`${indent(indentLevel)}@apply ${value};`);
-      continue;
-    }
-    lines.push(`${indent(indentLevel)}${name}: ${value};`);
+    // Generic valueless declaration: emit as a single statement
+    lines.push(`${indent(indentLevel)}${name};`);
   }
   return lines.join("\n");
 }
@@ -483,11 +476,10 @@ export function styleDefToCss(def: StyleDef): string {
   // @property
   const lines: string[] = [];
   if (def.syntax != null) {
-    const quoted = `"${def.syntax}"`;
-    lines.push(`  syntax: ${quoted};`);
+    lines.push(`  syntax: ${def.syntax};`);
   }
   if (def.inherits != null) {
-    lines.push(`  inherits: ${def.inherits ? "true" : "false"};`);
+    lines.push(`  inherits: ${def.inherits};`);
   }
   if (def.initialValue != null) {
     lines.push(`  initial-value: ${def.initialValue};`);

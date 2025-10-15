@@ -11,7 +11,7 @@
 /// <reference types="@clerk/astro/env" />
 
 declare module "*?source" {
-  const source: import("./lib/types.ts").Source;
+  const source: import("./lib/source.ts").Source;
   export default source;
 }
 

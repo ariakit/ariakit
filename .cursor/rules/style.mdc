@@ -37,7 +37,7 @@ These rules guide AI-assisted edits in this repository.
 
 - Explain the WHY and HOW, not the WHAT (the WHAT should be clear from good names).
 - Place comments above the code they describe, not at the end of the line.
-- Use JSDoc for functions, parameters, and types when documenting public APIs or non-obvious behavior.
+- Use JSDoc for functions, parameters, and types when top-level functions, APIs or non-obvious behavior.
 - If logic feels complex, extract a well-named helper that explains the WHAT; add a short rationale comment if useful.
 
 ## Functions

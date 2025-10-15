@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import * as React from "react";
 import * as rac from "react-aria-components";
-import { createRender } from "#app/examples/_lib/react/utils.ts";
+import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
 
 export interface DisclosureProps extends Omit<rac.DisclosureProps, "children"> {
   button?: React.ReactNode | DisclosureButtonProps;

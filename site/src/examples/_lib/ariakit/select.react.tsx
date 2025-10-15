@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import type * as React from "react";
-import { createRender } from "../react/utils.ts";
+import { createRender } from "../react-utils/create-render.ts";
 
 export interface SelectProps
   extends Omit<SelectButtonProps, "value" | "defaultValue">,
