@@ -51,32 +51,24 @@ export default class VitestBenchRunner
     const filename = new Date().toISOString();
 
     const filepath = path.resolve(this.config.root, ".benchmark", filename);
-    const results = this.#bench.tasks
-      .filter((task) => task.result !== undefined)
-      .reduce(
-        (accu, task) => {
-          accu[task.name] = {
-            latency: {
-              value: task.result!.latency.mean,
-              lower_value: task.result!.latency.min,
-              higher_value: task.result!.latency.max,
-            },
-            throughput: {
-              value: task.result!.throughput.mean,
-              lower_value: task.result!.throughput.min,
-              higher_value: task.result!.throughput.max,
-            },
-          };
-          return accu;
-        },
-        {} as Record<
-          string,
-          Record<
-            "latency" | "throughput",
-            { value: number; lower_value?: number; higher_value?: number }
-          >
-        >,
-      );
+
+    const results = this.#bench.tasks.reduce((accu, task) => {
+      if (task.result) {
+        accu[task.name] = {
+          latency: {
+            value: task.result.latency.mean,
+            lower_value: task.result.latency.min,
+            higher_value: task.result.latency.max,
+          },
+          throughput: {
+            value: task.result.throughput.mean,
+            lower_value: task.result.throughput.min,
+            higher_value: task.result.throughput.max,
+          },
+        };
+      }
+      return accu;
+    }, {} as BMF);
 
     const data = JSON.stringify(results, null, 4);
 
@@ -145,13 +137,21 @@ function deriveTinyBenchHooks(
     },
   };
 
-  if (!hooks.afterEach) {
+  if ((hooks.afterEach?.length ?? 0) === 0) {
     delete benched.afterEach;
   }
 
-  if (!hooks.beforeEach) {
+  if ((hooks.beforeEach?.length ?? 0) === 0) {
     delete benched.beforeEach;
   }
 
   return benched;
 }
+
+type BMF = Record<
+  string,
+  Record<
+    "latency" | "throughput",
+    { value: number; lower_value?: number; higher_value?: number }
+  >
+>;
