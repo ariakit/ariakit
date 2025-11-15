@@ -40,15 +40,44 @@ export default class VitestBenchRunner
   }
 
   async runTask(test: Test) {
-    // safety: tasks added earlier
+    // safety: tasks added earlier in `onBeforeRunFiles`
     const fn = this.#bench.getTask(test.id)!;
     await fn.run();
   }
 
+  // Format details
+  // https://bencher.dev/docs/reference/bencher-metric-format/
   onAfterRunFiles(): void {
     const filename = new Date().toISOString();
+
     const filepath = path.resolve(this.config.root, ".benchmark", filename);
-    const results = this.#bench.results.filter((a) => a !== undefined);
+    const results = this.#bench.tasks
+      .filter((task) => task.result !== undefined)
+      .reduce(
+        (accu, task) => {
+          accu[task.name] = {
+            latency: {
+              value: task.result!.latency.mean,
+              lower_value: task.result!.latency.min,
+              higher_value: task.result!.latency.max,
+            },
+            throughput: {
+              value: task.result!.throughput.mean,
+              lower_value: task.result!.throughput.min,
+              higher_value: task.result!.throughput.max,
+            },
+          };
+          return accu;
+        },
+        {} as Record<
+          string,
+          Record<
+            "latency" | "throughput",
+            { value: number; lower_value?: number; higher_value?: number }
+          >
+        >,
+      );
+
     const data = JSON.stringify(results, null, 4);
 
     fs.writeFileSync(filepath, data, { encoding: "utf8" });
