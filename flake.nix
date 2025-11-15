@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -16,15 +16,15 @@
         nativeBuildInputs = with pkgs; [
           direnv
           nodejs
+          biome
         ];
       in {
-        devShells.default =
-          pkgs.mkShell {
-            inherit system nativeBuildInputs;
-            # opt out of nextjs telemetry
-            # https://nextjs.org/telemetry
-            NEXT_TELEMETRY_DISABLED = 1;
-          };
+        devShells.default = pkgs.mkShell {
+          inherit system nativeBuildInputs;
+          # opt out of nextjs telemetry
+          # https://nextjs.org/telemetry
+          NEXT_TELEMETRY_DISABLED = 1;
+        };
       }
     );
 }
