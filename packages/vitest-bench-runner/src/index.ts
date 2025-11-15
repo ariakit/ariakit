@@ -76,12 +76,6 @@ export default class VitestBenchRunner
   }
 }
 
-// the idea
-//
-// 1. run existing test in bench mode.
-// 2. add benchmark results to a file like `.benchmark/<ISO8601>.json` (with some git stuff)
-// 3. During build, create benchmark and compare.
-
 function walk(
   suite: Suite,
   callbacks: { onSuite?(suite: Suite): void; onTest?(test: Test): void },
