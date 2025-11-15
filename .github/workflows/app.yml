@@ -1,0 +1,132 @@
+name: app
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  install-linux:
+    name: Install node modules (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+        with:
+          cache-npm: true
+
+  install-macos:
+    name: Install node modules (macOS)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+        with:
+          cache-npm: true
+
+  build:
+    name: Build app
+    needs: install-linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+
+      - name: Build app
+        run: npm run build-lite -w site
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-dist
+          path: site/dist
+          retention-days: 7
+          include-hidden-files: true
+
+  test:
+    name: Test ${{ matrix.name }}
+    needs: [build, install-macos]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Chrome
+            engine: chromium
+            project: chrome
+            run: xvfb-run npm run test-visual -w site --
+          - os: ubuntu-latest
+            name: Firefox
+            engine: firefox
+            project: firefox
+            run: xvfb-run npm run test-visual -w site --
+          # - os: ubuntu-latest
+          #   name: Android
+          #   engine: chromium
+          #   project: android
+          #   run: xvfb-run npm run test-visual -w site --
+          - os: macos-latest
+            name: Safari
+            engine: webkit
+            project: safari
+            run: npm run test-visual -w site --
+          # - os: macos-latest
+          #   name: iOS
+          #   engine: webkit
+          #   project: ios
+          #   run: npm run test-visual -w site --
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: ${{ matrix.engine }}
+
+      - name: Download app artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: app-dist
+          path: site/dist
+
+      - name: Test
+        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep-invert @visual --pass-with-no-tests
+
+      - name: Test visual
+        id: test-visual
+        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
+
+      - name: Reset snapshots
+        if: failure() && steps.test-visual.outcome == 'failure'
+        run: rm -rf site/src/tests/visual/*-${{ matrix.project }}-*.png
+
+      - name: Update snapshots
+        if: failure() && steps.test-visual.outcome == 'failure'
+        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual -u
+
+      - name: Upload snapshots
+        if: failure() && steps.test-visual.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-visual-${{ matrix.project }}
+          path: site/src/tests/visual
+          if-no-files-found: ignore
+          retention-days: 1

@@ -1,0 +1,32 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-production:
+    name: Deploy to production
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: Production
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+        with:
+          cache-npm: true
+
+      - name: Build app
+        run: npm run build -w site
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: deploy --env=""

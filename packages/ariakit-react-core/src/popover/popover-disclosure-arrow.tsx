@@ -1,6 +1,6 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useMemo } from "react";
 import type { ElementType } from "react";
+import { useMemo } from "react";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { usePopoverContext } from "./popover-context.tsx";

@@ -14,8 +14,8 @@ import type {
   KeyboardEvent,
   SyntheticEvent,
 } from "react";
-import { useCompositeItem } from "../composite/composite-item.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
+import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

@@ -121,6 +121,7 @@ export function hasOwnProperty<T extends AnyObject>(
   if (typeof Object.hasOwn === "function") {
     return Object.hasOwn(object, prop);
   }
+  // biome-ignore lint/suspicious/noPrototypeBuiltins: false positive
   return Object.prototype.hasOwnProperty.call(object, prop);
 }
 
@@ -131,7 +132,6 @@ export function chain<T>(...fns: T[]) {
   return (...args: T extends AnyFunction ? Parameters<T> : never) => {
     for (const fn of fns) {
       if (typeof fn === "function") {
-        // @ts-ignore
         fn(...args);
       }
     }
@@ -149,7 +149,6 @@ export function cx(...args: Array<string | null | false | 0 | undefined>) {
  * Removes diatrics from a string.
  */
 export function normalizeString(str: string) {
-  // biome-ignore lint/suspicious/noMisleadingCharacterClass:
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 

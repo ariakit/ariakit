@@ -1,5 +1,5 @@
-import { useContext } from "react";
 import type { ElementType } from "react";
+import { useContext } from "react";
 import type { HeadingOptions } from "../heading/heading.tsx";
 import { useHeading } from "../heading/heading.tsx";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";

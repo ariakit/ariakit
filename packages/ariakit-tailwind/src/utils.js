@@ -1,6 +1,9 @@
 export const LIGHTNESS_LEVELS = 8;
 export const SCHEME_THRESHOLD_L = 56.27;
 export const SCHEME_THRESHOLD_OKL = 0.623;
+// Upper bound for non-bare level expansions in utility value generation.
+// Keeps the generated class value space bounded and predictable.
+export const MAX_NON_BARE_LEVELS = 10;
 
 // Text contrast within the OkLCH and LCH color spaces
 export const TEXT_CONTRAST_OKL = `calc((${SCHEME_THRESHOLD_OKL} - l) * infinity)`;
@@ -46,12 +49,14 @@ export const vars = /** @type {const} */ ({
   shadow: "--ak-shadow",
   layerRing: "--ak-layer-ring",
   layerBorder: "--ak-layer-border",
+  bordering: "--ak-bordering",
   frameRadius: "--ak-frame-radius",
   frameBorder: "--ak-frame-border",
   framePadding: "--ak-frame-padding",
   frameMargin: "--ak-frame-margin",
 
   // Private API
+  _layerDown: "--_ak-layer-down",
   _layerBase: "--_ak-layer-base",
   _layerL: "--_ak-layer-l",
   _layerOkL: "--_ak-layer-okl",
@@ -75,6 +80,9 @@ export const vars = /** @type {const} */ ({
   _darkL: "--_ak-dark-l",
   _lightL: "--_ak-light-l",
 });
+
+export const IN_DARK = `@container style(${vars._layerAppearance}: oklch(1 0 0))`;
+export const IN_LIGHT = `@container style(${vars._layerAppearance}: oklch(0 0 0))`;
 
 export const properties = css({
   [`@property ${vars.layer}`]: {
@@ -112,6 +120,10 @@ export const properties = css({
     syntax: "'*'",
     inherits: "true",
   },
+  [`@property ${vars.bordering}`]: {
+    syntax: "'*'",
+    inherits: "false",
+  },
   [`@property ${vars.frameRadius}`]: {
     syntax: "'<length>'",
     inherits: "true",
@@ -131,6 +143,11 @@ export const properties = css({
     syntax: "'<length>'",
     inherits: "false",
     initialValue: "0px",
+  },
+  [`@property ${vars._layerDown}`]: {
+    syntax: "0 | 1",
+    inherits: "true",
+    initialValue: "0",
   },
   [`@property ${vars._layerBase}`]: {
     syntax: "'*'",
@@ -309,6 +326,7 @@ export function toPercent(value, defaultValue = "100%") {
  * Just to please TypeScript.
  * @typedef {{[key: string]: string | string[] | CssInJs | CssInJs[]}} CssInJs
  * @param {CssInJs[]} objects
+ * @returns {CssInJs}
  */
 export function css(...objects) {
   return Object.assign({}, ...objects);
@@ -328,29 +346,6 @@ export function bareValue(fn) {
 }
 
 /**
- * Returns the layer's computed okLCH values based on the provided level.
- * @param {string} level
- * @param {string} [contrast]
- */
-export function getLayerOkLCH(level, contrast = "0") {
-  const minL = `min(0.13, ${level})`;
-  const lMultiplier = 0.05;
-  const cMultiplier = 0.002;
-
-  let l = `max(0, max(l, ${minL}) + ${level} * ${lMultiplier})`;
-  const c = `max(0, c - ${level} * ${cMultiplier})`;
-  const h = "h";
-
-  if (`${contrast}` !== "0") {
-    const isDown = level.startsWith("-");
-    const layerContrast = `min(1, calc(-1 * ${contrast}))`;
-    const negativeContrast = `min(0, ${layerContrast})`;
-    l = `calc(${l} + ${lMultiplier} * ${negativeContrast} * ${oklchLightDark(isDown ? "-1" : "-5", isDown ? "-0.5" : "1")})`;
-  }
-  return { l, c, h };
-}
-
-/**
  * Returns CSS that enables a child to apply CSS based on the parent's layer
  * lightness level (0-100).
  * @param {(l: number) => CssInJs | null | undefined} fn
@@ -364,7 +359,7 @@ export function withParentL(fn) {
     const query = `@container style(${vars._layerL}: lch(${l} 0 0))`;
     const result = fn(l);
     if (!result) return acc;
-    Object.assign(acc, { [query]: result });
+    acc[query] = result;
     return acc;
   }, css());
 }
@@ -382,7 +377,7 @@ export function withParentOkL(fn) {
     const query = `@container style(${vars._layerOkL}: oklch(${l} 0 0))`;
     const result = fn(l);
     if (!result) return acc;
-    Object.assign(acc, { [query]: result });
+    acc[query] = result;
     return acc;
   }, css());
 }

@@ -1,4 +1,14 @@
-import { type User, clerkClient } from "@clerk/astro/server";
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { User } from "@clerk/astro/server";
+import { clerkClient } from "@clerk/astro/server";
 import type { APIContext } from "astro";
 import { createLogger } from "./logger.ts";
 import { objectId } from "./object.ts";

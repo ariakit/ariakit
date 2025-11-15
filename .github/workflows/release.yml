@@ -2,7 +2,7 @@ name: release
 
 on:
   push:
-    branches: [main, next]
+    branches: [main]
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -10,42 +10,36 @@ jobs:
   version:
     name: Version or publish
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v5
         with:
-          node-version-file: .nvmrc
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
 
-      - name: Cache npm
-        uses: actions/cache@v4
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
         with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json', '.nvmrc') }}
-          restore-keys: npm-
+          cache-npm: true
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: node-modules-${{ hashFiles('package-lock.json', '.nvmrc') }}
+      - name: Update npm
+        run: npm install -g npm@latest
 
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+      - name: Configure git
+        run: |
+          git config user.name "ariakit-bot"
+          git config user.email "ariakit-bot@users.noreply.github.com"
 
       - name: Create PR or publish to npm
         uses: changesets/action@v1
         with:
           title: Publish
           commit: Publish
-          version: node scripts/release/version.js
-          publish: node scripts/release/publish.js
+          version: npm run version
+          publish: npm run publish
+          setupGitUser: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
+          NPM_TOKEN: ""

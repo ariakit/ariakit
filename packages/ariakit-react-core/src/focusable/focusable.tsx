@@ -166,7 +166,9 @@ function useDisableEvent(
   });
 }
 
-// isKeyboardModality should be true by defaault.
+let hasInstalledGlobalEventListeners = false;
+
+// isKeyboardModality should be true by default.
 let isKeyboardModality = true;
 
 function onGlobalMouseDown(event: MouseEvent) {
@@ -210,8 +212,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     // keyboard to navigate the site or not.
     useEffect(() => {
       if (!focusable) return;
+      if (hasInstalledGlobalEventListeners) return;
       addGlobalEventListener("mousedown", onGlobalMouseDown, true);
       addGlobalEventListener("keydown", onGlobalKeyDown, true);
+      hasInstalledGlobalEventListeners = true;
     }, [focusable]);
 
     // Safari and Firefox on Apple devices don't focus on checkboxes or radio

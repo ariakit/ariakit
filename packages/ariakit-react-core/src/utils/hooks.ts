@@ -12,6 +12,7 @@ import type {
   RefObject,
   SetStateAction,
 } from "react";
+import * as React from "react";
 import {
   useCallback,
   useEffect,
@@ -21,7 +22,6 @@ import {
   useRef,
   useState,
 } from "react";
-import * as React from "react";
 import { setRef } from "./misc.ts";
 import type { WrapElement } from "./types.ts";
 
@@ -383,11 +383,14 @@ export function useMetadataProps<T, K extends keyof any>(
   return [parent?.[key], { onLoadedMetadataCapture }] as const;
 }
 
+let hasInstalledGlobalEventListeners = false;
+
 /**
  * Returns a function that checks whether the mouse is moving.
  */
 export function useIsMouseMoving() {
   useEffect(() => {
+    if (hasInstalledGlobalEventListeners) return;
     // We're not returning the event listener cleanup function here because we
     // may lose some events if this component is unmounted, but others are
     // still mounted.
@@ -397,6 +400,7 @@ export function useIsMouseMoving() {
     addGlobalEventListener("mouseup", resetMouseMoving, true);
     addGlobalEventListener("keydown", resetMouseMoving, true);
     addGlobalEventListener("scroll", resetMouseMoving, true);
+    hasInstalledGlobalEventListeners = true;
   }, []);
 
   const isMouseMoving = useEvent(() => mouseMoving);

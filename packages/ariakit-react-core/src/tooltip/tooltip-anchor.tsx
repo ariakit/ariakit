@@ -4,8 +4,8 @@ import {
   isFalsyBooleanCallback,
 } from "@ariakit/core/utils/misc";
 import { createStore, sync } from "@ariakit/core/utils/store";
-import { useEffect, useRef } from "react";
 import type { ElementType, FocusEvent, MouseEvent } from "react";
+import { useEffect, useRef } from "react";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import { useEvent } from "../utils/hooks.ts";

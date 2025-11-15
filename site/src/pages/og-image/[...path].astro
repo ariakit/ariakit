@@ -1,0 +1,147 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import {
+  BoxPatternsFull,
+  BoxPatternsMiddle,
+} from "#app/components/box-patterns.react.tsx";
+import { ProgressiveBlur } from "#app/components/progressive-blur.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
+import { Logo } from "#app/icons/logo.react.tsx";
+import { getFramework } from "#app/lib/frameworks.ts";
+import { capitalize } from "#app/lib/string.ts";
+import { importThumbnail } from "#app/lib/thumbnail.ts";
+import "#app/styles/global.css";
+import "@fontsource-variable/inter";
+import { getOGImageItems } from "./api.ts";
+
+export async function getStaticPaths() {
+  if (import.meta.env.PROD) {
+    return [];
+  }
+  const items = await getOGImageItems();
+  return items.map(({ path, ...props }) => {
+    return { params: { path }, props };
+  });
+}
+
+const { id, type, title, framework: frameworkProp } = Astro.props;
+
+const Thumbnail = await importThumbnail(id);
+const framework = frameworkProp ? getFramework(frameworkProp) : undefined;
+
+const Thumbnail1 = await importThumbnail("combobox-group");
+const Thumbnail2 = await importThumbnail("popover");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title ? `${title} - Ariakit` : "Ariakit"}</title>
+  </head>
+  <body class="flex items-center justify-center">
+    <div
+      class="h-[315px] w-[600px] ak-layer-current ring overflow-clip relative isolate"
+    >
+      {
+        type === "pages" && title ? (
+          <div class="p-11 flex flex-col items-center justify-center gap-2 h-full">
+            <div class="flex gap-2 items-center p-1 relative">
+              <Logo />
+              <BoxPatternsMiddle />
+            </div>
+            <h1 class="flex text-center text-4xl font-semibold text-balance relative w-fit">
+              {title}
+            </h1>
+          </div>
+        ) : type === "pages" ? (
+          <div class="p-11 flex flex-col items-center justify-center gap-4 h-full">
+            <div class="flex gap-2 items-center text-2xl relative">
+              <Logo />
+              <BoxPatternsFull />
+            </div>
+          </div>
+        ) : title && framework ? (
+          <div class="flex flex-col gap-4 h-full">
+            <div class="flex gap-2 items-center p-11 pb-0 z-20 relative">
+              <Logo />
+            </div>
+            <div
+              class:list={[
+                "z-10 p-11 pt-6 flex flex-col gap-1",
+                Thumbnail ? "pe-60" : "pe-32",
+              ]}
+            >
+              <div class="relative w-max ak-text-primary flex items-center gap-1">
+                <Icon name={framework.icon} />
+                {framework.label}
+                {capitalize(type)}
+                {!Thumbnail && (
+                  <div class="absolute min-w-55 -ms-8 -mt-4 -translate-y-1 inset-0">
+                    <BoxPatternsMiddle />
+                  </div>
+                )}
+              </div>
+              <h1 class="relative text-3xl font-semibold z-10 text-balance">
+                {title}
+              </h1>
+            </div>
+            {Thumbnail && (
+              <div class="absolute inset-0 -z-1 top-8">
+                <div class="absolute end-8 flex h-full bg-transparent z-1 w-max max-w-[55%] justify-self-end-safe gap-4">
+                  {Thumbnail && <Thumbnail />}
+                  <BoxPatternsMiddle />
+                </div>
+                <ProgressiveBlur
+                  side="bottom"
+                  strength={16}
+                  steps={16}
+                  tint="var(--ak-layer)"
+                  className="translate-y-16"
+                />
+              </div>
+            )}
+          </div>
+        ) : framework ? (
+          <div class="p-11 pt-16 flex flex-col items-center gap-4 h-full">
+            <div class="flex gap-2 items-center text-sm">
+              <Logo />
+            </div>
+            <h1 class="flex items-center gap-2 text-4xl font-semibold text-balance relative">
+              <Icon name={framework.icon} />
+              {framework.label}
+              {capitalize(type)}
+              <BoxPatternsMiddle />
+            </h1>
+            <div class="[zoom:0.5] mt-4 relative">
+              <div class="flex h-full bg-transparent gap-4 w-max">
+                {Thumbnail1 && <Thumbnail1 />}
+                {Thumbnail2 && <Thumbnail2 />}
+                {Thumbnail1 && <Thumbnail1 />}
+                {Thumbnail2 && <Thumbnail2 />}
+                {Thumbnail1 && <Thumbnail1 />}
+                {Thumbnail2 && <Thumbnail2 />}
+              </div>
+              <ProgressiveBlur
+                side="bottom"
+                strength={16}
+                steps={16}
+                tint="var(--ak-layer)"
+              />
+            </div>
+          </div>
+        ) : null
+      }
+    </div>
+  </body>
+</html>

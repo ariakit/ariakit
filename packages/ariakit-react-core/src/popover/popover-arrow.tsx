@@ -48,6 +48,18 @@ function getRingWidth(style?: CSSStyleDeclaration) {
   return ringWidth;
 }
 
+function getBorderColor(dir: BasePlacement, style?: CSSStyleDeclaration) {
+  if (!style) return;
+  const borderColor = style.getPropertyValue(`border-${dir}-color`);
+  if (borderColor) return borderColor;
+  const boxShadow = style.getPropertyValue("box-shadow");
+  const match = boxShadow.match(/0px 0px 0px [^,]+/);
+  if (!match) return;
+  const segment = match[0];
+  const ringColor = segment.replace(/^0px 0px 0px\s+[^\s,]+/, "").trim();
+  return ringColor || undefined;
+}
+
 /**
  * Returns props to create a `PopoverArrow` component.
  * @see https://ariakit.org/components/popover
@@ -84,17 +96,18 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
 
     const maskId = useId();
     const style = useComputedStyle(store);
+    const stroke = getBorderColor(dir, style) || "none";
     const fill = style?.getPropertyValue("background-color") || "none";
-    const stroke = style?.getPropertyValue(`border-${dir}-color`) || "none";
 
-    const borderWidth = useMemo(() => {
-      if (borderWidthProp != null) return borderWidthProp;
-      if (!style) return 0;
+    const [borderWidth, isRing] = useMemo(() => {
+      if (borderWidthProp != null) return [borderWidthProp, false];
+      if (!style) return [0, false];
       const ringWidth = getRingWidth(style);
-      if (ringWidth) return Number.parseInt(ringWidth);
+      if (ringWidth) return [Number.parseInt(ringWidth, 10), true];
       const borderWidth = style.getPropertyValue(`border-${dir}-width`);
-      if (borderWidth) return Number.parseInt(borderWidth);
-      return 0;
+      if (borderWidth)
+        return [Math.ceil(Number.parseFloat(borderWidth)), false];
+      return [0, false];
     }, [borderWidthProp, style, dir]);
 
     const strokeWidth = borderWidth * 2 * (defaultSize / size);
@@ -104,6 +117,17 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
       () => (
         <svg display="block" viewBox="0 0 30 30">
           <g transform={transform}>
+            {!isRing && (
+              // When using the CSS border property, set the fill color to match
+              // the background behind the stroke so transparent strokes match
+              // the appearance of borders on HTML elements.
+              <path
+                fill="none"
+                stroke={`var(--ak-layer, ${fill})`}
+                d={POPOVER_ARROW_PATH}
+                mask={`url(#${maskId})`}
+              />
+            )}
             <path fill="none" d={POPOVER_ARROW_PATH} mask={`url(#${maskId})`} />
             <path stroke="none" d={POPOVER_ARROW_PATH} />
             <mask id={maskId} maskUnits="userSpaceOnUse">
@@ -119,7 +143,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
           </g>
         </svg>
       ),
-      [transform, maskId],
+      [transform, isRing, fill, maskId],
     );
 
     props = {

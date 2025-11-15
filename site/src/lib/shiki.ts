@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 // @ts-nocheck Revisit this after we merge the site folder into root
 import type { BundledLanguage } from "shiki";
 import { createHighlighterCore } from "shiki/core";
@@ -19,7 +28,7 @@ export const highlighter = await createHighlighterCore({
     import("@shikijs/langs/python"),
     import("@shikijs/langs/jsx"),
   ],
-  engine: createOnigurumaEngine(import("shiki/wasm")),
+  engine: createOnigurumaEngine(import("shiki/onig.wasm")),
 });
 
 export function getLangFromFilename(filename: string): BundledLanguage {

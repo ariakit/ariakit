@@ -1,10 +1,22 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import fs from "node:fs";
 import { basename, dirname, relative } from "node:path";
+import prettier from "prettier";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
 import type { PluginContext } from "rollup";
 import ts from "typescript";
 import type { Plugin } from "vite";
+import { getFramework, getFrameworkByFilename } from "./frameworks.ts";
+import { resolveStylesForFiles } from "./styles.ts";
 import type { Source } from "./types.ts";
 
 // Cache for package information to avoid repeated lookups
@@ -38,6 +50,13 @@ function getPackageName(source: string) {
 }
 
 /**
+ * Escape special regex characters in a string
+ */
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
  * Remove framework-specific suffixes from a path
  */
 function removeFrameworkSuffixes(filePath: string) {
@@ -48,10 +67,26 @@ function removeFrameworkSuffixes(filePath: string) {
 }
 
 /**
+ * Whether an import path uses the `#app/*` alias
+ */
+function isAppAliasPath(importPath: string) {
+  return importPath.startsWith("#app/");
+}
+
+/**
  * Remove framework-specific suffixes and replace ../ with ./
  */
 function normalizeImportPath(importPath: string) {
-  return removeFrameworkSuffixes(importPath).replace(/^(\.\.\/)+/, "./");
+  const noFrameworkSuffix = removeFrameworkSuffixes(importPath);
+  // Treat #app alias as local and collapse path to just the filename
+  if (isAppAliasPath(noFrameworkSuffix)) {
+    return `./${basename(noFrameworkSuffix)}`;
+  }
+  // Any path starting with ../ should be reduced to just the basename
+  if (/^(?:\.\.\/)+/.test(noFrameworkSuffix)) {
+    return `./${basename(noFrameworkSuffix)}`;
+  }
+  return noFrameworkSuffix;
 }
 
 /**
@@ -59,6 +94,36 @@ function normalizeImportPath(importPath: string) {
  */
 function normalizeFilename(filename: string) {
   return removeFrameworkSuffixes(filename).replace(/^(\.\.\/)+/, "");
+}
+
+/**
+ * Choose a Prettier parser based on filename
+ */
+function getPrettierParserFromFilename(
+  filename: string,
+): "typescript" | "babel" | null {
+  if (/\.(ts|tsx)$/.test(filename)) return "typescript";
+  if (/\.(js|jsx)$/.test(filename)) return "babel";
+  return null;
+}
+
+/**
+ * Format code with Prettier respecting local configuration
+ */
+async function formatWithPrettier(
+  code: string,
+  filePath: string,
+  filenameForParser: string,
+) {
+  const parser = getPrettierParserFromFilename(filenameForParser);
+  if (!parser) return code;
+  try {
+    const resolvedConfig = (await prettier.resolveConfig(filePath)) ?? {};
+    return await prettier.format(code, { ...resolvedConfig, parser });
+  } catch {
+    // Fail silently: if Prettier isn't available or config fails, return unformatted code
+    return code;
+  }
 }
 
 /**
@@ -97,8 +162,19 @@ async function resolveImport(
   importer: string,
 ) {
   const { resolvedModule } = ts.resolveModuleName(id, importer, {}, host);
-  const external =
-    resolvedModule?.isExternalLibraryImport ?? !id.startsWith(".");
+  let external = resolvedModule?.isExternalLibraryImport ?? !id.startsWith(".");
+  // Any #app/* import is considered local
+  if (isAppAliasPath(id)) {
+    external = false;
+  }
+  if (external) {
+    return {
+      id,
+      external: true,
+      resolvedPath: resolveFrom(dirname(importer), id),
+      resolvedModule,
+    };
+  }
   const resolved = await context.resolve(id, importer);
   if (!resolved) return null;
   const resolvedPath = external
@@ -152,15 +228,9 @@ async function addFrameworkDependencies(
   source: Source,
 ) {
   const filename = basename(filePath);
-  if (filename.includes(".preact.tsx")) {
-    await addDependency(context, source, "preact", filePath);
-  }
-  if (filename.includes(".react.tsx")) {
-    await addDependency(context, source, "react", filePath);
-    await addDependency(context, source, "react-dom", filePath);
-  }
-  if (filename.includes(".solid.tsx")) {
-    await addDependency(context, source, "solid-js", filePath);
+  const framework = getFramework(getFrameworkByFilename(filename));
+  for (const dependency of framework.dependencies) {
+    await addDependency(context, source, dependency, filePath);
   }
 }
 
@@ -173,6 +243,7 @@ async function processFile(
   id: string,
   baseDir = dirname(id),
   processedModules = new Set<string>(),
+  preferBasename = false,
 ) {
   // Skip if already processed to avoid circular dependencies
   if (processedModules.has(id)) return;
@@ -180,19 +251,38 @@ async function processFile(
   context.addWatchFile(id);
 
   const content = await fs.promises.readFile(id, "utf-8");
-  const filename = normalizeFilename(getRelativePath(baseDir, id));
+  const relativeName = normalizeFilename(getRelativePath(baseDir, id));
+  const filename = preferBasename ? basename(relativeName) : relativeName;
   source.files[filename] = content;
 
   await addFrameworkDependencies(context, id, source);
 
   const imports = getImportPaths(content);
 
+  let importPathChanged = false;
+  let fileContent = source.files[filename];
+
   for (const importPath of imports) {
     const normalizedImportPath = normalizeImportPath(importPath);
-    source.files[filename] = source.files[filename].replaceAll(
-      importPath,
-      normalizedImportPath,
-    );
+    if (normalizedImportPath !== importPath) {
+      // Build a regex that matches import/export statements containing the
+      // original importPath. Matches: import ... from "path", export ... from
+      // 'path', import("path"), import('path'), import(`path`)
+      const escapedPath = escapeRegExp(importPath);
+      const importExportRegex = new RegExp(
+        `((?:import|export)\\s+(?:[^'"]*?\\s+from\\s+)?|import\\s*\\()(['"\`])${escapedPath}\\2`,
+        "g",
+      );
+      const updatedContent = fileContent.replace(
+        importExportRegex,
+        (_match, prefix, quote) =>
+          `${prefix}${quote}${normalizedImportPath}${quote}`,
+      );
+      if (updatedContent !== fileContent) {
+        fileContent = updatedContent;
+        importPathChanged = true;
+      }
+    }
 
     const resolved = await resolveImport(context, importPath, id);
     if (!resolved) continue;
@@ -207,8 +297,17 @@ async function processFile(
         resolved.id,
         baseDir,
         processedModules,
+        // If we're already preferring basenames (from a #app root) or the
+        // current import uses the #app alias, keep storing by basename.
+        preferBasename || isAppAliasPath(importPath),
       );
     }
+  }
+
+  // If we changed any import paths, run Prettier to normalize import formatting
+  if (importPathChanged) {
+    fileContent = await formatWithPrettier(fileContent, id, filename);
+    source.files[filename] = fileContent;
   }
 }
 
@@ -231,9 +330,13 @@ export function sourcePlugin(root?: string): Plugin {
         files: {},
         dependencies: {},
         devDependencies: {},
+        styles: [],
       };
 
       await processFile(this, source, realId);
+
+      // Resolve styles used by this source based on ak-* tokens found in files
+      source.styles = resolveStylesForFiles(source.files);
 
       return `export default ${JSON.stringify(source, null, 2)}`;
     },

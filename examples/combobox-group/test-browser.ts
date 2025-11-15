@@ -1,4 +1,5 @@
-import { type Page, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { test } from "../test-utils.ts";
 
 const getCombobox = (page: Page) => page.getByPlaceholder("e.g., Apple");

@@ -1,12 +1,12 @@
 import { invariant } from "@ariakit/core/utils/misc";
-import { queries as baseQueries } from "@testing-library/dom";
 import type {
   ByRoleMatcher,
   ByRoleOptions,
   getQueriesForElement,
 } from "@testing-library/dom";
-import { roles } from "./__aria-role.ts";
+import { queries as baseQueries } from "@testing-library/dom";
 import type { AriaRole } from "./__aria-role.ts";
+import { roles } from "./__aria-role.ts";
 
 type RoleQueries = Record<AriaRole, ReturnType<typeof createRoleQuery>>;
 type ElementQueries = ReturnType<

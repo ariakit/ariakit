@@ -1,5 +1,24 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 /// <reference types="astro/client" />
 /// <reference types="@clerk/astro/env" />
+
+declare module "*?source" {
+  const source: import("./lib/types.ts").Source;
+  export default source;
+}
+
+declare module "#app/styles/styles.json" {
+  const styles: import("./lib/styles.ts").StylesJson;
+  export default styles;
+}
 
 type PlusType = import("./lib/schemas.ts").PlusType;
 type Framework = import("./lib/schemas.ts").Framework;
@@ -12,11 +31,11 @@ type Runtime = import("@astrojs/cloudflare").Runtime<{
   ADMIN: KVNamespace;
 }>;
 
-namespace App {
+declare namespace App {
   interface Locals extends Runtime {
     user?: User | null;
     framework?: Framework;
-    example?: string;
+    reference?: string;
   }
   interface SessionData {
     admin: {
@@ -25,22 +44,22 @@ namespace App {
   }
 }
 
-interface UserPublicMetadata {
+declare interface UserPublicMetadata {
   plus?: PlusType | null;
 }
 
-interface UserPrivateMetadata {
+declare interface UserPrivateMetadata {
   stripeId?: string;
   credit?: number | null;
   currency?: string | null;
 }
 
-interface CustomJwtSessionClaims {
+declare interface CustomJwtSessionClaims {
   publicMetadata: UserPublicMetadata;
   teams: Record<string, string>;
 }
 
-interface ImportMetaEnv {
+declare interface ImportMetaEnv {
   readonly PUBLIC_CLERK_PUBLISHABLE_KEY?: string;
   readonly CLERK_SECRET_KEY?: string;
   readonly CLERK_WEBHOOK_SECRET?: string;
@@ -51,11 +70,11 @@ interface ImportMetaEnv {
   readonly ADMIN_ORG_ID?: string;
 }
 
-interface ImportMeta {
+declare interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
-namespace astroHTML.JSX {
+declare namespace astroHTML.JSX {
   interface ButtonHTMLAttributes {
     command?:
       | "show-modal"

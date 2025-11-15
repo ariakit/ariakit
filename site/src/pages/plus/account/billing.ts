@@ -1,6 +1,15 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import type { APIRoute } from "astro";
+import { z } from "zod";
 import { getCurrentUserId, getCustomer } from "#app/lib/auth.ts";
-import { camelCaseObject } from "#app/lib/schemas.ts";
 import { URLSchema } from "#app/lib/schemas.ts";
 import { getStripeClient } from "#app/lib/stripe.ts";
 import {
@@ -11,9 +20,13 @@ import {
 
 export const prerender = false;
 
-const querySchema = camelCaseObject({
-  redirectUrl: URLSchema,
-});
+const querySchema = z
+  .object({
+    redirect_url: URLSchema,
+  })
+  .transform((data) => ({
+    redirectUrl: data.redirect_url,
+  }));
 
 export const GET: APIRoute = async (context) => {
   const userId = getCurrentUserId(context);

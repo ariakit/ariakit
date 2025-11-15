@@ -1,7 +1,7 @@
 "use client";
 
-import { Role } from "@ariakit/react";
 import type { RoleProps } from "@ariakit/react";
+import { Role } from "@ariakit/react";
 import { track } from "@vercel/analytics";
 import { forwardRef } from "react";
 

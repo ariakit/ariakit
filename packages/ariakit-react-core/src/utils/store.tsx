@@ -1,10 +1,10 @@
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
   StoreState,
 } from "@ariakit/core/utils/store";
+import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   AnyFunction,
   AnyObject,
@@ -16,8 +16,9 @@ import * as React from "react";
 // This doesn't work in ESM, because use-sync-external-store only exposes CJS.
 // The following is a workaround until ESM is supported.
 import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
-const { useSyncExternalStore } = useSyncExternalStoreExports;
 import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.ts";
+
+const { useSyncExternalStore } = useSyncExternalStoreExports;
 
 export interface UseState<S> {
   /**

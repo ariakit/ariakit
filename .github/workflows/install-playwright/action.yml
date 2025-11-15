@@ -1,0 +1,26 @@
+name: install-playwright
+description: Install Playwright
+
+inputs:
+  engine:
+    description: Engine
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Playwright
+      id: cache-playwright
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ runner.os == 'macOS' && '~/Library/Caches/ms-playwright' || runner.os == 'Windows' && '~\\AppData\\Local\\ms-playwright' || '~/.cache/ms-playwright' }}
+        key: playwright-${{ runner.os }}-${{ inputs.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+        restore-keys: |
+          playwright-${{ runner.os }}-${{ inputs.engine }}-
+          playwright-${{ runner.os }}-
+
+    - name: Install Playwright
+      if: steps.cache-playwright.outputs.cache-hit != 'true'
+      shell: bash
+      run: npx playwright install --with-deps ${{ inputs.engine }}

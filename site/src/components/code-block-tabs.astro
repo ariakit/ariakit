@@ -1,8 +1,17 @@
 ---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import * as icons from "#app/icons/icons.ts";
-import { importThumbnail } from "#app/lib/import-thumbnail.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import { getLangFromFilename } from "#app/lib/shiki.ts";
+import { importThumbnail } from "#app/lib/thumbnail.ts";
 import type { Source } from "#app/lib/types.ts";
 import type { ComponentProps } from "astro/types";
 import { getEntry } from "astro:content";
@@ -13,6 +22,7 @@ import type { CodeBlockTabProps } from "./code-block.types";
 interface Props
   extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "source"> {
   source?: Source | Record<Framework, Source>;
+  span?: boolean;
 }
 
 const {
@@ -22,6 +32,8 @@ const {
   maxLines = 17,
   framework = Astro.locals.framework,
   example: exampleProp,
+  wide = false,
+  span = !!wide,
   ...props
 } = Astro.props;
 
@@ -38,18 +50,17 @@ function isTsxFramework(
 function getSource(source: typeof sourceProp) {
   if (!source) return;
   if ("files" in source) return source;
-  if (!framework) return;
-  return source[framework];
-}
-
-async function getVariantTitle(source?: Source) {
-  if (!source) return;
-  if (!source.name.includes("/")) return;
-  const title = await getEntry("previews", source.name);
-  return title?.data.title;
+  if (!framework) return null;
+  return source[framework] || null;
 }
 
 const source = getSource(sourceProp);
+
+// The source prop is available for multiple frameworks, but it doesn't include
+// the current one.
+if (source === null) {
+  return null;
+}
 
 const tabsFromSource = source
   ? Object.entries(source.files).map(([filename, code]) => {
@@ -69,36 +80,47 @@ const tabsFromSource = source
   : [];
 
 const tabs = tabsProp || tabsFromSource;
-const example = exampleProp ?? source?.name ?? Astro.locals.example;
-const title = await getVariantTitle(source);
+const example = exampleProp ?? source?.name;
+
+const isMainPreview =
+  !source?.name.includes("/") || source.name.includes("_component");
+
+const preview = source && (await getEntry("previews", source.name));
+const fullscreen = !!preview?.data.fullscreen;
+const title = preview?.data.title;
 
 const Fallback = example ? await importThumbnail(example) : undefined;
 ---
 
-<div class="grid gap-4">
-  {title && <div class="ak-text/60 font-medium text-center">{title}</div>}
-  <CodeBlockTabsReact
-    client:visible={{ rootMargin: "50%" }}
-    hasFallback={!!Fallback}
-    iframe={!Astro.slots.has("default")}
-    {tabs}
-    {source}
-    {maxLines}
-    {framework}
-    {example}
-    {...props}
-    preview={!!source}
+<div class:list={["h-full", span ? "col-span-full" : ""]}>
+  <div
+    class="grid gap-4 content-start sticky top-[calc(var(--header-height)+--spacing(2))]"
   >
-    <slot />
-    {Fallback && <Fallback slot="fallback0" />}
-    {Fallback && <Fallback slot="fallback1" />}
-    {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
-    {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
-    {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}
-    {tabs[3] && <CodeBlockContent slot="slot3" {lineNumbers} {...tabs[3]} />}
-    {tabs[4] && <CodeBlockContent slot="slot4" {lineNumbers} {...tabs[4]} />}
-    {tabs[5] && <CodeBlockContent slot="slot5" {lineNumbers} {...tabs[5]} />}
-    {tabs[6] && <CodeBlockContent slot="slot6" {lineNumbers} {...tabs[6]} />}
-    {tabs[7] && <CodeBlockContent slot="slot7" {lineNumbers} {...tabs[7]} />}
-  </CodeBlockTabsReact>
+    <CodeBlockTabsReact
+      tabs={tabs}
+      wide={wide || isMainPreview}
+      title={title}
+      source={source}
+      example={example}
+      maxLines={maxLines}
+      framework={framework}
+      defaultView={isMainPreview ? "code" : "preview"}
+      showControlsOnHover={!isMainPreview}
+      iframe={!Astro.slots.has("default")}
+      {...props}
+      preview={!!source ? (fullscreen ? "full" : true) : false}
+      client:visible={{ rootMargin: "50%" }}
+    >
+      <slot />
+      {Fallback && <Fallback slot="fallback" />}
+      {tabs[0] && <CodeBlockContent slot="slot0" {lineNumbers} {...tabs[0]} />}
+      {tabs[1] && <CodeBlockContent slot="slot1" {lineNumbers} {...tabs[1]} />}
+      {tabs[2] && <CodeBlockContent slot="slot2" {lineNumbers} {...tabs[2]} />}
+      {tabs[3] && <CodeBlockContent slot="slot3" {lineNumbers} {...tabs[3]} />}
+      {tabs[4] && <CodeBlockContent slot="slot4" {lineNumbers} {...tabs[4]} />}
+      {tabs[5] && <CodeBlockContent slot="slot5" {lineNumbers} {...tabs[5]} />}
+      {tabs[6] && <CodeBlockContent slot="slot6" {lineNumbers} {...tabs[6]} />}
+      {tabs[7] && <CodeBlockContent slot="slot7" {lineNumbers} {...tabs[7]} />}
+    </CodeBlockTabsReact>
+  </div>
 </div>

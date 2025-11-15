@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import clsx from "clsx";
 import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
@@ -39,7 +48,7 @@ export function CopyCode({
       <button
         {...props}
         className={clsx(
-          "ak-button ak-button-square ak-layer-pop size-9 ring",
+          "ak-button ak-button-square ak-layer-pop size-9 ak-border",
           props.className,
         )}
         onClick={async (event) => {

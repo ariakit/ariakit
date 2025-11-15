@@ -1,6 +1,15 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import clsx from "clsx";
 import * as React from "react";
-import { Icon } from "../icons/icon.react.tsx";
+import { Icon } from "#app/icons/icon.react.tsx";
 
 interface UseCollapsibleProps {
   collapsible: boolean;
@@ -50,9 +59,10 @@ export function useCollapsible<T extends HTMLElement>({
   const expandButton =
     collapsible && collapsed ? (
       <button
+        data-expand
         ref={expandButtonRef}
         onClick={expand}
-        className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-var(--line-height)*8)] ak-light:from-[calc(100%-var(--line-height)*4)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-1 justify-center items-end"
+        className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-[calc(100%-var(--line-height)*8)] ak-light:from-[calc(100%-var(--line-height)*4)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-2 justify-center items-end"
       >
         <div className="ak-button h-9 ak-layer-pop text-sm/[1.5rem] hover:ak-layer-hover group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
           Expand code
@@ -63,13 +73,16 @@ export function useCollapsible<T extends HTMLElement>({
 
   const collapseButton = (
     <div
-      className={clsx("sticky bottom-2", collapsible && !collapsed && "my-2")}
+      className={clsx(
+        "sticky bottom-2 z-10",
+        collapsible && !collapsed && "my-2",
+      )}
     >
       {collapsible && !collapsed && (
-        <div className="grid justify-center">
+        <div className="grid justify-center ak-frame-force-field/0">
           <button
             onClick={collapse}
-            className="ak-button ak-layer border h-9 text-sm/[1.5rem]"
+            className="ak-button ak-layer ak-bordering h-9 text-sm/[1.5rem]"
           >
             Collapse code
             <Icon className="text-base" name="chevronUp" />

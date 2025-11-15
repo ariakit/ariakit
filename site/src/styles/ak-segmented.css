@@ -1,0 +1,102 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@custom-variant ak-segmented-button-selected {
+  &:checked,
+  &[aria-selected="true"],
+  &[aria-checked="true"],
+  &:has(:checked),
+  &:has([aria-checked="true"]),
+  &:has([aria-selected="true"]) {
+    @slot;
+  }
+}
+
+@utility ak-segmented {
+  @apply ak-frame-full/container ak-layer-down-0.25 ak-bordering after:ak-segmented-indicator;
+  @apply gap-(--ak-frame-padding) relative flex overflow-clip;
+  --ak-segmented-padding: var(--ak-frame-padding);
+}
+
+@utility ak-segmented-separator {
+  @apply ak-layer-current;
+  @apply pointer-events-none absolute h-1/2 border-r transition-opacity delay-150 ease-in;
+  content: "";
+  inset-inline-start: calc((var(--ak-segmented-padding) / 2 + 1px) * -1);
+}
+
+@utility ak-segmented-indicator-base {
+  @apply ak-layer-2 ak-dark:ak-edge/0;
+  @apply ak-dark:ring-inset ring shadow;
+}
+
+@utility ak-segmented-indicator {
+  @apply ak-segmented-indicator-base ak-frame-field/0;
+  @apply absolute transition-[inset];
+  position-anchor: --ak-segmented-button_selected;
+  inset: anchor(start) anchor(end) anchor(end) anchor(start);
+}
+
+@utility ak-segmented-button_idle {
+  @apply ak-button_idle ak-text/70;
+  @apply z-1 font-medium transition-colors;
+  padding-block: calc(var(--ak-button-padding-block) * 0.75);
+  input[type="radio"] {
+    @apply sr-only;
+  }
+  &:not(:first-of-type)::before {
+    @apply ak-segmented-separator;
+  }
+}
+
+@utility ak-segmented-button_selected {
+  &::before,
+  & + *::before {
+    @apply opacity-0 delay-0;
+  }
+
+  @supports (anchor-name: --a) {
+    @apply ak-layer-2;
+    @apply bg-transparent!;
+    anchor-name: --ak-segmented-button_selected;
+  }
+
+  @supports not (anchor-name: --a) {
+    @apply ak-segmented-indicator-base;
+  }
+}
+
+@utility ak-segmented-button_hover {
+  @apply ak-button_hover;
+  &::before,
+  & + *::before {
+    @apply opacity-0 delay-0;
+  }
+}
+
+@utility ak-segmented-button_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-segmented-button_active {
+  @apply ak-button_active;
+}
+
+@utility ak-segmented-button_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-segmented-button {
+  @apply ak-segmented-button_idle;
+  @apply ak-command-hover:ak-segmented-button_hover;
+  @apply ak-command-focus:ak-segmented-button_focus;
+  @apply has-focus-visible:ak-segmented-button_focus;
+  @apply ak-command-active:ak-segmented-button_active;
+  @apply ak-command-disabled:ak-segmented-button_disabled;
+  @apply ak-segmented-button-selected:ak-segmented-button_selected;
+}

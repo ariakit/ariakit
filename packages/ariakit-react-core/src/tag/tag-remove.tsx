@@ -1,7 +1,7 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { useContext, useEffect } from "react";
 import type { ElementType, MouseEvent } from "react";
+import { useContext, useEffect } from "react";
 import { Role } from "../role/role.tsx";
 import { useBooleanEvent, useEvent, useId } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

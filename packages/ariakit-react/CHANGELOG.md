@@ -1,5 +1,22 @@
 # @ariakit/react
 
+## 0.4.19
+
+- Updated `Array` types to `ReadonlyArray` for better compatibility.
+- Fixed the automatic border width on [`PopoverArrow`](https://ariakit.org/reference/popover-arrow) to account for the device pixel ratio.
+- Updated dependencies: `@ariakit/react-core@0.4.19`
+
+## 0.4.18
+
+### Improved Combobox performance
+
+Thanks to [@iamakulov](https://github.com/iamakulov), the [Combobox](https://ariakit.org/components/combobox) component now opens ~30% faster by removing unnecessary calls to an internal function that adds global event listeners. See the [pull request](https://github.com/ariakit/ariakit/pull/4860) for more details.
+
+### Other updates
+
+- Improved [`PopoverArrow`](https://ariakit.org/reference/popover-arrow) default appearance when using semi-transparent borders.
+- Updated dependencies: `@ariakit/react-core@0.4.18`
+
 ## 0.4.17
 
 - Restored support for React 17 in [`PopoverArrow`](https://ariakit.org/reference/popover-arrow).

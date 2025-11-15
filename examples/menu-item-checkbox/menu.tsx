@@ -1,7 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
-import { forwardRef } from "react";
 import type { ReactNode } from "react";
+import { forwardRef } from "react";
 
 interface MenuProps extends Ariakit.MenuButtonProps {
   label: ReactNode;

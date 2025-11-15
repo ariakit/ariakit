@@ -1,10 +1,10 @@
+import { groupBy } from "lodash-es";
+import { notFound } from "next/navigation.js";
 import pagesConfig from "@/build-pages/config.js";
 import index from "@/build-pages/index.ts";
 import { PageItem } from "@/components/page-item.tsx";
 import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 import { getPageIcon } from "@/lib/get-page-icon.tsx";
-import { groupBy } from "lodash-es";
-import { notFound } from "next/navigation.js";
 import { PageSection } from "../page-section.tsx";
 import { ListPage } from "./list-page.tsx";
 
@@ -44,7 +44,6 @@ export default function Page({ params }: Props) {
 
   const groups = groupBy(pages, "group");
   const grouplessPages = groups.null || [];
-  // biome-ignore lint/performance/noDelete: TODO
   delete groups.null;
 
   return (

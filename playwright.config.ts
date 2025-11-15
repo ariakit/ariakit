@@ -7,6 +7,13 @@ if (process.argv.includes("--headed")) {
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
 
+function testMatchersFor(...kinds: string[]): RegExp[] {
+  return kinds.flatMap((kind) => [
+    new RegExp(`\\/test[^/]*-${kind}`),
+    new RegExp(`\\/tests\\/[^/]*-${kind}`),
+  ]);
+}
+
 export default defineConfig({
   fullyParallel: !HEADED,
   ignoreSnapshots: HEADED,
@@ -15,6 +22,7 @@ export default defineConfig({
   reportSlowTests: null,
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
+  testIgnore: ["site/**"],
   webServer: {
     command: "npm start",
     reuseExistingServer: !CI,
@@ -36,28 +44,29 @@ export default defineConfig({
   projects: [
     {
       name: "chrome",
-      testMatch: [/\/test[^\/]*\-chrome/, /\/test[^\/]*\-browser/],
+      testMatch: testMatchersFor("chrome", "browser"),
       use: devices["Desktop Chrome"],
     },
     {
       name: "firefox",
-      testMatch: [/\/test[^\/]*\-firefox/, /\/test[^\/]*\-browser/],
+      testMatch: testMatchersFor("firefox", "browser"),
       retries: CI ? 2 : 1,
       use: devices["Desktop Firefox"],
     },
     {
       name: "safari",
-      testMatch: [/\/test[^\/]*\-safari/, /\/test[^\/]*\-browser/],
+      testMatch: testMatchersFor("safari", "browser"),
       use: devices["Desktop Safari"],
+      retries: CI ? 3 : 1,
     },
     {
       name: "ios",
-      testMatch: [/\/test[^\/]*\-ios/, /\/test[^\/]*\-mobile/],
+      testMatch: testMatchersFor("ios", "mobile"),
       use: devices["iPhone 13 Pro Max"],
     },
     {
       name: "android",
-      testMatch: [/\/test[^\/]*\-android/, /\/test[^\/]*\-mobile/],
+      testMatch: testMatchersFor("android", "mobile"),
       use: devices["Pixel 5"],
     },
     {

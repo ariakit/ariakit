@@ -2,11 +2,7 @@ import { PlaceholderText } from "#app/components/placeholder-text.react.tsx";
 
 export default function Thumbnail() {
   return (
-    <div
-      // @ts-expect-error
-      inert="true"
-      className="flex flex-col gap-2 items-center"
-    >
+    <div className="flex flex-col gap-2 items-center">
       <div className="ak-input_idle w-64 flex mt-4">
         <PlaceholderText>e.g., John Doe</PlaceholderText>
       </div>

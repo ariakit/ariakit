@@ -1,8 +1,8 @@
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
-import { Select } from "./select.tsx";
 import type { SelectProps } from "./select.tsx";
+import { Select } from "./select.tsx";
 
 export { useFormStore } from "@ariakit/react";
 

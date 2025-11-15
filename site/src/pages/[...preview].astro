@@ -1,0 +1,59 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import "#app/styles/global.css";
+import "@fontsource-variable/inter";
+import type { GetStaticPaths } from "astro";
+import { getCollection, render } from "astro:content";
+
+export const getStaticPaths = (async () => {
+  const entries = await getCollection("previews");
+  return entries.flatMap((entry) => {
+    return entry.data.frameworks.map((framework) => ({
+      params: { preview: `${framework}/previews/${entry.id}` },
+      props: { framework, entry },
+    }));
+  });
+}) satisfies GetStaticPaths;
+
+const { framework, entry } = Astro.props;
+const { Content } = await render(entry);
+
+Astro.locals.framework = framework;
+
+const title = entry.data.title;
+const fullscreen = entry.data.fullscreen;
+---
+
+<!doctype html>
+<html lang="en" class:list={[!fullscreen && "min-h-[200vh]!"]}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Preview {title} - Ariakit</title>
+  </head>
+  <body
+    class:list={[
+      "flex",
+      !fullscreen && "items-center-safe justify-center-safe",
+    ]}
+  >
+    {
+      fullscreen ? (
+        <Content {framework} />
+      ) : (
+        <div class="p-3 size-full @container flex items-center-safe justify-center-safe">
+          <Content {framework} />
+        </div>
+      )
+    }
+  </body>
+</html>

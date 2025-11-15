@@ -6,8 +6,8 @@ import {
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { useCallback } from "react";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
+import { useCallback } from "react";
 import {
   useBooleanEvent,
   useEvent,

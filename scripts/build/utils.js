@@ -1,4 +1,4 @@
-import { lstatSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { lstatSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import chalk from "chalk";
 import fse from "fs-extra";

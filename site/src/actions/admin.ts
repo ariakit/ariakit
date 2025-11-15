@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import { ActionError, defineAction } from "astro:actions";
 import type { APIContext } from "astro";
 import type Stripe from "stripe";
@@ -15,11 +24,8 @@ import {
 import { formatCurrency } from "#app/lib/locale.ts";
 import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object.ts";
-import {
-  type PlusType,
-  PlusTypeSchema,
-  type PriceData,
-} from "#app/lib/schemas.ts";
+import type { PlusType, PriceData } from "#app/lib/schemas.ts";
+import { PlusTypeSchema } from "#app/lib/schemas.ts";
 import {
   createSalePromo,
   expanded,

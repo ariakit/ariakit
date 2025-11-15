@@ -1,6 +1,15 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import type { APIContext } from "astro";
 import { getUnixTime } from "./datetime.ts";
-import { nonNullable } from "./non-nullable.ts";
+import { nonNullable } from "./object.ts";
 import type { PriceData, PromoData } from "./schemas.ts";
 
 function priceKey(key = "") {
@@ -138,5 +147,5 @@ export async function getAdminLastSync(context: APIContext) {
   const store = getAdminStore(context);
   const lastSync = await store.get("last-sync");
   if (!lastSync) return;
-  return Number.parseInt(lastSync);
+  return Number.parseInt(lastSync, 10);
 }

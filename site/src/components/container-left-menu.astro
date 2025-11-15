@@ -1,0 +1,30 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {}
+
+const props = Astro.props;
+---
+
+<div
+  data-container-left-menu="true"
+  class:list={[
+    "overflow-x-clip @5xl:grid content-start max-h-[inherit]",
+    "[--container-p:--spacing(3)] @5xl:[--container-p:--spacing(6)]",
+    "[--sidebar-menu-width:max(16rem,calc(100%-min(100%,var(--container-default)+--spacing(3)*2))/2)]",
+    "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),calc(var(--container-wide)---spacing(2)))]",
+    props.class,
+  ]}
+  {...props}
+>
+  <slot />
+</div>

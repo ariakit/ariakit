@@ -1,4 +1,4 @@
-import { Menu, MenuGroup, MenuItem, Menubar } from "./menubar.tsx";
+import { Menu, Menubar, MenuGroup, MenuItem } from "./menubar.tsx";
 import "./style.css";
 
 export default function Example() {

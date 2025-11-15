@@ -1,0 +1,39 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-badge_base {
+  @apply ak-frame-badge;
+  @apply flex items-center gap-1 text-xs font-medium leading-[1em];
+  padding-inline: calc(var(--spacing-badge) * 1.5);
+}
+
+@utility ak-badge {
+  @apply ak-badge_base;
+}
+
+@utility ak-badge-* {
+  --ak-badge-color: --value(--color, [*]);
+  @apply ak-badge_base;
+  @apply ak-layer-mix-(--ak-badge-color)/15 ak-dark:ak-edge-(--ak-badge-color)/10 ak-light:ak-edge-(--ak-badge-color)/15;
+
+  &::before,
+  &::after,
+  :where(& > *) {
+    @apply ak-text-(--ak-badge-color)/70;
+  }
+}
+
+@utility ak-badge-icon {
+  @apply flex-none;
+  :has(> &:first-child) {
+    padding-inline-start: calc(var(--spacing-badge));
+  }
+  :has(> &:last-child) {
+    padding-inline-end: calc(var(--spacing-badge));
+  }
+}

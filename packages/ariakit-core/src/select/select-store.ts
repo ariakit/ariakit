@@ -190,7 +190,7 @@ export function createSelectStore({
   };
 }
 
-export type SelectStoreValue = string | string[];
+export type SelectStoreValue = string | readonly string[];
 
 export interface SelectStoreItem extends CompositeStoreItem {
   value?: string;

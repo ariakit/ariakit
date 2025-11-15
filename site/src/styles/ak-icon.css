@@ -1,0 +1,26 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+
+@utility ak-icon {
+  @apply block size-full flex-none bg-current;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-type: alpha;
+  mask-size: 100%;
+}
+
+@utility ak-icon-chevron {
+  @apply ak-icon;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' stroke-width='1.5' stroke='black' fill='none'%3E%3Cpolyline vector-effect='non-scaling-stroke' stroke-linecap='round' stroke-linejoin='round' points='4,6 8,10 12,6'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+@utility ak-icon-check {
+  @apply ak-icon;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke-width='1.5' stroke='black' fill='none'%3E%3Cpath vector-effect='non-scaling-stroke' stroke-linecap='round' stroke-linejoin='round' d='m4.5 12.75 6 6 9-13.5'/%3E%3C/svg%3E");
+}

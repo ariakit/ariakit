@@ -1,10 +1,21 @@
-import kleur from "kleur";
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { AstroIntegrationLogger } from "astro";
+import * as kleur from "kleur/colors";
 
 type LogLevel = "info" | "warn" | "error";
 
 interface LogOptions {
   level?: LogLevel;
   label?: string;
+  timestamp?: boolean;
   startTime?: number;
 }
 
@@ -21,11 +32,16 @@ const dateTimeFormat = new Intl.DateTimeFormat([], {
   hour12: false,
 });
 
-function getEventPrefix({ level = "info", label }: LogOptions) {
-  const timestamp = `${dateTimeFormat.format(new Date())}`;
+function getEventPrefix({
+  level = "info",
+  timestamp = true,
+  label,
+}: LogOptions) {
   const color = colors[level];
   const prefix = [];
-  prefix.push(kleur.dim(timestamp));
+  if (timestamp) {
+    prefix.push(kleur.dim(dateTimeFormat.format(new Date())));
+  }
   if (level === "error" || level === "warn") {
     prefix.push(color(`[${level.toUpperCase()}]`));
   }
@@ -37,10 +53,20 @@ function getEventPrefix({ level = "info", label }: LogOptions) {
 
 function getEventSuffix({ startTime }: LogOptions = {}) {
   if (!startTime) return;
-  return kleur.dim(`${Math.round(performance.now() - startTime)}ms`);
+  const timeDiff = performance.now() - startTime;
+  const timeDisplay =
+    timeDiff < 750
+      ? `${Math.round(timeDiff)}ms`
+      : `${(timeDiff / 1000).toFixed(2)}s`;
+  return kleur.dim(timeDisplay);
 }
 
-export function createLogger(label?: string, disableInProduction = false) {
+export function createLogger(
+  labelOrLogger?: string | AstroIntegrationLogger,
+  disableInProduction = false,
+) {
+  const label = typeof labelOrLogger === "string" ? labelOrLogger : undefined;
+  const logger = typeof labelOrLogger === "object" ? labelOrLogger : undefined;
   const parseParams = (
     options: LogOptions,
     message?: any,
@@ -50,11 +76,16 @@ export function createLogger(label?: string, disableInProduction = false) {
     const suffix = getEventSuffix(options);
     const text =
       typeof message === "string" ? message : JSON.stringify(message, null, 2);
-    return [[prefix, text].join(" "), ...optionalParams, suffix].filter(
+    const firstParam = prefix ? [prefix, text].join(" ") : text;
+    return [firstParam, ...optionalParams, suffix].filter(
       (param) => param !== undefined,
     );
   };
-  const getLogFn = ({ level = "info", ...options }: LogOptions) => {
+  const getLogFn = ({
+    level = "info",
+    timestamp = !logger,
+    ...options
+  }: LogOptions) => {
     const fnMap = {
       info: console.log,
       warn: console.warn,
@@ -63,7 +94,12 @@ export function createLogger(label?: string, disableInProduction = false) {
     return (...params: any[]) => {
       if (disableInProduction && import.meta.env.PROD) return;
       if (!params.length) return;
-      fnMap[level](...parseParams({ level, ...options }, ...params));
+      const args = parseParams({ level, timestamp, ...options }, ...params);
+      if (logger) {
+        logger[level](args.join(" "));
+      } else {
+        fnMap[level](...args);
+      }
     };
   };
   const getLogFns = (options: LogOptions) => {

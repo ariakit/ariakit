@@ -2,8 +2,8 @@ import type { FormStoreValues } from "@ariakit/core/form/form-store";
 import type { PickRequired } from "@ariakit/core/utils/types";
 import type { ReactElement, ReactNode } from "react";
 import { FormContextProvider } from "./form-context.tsx";
-import { useFormStore } from "./form-store.ts";
 import type { FormStoreProps } from "./form-store.ts";
+import { useFormStore } from "./form-store.ts";
 
 type Values = FormStoreValues;
 

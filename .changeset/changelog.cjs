@@ -45,7 +45,7 @@ async function getChangelogText(changelogLines) {
   if (!headingLines.length) return other;
 
   const heading = headingLines.join("\n\n");
-  if (!otherLines.length) return heading;
+  if (!other.trim()) return heading;
 
   return `${heading}\n\n### Other updates\n\n${other}`;
 }

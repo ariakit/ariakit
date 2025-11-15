@@ -1,15 +1,14 @@
 "use client";
+import { Heading, HeadingLevel } from "@ariakit/react";
+import Link from "next/link.js";
+import { useSearchParams } from "next/navigation.js";
 import { Heart } from "@/icons/heart.tsx";
 import { Nextjs } from "@/icons/nextjs.tsx";
 import { Vite } from "@/icons/vite.tsx";
 import { usePrice } from "@/lib/use-price.ts";
-import { Heading, HeadingLevel } from "@ariakit/react";
-import Link from "next/link.js";
-import { useSearchParams } from "next/navigation.js";
 import { CodePlaceholder } from "./code-placeholder.tsx";
 import { Focusable } from "./focusable.tsx";
 import { InlineLink } from "./inline-link.tsx";
-import { PlusBordered } from "./plus-bordered.tsx";
 import {
   PlusCheckoutButton,
   PlusCheckoutFrame,
@@ -18,6 +17,7 @@ import {
   PlusFeaturePreviewContainer,
   PlusProvider,
 } from "./plus.tsx";
+import { PlusBordered } from "./plus-bordered.tsx";
 
 export function PlusScreen() {
   const searchParams = useSearchParams();

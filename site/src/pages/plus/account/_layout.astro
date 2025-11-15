@@ -1,4 +1,13 @@
 ---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { Logo } from "#app/icons/logo.react.tsx";
@@ -7,7 +16,7 @@ import {
   getCurrentUserTeams,
   isSignedIn,
 } from "#app/lib/auth.ts";
-import { camelCaseObject, URLSchema } from "#app/lib/schemas.ts";
+import { URLSchema } from "#app/lib/schemas.ts";
 import type { GetPlusAccountURLParams } from "#app/lib/url.ts";
 import {
   getPlusAccountPath,
@@ -18,10 +27,15 @@ import "#app/styles/global.css";
 import { SignOutButton } from "@clerk/astro/components";
 import "@fontsource-variable/inter";
 import type { HTMLAttributes } from "astro/types";
+import { z } from "zod";
 
-const querySchema = camelCaseObject({
-  redirectUrl: URLSchema,
-});
+const querySchema = z
+  .object({
+    redirect_url: URLSchema,
+  })
+  .transform((data) => ({
+    redirectUrl: data.redirect_url,
+  }));
 
 const { redirectUrl } = querySchema.parse(
   Object.fromEntries(Astro.url.searchParams)

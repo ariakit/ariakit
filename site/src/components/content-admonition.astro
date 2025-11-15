@@ -1,4 +1,13 @@
 ---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import { Icon, type IconName } from "#app/icons/icon.react.tsx";
 import { AdmonitionTypeSchema, type AdmonitionType } from "#app/lib/schemas.ts";
 import type { HTMLAttributes } from "astro/types";
@@ -46,7 +55,7 @@ const titleContent =
   data-admonition={type}
   class:list={[
     "ak-frame-card",
-    "ak-layer-mix-(--color)/10 ak-edge/0 ring",
+    "ak-layer-pop-0.5 ak-frame-border",
     "[--container-width:theme(--container-content)] not-in-data-content:[--container-width:theme(--container-default)]",
     "ak-container-size-[calc(min(var(--container-width),100%)+var(--ak-frame-padding)*2)]/0 ak-container",
     "not-in-data-content:grid not-in-data-content:@3xl:grid-cols-[1fr_var(--container-sidebar)]",
@@ -55,7 +64,7 @@ const titleContent =
   ]}
   {...props}
 >
-  <div class="ak-prose ak-prose-text-base/relaxed">
+  <div class="ak-prose-content ak-prose-text-base/relaxed">
     <div class:list={["font-medium ak-text-(--color) flex gap-2"]}>
       <Icon
         name={icon}

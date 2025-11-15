@@ -1,9 +1,5 @@
-import {
-  type ValidComponent,
-  createEffect,
-  onCleanup,
-  useContext,
-} from "solid-js";
+import type { ValidComponent } from "solid-js";
+import { createEffect, onCleanup, useContext } from "solid-js";
 import { createId } from "../utils/misc.ts";
 import { mergeProps, stableAccessor } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";

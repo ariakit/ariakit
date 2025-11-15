@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import * as ak from "@ariakit/react";
 import type { PropsWithChildren } from "react";
 
@@ -30,7 +39,12 @@ function Tabs({ tabList, ...props }: TabsProps) {
         <button className="ak-tab-folder" tabIndex={0}>
           <div>default</div>
         </button>
-        <button className="ak-tab-folder" aria-selected="true" tabIndex={0}>
+        <button
+          className="ak-tab-folder"
+          role="tab"
+          aria-selected="true"
+          tabIndex={0}
+        >
           <div>default selected</div>
         </button>
       </ak.Role>

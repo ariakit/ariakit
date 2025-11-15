@@ -1,5 +1,12 @@
-import camelCase from "lodash-es/camelCase.js";
-import mapKeys from "lodash-es/mapKeys.js";
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import { z } from "zod";
 import { frameworks } from "./frameworks.ts";
 import { keys } from "./object.ts";
@@ -66,12 +73,48 @@ export const URLSchema = z
     return decodeURIComponent(value);
   });
 
-export function camelCaseObject<T extends z.ZodRawShape>(
-  shape: T,
-  params?: z.RawCreateParams,
-) {
-  return z
-    .record(z.string())
-    .transform((data) => mapKeys(data, (_, key) => camelCase(key)))
-    .pipe(z.object(shape, params));
-}
+const ReferenceExampleSchema = z.object({
+  description: z.string(),
+  language: z.string(),
+  meta: z.string(),
+  code: z.string(),
+});
+
+const BaseReferencePropSchema = z.object({
+  name: z.string(),
+  type: z.string(),
+  description: z.string(),
+  optional: z.boolean(),
+  defaultValue: z.string().optional(),
+  deprecated: z.union([z.string(), z.boolean()]),
+  examples: ReferenceExampleSchema.array(),
+  liveExamples: z.array(z.string()),
+});
+
+export const ReferencePropSchema = BaseReferencePropSchema.extend({
+  props: BaseReferencePropSchema.array().optional(),
+});
+
+export type ReferenceProp = z.infer<typeof ReferencePropSchema>;
+
+const ReferenceReturnValueSchema = z.object({
+  type: z.string(),
+  description: z.string(),
+  props: ReferencePropSchema.array().optional(),
+});
+
+export const ReferenceSchema = z.object({
+  name: z.string(),
+  component: z.string(),
+  kind: z.enum(["component", "function", "store"]),
+  framework: FrameworkSchema,
+  description: z.string(),
+  deprecated: z.union([z.string(), z.boolean()]),
+  examples: ReferenceExampleSchema.array(),
+  liveExamples: z.array(z.string()),
+  state: ReferencePropSchema.array(),
+  params: ReferencePropSchema.array(),
+  returnValue: ReferenceReturnValueSchema.optional(),
+});
+
+export type Reference = z.infer<typeof ReferenceSchema>;

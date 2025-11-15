@@ -1,7 +1,17 @@
 ---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import * as icons from "#app/icons/icons.ts";
 import { isJsxFramework } from "#app/lib/frameworks.ts";
 import { getLangFromFilename } from "#app/lib/shiki.ts";
+import { invariant } from "@ariakit/core/utils/misc";
 import type { ComponentProps } from "astro/types";
 import { decode } from "html-entities";
 import parseNumericRange from "parse-numeric-range";
@@ -9,7 +19,7 @@ import CodeBlockTabs from "./code-block-tabs.astro";
 import CodeBlock from "./code-block.astro";
 import type { CodeBlockProps } from "./code-block.types.ts";
 
-interface Props extends ComponentProps<typeof CodeBlockTabs> {}
+interface Props extends Partial<ComponentProps<typeof CodeBlockTabs>> {}
 
 const framework = Astro.locals.framework;
 
@@ -32,6 +42,7 @@ function getFilenameIcon(
 function parseLang(className?: string) {
   if (!className) return { filename: undefined, lang: undefined };
   const [, filename] = className.match(/language\-(.+)/) ?? [];
+  if (!filename) return { filename: undefined, lang: undefined };
   const lang = getLangFromFilename(filename);
   const showFilename = filename !== lang;
   return {
@@ -94,6 +105,7 @@ function parseMetaString(metaString?: string) {
     .filter((item) => tokenPattern.test(item))
     .map((item) => {
       const [, token, ranges] = item.match(tokenPattern) || [];
+      invariant(token, "Token must be defined");
       if (!ranges) return token;
       return [token, ...parseNumericRange(ranges)] as const;
     });
@@ -114,6 +126,9 @@ function parseCodeBlock(html: string): CodeBlockProps {
     return { code: html };
   }
   const [, attributes, encodedContent] = codeMatch;
+  if (!attributes) {
+    return { code: html };
+  }
   const className = attributes.match(/class="([^"]*)"/)?.[1];
   const langInfo = parseLang(className);
   const metaString = attributes.match(/metastring="([^"]*)"/)?.[1];
@@ -126,12 +141,49 @@ function parseCodeBlock(html: string): CodeBlockProps {
   };
 }
 
-const { tabs } = Astro.props;
+function getPackageManagerTabs(
+  props: Pick<CodeBlockProps, "lang" | "code"> | null
+) {
+  if (!props) return null;
+  const { lang, code } = props;
+  if (lang !== "sh" && lang !== "bash") return null;
+  if (!code.startsWith("npm install")) return null;
+  const isDev = code.includes("--save-dev") || code.includes(" -D");
+  const packages = code
+    .replace(/^npm install\s*/, "")
+    .replace(/--save-dev/, "")
+    .replace(/-D/, "")
+    .trim();
+  const npm = `npm install${isDev ? " --save-dev" : ""} ${packages}`;
+  const pnpm = `pnpm add${isDev ? " --save-dev" : ""} ${packages}`;
+  const yarn = `yarn add${isDev ? " --dev" : ""} ${packages}`;
+  const bun = `bun add${isDev ? " --dev" : ""} ${packages}`;
+  const tabs = [
+    { filename: "npm", code: npm },
+    { filename: "pnpm", code: pnpm },
+    { filename: "yarn", code: yarn },
+    { filename: "bun", code: bun },
+  ];
+  return {
+    tabs,
+    props: { persistTabKey: "package-manager" },
+  };
+}
+
+let { tabs, ...props } = Astro.props;
 
 const hasProps = Object.keys(Astro.props).length > 0;
-const codeBlockProps = !hasProps
+let codeBlockProps = !hasProps
   ? parseCodeBlock(await Astro.slots.render("default"))
   : null;
+
+const packageManagerTabs = getPackageManagerTabs(codeBlockProps);
+
+if (packageManagerTabs) {
+  tabs = packageManagerTabs.tabs;
+  Object.assign(props, packageManagerTabs.props);
+  codeBlockProps = null;
+}
 
 // Automatically set the filename icon for each tab
 if (tabs?.length) {
@@ -154,7 +206,7 @@ if (tabs?.length) {
     codeBlockProps ? (
       <CodeBlock {...codeBlockProps} />
     ) : (
-      <CodeBlockTabs {...Astro.props} />
+      !!tabs && <CodeBlockTabs {...props} tabs={tabs} />
     )
   }
 </div>

@@ -1,14 +1,31 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+
+import type { CollectionEntry } from "astro:content";
+import { isFramework } from "./frameworks.ts";
+import type { ReferenceItem } from "./reference.ts";
 import {
-  type PlusAccountPath,
-  type PlusCheckoutStep,
-  PlusCheckoutStepSchema,
-  type PlusType,
-  PlusTypeSchema,
-} from "./schemas.ts";
+  getReferenceItem,
+  getReferenceItemId,
+  getReferenceSlug,
+} from "./reference.ts";
+import type { PlusAccountPath, PlusCheckoutStep, PlusType } from "./schemas.ts";
+import { PlusCheckoutStepSchema, PlusTypeSchema } from "./schemas.ts";
+import { trimRight } from "./string.ts";
 
 const DEFAULT_URL = new URL("http://localhost:4321");
 const PLUS_ACCOUNT_PATH = "/plus/account";
 const PLUS_CHECKOUT_PATH = "/plus/checkout";
+const COMPONENTS_PATH = "/components";
+const LEGACY_REFERENCE_PATH = "/reference";
+const PARTIALS_PATH = "/partials";
 
 function leadingSlash(path?: string | null) {
   return path ? `/${path}` : "";
@@ -82,4 +99,179 @@ export function parsePlusCheckoutURL(url: string | URL) {
   const step = parsedStep.success ? parsedStep.data : undefined;
   const type = parsedType.success ? parsedType.data : undefined;
   return { step, type };
+}
+
+export interface GetReferenceURLParams {
+  reference: CollectionEntry<"references">;
+  item?: string;
+  url?: string | URL;
+}
+
+export function getReferenceURL({
+  reference,
+  item,
+  url,
+}: GetReferenceURLParams) {
+  const { framework, component } = reference.data;
+  const slug = getReferenceSlug(reference);
+  if (item && !getReferenceItem(reference.data, item)) return;
+  const nextUrl = new URL(url ?? DEFAULT_URL);
+  const slugPath = slug ? `/${slug}` : "";
+  nextUrl.pathname = `/${framework}${COMPONENTS_PATH}/${component}${slugPath}/`;
+  nextUrl.hash = item ? `#${item}` : "#api";
+  return nextUrl;
+}
+
+export interface GetReferencePathParams {
+  reference: CollectionEntry<"references">;
+  item?: string;
+}
+
+export function getReferencePath({ reference, item }: GetReferencePathParams) {
+  const url = getReferenceURL({ reference, item });
+  return url?.toString().replace(url.origin, "");
+}
+
+function getReferenceURLSegments(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const [framework, collection, component, slug, ...rest] = nextUrl.pathname
+    .split("/")
+    .filter(Boolean);
+  if (rest.length) return null;
+  if (!framework) return null;
+  if (!component) return null;
+  if (!slug) return null;
+  if (`/${collection}` !== COMPONENTS_PATH) return null;
+  return { framework, collection, component, slug };
+}
+
+function getLegacyReferenceURLSegments(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const [maybeLegacy, slug, ...rest] = nextUrl.pathname
+    .split("/")
+    .filter(Boolean);
+  if (rest.length) return null;
+  if (maybeLegacy !== LEGACY_REFERENCE_PATH.slice(1)) return null;
+  if (!slug) return null;
+  return { slug };
+}
+
+export interface ParseReferenceURLResult {
+  reference: CollectionEntry<"references">;
+  item?: ReferenceItem;
+}
+
+export function parseReferenceURL(
+  url: string | URL,
+  references: CollectionEntry<"references">[],
+): ParseReferenceURLResult | null {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const segments = getReferenceURLSegments(nextUrl);
+  if (!segments) return null;
+  const { framework, component, slug } = segments;
+  const referenceId = `${framework}/${component}/${slug}`;
+  const reference = references.find((r) => r.id === referenceId);
+  if (!reference) return null;
+  const itemId = getReferenceURLItemId(url);
+  if (!itemId) return { reference };
+  const item = getReferenceItem(reference.data, itemId);
+  if (!item) return null;
+  return { reference, item };
+}
+
+/**
+ * Returns true if the given URL has the shape of a reference page, regardless
+ * of whether the reference actually exists. Pattern:
+ * /{framework}/components/{component}/{slug}/[#item]
+ */
+export function isReferenceURLLike(
+  url?: string | URL | null,
+): url is string | URL {
+  if (!url) return false;
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const segments = getReferenceURLSegments(nextUrl);
+  if (!segments) return false;
+  return isFramework(segments.framework);
+}
+
+export function isLegacyReferenceURLLike(
+  url?: string | URL | null,
+): url is string | URL {
+  if (!url) return false;
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const legacy = getLegacyReferenceURLSegments(nextUrl);
+  return Boolean(legacy);
+}
+
+export function legacyToReferenceURL(
+  url: string | URL,
+  references: CollectionEntry<"references">[],
+) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const legacy = getLegacyReferenceURLSegments(nextUrl);
+  if (!legacy) return null;
+  const framework = "react";
+  const reference = references.find(
+    (r) =>
+      r.data.framework === framework && getReferenceSlug(r) === legacy.slug,
+  );
+  if (!reference) return null;
+  const rawItemId = nextUrl.hash ? nextUrl.hash.replace(/^#/, "") : undefined;
+  let itemId: string | undefined;
+  if (rawItemId) {
+    const matchedItem = getReferenceItem(reference.data, rawItemId);
+    if (matchedItem) {
+      itemId = matchedItem.id;
+    } else {
+      const propPrefixed = getReferenceItemId("prop", rawItemId);
+      const propItem = getReferenceItem(reference.data, propPrefixed);
+      if (propItem) {
+        itemId = propItem.id;
+      }
+    }
+  }
+  return getReferenceURL({ reference, item: itemId, url: nextUrl }) ?? null;
+}
+
+export function legacyToReferencePath(
+  url: string | URL,
+  references: CollectionEntry<"references">[],
+) {
+  const referenceUrl = legacyToReferenceURL(url, references);
+  return referenceUrl?.toString().replace(referenceUrl.origin, "");
+}
+
+export function getReferenceURLItemId(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const itemId = nextUrl.hash.replace(/^#/, "");
+  if (!itemId) return null;
+  if (itemId === "api") return null;
+  return itemId;
+}
+
+export function referenceURLToPartialPath(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const itemId = getReferenceURLItemId(url);
+  const pathname = `${PARTIALS_PATH}${trimRight(nextUrl.pathname, "/")}/`;
+  if (itemId) {
+    return `${pathname}${itemId}/`;
+  }
+  return pathname;
+}
+
+export function getPartialURLItemId(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const itemId = nextUrl.searchParams.get("item");
+  if (!itemId) return null;
+  return itemId;
+}
+
+export function partialURLToReferencePath(url: string | URL) {
+  const nextUrl = new URL(url, DEFAULT_URL);
+  const pathname = `${trimRight(nextUrl.pathname.replace(PARTIALS_PATH, ""), "/")}/`;
+  const item = getPartialURLItemId(url);
+  if (item) {
+    return `${pathname}#${item}`;
+  }
+  return `${pathname}`;
 }

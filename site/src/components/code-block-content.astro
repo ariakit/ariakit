@@ -1,10 +1,27 @@
 ---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { ReferenceHovercardAnchor } from "#app/components/reference-hovercard.react.tsx";
+import { findCodeReferenceAnchors } from "#app/lib/reference-tokenizer.ts";
 import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
+import { invariant } from "@ariakit/core/utils/misc";
+import { getCollection } from "astro:content";
 import { diffLines, diffWordsWithSpace } from "diff";
 import type { ThemedToken } from "shiki";
 import type { CodeBlockProps } from "./code-block.types";
 
-interface Props extends CodeBlockProps {}
+interface Props extends CodeBlockProps {
+  grammarContextCode?: string;
+  disableSyntaxHighlighting?: boolean;
+  disableReferenceLinks?: boolean;
+}
 
 interface TokenFragment {
   content: string;
@@ -12,6 +29,8 @@ interface TokenFragment {
   isHighlighted: boolean;
   tokenIndex: number;
   isDiff?: boolean;
+  charStart: number;
+  charEnd: number;
 }
 
 interface Segment {
@@ -83,19 +102,64 @@ const {
   lineNumbers = false,
   highlightLines = [],
   highlightTokens = [],
+  grammarContextCode,
+  disableSyntaxHighlighting = !!import.meta.env.DISABLE_SYNTAX_HIGHLIGHTING,
+  disableReferenceLinks = !!import.meta.env.DISABLE_REFERENCE_LINKS,
 } = Astro.props;
 
-const { tokens } = highlighter.codeToTokens(code.trim(), {
-  lang,
-  themes: {
-    light: "github-light",
-    dark: "dark-plus",
-  },
-});
+function getTokens() {
+  if (disableSyntaxHighlighting) return null;
+  const { tokens } = highlighter.codeToTokens(code.trim(), {
+    lang,
+    grammarContextCode,
+    themes: {
+      light: "github-light",
+      dark: "dark-plus",
+    },
+  });
+  return tokens;
+}
+
+const tokens = getTokens();
 
 let diffInfo: DiffInfo | null = null;
 
-if (previousCode) {
+// Reusable UI class constants (template-only consumers)
+const REMOVED_TOKEN_CLASS =
+  "ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
+const HIGHLIGHT_CHIP_CLASS = "ring rounded px-[0.25em] py-0.5";
+const HIGHLIGHT_ADDED_CHIP_CLASS =
+  "ak-layer-mix-green-500/30 ak-edge-green-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5";
+const MULTI_TOKEN_HIGHLIGHT_CLASS = "ak-layer-pop ak-edge/25";
+const LINE_DIV_BASE_CLASS = "pe-14 [content-visibility:auto] h-(--line-height)";
+
+function getTokenColors(token: ThemedToken) {
+  const style = token.htmlStyle as any;
+  const dark = style?.["--shiki-dark"] || token.color;
+  const light = style?.color || token.color;
+  return { dark, light } as const;
+}
+
+function mergeHighlightRanges<
+  T extends { start: number; end: number; isDiff?: boolean },
+>(ranges: T[]) {
+  if (ranges.length === 0) return [] as T[];
+  const sorted = [...ranges].sort((a, b) => a.start - b.start);
+  const merged: T[] = [];
+  for (const current of sorted) {
+    const last = merged[merged.length - 1];
+    if (last && current.start <= last.end) {
+      // merge
+      last.end = Math.max(last.end, current.end);
+      if (current.isDiff) last.isDiff = true;
+    } else {
+      merged.push({ ...(current as T) });
+    }
+  }
+  return merged;
+}
+
+if (previousCode && tokens) {
   const changes = diffLines(previousCode.trim(), code.trim());
   diffInfo = [];
   let newCodeLineIndex = 0;
@@ -112,6 +176,7 @@ if (previousCode) {
 
   for (let i = 0; i < changes.length; i++) {
     const part = changes[i];
+    invariant(part, "Part is required");
     const nextPart = i + 1 < changes.length ? changes[i + 1] : null;
 
     const lines = part.value.replace(/\n$/, "").split("\n");
@@ -124,6 +189,8 @@ if (previousCode) {
         for (let j = 0; j < removedLines.length; j++) {
           const oldLine = removedLines[j];
           const newLine = addedLines[j];
+          invariant(oldLine, "Old line is required");
+          invariant(newLine, "New line is required");
           const wordDiff = diffWordsWithSpace(oldLine, newLine);
           const modifiedSegmentCount = wordDiff.filter(
             (p) => p.added || p.removed
@@ -197,7 +264,9 @@ function getTokensForSubstring(
   length: number
 ) {
   const resultTokens: ThemedToken[] = [];
-  if (!lineTokens) return resultTokens;
+  if (!lineTokens) {
+    return resultTokens;
+  }
   let currentPos = 0;
   for (const token of lineTokens) {
     const tokenStart = currentPos;
@@ -301,7 +370,8 @@ function createHighlightSegments(
   line: ThemedToken[],
   textHighlights: Array<
     ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
-  >
+  >,
+  charOffset = 0
 ) {
   if (!line.some((token) => token.content)) {
     return { isEmpty: true, segments: [] as Segment[] };
@@ -328,6 +398,8 @@ function createHighlightSegments(
         token,
         isHighlighted: false,
         tokenIndex,
+        charStart: charOffset + tokenStart,
+        charEnd: charOffset + tokenEnd,
       });
     } else {
       // Token intersects with highlights - split it
@@ -349,6 +421,8 @@ function createHighlightSegments(
       for (let i = 0; i < sortedSplitPoints.length - 1; i++) {
         const fragmentStart = sortedSplitPoints[i];
         const fragmentEnd = sortedSplitPoints[i + 1];
+        invariant(fragmentStart !== undefined, "Fragment start is required");
+        invariant(fragmentEnd !== undefined, "Fragment end is required");
 
         // Check if this fragment is highlighted
         const highlight = textHighlights.find(
@@ -367,6 +441,8 @@ function createHighlightSegments(
             isHighlighted: !!highlight,
             tokenIndex,
             isDiff: highlight?.isDiff,
+            charStart: charOffset + fragmentStart,
+            charEnd: charOffset + fragmentEnd,
           });
         }
       }
@@ -410,133 +486,107 @@ function createHighlightSegments(
   return { isEmpty: false, segments };
 }
 
-const linesToRender = (() => {
-  if (diffInfo) {
-    const linesData = diffInfo.map((line, i) => ({
-      ...line,
-      i,
-      key: `diff-${i}`,
-    }));
-    return linesData.map((line) => {
-      if (line.type === "removed") {
-        return { ...line, renderType: line.type };
-      }
+function buildLinesToRenderFromDiff(
+  diff: DiffInfo,
+  lineHighlightsByLine: ReturnType<typeof findAllTextHighlights>[]
+): LinesToRender {
+  const linesData = diff.map((line, i) => ({ ...line, i, key: `diff-${i}` }));
+  return linesData.map((line) => {
+    if (line.type === "removed") {
+      return { ...line, renderType: line.type };
+    }
 
-      if (line.type === "modified-inline") {
-        const parts = [];
-        let charIndex = 0;
-        const lineHighlights =
-          (line.lineNum &&
-            highlightsByLine[line.lineNum - 1]?.map((h) => ({ ...h }))) ||
-          [];
-
-        for (const part of line.diffs || []) {
-          if (part.removed) {
-            parts.push({ renderType: "removed", content: part.value });
-            continue;
-          }
-
-          const partContent = part.value;
-          const partStart = charIndex;
-          const partEnd = partStart + partContent.length;
-
-          const highlightsInPart: Array<
-            ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
-          > = lineHighlights
-            .filter((h) => h.start < partEnd && h.end > partStart)
-            .map((h) => ({
-              ...h,
-              start: h.start - partStart,
-              end: h.end - partStart,
-            }));
-
-          if (part.added) {
-            highlightsInPart.push({
-              start: 0,
-              end: partContent.length,
-              text: partContent,
-              isDiff: true,
-            });
-          }
-
-          // Sort and merge highlights for this part
-          highlightsInPart.sort((a, b) => a.start - b.start);
-          const mergedHighlights: typeof highlightsInPart = [];
-          highlightsInPart.forEach((current) => {
-            const last = mergedHighlights[mergedHighlights.length - 1];
-            if (last && current.start <= last.end) {
-              last.end = Math.max(last.end, current.end);
-              if (current.isDiff) last.isDiff = true;
-            } else {
-              mergedHighlights.push(current);
-            }
-          });
-
-          const subTokens =
-            getTokensForSubstring(
-              line.tokens || [],
-              partStart,
-              partContent.length
-            ) || [];
-          const { isEmpty, segments } = createHighlightSegments(
-            subTokens,
-            mergedHighlights
-          );
-          parts.push({ renderType: "segments", isEmpty, segments });
-          charIndex += partContent.length;
-        }
-        return { ...line, renderType: "parts", parts };
-      }
-
-      const lineTokens = line.tokens || [];
-
-      const highlights: Array<
-        ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
-      > =
+    if (line.type === "modified-inline") {
+      const parts: LinePart[] = [];
+      let charIndex = 0;
+      const lineHighlights =
         (line.lineNum &&
-          highlightsByLine[line.lineNum - 1]?.map((h) => ({ ...h }))) ||
+          lineHighlightsByLine[line.lineNum - 1]?.map((h) => ({ ...h }))) ||
         [];
 
-      if (line.diffs) {
-        // With diff, `highlights` are the added parts of the line
-        let currentPos = 0;
-        for (const part of line.diffs) {
-          if (part.added) {
-            highlights.push({
-              start: currentPos,
-              end: currentPos + part.value.length,
-              text: part.value,
-              isDiff: true,
-            });
-          }
-          if (!part.removed) {
-            currentPos += part.value.length;
-          }
+      for (const part of line.diffs || []) {
+        if (part.removed) {
+          parts.push({ renderType: "removed", content: part.value });
+          continue;
+        }
+
+        const partContent = part.value;
+        const partStart = charIndex;
+        const partEnd = partStart + partContent.length;
+
+        const highlightsInPart: Array<
+          ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
+        > = lineHighlights
+          .filter((h) => h.start < partEnd && h.end > partStart)
+          .map((h) => ({
+            ...h,
+            start: h.start - partStart,
+            end: h.end - partStart,
+          }));
+
+        if (part.added) {
+          highlightsInPart.push({
+            start: 0,
+            end: partContent.length,
+            text: partContent,
+            isDiff: true,
+          });
+        }
+
+        const mergedHighlights = mergeHighlightRanges(highlightsInPart);
+        const subTokens =
+          getTokensForSubstring(
+            line.tokens || [],
+            partStart,
+            partContent.length
+          ) || [];
+        const { isEmpty, segments } = createHighlightSegments(
+          subTokens,
+          mergedHighlights,
+          partStart
+        );
+        parts.push({ renderType: "segments", isEmpty, segments });
+        charIndex += partContent.length;
+      }
+      return { ...line, renderType: "parts", parts };
+    }
+
+    const lineTokens = line.tokens || [];
+    const highlights: Array<
+      ReturnType<typeof findAllTextHighlights>[0] & { isDiff?: boolean }
+    > =
+      (line.lineNum &&
+        lineHighlightsByLine[line.lineNum - 1]?.map((h) => ({ ...h }))) ||
+      [];
+
+    if (line.diffs) {
+      let currentPos = 0;
+      for (const part of line.diffs) {
+        if (part.added) {
+          highlights.push({
+            start: currentPos,
+            end: currentPos + part.value.length,
+            text: part.value,
+            isDiff: true,
+          });
+        }
+        if (!part.removed) {
+          currentPos += part.value.length;
         }
       }
+    }
 
-      // Sort and merge highlights
-      highlights.sort((a, b) => a.start - b.start);
-      const merged: typeof highlights = [];
-      highlights.forEach((current) => {
-        const last = merged[merged.length - 1];
-        if (last && current.start <= last.end) {
-          // Merge overlapping highlights
-          last.end = Math.max(last.end, current.end);
-          if (current.isDiff) {
-            last.isDiff = true;
-          }
-        } else {
-          merged.push(current);
-        }
-      });
+    const merged = mergeHighlightRanges(highlights);
+    const { isEmpty, segments } = createHighlightSegments(lineTokens, merged);
+    return { ...line, renderType: "segments" as const, isEmpty, segments };
+  }) as LinesToRender;
+}
 
-      const { isEmpty, segments } = createHighlightSegments(lineTokens, merged);
-      return { ...line, renderType: "segments" as const, isEmpty, segments };
-    }) as LinesToRender;
-  }
-
-  const linesData = tokens.map((line, i) => ({
+function buildLinesToRenderFromTokens(
+  tokenLines: ThemedToken[][],
+  lineHighlightsByLine: ReturnType<typeof findAllTextHighlights>[]
+): LinesToRender {
+  const linesData = tokenLines.map((line, i) => ({
     key: `token-${i}`,
     i,
     type: "unchanged" as const,
@@ -547,18 +597,96 @@ const linesToRender = (() => {
 
   return linesData.map((line) => {
     const lineTokens = line.tokens || [];
-    const highlights = highlightsByLine[line.i] || [];
+    const highlights = lineHighlightsByLine[line.i] || [];
     const { isEmpty, segments } = createHighlightSegments(
       lineTokens,
-      highlights.map((h) => ({ ...h, isDiff: false }))
+      highlights.map((h) => ({ ...h, isDiff: false })),
+      0
     );
     return { ...line, renderType: "segments" as const, isEmpty, segments };
   }) as LinesToRender;
+}
+
+function buildLinesToRenderFromCode(codeString: string): LinesToRender {
+  const lines = codeString.trim().split("\n");
+  return lines.map((content, i) => {
+    const token = { content, color: "currentColor" } as unknown as ThemedToken;
+    const { isEmpty, segments } = createHighlightSegments([token], []);
+    return {
+      key: `lite-${i}`,
+      i,
+      type: "unchanged" as const,
+      renderType: "segments" as const,
+      isEmpty,
+      segments,
+      lineNum: i + 1,
+    };
+  }) as LinesToRender;
+}
+
+const linesToRender: LinesToRender = (() => {
+  if (disableSyntaxHighlighting) {
+    return buildLinesToRenderFromCode(code);
+  }
+  if (diffInfo) {
+    return buildLinesToRenderFromDiff(diffInfo, highlightsByLine);
+  }
+  return buildLinesToRenderFromTokens(tokens || [], highlightsByLine);
 })();
 
 const hasAddedOrRemoved = diffInfo?.some(
   (line) => line.type === "added" || line.type === "removed"
 );
+const showGutter = lineNumbers || hasAddedOrRemoved;
+const showGridColumns = lineNumbers || Boolean(diffInfo);
+
+// Reference hovercards: compute anchor ranges per line (disabled in lite mode)
+let anchorsByLine: ReturnType<typeof findCodeReferenceAnchors> = [];
+if (!disableReferenceLinks) {
+  const references = await getCollection("references");
+  anchorsByLine = findCodeReferenceAnchors({
+    code: code.trim(),
+    references,
+    framework: Astro.locals.framework,
+  });
+}
+
+function getFragmentPieces(
+  fragment: TokenFragment,
+  lineZeroBasedIndex: number
+) {
+  const lineAnchors = anchorsByLine?.[lineZeroBasedIndex] || [];
+  const start = fragment.charStart;
+  const end = fragment.charEnd;
+  const pieces: Array<
+    | { type: "text"; start: number; end: number }
+    | { type: "anchor"; start: number; end: number; href: string; kind: any }
+  > = [];
+  let cursor = start;
+  const overlapping = lineAnchors
+    .filter((a) => a.start < end && a.end > start)
+    .sort((a, b) => a.start - b.start);
+  for (const a of overlapping) {
+    const aStart = Math.max(start, a.start);
+    const aEnd = Math.min(end, a.end);
+    if (cursor < aStart)
+      pieces.push({ type: "text", start: cursor, end: aStart });
+    if (aEnd > aStart) {
+      pieces.push({
+        type: "anchor",
+        start: aStart,
+        end: aEnd,
+        href: a.href,
+        kind: a.kind,
+      });
+      cursor = aEnd;
+    }
+  }
+  if (cursor < end) {
+    pieces.push({ type: "text", start: cursor, end });
+  }
+  return pieces;
+}
 ---
 
 <Fragment>
@@ -566,14 +694,14 @@ const hasAddedOrRemoved = diffInfo?.some(
     class:list={[
       "grid whitespace-pre **:data-highlight:ak-edge/25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0625rem*var(--contrast,0))_0_var(--ak-border)]",
       "*:*:ps-4 *:*:in-data-admonition:ps-3",
-      (lineNumbers || diffInfo) && {
+      showGridColumns && {
         "sm:grid-cols-[max-content_1fr]": !hasAddedOrRemoved,
         "grid-cols-[max-content_1fr]": hasAddedOrRemoved,
       },
     ]}
   >
     {
-      (lineNumbers || hasAddedOrRemoved) && (
+      showGutter && (
         <div
           aria-hidden
           class:list={[
@@ -631,8 +759,6 @@ const hasAddedOrRemoved = diffInfo?.some(
             "ak-layer-mix-green-500/25": isAdded,
             "ak-layer-mix-red-500/25 ak-text/0": lineInfo.type === "removed",
           };
-          const removedTokenClass =
-            "ak-layer-mix-red-500/30 ak-edge-red-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-text/0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
 
           if (lineInfo.renderType === "removed") {
             return (
@@ -652,7 +778,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                       return (
                         <del
                           class:list={{
-                            [removedTokenClass]: part.removed,
+                            [REMOVED_TOKEN_CLASS]: part.removed,
                             "[text-decoration:none]": !part.removed,
                           }}
                         >
@@ -670,7 +796,7 @@ const hasAddedOrRemoved = diffInfo?.some(
               <div
                 data-highlight={highlightLine || undefined}
                 class:list={[
-                  "pe-14 [content-visibility:auto] h-(--line-height)",
+                  LINE_DIV_BASE_CLASS,
                   lineClass,
                   isHighlighted(lineInfo.i) && "ak-layer-pop",
                   isCollapsed(lineInfo.i) && "in-data-collapsed:hidden",
@@ -679,7 +805,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                 {lineInfo.parts.map((part) => {
                   if (part.renderType === "removed") {
                     return (
-                      <del class={removedTokenClass}>
+                      <del class={REMOVED_TOKEN_CLASS}>
                         <span class="relative z-1">{part.content}</span>
                       </del>
                     );
@@ -688,30 +814,49 @@ const hasAddedOrRemoved = diffInfo?.some(
                     const { isEmpty, segments } = part;
                     if (isEmpty) return null;
                     return segments.map((segment: Segment) => {
-                      const segmentElements = segment.fragments.map(
-                        ({ content, token }: TokenFragment) => {
-                          const style = token.htmlStyle as any;
-                          const dark = style?.["--shiki-dark"] || token.color;
-                          const light = style?.color || token.color;
-                          return (
+                      const segmentElements = segment.fragments.flatMap(
+                        (fragment: TokenFragment) => {
+                          const { dark, light } = getTokenColors(
+                            fragment.token
+                          );
+                          const pieces = getFragmentPieces(
+                            fragment,
+                            (lineInfo.lineNum || 1) - 1
+                          );
+                          const textFrom = (a: number, b: number) =>
+                            fragment.content.slice(
+                              a - fragment.charStart,
+                              b - fragment.charStart
+                            );
+                          return pieces.map((piece) => (
                             <span
                               style={`--dark:${dark}; --light:${light}`}
                               class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
                             >
-                              {content || ""}
+                              {piece.type === "anchor" ? (
+                                <ReferenceHovercardAnchor
+                                  client:idle
+                                  inCodeBlock
+                                  href={piece.href}
+                                  kind={piece.kind}
+                                  inHovercard={!!Astro.locals.reference}
+                                >
+                                  {textFrom(piece.start, piece.end)}
+                                </ReferenceHovercardAnchor>
+                              ) : (
+                                textFrom(piece.start, piece.end) || ""
+                              )}
                             </span>
-                          );
+                          ));
                         }
                       );
 
                       // Apply highlighting if needed
                       if (segment.isHighlighted) {
-                        const highlightClass =
-                          "ring rounded px-[0.25em] py-0.5";
-
+                        const highlightClass = HIGHLIGHT_CHIP_CLASS;
                         if (isAdded || segment.isDiff) {
                           return (
-                            <span class="ak-layer-mix-green-500/30 ak-edge-green-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5">
+                            <span class={HIGHLIGHT_ADDED_CHIP_CLASS}>
                               {segmentElements}
                             </span>
                           );
@@ -722,7 +867,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                           return (
                             <span
                               class:list={[
-                                "ak-layer-pop ak-edge/25",
+                                MULTI_TOKEN_HIGHLIGHT_CLASS,
                                 highlightClass,
                               ]}
                             >
@@ -732,17 +877,17 @@ const hasAddedOrRemoved = diffInfo?.some(
                         }
                         // Single token highlight - use token colors for background
                         const firstFragment = segment.fragments[0];
-                        const style = firstFragment.token.htmlStyle as any;
-                        const dark =
-                          style?.["--shiki-dark"] || firstFragment.token.color;
-                        const light = style?.color || firstFragment.token.color;
+                        invariant(firstFragment, "First fragment is required");
+                        const { dark, light } = getTokenColors(
+                          firstFragment.token
+                        );
 
                         return (
                           <span
                             style={`--dark:${dark}; --light:${light}`}
                             class:list={[
                               "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
-                              highlightClass,
+                              HIGHLIGHT_CHIP_CLASS,
                             ]}
                           >
                             {segmentElements}
@@ -766,7 +911,7 @@ const hasAddedOrRemoved = diffInfo?.some(
               <div
                 data-highlight={highlightLine || undefined}
                 class:list={[
-                  "pe-14 [content-visibility:auto] h-(--line-height)",
+                  LINE_DIV_BASE_CLASS,
                   lineClass,
                   isHighlighted(lineInfo.i) &&
                     !addedOrRemoved &&
@@ -777,31 +922,50 @@ const hasAddedOrRemoved = diffInfo?.some(
                 {isEmpty
                   ? "\n"
                   : segments.map((segment) => {
-                      const segmentElements = segment.fragments.map(
-                        ({ content, token }: TokenFragment) => {
-                          // TODO: Fix this after we merge the site folder into root
-                          const style = token.htmlStyle as any;
-                          const dark = style?.["--shiki-dark"] || token.color;
-                          const light = style?.color || token.color;
-                          return (
+                      const segmentElements = segment.fragments.flatMap(
+                        (fragment: TokenFragment) => {
+                          const { dark, light } = getTokenColors(
+                            fragment.token
+                          );
+                          const pieces = getFragmentPieces(
+                            fragment,
+                            (lineInfo.lineNum || 1) - 1
+                          );
+                          const textFrom = (a: number, b: number) =>
+                            fragment.content.slice(
+                              a - fragment.charStart,
+                              b - fragment.charStart
+                            );
+                          return pieces.map((piece) => (
                             <span
                               style={`--dark:${dark}; --light:${light}`}
                               class="ak-text-(--dark)/50 ak-light:ak-text-(--light)/65"
                             >
-                              {content || ""}
+                              {piece.type === "anchor" ? (
+                                <ReferenceHovercardAnchor
+                                  client:idle
+                                  inCodeBlock
+                                  href={piece.href}
+                                  kind={piece.kind}
+                                  inHovercard={!!Astro.locals.reference}
+                                >
+                                  {textFrom(piece.start, piece.end)}
+                                </ReferenceHovercardAnchor>
+                              ) : (
+                                textFrom(piece.start, piece.end) || ""
+                              )}
                             </span>
-                          );
+                          ));
                         }
                       );
 
                       // Apply highlighting if needed
                       if (segment.isHighlighted) {
-                        const highlightClass =
-                          "ring rounded px-[0.25em] py-0.5";
+                        const highlightClass = HIGHLIGHT_CHIP_CLASS;
 
                         if (isAdded || segment.isDiff) {
                           return (
-                            <span class="ak-layer-mix-green-500/30 ak-edge-green-500/20 ring mx-[0.1em] rounded px-[0.25em] py-0.5">
+                            <span class={HIGHLIGHT_ADDED_CHIP_CLASS}>
                               {segmentElements}
                             </span>
                           );
@@ -812,7 +976,7 @@ const hasAddedOrRemoved = diffInfo?.some(
                           return (
                             <span
                               class:list={[
-                                "ak-layer-pop ak-edge/25",
+                                MULTI_TOKEN_HIGHLIGHT_CLASS,
                                 highlightClass,
                               ]}
                             >
@@ -822,17 +986,17 @@ const hasAddedOrRemoved = diffInfo?.some(
                         }
                         // Single token highlight - use token colors for background
                         const firstFragment = segment.fragments[0];
-                        const style = firstFragment.token.htmlStyle as any;
-                        const dark =
-                          style?.["--shiki-dark"] || firstFragment.token.color;
-                        const light = style?.color || firstFragment.token.color;
+                        invariant(firstFragment, "First fragment is required");
+                        const { dark, light } = getTokenColors(
+                          firstFragment.token
+                        );
 
                         return (
                           <span
                             style={`--dark:${dark}; --light:${light}`}
                             class:list={[
                               "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65 ak-layer-mix-(--ak-text)/10 ak-edge-(--ak-text)/20",
-                              highlightClass,
+                              HIGHLIGHT_CHIP_CLASS,
                             ]}
                           >
                             {segmentElements}

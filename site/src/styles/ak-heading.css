@@ -1,0 +1,63 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-heading-1 {
+  @apply text-[2.25em];
+}
+
+@utility ak-heading-2 {
+  @apply text-[1.75em];
+}
+
+@utility ak-heading-3 {
+  @apply text-[1.4em];
+}
+
+@utility ak-heading-4 {
+  @apply text-[1.2em];
+}
+
+@utility ak-heading-5 {
+  @apply text-[1em];
+}
+
+@utility ak-heading {
+  @apply ak-text mb-[0.5em] font-medium;
+
+  &:where(:not(:first-child)) {
+    @apply mt-[1em];
+  }
+
+  :where(h1, h2, h3, h4, h5) + & {
+    @apply mt-[0.35em];
+  }
+
+  a {
+    @apply hover:ak-link_idle hover:ak-text font-[weight:inherit] text-current no-underline;
+  }
+
+  li & {
+    @apply mb-0;
+  }
+
+  &:where(h1) {
+    @apply ak-heading-1;
+  }
+  &:where(h2) {
+    @apply ak-heading-2;
+  }
+  &:where(h3) {
+    @apply ak-heading-3;
+  }
+  &:where(h4) {
+    @apply ak-heading-4;
+  }
+  &:where(h5) {
+    @apply ak-heading-5;
+  }
+}

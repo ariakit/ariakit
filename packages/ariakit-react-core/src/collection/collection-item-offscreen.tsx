@@ -1,6 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
-import { type RefCallback, useCallback, useRef, useState } from "react";
-import type { ElementType, RefObject } from "react";
+import type { ElementType, RefCallback, RefObject } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Role } from "../role/role.tsx";
 import { useForceUpdate, useId, useMergeRefs } from "../utils/hooks.ts";
 import { forwardRef } from "../utils/system.tsx";

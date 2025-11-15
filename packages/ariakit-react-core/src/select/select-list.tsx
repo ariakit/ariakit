@@ -3,12 +3,12 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, KeyboardEvent } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import { isHidden } from "../disclosure/disclosure-content.tsx";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
   useAttribute,
   useBooleanEvent,

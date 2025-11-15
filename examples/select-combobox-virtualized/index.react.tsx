@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
 import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
+import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
 import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
@@ -58,62 +58,60 @@ export default function Example() {
   }, [searchValue]);
 
   return (
-    <>
-      <div className="wrapper">
-        <Ariakit.SelectLabel store={select}>Country</Ariakit.SelectLabel>
-        <Ariakit.Select store={select} className="button">
-          <span className="select-value">
-            {selectValue || "Select a country"}
-          </span>
-          <Ariakit.SelectArrow />
-        </Ariakit.Select>
-        <Ariakit.SelectPopover
-          store={select}
-          gutter={4}
-          sameWidth
-          className="popover"
-        >
-          <div className="combobox-wrapper">
-            <Ariakit.Combobox
-              store={combobox}
-              autoSelect
-              placeholder="Search..."
-              className="combobox"
-            />
-          </div>
-          <Ariakit.ComboboxList store={combobox}>
-            <SelectRenderer store={select} items={matches} gap={8} overscan={1}>
-              {({ label, ...item }) => (
-                <SelectRenderer
-                  key={item.id}
-                  className="group"
-                  overscan={1}
-                  {...item}
-                  render={(props) => (
-                    <Ariakit.SelectGroup {...props}>
-                      <Ariakit.SelectGroupLabel className="group-label">
-                        {label}
-                      </Ariakit.SelectGroupLabel>
-                      {props.children}
-                    </Ariakit.SelectGroup>
-                  )}
-                >
-                  {({ value, ...item }) => (
-                    <Ariakit.ComboboxItem
-                      key={item.id}
-                      {...item}
-                      className="select-item"
-                      render={<Ariakit.SelectItem value={value} />}
-                    >
-                      <span className="select-item-value">{value}</span>
-                    </Ariakit.ComboboxItem>
-                  )}
-                </SelectRenderer>
-              )}
-            </SelectRenderer>
-          </Ariakit.ComboboxList>
-        </Ariakit.SelectPopover>
-      </div>
-    </>
+    <div className="wrapper">
+      <Ariakit.SelectLabel store={select}>Country</Ariakit.SelectLabel>
+      <Ariakit.Select store={select} className="button">
+        <span className="select-value">
+          {selectValue || "Select a country"}
+        </span>
+        <Ariakit.SelectArrow />
+      </Ariakit.Select>
+      <Ariakit.SelectPopover
+        store={select}
+        gutter={4}
+        sameWidth
+        className="popover"
+      >
+        <div className="combobox-wrapper">
+          <Ariakit.Combobox
+            store={combobox}
+            autoSelect
+            placeholder="Search..."
+            className="combobox"
+          />
+        </div>
+        <Ariakit.ComboboxList store={combobox}>
+          <SelectRenderer store={select} items={matches} gap={8} overscan={1}>
+            {({ label, ...item }) => (
+              <SelectRenderer
+                key={item.id}
+                className="group"
+                overscan={1}
+                {...item}
+                render={(props) => (
+                  <Ariakit.SelectGroup {...props}>
+                    <Ariakit.SelectGroupLabel className="group-label">
+                      {label}
+                    </Ariakit.SelectGroupLabel>
+                    {props.children}
+                  </Ariakit.SelectGroup>
+                )}
+              >
+                {({ value, ...item }) => (
+                  <Ariakit.ComboboxItem
+                    key={item.id}
+                    {...item}
+                    className="select-item"
+                    render={<Ariakit.SelectItem value={value} />}
+                  >
+                    <span className="select-item-value">{value}</span>
+                  </Ariakit.ComboboxItem>
+                )}
+              </SelectRenderer>
+            )}
+          </SelectRenderer>
+        </Ariakit.ComboboxList>
+      </Ariakit.SelectPopover>
+    </div>
   );
 }

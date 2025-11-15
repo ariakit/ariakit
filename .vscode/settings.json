@@ -5,21 +5,20 @@
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.experimental.configFile": {
     "site/src/styles/global.css": "site/**/*",
     "tailwind.config.cjs": "**/*"
   },
   "tailwindCSS.experimental.classRegex": [
-    "tw`([^`]*)`",
-    ["(?:twMerge|twJoin)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
+    ["(?:twMerge|twJoin|clsx)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
   ],
   "css.validate": false,
   "stylelint.enable": true,
   "editor.snippetSuggestions": "bottom",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll.biome": "explicit"
   },
   "[css]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -39,6 +38,9 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "[astro]": {
     "editor.defaultFormatter": "astro-build.astro-vscode",
     "editor.codeActionsOnSave": {
@@ -52,5 +54,10 @@
   "[mdx]": {
     "editor.wordWrap": "on",
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-action.json": [
+      ".github/workflows/*/action.y*ml"
+    ]
   }
 }

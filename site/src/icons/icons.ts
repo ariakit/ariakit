@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 interface Icon {
   html: string;
   size?: number;
@@ -20,6 +29,14 @@ export const search: Icon = {
   stroke: "currentColor",
   fill: "none",
   html: `<path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />`,
+};
+
+export const list: Icon = {
+  size: 32,
+  stroke: "currentColor",
+  fill: "none",
+  strokeWidth: 2,
+  html: `<path stroke-linecap="round" stroke-width="2" d="M12 8h15m-15 8h9m-9 8h15M7 24a1 1 0 1 1-2 0a1 1 0 0 1 2 0Zm0-8a1 1 0 1 1-2 0a1 1 0 0 1 2 0Zm0-8a1 1 0 1 1-2 0a1 1 0 0 1 2 0Z"/>`,
 };
 
 export const check: Icon = {
@@ -191,6 +208,7 @@ export const preview: Icon = {
   size: 24,
   stroke: "currentColor",
   fill: "none",
+  strokeWidth: 2,
   html: `<path d="M21.79 10.993a11.36 11.36 0 0 0-3.992-5.002a10.53 10.53 0 0 0-11.596 0a11.3 11.3 0 0 0-3.992 5.002a2.6 2.6 0 0 0-.21 1c.004.343.072.683.2 1a11.3 11.3 0 0 0 3.992 5.003a9.57 9.57 0 0 0 5.768 1.75h.3a9.67 9.67 0 0 0 5.538-1.73a11.3 11.3 0 0 0 3.992-5.002a2.55 2.55 0 0 0 .21-1a2.7 2.7 0 0 0-.21-1.021m-9.77 4.782a3.75 3.75 0 0 1-3.474-2.315a3.77 3.77 0 0 1 .807-4.103a3.75 3.75 0 0 1 6.41 2.656a3.76 3.76 0 0 1-1.107 2.674a3.74 3.74 0 0 1-2.676 1.088z"/>`,
 };
 
@@ -198,6 +216,7 @@ export const code: Icon = {
   size: 24,
   stroke: "currentColor",
   fill: "none",
+  strokeWidth: 2,
   html: `<path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />`,
 };
 
@@ -229,12 +248,12 @@ export const chevronLeft: Icon = {
   html: `<polyline stroke-linecap="round" stroke-linejoin="round" points="10,4 6,8 10,12" />`,
 };
 
-export const arrowLeft: Icon = {
+export const arrowUp: Icon = {
   size: 24,
   stroke: "currentColor",
   fill: "none",
   strokeWidth: 2,
-  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />`,
+  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" />`,
 };
 
 export const arrowRight: Icon = {
@@ -243,6 +262,22 @@ export const arrowRight: Icon = {
   fill: "none",
   strokeWidth: 2,
   html: `<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />`,
+};
+
+export const arrowDown: Icon = {
+  size: 24,
+  stroke: "currentColor",
+  fill: "none",
+  strokeWidth: 2,
+  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />`,
+};
+
+export const arrowLeft: Icon = {
+  size: 24,
+  stroke: "currentColor",
+  fill: "none",
+  strokeWidth: 2,
+  html: `<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />`,
 };
 
 export const upgrade: Icon = {
@@ -266,4 +301,12 @@ export const group: Icon = {
   stroke: "currentColor",
   fill: "none",
   html: `<path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />`,
+};
+
+export const terminal: Icon = {
+  size: 24,
+  stroke: "currentColor",
+  fill: "none",
+  strokeWidth: 2,
+  html: `<g stroke-linecap="round" stroke-linejoin="round"><path d="M12 19h8"/><path d="m4 17 6-6-6-6"/></g>`,
 };

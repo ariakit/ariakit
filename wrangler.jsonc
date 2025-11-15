@@ -2,7 +2,8 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
   "main": "./site/dist/_worker.js/index.js",
-  "compatibility_date": "2025-04-10",
+  "preview_urls": false,
+  "compatibility_date": "2025-08-13",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
@@ -35,7 +36,8 @@
   ],
   "env": {
     "preview": {
-      "name": "ariakit-preview"
+      "name": "ariakit-preview",
+      "preview_urls": true
     }
   }
 }

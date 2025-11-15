@@ -7,19 +7,19 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "ignore": [
-      "package.json",
-      "website/.next/**",
-      "website/.pages/**",
-      "site/.astro/**",
-      "site/.types/**",
-      "**/*.astro",
-      "**/*.css"
+    "includes": [
+      "**",
+      "!**/package.json",
+      "!**/website/.next",
+      "!**/website/.pages",
+      "!**/site/.astro",
+      "!**/site/.types",
+      "!**/*.astro",
+      "!**/*.css",
+      "!site/src/styles/styles.json"
     ]
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "formatter": {
     "enabled": true,
     "indentStyle": "space"
@@ -40,24 +40,41 @@
         "noAutofocus": "off",
         "noLabelWithoutControl": "off",
         "useSemanticElements": "off",
-        "useFocusableInteractive": "off"
+        "useFocusableInteractive": "off",
+        "noStaticElementInteractions": "off",
+        "useAriaPropsSupportedByRole": "off"
       },
       "suspicious": {
         "noExplicitAny": "off",
         "noShadowRestrictedNames": "off",
         "noConfusingVoidType": "off",
         "noArrayIndexKey": "off",
-        "noAssignInExpressions": "off"
+        "noAssignInExpressions": "off",
+        "noTsIgnore": "off",
+        "useIterableCallbackReturn": "off"
       },
       "correctness": {
         "useExhaustiveDependencies": "off",
-        "useJsxKeyInIterable": "off"
+        "useJsxKeyInIterable": "off",
+        "useHookAtTopLevel": "off",
+        "noUnusedVariables": {
+          "level": "on",
+          "options": {
+            "ignoreRestSiblings": true
+          }
+        }
       },
       "style": {
         "noParameterAssign": "off",
         "noUnusedTemplateLiteral": "off",
         "noNonNullAssertion": "off",
-        "noUselessElse": "off"
+        "noUselessElse": "off",
+        "useImportType": {
+          "level": "on",
+          "options": {
+            "style": "separatedType"
+          }
+        }
       }
     }
   }

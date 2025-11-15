@@ -1,3 +1,12 @@
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
@@ -20,12 +29,17 @@ import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
 try {
   loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
-} catch (error) {}
+} catch (_error) {}
 
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // https://astro.build/config
 export default defineConfig({
+  site:
+    process.env.NODE_ENV === "production"
+      ? "https://next.ariakit.org"
+      : "http://localhost:4321",
+
   srcDir: "src",
 
   server: {
@@ -57,6 +71,7 @@ export default defineConfig({
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     mdx({
+      extendMarkdownConfig: true,
       rehypePlugins: [
         rehypeHeadingIds,
         rehypePreviousCode,

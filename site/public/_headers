@@ -1,0 +1,6 @@
+/*
+  Content-Security-Policy: frame-ancestors 'self';
+  X-Frame-Options: SAMEORIGIN
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

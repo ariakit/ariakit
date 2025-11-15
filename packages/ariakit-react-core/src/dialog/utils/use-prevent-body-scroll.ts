@@ -34,7 +34,7 @@ export function usePreventBodyScroll(
     const cssScrollbarWidth =
       documentElement.style.getPropertyValue("--scrollbar-width");
     const scrollbarWidth = cssScrollbarWidth
-      ? Number.parseInt(cssScrollbarWidth)
+      ? Number.parseInt(cssScrollbarWidth, 10)
       : win.innerWidth - documentElement.clientWidth;
 
     const setScrollbarWidthProperty = () =>

@@ -1,12 +1,8 @@
 import * as Ariakit from "@ariakit/react";
-import {
-  ComboboxItem,
-  type ComboboxItemProps,
-} from "@ariakit/react-core/combobox/combobox-item-offscreen";
-import {
-  SelectItem,
-  type SelectItemProps,
-} from "@ariakit/react-core/select/select-item-offscreen";
+import type { ComboboxItemProps } from "@ariakit/react-core/combobox/combobox-item-offscreen";
+import { ComboboxItem } from "@ariakit/react-core/combobox/combobox-item-offscreen";
+import type { SelectItemProps } from "@ariakit/react-core/select/select-item-offscreen";
+import { SelectItem } from "@ariakit/react-core/select/select-item-offscreen";
 import clsx from "clsx";
 import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";

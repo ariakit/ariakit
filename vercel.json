@@ -1,7 +1,23 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "npm install",
   "buildCommand": "npm run build-website",
   "devCommand": "npm run dev -- --port $PORT",
   "outputDirectory": "website/.next",
-  "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" == \"changeset-release/main\" ]; then exit 0; else exit 1; fi"
+  "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" == \"changeset-release/main\" ]; then exit 0; else exit 1; fi",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "frame-ancestors 'self';"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    }
+  ]
 }

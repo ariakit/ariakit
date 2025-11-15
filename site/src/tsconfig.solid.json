@@ -9,6 +9,12 @@
     "jsx": "preserve",
     "jsxImportSource": "solid-js"
   },
-  "include": ["**/*.solid.tsx", "**/*.ts"],
+  "include": [
+    "../.astro/types.d.ts",
+    "env.d.ts",
+    "**/*.solid.tsx",
+    "**/*.ts",
+    "**/*.json"
+  ],
   "exclude": ["content.config.ts"]
 }

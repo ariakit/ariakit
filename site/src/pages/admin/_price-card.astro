@@ -1,4 +1,13 @@
 ---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
 import { actions } from "astro:actions";
 import {
   formatCurrency,
@@ -7,7 +16,7 @@ import {
 } from "#app/lib/locale.ts";
 import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
-import { nonNullable } from "#app/lib/non-nullable.ts";
+import { nonNullable } from "#app/lib/object.ts";
 import { capitalize } from "#app/lib/string.ts";
 import SubmitButton from "#app/components/submit-button.astro";
 import type { PriceData } from "#app/lib/schemas.ts";

@@ -1,6 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
-import { type ElementRef, forwardRef } from "react";
+import type { ElementRef } from "react";
+import { forwardRef } from "react";
 
 interface GridProps extends Ariakit.CompositeProps {
   focusShift?: boolean;
