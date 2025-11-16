@@ -3,6 +3,8 @@ import { getHooks } from "@vitest/runner";
 import type { FnOptions } from "tinybench";
 import { skip } from "./utils.ts";
 
+// todo: consider the config options for hook sequencing.
+// Currently only runs in series.
 export function deriveTinyBenchHooks(
   test: Test,
 ): Pick<FnOptions, "afterEach" | "beforeEach"> {

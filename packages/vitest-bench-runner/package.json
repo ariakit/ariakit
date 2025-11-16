@@ -32,6 +32,10 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./delegated": "./src/delegated.ts",
+    "./tinybench": "./src/tinybench.ts",
+    "./utils": "./src/utils.ts",
+    "./vitest": "./src/vitest.ts",
     "./package.json": "./package.json"
   }
 }

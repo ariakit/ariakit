@@ -12,17 +12,33 @@ export class Delegated<T = void> extends Promise<T> {
       reject: (reason?: any) => void,
     ) => void,
   ) {
-    super((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject = reject;
+    let resolve: (value: T | PromiseLike<T>) => void;
+    let reject: (reason?: any) => void;
+
+    super((res, rej) => {
+      resolve = res;
+      reject = rej;
 
       if (executor) {
-        executor(resolve, reject);
+        executor(res, rej);
       }
     });
 
-    if (this.resolve === undefined || this.reject === undefined) {
-      throw new Error(`Expected resolve and reject to be assigned`);
+    this.resolve = resolve!;
+    this.reject = reject!;
+
+    if (!this.resolve || !this.reject) {
+      throw new Error("Expected resolve and reject to be defined");
     }
+  }
+
+  static from<T>(promise: PromiseLike<T>): Delegated<T> {
+    return new Delegated((res, rej) => {
+      try {
+        promise.then(res);
+      } catch (reason) {
+        rej(reason);
+      }
+    });
   }
 }

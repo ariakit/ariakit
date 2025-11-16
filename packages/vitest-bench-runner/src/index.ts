@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { File, Test } from "@vitest/runner";
+import {} from "@vitest/runner";
 import { VitestTestRunner } from "vitest/runners";
 import type { VitestRunner } from "vitest/suite";
 import { getFn } from "vitest/suite";
@@ -8,6 +9,11 @@ import { Delegated } from "./delegated.ts";
 import { deriveTinyBenchHooks } from "./tinybench.ts";
 import { deriveBenchmarkableTests, getFullName } from "./vitest.ts";
 
+// todo: IS THE ENVIRONMENT for JSDOM COOKED?!
+//
+// Not a race condition between tests.
+// surely not a bug in the test query?
+//
 // todo: remove assertions via vite plugin?
 export default class VitestBenchRunner
   extends VitestTestRunner
@@ -56,6 +62,7 @@ export default class VitestBenchRunner
 
     const filename = new Date().toISOString();
     const filepath = path.resolve(this.config.root, ".benchmark", filename);
+
     const results = bench.tasks.reduce((accu, task) => {
       // buffer the getter call
       const result = task.result;
