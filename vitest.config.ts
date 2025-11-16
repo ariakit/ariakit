@@ -59,8 +59,6 @@ export default defineConfig({
     coverage: {
       include: ["packages"],
     },
-    benchmark: {
-      include: ["**/*{test,perf}.{ts,tsx}", `**/*{test,perf}.${LOADER}.{ts,tsx}`],
-    },
+    runner: "./packages/vitest-bench-runner",
   },
 });

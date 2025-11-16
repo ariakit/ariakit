@@ -10,7 +10,6 @@ import {
 } from "solid-js/web";
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";
-import { bench } from "vitest";
 
 if (!version.startsWith("17")) {
   failOnConsole();
@@ -73,12 +72,17 @@ async function loadReact(dir: string) {
     `./${dir}/index.react.tsx`,
   );
   if (failedImport) return false;
+
   const element = createElement(ReactSuspense, {
     fallback: null,
     // biome-ignore lint/correctness/noChildrenProp: createElement requires children prop
     children: createElement(component),
   });
-  const { unmount } = await renderReact(element, { strictMode: true });
+
+  const { unmount } = await renderReact(element, {
+    strictMode: true,
+  });
+
   return unmount;
 }
 
@@ -87,8 +91,10 @@ async function loadSolid(dir: string) {
     `./${dir}/index.solid.tsx`,
   );
   if (failedImport) return false;
+
   const div = document.createElement("div");
   document.body.appendChild(div);
+
   const dispose = renderSolid(
     () =>
       createComponent(SolidSuspense, {
@@ -155,16 +161,12 @@ const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
+
   const { dir, loader } = parseResult;
   if (loader !== "all" && loader !== LOADER) skip();
+
   const result = await LOADERS[LOADER](dir);
   if (result === false) skip();
-  return result;
-})
 
-if (process.env.MODE === "benchmark") {
-  //@ts-expect-error not the same api but should be fine?
-  globalThis['test'] = function() {
-    bench(arguments[0], arguments[1], { throws: true })
-  }
-}
+  return result;
+});
