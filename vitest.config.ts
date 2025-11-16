@@ -36,6 +36,10 @@ const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
   react: [reactPlugin()],
   solid: [solidPlugin()],
 };
+const runner =
+  process.env.ARIAKIT_BENCH === "1"
+    ? "./packages/vitest-bench-runner"
+    : undefined;
 
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
@@ -59,6 +63,6 @@ export default defineConfig({
     coverage: {
       include: ["packages"],
     },
-    runner: "./packages/vitest-bench-runner",
+    runner,
   },
 });
