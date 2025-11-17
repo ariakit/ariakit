@@ -1,6 +1,7 @@
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import { basename, dirname, extname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { APIRoute } from "astro";
 import type { Registry, RegistryItem } from "shadcn/schema";
 import { z } from "zod/v4";
@@ -23,7 +24,8 @@ const logger = createLogger("registry");
 export const prerender = false;
 
 const previewImports = import.meta.glob("../../examples/**/preview.astro");
-const APP_DIR = join(import.meta.dirname, "../../");
+const moduleDir = fileURLToPath(new URL(import.meta.url));
+const APP_DIR = join(moduleDir, "../../");
 const EXAMPLES_DIR = join(APP_DIR, "examples");
 const LIB_DIR = join(EXAMPLES_DIR, "_lib");
 const DATA_DIR = join(LIB_DIR, "data");
@@ -123,13 +125,11 @@ function getRegistryItem({
       path: getRegistryItemPath(source.path, name),
       content: index
         ? undefined
-        : styleDefsToCss(
-            Object.values({
-              ...source.atProperties,
-              ...source.variants,
-              ...source.utilities,
-            }),
-          ),
+        : styleDefsToCss([
+            ...Object.values(source.atProperties),
+            ...Object.values(source.variants),
+            ...Object.values(source.utilities),
+          ]),
     };
 
     const item: RegistryItem = {
@@ -276,10 +276,21 @@ function getRegistryItemDependencies(source: Source | SourceFile | ModuleJson) {
         dependencies.add(dep.import);
       }
     }
-  } else if (source.dependencies) {
-    for (const [pkg] of Object.entries(source.dependencies)) {
-      if (isFrameworkDependency(pkg)) continue;
-      dependencies.add(pkg);
+  } else {
+    const sources =
+      "sources" in source ? source.sources : { [source.id]: source };
+    for (const s of Object.values(sources)) {
+      if (
+        isLibSourcePath(s.id) &&
+        (("name" in source && source.name !== getRegistryItemName(s.id)) ||
+          ("id" in source && source.id !== s.id))
+      ) {
+        continue;
+      }
+      for (const dep of Object.keys(s.dependencies ?? {})) {
+        if (isFrameworkDependency(dep)) continue;
+        dependencies.add(dep);
+      }
     }
   }
   return Array.from(dependencies).sort();
