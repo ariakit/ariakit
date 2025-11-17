@@ -89,9 +89,9 @@ for (const [name, paths] of Object.entries(filePathSamples)) {
     page,
   }) => {
     const item = await fetchRegistryItem(page, name);
-    for (const [index, path] of paths.entries()) {
-      expect(item.files?.[index]?.path).toBe(path);
-    }
+    expect(item.files).toEqual(
+      paths.map((path) => expect.objectContaining({ path })),
+    );
   });
 }
 
@@ -101,12 +101,8 @@ function depRegex(dependency: string) {
 
 const dependencySamples = {
   "ak-button": ["@ariakit/tailwind"],
-  "react-examples-disclosure": ["@ariakit/react"],
-  "react-examples-disclosure-actions": [
-    "@ariakit/react",
-    "clsx",
-    "lucide-react",
-  ],
+  "react-examples-disclosure": [],
+  "react-examples-disclosure-actions": ["clsx", "lucide-react"],
   "react-components-disclosure": ["@ariakit/react"],
   "react-aria-disclosure": ["clsx", "react-aria-components"],
   "react-utils-create-render": [],
@@ -116,9 +112,11 @@ const dependencySamples = {
 for (const [name, dependencies] of Object.entries(dependencySamples)) {
   test(`registry item ${name} has correct dependencies`, async ({ page }) => {
     const item = await fetchRegistryItem(page, name);
-    for (const [index, dependency] of dependencies.entries()) {
-      expect(item.dependencies?.[index]).toMatch(depRegex(dependency));
-    }
+    expect(item.dependencies).toEqual(
+      dependencies.map((dependency) =>
+        expect.stringMatching(depRegex(dependency)),
+      ),
+    );
   });
 }
 
