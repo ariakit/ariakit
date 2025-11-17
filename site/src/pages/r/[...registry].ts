@@ -24,7 +24,7 @@ const logger = createLogger("registry");
 export const prerender = false;
 
 const previewImports = import.meta.glob("../../examples/**/preview.astro");
-const moduleDir = fileURLToPath(new URL(import.meta.url));
+const moduleDir = fileURLToPath(new URL(".", import.meta.url));
 const APP_DIR = join(moduleDir, "../../");
 const EXAMPLES_DIR = join(APP_DIR, "examples");
 const LIB_DIR = join(EXAMPLES_DIR, "_lib");
