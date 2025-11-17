@@ -1,1132 +1,358 @@
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
-import { basename, extname, join } from "node:path";
+import { basename, dirname, extname, join } from "node:path";
 import type { APIRoute } from "astro";
 import type { Registry, RegistryItem } from "shadcn/schema";
-import { z } from "zod";
-import { markdownToHtml } from "#app/lib/content.ts";
-import { getFramework, isFramework } from "#app/lib/frameworks.ts";
-import type { Source } from "#app/lib/source.ts";
+import { z } from "zod/v4";
+import {
+  getFrameworkByFilename,
+  isFrameworkDependency,
+  removeFrameworkSuffix,
+} from "#app/lib/frameworks.ts";
+import { createLogger } from "#app/lib/logger.ts";
+import { nonNullable } from "#app/lib/object.ts";
+import { badRequest, notFound } from "#app/lib/response.ts";
+import type { Source, SourceFile } from "#app/lib/source.ts";
 import { getImportPaths, replaceImportPaths } from "#app/lib/source.ts";
 import type { ModuleJson } from "#app/lib/styles.ts";
+import { resolveDirectStyles, styleDefsToCss } from "#app/lib/styles.ts";
 import stylesJson from "#app/styles/styles.json" with { type: "json" };
+
+const logger = createLogger("registry");
 
 export const prerender = false;
 
-type RegistryFiles = NonNullable<RegistryItem["files"]>;
-type RegistryFile = RegistryFiles[number];
+const previewImports = import.meta.glob("../../examples/**/preview.astro");
+const APP_DIR = join(import.meta.dirname, "../../");
+const EXAMPLES_DIR = join(APP_DIR, "examples");
+const LIB_DIR = join(EXAMPLES_DIR, "_lib");
+const DATA_DIR = join(LIB_DIR, "data");
+const REACT_UTILS_DIR = join(LIB_DIR, "react-utils");
+const REACT_HOOKS_DIR = join(LIB_DIR, "react-hooks");
 
-type RegistryIndexResponse = Registry;
+const queryParamsSchema = z.object({
+  ariakit: z.stringbool().default(true),
+});
 
-interface BuildRegistryIndexParams {
-  previews: CollectionEntry<"previews">[];
-  baseUrl: string;
-  includeExtension?: boolean;
-  queryString?: string;
-}
+export const GET: APIRoute = async ({ request, params }) => {
+  const url = new URL(request.url);
 
-interface BuildRegistryItemParams {
-  itemSlug: string;
-  previews: CollectionEntry<"previews">[];
-  baseUrl?: string;
-  includeExtension?: boolean;
-  queryString?: string;
-}
-
-const examples = import.meta.glob("../../examples/**/preview.astro");
-
-// Cache for UI and lib registry items (cleared on each request)
-const uiLibCache = new Map<string, RegistryItem>();
-
-/**
- * Scan all preview sources to find _lib files and their sources
- */
-async function getLibFileSources(
-  previews: CollectionEntry<"previews">[],
-): Promise<Map<string, Source>> {
-  const libSources = new Map<string, Source>();
-
-  for (const preview of previews) {
-    const sources = await getPreviewSources(preview);
-    if (!sources) {
-      continue;
-    }
-
-    for (const framework of preview.data.frameworks) {
-      if (!isFramework(framework)) {
-        continue;
-      }
-      const source = sources[framework];
-      if (!source) {
-        continue;
-      }
-
-      // Check all files in this source for _lib files
-      for (const [filename, fileData] of Object.entries(source.files)) {
-        const fileId = fileData.id;
-
-        // Check if this is a _lib file
-        if (
-          isAriakitLibFile(fileId) ||
-          isReactAriaLibFile(fileId) ||
-          isReactLibFile(fileId)
-        ) {
-          const registryName = getLibRegistryName(fileId);
-          if (registryName && !libSources.has(registryName)) {
-            // Create a minimal source object for this _lib file
-            const libSource: Source = {
-              name: registryName,
-              files: { [filename]: fileData },
-              sources: {},
-              dependencies: source.dependencies,
-              devDependencies: source.devDependencies,
-              // Use per-file styles instead of source-level styles
-              styles: fileData.styles || [],
-            };
-            libSources.set(registryName, libSource);
-          }
-        }
-      }
-    }
+  if (!params.registry) {
+    return notFound();
   }
 
-  return libSources;
-}
-
-export const GET: APIRoute = async ({ request }) => {
-  // Clear caches for each request
-  uiLibCache.clear();
-
-  const url = new URL(request.url);
-  const segments = getRequestSegments(url.pathname);
-  const previews = await getCollection("previews");
-
-  // Define query parameters schema
-  const queryParamsSchema = z.object({
-    ext: z
-      .string()
-      .optional()
-      .refine((val) => val === undefined || val === "true" || val === "false", {
-        message: "ext must be 'true' or 'false'",
-      }),
-  });
-
-  // Validate query parameters
   const paramsObject = Object.fromEntries(url.searchParams.entries());
   const validation = queryParamsSchema.safeParse(paramsObject);
 
   if (!validation.success) {
-    return new Response(
-      JSON.stringify({
-        error: "Invalid query parameters",
-        details: validation.error.format(),
-      }),
-      {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    return badRequest(validation.error.message);
   }
 
-  // Parse query parameters
-  const includeExtension = url.searchParams.get("ext") === "true";
-  const queryString = url.searchParams.toString();
-  const baseUrl = `${url.protocol}//${url.host}`;
+  const sources = await getRegistryItemSources();
 
-  if (!segments.length || segments[0] === "registry.json") {
-    const registry = await buildRegistryIndex({
-      previews,
-      baseUrl,
-      includeExtension,
-      queryString,
-    });
-    return Response.json({
-      $schema: "https://ui.shadcn.com/schema/registry.json",
-      ...registry,
-    });
+  if (params.registry === "registry.json") {
+    const items = Array.from(sources.values())
+      .map((source) => getRegistryItem({ source, url, index: true }))
+      .filter(nonNullable);
+
+    const registry = {
+      name: "Ariakit",
+      homepage: "https://ariakit.com",
+      items: items,
+    } satisfies Registry;
+    return Response.json(registry);
   }
 
-  if (segments.length !== 1) {
+  const source = sources.get(params.registry.replace(".json", ""));
+  if (!source) {
     return notFound();
   }
 
-  const itemSlug = segments[0]?.replace(/\.json$/, "");
-  if (!itemSlug || itemSlug === "registry") {
-    const registry = await buildRegistryIndex({
-      previews,
-      baseUrl,
-      includeExtension,
-      queryString,
-    });
-    return Response.json({
-      $schema: "https://ui.shadcn.com/schema/registry.json",
-      ...registry,
-    });
-  }
-
-  const registryItem = await buildRegistryItem({
-    itemSlug,
-    previews,
-    baseUrl,
-    includeExtension,
-    queryString,
-  });
-  if (!registryItem) {
-    return notFound();
-  }
-
-  return Response.json(registryItem);
+  return Response.json(getRegistryItem({ source, url }));
 };
 
-function getRequestSegments(pathname: string) {
-  return pathname.split("/").filter((segment) => segment && segment !== "r");
-}
+async function getRegistryItemSources() {
+  const sources2 = new Map<string, ModuleJson | Source | SourceFile>();
+  const previews = await getCollection("previews");
 
-function notFound() {
-  return new Response("Not found", { status: 404 });
-}
-
-/**
- * Check if a file path is from _lib/ariakit
- */
-function isAriakitLibFile(filePath: string): boolean {
-  return filePath.includes("/_lib/ariakit/");
-}
-
-/**
- * Check if a file path is from _lib/react-aria
- */
-function isReactAriaLibFile(filePath: string): boolean {
-  return filePath.includes("/_lib/react-aria/");
-}
-
-/**
- * Check if a file path is from _lib/react
- */
-function isReactLibFile(filePath: string): boolean {
-  return (
-    filePath.includes("/_lib/react/") && !filePath.includes("/_lib/react-aria/")
-  );
-}
-
-/**
- * Get the registry name for a lib file based on its path
- */
-function getLibRegistryName(filePath: string): string {
-  if (isAriakitLibFile(filePath)) {
-    const filename = basename(filePath, ".tsx").replace(/\.react$/, "");
-    return `ariakit-react-${filename}`;
+  for (const module of stylesJson.modules) {
+    sources2.set(getRegistryItemName(module.path), module);
   }
-  if (isReactAriaLibFile(filePath)) {
-    const filename = basename(filePath, ".tsx").replace(/\.react$/, "");
-    return `react-aria-${filename}`;
-  }
-  if (isReactLibFile(filePath)) {
-    return basename(filePath, ".ts");
-  }
-  return "";
-}
 
-/**
- * Get the import path for a lib file in registry format
- */
-function getLibImportPath(filePath: string, includeExtension = false): string {
-  if (isAriakitLibFile(filePath)) {
-    const filename = basename(filePath, ".tsx").replace(/\.react$/, "");
-    const ext = includeExtension ? ".tsx" : "";
-    return `@/registry/ui/${filename}${ext}`;
-  }
-  if (isReactAriaLibFile(filePath)) {
-    const filename = basename(filePath, ".tsx").replace(/\.react$/, "");
-    const ext = includeExtension ? ".tsx" : "";
-    return `@/registry/ui/${filename}${ext}`;
-  }
-  if (isReactLibFile(filePath)) {
-    const filename = basename(filePath, ".ts");
-    const ext = includeExtension ? ".ts" : "";
-    const registryType = filename.startsWith("use-") ? "hook" : "lib";
-    return `@/registry/${registryType}/${filename}${ext}`;
-  }
-  return "";
-}
+  for (const preview of previews) {
+    const sources = await getPreviewSource(preview);
+    if (!sources) continue;
+    for (const framework of preview.data.frameworks) {
+      const source = sources[framework];
+      if (!source) continue;
 
-/**
- * Transform import paths to registry format
- */
-function transformImportPaths(
-  content: string,
-  source: Source,
-  allLibSources?: Map<string, Source>,
-  includeExtension = false,
-): string {
-  return replaceImportPaths(content, (path) => {
-    // Skip non-relative imports
-    if (!path.startsWith("./") && !path.startsWith("../")) {
-      return path;
-    }
-
-    // Extract the filename from the import path
-    const importFilename = basename(path);
-    // Remove extension for basename comparison
-    const importBasename = importFilename.replace(/\.[jt]sx?$/, "");
-
-    // First check if this import matches a file in the current source
-    for (const fileData of Object.values(source.files)) {
-      const fileId = fileData.id;
-      const sourceFilename = basename(fileId);
-      // Remove extension for basename comparison
-      const sourceBasename = sourceFilename.replace(/\.[jt]sx?$/, "");
-
-      // Match by filename or basename
-      if (
-        importFilename === sourceFilename ||
-        importBasename === sourceBasename
-      ) {
-        // Check if this is a lib file - if so, transform to registry path
-        if (
-          isAriakitLibFile(fileId) ||
-          isReactAriaLibFile(fileId) ||
-          isReactLibFile(fileId)
-        ) {
-          return getLibImportPath(fileId, includeExtension);
-        }
-        // If it's a data file, keep it relative
-        if (path.includes("/data/") || path.includes("orders")) {
-          return `./${basename(path, extname(path))}`;
-        }
-        // For other files in the same block, keep relative
-        if (!includeExtension) {
-          return path.replace(/\.[^.]+$/, "");
-        }
-        return path;
+      for (const [path] of Object.entries(source.sources)) {
+        if (!isLibSourcePath(path)) continue;
+        if (!source.sources[path]) continue;
+        sources2.set(getRegistryItemName(path), source.sources[path]);
+      }
+      const firstPath = Object.keys(source.sources)[0];
+      if (firstPath) {
+        sources2.set(getRegistryItemName(firstPath), source);
       }
     }
+  }
 
-    // If not found in current source, check all lib sources if available
-    if (allLibSources) {
-      for (const libSource of allLibSources.values()) {
-        for (const [libFilename, fileData] of Object.entries(libSource.files)) {
-          const fileId = fileData.id;
-          // Remove extension for basename comparison
-          const libBasename = libFilename.replace(/\.[jt]sx?$/, "");
-
-          // Match by filename or basename
-          if (
-            importFilename === libFilename ||
-            importBasename === libBasename
-          ) {
-            // Transform to registry path
-            return getLibImportPath(fileId, includeExtension);
-          }
-        }
-      }
-    }
-
-    return path;
-  });
+  return sources2;
 }
 
-/**
- * Extract registry dependencies from source
- */
-function extractRegistryDependencies(
-  source: Source,
-  allLibSources?: Map<string, Source>,
-): string[] {
+type RegistryItemFile = NonNullable<RegistryItem["files"]>[number];
+
+interface GetRegistryItemParams {
+  source: Source | SourceFile | ModuleJson;
+  url: URL;
+  index?: boolean;
+}
+
+function getRegistryItem({
+  source,
+  url,
+  index = false,
+}: GetRegistryItemParams) {
+  if ("utilities" in source) {
+    const name = `ak-${source.id}`;
+    const filename = `${source.id}.css`;
+    const type = getRegistryItemType(source.path);
+    const file: RegistryItemFile = {
+      type,
+      path: getRegistryItemPath(source.path, name),
+      content: index
+        ? undefined
+        : styleDefsToCss(
+            Object.values({
+              ...source.atProperties,
+              ...source.variants,
+              ...source.utilities,
+            }),
+          ),
+    };
+
+    const item: RegistryItem = {
+      name,
+      type,
+      meta: {
+        href: `${url.origin}/r/${name}.json`,
+      },
+      css: index
+        ? undefined
+        : { [`@import "../components/ui/${filename}"`]: {} },
+      dependencies: index ? undefined : getRegistryItemDependencies(source),
+      registryDependencies: index
+        ? undefined
+        : getRegistryItemRegistryDependencies(source, url),
+      files: [file],
+    };
+
+    return item;
+  }
+
+  const libDeps = new Set<string>();
+
+  const originalSources =
+    "sources" in source ? source.sources : { [source.id]: source };
+
+  const sources = { ...originalSources };
+
+  for (const [path, { id }] of Object.entries(sources)) {
+    if (
+      !isLibSourcePath(path) &&
+      (("name" in source && source.name !== getRegistryItemName(id)) ||
+        ("id" in source && source.id !== id))
+    )
+      continue;
+    delete sources[path];
+    const item = libDeps.has(id);
+    if (item) continue;
+    libDeps.add(id);
+  }
+
+  const ss = Object.keys(sources).length > 0 ? sources : originalSources;
+
+  if (Object.keys(ss).length > 0) {
+    const firstPath = Object.keys(ss)[0]!;
+    const firstSourceName = getRegistryItemName(firstPath);
+    const item: RegistryItem = {
+      name: firstSourceName,
+      type: getRegistryItemType(firstPath),
+      dependencies: !index ? getRegistryItemDependencies(source) : undefined,
+      registryDependencies: !index
+        ? getRegistryItemRegistryDependencies({ ...source, sources: ss }, url)
+        : undefined,
+      meta: {
+        href: `${url.origin}/r/${firstSourceName}.json`,
+      },
+      files: Object.values(ss).map((source) => ({
+        type: getRegistryItemType(source.id),
+        path: getRegistryItemPath(source.id, firstSourceName),
+        content: index
+          ? undefined
+          : replaceImportPaths(source.content, (path) => {
+              const absolutePath = path.startsWith(".")
+                ? join(dirname(source.id), path)
+                : path.replace("#app/", APP_DIR);
+              if (!isLibSourcePath(absolutePath)) {
+                if (path.startsWith(".") || absolutePath.startsWith(DATA_DIR)) {
+                  return `./${basename(removeFrameworkSuffix(path), extname(path))}`;
+                }
+                return path;
+              }
+              return `@/${getRegistryItemPath(absolutePath, firstSourceName).replace(/\.([jt]sx?)$/, "")}`;
+            }),
+      })),
+    };
+
+    return item;
+  }
+
+  return null;
+}
+
+function isLibSourcePath(sourcePath: string) {
+  return sourcePath.startsWith(LIB_DIR) && !sourcePath.startsWith(DATA_DIR);
+}
+
+function getRegistryItemFilename(sourcePath: string) {
+  return removeFrameworkSuffix(basename(sourcePath));
+}
+
+function getExamplesFolderName(sourcePath: string) {
+  return dirname(sourcePath)
+    .replace(`${EXAMPLES_DIR}/`, "")
+    .replace("/", "-")
+    .replace("-_component", "");
+}
+
+function getRegistryItemName(sourcePath: string) {
+  if (sourcePath.endsWith(".css")) {
+    return `ak-${basename(sourcePath, ".css").replace(/^ak-/, "")}`;
+  }
+  const prefix = isLibSourcePath(sourcePath)
+    ? basename(dirname(sourcePath))
+    : `${sourcePath.includes("/_component") ? "components" : "examples"}-${getExamplesFolderName(sourcePath)}`;
+  const filename = getRegistryItemFilename(sourcePath);
+  const filenameNoExt = basename(filename, extname(sourcePath));
+  const framework = getFrameworkByFilename(sourcePath);
+  const name = framework
+    ? prefix.startsWith(framework)
+      ? `${prefix}-${filenameNoExt}`
+      : `${framework}-${prefix}-${filenameNoExt}`
+    : `${prefix}-${filenameNoExt}`;
+  return name.replace(/-index$/, "");
+}
+
+function getRegistryItemType(sourcePath: string) {
+  if (sourcePath.endsWith(".css")) return "registry:ui";
+  if (sourcePath.startsWith(REACT_UTILS_DIR)) return "registry:lib";
+  if (sourcePath.startsWith(REACT_HOOKS_DIR)) return "registry:hook";
+  if (sourcePath.startsWith(DATA_DIR)) return "registry:example";
+  if (sourcePath.startsWith(LIB_DIR)) return "registry:ui";
+  if (sourcePath.startsWith(EXAMPLES_DIR)) return "registry:example";
+  return "registry:ui";
+}
+
+function getRegistryItemPath(sourcePath: string, itemName: string) {
+  const type = getRegistryItemType(sourcePath);
+  const filename = getRegistryItemFilename(sourcePath);
+  if (type === "registry:lib") return `registry/lib/${filename}`;
+  if (type === "registry:hook") return `registry/hook/${filename}`;
+  if (type === "registry:ui") {
+    return `registry/ui/${filename.replace("ak-", "")}`;
+  }
+  const exampleName = itemName.replace(/^[a-z-]+-(examples|components)-/, "");
+  return `registry/examples/${exampleName}/${filename}`;
+}
+
+function getRegistryItemDependencies(source: Source | SourceFile | ModuleJson) {
+  const dependencies = new Set<string>();
+  if ("utilities" in source) {
+    for (const utility of Object.values(source.utilities)) {
+      for (const dep of utility.dependencies) {
+        if (!dep.import) continue;
+        dependencies.add(dep.import);
+      }
+    }
+  } else if (source.dependencies) {
+    for (const [pkg] of Object.entries(source.dependencies)) {
+      if (isFrameworkDependency(pkg)) continue;
+      dependencies.add(pkg);
+    }
+  }
+  return Array.from(dependencies).sort();
+}
+
+function getRegistryItemRegistryDependencies(
+  source: Source | SourceFile | ModuleJson,
+  url: URL,
+) {
   const dependencies = new Set<string>();
 
-  // Check all file IDs in the source
-  for (const file of Object.values(source.files)) {
-    const fileId = file.id;
-
-    // Add UI and lib dependencies based on file paths
-    if (
-      isAriakitLibFile(fileId) ||
-      isReactAriaLibFile(fileId) ||
-      isReactLibFile(fileId)
-    ) {
-      const registryName = getLibRegistryName(fileId);
-      if (registryName) {
-        dependencies.add(registryName);
+  if ("utilities" in source) {
+    for (const utility of Object.values(source.utilities)) {
+      for (const dep of utility.dependencies) {
+        if (!dep.module) continue;
+        if (dep.module === source.id) continue;
+        dependencies.add(`${url.origin}/r/ak-${dep.module}.json`);
       }
     }
+  } else {
+    const sources =
+      "sources" in source ? source.sources : { [source.id]: source };
 
-    // Also extract dependencies from imports in the file content
-    if (allLibSources) {
-      const imports = getImportPaths(file.content);
-      for (const importPath of imports) {
-        if (importPath.startsWith("./") || importPath.startsWith("../")) {
-          const importFilename = basename(importPath);
-          const importBasename = importFilename.replace(/\.[jt]sx?$/, "");
+    for (const [pkg, { content }] of Object.entries(sources)) {
+      const styles = resolveDirectStyles(content);
 
-          // Determine which library this file belongs to
-          const isCurrentAriakit = isAriakitLibFile(fileId);
-          const isCurrentReactAria = isReactAriaLibFile(fileId);
-          const isCurrentReact = isReactLibFile(fileId);
-
-          // Check if this import matches any lib file from the same library
-          for (const [registryName, libSource] of allLibSources.entries()) {
-            for (const [libFilename, libFileData] of Object.entries(
-              libSource.files,
-            )) {
-              const libBasename = libFilename.replace(/\.[jt]sx?$/, "");
-              const libFileId = libFileData.id;
-
-              // Only match if basenames match AND they're from the same library
-              const basenameMatches =
-                importFilename === libFilename ||
-                importBasename === libBasename;
-
-              if (!basenameMatches) {
-                continue;
-              }
-
-              // Check if the lib file is from a compatible library
-              // - Ariakit files can only import from ariakit or react (not react-aria)
-              // - React-aria files can only import from react-aria or react (not ariakit)
-              // - React files can be imported by anyone
-              const isLibFromReact = isReactLibFile(libFileId);
-              const isCompatible =
-                isLibFromReact || // React utils/hooks can be used by anyone
-                (isCurrentAriakit && isAriakitLibFile(libFileId)) ||
-                (isCurrentReactAria && isReactAriaLibFile(libFileId)) ||
-                (isCurrentReact && isReactLibFile(libFileId));
-
-              if (isCompatible) {
-                dependencies.add(registryName);
-              }
-            }
-          }
-        }
+      for (const style of styles) {
+        if (!style.module) continue;
+        dependencies.add(`${url.origin}/r/ak-${style.module}.json`);
       }
-    }
 
-    // Extract style dependencies from per-file styles
-    if (file.styles) {
-      for (const style of file.styles) {
-        if (style.module) {
-          dependencies.add(`ak-${style.module}`);
-        }
-      }
-    }
-  }
+      getImportPaths(content).forEach((importPath) => {
+        const absolutePath = importPath.startsWith(".")
+          ? join(dirname(pkg), importPath)
+          : importPath.replace("#app/", APP_DIR);
 
-  // Also extract style dependencies from source-level styles (fallback)
-  for (const style of source.styles) {
-    if (style.module) {
-      dependencies.add(`ak-${style.module}`);
+        if (!isLibSourcePath(absolutePath)) return;
+        dependencies.add(
+          `${url.origin}/r/${getRegistryItemName(absolutePath)}.json`,
+        );
+      });
+
+      if (
+        !isLibSourcePath(pkg) ||
+        ("name" in source && source.name === getRegistryItemName(pkg)) ||
+        ("id" in source && source.id === pkg)
+      )
+        continue;
+      dependencies.add(`${url.origin}/r/${getRegistryItemName(pkg)}.json`);
     }
   }
 
   return Array.from(dependencies).sort();
 }
 
-/**
- * Convert CSS properties to registry CSS format
- */
-function propertiesToCss(
-  properties: Array<{
-    name: string;
-    value: string | Record<string, never> | any[];
-  }>,
-): Record<string, any> {
-  const css: Record<string, any> = {};
-
-  for (const prop of properties) {
-    if (Array.isArray(prop.value)) {
-      // Nested properties
-      css[prop.name] = propertiesToCss(prop.value);
-    } else {
-      // Regular property
-      css[prop.name] = prop.value;
-    }
-  }
-
-  return css;
-}
-
-/**
- * Build style registry items from styles.json
- */
-function buildStyleRegistryItems(
-  baseUrl?: string,
-  queryString?: string,
-): RegistryItem[] {
-  const items: RegistryItem[] = [];
-
-  for (const module of stylesJson.modules as ModuleJson[]) {
-    const css: Record<string, any> = {};
-    const registryDependencies = new Set<string>();
-    const packageDependencies = new Set<string>();
-
-    // Add utilities
-    for (const [name, utility] of Object.entries(module.utilities)) {
-      css[`@utility ${name}`] = propertiesToCss(utility.properties);
-
-      // Collect dependencies
-      for (const dep of utility.dependencies) {
-        if (dep.module && dep.module !== module.id) {
-          registryDependencies.add(`ak-${dep.module}`);
-        }
-        if (dep.import === "@ariakit/tailwind") {
-          packageDependencies.add("@ariakit/tailwind");
-        }
-      }
-    }
-
-    // Add variants
-    for (const [name, variant] of Object.entries(module.variants)) {
-      css[`@custom-variant ${name}`] = propertiesToCss(variant.properties);
-
-      // Collect dependencies
-      for (const dep of variant.dependencies) {
-        if (dep.module && dep.module !== module.id) {
-          registryDependencies.add(`ak-${dep.module}`);
-        }
-        if (dep.import === "@ariakit/tailwind") {
-          packageDependencies.add("@ariakit/tailwind");
-        }
-      }
-    }
-
-    // Add at-properties
-    for (const [name, atProperty] of Object.entries(module.atProperties)) {
-      const atRule: Record<string, any> = {};
-      if (atProperty.syntax) {
-        atRule.syntax = atProperty.syntax;
-      }
-      if (atProperty.inherits !== null) {
-        atRule.inherits = atProperty.inherits;
-      }
-      if (atProperty.initialValue) {
-        atRule["initial-value"] = atProperty.initialValue;
-      }
-      css[`@property ${name}`] = atRule;
-    }
-
-    const item: RegistryItem = {
-      name: `ak-${module.id}`,
-      type: "registry:style",
-      css,
-    };
-
-    // Only add registryDependencies if there are any
-    if (registryDependencies.size > 0) {
-      const styleDeps = Array.from(registryDependencies).sort();
-      // Convert to full URLs if baseUrl is provided
-      item.registryDependencies = baseUrl
-        ? styleDeps.map(
-            (dep) =>
-              `${baseUrl}/r/${dep}.json${queryString ? `?${queryString}` : ""}`,
-          )
-        : styleDeps;
-    }
-
-    // Add package dependencies if any
-    if (packageDependencies.size > 0) {
-      item.dependencies = Array.from(packageDependencies).sort();
-    }
-
-    items.push(item);
-  }
-
-  return items;
-}
-
-/**
- * Build UI registry item from _lib file
- */
-async function buildUIRegistryItem(
-  itemName: string,
-  previews: CollectionEntry<"previews">[],
-  baseUrl?: string,
-  includeExtension = false,
-  queryString?: string,
-): Promise<RegistryItem | null> {
-  // Check cache
-  if (uiLibCache.has(itemName)) {
-    return uiLibCache.get(itemName) || null;
-  }
-
-  const isAriakit = itemName.startsWith("ariakit-react-");
-  const isReactAria = itemName.startsWith("react-aria-");
-
-  if (!isAriakit && !isReactAria) {
-    return null;
-  }
-
-  // Get the source from lib file sources
-  const libSources = await getLibFileSources(previews);
-  const source = libSources.get(itemName);
-
-  if (!source) {
-    return null;
-  }
-
-  const files: RegistryFiles = [];
-  const dependencies = new Set<string>();
-  const registryDependencies = new Set<string>();
-
-  // Add dependencies
-  for (const [pkg, version] of Object.entries(source.dependencies)) {
-    dependencies.add(`${pkg}@^${version.replace(/^\^/, "")}`);
-  }
-
-  // Extract registry dependencies
-  const extractedDeps = extractRegistryDependencies(source, libSources);
-  for (const dep of extractedDeps) {
-    if (dep !== itemName) {
-      registryDependencies.add(dep);
-    }
-  }
-
-  // Process files
-  for (const [filename, fileContent] of Object.entries(source.files)) {
-    const transformedContent = transformImportPaths(
-      fileContent.content,
-      source,
-      libSources,
-      includeExtension,
-    );
-
-    files.push({
-      path: join("registry", "ui", filename),
-      content: transformedContent,
-      type: "registry:ui",
-    });
-  }
-
-  const uiDeps = Array.from(registryDependencies).sort();
-  const item: RegistryItem = {
-    name: itemName,
-    type: "registry:ui",
-    description: "",
-    // Convert to full URLs if baseUrl is provided
-    registryDependencies: baseUrl
-      ? uiDeps.map(
-          (dep) =>
-            `${baseUrl}/r/${dep}.json${queryString ? `?${queryString}` : ""}`,
-        )
-      : uiDeps,
-    dependencies: Array.from(dependencies).sort(),
-    files,
-  };
-
-  uiLibCache.set(itemName, item);
-  return item;
-}
-
-/**
- * Build hook registry item from _lib/react/use-* file
- */
-async function buildHookRegistryItem(
-  itemName: string,
-  previews: CollectionEntry<"previews">[],
-  baseUrl?: string,
-  includeExtension = false,
-  queryString?: string,
-): Promise<RegistryItem | null> {
-  // Check cache
-  if (uiLibCache.has(itemName)) {
-    return uiLibCache.get(itemName) || null;
-  }
-
-  // Get the source from lib file sources
-  const libSources = await getLibFileSources(previews);
-  const source = libSources.get(itemName);
-
-  if (!source) {
-    return null;
-  }
-
-  const files: RegistryFiles = [];
-  const dependencies = new Set<string>();
-  const registryDependencies = new Set<string>();
-
-  // Add dependencies
-  for (const [pkg, version] of Object.entries(source.dependencies)) {
-    dependencies.add(`${pkg}@^${version.replace(/^\^/, "")}`);
-  }
-
-  // Extract registry dependencies
-  const extractedDeps = extractRegistryDependencies(source, libSources);
-  for (const dep of extractedDeps) {
-    if (dep !== itemName) {
-      registryDependencies.add(dep);
-    }
-  }
-
-  // Process files
-  for (const [filename, fileContent] of Object.entries(source.files)) {
-    const transformedContent = transformImportPaths(
-      fileContent.content,
-      source,
-      libSources,
-      includeExtension,
-    );
-
-    files.push({
-      path: join("registry", "hook", filename),
-      content: transformedContent,
-      type: "registry:hook",
-    });
-  }
-
-  const hookDeps = Array.from(registryDependencies).sort();
-  const item: RegistryItem = {
-    name: itemName,
-    type: "registry:hook",
-    description: "",
-    // Convert to full URLs if baseUrl is provided
-    registryDependencies: baseUrl
-      ? hookDeps.map(
-          (dep) =>
-            `${baseUrl}/r/${dep}.json${queryString ? `?${queryString}` : ""}`,
-        )
-      : hookDeps,
-    dependencies: Array.from(dependencies).sort(),
-    files,
-  };
-
-  uiLibCache.set(itemName, item);
-  return item;
-}
-
-/**
- * Build lib registry item from _lib/react file
- */
-async function buildLibRegistryItem(
-  itemName: string,
-  previews: CollectionEntry<"previews">[],
-  baseUrl?: string,
-  includeExtension = false,
-  queryString?: string,
-): Promise<RegistryItem | null> {
-  // Check cache
-  if (uiLibCache.has(itemName)) {
-    return uiLibCache.get(itemName) || null;
-  }
-
-  // Get the source from lib file sources
-  const libSources = await getLibFileSources(previews);
-  const source = libSources.get(itemName);
-
-  if (!source) {
-    return null;
-  }
-
-  const files: RegistryFiles = [];
-  const dependencies = new Set<string>();
-  const registryDependencies = new Set<string>();
-
-  // Add dependencies
-  for (const [pkg, version] of Object.entries(source.dependencies)) {
-    dependencies.add(`${pkg}@^${version.replace(/^\^/, "")}`);
-  }
-
-  // Extract registry dependencies
-  const extractedLibDeps = extractRegistryDependencies(source, libSources);
-  for (const dep of extractedLibDeps) {
-    if (dep !== itemName) {
-      registryDependencies.add(dep);
-    }
-  }
-
-  // Process files
-  for (const [filename, fileContent] of Object.entries(source.files)) {
-    const transformedContent = transformImportPaths(
-      fileContent.content,
-      source,
-      libSources,
-      includeExtension,
-    );
-
-    files.push({
-      path: join("registry", "lib", filename),
-      content: transformedContent,
-      type: "registry:lib",
-    });
-  }
-
-  const libDeps = Array.from(registryDependencies).sort();
-  const item: RegistryItem = {
-    name: itemName,
-    type: "registry:lib",
-    description: "",
-    // Convert to full URLs if baseUrl is provided
-    registryDependencies: baseUrl
-      ? libDeps.map(
-          (dep) =>
-            `${baseUrl}/r/${dep}.json${queryString ? `?${queryString}` : ""}`,
-        )
-      : libDeps,
-    dependencies: Array.from(dependencies).sort(),
-    files,
-  };
-
-  uiLibCache.set(itemName, item);
-  return item;
-}
-
-async function buildRegistryIndex(params: BuildRegistryIndexParams) {
-  const { previews, baseUrl, queryString } = params;
-
-  const items: RegistryItem[] = [];
-
-  // Add block items from previews
-  for (const preview of previews) {
-    const sources = await getPreviewSources(preview);
-    if (!sources) {
-      continue;
-    }
-    for (const framework of preview.data.frameworks) {
-      if (!isFramework(framework)) {
-        continue;
-      }
-      const source = sources[framework];
-      if (!source) {
-        continue;
-      }
-      const slug = getRegistrySlug(preview, framework);
-      const description = await getPreviewDescription(preview);
-      items.push({
-        name: slug,
-        type: "registry:block",
-        title: preview.data.title,
-        description: description || "",
-        meta: {
-          href: `${baseUrl}/r/${slug}.json`,
-        },
-      });
-    }
-  }
-
-  // Add UI items from _lib/ariakit
-  const ariakitFiles = [
-    "disclosure.react.tsx",
-    "list.react.tsx",
-    "nav.react.tsx",
-    "progress.react.tsx",
-    "select.react.tsx",
-    "sidebar.react.tsx",
-    "table.react.tsx",
-  ];
-  for (const file of ariakitFiles) {
-    const filename = basename(file, ".tsx").replace(/\.react$/, "");
-    const itemName = `ariakit-react-${filename}`;
-    items.push({
-      name: itemName,
-      type: "registry:ui",
-      description: "",
-      meta: {
-        href: `${baseUrl}/r/${itemName}.json`,
-      },
-    });
-  }
-
-  // Add UI items from _lib/react-aria
-  const reactAriaFiles = [
-    "disclosure.react.tsx",
-    "list.react.tsx",
-    "progress.react.tsx",
-  ];
-  for (const file of reactAriaFiles) {
-    const filename = basename(file, ".tsx").replace(/\.react$/, "");
-    const itemName = `react-aria-${filename}`;
-    items.push({
-      name: itemName,
-      type: "registry:ui",
-      description: "",
-      meta: {
-        href: `${baseUrl}/r/${itemName}.json`,
-      },
-    });
-  }
-
-  // Add lib and hook items from _lib/react
-  const libFiles = ["use-is-mobile.ts", "utils.ts"];
-  for (const file of libFiles) {
-    const filename = basename(file, ".ts");
-    const isHook = filename.startsWith("use-");
-    items.push({
-      name: filename,
-      type: isHook ? "registry:hook" : "registry:lib",
-      description: "",
-      meta: {
-        href: `${baseUrl}/r/${filename}.json`,
-      },
-    });
-  }
-
-  // Add style items
-  const styleItems = buildStyleRegistryItems(baseUrl, queryString);
-  for (const styleItem of styleItems) {
-    items.push({
-      name: styleItem.name,
-      type: "registry:style",
-      description: "",
-      meta: {
-        href: `${baseUrl}/r/${styleItem.name}.json`,
-      },
-    });
-  }
-
-  const registry: RegistryIndexResponse = {
-    name: "Ariakit",
-    homepage: "https://ariakit.com",
-    items: items.sort((a, b) => a.name.localeCompare(b.name)),
-  };
-
-  return registry;
-}
-
-async function buildRegistryItem(params: BuildRegistryItemParams) {
-  const { itemSlug, previews, baseUrl, includeExtension, queryString } = params;
-
-  // Check if it's a style item (starts with ak-)
-  if (itemSlug.startsWith("ak-")) {
-    const styleItems = buildStyleRegistryItems(baseUrl, queryString);
-    const styleItem = styleItems.find((item) => item.name === itemSlug);
-    if (styleItem) {
-      return styleItem;
-    }
-  }
-
-  // Check if it's a UI item (ariakit-react-* or react-aria-*)
-  if (
-    itemSlug.startsWith("ariakit-react-") ||
-    itemSlug.startsWith("react-aria-")
-  ) {
-    const result = await buildUIRegistryItem(
-      itemSlug,
-      previews,
-      baseUrl,
-      includeExtension,
-      queryString,
-    );
-    if (result) {
-      return result;
-    }
-  }
-
-  // Check if it's a hook item (use-*)
-  if (itemSlug.startsWith("use-")) {
-    const hookResult = await buildHookRegistryItem(
-      itemSlug,
-      previews,
-      baseUrl,
-      includeExtension,
-      queryString,
-    );
-    if (hookResult) {
-      return hookResult;
-    }
-  }
-
-  // Check if it's a lib item
-  const libResult = await buildLibRegistryItem(
-    itemSlug,
-    previews,
-    baseUrl,
-    includeExtension,
-    queryString,
+function isObjectWithSource(
+  obj: unknown,
+): obj is { source: Record<string, Source> } {
+  return (
+    typeof obj === "object" && obj !== null && "source" in obj && !!obj.source
   );
-  if (libResult) {
-    return libResult;
-  }
-
-  // Check if it's a block item from previews
-  for (const preview of previews) {
-    const sources = await getPreviewSources(preview);
-    if (!sources) {
-      continue;
-    }
-    for (const framework of preview.data.frameworks) {
-      if (!isFramework(framework)) {
-        continue;
-      }
-      const source = sources[framework];
-      if (!source) {
-        continue;
-      }
-      const slug = getRegistrySlug(preview, framework);
-      if (slug !== itemSlug) {
-        continue;
-      }
-      return buildRegistryItemDetail({
-        preview,
-        framework,
-        source,
-        baseUrl,
-        previews,
-        includeExtension,
-        queryString,
-      });
-    }
-  }
-
-  return null;
 }
 
-interface BuildRegistryItemDetailParams {
-  preview: CollectionEntry<"previews">;
-  framework: keyof typeof import("#app/lib/frameworks.ts").frameworks;
-  source: Source;
-  baseUrl?: string;
-  previews: CollectionEntry<"previews">[];
-  includeExtension?: boolean;
-  queryString?: string;
-}
-
-async function buildRegistryItemDetail(params: BuildRegistryItemDetailParams) {
-  const {
-    preview,
-    framework,
-    source,
-    baseUrl,
-    previews,
-    queryString,
-    includeExtension,
-  } = params;
-  const slug = getRegistrySlug(preview, framework);
-  const frameworkDetails = getFramework(framework);
-  const description = await getPreviewDescription(preview);
-
-  const files = await buildRegistryFiles({
-    preview,
-    slug,
-    source,
-    previews,
-    includeExtension,
-  });
-  if (!files.length) {
-    return null;
-  }
-
-  const dependencies = new Set<string>();
-  const registryDependencies = new Set<string>();
-
-  // Add dependencies with ^ prefix (excluding framework dependencies)
-  const frameworkDeps = frameworkDetails.dependencies as readonly string[];
-  for (const [pkg, version] of Object.entries(source.dependencies)) {
-    // Skip framework dependencies as they're already defined in frameworks.ts
-    if (frameworkDeps.includes(pkg)) {
-      continue;
-    }
-    dependencies.add(`${pkg}@^${version.replace(/^\^/, "")}`);
-  }
-
-  // Extract registry dependencies
-  const libSources = await getLibFileSources(previews);
-  const extractedBlockDeps = extractRegistryDependencies(source, libSources);
-  for (const dep of extractedBlockDeps) {
-    registryDependencies.add(dep);
-  }
-
-  const blockDeps = Array.from(registryDependencies).sort();
-  const item: RegistryItem = {
-    name: slug,
-    type: "registry:block",
-    title: preview.data.title,
-    description: description || "",
-    // Convert to full URLs if baseUrl is provided
-    registryDependencies: baseUrl
-      ? blockDeps.map(
-          (dep) =>
-            `${baseUrl}/r/${dep}.json${queryString ? `?${queryString}` : ""}`,
-        )
-      : blockDeps,
-    dependencies: Array.from(dependencies).sort(),
-    meta: {
-      href: `${slug}.json`,
-    },
-    files,
-  };
-
-  return item;
-}
-
-interface BuildRegistryFilesParams {
-  preview: CollectionEntry<"previews">;
-  slug: string;
-  source: Source;
-  previews: CollectionEntry<"previews">[];
-  includeExtension?: boolean;
-}
-
-async function buildRegistryFiles(params: BuildRegistryFilesParams) {
-  const { slug, source, previews, includeExtension } = params;
-
-  const entries: RegistryFiles = [];
-
-  const pushFile = (file: RegistryFile) => {
-    entries.push(file);
-  };
-
-  // Get lib sources for transform
-  const libSources = await getLibFileSources(previews);
-
-  // Transform import paths for all files, but exclude _lib files
-  for (const [filename, content] of Object.entries(source.files)) {
-    // Skip _lib files - they should be registry dependencies, not included files
-    if (
-      isAriakitLibFile(content.id) ||
-      isReactAriaLibFile(content.id) ||
-      isReactLibFile(content.id)
-    ) {
-      continue;
-    }
-
-    const transformedContent = transformImportPaths(
-      content.content,
-      source,
-      libSources,
-      includeExtension,
-    );
-    const isMainFile = filename === "index.tsx" || filename === "index.ts";
-    const finalFilename = isMainFile ? "index.tsx" : filename;
-
-    pushFile({
-      path: join("registry", "block", slug, finalFilename),
-      content: transformedContent,
-      type: "registry:block",
-    });
-  }
-
-  return entries;
-}
-
-async function getPreviewSources(entry: CollectionEntry<"previews">) {
+async function getPreviewSource(entry: CollectionEntry<"previews">) {
   try {
-    const previewModule = (await examples[
-      `../../examples/${entry.id}/preview.astro`
-    ]?.()) as {
-      source?: Record<string, Source>;
-    };
-    if (!previewModule?.source) {
-      return null;
+    const example = previewImports[`../../examples/${entry.id}/preview.astro`];
+    const mod = await example?.();
+    if (!isObjectWithSource(mod)) {
+      throw new Error(`Preview source not found for ${entry.id}`);
     }
-    return previewModule.source;
+    return mod.source;
   } catch (error) {
-    console.error("Failed to load preview source", entry.id, error);
+    logger.error("Failed to load preview source", entry.id, error);
     return null;
   }
-}
-
-async function getPreviewDescription(entry: CollectionEntry<"previews">) {
-  if (!entry.body) {
-    return null;
-  }
-  return markdownToHtml(entry.body);
-}
-
-// Removed: getPreviewMarkdown is no longer used since we don't generate README.md
-
-function getRegistrySlug(
-  preview: CollectionEntry<"previews">,
-  framework: string,
-) {
-  return `${framework}-${preview.id.replaceAll("/", "-")}`;
 }

@@ -88,6 +88,18 @@ function dependencyIdentity(dep: StyleDependency): string {
   return `${dep.type}:${dep.name}:${moduleId}:${importId}`;
 }
 
+function dedupeDependencies(deps: StyleDependency[]): StyleDependency[] {
+  const seen = new Set<string>();
+  const unique: StyleDependency[] = [];
+  for (const dep of deps) {
+    const key = dependencyIdentity(dep);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(dep);
+  }
+  return unique;
+}
+
 function isWildcard(name: string): boolean {
   return name.includes("*");
 }
@@ -368,50 +380,28 @@ export function resolveDependenciesForAkToken(name: string): StyleDependency[] {
   out.push(...resolveWildcardBaseDeps(name, "utility"));
   out.push(...resolveWildcardBaseDeps(name, "variant"));
 
-  // Deduplicate by identity
-  const seen = new Set<string>();
-  const unique: StyleDependency[] = [];
-  for (const dep of out) {
-    const key = dependencyIdentity(dep);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    unique.push(dep);
-  }
-  return unique;
+  return dedupeDependencies(out);
 }
 
 /**
- * Resolve styles for a collection of files.
+ * Resolve direct styles for a collection of files. This does not include
+ * transitive dependencies.
+ */
+export function resolveDirectStyles(...contents: string[]) {
+  const tokens = scanAkTokens(...contents);
+  return dedupeDependencies([...tokens].flatMap(resolveDependenciesForAkToken));
+}
+
+/**
+ * Resolve styles for a collection of files. This includes transitive
+ * dependencies.
  */
 export function resolveStyles(...contents: string[]): StyleDependency[] {
-  const tokens = scanAkTokens(...contents);
-  const baseDeps: StyleDependency[] = [];
-  for (const token of tokens) {
-    const deps = resolveDependenciesForAkToken(token);
-    for (const d of deps) {
-      baseDeps.push(d);
-    }
-  }
-
-  const allDeps: StyleDependency[] = [];
-  const seen = new Set<string>();
-
-  const addUnique = (dep: StyleDependency) => {
-    const key = dependencyIdentity(dep);
-    if (seen.has(key)) return;
-    seen.add(key);
-    allDeps.push(dep);
-  };
-
-  for (const base of baseDeps) {
-    addUnique(base);
-    const transitive = getTransitiveDependencies(base);
-    for (const d of transitive) {
-      addUnique(d);
-    }
-  }
-
-  return allDeps;
+  const directDeps = resolveDirectStyles(...contents);
+  return dedupeDependencies([
+    ...directDeps,
+    ...directDeps.flatMap(getTransitiveDependencies),
+  ]);
 }
 
 /**
@@ -489,4 +479,8 @@ export function styleDefToCss(def: StyleDef): string {
     return `@property ${def.name} {}`;
   }
   return `@property ${def.name} {\n${inner}\n}`;
+}
+
+export function styleDefsToCss(defs: StyleDef[]): string {
+  return `${defs.map(styleDefToCss).join("\n\n").trimEnd()}\n`;
 }

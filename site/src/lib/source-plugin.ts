@@ -17,7 +17,11 @@ import resolveFrom from "resolve-from";
 import type { PluginContext } from "rollup";
 import ts from "typescript";
 import type { Plugin } from "vite";
-import { getFramework, getFrameworkByFilename } from "./frameworks.ts";
+import {
+  getFramework,
+  getFrameworkByFilename,
+  removeFrameworkSuffix,
+} from "./frameworks.ts";
 import type { Source, SourceFile } from "./source.ts";
 import { getImportPaths, mergeFiles, replaceImportPaths } from "./source.ts";
 import { resolveStyles } from "./styles.ts";
@@ -77,16 +81,6 @@ function getPackageName(source: string) {
 }
 
 /**
- * Remove framework-specific suffixes from a path
- */
-function removeFrameworkSuffixes(filePath: string) {
-  return filePath
-    .replace(/\.preact\.([tj]sx?)$/, ".$1")
-    .replace(/\.react\.([tj]sx?)$/, ".$1")
-    .replace(/\.solid\.([tj]sx?)$/, ".$1");
-}
-
-/**
  * Whether an import path uses the package.json imports map alias (starts with #)
  */
 function isImportMapAliasPath(importPath: string) {
@@ -112,7 +106,7 @@ function isUtilsPath(filePath: string) {
  * Remove framework-specific suffixes and replace ../ with ./
  */
 function normalizeImportPath(importPath: string) {
-  const noFrameworkSuffix = removeFrameworkSuffixes(importPath);
+  const noFrameworkSuffix = removeFrameworkSuffix(importPath);
   // Treat # aliases as local and collapse path to just the filename
   if (isImportMapAliasPath(noFrameworkSuffix)) {
     return `./${basename(noFrameworkSuffix)}`;
@@ -128,7 +122,7 @@ function normalizeImportPath(importPath: string) {
  * Remove framework-specific suffixes and leading ./ or ../
  */
 function normalizeFilename(filename: string) {
-  return removeFrameworkSuffixes(filename).replace(/^(\.\.\/)+/, "");
+  return removeFrameworkSuffix(filename).replace(/^(\.\.\/)+/, "");
 }
 
 /**
@@ -234,7 +228,9 @@ async function addFrameworkDependenciesToFile(
   file: SourceFile,
 ) {
   const filename = basename(filePath);
-  const framework = getFramework(getFrameworkByFilename(filename));
+  const frameworkName = getFrameworkByFilename(filename);
+  if (!frameworkName) return;
+  const framework = getFramework(frameworkName);
   for (const dependency of framework.dependencies) {
     const resolved = await resolveImport(context, dependency, filePath);
     if (!resolved) continue;
