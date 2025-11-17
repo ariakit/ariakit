@@ -1,7 +1,6 @@
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import { basename, dirname, extname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import type { APIRoute } from "astro";
 import type { Registry, RegistryItem } from "shadcn/schema";
 import { z } from "zod/v4";
@@ -24,13 +23,11 @@ const logger = createLogger("registry");
 export const prerender = false;
 
 const previewImports = import.meta.glob("../../examples/**/preview.astro");
-const moduleDir = fileURLToPath(new URL(".", import.meta.url));
-const APP_DIR = join(moduleDir, "../../");
-const EXAMPLES_DIR = join(APP_DIR, "examples");
-const LIB_DIR = join(EXAMPLES_DIR, "_lib");
-const DATA_DIR = join(LIB_DIR, "data");
-const REACT_UTILS_DIR = join(LIB_DIR, "react-utils");
-const REACT_HOOKS_DIR = join(LIB_DIR, "react-hooks");
+const EXAMPLES_PREFIX = "examples/";
+const LIB_PREFIX = "examples/_lib/";
+const DATA_PREFIX = "examples/_lib/data/";
+const REACT_UTILS_PREFIX = "examples/_lib/react-utils/";
+const REACT_HOOKS_PREFIX = "examples/_lib/react-hooks/";
 
 const queryParamsSchema = z.object({
   ariakit: z.stringbool().default(true),
@@ -192,11 +189,13 @@ function getRegistryItem({
         content: index
           ? undefined
           : replaceImportPaths(source.content, (path) => {
-              const absolutePath = path.startsWith(".")
-                ? join(dirname(source.id), path)
-                : path.replace("#app/", APP_DIR);
+              const absolutePath = resolveImportAbsolutePath(source.id, path);
+              const relativeAbsolutePath = getSrcRelativePath(absolutePath);
               if (!isLibSourcePath(absolutePath)) {
-                if (path.startsWith(".") || absolutePath.startsWith(DATA_DIR)) {
+                if (
+                  path.startsWith(".") ||
+                  relativeAbsolutePath.startsWith(DATA_PREFIX)
+                ) {
                   return `./${basename(removeFrameworkSuffix(path), extname(path))}`;
                 }
                 return path;
@@ -213,30 +212,36 @@ function getRegistryItem({
 }
 
 function isLibSourcePath(sourcePath: string) {
-  return sourcePath.startsWith(LIB_DIR) && !sourcePath.startsWith(DATA_DIR);
+  const relativePath = getSrcRelativePath(sourcePath);
+  return (
+    relativePath.startsWith(LIB_PREFIX) && !relativePath.startsWith(DATA_PREFIX)
+  );
 }
 
 function getRegistryItemFilename(sourcePath: string) {
-  return removeFrameworkSuffix(basename(sourcePath));
+  const normalizedPath = normalizePath(sourcePath);
+  return removeFrameworkSuffix(basename(normalizedPath));
 }
 
 function getExamplesFolderName(sourcePath: string) {
-  return dirname(sourcePath)
-    .replace(`${EXAMPLES_DIR}/`, "")
-    .replace("/", "-")
-    .replace("-_component", "");
+  const relativeDir = getSrcRelativePath(dirname(sourcePath));
+  const withoutPrefix = relativeDir.startsWith(EXAMPLES_PREFIX)
+    ? relativeDir.slice(EXAMPLES_PREFIX.length)
+    : relativeDir;
+  return withoutPrefix.replace("/", "-").replace("-_component", "");
 }
 
 function getRegistryItemName(sourcePath: string) {
-  if (sourcePath.endsWith(".css")) {
-    return `ak-${basename(sourcePath, ".css").replace(/^ak-/, "")}`;
+  const relativePath = getSrcRelativePath(sourcePath);
+  if (relativePath.endsWith(".css")) {
+    return `ak-${basename(relativePath, ".css").replace(/^ak-/, "")}`;
   }
-  const prefix = isLibSourcePath(sourcePath)
-    ? basename(dirname(sourcePath))
-    : `${sourcePath.includes("/_component") ? "components" : "examples"}-${getExamplesFolderName(sourcePath)}`;
-  const filename = getRegistryItemFilename(sourcePath);
-  const filenameNoExt = basename(filename, extname(sourcePath));
-  const framework = getFrameworkByFilename(sourcePath);
+  const prefix = isLibSourcePath(relativePath)
+    ? basename(dirname(relativePath))
+    : `${relativePath.includes("/_component") ? "components" : "examples"}-${getExamplesFolderName(relativePath)}`;
+  const filename = getRegistryItemFilename(relativePath);
+  const filenameNoExt = basename(filename, extname(relativePath));
+  const framework = getFrameworkByFilename(relativePath);
   const name = framework
     ? prefix.startsWith(framework)
       ? `${prefix}-${filenameNoExt}`
@@ -246,12 +251,13 @@ function getRegistryItemName(sourcePath: string) {
 }
 
 function getRegistryItemType(sourcePath: string) {
-  if (sourcePath.endsWith(".css")) return "registry:ui";
-  if (sourcePath.startsWith(REACT_UTILS_DIR)) return "registry:lib";
-  if (sourcePath.startsWith(REACT_HOOKS_DIR)) return "registry:hook";
-  if (sourcePath.startsWith(DATA_DIR)) return "registry:example";
-  if (sourcePath.startsWith(LIB_DIR)) return "registry:ui";
-  if (sourcePath.startsWith(EXAMPLES_DIR)) return "registry:example";
+  const relativePath = getSrcRelativePath(sourcePath);
+  if (relativePath.endsWith(".css")) return "registry:ui";
+  if (relativePath.startsWith(REACT_UTILS_PREFIX)) return "registry:lib";
+  if (relativePath.startsWith(REACT_HOOKS_PREFIX)) return "registry:hook";
+  if (relativePath.startsWith(DATA_PREFIX)) return "registry:example";
+  if (relativePath.startsWith(LIB_PREFIX)) return "registry:ui";
+  if (relativePath.startsWith(EXAMPLES_PREFIX)) return "registry:example";
   return "registry:ui";
 }
 
@@ -323,10 +329,7 @@ function getRegistryItemRegistryDependencies(
       }
 
       getImportPaths(content).forEach((importPath) => {
-        const absolutePath = importPath.startsWith(".")
-          ? join(dirname(pkg), importPath)
-          : importPath.replace("#app/", APP_DIR);
-
+        const absolutePath = resolveImportAbsolutePath(pkg, importPath);
         if (!isLibSourcePath(absolutePath)) return;
         dependencies.add(
           `${url.origin}/r/${getRegistryItemName(absolutePath)}.json`,
@@ -344,6 +347,37 @@ function getRegistryItemRegistryDependencies(
   }
 
   return Array.from(dependencies).sort();
+}
+
+const SRC_DIR_TOKEN = "/src/";
+
+function normalizePath(value: string) {
+  return value.replace(/\\/g, "/");
+}
+
+function getSrcRelativePath(value: string) {
+  const normalized = normalizePath(value);
+  const srcIndex = normalized.lastIndexOf(SRC_DIR_TOKEN);
+  if (srcIndex >= 0) {
+    return normalized.slice(srcIndex + SRC_DIR_TOKEN.length);
+  }
+  if (normalized.startsWith("src/")) {
+    return normalized.slice("src/".length);
+  }
+  if (normalized.startsWith("/src/")) {
+    return normalized.slice(SRC_DIR_TOKEN.length);
+  }
+  return normalized.replace(/^(\.?\/)+/, "");
+}
+
+function resolveImportAbsolutePath(fromPath: string, importPath: string) {
+  if (importPath.startsWith(".")) {
+    return normalizePath(join(dirname(fromPath), importPath));
+  }
+  if (importPath.startsWith("#app/")) {
+    return normalizePath(`src/${importPath.slice("#app/".length)}`);
+  }
+  return importPath;
 }
 
 function isObjectWithSource(
