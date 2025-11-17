@@ -14,11 +14,11 @@ export function createRender<
   T extends React.ElementType<P> | React.ExoticComponent<P>,
   P extends object,
 >(Component: T, props?: P | React.ReactNode, defaultProps?: P) {
-  if (props == null) {
+  if (props == null || (typeof props === "object" && "then" in props)) {
     return React.createElement(Component, defaultProps);
   }
   if (React.isValidElement<any>(props)) {
-    const element = props;
+    const element = props as React.ReactElement<P>;
     if (defaultProps) {
       const mergedProps = mergeProps(defaultProps, element.props);
       return React.cloneElement(element, mergedProps);
