@@ -9,6 +9,7 @@ import { Delegated } from "./delegated.ts";
 import { deriveTinyBenchHooks } from "./tinybench.ts";
 import { deriveBenchmarkableTests, getFullName } from "./vitest.ts";
 
+let count = 0;
 // todo: IS THE ENVIRONMENT for JSDOM COOKED?!
 //
 // Not a race condition between tests.
@@ -49,6 +50,8 @@ export default class VitestBenchRunner
   async runTask(test: Test) {
     await this.#onBeforeRunFilesPromise;
     const bench = await this.#bench;
+
+    console.log("Run task", count++);
 
     // safety: tasks added earlier in `onBeforeRunFiles`
     const fn = bench.getTask(test.id)!;
@@ -91,6 +94,8 @@ export default class VitestBenchRunner
 
     fs.mkdirSync(path.dirname(filepath), { recursive: true });
     fs.writeFileSync(filepath, data, { encoding: "utf8" });
+
+    super.onAfterRunFiles();
   }
 }
 

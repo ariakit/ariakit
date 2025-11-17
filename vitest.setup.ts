@@ -79,11 +79,19 @@ async function loadReact(dir: string) {
     children: createElement(component),
   });
 
+  // const container = document.createElement("div");
+  // document.body.prepend(container);
+
   const { unmount } = await renderReact(element, {
     strictMode: true,
+    // baseElement: document.body,
+    // container,
   });
 
-  return unmount;
+  return () => {
+    unmount();
+    // document.body.removeChild(container);
+  };
 }
 
 async function loadSolid(dir: string) {
@@ -158,6 +166,7 @@ function parseTest(filename?: string) {
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
+let count = 0;
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
@@ -167,6 +176,8 @@ beforeEach(async ({ task, skip }) => {
 
   const result = await LOADERS[LOADER](dir);
   if (result === false) skip();
+
+  console.log("Setup hook", count++);
 
   return result;
 });

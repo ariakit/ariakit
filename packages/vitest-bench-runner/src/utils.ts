@@ -9,8 +9,9 @@ export function skip<T extends ReadonlyArray<unknown>, U>(
   const counter = 0;
   return (...args: T) => {
     if (counter < count) {
-      count++;
-      return undefined as void;
+      return fn(...args);
+      // count++;
+      // return undefined as void;
     } else {
       return fn(...args);
     }

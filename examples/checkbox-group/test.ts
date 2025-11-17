@@ -1,6 +1,12 @@
 import { click, press, q } from "@ariakit/test";
+import { screen } from "@testing-library/dom";
 
-test("check/uncheck on click", async () => {
+let count = 0;
+test.only("check/uncheck on click", async () => {
+  console.log("Test only", count++);
+  screen.debug();
+  console.log(new Error((count++).toString()));
+
   expect(q.labeled("Apple")).toHaveAttribute("aria-checked", "false");
   expect(q.labeled("Orange")).toHaveAttribute("aria-checked", "false");
   expect(q.labeled("Mango")).toHaveAttribute("aria-checked", "false");

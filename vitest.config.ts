@@ -64,5 +64,6 @@ export default defineConfig({
       include: ["packages"],
     },
     runner,
+    sequence: { hooks: "stack" },
   },
 });
