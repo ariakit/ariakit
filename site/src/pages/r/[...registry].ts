@@ -71,11 +71,11 @@ export const GET: APIRoute = async ({ request, params }) => {
 };
 
 async function getRegistryItemSources() {
-  const sources2 = new Map<string, ModuleJson | Source | SourceFile>();
+  const sourceMap = new Map<string, ModuleJson | Source | SourceFile>();
   const previews = await getCollection("previews");
 
   for (const module of stylesJson.modules) {
-    sources2.set(getRegistryItemName(module.path), module);
+    sourceMap.set(getRegistryItemName(module.path), module);
   }
 
   for (const preview of previews) {
@@ -88,16 +88,16 @@ async function getRegistryItemSources() {
       for (const [path] of Object.entries(source.sources)) {
         if (!isLibSourcePath(path)) continue;
         if (!source.sources[path]) continue;
-        sources2.set(getRegistryItemName(path), source.sources[path]);
+        sourceMap.set(getRegistryItemName(path), source.sources[path]);
       }
       const firstPath = Object.keys(source.sources)[0];
       if (firstPath) {
-        sources2.set(getRegistryItemName(firstPath), source);
+        sourceMap.set(getRegistryItemName(firstPath), source);
       }
     }
   }
 
-  return sources2;
+  return sourceMap;
 }
 
 type RegistryItemFile = NonNullable<RegistryItem["files"]>[number];
@@ -114,101 +114,120 @@ function getRegistryItem({
   index = false,
 }: GetRegistryItemParams) {
   if ("utilities" in source) {
-    const name = `ak-${source.id}`;
-    const filename = `${source.id}.css`;
-    const type = getRegistryItemType(source.path);
-    const file: RegistryItemFile = {
-      type,
-      path: getRegistryItemPath(source.path, name),
+    return getCssRegistryItem(source, url, index);
+  }
+  return getLibraryRegistryItem(source, url, index);
+}
+
+function getCssRegistryItem(
+  source: ModuleJson,
+  url: URL,
+  index: boolean,
+): RegistryItem {
+  const name = `ak-${source.id}`;
+  const filename = `${source.id}.css`;
+  const type = getRegistryItemType(source.path);
+  const file: RegistryItemFile = {
+    type,
+    path: getRegistryItemPath(source.path, name),
+    content: index
+      ? undefined
+      : styleDefsToCss([
+          ...Object.values(source.atProperties),
+          ...Object.values(source.variants),
+          ...Object.values(source.utilities),
+        ]),
+  };
+
+  const item: RegistryItem = {
+    name,
+    type,
+    meta: {
+      href: `${url.origin}/r/${name}.json`,
+    },
+    css: index ? undefined : { [`@import "../components/ui/${filename}"`]: {} },
+    dependencies: index ? undefined : getRegistryItemDependencies(source),
+    registryDependencies: index
+      ? undefined
+      : getRegistryItemRegistryDependencies(source, url),
+    files: [file],
+  };
+
+  return item;
+}
+
+function getLibraryRegistryItem(
+  source: Source | SourceFile,
+  url: URL,
+  index: boolean,
+): RegistryItem | null {
+  const originalSources = getFlattenedSources(source);
+  const filteredSources = filterLibrarySources(source, originalSources);
+
+  if (Object.keys(filteredSources).length === 0) return null;
+
+  const firstPath = Object.keys(filteredSources)[0]!;
+  const firstSourceName = getRegistryItemName(firstPath);
+
+  const item: RegistryItem = {
+    name: firstSourceName,
+    type: getRegistryItemType(firstPath),
+    dependencies: !index ? getRegistryItemDependencies(source) : undefined,
+    registryDependencies: !index
+      ? getRegistryItemRegistryDependencies(
+          { ...source, sources: filteredSources },
+          url,
+        )
+      : undefined,
+    meta: {
+      href: `${url.origin}/r/${firstSourceName}.json`,
+    },
+    files: Object.values(filteredSources).map((source) => ({
+      type: getRegistryItemType(source.id),
+      path: getRegistryItemPath(source.id, firstSourceName),
       content: index
         ? undefined
-        : styleDefsToCss([
-            ...Object.values(source.atProperties),
-            ...Object.values(source.variants),
-            ...Object.values(source.utilities),
-          ]),
-    };
+        : transformFileContent(source, firstSourceName),
+    })),
+  };
 
-    const item: RegistryItem = {
-      name,
-      type,
-      meta: {
-        href: `${url.origin}/r/${name}.json`,
-      },
-      css: index
-        ? undefined
-        : { [`@import "../components/ui/${filename}"`]: {} },
-      dependencies: index ? undefined : getRegistryItemDependencies(source),
-      registryDependencies: index
-        ? undefined
-        : getRegistryItemRegistryDependencies(source, url),
-      files: [file],
-    };
+  return item;
+}
 
-    return item;
-  }
+function transformFileContent(source: SourceFile, itemName: string) {
+  return replaceImportPaths(source.content, (path) => {
+    const absolutePath = resolveImportAbsolutePath(source.id, path);
+    const relativeAbsolutePath = getSrcRelativePath(absolutePath);
+    if (!isLibSourcePath(absolutePath)) {
+      if (
+        path.startsWith(".") ||
+        relativeAbsolutePath.startsWith(DATA_PREFIX)
+      ) {
+        return `./${basename(removeFrameworkSuffix(path), extname(path))}`;
+      }
+      return path;
+    }
+    return `@/${getRegistryItemPath(absolutePath, itemName).replace(/\.([jt]sx?)$/, "")}`;
+  });
+}
 
+function filterLibrarySources(
+  source: Source | SourceFile,
+  originalSources: Record<string, SourceFile>,
+) {
+  const sources = { ...originalSources };
   const libDeps = new Set<string>();
 
-  const originalSources =
-    "sources" in source ? source.sources : { [source.id]: source };
-
-  const sources = { ...originalSources };
-
   for (const [path, { id }] of Object.entries(sources)) {
-    if (
-      !isLibSourcePath(path) &&
-      (("name" in source && source.name !== getRegistryItemName(id)) ||
-        ("id" in source && source.id !== id))
-    )
+    if (!isLibSourcePath(path) && isExternalRegistryItem(source, id)) {
       continue;
+    }
     delete sources[path];
-    const item = libDeps.has(id);
-    if (item) continue;
-    libDeps.add(id);
+    if (!libDeps.has(id)) {
+      libDeps.add(id);
+    }
   }
-
-  const ss = Object.keys(sources).length > 0 ? sources : originalSources;
-
-  if (Object.keys(ss).length > 0) {
-    const firstPath = Object.keys(ss)[0]!;
-    const firstSourceName = getRegistryItemName(firstPath);
-    const item: RegistryItem = {
-      name: firstSourceName,
-      type: getRegistryItemType(firstPath),
-      dependencies: !index ? getRegistryItemDependencies(source) : undefined,
-      registryDependencies: !index
-        ? getRegistryItemRegistryDependencies({ ...source, sources: ss }, url)
-        : undefined,
-      meta: {
-        href: `${url.origin}/r/${firstSourceName}.json`,
-      },
-      files: Object.values(ss).map((source) => ({
-        type: getRegistryItemType(source.id),
-        path: getRegistryItemPath(source.id, firstSourceName),
-        content: index
-          ? undefined
-          : replaceImportPaths(source.content, (path) => {
-              const absolutePath = resolveImportAbsolutePath(source.id, path);
-              const relativeAbsolutePath = getSrcRelativePath(absolutePath);
-              if (!isLibSourcePath(absolutePath)) {
-                if (
-                  path.startsWith(".") ||
-                  relativeAbsolutePath.startsWith(DATA_PREFIX)
-                ) {
-                  return `./${basename(removeFrameworkSuffix(path), extname(path))}`;
-                }
-                return path;
-              }
-              return `@/${getRegistryItemPath(absolutePath, firstSourceName).replace(/\.([jt]sx?)$/, "")}`;
-            }),
-      })),
-    };
-
-    return item;
-  }
-
-  return null;
+  return Object.keys(sources).length > 0 ? sources : originalSources;
 }
 
 function isLibSourcePath(sourcePath: string) {
@@ -236,17 +255,23 @@ function getRegistryItemName(sourcePath: string) {
   if (relativePath.endsWith(".css")) {
     return `ak-${basename(relativePath, ".css").replace(/^ak-/, "")}`;
   }
+
   const prefix = isLibSourcePath(relativePath)
     ? basename(dirname(relativePath))
     : `${relativePath.includes("/_component") ? "components" : "examples"}-${getExamplesFolderName(relativePath)}`;
+
   const filename = getRegistryItemFilename(relativePath);
   const filenameNoExt = basename(filename, extname(relativePath));
   const framework = getFrameworkByFilename(relativePath);
-  const name = framework
-    ? prefix.startsWith(framework)
-      ? `${prefix}-${filenameNoExt}`
-      : `${framework}-${prefix}-${filenameNoExt}`
-    : `${prefix}-${filenameNoExt}`;
+
+  if (!framework) {
+    return `${prefix}-${filenameNoExt}`.replace(/-index$/, "");
+  }
+
+  const name = prefix.startsWith(framework)
+    ? `${prefix}-${filenameNoExt}`
+    : `${framework}-${prefix}-${filenameNoExt}`;
+
   return name.replace(/-index$/, "");
 }
 
@@ -275,6 +300,7 @@ function getRegistryItemPath(sourcePath: string, itemName: string) {
 
 function getRegistryItemDependencies(source: Source | SourceFile | ModuleJson) {
   const dependencies = new Set<string>();
+
   if ("utilities" in source) {
     for (const utility of Object.values(source.utilities)) {
       for (const dep of utility.dependencies) {
@@ -283,14 +309,9 @@ function getRegistryItemDependencies(source: Source | SourceFile | ModuleJson) {
       }
     }
   } else {
-    const sources =
-      "sources" in source ? source.sources : { [source.id]: source };
+    const sources = getFlattenedSources(source);
     for (const s of Object.values(sources)) {
-      if (
-        isLibSourcePath(s.id) &&
-        (("name" in source && source.name !== getRegistryItemName(s.id)) ||
-          ("id" in source && source.id !== s.id))
-      ) {
+      if (isLibSourcePath(s.id) && isExternalRegistryItem(source, s.id)) {
         continue;
       }
       for (const dep of Object.keys(s.dependencies ?? {})) {
@@ -317,8 +338,7 @@ function getRegistryItemRegistryDependencies(
       }
     }
   } else {
-    const sources =
-      "sources" in source ? source.sources : { [source.id]: source };
+    const sources = getFlattenedSources(source);
 
     for (const [pkg, { content }] of Object.entries(sources)) {
       const styles = resolveDirectStyles(content);
@@ -336,17 +356,39 @@ function getRegistryItemRegistryDependencies(
         );
       });
 
-      if (
-        !isLibSourcePath(pkg) ||
-        ("name" in source && source.name === getRegistryItemName(pkg)) ||
-        ("id" in source && source.id === pkg)
-      )
+      if (!isLibSourcePath(pkg) || !isExternalRegistryItem(source, pkg)) {
         continue;
+      }
       dependencies.add(`${url.origin}/r/${getRegistryItemName(pkg)}.json`);
     }
   }
 
   return Array.from(dependencies).sort();
+}
+
+function getFlattenedSources(
+  source: Source | SourceFile | ModuleJson,
+): Record<string, SourceFile> {
+  if ("sources" in source) {
+    return source.sources;
+  }
+  if ("id" in source && !("utilities" in source)) {
+    return { [source.id]: source as SourceFile };
+  }
+  return {};
+}
+
+function isExternalRegistryItem(
+  source: Source | SourceFile | ModuleJson,
+  targetId: string,
+) {
+  if ("name" in source) {
+    return source.name !== getRegistryItemName(targetId);
+  }
+  if ("id" in source) {
+    return source.id !== targetId;
+  }
+  return false;
 }
 
 const SRC_DIR_TOKEN = "/src/";
