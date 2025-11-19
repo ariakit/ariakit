@@ -228,6 +228,40 @@ export function replaceImportPaths(
 }
 
 /**
+ * Parse a named import specifier list, separating runtime and type names
+ */
+function parseNamedSpecifiers(inside: string) {
+  const runtime: string[] = [];
+  const typeOnly: string[] = [];
+  const items = inside
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  for (const item of items) {
+    const isType = /^type\s+/i.test(item);
+    const raw = isType ? item.replace(/^type\s+/i, "") : item;
+    const first = raw.split(/\s+as\s+/i)[0] ?? "";
+    const name = first.trim();
+    if (!name) continue;
+    if (isType) {
+      typeOnly.push(name);
+    } else {
+      runtime.push(name);
+    }
+  }
+  return { runtime, typeOnly };
+}
+
+function parseTypeOnlySpecifiers(inside: string) {
+  return inside
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((s) => (s.split(/\s+as\s+/i)[0] ?? "").trim())
+    .filter(Boolean);
+}
+
+/**
  * Merges named import declarations within a single source string, hoisting them
  * to the top and separating runtime (`import { ... }`) and type-only
  * (`import type { ... }`) groups.
@@ -278,35 +312,6 @@ export function mergeImports(
     }
   };
 
-  // Parse a named import specifier list, separating runtime and type names
-  const parseNamedSpecifiers = (inside: string) => {
-    const runtime: string[] = [];
-    const typeOnly: string[] = [];
-    const items = inside
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-    for (const item of items) {
-      const isType = /^type\s+/i.test(item);
-      const raw = isType ? item.replace(/^type\s+/i, "") : item;
-      const first = raw.split(/\s+as\s+/i)[0] ?? "";
-      const name = first.trim();
-      if (!name) continue;
-      if (isType) typeOnly.push(name);
-      else runtime.push(name);
-    }
-    return { runtime, typeOnly };
-  };
-
-  const parseTypeOnlySpecifiers = (inside: string) => {
-    return inside
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .map((s) => (s.split(/\s+as\s+/i)[0] ?? "").trim())
-      .filter(Boolean);
-  };
-
   const handleMatches = (pattern: RegExp, forcedTypeOnly: boolean) => {
     for (const match of content.matchAll(pattern)) {
       const groups = match.groups;
@@ -316,12 +321,18 @@ export function mergeImports(
       if (inside == null) continue;
       if (forcedTypeOnly) {
         const items = parseTypeOnlySpecifiers(inside);
-        if (items.length) addMany(path, items, "import-type");
+        if (items.length) {
+          addMany(path, items, "import-type");
+        }
         continue;
       }
       const { runtime, typeOnly } = parseNamedSpecifiers(inside);
-      if (runtime.length) addMany(path, runtime, "import");
-      if (typeOnly.length) addMany(path, typeOnly, "import-type");
+      if (runtime.length) {
+        addMany(path, runtime, "import");
+      }
+      if (typeOnly.length) {
+        addMany(path, typeOnly, "import-type");
+      }
     }
   };
 
@@ -331,10 +342,7 @@ export function mergeImports(
   // Build merged import declarations per final path (sorted), always placing
   // type-only imports before value imports for each module.
   const finalPaths = sortKeys(
-    new Set<string>([
-      ...valueNamed.keys(),
-      ...typeNamed.keys(),
-    ]) as unknown as Iterable<string>,
+    new Set<string>([...valueNamed.keys(), ...typeNamed.keys()]),
   );
 
   const hoistedLines: string[] = [];
@@ -343,12 +351,12 @@ export function mergeImports(
     const valueNames = valueNamed.get(mod);
     if (typeNames?.size) {
       hoistedLines.push(
-        `import type { ${sortKeys(typeNames.keys() as unknown as Iterable<string>).join(", ")} } from "${mod}";`,
+        `import type { ${sortKeys(typeNames.keys()).join(", ")} } from "${mod}";`,
       );
     }
     if (valueNames?.size) {
       hoistedLines.push(
-        `import { ${sortKeys(valueNames.keys() as unknown as Iterable<string>).join(", ")} } from "${mod}";`,
+        `import { ${sortKeys(valueNames.keys()).join(", ")} } from "${mod}";`,
       );
     }
   }
@@ -430,6 +438,179 @@ export function mergeImports(
 }
 
 /**
+ * Resolve a relative import specifier from a given file id to an absolute id
+ * present in the input map. Handles extensionless specifiers by trying .ts.
+ * Does not attempt index files.
+ */
+function resolveSpecifierToId(
+  files: Record<string, SourceFile>,
+  fromId: string,
+  spec: string,
+): string | null {
+  if (!spec || !spec.startsWith(".")) return null;
+  const baseDir = dirname(fromId);
+  const absolute = resolve(baseDir, spec);
+  if (files[absolute]) return absolute;
+  if (!extname(absolute)) {
+    const withTs = `${absolute}.ts`;
+    if (files[withTs]) return withTs;
+    const withTsx = `${absolute}.tsx`;
+    if (files[withTsx]) return withTsx;
+  }
+  return null;
+}
+
+/**
+ * Compute topological order of a group's members based on internal named/type imports.
+ * Edges: A -> B if A imports B (relative specifier resolving to B in the group).
+ */
+function topoOrderGroup(
+  files: Record<string, SourceFile>,
+  memberIds: string[],
+): string[] {
+  const memberSet = new Set(memberIds);
+  // Build adjacency and indegree
+  const adj = new Map<string, Set<string>>();
+  const indegree = new Map<string, number>();
+  for (const id of memberIds) {
+    adj.set(id, new Set());
+    indegree.set(id, 0);
+  }
+  for (const id of memberIds) {
+    const content = files[id]?.content ?? "";
+    const addDeps = (pattern: RegExp) => {
+      for (const m of content.matchAll(pattern)) {
+        const groups = m.groups;
+        const p = getPathFromGroups(groups);
+        if (!p) continue;
+        const abs = resolveSpecifierToId(files, id, p);
+        if (!abs) continue;
+        if (!memberSet.has(abs)) continue;
+        // Place dependency before dependent: edge abs -> id
+        if (!adj.get(abs)!.has(id)) {
+          adj.get(abs)!.add(id);
+          indegree.set(id, (indegree.get(id) ?? 0) + 1);
+        }
+      }
+    };
+    // Consider any value import (default, namespace, named) and type-only named imports
+    addDeps(IMPORT_FROM_ANY);
+    addDeps(IMPORT_TYPE_NAMED);
+  }
+  // Kahn's algorithm with lexical tie-breaker for determinism
+  const queue: string[] = [];
+  for (const id of memberIds) {
+    if ((indegree.get(id) ?? 0) === 0) {
+      queue.push(id);
+    }
+  }
+  queue.sort((a, b) => a.localeCompare(b));
+  const ordered: string[] = [];
+  while (queue.length > 0) {
+    const cur = queue.shift();
+    if (!cur) break;
+    ordered.push(cur);
+    const neighbors = Array.from(adj.get(cur) ?? []);
+    neighbors.sort((a, b) => a.localeCompare(b));
+    for (const nb of neighbors) {
+      const nextDeg = (indegree.get(nb) ?? 0) - 1;
+      indegree.set(nb, nextDeg);
+      if (nextDeg === 0) {
+        // Insert maintaining lexical order
+        let inserted = false;
+        for (let i = 0; i < queue.length; i++) {
+          if (nb.localeCompare(queue[i]!) < 0) {
+            queue.splice(i, 0, nb);
+            inserted = true;
+            break;
+          }
+        }
+        if (!inserted) {
+          queue.push(nb);
+        }
+      }
+    }
+  }
+  if (ordered.length !== memberIds.length) {
+    // Cycle detected; fall back to lexicographic
+    return [...memberIds].sort((a, b) => a.localeCompare(b));
+  }
+  return ordered;
+}
+
+/**
+ * Remove named import declarations that target other members of the same group.
+ * Leaves default/namespace/side-effect imports intact.
+ */
+function stripInternalNamedImports(
+  files: Record<string, SourceFile>,
+  fromId: string,
+  content: string,
+  groupIds: Set<string>,
+) {
+  let body = content;
+  const removeFor = (pattern: RegExp) => {
+    body = body.replace(pattern, (match, ...args) => {
+      const groups = args.at(-1) as RegExpExecArray["groups"];
+      const spec = getPathFromGroups(groups);
+      if (!spec) return match;
+      const abs = resolveSpecifierToId(files, fromId, spec);
+      if (!abs) return match;
+      if (!groupIds.has(abs)) return match;
+      // Remove declaration; stray semicolon cleanup will handle leftover ';' lines
+      return "";
+    });
+  };
+  // Remove any internal import declarations (named, type-only, default, namespace, side-effect)
+  removeFor(IMPORT_TYPE_NAMED);
+  removeFor(IMPORT_NAMED);
+  removeFor(IMPORT_FROM_ANY);
+  removeFor(IMPORT_SIDE_EFFECT);
+  // Clean up and collapse excessive blank lines
+  body = collapseExcessBlankLines(cleanSemicolonOnlyLines(body));
+  return body;
+}
+
+/**
+ * Merge styles arrays, deduplicating by identity of type+name+module+import.
+ */
+function mergeStyles(
+  ...lists: Array<StyleDependency[] | undefined>
+): StyleDependency[] | undefined {
+  const acc: StyleDependency[] = [];
+  const seen = new Set<string>();
+  const idOf = (d: StyleDependency) =>
+    `${d.type}:${d.name}:${d.module ?? ""}:${d.import ?? ""}`;
+  for (const list of lists) {
+    if (!list) continue;
+    for (const dep of list) {
+      const key = idOf(dep);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      acc.push(dep);
+    }
+  }
+  return acc.length ? acc : undefined;
+}
+
+/**
+ * Merge dependency maps, preserving first-seen version on conflicts.
+ */
+function mergeDepMaps(
+  ...maps: Array<Record<string, string> | undefined>
+): Record<string, string> | undefined {
+  const result: Record<string, string> = {};
+  for (const m of maps) {
+    if (!m) continue;
+    for (const [k, v] of Object.entries(m)) {
+      if (result[k] != null) continue;
+      result[k] = v;
+    }
+  }
+  return Object.keys(result).length ? result : undefined;
+}
+
+/**
  * Merges related files into grouped targets and rewrites named imports to point
  * at the merged output when appropriate. By default groups files by their
  * parent directory (directories with 2+ files produce `<dir>.ts`).
@@ -438,28 +619,6 @@ export function mergeFiles(
   files: Record<string, SourceFile>,
   filter?: (path: string) => string | boolean,
 ): Record<string, SourceFile> {
-  /**
-   * Resolve a relative import specifier from a given file id to an absolute id
-   * present in the input map. Handles extensionless specifiers by trying .ts.
-   * Does not attempt index files.
-   */
-  const resolveSpecifierToId = (
-    fromId: string,
-    spec: string,
-  ): string | null => {
-    if (!spec || !spec.startsWith(".")) return null;
-    const baseDir = dirname(fromId);
-    const absolute = resolve(baseDir, spec);
-    if (files[absolute]) return absolute;
-    if (!extname(absolute)) {
-      const withTs = `${absolute}.ts`;
-      if (files[withTs]) return withTs;
-      const withTsx = `${absolute}.tsx`;
-      if (files[withTsx]) return withTsx;
-    }
-    return null;
-  };
-
   /**
    * Build grouping: map each file id to a target merged id, or null to keep as-is.
    */
@@ -478,15 +637,21 @@ export function mergeFiles(
     const byDir = new Map<string, string[]>();
     for (const id of Object.keys(files)) {
       const dir = dirname(id);
-      if (!byDir.has(dir)) byDir.set(dir, []);
+      if (!byDir.has(dir)) {
+        byDir.set(dir, []);
+      }
       byDir.get(dir)!.push(id);
     }
     for (const [dir, ids] of byDir) {
       if (ids.length >= 2) {
         const target = `${dir}.ts`;
-        for (const id of ids) targetById.set(id, target);
+        for (const id of ids) {
+          targetById.set(id, target);
+        }
       } else {
-        for (const id of ids) targetById.set(id, null);
+        for (const id of ids) {
+          targetById.set(id, null);
+        }
       }
     }
   }
@@ -497,154 +662,15 @@ export function mergeFiles(
   const membersByTarget = new Map<string, string[]>();
   for (const [id, tgt] of targetById) {
     if (!tgt) continue;
-    if (!membersByTarget.has(tgt)) membersByTarget.set(tgt, []);
+    if (!membersByTarget.has(tgt)) {
+      membersByTarget.set(tgt, []);
+    }
     membersByTarget.get(tgt)!.push(id);
   }
   // Ensure deterministic ordering of members per group
-  for (const ids of membersByTarget.values())
+  for (const ids of membersByTarget.values()) {
     ids.sort((a, b) => a.localeCompare(b));
-
-  /**
-   * Compute topological order of a group's members based on internal named/type imports.
-   * Edges: A -> B if A imports B (relative specifier resolving to B in the group).
-   */
-  const topoOrderGroup = (memberIds: string[]): string[] => {
-    const memberSet = new Set(memberIds);
-    // Build adjacency and indegree
-    const adj = new Map<string, Set<string>>();
-    const indegree = new Map<string, number>();
-    for (const id of memberIds) {
-      adj.set(id, new Set());
-      indegree.set(id, 0);
-    }
-    for (const id of memberIds) {
-      const content = files[id]?.content ?? "";
-      const addDeps = (pattern: RegExp) => {
-        for (const m of content.matchAll(pattern)) {
-          const groups = m.groups;
-          const p = getPathFromGroups(groups);
-          if (!p) continue;
-          const abs = resolveSpecifierToId(id, p);
-          if (!abs) continue;
-          if (!memberSet.has(abs)) continue;
-          // Place dependency before dependent: edge abs -> id
-          if (!adj.get(abs)!.has(id)) {
-            adj.get(abs)!.add(id);
-            indegree.set(id, (indegree.get(id) ?? 0) + 1);
-          }
-        }
-      };
-      // Consider any value import (default, namespace, named) and type-only named imports
-      addDeps(IMPORT_FROM_ANY);
-      addDeps(IMPORT_TYPE_NAMED);
-    }
-    // Kahn's algorithm with lexical tie-breaker for determinism
-    const queue: string[] = [];
-    for (const id of memberIds) {
-      if ((indegree.get(id) ?? 0) === 0) queue.push(id);
-    }
-    queue.sort((a, b) => a.localeCompare(b));
-    const ordered: string[] = [];
-    while (queue.length > 0) {
-      const cur = queue.shift();
-      if (!cur) break;
-      ordered.push(cur);
-      const neighbors = Array.from(adj.get(cur) ?? []);
-      neighbors.sort((a, b) => a.localeCompare(b));
-      for (const nb of neighbors) {
-        const nextDeg = (indegree.get(nb) ?? 0) - 1;
-        indegree.set(nb, nextDeg);
-        if (nextDeg === 0) {
-          // Insert maintaining lexical order
-          let inserted = false;
-          for (let i = 0; i < queue.length; i++) {
-            if (nb.localeCompare(queue[i]!) < 0) {
-              queue.splice(i, 0, nb);
-              inserted = true;
-              break;
-            }
-          }
-          if (!inserted) queue.push(nb);
-        }
-      }
-    }
-    if (ordered.length !== memberIds.length) {
-      // Cycle detected; fall back to lexicographic
-      return [...memberIds].sort((a, b) => a.localeCompare(b));
-    }
-    return ordered;
-  };
-
-  /**
-   * Remove named import declarations that target other members of the same group.
-   * Leaves default/namespace/side-effect imports intact.
-   */
-  const stripInternalNamedImports = (
-    fromId: string,
-    content: string,
-    groupIds: Set<string>,
-  ) => {
-    let body = content;
-    const removeFor = (pattern: RegExp) => {
-      body = body.replace(pattern, (match, ...args) => {
-        const groups = args.at(-1) as RegExpExecArray["groups"];
-        const spec = getPathFromGroups(groups);
-        if (!spec) return match;
-        const abs = resolveSpecifierToId(fromId, spec);
-        if (!abs) return match;
-        if (!groupIds.has(abs)) return match;
-        // Remove declaration; stray semicolon cleanup will handle leftover ';' lines
-        return "";
-      });
-    };
-    // Remove any internal import declarations (named, type-only, default, namespace, side-effect)
-    removeFor(IMPORT_TYPE_NAMED);
-    removeFor(IMPORT_NAMED);
-    removeFor(IMPORT_FROM_ANY);
-    removeFor(IMPORT_SIDE_EFFECT);
-    // Clean up and collapse excessive blank lines
-    body = collapseExcessBlankLines(cleanSemicolonOnlyLines(body));
-    return body;
-  };
-
-  /**
-   * Merge styles arrays, deduplicating by identity of type+name+module+import.
-   */
-  const mergeStyles = (
-    ...lists: Array<StyleDependency[] | undefined>
-  ): StyleDependency[] | undefined => {
-    const acc: StyleDependency[] = [];
-    const seen = new Set<string>();
-    const idOf = (d: StyleDependency) =>
-      `${d.type}:${d.name}:${d.module ?? ""}:${d.import ?? ""}`;
-    for (const list of lists) {
-      if (!list) continue;
-      for (const dep of list) {
-        const key = idOf(dep);
-        if (seen.has(key)) continue;
-        seen.add(key);
-        acc.push(dep);
-      }
-    }
-    return acc.length ? acc : undefined;
-  };
-
-  /**
-   * Merge dependency maps, preserving first-seen version on conflicts.
-   */
-  const mergeDepMaps = (
-    ...maps: Array<Record<string, string> | undefined>
-  ): Record<string, string> | undefined => {
-    const result: Record<string, string> = {};
-    for (const m of maps) {
-      if (!m) continue;
-      for (const [k, v] of Object.entries(m)) {
-        if (result[k] != null) continue;
-        result[k] = v;
-      }
-    }
-    return Object.keys(result).length ? result : undefined;
-  };
+  }
 
   const result: Record<string, SourceFile> = {};
 
@@ -657,14 +683,19 @@ export function mergeFiles(
     devDependencies?: Record<string, string>;
   }> = [];
   for (const [target, memberIds] of membersByTarget) {
-    const order = topoOrderGroup(memberIds);
+    const order = topoOrderGroup(files, memberIds);
     const groupSet = new Set(memberIds);
     const parts: string[] = [];
     for (let i = 0; i < order.length; i++) {
       const id = order[i]!;
       const file = files[id];
       if (!file) continue;
-      let stripped = stripInternalNamedImports(id, file.content, groupSet);
+      let stripped = stripInternalNamedImports(
+        files,
+        id,
+        file.content,
+        groupSet,
+      );
       stripped = i === 0 ? stripped.trimEnd() : stripped.trimStart().trimEnd();
       parts.push(stripped);
     }
@@ -696,7 +727,7 @@ export function mergeFiles(
     const dir = dirname(id);
     const rewritten = mergeImports(file.content, (p, _t) => {
       // Only named (type/value) imports are processed by mergeImports; return false by default
-      const abs = resolveSpecifierToId(id, p);
+      const abs = resolveSpecifierToId(files, id, p);
       if (!abs) return false;
       const target = targetById.get(abs);
       if (!target) return false;
