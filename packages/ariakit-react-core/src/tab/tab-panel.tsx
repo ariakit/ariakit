@@ -298,7 +298,7 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    */
   scrollElement?:
     | HTMLElement
-    | RefObject<HTMLElement>
+    | RefObject<HTMLElement | null>
     | ((panel: HTMLElement) => HTMLElement | null);
 }
 

@@ -83,7 +83,7 @@ function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
 }
 
 function getElementFromProp(
-  prop?: HTMLElement | RefObject<HTMLElement> | null,
+  prop?: HTMLElement | RefObject<HTMLElement | null> | null,
   focusable = false,
 ) {
   if (!prop) return null;
@@ -815,7 +815,7 @@ export interface DialogOptions<T extends ElementType = TagName>
    * 3. The first focusable element inside the dialog.
    * 4. The dialog element itself.
    */
-  initialFocus?: HTMLElement | RefObject<HTMLElement> | null;
+  initialFocus?: HTMLElement | RefObject<HTMLElement | null> | null;
   /**
    * Determines the element that will receive focus once the dialog is closed,
    * provided that no other element has been focused while the dialog was being
@@ -827,7 +827,7 @@ export interface DialogOptions<T extends ElementType = TagName>
    * - If left unset, the element that was focused before the dialog was opened
    *   will be focused again.
    */
-  finalFocus?: HTMLElement | RefObject<HTMLElement> | null;
+  finalFocus?: HTMLElement | RefObject<HTMLElement | null> | null;
   /**
    * @private
    */
