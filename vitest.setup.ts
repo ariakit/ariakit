@@ -166,7 +166,7 @@ function parseTest(filename?: string) {
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
-let count = 0;
+// let count = 0;
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
@@ -176,8 +176,6 @@ beforeEach(async ({ task, skip }) => {
 
   const result = await LOADERS[LOADER](dir);
   if (result === false) skip();
-
-  console.log("Setup hook", count++);
 
   return result;
 });

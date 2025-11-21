@@ -38,7 +38,7 @@ const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
 };
 const runner =
   process.env.ARIAKIT_BENCH === "1"
-    ? "./packages/vitest-bench-runner"
+    ? "./node_modules/vitest-runner-benchmark/runner"
     : undefined;
 
 export default defineConfig({
@@ -54,9 +54,6 @@ export default defineConfig({
       ...configDefaults.exclude,
       ...(isReact17 ? excludeFromReact17 : []),
     ],
-    browser: {
-      name: "chromium",
-    },
     css: {
       include: includeWithStyles,
     },
@@ -64,6 +61,5 @@ export default defineConfig({
       include: ["packages"],
     },
     runner,
-    sequence: { hooks: "stack" },
   },
 });

@@ -120,7 +120,8 @@
     "@types/use-sync-external-store": "0.0.6",
     "@vercel/analytics": "1.5.0",
     "@vitejs/plugin-react": "5.0.4",
-    "@vitest/browser": "3.2.4",
+    "@vitest/browser": "4.0.12",
+    "@vitest/runner": "4.0.12",
     "@vitest/coverage-c8": "0.33.0",
     "@wordpress/components": "30.5.0",
     "astro": "5.14.4",
@@ -213,10 +214,13 @@
     "unist-util-visit": "5.0.0",
     "use-local-storage-state": "19.5.0",
     "vite-plugin-solid": "2.11.0",
-    "vitest": "3.2.4",
+    "vitest": "4.0.12",
     "vitest-fail-on-console": "0.10.1",
     "webpack": "5.102.1",
     "wrangler": "4.42.2",
     "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "vitest-runner-benchmark": "github:waynevanson/vitest-runner-benchmark"
   }
 }
