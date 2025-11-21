@@ -21,13 +21,13 @@ export interface StyleDependency {
 
 export interface PropertyDecl {
   name: string;
-  value: string | PropertyDecl[];
+  value: string | PropertyDecl[] | Record<string, never>;
 }
 
 export interface AtPropertyDef {
   name: string;
   syntax: string | null;
-  inherits: boolean | null;
+  inherits: string | null;
   initialValue: string | null;
 }
 
@@ -86,6 +86,18 @@ function dependencyIdentity(dep: StyleDependency): string {
   const moduleId = dep.module ?? "";
   const importId = dep.import ?? "";
   return `${dep.type}:${dep.name}:${moduleId}:${importId}`;
+}
+
+function dedupeDependencies(deps: StyleDependency[]): StyleDependency[] {
+  const seen = new Set<string>();
+  const unique: StyleDependency[] = [];
+  for (const dep of deps) {
+    const key = dependencyIdentity(dep);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    unique.push(dep);
+  }
+  return unique;
 }
 
 function isWildcard(name: string): boolean {
@@ -149,12 +161,10 @@ function getIndexMap(type: StyleType): IndexMap {
 /**
  * Scan ak-* tokens in multiple files.
  */
-export function scanAkTokensInFiles(
-  files: Record<string, string>,
-): Set<string> {
+export function scanAkTokens(...contents: string[]): Set<string> {
   const tokens = new Set<string>();
   const re = /ak-(?:\[[^\]]*\]|[^\s"'`])+/g;
-  for (const content of Object.values(files)) {
+  for (const content of contents) {
     if (!content) continue;
     let match: RegExpExecArray | null;
     // eslint-disable-next-line no-cond-assign
@@ -370,52 +380,28 @@ export function resolveDependenciesForAkToken(name: string): StyleDependency[] {
   out.push(...resolveWildcardBaseDeps(name, "utility"));
   out.push(...resolveWildcardBaseDeps(name, "variant"));
 
-  // Deduplicate by identity
-  const seen = new Set<string>();
-  const unique: StyleDependency[] = [];
-  for (const dep of out) {
-    const key = dependencyIdentity(dep);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    unique.push(dep);
-  }
-  return unique;
+  return dedupeDependencies(out);
 }
 
 /**
- * Resolve styles for a collection of files.
+ * Resolve direct styles for a collection of files. This does not include
+ * transitive dependencies.
  */
-export function resolveStylesForFiles(
-  files: Record<string, string>,
-): StyleDependency[] {
-  const tokens = scanAkTokensInFiles(files);
-  const baseDeps: StyleDependency[] = [];
-  for (const token of tokens) {
-    const deps = resolveDependenciesForAkToken(token);
-    for (const d of deps) {
-      baseDeps.push(d);
-    }
-  }
+export function resolveDirectStyles(...contents: string[]) {
+  const tokens = scanAkTokens(...contents);
+  return dedupeDependencies([...tokens].flatMap(resolveDependenciesForAkToken));
+}
 
-  const allDeps: StyleDependency[] = [];
-  const seen = new Set<string>();
-
-  const addUnique = (dep: StyleDependency) => {
-    const key = dependencyIdentity(dep);
-    if (seen.has(key)) return;
-    seen.add(key);
-    allDeps.push(dep);
-  };
-
-  for (const base of baseDeps) {
-    addUnique(base);
-    const transitive = getTransitiveDependencies(base);
-    for (const d of transitive) {
-      addUnique(d);
-    }
-  }
-
-  return allDeps;
+/**
+ * Resolve styles for a collection of files. This includes transitive
+ * dependencies.
+ */
+export function resolveStyles(...contents: string[]): StyleDependency[] {
+  const directDeps = resolveDirectStyles(...contents);
+  return dedupeDependencies([
+    ...directDeps,
+    ...directDeps.flatMap(getTransitiveDependencies),
+  ]);
 }
 
 /**
@@ -436,24 +422,21 @@ function renderPropertyDecls(decls: PropertyDecl[], indentLevel = 0): string {
       continue;
     }
     const name = decl.name;
-    const value = decl.value;
-    if (!name) {
-      continue;
-    }
+    if (!name) continue;
+    // Comments
     if (name.startsWith("/*") && name.endsWith("*/")) {
       // Raw comment preserved as its own line
       lines.push(`${indent(indentLevel)}${name}`);
       continue;
     }
-    if (name === "@slot") {
-      lines.push(`${indent(indentLevel)}@slot;`);
+    // String value: standard CSS declaration
+    if (typeof decl.value === "string") {
+      const value = decl.value;
+      lines.push(`${indent(indentLevel)}${name}: ${value};`);
       continue;
     }
-    if (name === "@apply") {
-      lines.push(`${indent(indentLevel)}@apply ${value};`);
-      continue;
-    }
-    lines.push(`${indent(indentLevel)}${name}: ${value};`);
+    // Generic valueless declaration: emit as a single statement
+    lines.push(`${indent(indentLevel)}${name};`);
   }
   return lines.join("\n");
 }
@@ -483,11 +466,10 @@ export function styleDefToCss(def: StyleDef): string {
   // @property
   const lines: string[] = [];
   if (def.syntax != null) {
-    const quoted = `"${def.syntax}"`;
-    lines.push(`  syntax: ${quoted};`);
+    lines.push(`  syntax: ${def.syntax};`);
   }
   if (def.inherits != null) {
-    lines.push(`  inherits: ${def.inherits ? "true" : "false"};`);
+    lines.push(`  inherits: ${def.inherits};`);
   }
   if (def.initialValue != null) {
     lines.push(`  initial-value: ${def.initialValue};`);
@@ -497,4 +479,8 @@ export function styleDefToCss(def: StyleDef): string {
     return `@property ${def.name} {}`;
   }
   return `@property ${def.name} {\n${inner}\n}`;
+}
+
+export function styleDefsToCss(defs: StyleDef[]): string {
+  return `${defs.map(styleDefToCss).join("\n\n").trimEnd()}\n`;
 }

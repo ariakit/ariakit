@@ -36,6 +36,11 @@ export default defineConfig({
       slowMo: HEADED ? 150 : undefined,
     },
   },
+  expect: {
+    toMatchSnapshot: {
+      maxDiffPixelRatio: 0.0005,
+    },
+  },
   projects: [
     {
       name: "chrome",

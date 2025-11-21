@@ -1,10 +1,10 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import type * as React from "react";
-import { createRender } from "../react/utils.ts";
+import { createRender } from "../react-utils/create-render.ts";
 
 export interface SelectProps
-  extends Omit<SelectButtonProps, "value" | "defaultValue">,
+  extends Omit<SelectButtonProps, "value" | "defaultValue" | "popover">,
     Pick<SelectProviderProps, "value" | "setValue" | "defaultValue"> {
   /** Items to render in the popover when not provided as children. */
   items?: SelectItemProps[];

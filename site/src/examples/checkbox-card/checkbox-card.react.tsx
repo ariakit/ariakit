@@ -54,14 +54,9 @@ export function CheckboxCard({
   );
 }
 
-export interface CheckboxCardCheckProps extends ComponentProps<"div"> {
-  position?: "start" | "end";
-}
+export interface CheckboxCardCheckProps extends ComponentProps<"div"> {}
 
-export function CheckboxCardCheck({
-  position = "end",
-  ...props
-}: CheckboxCardCheckProps) {
+export function CheckboxCardCheck({ ...props }: CheckboxCardCheckProps) {
   return (
     <div
       {...props}

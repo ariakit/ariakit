@@ -13,33 +13,29 @@ import {
   getStyleDefinition,
   getTransitiveDependencies,
   resolveDependenciesForAkToken,
-  resolveStylesForFiles,
-  scanAkTokensInFiles,
+  resolveStyles,
+  scanAkTokens,
   styleDefToCss,
 } from "./styles.ts";
 
 test("scanAkTokensInFiles finds ak-* tokens including bracketed", () => {
-  const files = {
-    "a.tsx": `
-      <div className="ak-badge ak-text/80"></div>
-      <div className='not-data-open:ak-text/0'></div>
-    `,
-  };
-  const tokens = scanAkTokensInFiles(files);
+  const tokens = scanAkTokens(`
+    <div className="ak-badge ak-text/80"></div>
+    <div className='not-data-open:ak-text/0'></div>
+  `);
   expect(tokens.has("ak-badge")).toBe(true);
   expect(tokens.has("ak-text/80")).toBe(true);
 });
 
 test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () => {
-  const files = {
-    "a.tsx": `
-      <div className="ak-one"></div>
-      <div className="ak-two"></div>
-    `,
+  const tokens = scanAkTokens(
+    `
+    <div className="ak-one"></div>
+    <div className="ak-two"></div>
+  `,
     // Second file starts with a token at index 0 to expose lastIndex carry-over
-    "b.tsx": `ak-three <span class="ak-four"></span>`,
-  };
-  const tokens = scanAkTokensInFiles(files);
+    `ak-three <span class="ak-four"></span>`,
+  );
   expect(tokens.has("ak-one")).toBe(true);
   expect(tokens.has("ak-two")).toBe(true);
   // These should be found in the second file even if the regex lastIndex carried over
@@ -48,13 +44,10 @@ test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () 
 });
 
 test("scanAkTokensInFiles finds tokens inside group-/peer- ak variant prefixes", () => {
-  const files = {
-    "a.tsx": `
-      <div className="group-ak-command-disabled:ak-badge"></div>
-      <div className="peer-ak-command-active:ak-text/80"></div>
-    `,
-  };
-  const tokens = scanAkTokensInFiles(files);
+  const tokens = scanAkTokens(`
+    <div className="group-ak-command-disabled:ak-badge"></div>
+    <div className="peer-ak-command-active:ak-text/80"></div>
+  `);
   // Variants inside group-/peer- prefixes
   expect(tokens.has("ak-command-disabled")).toBe(true);
   expect(tokens.has("ak-command-active")).toBe(true);
@@ -217,13 +210,10 @@ test("getTransitiveDependencies returns BFS dependencies, excluding root and ded
   );
 });
 
-test("resolveStylesForFiles aggregates base + transitive, deduped by identity", () => {
-  const files = {
-    "x.tsx": `
-      <div className="ak-badge ak-badge-primary ak-table-border-t-2"></div>
-    `,
-  };
-  const deps = resolveStylesForFiles(files);
+test("resolveStyles aggregates base + transitive, deduped by identity", () => {
+  const deps = resolveStyles(`
+    <div className="ak-badge ak-badge-primary ak-table-border-t-2"></div>
+  `);
   // Base exact and wildcard for badge
   expect(
     deps.some(
@@ -257,13 +247,10 @@ test("resolveStylesForFiles aggregates base + transitive, deduped by identity", 
   ).toBe(true);
 });
 
-test("resolveStylesForFiles includes variants from group-/peer- ak prefixes", () => {
-  const files = {
-    "x.tsx": `
-      <div className="group-ak-command-disabled:opacity-50 peer-ak-command-active:opacity-100"></div>
-    `,
-  };
-  const deps = resolveStylesForFiles(files);
+test("resolveStyles includes variants from group-/peer- ak prefixes", () => {
+  const deps = resolveStyles(`
+    <div className="group-ak-command-disabled:opacity-50 peer-ak-command-active:opacity-100"></div>
+  `);
   // Variants referenced via group-/peer- prefixes should be included
   expect(
     deps.some(

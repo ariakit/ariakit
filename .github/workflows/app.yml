@@ -108,9 +108,11 @@ jobs:
           path: site/dist
 
       - name: Test
+        id: test
         run: ${{ matrix.run }} --project ${{ matrix.project }} --grep-invert @visual --pass-with-no-tests
 
       - name: Test visual
+        if: success() || steps.test.outcome == 'failure'
         id: test-visual
         run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
 
@@ -123,7 +125,7 @@ jobs:
         run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual -u
 
       - name: Upload snapshots
-        if: failure() && steps.test-visual.outcome == 'failure'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: app-visual-${{ matrix.project }}

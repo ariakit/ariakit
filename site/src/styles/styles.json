@@ -46,8 +46,8 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "duration-750 absolute transition-[background-position]"
+                  "name": "@apply duration-750 absolute transition-[background-position]",
+                  "value": {}
                 },
                 {
                   "name": "content",
@@ -99,8 +99,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "block size-full flex-none bg-current"
+              "name": "@apply block size-full flex-none bg-current",
+              "value": {}
             },
             {
               "name": "mask-repeat",
@@ -126,8 +126,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-icon"
+              "name": "@apply ak-icon",
+              "value": {}
             },
             {
               "name": "mask-image",
@@ -147,8 +147,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-icon"
+              "name": "@apply ak-icon",
+              "value": {}
             },
             {
               "name": "mask-image",
@@ -176,12 +176,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-badge"
+              "name": "@apply ak-frame-badge",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "flex items-center gap-1 text-xs font-medium leading-[1em]"
+              "name": "@apply flex items-center gap-1 text-xs font-medium leading-[1em]",
+              "value": {}
             },
             {
               "name": "padding-inline",
@@ -201,8 +201,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-badge_base"
+              "name": "@apply ak-badge_base",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -222,19 +222,19 @@
               "value": "--value(--color, [*])"
             },
             {
-              "name": "@apply",
-              "value": "ak-badge_base"
+              "name": "@apply ak-badge_base",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-layer-mix-(--ak-badge-color)/15 ak-dark:ak-edge-(--ak-badge-color)/10 ak-light:ak-edge-(--ak-badge-color)/15"
+              "name": "@apply ak-layer-mix-(--ak-badge-color)/15 ak-dark:ak-edge-(--ak-badge-color)/10 ak-light:ak-edge-(--ak-badge-color)/15",
+              "value": {}
             },
             {
               "name": "&::before,\n  &::after,\n  :where(& > *)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-text-(--ak-badge-color)/70"
+                  "name": "@apply ak-text-(--ak-badge-color)/70",
+                  "value": {}
                 }
               ]
             }
@@ -282,8 +282,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "flex-none"
+              "name": "@apply flex-none",
+              "value": {}
             },
             {
               "name": ":has(> &:first-child)",
@@ -315,14 +315,14 @@
       "atProperties": {
         "--ak-command-depth-x": {
           "name": "--ak-command-depth-x",
-          "syntax": "<number>",
-          "inherits": false,
+          "syntax": "\"<number>\"",
+          "inherits": "false",
           "initialValue": "0"
         },
         "--ak-command-depth-y": {
           "name": "--ak-command-depth-y",
-          "syntax": "<number>",
-          "inherits": false,
+          "syntax": "\"<number>\"",
+          "inherits": "false",
           "initialValue": "0"
         }
       },
@@ -332,21 +332,21 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "not-[a]:cursor-default relative block"
+              "name": "@apply not-[a]:cursor-default relative block",
+              "value": {}
             },
             {
               "name": "&:not(button)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "select-none"
+                  "name": "@apply select-none",
+                  "value": {}
                 }
               ]
             },
             {
               "name": "/* Only apply cursor-pointer to submit buttons that are not disabled */",
-              "value": ""
+              "value": {}
             },
             {
               "name": "&:where([type=\"submit\"], form button:only-of-type, a &)",
@@ -355,8 +355,8 @@
                   "name": "@variant not-ak-command-disabled",
                   "value": [
                     {
-                      "name": "@apply",
-                      "value": "cursor-pointer"
+                      "name": "@apply cursor-pointer",
+                      "value": {}
                     }
                   ]
                 }
@@ -387,12 +387,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "origin-bottom"
+              "name": "@apply origin-bottom",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "scale-x-(--ak-command-scale-x) scale-y-(--ak-command-scale-y) origin-bottom"
+              "name": "@apply scale-x-(--ak-command-scale-x) scale-y-(--ak-command-scale-y) origin-bottom",
+              "value": {}
             },
             {
               "name": "--ak-command-scale-x",
@@ -421,16 +421,16 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_idle"
+              "name": "@apply ak-command_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-command_focus"
+              "name": "@apply ak-command-focus:ak-command_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-command_active"
+              "name": "@apply ak-command-active:ak-command_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -509,7 +509,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -525,7 +525,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -541,7 +541,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -557,7 +557,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -576,12 +576,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_idle ak-outline-primary ak-frame-field"
+              "name": "@apply ak-command_idle ak-outline-primary ak-frame-field",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+50*var(--contrast))]"
+              "name": "@apply leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+50*var(--contrast))]",
+              "value": {}
             },
             {
               "name": "--ak-button-leading",
@@ -623,8 +623,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-hover"
+              "name": "@apply ak-layer-hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -640,8 +640,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_focus outline-2"
+              "name": "@apply ak-command_focus outline-2",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -657,8 +657,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_active"
+              "name": "@apply ak-command_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -674,12 +674,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-text/50 ak-layer-mix/20"
+              "name": "@apply ak-text/50 ak-layer-mix/20",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "inset-shadow-none bg-none shadow-none"
+              "name": "@apply inset-shadow-none bg-none shadow-none",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -700,24 +700,24 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_idle"
+              "name": "@apply ak-button_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-hover:ak-button_hover"
+              "name": "@apply ak-command-hover:ak-button_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-button_focus"
+              "name": "@apply ak-command-focus:ak-button_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-button_active"
+              "name": "@apply ak-command-active:ak-button_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-button_disabled"
+              "name": "@apply ak-command-disabled:ak-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -773,8 +773,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "aspect-square p-0"
+              "name": "@apply aspect-square p-0",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -792,8 +792,8 @@
               "value": "--value(--spacing, [length])"
             },
             {
-              "name": "@apply",
-              "value": "aspect-square p-0"
+              "name": "@apply aspect-square p-0",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -803,12 +803,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_idle ak-layer"
+              "name": "@apply ak-button_idle ak-layer",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-gradient-to-b from-50% bg-clip-padding"
+              "name": "@apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-gradient-to-b from-50% bg-clip-padding",
+              "value": {}
             },
             {
               "name": "--ak-button-min-l",
@@ -895,8 +895,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_hover"
+              "name": "@apply ak-button_hover",
+              "value": {}
             },
             {
               "name": "--ak-button-min-l",
@@ -938,8 +938,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_focus outline-offset-1"
+              "name": "@apply ak-button_focus outline-offset-1",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -955,12 +955,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_active"
+              "name": "@apply ak-button_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "from-(--ak-button-bg-dark-active) to-(--ak-button-bg-light-active) from-60%"
+              "name": "@apply from-(--ak-button-bg-dark-active) to-(--ak-button-bg-light-active) from-60%",
+              "value": {}
             },
             {
               "name": "--ak-button-bg-dark-active",
@@ -1014,8 +1014,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_disabled"
+              "name": "@apply ak-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1031,24 +1031,24 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button-classic_idle"
+              "name": "@apply ak-button-classic_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "hover:ak-button-classic_hover"
+              "name": "@apply hover:ak-button-classic_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-button-classic_focus"
+              "name": "@apply ak-command-focus:ak-button-classic_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-button-classic_active"
+              "name": "@apply ak-command-active:ak-button-classic_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-button-classic_disabled"
+              "name": "@apply ak-command-disabled:ak-button-classic_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1107,12 +1107,12 @@
               "value": "--modifier(--color, [*])"
             },
             {
-              "name": "@apply",
-              "value": "ak-aurora-(--ak-button-aurora-color-1)/(--ak-button-aurora-color-2)"
+              "name": "@apply ak-aurora-(--ak-button-aurora-color-1)/(--ak-button-aurora-color-2)",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-hover:ak-aurora_hover"
+              "name": "@apply ak-command-hover:ak-aurora_hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1146,8 +1146,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "grid auto-rows-fr gap-3"
+              "name": "@apply grid auto-rows-fr gap-3",
+              "value": {}
             },
             {
               "name": "grid-template-columns",
@@ -1176,12 +1176,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_idle ak-layer ak-frame-card ak-bordering"
+              "name": "@apply ak-button_idle ak-layer ak-frame-card ak-bordering",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "outline-offset-3 flex flex-wrap content-start justify-start text-wrap"
+              "name": "@apply outline-offset-3 flex flex-wrap content-start justify-start text-wrap",
+              "value": {}
             },
             {
               "name": "--ak-checkbox-card-edge",
@@ -1195,8 +1195,8 @@
               "name": "input[type=\"checkbox\"]",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "sr-only absolute"
+                  "name": "@apply sr-only absolute",
+                  "value": {}
                 }
               ]
             },
@@ -1204,8 +1204,8 @@
               "name": "&:has(> *:nth-child(4), > div > div)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-command-depth-4"
+                  "name": "@apply ak-command-depth-4",
+                  "value": {}
                 }
               ]
             }
@@ -1243,8 +1243,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_hover"
+              "name": "@apply ak-button_hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1260,8 +1260,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_focus"
+              "name": "@apply ak-button_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1277,8 +1277,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_active"
+              "name": "@apply ak-button_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1301,8 +1301,8 @@
               "name": "&&",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-edge/5 ak-layer-mix/20 ak-text/0"
+                  "name": "@apply ak-edge/5 ak-layer-mix/20 ak-text/0",
+                  "value": {}
                 }
               ]
             },
@@ -1310,8 +1310,8 @@
               "name": "svg,\n  img",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "opacity-50"
+                  "name": "@apply opacity-50",
+                  "value": {}
                 }
               ]
             }
@@ -1339,8 +1339,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "not-has-disabled:not-has-aria-disabled:ak-edge-contrast-primary"
+              "name": "@apply not-has-disabled:not-has-aria-disabled:ak-edge-contrast-primary",
+              "value": {}
             },
             {
               "name": "--ak-checkbox-checked",
@@ -1360,28 +1360,28 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-checkbox-card_idle"
+              "name": "@apply ak-checkbox-card_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "hover:not-has-disabled:not-has-aria-disabled:ak-checkbox-card_hover"
+              "name": "@apply hover:not-has-disabled:not-has-aria-disabled:ak-checkbox-card_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "has-focus-visible:ak-checkbox-card_focus"
+              "name": "@apply has-focus-visible:ak-checkbox-card_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "has-active:not-has-disabled:not-has-aria-disabled:ak-checkbox-card_active"
+              "name": "@apply has-active:not-has-disabled:not-has-aria-disabled:ak-checkbox-card_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-checkbox-checked:ak-checkbox-card_checked"
+              "name": "@apply ak-checkbox-checked:ak-checkbox-card_checked",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-checkbox-disabled:ak-checkbox-card_disabled"
+              "name": "@apply ak-checkbox-disabled:ak-checkbox-card_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1432,8 +1432,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "grid justify-stretch"
+              "name": "@apply grid justify-stretch",
+              "value": {}
             },
             {
               "name": "--ak-checkbox-vertical",
@@ -1447,8 +1447,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-full/2"
+              "name": "@apply ak-frame-full/2",
+              "value": {}
             },
             {
               "name": "--ak-checkbox-round",
@@ -1468,8 +1468,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "me-auto flex-1 self-start truncate"
+              "name": "@apply me-auto flex-1 self-start truncate",
+              "value": {}
             },
             {
               "name": "width",
@@ -1479,8 +1479,8 @@
               "name": "@variant ak-checkbox-round",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "text-center"
+                  "name": "@apply text-center",
+                  "value": {}
                 }
               ]
             },
@@ -1488,8 +1488,8 @@
               "name": "@variant ak-checkbox-vertical",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "w-full text-center"
+                  "name": "@apply w-full text-center",
+                  "value": {}
                 }
               ]
             }
@@ -1512,19 +1512,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-down ak-frame-force-full/1 ak-bordering"
+              "name": "@apply ak-layer-down ak-frame-force-full/1 ak-bordering",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "size-6 flex-none self-start *:hidden"
+              "name": "@apply size-6 flex-none self-start *:hidden",
+              "value": {}
             },
             {
               "name": "@variant ak-checkbox-vertical",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "justify-self-end"
+                  "name": "@apply justify-self-end",
+                  "value": {}
                 },
                 {
                   "name": "grid-column",
@@ -1565,12 +1565,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-(--ak-checkbox-card-edge) empty:before:ak-icon-check"
+              "name": "@apply ak-layer-(--ak-checkbox-card-edge) empty:before:ak-icon-check",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ring-(--ak-layer) border-0 ring *:block"
+              "name": "@apply ring-(--ak-layer) border-0 ring *:block",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1591,8 +1591,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-(--ak-layer-parent) ak-text/0 ak-edge/10"
+              "name": "@apply ak-layer-(--ak-layer-parent) ak-text/0 ak-edge/10",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1618,15 +1618,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-checkbox-card-check_idle"
+              "name": "@apply ak-checkbox-card-check_idle",
+              "value": {}
             },
             {
               "name": "@variant ak-checkbox-checked",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-checkbox-card-check_checked"
+                  "name": "@apply ak-checkbox-card-check_checked",
+                  "value": {}
                 }
               ]
             },
@@ -1634,8 +1634,8 @@
               "name": "@variant ak-checkbox-disabled",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-checkbox-card-check_disabled"
+                  "name": "@apply ak-checkbox-card-check_disabled",
+                  "value": {}
                 }
               ]
             }
@@ -1673,15 +1673,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame/2 flex h-full w-20 items-center justify-center"
+              "name": "@apply ak-frame/2 flex h-full w-20 items-center justify-center",
+              "value": {}
             },
             {
               "name": "@variant ak-checkbox-vertical",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "max-w-4/5 w-full justify-self-center"
+                  "name": "@apply max-w-4/5 w-full justify-self-center",
+                  "value": {}
                 },
                 {
                   "name": "grid-column",
@@ -1712,19 +1712,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-text/70"
+              "name": "@apply ak-text/70",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "w-full self-start font-normal"
+              "name": "@apply w-full self-start font-normal",
+              "value": {}
             },
             {
               "name": "@variant ak-checkbox-disabled",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-text/0"
+                  "name": "@apply ak-text/0",
+                  "value": {}
                 }
               ]
             }
@@ -1752,8 +1752,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "flex flex-1 flex-wrap content-start gap-[inherit] self-start"
+              "name": "@apply flex flex-1 flex-wrap content-start gap-[inherit] self-start",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -1769,7 +1769,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             },
@@ -1778,7 +1778,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -1794,7 +1794,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             },
@@ -1803,7 +1803,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -1819,7 +1819,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -1835,7 +1835,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -1854,15 +1854,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_idle"
+              "name": "@apply ak-button_idle",
+              "value": {}
             },
             {
               "name": "input",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "sr-only"
+                  "name": "@apply sr-only",
+                  "value": {}
                 }
               ]
             },
@@ -1870,12 +1870,12 @@
               "name": "@variant before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-text/50"
+                  "name": "@apply ak-text/50",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "size-[1em] flex-none rounded-full border-2 border-current bg-clip-content p-0.5 content-['']"
+                  "name": "@apply size-[1em] flex-none rounded-full border-2 border-current bg-clip-content p-0.5 content-['']",
+                  "value": {}
                 }
               ]
             }
@@ -1898,8 +1898,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_hover"
+              "name": "@apply ak-button_hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1915,8 +1915,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_focus"
+              "name": "@apply ak-button_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1932,8 +1932,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_active"
+              "name": "@apply ak-button_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1949,8 +1949,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_disabled"
+              "name": "@apply ak-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -1969,12 +1969,12 @@
               "name": "@variant before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-text-primary/50"
+                  "name": "@apply ak-text-primary/50",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "bg-current"
+                  "name": "@apply bg-current",
+                  "value": {}
                 }
               ]
             }
@@ -1992,28 +1992,28 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-radio_idle"
+              "name": "@apply ak-radio_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "hover:ak-radio_hover"
+              "name": "@apply hover:ak-radio_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "has-focus-visible:ak-radio_focus"
+              "name": "@apply has-focus-visible:ak-radio_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "active:not-disabled:not-aria-disabled:ak-radio_active"
+              "name": "@apply active:not-disabled:not-aria-disabled:ak-radio_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "aria-disabled:ak-radio_disabled disabled:ak-radio_disabled"
+              "name": "@apply aria-disabled:ak-radio_disabled disabled:ak-radio_disabled",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "has-checked:ak-radio_checked aria-checked:ak-radio_checked"
+              "name": "@apply has-checked:ak-radio_checked aria-checked:ak-radio_checked",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2062,8 +2062,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_idle ak-frame-field/2"
+              "name": "@apply ak-command_idle ak-frame-field/2",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2084,8 +2084,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-hover"
+              "name": "@apply ak-layer-hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2101,12 +2101,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_focus ak-layer-contrast-primary"
+              "name": "@apply ak-command_focus ak-layer-contrast-primary",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "outline-none"
+              "name": "@apply outline-none",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2127,8 +2127,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_active"
+              "name": "@apply ak-command_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2144,8 +2144,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-text/50 ak-layer-mix/20"
+              "name": "@apply ak-text/50 ak-layer-mix/20",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2166,24 +2166,24 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-option_idle"
+              "name": "@apply ak-option_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-hover:ak-option_hover"
+              "name": "@apply ak-command-hover:ak-option_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-option_focus"
+              "name": "@apply ak-command-focus:ak-option_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-option_active"
+              "name": "@apply ak-command-active:ak-option_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-option_disabled"
+              "name": "@apply ak-command-disabled:ak-option_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2243,8 +2243,8 @@
       "atProperties": {
         "--ak-tab-border-width": {
           "name": "--ak-tab-border-width",
-          "syntax": "<length>",
-          "inherits": true,
+          "syntax": "\"<length>\"",
+          "inherits": "true",
           "initialValue": "0px"
         }
       },
@@ -2273,12 +2273,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-overflow ak-layer-down"
+              "name": "@apply ak-frame-overflow ak-layer-down",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "-mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain !pb-0"
+              "name": "@apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain !pb-0",
+              "value": {}
             },
             {
               "name": "scrollbar-width",
@@ -2288,8 +2288,8 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) pointer-events-none sticky h-full w-8 flex-none bg-gradient-to-l to-transparent bg-clip-padding content-['']"
+                  "name": "@apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) pointer-events-none sticky h-full w-8 flex-none bg-gradient-to-l to-transparent bg-clip-padding content-['']",
+                  "value": {}
                 }
               ]
             },
@@ -2300,8 +2300,8 @@
                   "name": "&::after",
                   "value": [
                     {
-                      "name": "@apply",
-                      "value": "bg-gradient-to-r"
+                      "name": "@apply bg-gradient-to-r",
+                      "value": {}
                     }
                   ]
                 }
@@ -2326,12 +2326,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-cover"
+              "name": "@apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-cover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "!border-(--ak-tab-border-color) relative"
+              "name": "@apply !border-(--ak-tab-border-color) relative",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2357,12 +2357,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_idle ak-text/70"
+              "name": "@apply ak-command_idle ak-text/70",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "z-1 relative flex items-center gap-1.5 whitespace-nowrap font-medium leading-[1em]"
+              "name": "@apply z-1 relative flex items-center gap-1.5 whitespace-nowrap font-medium leading-[1em]",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2383,12 +2383,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-tab_idle ak-frame-container ak-frame-border-(--ak-tab-border-width)"
+              "name": "@apply ak-tab_idle ak-frame-container ak-frame-border-(--ak-tab-border-width)",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "border-(length:--ak-tab-border-width) !border-b-0 border-transparent"
+              "name": "@apply border-(length:--ak-tab-border-width) !border-b-0 border-transparent",
+              "value": {}
             },
             {
               "name": "padding-block-end",
@@ -2402,8 +2402,8 @@
               "name": "&:not(:last-child)::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r transition-colors content-['']"
+                  "name": "@apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r transition-colors content-['']",
+                  "value": {}
                 }
               ]
             },
@@ -2411,12 +2411,12 @@
               "name": "> *",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]"
+                  "name": "@apply ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "flex h-full items-center gap-1.5 whitespace-nowrap transition-colors"
+                  "name": "@apply flex h-full items-center gap-1.5 whitespace-nowrap transition-colors",
+                  "value": {}
                 }
               ]
             }
@@ -2457,8 +2457,8 @@
               "name": "&:not(:last-child)::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "border-transparent"
+                  "name": "@apply border-transparent",
+                  "value": {}
                 }
               ]
             },
@@ -2466,8 +2466,8 @@
               "name": ":has(+ &)::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "border-transparent"
+                  "name": "@apply border-transparent",
+                  "value": {}
                 }
               ]
             },
@@ -2475,8 +2475,8 @@
               "name": "> *",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-hover"
+                  "name": "@apply ak-layer-hover",
+                  "value": {}
                 }
               ]
             }
@@ -2494,19 +2494,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command_focus"
+              "name": "@apply ak-command_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "outline-none"
+              "name": "@apply outline-none",
+              "value": {}
             },
             {
               "name": "&:not(:last-child)::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "border-transparent"
+                  "name": "@apply border-transparent",
+                  "value": {}
                 }
               ]
             },
@@ -2514,8 +2514,8 @@
               "name": ":has(+ &)::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "border-transparent"
+                  "name": "@apply border-transparent",
+                  "value": {}
                 }
               ]
             },
@@ -2523,8 +2523,8 @@
               "name": "> *",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-contrast-primary"
+                  "name": "@apply ak-layer-contrast-primary",
+                  "value": {}
                 }
               ]
             }
@@ -2550,8 +2550,8 @@
               "name": "> *",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-command_active"
+                  "name": "@apply ak-command_active",
+                  "value": {}
                 }
               ]
             }
@@ -2569,19 +2569,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-(--ak-tab-bg) ak-text/100"
+              "name": "@apply ak-layer-(--ak-tab-bg) ak-text/100",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "z-2 !border-(--ak-tab-border-color) !rounded-b-none"
+              "name": "@apply z-2 !border-(--ak-tab-border-color) !rounded-b-none",
+              "value": {}
             },
             {
               "name": "&::after,\n  &::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "pointer-events-none absolute bottom-0 border-none bg-no-repeat content-['']"
+                  "name": "@apply pointer-events-none absolute bottom-0 border-none bg-no-repeat content-['']",
+                  "value": {}
                 },
                 {
                   "name": "--ak-tab-smoothness",
@@ -2695,8 +2695,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-tab-folder_idle hover:not-aria-selected:ak-tab-folder_hover focus-visible:ak-tab-folder_focus aria-selected:ak-tab-folder_selected active:ak-tab-folder_active"
+              "name": "@apply ak-tab-folder_idle hover:not-aria-selected:ak-tab-folder_hover focus-visible:ak-tab-folder_focus aria-selected:ak-tab-folder_selected active:ak-tab-folder_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2748,12 +2748,12 @@
               "value": "overlay, display, scale, opacity"
             },
             {
-              "name": "@apply",
-              "value": "ak-layer ak-frame-force-dialog ak-light:ring ak-dark:ak-frame-border ak-light:border-none"
+              "name": "@apply ak-layer ak-frame-force-dialog ak-light:ring ak-dark:ak-frame-border ak-light:border-none",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "transition-discrete z-10 shadow-xl"
+              "name": "@apply transition-discrete z-10 shadow-xl",
+              "value": {}
             },
             {
               "name": "@variant backdrop",
@@ -2798,8 +2798,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "scale-95 opacity-0"
+              "name": "@apply scale-95 opacity-0",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -2809,23 +2809,23 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "starting:ak-popover_starting-style duration-500"
+              "name": "@apply starting:ak-popover_starting-style duration-500",
+              "value": {}
             },
             {
               "name": "/* https://easingwizard.com */",
-              "value": ""
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ease-[linear(0,_0.008_1.1%,_0.031_2.2%,_0.129_4.8%,_0.257_7.2%,_0.671_14.2%,_0.789_16.5%,_0.881_18.6%,_0.957_20.7%,_1.019_22.9%,_1.063_25.1%,_1.094_27.4%,_1.114_30.7%,_1.112_34.5%,_1.018_49.9%,_0.99_59.1%,_1)]"
+              "name": "@apply ease-[linear(0,_0.008_1.1%,_0.031_2.2%,_0.129_4.8%,_0.257_7.2%,_0.671_14.2%,_0.789_16.5%,_0.881_18.6%,_0.957_20.7%,_1.019_22.9%,_1.063_25.1%,_1.094_27.4%,_1.114_30.7%,_1.112_34.5%,_1.018_49.9%,_0.99_59.1%,_1)]",
+              "value": {}
             },
             {
               "name": "@variant backdrop",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "duration-250 opacity-100"
+                  "name": "@apply duration-250 opacity-100",
+                  "value": {}
                 }
               ]
             }
@@ -2843,15 +2843,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "duration-250 scale-95 opacity-0"
+              "name": "@apply duration-250 scale-95 opacity-0",
+              "value": {}
             },
             {
               "name": "@variant backdrop",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "duration-250 opacity-0"
+                  "name": "@apply duration-250 opacity-0",
+                  "value": {}
                 }
               ]
             }
@@ -2863,15 +2863,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_idle"
+              "name": "@apply ak-popover_idle",
+              "value": {}
             },
             {
               "name": "&:is(dialog, [popover])",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "open:ak-popover_open not-open:ak-popover_closed"
+                  "name": "@apply open:ak-popover_open not-open:ak-popover_closed",
+                  "value": {}
                 }
               ]
             }
@@ -2899,8 +2899,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-cover overflow-auto overscroll-contain"
+              "name": "@apply ak-frame-cover overflow-auto overscroll-contain",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -2955,19 +2955,19 @@
               "value": "--spacing(3)"
             },
             {
-              "name": "@apply",
-              "value": "ak-popover_idle"
+              "name": "@apply ak-popover_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "backdrop:backdrop-blur-xs inset-(--inset) fixed m-auto h-fit max-h-[calc(100dvh-var(--inset)*2)]"
+              "name": "@apply backdrop:backdrop-blur-xs inset-(--inset) fixed m-auto h-fit max-h-[calc(100dvh-var(--inset)*2)]",
+              "value": {}
             },
             {
               "name": "@variant backdrop",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "overflow-auto overscroll-contain"
+                  "name": "@apply overflow-auto overscroll-contain",
+                  "value": {}
                 }
               ]
             }
@@ -2985,8 +2985,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_open"
+              "name": "@apply ak-popover_open",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3002,8 +3002,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_closed"
+              "name": "@apply ak-popover_closed",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3019,15 +3019,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-dialog_idle"
+              "name": "@apply ak-dialog_idle",
+              "value": {}
             },
             {
               "name": "&:is(dialog, [popover])",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "open:ak-dialog_open not-open:ak-dialog_closed"
+                  "name": "@apply open:ak-dialog_open not-open:ak-dialog_closed",
+                  "value": {}
                 }
               ]
             }
@@ -3055,12 +3055,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-current bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30"
+              "name": "@apply ak-layer-current bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "backdrop-blur-xs"
+              "name": "@apply backdrop-blur-xs",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3081,8 +3081,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover-scroll"
+              "name": "@apply ak-popover-scroll",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3106,8 +3106,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-none/card"
+              "name": "@apply ak-frame-none/card",
+              "value": {}
             },
             {
               "name": "--ak-disclosure-group",
@@ -3134,8 +3134,8 @@
               "name": "@variant ak-disclosure-hover",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-hover-0"
+                  "name": "@apply ak-layer-hover-0",
+                  "value": {}
                 }
               ]
             }
@@ -3158,8 +3158,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "p-0! max-w-[inherit] transition-none duration-300"
+              "name": "@apply p-0! max-w-[inherit] transition-none duration-300",
+              "value": {}
             },
             {
               "name": "--ak-disclosure-open",
@@ -3185,8 +3185,8 @@
               "name": "@variant ak-disclosure-group",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-frame-cover p-0"
+                  "name": "@apply ak-frame-cover p-0",
+                  "value": {}
                 }
               ]
             },
@@ -3194,8 +3194,8 @@
               "name": "@variant motion-reduce",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "duration-0"
+                  "name": "@apply duration-0",
+                  "value": {}
                 }
               ]
             },
@@ -3203,8 +3203,8 @@
               "name": ":where(summary)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-button"
+                  "name": "@apply ak-disclosure-button",
+                  "value": {}
                 }
               ]
             },
@@ -3212,8 +3212,8 @@
               "name": "&::details-content",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-content-base_idle"
+                  "name": "@apply ak-disclosure-content-base_idle",
+                  "value": {}
                 }
               ]
             },
@@ -3221,8 +3221,8 @@
               "name": ":where(summary ~ *)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-content-body"
+                  "name": "@apply ak-disclosure-content-body",
+                  "value": {}
                 }
               ]
             }
@@ -3260,8 +3260,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-hover"
+              "name": "@apply ak-layer-hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3284,8 +3284,8 @@
               "name": "&::details-content",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-content-base_open"
+                  "name": "@apply ak-disclosure-content-base_open",
+                  "value": {}
                 }
               ]
             }
@@ -3303,16 +3303,16 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure_idle"
+              "name": "@apply ak-disclosure_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "open:ak-disclosure_open"
+              "name": "@apply open:ak-disclosure_open",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-disclosure-hover:ak-disclosure_hover"
+              "name": "@apply ak-disclosure-hover:ak-disclosure_hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3358,15 +3358,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "min-h-(--ak-button-leading) size-(--ak-disclosure-icon-size) flex-none self-start"
+              "name": "@apply min-h-(--ak-button-leading) size-(--ak-disclosure-icon-size) flex-none self-start",
+              "value": {}
             },
             {
               "name": "svg",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "size-full"
+                  "name": "@apply size-full",
+                  "value": {}
                 }
               ]
             }
@@ -3378,16 +3378,16 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-command-depth-x-3 ak-button_idle ak-text overflow-clip"
+              "name": "@apply ak-command-depth-x-3 ak-button_idle ak-text overflow-clip",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)"
+              "name": "@apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "w-full justify-start text-wrap text-start -outline-offset-2 transition-[border-radius]"
+              "name": "@apply w-full justify-start text-wrap text-start -outline-offset-2 transition-[border-radius]",
+              "value": {}
             },
             {
               "name": "--ak-disclosure-button-radius",
@@ -3409,8 +3409,8 @@
               "name": "@variant ak-disclosure-group",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "rounded-[inherit]"
+                  "name": "@apply rounded-[inherit]",
+                  "value": {}
                 }
               ]
             },
@@ -3460,8 +3460,8 @@
               "name": "@container style(--ak-disclosure-split: 1)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-hover"
+                  "name": "@apply ak-layer-hover",
+                  "value": {}
                 }
               ]
             }
@@ -3479,8 +3479,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "rounded-b-none delay-0"
+              "name": "@apply rounded-b-none delay-0",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -3490,8 +3490,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_focus"
+              "name": "@apply ak-button_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3507,8 +3507,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_active"
+              "name": "@apply ak-button_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3524,8 +3524,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_disabled"
+              "name": "@apply ak-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3541,28 +3541,28 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-button_idle"
+              "name": "@apply ak-disclosure-button_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-disclosure-open:ak-disclosure-button_open"
+              "name": "@apply ak-disclosure-open:ak-disclosure-button_open",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-disclosure-hover:ak-command-hover:ak-disclosure-button_hover"
+              "name": "@apply ak-disclosure-hover:ak-command-hover:ak-disclosure-button_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-disclosure-button_focus"
+              "name": "@apply ak-command-focus:ak-disclosure-button_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-disclosure-button_active"
+              "name": "@apply ak-command-active:ak-disclosure-button_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-disclosure-button_disabled"
+              "name": "@apply ak-command-disabled:ak-disclosure-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3633,12 +3633,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-icon-chevron"
+              "name": "@apply ak-icon-chevron",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "w-(--ak-disclosure-chevron-size) -rotate-90 self-start transition-[rotate,opacity]"
+              "name": "@apply w-(--ak-disclosure-chevron-size) -rotate-90 self-start transition-[rotate,opacity]",
+              "value": {}
             },
             {
               "name": "--ak-disclosure-chevron-size",
@@ -3670,8 +3670,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "rotate-0"
+              "name": "@apply rotate-0",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -3681,15 +3681,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-chevron-right_idle"
+              "name": "@apply ak-disclosure-chevron-right_idle",
+              "value": {}
             },
             {
               "name": "@variant ak-disclosure-open",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-chevron-right_open"
+                  "name": "@apply ak-disclosure-chevron-right_open",
+                  "value": {}
                 }
               ]
             }
@@ -3717,8 +3717,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-chevron-right_idle rotate-0"
+              "name": "@apply ak-disclosure-chevron-right_idle rotate-0",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -3734,8 +3734,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "rotate-180"
+              "name": "@apply rotate-180",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -3745,15 +3745,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-chevron-down_idle"
+              "name": "@apply ak-disclosure-chevron-down_idle",
+              "value": {}
             },
             {
               "name": "@variant ak-disclosure-open",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-chevron-down_open"
+                  "name": "@apply ak-disclosure-chevron-down_open",
+                  "value": {}
                 }
               ]
             }
@@ -3781,8 +3781,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "w-(--ak-button-leading) flex-none self-start rounded-full transition-[rotate,background-size,opacity]"
+              "name": "@apply w-(--ak-button-leading) flex-none self-start rounded-full transition-[rotate,background-size,opacity]",
+              "value": {}
             },
             {
               "name": "--ak-plus-line-thickness",
@@ -3820,8 +3820,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "rotate-90"
+              "name": "@apply rotate-90",
+              "value": {}
             },
             {
               "name": "background-size",
@@ -3835,15 +3835,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-plus_idle"
+              "name": "@apply ak-disclosure-plus_idle",
+              "value": {}
             },
             {
               "name": "@variant ak-disclosure-open",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-plus_open"
+                  "name": "@apply ak-disclosure-plus_open",
+                  "value": {}
                 }
               ]
             }
@@ -3882,12 +3882,12 @@
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-current"
+                  "name": "@apply ak-layer-current",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "absolute border-e"
+                  "name": "@apply absolute border-e",
+                  "value": {}
                 },
                 {
                   "name": "content",
@@ -3917,8 +3917,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "z-1 relative max-h-0 overflow-clip rounded-b-[inherit] p-0 transition-[content-visibility,height,max-height]"
+              "name": "@apply z-1 relative max-h-0 overflow-clip rounded-b-[inherit] p-0 transition-[content-visibility,height,max-height]",
+              "value": {}
             },
             {
               "name": "--ak-disclosure-group",
@@ -3939,8 +3939,8 @@
                   "name": "@starting-style",
                   "value": [
                     {
-                      "name": "@apply",
-                      "value": "max-h-0"
+                      "name": "@apply max-h-0",
+                      "value": {}
                     }
                   ]
                 }
@@ -3972,8 +3972,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "max-h-max"
+              "name": "@apply max-h-max",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -3983,15 +3983,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-content-base_idle"
+              "name": "@apply ak-disclosure-content-base_idle",
+              "value": {}
             },
             {
               "name": ":where(& > *)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-content-body"
+                  "name": "@apply ak-disclosure-content-body",
+                  "value": {}
                 }
               ]
             }
@@ -4014,8 +4014,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-content-base_open"
+              "name": "@apply ak-disclosure-content-base_open",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4031,15 +4031,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-content_idle"
+              "name": "@apply ak-disclosure-content_idle",
+              "value": {}
             },
             {
               "name": "details[open] > &",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-content_open"
+                  "name": "@apply ak-disclosure-content_open",
+                  "value": {}
                 }
               ]
             },
@@ -4047,8 +4047,8 @@
               "name": "@variant ak-disclosure-open",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-content_open"
+                  "name": "@apply ak-disclosure-content_open",
+                  "value": {}
                 }
               ]
             }
@@ -4076,12 +4076,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-current"
+              "name": "@apply ak-layer-current",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "rounded-b-[inherit]"
+              "name": "@apply rounded-b-[inherit]",
+              "value": {}
             },
             {
               "name": "--ak-disclosure-icon-size",
@@ -4117,15 +4117,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "h-(--ak-button-leading) relative -mt-[0.1875rem] ms-auto"
+              "name": "@apply h-(--ak-button-leading) relative -mt-[0.1875rem] ms-auto",
+              "value": {}
             },
             {
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "absolute -inset-4 start-0"
+                  "name": "@apply absolute -inset-4 start-0",
+                  "value": {}
                 },
                 {
                   "name": "content",
@@ -4147,7 +4147,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -4163,7 +4163,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -4179,7 +4179,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -4195,7 +4195,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -4244,15 +4244,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-nav-gap-1"
+              "name": "@apply ak-nav-gap-1",
+              "value": {}
             },
             {
               "name": ":where(> ul)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-nav-list"
+                  "name": "@apply ak-nav-list",
+                  "value": {}
                 }
               ]
             }
@@ -4275,8 +4275,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "grid"
+              "name": "@apply grid",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -4286,8 +4286,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "grid"
+              "name": "@apply grid",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -4297,15 +4297,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "h-(--ak-button-leading) w-(--ak-nav-icon-size) flex-none self-start transition-[height]"
+              "name": "@apply h-(--ak-button-leading) w-(--ak-nav-icon-size) flex-none self-start transition-[height]",
+              "value": {}
             },
             {
               "name": "svg",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "size-full"
+                  "name": "@apply size-full",
+                  "value": {}
                 }
               ]
             },
@@ -4313,8 +4313,8 @@
               "name": "@variant ak-sidebar-collapsed",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "size-(--ak-nav-icon-size)"
+                  "name": "@apply size-(--ak-nav-icon-size)",
+                  "value": {}
                 }
               ]
             }
@@ -4332,12 +4332,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_idle ak-dark:ak-text/70"
+              "name": "@apply ak-button_idle ak-dark:ak-text/70",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "z-1 relative justify-start text-wrap"
+              "name": "@apply z-1 relative justify-start text-wrap",
+              "value": {}
             },
             {
               "name": "--ak-button-padding-block",
@@ -4351,8 +4351,8 @@
               "name": "@variant not-ak-nav-current",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "font-normal"
+                  "name": "@apply font-normal",
+                  "value": {}
                 }
               ]
             }
@@ -4388,8 +4388,8 @@
               "name": "&&",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "bg-transparent"
+                  "name": "@apply bg-transparent",
+                  "value": {}
                 }
               ]
             },
@@ -4397,8 +4397,8 @@
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "-z-1 ak-layer-(--ak-layer) absolute inset-x-0 rounded-[inherit]"
+                  "name": "@apply -z-1 ak-layer-(--ak-layer) absolute inset-x-0 rounded-[inherit]",
+                  "value": {}
                 },
                 {
                   "name": "content",
@@ -4424,8 +4424,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_hover ak-nav-link-overlay"
+              "name": "@apply ak-button_hover ak-nav-link-overlay",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4446,8 +4446,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_focus"
+              "name": "@apply ak-button_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4463,8 +4463,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_active"
+              "name": "@apply ak-button_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4480,8 +4480,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_disabled"
+              "name": "@apply ak-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4497,23 +4497,23 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-pop ak-nav-link-overlay"
+              "name": "@apply ak-layer-pop ak-nav-link-overlay",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "z-1"
+              "name": "@apply z-1",
+              "value": {}
             },
             {
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-edge/0"
+                  "name": "@apply ak-edge/0",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "ring ring-inset"
+                  "name": "@apply ring ring-inset",
+                  "value": {}
                 }
               ]
             }
@@ -4541,28 +4541,28 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-nav-link_idle"
+              "name": "@apply ak-nav-link_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-hover:not-ak-nav-current:ak-nav-link_hover"
+              "name": "@apply ak-command-hover:not-ak-nav-current:ak-nav-link_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-nav-link_focus"
+              "name": "@apply ak-command-focus:ak-nav-link_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-nav-link_active"
+              "name": "@apply ak-command-active:ak-nav-link_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-nav-link_disabled"
+              "name": "@apply ak-command-disabled:ak-nav-link_disabled",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-nav-current:ak-nav-link_current"
+              "name": "@apply ak-nav-current:ak-nav-link_current",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4628,12 +4628,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_idle ak-frame-force-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2))"
+              "name": "@apply ak-button_idle ak-frame-force-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2))",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "transition-discrete justify-start overflow-clip whitespace-normal text-start transition-[gap,width,height,padding] delay-0"
+              "name": "@apply transition-discrete justify-start overflow-clip whitespace-normal text-start transition-[gap,width,height,padding] delay-0",
+              "value": {}
             },
             {
               "name": "interpolate-size",
@@ -4651,8 +4651,8 @@
               "name": "@variant ak-sidebar-collapsed",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "size-(--ak-nav-button-size) gap-0 after:opacity-0"
+                  "name": "@apply size-(--ak-nav-button-size) gap-0 after:opacity-0",
+                  "value": {}
                 },
                 {
                   "name": "--ak-nav-button-size",
@@ -4688,8 +4688,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_hover"
+              "name": "@apply ak-button_hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4705,8 +4705,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_focus"
+              "name": "@apply ak-button_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4722,8 +4722,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_active"
+              "name": "@apply ak-button_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4739,8 +4739,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_disabled"
+              "name": "@apply ak-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4756,24 +4756,24 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-nav-button_idle"
+              "name": "@apply ak-nav-button_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-hover:ak-nav-button_hover"
+              "name": "@apply ak-command-hover:ak-nav-button_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-nav-button_focus"
+              "name": "@apply ak-command-focus:ak-nav-button_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-nav-button_active"
+              "name": "@apply ak-command-active:ak-nav-button_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-nav-button_disabled"
+              "name": "@apply ak-command-disabled:ak-nav-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -4829,8 +4829,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "block overflow-hidden transition-[translate,height,opacity]"
+              "name": "@apply block overflow-hidden transition-[translate,height,opacity]",
+              "value": {}
             },
             {
               "name": "transition-behavior",
@@ -4852,8 +4852,8 @@
               "name": "@variant ak-sidebar-collapsed",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "h-(--ak-button-leading) opacity-0 delay-0"
+                  "name": "@apply h-(--ak-button-leading) opacity-0 delay-0",
+                  "value": {}
                 },
                 {
                   "name": "transition-duration",
@@ -4875,15 +4875,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure ak-disclosure-split ak-frame-field/2"
+              "name": "@apply ak-disclosure ak-disclosure-split ak-frame-field/2",
+              "value": {}
             },
             {
               "name": "@container style(--ak-nav-icon-size)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-icon-(--ak-nav-icon-size)"
+                  "name": "@apply ak-disclosure-icon-(--ak-nav-icon-size)",
+                  "value": {}
                 }
               ]
             }
@@ -4916,15 +4916,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-nav-button"
+              "name": "@apply ak-nav-button",
+              "value": {}
             },
             {
               "name": "@layer base",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure-button"
+                  "name": "@apply ak-disclosure-button",
+                  "value": {}
                 }
               ]
             }
@@ -4947,15 +4947,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-content"
+              "name": "@apply ak-disclosure-content",
+              "value": {}
             },
             {
               "name": ":where(& > *)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-nav-disclosure-content-body"
+                  "name": "@apply ak-nav-disclosure-content-body",
+                  "value": {}
                 }
               ]
             },
@@ -4963,8 +4963,8 @@
               "name": "@variant ak-sidebar-collapsed",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "h-0 w-0"
+                  "name": "@apply h-0 w-0",
+                  "value": {}
                 }
               ]
             },
@@ -5001,12 +5001,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-content-body"
+              "name": "@apply ak-disclosure-content-body",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-frame-force-(--ak-nav-disclosure-content-body-radius)/(--ak-nav-disclosure-content-body-padding)"
+              "name": "@apply ak-frame-force-(--ak-nav-disclosure-content-body-radius)/(--ak-nav-disclosure-content-body-padding)",
+              "value": {}
             },
             {
               "name": "--ak-nav-disclosure-content-body-padding",
@@ -5045,7 +5045,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -5064,12 +5064,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_idle ak-frame-force-tooltip"
+              "name": "@apply ak-popover_idle ak-frame-force-tooltip",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "px-2 text-sm shadow-md"
+              "name": "@apply px-2 text-sm shadow-md",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5090,8 +5090,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_open"
+              "name": "@apply ak-popover_open",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5107,8 +5107,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_closed"
+              "name": "@apply ak-popover_closed",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5124,15 +5124,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-tooltip_idle"
+              "name": "@apply ak-tooltip_idle",
+              "value": {}
             },
             {
               "name": "&:is(dialog, [popover])",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "open:ak-tooltip_open not-open:ak-tooltip_closed"
+                  "name": "@apply open:ak-tooltip_open not-open:ak-tooltip_closed",
+                  "value": {}
                 }
               ]
             }
@@ -5168,8 +5168,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_idle"
+              "name": "@apply ak-button_idle",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5185,8 +5185,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_hover"
+              "name": "@apply ak-button_hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5202,8 +5202,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_focus"
+              "name": "@apply ak-button_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5219,8 +5219,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_active"
+              "name": "@apply ak-button_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5236,8 +5236,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_disabled"
+              "name": "@apply ak-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5253,24 +5253,24 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-select_idle"
+              "name": "@apply ak-select_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-hover:ak-select_hover"
+              "name": "@apply ak-command-hover:ak-select_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-select_focus"
+              "name": "@apply ak-command-focus:ak-select_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-select_active"
+              "name": "@apply ak-command-active:ak-select_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-select_disabled"
+              "name": "@apply ak-command-disabled:ak-select_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5326,12 +5326,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-icon-chevron"
+              "name": "@apply ak-icon-chevron",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ms-auto size-4"
+              "name": "@apply ms-auto size-4",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5347,12 +5347,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_idle ak-frame-force-container ak-layer-canvas-1"
+              "name": "@apply ak-popover_idle ak-frame-force-container ak-layer-canvas-1",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "outline-none"
+              "name": "@apply outline-none",
+              "value": {}
             },
             {
               "name": "top",
@@ -5390,8 +5390,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_open"
+              "name": "@apply ak-popover_open",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5407,8 +5407,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-popover_closed"
+              "name": "@apply ak-popover_closed",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5424,15 +5424,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-select-popover_idle"
+              "name": "@apply ak-select-popover_idle",
+              "value": {}
             },
             {
               "name": "&:is(dialog, [popover])",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "open:ak-select-popover_open not-open:ak-select-popover_closed"
+                  "name": "@apply open:ak-select-popover_open not-open:ak-select-popover_closed",
+                  "value": {}
                 }
               ]
             }
@@ -5460,12 +5460,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-option_idle"
+              "name": "@apply ak-option_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "flex items-center gap-2"
+              "name": "@apply flex items-center gap-2",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5492,8 +5492,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-option_hover"
+              "name": "@apply ak-option_hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5509,8 +5509,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-option_focus"
+              "name": "@apply ak-option_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5526,8 +5526,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-option_active"
+              "name": "@apply ak-option_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5543,8 +5543,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-option_disabled"
+              "name": "@apply ak-option_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5560,28 +5560,28 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-select-item_idle"
+              "name": "@apply ak-select-item_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-select-item-selected:ak-select-item_selected"
+              "name": "@apply ak-select-item-selected:ak-select-item_selected",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-hover:ak-select-item_hover"
+              "name": "@apply ak-command-hover:ak-select-item_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-select-item_focus"
+              "name": "@apply ak-command-focus:ak-select-item_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-select-item_active"
+              "name": "@apply ak-command-active:ak-select-item_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-select-item_disabled"
+              "name": "@apply ak-command-disabled:ak-select-item_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5647,19 +5647,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-icon-check"
+              "name": "@apply ak-icon-check",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "invisible size-4"
+              "name": "@apply invisible size-4",
+              "value": {}
             },
             {
               "name": "@variant ak-select-item-selected",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "visible"
+                  "name": "@apply visible",
+                  "value": {}
                 }
               ]
             }
@@ -5688,7 +5688,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             },
@@ -5697,7 +5697,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -5777,8 +5777,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-text/0"
+              "name": "@apply ak-text/0",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -5794,19 +5794,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-edge-contrast ak-frame-field ak-frame-border"
+              "name": "@apply ak-edge-contrast ak-frame-field ak-frame-border",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "max-w-full cursor-text leading-[1em] -outline-offset-1"
+              "name": "@apply max-w-full cursor-text leading-[1em] -outline-offset-1",
+              "value": {}
             },
             {
               "name": "@variant ak-light",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer"
+                  "name": "@apply ak-layer",
+                  "value": {}
                 }
               ]
             },
@@ -5814,8 +5814,8 @@
               "name": "@variant ak-dark",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "not-hover:not-focus-within:ak-layer-down-0.5"
+                  "name": "@apply not-hover:not-focus-within:ak-layer-down-0.5",
+                  "value": {}
                 }
               ]
             },
@@ -5823,8 +5823,8 @@
               "name": "&:is(input)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "box-content h-[1em]"
+                  "name": "@apply box-content h-[1em]",
+                  "value": {}
                 }
               ]
             },
@@ -5832,8 +5832,8 @@
               "name": "input",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "-my-[0.25em] box-content h-[1.5em] outline-none"
+                  "name": "@apply -my-[0.25em] box-content h-[1.5em] outline-none",
+                  "value": {}
                 }
               ]
             },
@@ -5841,8 +5841,8 @@
               "name": "&::placeholder,\n  ::placeholder",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-input-placeholder"
+                  "name": "@apply ak-input-placeholder",
+                  "value": {}
                 }
               ]
             }
@@ -5895,15 +5895,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "transition-[background-color]"
+              "name": "@apply transition-[background-color]",
+              "value": {}
             },
             {
               "name": "@variant ak-light",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-hover-0.5"
+                  "name": "@apply ak-layer-hover-0.5",
+                  "value": {}
                 }
               ]
             },
@@ -5911,8 +5911,8 @@
               "name": "@variant ak-dark",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-current"
+                  "name": "@apply ak-layer-current",
+                  "value": {}
                 }
               ]
             }
@@ -5945,15 +5945,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-outline-primary outline-2"
+              "name": "@apply ak-outline-primary outline-2",
+              "value": {}
             },
             {
               "name": "@variant ak-light",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer"
+                  "name": "@apply ak-layer",
+                  "value": {}
                 }
               ]
             },
@@ -5961,8 +5961,8 @@
               "name": "@variant ak-dark",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-current"
+                  "name": "@apply ak-layer-current",
+                  "value": {}
                 }
               ]
             }
@@ -6000,8 +6000,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-input_idle hover:ak-input_hover focus-within:ak-input_focus"
+              "name": "@apply ak-input_idle hover:ak-input_hover focus-within:ak-input_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -6035,12 +6035,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-pop-1.5 ak-edge-5/100"
+              "name": "@apply ak-layer-pop-1.5 ak-edge-5/100",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "font-sans"
+              "name": "@apply font-sans",
+              "value": {}
             },
             {
               "name": "border-radius",
@@ -6074,12 +6074,12 @@
               "name": "@variant ak-dark",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-edge/16"
+                  "name": "@apply ak-edge/16",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "rounded-b-[0.4em]"
+                  "name": "@apply rounded-b-[0.4em]",
+                  "value": {}
                 },
                 {
                   "name": "border-width",
@@ -6136,12 +6136,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-text-primary ak-outline-primary"
+              "name": "@apply ak-text-primary ak-outline-primary",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "-mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium underline decoration-1 underline-offset-[0.25em]"
+              "name": "@apply -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium underline decoration-1 underline-offset-[0.25em]",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -6162,8 +6162,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "decoration-[3px]"
+              "name": "@apply decoration-[3px]",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -6173,8 +6173,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "outline-2"
+              "name": "@apply outline-2",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -6184,8 +6184,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-link_idle hover:ak-link_hover focus-visible:ak-link_focus"
+              "name": "@apply ak-link_idle hover:ak-link_hover focus-visible:ak-link_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -6215,8 +6215,8 @@
       "atProperties": {
         "--ak-progress-value": {
           "name": "--ak-progress-value",
-          "syntax": "<number>",
-          "inherits": true,
+          "syntax": "\"<number>\"",
+          "inherits": "true",
           "initialValue": "0"
         }
       },
@@ -6260,12 +6260,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-pop-2 ak-edge/0 ak-frame-force-full ak-progress-thickness-2"
+              "name": "@apply ak-layer-pop-2 ak-edge/0 ak-frame-force-full ak-progress-thickness-2",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "h-(--ak-progress-thickness) relative block w-full overflow-clip ring ring-inset"
+              "name": "@apply h-(--ak-progress-thickness) relative block w-full overflow-clip ring ring-inset",
+              "value": {}
             },
             {
               "name": "--ak-progress-ring",
@@ -6275,12 +6275,12 @@
               "name": "&::-webkit-progress-bar",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-frame ak-layer-current"
+                  "name": "@apply ak-frame ak-layer-current",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "ring-(--ak-progress-ring) ring ring-inset"
+                  "name": "@apply ring-(--ak-progress-ring) ring ring-inset",
+                  "value": {}
                 }
               ]
             },
@@ -6288,8 +6288,8 @@
               "name": "&::-webkit-progress-value",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-progress-fill_base"
+                  "name": "@apply ak-progress-fill_base",
+                  "value": {}
                 }
               ]
             }
@@ -6337,19 +6337,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-contrast-primary ak-frame"
+              "name": "@apply ak-layer-contrast-primary ak-frame",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "starting:w-0! block h-full transition-[width] duration-1000"
+              "name": "@apply starting:w-0! block h-full transition-[width] duration-1000",
+              "value": {}
             },
             {
               "name": "@variant motion-reduce",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "duration-0"
+                  "name": "@apply duration-0",
+                  "value": {}
                 }
               ]
             }
@@ -6372,8 +6372,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-progress-fill_base"
+              "name": "@apply ak-progress-fill_base",
+              "value": {}
             },
             {
               "name": "width",
@@ -6398,12 +6398,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-pop-2 ak-edge/0 ak-frame-force-full ak-progress-thickness-2"
+              "name": "@apply ak-layer-pop-2 ak-edge/0 ak-frame-force-full ak-progress-thickness-2",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "relative size-full ring ring-inset"
+              "name": "@apply relative size-full ring ring-inset",
+              "value": {}
             },
             {
               "name": "--ak-progress-layer-parent",
@@ -6417,12 +6417,12 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-(--ak-progress-layer-parent)"
+                  "name": "@apply ak-layer-(--ak-progress-layer-parent)",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "ring-(--ak-progress-ring) inset-(--ak-progress-thickness) absolute rounded-full ring"
+                  "name": "@apply ring-(--ak-progress-ring) inset-(--ak-progress-thickness) absolute rounded-full ring",
+                  "value": {}
                 },
                 {
                   "name": "content",
@@ -6464,12 +6464,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-contrast-primary"
+              "name": "@apply ak-layer-contrast-primary",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "absolute inset-0 rounded-full bg-transparent transition-[--ak-progress-value] duration-1000"
+              "name": "@apply absolute inset-0 rounded-full bg-transparent transition-[--ak-progress-value] duration-1000",
+              "value": {}
             },
             {
               "name": "--feather-px",
@@ -6500,8 +6500,8 @@
               "name": "@variant motion-reduce",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "duration-0"
+                  "name": "@apply duration-0",
+                  "value": {}
                 }
               ]
             }
@@ -6559,8 +6559,8 @@
               "value": "--value([*])"
             },
             {
-              "name": "@apply",
-              "value": "leading-(--ak-list-leading)"
+              "name": "@apply leading-(--ak-list-leading)",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -6608,15 +6608,15 @@
               "value": "1"
             },
             {
-              "name": "@apply",
-              "value": "ak-list-item-padding-2"
+              "name": "@apply ak-list-item-padding-2",
+              "value": {}
             },
             {
               "name": "&:where(ol)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item-border-1"
+                  "name": "@apply ak-list-item-border-1",
+                  "value": {}
                 }
               ]
             },
@@ -6624,8 +6624,8 @@
               "name": "&:where(ul)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item-border-0"
+                  "name": "@apply ak-list-item-border-0",
+                  "value": {}
                 }
               ]
             }
@@ -6694,12 +6694,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-list-gap-4 ak-list-leading-normal ak-list-counter-reset ak-list-item-padding-1"
+              "name": "@apply ak-list-gap-4 ak-list-leading-normal ak-list-counter-reset ak-list-item-padding-1",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "gap-(--ak-list-gap) grid"
+              "name": "@apply gap-(--ak-list-gap) grid",
+              "value": {}
             },
             {
               "name": "--ak-list-gap",
@@ -6725,8 +6725,8 @@
               "name": "&:where(ul)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-ul"
+                  "name": "@apply ak-list-ul",
+                  "value": {}
                 }
               ]
             },
@@ -6734,8 +6734,8 @@
               "name": "&:where(ol)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-ol"
+                  "name": "@apply ak-list-ol",
+                  "value": {}
                 }
               ]
             },
@@ -6743,8 +6743,8 @@
               "name": "& &",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-gap-2"
+                  "name": "@apply ak-list-gap-2",
+                  "value": {}
                 }
               ]
             },
@@ -6752,8 +6752,8 @@
               "name": "@variant ak-list-blocks",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-blocks"
+                  "name": "@apply ak-list-blocks",
+                  "value": {}
                 }
               ]
             },
@@ -6761,8 +6761,8 @@
               "name": "@variant ak-list-sections",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-sections"
+                  "name": "@apply ak-list-sections",
+                  "value": {}
                 }
               ]
             }
@@ -6875,12 +6875,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-pop-2 ak-list-counter-content"
+              "name": "@apply ak-layer-pop-2 ak-list-counter-content",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "size-(--ak-list-counter-size) relative flex-none self-start rounded-full text-center font-semibold"
+              "name": "@apply size-(--ak-list-counter-size) relative flex-none self-start rounded-full text-center font-semibold",
+              "value": {}
             },
             {
               "name": "--_ak-list-counter-margin",
@@ -6925,12 +6925,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-current ak-edge/40"
+              "name": "@apply ak-layer-current ak-edge/40",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "absolute left-0 border-b"
+              "name": "@apply absolute left-0 border-b",
+              "value": {}
             },
             {
               "name": "content",
@@ -6967,8 +6967,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "before:ak-list-item-ul-marker"
+              "name": "@apply before:ak-list-item-ul-marker",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -6984,12 +6984,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-list-counter"
+              "name": "@apply ak-list-counter",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "pointer-events-none absolute border-0"
+              "name": "@apply pointer-events-none absolute border-0",
+              "value": {}
             },
             {
               "name": "--ak-list-counter-leading",
@@ -7021,8 +7021,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "relative"
+              "name": "@apply relative",
+              "value": {}
             },
             {
               "name": "--ak-list-border-gap",
@@ -7034,18 +7034,18 @@
             },
             {
               "name": "/* Border segment */",
-              "value": ""
+              "value": {}
             },
             {
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-pop-2"
+                  "name": "@apply ak-layer-pop-2",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "z-2 pointer-events-none absolute h-full"
+                  "name": "@apply z-2 pointer-events-none absolute h-full",
+                  "value": {}
                 },
                 {
                   "name": "content",
@@ -7071,14 +7071,14 @@
             },
             {
               "name": "/* Make the final border segment match the content’s height */",
-              "value": ""
+              "value": {}
             },
             {
               "name": "li:last-of-type > &::after,\n  &:is(li):last-of-type::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "from-(--ak-layer) bg-transparent bg-gradient-to-b from-[calc(100%-1rem)] to-transparent"
+                  "name": "@apply from-(--ak-layer) bg-transparent bg-gradient-to-b from-[calc(100%-1rem)] to-transparent",
+                  "value": {}
                 },
                 {
                   "name": "height",
@@ -7100,15 +7100,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-list-counter-increment"
+              "name": "@apply ak-list-counter-increment",
+              "value": {}
             },
             {
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item-ol-marker"
+                  "name": "@apply ak-list-item-ol-marker",
+                  "value": {}
                 }
               ]
             },
@@ -7116,8 +7116,8 @@
               "name": "@variant ak-list-blocks",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item-ol-border"
+                  "name": "@apply ak-list-item-ol-border",
+                  "value": {}
                 }
               ]
             }
@@ -7150,12 +7150,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-card/(--ak-list-item-padding)"
+              "name": "@apply ak-frame-card/(--ak-list-item-padding)",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "leading-(--ak-list-leading) relative"
+              "name": "@apply leading-(--ak-list-leading) relative",
+              "value": {}
             },
             {
               "name": "--ak-list-item-base-ps",
@@ -7169,8 +7169,8 @@
               "name": "@variant ak-list-ul",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item-ul"
+                  "name": "@apply ak-list-item-ul",
+                  "value": {}
                 }
               ]
             },
@@ -7178,8 +7178,8 @@
               "name": "@variant ak-list-ol",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item-ol"
+                  "name": "@apply ak-list-item-ol",
+                  "value": {}
                 }
               ]
             }
@@ -7217,8 +7217,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "gap-(--ak-list-item-gap) grid"
+              "name": "@apply gap-(--ak-list-item-gap) grid",
+              "value": {}
             },
             {
               "name": "--ak-list-item-gap",
@@ -7235,15 +7235,15 @@
               "name": "&:not(:has(> details))",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item_base"
+                  "name": "@apply ak-list-item_base",
+                  "value": {}
                 },
                 {
                   "name": "@variant ak-list-item-blocks",
                   "value": [
                     {
-                      "name": "@apply",
-                      "value": "ak-list-item-blocks"
+                      "name": "@apply ak-list-item-blocks",
+                      "value": {}
                     }
                   ]
                 }
@@ -7253,22 +7253,22 @@
               "name": "& > details",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-disclosure ak-list-disclosure"
+                  "name": "@apply ak-disclosure ak-list-disclosure",
+                  "value": {}
                 },
                 {
                   "name": "> summary",
                   "value": [
                     {
-                      "name": "@apply",
-                      "value": "ak-list-disclosure-button"
+                      "name": "@apply ak-list-disclosure-button",
+                      "value": {}
                     },
                     {
                       "name": "+ *",
                       "value": [
                         {
-                          "name": "@apply",
-                          "value": "ak-list-disclosure-content-body"
+                          "name": "@apply ak-list-disclosure-content-body",
+                          "value": {}
                         }
                       ]
                     }
@@ -7320,8 +7320,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure ak-list-item_base"
+              "name": "@apply ak-disclosure ak-list-item_base",
+              "value": {}
             },
             {
               "name": "--ak-disclosure-ps",
@@ -7346,8 +7346,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-button after:ak-disclosure-chevron-down after:ms-0"
+              "name": "@apply ak-disclosure-button after:ak-disclosure-chevron-down after:ms-0",
+              "value": {}
             },
             {
               "name": "--ak-button-leading",
@@ -7361,8 +7361,8 @@
               "name": "@variant ak-list-ol",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "before:ak-list-item-ol-marker"
+                  "name": "@apply before:ak-list-item-ol-marker",
+                  "value": {}
                 }
               ]
             },
@@ -7370,8 +7370,8 @@
               "name": "@variant ak-list-ul",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "before:ak-list-item-ul-marker"
+                  "name": "@apply before:ak-list-item-ul-marker",
+                  "value": {}
                 }
               ]
             }
@@ -7414,15 +7414,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-content"
+              "name": "@apply ak-disclosure-content",
+              "value": {}
             },
             {
               "name": ":where(& > *)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-disclosure-content-body"
+                  "name": "@apply ak-list-disclosure-content-body",
+                  "value": {}
                 }
               ]
             }
@@ -7445,8 +7445,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-disclosure-content-body ak-list-item-blocks"
+              "name": "@apply ak-disclosure-content-body ak-list-item-blocks",
+              "value": {}
             },
             {
               "name": "padding-block-start",
@@ -7471,12 +7471,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-list-item-ol-marker ak-layer-pop ak-edge/25"
+              "name": "@apply ak-list-item-ol-marker ak-layer-pop ak-edge/25",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ring ring-inset"
+              "name": "@apply ring ring-inset",
+              "value": {}
             },
             {
               "name": "&::before",
@@ -7511,15 +7511,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-list-item-check-base"
+              "name": "@apply ak-list-item-check-base",
+              "value": {}
             },
             {
               "name": "li:has(&)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "before:hidden after:hidden"
+                  "name": "@apply before:hidden after:hidden",
+                  "value": {}
                 }
               ]
             }
@@ -7537,12 +7537,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-list-item-check-base"
+              "name": "@apply ak-list-item-check-base",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "bg-transparent ring-0"
+              "name": "@apply bg-transparent ring-0",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -7561,8 +7561,8 @@
               "name": "@variant ak-list-ol",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item-check-ol"
+                  "name": "@apply ak-list-item-check-ol",
+                  "value": {}
                 }
               ]
             },
@@ -7570,8 +7570,8 @@
               "name": "@variant ak-list-ul",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item-check-ul"
+                  "name": "@apply ak-list-item-check-ul",
+                  "value": {}
                 }
               ]
             }
@@ -7604,19 +7604,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-contrast-primary"
+              "name": "@apply ak-layer-contrast-primary",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ring-0"
+              "name": "@apply ring-0",
+              "value": {}
             },
             {
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-icon-check"
+                  "name": "@apply ak-icon-check",
+                  "value": {}
                 },
                 {
                   "name": "mask-size",
@@ -7647,8 +7647,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "before:ak-progress-circular-fill ak-progress-value-(--value)"
+              "name": "@apply before:ak-progress-circular-fill ak-progress-value-(--value)",
+              "value": {}
             },
             {
               "name": "--value",
@@ -7666,8 +7666,8 @@
               "name": "@variant ak-list-ol",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-progress-thickness-[0.15em]"
+                  "name": "@apply ak-progress-thickness-[0.15em]",
+                  "value": {}
                 }
               ]
             },
@@ -7675,8 +7675,8 @@
               "name": "@variant ak-list-ul",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-progress-thickness-[calc(30%+5%*var(--contrast,0))]"
+                  "name": "@apply ak-progress-thickness-[calc(30%+5%*var(--contrast,0))]",
+                  "value": {}
                 }
               ]
             }
@@ -7725,7 +7725,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -7741,7 +7741,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             },
@@ -7750,7 +7750,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -7766,7 +7766,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -7782,7 +7782,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -7798,7 +7798,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -7817,8 +7817,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "text-[2.25em]"
+              "name": "@apply text-[2.25em]",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -7828,8 +7828,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "text-[1.75em]"
+              "name": "@apply text-[1.75em]",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -7839,8 +7839,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "text-[1.4em]"
+              "name": "@apply text-[1.4em]",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -7850,8 +7850,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "text-[1.2em]"
+              "name": "@apply text-[1.2em]",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -7861,8 +7861,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "text-[1em]"
+              "name": "@apply text-[1em]",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -7872,15 +7872,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-text mb-[0.5em] font-medium"
+              "name": "@apply ak-text mb-[0.5em] font-medium",
+              "value": {}
             },
             {
               "name": "&:where(:not(:first-child))",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "mt-[1em]"
+                  "name": "@apply mt-[1em]",
+                  "value": {}
                 }
               ]
             },
@@ -7888,8 +7888,8 @@
               "name": ":where(h1, h2, h3, h4, h5) + &",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "mt-[0.35em]"
+                  "name": "@apply mt-[0.35em]",
+                  "value": {}
                 }
               ]
             },
@@ -7897,8 +7897,8 @@
               "name": "a",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "hover:ak-link_idle hover:ak-text font-[weight:inherit] text-current no-underline"
+                  "name": "@apply hover:ak-link_idle hover:ak-text font-[weight:inherit] text-current no-underline",
+                  "value": {}
                 }
               ]
             },
@@ -7906,8 +7906,8 @@
               "name": "li &",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "mb-0"
+                  "name": "@apply mb-0",
+                  "value": {}
                 }
               ]
             },
@@ -7915,8 +7915,8 @@
               "name": "&:where(h1)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-heading-1"
+                  "name": "@apply ak-heading-1",
+                  "value": {}
                 }
               ]
             },
@@ -7924,8 +7924,8 @@
               "name": "&:where(h2)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-heading-2"
+                  "name": "@apply ak-heading-2",
+                  "value": {}
                 }
               ]
             },
@@ -7933,8 +7933,8 @@
               "name": "&:where(h3)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-heading-3"
+                  "name": "@apply ak-heading-3",
+                  "value": {}
                 }
               ]
             },
@@ -7942,8 +7942,8 @@
               "name": "&:where(h4)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-heading-4"
+                  "name": "@apply ak-heading-4",
+                  "value": {}
                 }
               ]
             },
@@ -7951,8 +7951,8 @@
               "name": "&:where(h5)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-heading-5"
+                  "name": "@apply ak-heading-5",
+                  "value": {}
                 }
               ]
             }
@@ -8008,12 +8008,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-full/container ak-layer-down-0.25 ak-bordering after:ak-segmented-indicator"
+              "name": "@apply ak-frame-full/container ak-layer-down-0.25 ak-bordering after:ak-segmented-indicator",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "gap-(--ak-frame-padding) relative flex overflow-clip"
+              "name": "@apply gap-(--ak-frame-padding) relative flex overflow-clip",
+              "value": {}
             },
             {
               "name": "--ak-segmented-padding",
@@ -8048,12 +8048,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-current"
+              "name": "@apply ak-layer-current",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "pointer-events-none absolute h-1/2 border-r transition-opacity delay-150 ease-in"
+              "name": "@apply pointer-events-none absolute h-1/2 border-r transition-opacity delay-150 ease-in",
+              "value": {}
             },
             {
               "name": "content",
@@ -8077,12 +8077,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-2 ak-dark:ak-edge/0"
+              "name": "@apply ak-layer-2 ak-dark:ak-edge/0",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-dark:ring-inset ring shadow"
+              "name": "@apply ak-dark:ring-inset ring shadow",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8108,12 +8108,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-segmented-indicator-base ak-frame-field/0"
+              "name": "@apply ak-segmented-indicator-base ak-frame-field/0",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "absolute transition-[inset]"
+              "name": "@apply absolute transition-[inset]",
+              "value": {}
             },
             {
               "name": "position-anchor",
@@ -8142,12 +8142,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_idle ak-text/70"
+              "name": "@apply ak-button_idle ak-text/70",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "z-1 font-medium transition-colors"
+              "name": "@apply z-1 font-medium transition-colors",
+              "value": {}
             },
             {
               "name": "padding-block",
@@ -8157,8 +8157,8 @@
               "name": "input[type=\"radio\"]",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "sr-only"
+                  "name": "@apply sr-only",
+                  "value": {}
                 }
               ]
             },
@@ -8166,8 +8166,8 @@
               "name": "&:not(:first-of-type)::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-segmented-separator"
+                  "name": "@apply ak-segmented-separator",
+                  "value": {}
                 }
               ]
             }
@@ -8198,8 +8198,8 @@
               "name": "&::before,\n  & + *::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "opacity-0 delay-0"
+                  "name": "@apply opacity-0 delay-0",
+                  "value": {}
                 }
               ]
             },
@@ -8207,12 +8207,12 @@
               "name": "@supports (anchor-name: --a)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-2"
+                  "name": "@apply ak-layer-2",
+                  "value": {}
                 },
                 {
-                  "name": "@apply",
-                  "value": "bg-transparent!"
+                  "name": "@apply bg-transparent!",
+                  "value": {}
                 },
                 {
                   "name": "anchor-name",
@@ -8224,8 +8224,8 @@
               "name": "@supports not (anchor-name: --a)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-segmented-indicator-base"
+                  "name": "@apply ak-segmented-indicator-base",
+                  "value": {}
                 }
               ]
             }
@@ -8248,15 +8248,15 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_hover"
+              "name": "@apply ak-button_hover",
+              "value": {}
             },
             {
               "name": "&::before,\n  & + *::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "opacity-0 delay-0"
+                  "name": "@apply opacity-0 delay-0",
+                  "value": {}
                 }
               ]
             }
@@ -8274,8 +8274,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_focus"
+              "name": "@apply ak-button_focus",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8291,8 +8291,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_active"
+              "name": "@apply ak-button_active",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8308,8 +8308,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-button_disabled"
+              "name": "@apply ak-button_disabled",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8325,32 +8325,32 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-segmented-button_idle"
+              "name": "@apply ak-segmented-button_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-hover:ak-segmented-button_hover"
+              "name": "@apply ak-command-hover:ak-segmented-button_hover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-focus:ak-segmented-button_focus"
+              "name": "@apply ak-command-focus:ak-segmented-button_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "has-focus-visible:ak-segmented-button_focus"
+              "name": "@apply has-focus-visible:ak-segmented-button_focus",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-active:ak-segmented-button_active"
+              "name": "@apply ak-command-active:ak-segmented-button_active",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-command-disabled:ak-segmented-button_disabled"
+              "name": "@apply ak-command-disabled:ak-segmented-button_disabled",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "ak-segmented-button-selected:ak-segmented-button_selected"
+              "name": "@apply ak-segmented-button-selected:ak-segmented-button_selected",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8422,7 +8422,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -8441,8 +8441,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "z-3 sticky top-0"
+              "name": "@apply z-3 sticky top-0",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -8452,8 +8452,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "z-3 sticky bottom-0"
+              "name": "@apply z-3 sticky bottom-0",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -8463,12 +8463,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-card/0 ak-layer-current"
+              "name": "@apply ak-frame-card/0 ak-layer-current",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "overflow-clip"
+              "name": "@apply overflow-clip",
+              "value": {}
             },
             {
               "name": "border-inline-start-width",
@@ -8505,8 +8505,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-dark:scheme-dark ak-light:scheme-light max-h-[inherit] overflow-auto"
+              "name": "@apply ak-dark:scheme-dark ak-light:scheme-light max-h-[inherit] overflow-auto",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8580,19 +8580,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-field"
+              "name": "@apply ak-frame-field",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "p-0! relative w-full border-separate border-spacing-0 overflow-x-hidden"
+              "name": "@apply p-0! relative w-full border-separate border-spacing-0 overflow-x-hidden",
+              "value": {}
             },
             {
               "name": ":where(tbody)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-rowgroup"
+                  "name": "@apply ak-table-rowgroup",
+                  "value": {}
                 }
               ]
             },
@@ -8600,8 +8600,8 @@
               "name": ":where(thead)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-head"
+                  "name": "@apply ak-table-head",
+                  "value": {}
                 }
               ]
             },
@@ -8609,8 +8609,8 @@
               "name": ":where(tfoot)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-foot"
+                  "name": "@apply ak-table-foot",
+                  "value": {}
                 }
               ]
             },
@@ -8618,8 +8618,8 @@
               "name": ":where(tr:not(:where(thead, tfoot) > *))",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-row"
+                  "name": "@apply ak-table-row",
+                  "value": {}
                 }
               ]
             },
@@ -8627,8 +8627,8 @@
               "name": ":where(tr:where(thead > *))",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-head-row"
+                  "name": "@apply ak-table-head-row",
+                  "value": {}
                 }
               ]
             },
@@ -8636,8 +8636,8 @@
               "name": ":where(tr:where(tfoot > *))",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-foot-row"
+                  "name": "@apply ak-table-foot-row",
+                  "value": {}
                 }
               ]
             },
@@ -8645,8 +8645,8 @@
               "name": ":where(td, th)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-cell"
+                  "name": "@apply ak-table-cell",
+                  "value": {}
                 }
               ]
             },
@@ -8654,8 +8654,8 @@
               "name": ":where(> th, tbody th, tfoot th)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-row-header"
+                  "name": "@apply ak-table-row-header",
+                  "value": {}
                 }
               ]
             },
@@ -8663,8 +8663,8 @@
               "name": ":where(thead th)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-table-column-header"
+                  "name": "@apply ak-table-column-header",
+                  "value": {}
                 }
               ]
             }
@@ -8727,12 +8727,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-current"
+              "name": "@apply ak-layer-current",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "relative"
+              "name": "@apply relative",
+              "value": {}
             },
             {
               "name": "&:is(thead):first-of-type,\n  :not(:has(thead)) > &:first-child",
@@ -8766,12 +8766,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-table-rowgroup ak-layer-pop-0.5"
+              "name": "@apply ak-table-rowgroup ak-layer-pop-0.5",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "whitespace-nowrap text-sm"
+              "name": "@apply whitespace-nowrap text-sm",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8792,8 +8792,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-table-row_idle"
+              "name": "@apply ak-table-row_idle",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8809,8 +8809,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-table-rowgroup"
+              "name": "@apply ak-table-rowgroup",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8826,8 +8826,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-table-row_idle"
+              "name": "@apply ak-table-row_idle",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8843,8 +8843,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-current"
+              "name": "@apply ak-layer-current",
+              "value": {}
             },
             {
               "name": "&:first-of-type",
@@ -8878,8 +8878,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-hover-0.5 z-2 *:z-2"
+              "name": "@apply ak-layer-hover-0.5 z-2 *:z-2",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8895,12 +8895,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-table-row_idle"
+              "name": "@apply ak-table-row_idle",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "hover:ak-table-row_hover"
+              "name": "@apply hover:ak-table-row_hover",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8921,8 +8921,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-table-cell text-start font-semibold"
+              "name": "@apply ak-table-cell text-start font-semibold",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8938,8 +8938,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-text/70 text-start font-semibold"
+              "name": "@apply ak-text/70 text-start font-semibold",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -8955,8 +8955,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-current z-1 relative"
+              "name": "@apply ak-layer-current z-1 relative",
+              "value": {}
             },
             {
               "name": "padding-inline",
@@ -8970,8 +8970,8 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-current -z-1 pointer-events-none absolute inset-0"
+                  "name": "@apply ak-layer-current -z-1 pointer-events-none absolute inset-0",
+                  "value": {}
                 },
                 {
                   "name": "content",
@@ -8995,8 +8995,8 @@
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-layer-current -z-1 pointer-events-none absolute inset-0"
+                  "name": "@apply ak-layer-current -z-1 pointer-events-none absolute inset-0",
+                  "value": {}
                 },
                 {
                   "name": "content",
@@ -9048,8 +9048,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "text-end tabular-nums"
+              "name": "@apply text-end tabular-nums",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -9346,12 +9346,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-pop-0.5 ak-frame-dialog/2 ak-sidebar-max-width-60 ak-sidebar-min-width-14"
+              "name": "@apply ak-layer-pop-0.5 ak-frame-dialog/2 ak-sidebar-max-width-60 ak-sidebar-min-width-14",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "transition-discrete fixed start-0 top-0 z-10 flex flex-col overflow-clip rounded-none border-e transition-[inline-size,padding,inset] duration-300"
+              "name": "@apply transition-discrete fixed start-0 top-0 z-10 flex flex-col overflow-clip rounded-none border-e transition-[inline-size,padding,inset] duration-300",
+              "value": {}
             },
             {
               "name": "--ak-sidebar-gap",
@@ -9402,12 +9402,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-dialog/1"
+              "name": "@apply ak-frame-dialog/1",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "rounded-none"
+              "name": "@apply rounded-none",
+              "value": {}
             },
             {
               "name": "--ak-sidebar-collapsed",
@@ -9431,12 +9431,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-frame-cover"
+              "name": "@apply ak-frame-cover",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "gap-(--ak-sidebar-gap) grid"
+              "name": "@apply gap-(--ak-sidebar-gap) grid",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -9452,8 +9452,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-sidebar-section"
+              "name": "@apply ak-sidebar-section",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -9469,12 +9469,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-sidebar-section"
+              "name": "@apply ak-sidebar-section",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "flex-1 overflow-y-auto overflow-x-clip"
+              "name": "@apply flex-1 overflow-y-auto overflow-x-clip",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -9490,8 +9490,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-sidebar-section"
+              "name": "@apply ak-sidebar-section",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -9513,7 +9513,7 @@
               "value": [
                 {
                   "name": "@slot",
-                  "value": ""
+                  "value": {}
                 }
               ]
             }
@@ -9532,12 +9532,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-pop ak-edge/15"
+              "name": "@apply ak-layer-pop ak-edge/15",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "rounded px-[0.25em] py-[0.18em] font-mono text-inherit ring"
+              "name": "@apply rounded px-[0.25em] py-[0.18em] font-mono text-inherit ring",
+              "value": {}
             },
             {
               "name": "font-size-adjust",
@@ -9562,12 +9562,12 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-layer-current ak-edge/20"
+              "name": "@apply ak-layer-current ak-edge/20",
+              "value": {}
             },
             {
-              "name": "@apply",
-              "value": "border-t border-dashed"
+              "name": "@apply border-t border-dashed",
+              "value": {}
             },
             {
               "name": "margin-block",
@@ -9577,8 +9577,8 @@
               "name": "+ *",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "mt-0"
+                  "name": "@apply mt-0",
+                  "value": {}
                 }
               ]
             }
@@ -9601,8 +9601,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-text font-medium"
+              "name": "@apply ak-text font-medium",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -9630,8 +9630,8 @@
               "value": "--value([*])"
             },
             {
-              "name": "@apply",
-              "value": "leading-(--ak-prose-leading)"
+              "name": "@apply leading-(--ak-prose-leading)",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -9657,8 +9657,8 @@
               "value": "--value(--text, [*])"
             },
             {
-              "name": "@apply",
-              "value": "leading-(--ak-prose-leading)"
+              "name": "@apply leading-(--ak-prose-leading)",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -9683,8 +9683,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "gap-(--ak-prose-gap) flex flex-col"
+              "name": "@apply gap-(--ak-prose-gap) flex flex-col",
+              "value": {}
             }
           ],
           "dependencies": []
@@ -9694,8 +9694,8 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply",
-              "value": "ak-dark:ak-text/75 ak-light:ak-text/90"
+              "name": "@apply ak-dark:ak-text/75 ak-light:ak-text/90",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -9730,8 +9730,8 @@
               "value": "1.25em"
             },
             {
-              "name": "@apply",
-              "value": "ak-prose-text ak-prose-text-base/relaxed ak-prose-elements ak-prose-content"
+              "name": "@apply ak-prose-text ak-prose-text-base/relaxed ak-prose-elements ak-prose-content",
+              "value": {}
             }
           ],
           "dependencies": [
@@ -9765,8 +9765,8 @@
               "name": ":where(h1, h2, h3, h4, h5)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-heading"
+                  "name": "@apply ak-heading",
+                  "value": {}
                 }
               ]
             },
@@ -9774,8 +9774,8 @@
               "name": ":where(p)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-prose-text"
+                  "name": "@apply ak-prose-text",
+                  "value": {}
                 }
               ]
             },
@@ -9783,8 +9783,8 @@
               "name": ":where(ul, ol)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-prose-text ak-list ak-list-leading-(--ak-prose-leading) ak-list-gap-(--ak-prose-gap)"
+                  "name": "@apply ak-prose-text ak-list ak-list-leading-(--ak-prose-leading) ak-list-gap-(--ak-prose-gap)",
+                  "value": {}
                 }
               ]
             },
@@ -9792,8 +9792,8 @@
               "name": ":where(li)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-list-item"
+                  "name": "@apply ak-list-item",
+                  "value": {}
                 }
               ]
             },
@@ -9801,8 +9801,8 @@
               "name": ":where(strong)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-strong"
+                  "name": "@apply ak-strong",
+                  "value": {}
                 }
               ]
             },
@@ -9810,8 +9810,8 @@
               "name": ":where(code):not(:where(pre code))",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-code"
+                  "name": "@apply ak-code",
+                  "value": {}
                 }
               ]
             },
@@ -9819,8 +9819,8 @@
               "name": ":where(p a)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-link"
+                  "name": "@apply ak-link",
+                  "value": {}
                 }
               ]
             },
@@ -9828,8 +9828,8 @@
               "name": ":where(kbd)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-kbd"
+                  "name": "@apply ak-kbd",
+                  "value": {}
                 }
               ]
             },
@@ -9837,8 +9837,8 @@
               "name": ":where(hr)",
               "value": [
                 {
-                  "name": "@apply",
-                  "value": "ak-separator"
+                  "name": "@apply ak-separator",
+                  "value": {}
                 }
               ]
             }
