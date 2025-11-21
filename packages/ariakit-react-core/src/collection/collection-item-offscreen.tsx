@@ -136,7 +136,7 @@ export interface CollectionItemOptions<T extends ElementType = TagName>
   offscreenBehavior?: "active" | "passive" | "lazy";
   offscreenRoot?:
     | HTMLElement
-    | RefObject<HTMLElement>
+    | RefObject<HTMLElement | null>
     | ((element: HTMLElement) => HTMLElement | null)
     | null;
 }

@@ -27,7 +27,10 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 type ItemType = "label" | "error" | "description";
 
-function getNamedElement(ref: RefObject<HTMLInputElement>, name: string) {
+function getNamedElement(
+  ref: RefObject<HTMLInputElement | null>,
+  name: string,
+) {
   const element = ref.current;
   if (!element) return null;
   if (element.name === name) return element;
