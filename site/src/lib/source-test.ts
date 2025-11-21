@@ -459,3 +459,37 @@ test("mergeFiles falls back to lexicographic order on cycles", () => {
     "
   `);
 });
+
+test("mergeFiles hoists external imports", () => {
+  const files = {
+    "/path/to/utils/a.ts": {
+      id: "/path/to/utils/a.ts",
+      content: [
+        'import { ext } from "external";',
+        'import { b } from "./b";',
+        "",
+        "export const a = b + ext;",
+        "",
+      ].join("\n"),
+    },
+    "/path/to/utils/b.ts": {
+      id: "/path/to/utils/b.ts",
+      content: [
+        'import { other } from "other";',
+        "",
+        "export const b = other;",
+        "",
+      ].join("\n"),
+    },
+  };
+  const merged = mergeFiles(files);
+  expect(merged["/path/to/utils.ts"]?.content).toMatchInlineSnapshot(`
+    "import { ext } from "external";
+    import { other } from "other";
+
+    export const b = other;
+
+    export const a = b + ext;
+    "
+  `);
+});

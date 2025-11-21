@@ -611,6 +611,39 @@ function mergeDepMaps(
 }
 
 /**
+ * Hoists import declarations to the top of the content.
+ */
+export function hoistImports(content: string) {
+  const imports = new Set<string>();
+  let body = content;
+
+  const extract = (pattern: RegExp) => {
+    body = body.replace(pattern, (match, ...args) => {
+      const offset = (args.at(-3) as number) ?? 0;
+      const full = (args.at(-2) as string) ?? body;
+
+      let stmt = match;
+      if (full[offset + match.length] === ";") {
+        stmt += ";";
+      }
+      imports.add(stmt);
+      return "";
+    });
+  };
+
+  extract(IMPORT_SIDE_EFFECT);
+  extract(IMPORT_TYPE_NAMED);
+  extract(IMPORT_FROM_ANY);
+
+  body = cleanSemicolonOnlyLines(body);
+  body = collapseExcessBlankLines(body);
+
+  if (imports.size === 0) return content;
+
+  return `${sortKeys(imports).join("\n")}\n\n${body.trimStart()}`;
+}
+
+/**
  * Merges related files into grouped targets and rewrites named imports to point
  * at the merged output when appropriate. By default groups files by their
  * parent directory (directories with 2+ files produce `<dir>.ts`).
@@ -712,9 +745,10 @@ export function mergeFiles(
       mergedDevDeps = mergeDepMaps(mergedDevDeps, file.devDependencies);
     }
     const content = `${parts.join("\n\n").trimEnd()}\n`;
+    const hoistedContent = hoistImports(content);
     mergedGroups.push({
       target,
-      content,
+      content: hoistedContent,
       styles: mergedStyles,
       dependencies: mergedDeps,
       devDependencies: mergedDevDeps,
