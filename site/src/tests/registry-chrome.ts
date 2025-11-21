@@ -99,19 +99,6 @@ test("ariakit tailwind theme item has correct css", async ({ page }) => {
   });
 });
 
-test("example item files are merged into a single file", async ({ page }) => {
-  const item = await fetchRegistryItem(
-    page,
-    "react-examples-disclosure-actions",
-  );
-  expect(item.files).toEqual([
-    expect.objectContaining({
-      path: "registry/examples/disclosure-actions.tsx",
-      content: expect.stringContaining("export interface Order {"),
-    }),
-  ]);
-});
-
 const nameTypeSamples = {
   "ak-button": "registry:ui",
   "react-examples-disclosure": "registry:example",
@@ -132,23 +119,53 @@ for (const [name, type] of Object.entries(nameTypeSamples)) {
 
 const filePathSamples = {
   "ak-button": ["registry/ui/button.css"],
-  "react-examples-disclosure": ["registry/examples/disclosure.tsx"],
+  "react-examples-disclosure": ["registry/examples/disclosure/index.tsx"],
   "react-examples-disclosure-actions": [
-    "registry/examples/disclosure-actions.tsx",
+    "registry/examples/disclosure-actions/index.tsx",
+    "registry/examples/disclosure-actions/orders.ts",
   ],
-  "react-components-disclosure": ["registry/examples/disclosure.tsx"],
+  "react-components-disclosure": ["registry/examples/disclosure/index.tsx"],
   "react-aria-disclosure": ["registry/ui/disclosure.tsx"],
   "react-utils-create-render": ["registry/lib/create-render.ts"],
   "react-hooks-use-is-mobile": ["registry/hook/use-is-mobile.ts"],
 };
 
 for (const [name, paths] of Object.entries(filePathSamples)) {
-  test(`registry item ${name} has correct file with correct path`, async ({
+  test(`registry item ${name} has correct files with correct paths`, async ({
     page,
   }) => {
     const item = await fetchRegistryItem(page, name);
     expect(item.files).toEqual(
       paths.map((path) => expect.objectContaining({ path })),
+    );
+  });
+}
+
+const fileTargetSamples = {
+  "ak-button": [undefined],
+  "react-examples-disclosure": ["components/disclosure/index.tsx"],
+  "react-examples-disclosure-actions": [
+    "components/disclosure-actions/index.tsx",
+    "components/disclosure-actions/orders.ts",
+  ],
+  "react-components-disclosure": ["components/disclosure/index.tsx"],
+  "react-aria-disclosure": [undefined],
+  "react-utils-create-render": [undefined],
+  "react-hooks-use-is-mobile": [undefined],
+};
+
+for (const [name, targets] of Object.entries(fileTargetSamples)) {
+  test(`registry item ${name} has correct file with correct target path`, async ({
+    page,
+  }) => {
+    const item = await fetchRegistryItem(page, name);
+    expect(item.files).toEqual(
+      targets.map((target) => {
+        if (target === undefined) {
+          return expect.not.objectContaining({ target: expect.anything() });
+        }
+        return expect.objectContaining({ target });
+      }),
     );
   });
 }

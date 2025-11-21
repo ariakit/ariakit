@@ -13,11 +13,7 @@ import { createLogger } from "#app/lib/logger.ts";
 import { nonNullable } from "#app/lib/object.ts";
 import { badRequest, notFound } from "#app/lib/response.ts";
 import type { Source, SourceFile } from "#app/lib/source.ts";
-import {
-  getImportPaths,
-  mergeFiles,
-  replaceImportPaths,
-} from "#app/lib/source.ts";
+import { getImportPaths, replaceImportPaths } from "#app/lib/source.ts";
 import type { ModuleJson } from "#app/lib/styles.ts";
 import { resolveDirectStyles, styleDefsToCss } from "#app/lib/styles.ts";
 import stylesJson from "#app/styles/styles.json" with { type: "json" };
@@ -195,7 +191,7 @@ function getCssRegistryItem(
   const type = getRegistryItemType(source.path);
   const file: RegistryItemFile = {
     type,
-    path: getRegistryItemPath(source.path, name),
+    path: getRegistryItemPath(source.path),
     content: index
       ? undefined
       : styleDefsToCss([
@@ -228,25 +224,14 @@ function getLibraryRegistryItem(
   index: boolean,
 ): RegistryItem | null {
   const originalSources = getFlattenedSources(source);
-  let filteredSources = filterLibrarySources(source, originalSources);
+  const filteredSources = filterLibrarySources(source, originalSources);
+  const firstPath = Object.keys(filteredSources)[0];
 
-  if (Object.keys(filteredSources).length === 0) return null;
+  if (!firstPath) return null;
 
-  const firstPath = Object.keys(filteredSources)[0]!;
   const firstSourceName = getRegistryItemName(firstPath);
   const type = getRegistryItemType(firstPath);
-
-  if (type === "registry:example") {
-    const folderName = getExamplesFolderName(firstPath);
-    const extension = Object.keys(filteredSources).some((path) =>
-      path.endsWith(".tsx"),
-    )
-      ? "tsx"
-      : "ts";
-    const targetPath = `${EXAMPLES_PREFIX}${folderName}.${extension}`;
-
-    filteredSources = mergeFiles(filteredSources, () => targetPath);
-  }
+  const firstSourceFile = getExamplesFolderName(firstPath);
 
   const item: RegistryItem = {
     name: firstSourceName,
@@ -261,19 +246,40 @@ function getLibraryRegistryItem(
     meta: {
       href: `${url.origin}/r/${firstSourceName}.json`,
     },
-    files: Object.values(filteredSources).map((source) => ({
-      type: getRegistryItemType(source.id),
-      path: getRegistryItemPath(source.id, firstSourceName),
-      content: index
+    files: Object.values(filteredSources).map((source) => {
+      const content = index ? undefined : transformFileContent(source);
+      const contentUseClient = index
         ? undefined
-        : transformFileContent(source, firstSourceName),
-    })),
+        : ["registry:ui", "registry:example"].includes(
+              getRegistryItemType(source.id),
+            )
+          ? `"use client";\n${content}`
+          : content;
+
+      let path = getRegistryItemPath(source.id);
+      if (
+        type === "registry:example" &&
+        getRegistryItemType(source.id) === "registry:example"
+      ) {
+        path = `registry/examples/${firstSourceFile}/${getRegistryItemFilename(source.id)}`;
+      }
+
+      return {
+        type: getRegistryItemType(source.id),
+        path,
+        target:
+          type === "registry:example"
+            ? `components/${basename(firstSourceFile, extname(firstSourceFile))}/${getRegistryItemFilename(source.id)}`
+            : undefined,
+        content: index ? undefined : contentUseClient,
+      };
+    }),
   };
 
   return item;
 }
 
-function transformFileContent(source: SourceFile, itemName: string) {
+function transformFileContent(source: SourceFile) {
   return replaceImportPaths(source.content, (path) => {
     const absolutePath = resolveImportAbsolutePath(source.id, path);
     const relativeAbsolutePath = getSrcRelativePath(absolutePath);
@@ -286,7 +292,7 @@ function transformFileContent(source: SourceFile, itemName: string) {
       }
       return path;
     }
-    return `@/${getRegistryItemPath(absolutePath, itemName).replace(/\.([jt]sx?)$/, "")}`;
+    return `@/${getRegistryItemPath(absolutePath).replace(/\.([jt]sx?)$/, "")}`;
   });
 }
 
@@ -365,7 +371,7 @@ function getRegistryItemType(sourcePath: string) {
   return "registry:ui";
 }
 
-function getRegistryItemPath(sourcePath: string, _itemName: string) {
+function getRegistryItemPath(sourcePath: string) {
   const type = getRegistryItemType(sourcePath);
   const filename = getRegistryItemFilename(sourcePath);
   if (type === "registry:lib") return `registry/lib/${filename}`;
@@ -373,7 +379,8 @@ function getRegistryItemPath(sourcePath: string, _itemName: string) {
   if (type === "registry:ui") {
     return `registry/ui/${filename.replace("ak-", "")}`;
   }
-  return `registry/examples/${filename}`;
+  const folderName = getExamplesFolderName(sourcePath);
+  return `registry/examples/${folderName}/${filename}`;
 }
 
 function getRegistryItemDependencies(source: Source | SourceFile | ModuleJson) {
