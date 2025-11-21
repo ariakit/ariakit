@@ -41,9 +41,9 @@ const THEME_CSS = {
 };
 
 const THEME_CSS_VARS = {
-  "--color-canvas": "oklch(99.33% 0.0011 197.14)",
-  "--color-primary": "oklch(56.7% 0.154556 248.5156)",
-  "--color-secondary": "oklch(65.59% 0.2118 354.31)",
+  "--color-canvas": "var(--color-canvas)",
+  "--color-primary": "var(--color-primary)",
+  "--color-secondary": "var(--color-secondary)",
   "--radius-container": "var(--radius-xl)",
   "--spacing-container": "--spacing(1)",
   "--radius-tooltip": "var(--radius-lg)",
@@ -58,8 +58,16 @@ const THEME_CSS_VARS = {
   "--spacing-badge": "--spacing(1.5)",
 };
 
+const THEME_CSS_VARS_LIGHT = {
+  "--canvas": "oklch(99.33% 0.0011 197.14)",
+  "--primary": "oklch(56.7% 0.154556 248.5156)",
+  "--secondary": "oklch(65.59% 0.2118 354.31)",
+};
+
 const THEME_CSS_VARS_DARK = {
-  "--color-canvas": "oklch(16.34% 0.0091 264.28)",
+  "--canvas": "oklch(16.34% 0.0091 264.28)",
+  "--primary": "oklch(56.7% 0.154556 248.5156)",
+  "--secondary": "oklch(65.59% 0.2118 354.31)",
 };
 
 function getThemeRegistryItem(url: URL, index = false): RegistryItem {
@@ -71,7 +79,11 @@ function getThemeRegistryItem(url: URL, index = false): RegistryItem {
     css: index ? undefined : THEME_CSS,
     cssVars: index
       ? undefined
-      : { theme: THEME_CSS_VARS, dark: THEME_CSS_VARS_DARK },
+      : {
+          theme: THEME_CSS_VARS,
+          light: THEME_CSS_VARS_LIGHT,
+          dark: THEME_CSS_VARS_DARK,
+        },
     files: [],
   };
 }

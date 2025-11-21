@@ -64,9 +64,9 @@ test("ariakit tailwind theme item has correct css", async ({ page }) => {
   const item = await fetchRegistryItem(page, "ariakit-tailwind");
   expect(item.cssVars).toEqual({
     theme: {
-      "--color-canvas": "oklch(99.33% 0.0011 197.14)",
-      "--color-primary": "oklch(56.7% 0.154556 248.5156)",
-      "--color-secondary": "oklch(65.59% 0.2118 354.31)",
+      "--color-canvas": "var(--color-canvas)",
+      "--color-primary": "var(--color-primary)",
+      "--color-secondary": "var(--color-secondary)",
       "--radius-container": "var(--radius-xl)",
       "--spacing-container": "--spacing(1)",
       "--radius-tooltip": "var(--radius-lg)",
@@ -80,8 +80,15 @@ test("ariakit tailwind theme item has correct css", async ({ page }) => {
       "--radius-badge": "var(--radius-full)",
       "--spacing-badge": "--spacing(1.5)",
     },
+    light: {
+      "--canvas": "oklch(99.33% 0.0011 197.14)",
+      "--primary": "oklch(56.7% 0.154556 248.5156)",
+      "--secondary": "oklch(65.59% 0.2118 354.31)",
+    },
     dark: {
-      "--color-canvas": "oklch(16.34% 0.0091 264.28)",
+      "--canvas": "oklch(16.34% 0.0091 264.28)",
+      "--primary": "oklch(56.7% 0.154556 248.5156)",
+      "--secondary": "oklch(65.59% 0.2118 354.31)",
     },
   });
   expect(item.css).toEqual({
