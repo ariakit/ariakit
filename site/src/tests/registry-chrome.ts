@@ -24,6 +24,13 @@ test("registry index has specific fields", async ({ page }) => {
   expect(registry.items.length).toBeGreaterThan(0);
 });
 
+test("registry index has theme", async ({ page }) => {
+  const registry = await fetchRegistry(page);
+  const firstItem = registry.items[0];
+  expect(firstItem?.name).toBe("ariakit-tailwind");
+  expect(firstItem?.type).toBe("registry:theme");
+});
+
 test("registry index has ak-* UI items", async ({ page }) => {
   const registry = await fetchRegistry(page);
   const akItems = registry.items.filter((item) => item.name.startsWith("ak-"));
@@ -53,6 +60,51 @@ test("registry index has files with correct paths", async ({ page }) => {
   expect(files.every((file) => file?.path?.startsWith("registry/"))).toBe(true);
 });
 
+test("ariakit tailwind theme item has correct css", async ({ page }) => {
+  const item = await fetchRegistryItem(page, "ariakit-tailwind");
+  expect(item.cssVars).toEqual({
+    theme: {
+      "--color-canvas": "oklch(99.33% 0.0011 197.14)",
+      "--color-primary": "oklch(56.7% 0.154556 248.5156)",
+      "--color-secondary": "oklch(65.59% 0.2118 354.31)",
+      "--radius-container": "var(--radius-xl)",
+      "--spacing-container": "--spacing(1)",
+      "--radius-tooltip": "var(--radius-lg)",
+      "--spacing-tooltip": "--spacing(1)",
+      "--radius-dialog": "var(--radius-2xl)",
+      "--spacing-dialog": "--spacing(4)",
+      "--radius-field": "var(--radius-lg)",
+      "--spacing-field": "0.75em",
+      "--radius-card": "var(--radius-xl)",
+      "--spacing-card": "--spacing(4)",
+      "--radius-badge": "var(--radius-full)",
+      "--spacing-badge": "--spacing(1.5)",
+    },
+    dark: {
+      "--color-canvas": "oklch(16.34% 0.0091 264.28)",
+    },
+  });
+  expect(item.css).toEqual({
+    '@import "@ariakit/tailwind"': {},
+    body: {
+      "@apply ak-layer-canvas": {},
+    },
+  });
+});
+
+test("example item files are merged into a single file", async ({ page }) => {
+  const item = await fetchRegistryItem(
+    page,
+    "react-examples-disclosure-actions",
+  );
+  expect(item.files).toEqual([
+    expect.objectContaining({
+      path: "registry/examples/disclosure-actions.tsx",
+      content: expect.stringContaining("export interface Order {"),
+    }),
+  ]);
+});
+
 const nameTypeSamples = {
   "ak-button": "registry:ui",
   "react-examples-disclosure": "registry:example",
@@ -73,12 +125,11 @@ for (const [name, type] of Object.entries(nameTypeSamples)) {
 
 const filePathSamples = {
   "ak-button": ["registry/ui/button.css"],
-  "react-examples-disclosure": ["registry/examples/disclosure/index.tsx"],
+  "react-examples-disclosure": ["registry/examples/disclosure.tsx"],
   "react-examples-disclosure-actions": [
-    "registry/examples/disclosure-actions/index.tsx",
-    "registry/examples/disclosure-actions/orders.ts",
+    "registry/examples/disclosure-actions.tsx",
   ],
-  "react-components-disclosure": ["registry/examples/disclosure/index.tsx"],
+  "react-components-disclosure": ["registry/examples/disclosure.tsx"],
   "react-aria-disclosure": ["registry/ui/disclosure.tsx"],
   "react-utils-create-render": ["registry/lib/create-render.ts"],
   "react-hooks-use-is-mobile": ["registry/hook/use-is-mobile.ts"],
@@ -100,6 +151,7 @@ function depRegex(dependency: string) {
 }
 
 const dependencySamples = {
+  "ariakit-tailwind": ["@ariakit/tailwind"],
   "ak-button": ["@ariakit/tailwind"],
   "react-examples-disclosure": [],
   "react-examples-disclosure-actions": ["clsx", "lucide-react"],
@@ -121,7 +173,7 @@ for (const [name, dependencies] of Object.entries(dependencySamples)) {
 }
 
 const registryDependencySamples = {
-  "ak-button": ["ak-aurora", "ak-command"],
+  "ak-button": ["ak-aurora", "ak-command", "ariakit-tailwind"],
   "react-examples-disclosure": ["react-ariakit-disclosure"],
   "react-examples-disclosure-actions": [
     "ak-badge",

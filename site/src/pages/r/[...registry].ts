@@ -13,7 +13,11 @@ import { createLogger } from "#app/lib/logger.ts";
 import { nonNullable } from "#app/lib/object.ts";
 import { badRequest, notFound } from "#app/lib/response.ts";
 import type { Source, SourceFile } from "#app/lib/source.ts";
-import { getImportPaths, replaceImportPaths } from "#app/lib/source.ts";
+import {
+  getImportPaths,
+  mergeFiles,
+  replaceImportPaths,
+} from "#app/lib/source.ts";
 import type { ModuleJson } from "#app/lib/styles.ts";
 import { resolveDirectStyles, styleDefsToCss } from "#app/lib/styles.ts";
 import stylesJson from "#app/styles/styles.json" with { type: "json" };
@@ -28,6 +32,49 @@ const LIB_PREFIX = "examples/_lib/";
 const DATA_PREFIX = "examples/_lib/data/";
 const REACT_UTILS_PREFIX = "examples/_lib/react-utils/";
 const REACT_HOOKS_PREFIX = "examples/_lib/react-hooks/";
+
+const THEME_CSS = {
+  '@import "@ariakit/tailwind"': {},
+  body: {
+    "@apply ak-layer-canvas": {},
+  },
+};
+
+const THEME_CSS_VARS = {
+  "--color-canvas": "oklch(99.33% 0.0011 197.14)",
+  "--color-primary": "oklch(56.7% 0.154556 248.5156)",
+  "--color-secondary": "oklch(65.59% 0.2118 354.31)",
+  "--radius-container": "var(--radius-xl)",
+  "--spacing-container": "--spacing(1)",
+  "--radius-tooltip": "var(--radius-lg)",
+  "--spacing-tooltip": "--spacing(1)",
+  "--radius-dialog": "var(--radius-2xl)",
+  "--spacing-dialog": "--spacing(4)",
+  "--radius-field": "var(--radius-lg)",
+  "--spacing-field": "0.75em",
+  "--radius-card": "var(--radius-xl)",
+  "--spacing-card": "--spacing(4)",
+  "--radius-badge": "var(--radius-full)",
+  "--spacing-badge": "--spacing(1.5)",
+};
+
+const THEME_CSS_VARS_DARK = {
+  "--color-canvas": "oklch(16.34% 0.0091 264.28)",
+};
+
+function getThemeRegistryItem(url: URL, index = false): RegistryItem {
+  return {
+    name: "ariakit-tailwind",
+    type: "registry:theme",
+    dependencies: index ? undefined : ["@ariakit/tailwind"],
+    meta: { href: `${url.origin}/r/ariakit-tailwind.json` },
+    css: index ? undefined : THEME_CSS,
+    cssVars: index
+      ? undefined
+      : { theme: THEME_CSS_VARS, dark: THEME_CSS_VARS_DARK },
+    files: [],
+  };
+}
 
 const queryParamsSchema = z.object({
   ariakit: z.stringbool().default(true),
@@ -50,9 +97,12 @@ export const GET: APIRoute = async ({ request, params }) => {
   const sources = await getRegistryItemSources();
 
   if (params.registry === "registry.json") {
-    const items = Array.from(sources.values())
-      .map((source) => getRegistryItem({ source, url, index: true }))
-      .filter(nonNullable);
+    const items = [
+      getThemeRegistryItem(url, true),
+      ...Array.from(sources.values())
+        .map((source) => getRegistryItem({ source, url, index: true }))
+        .filter(nonNullable),
+    ];
 
     const registry = {
       name: "Ariakit",
@@ -60,6 +110,10 @@ export const GET: APIRoute = async ({ request, params }) => {
       items: items,
     } satisfies Registry;
     return Response.json(registry);
+  }
+
+  if (params.registry === "ariakit-tailwind.json") {
+    return Response.json(getThemeRegistryItem(url));
   }
 
   const source = sources.get(params.registry.replace(".json", ""));
@@ -162,16 +216,29 @@ function getLibraryRegistryItem(
   index: boolean,
 ): RegistryItem | null {
   const originalSources = getFlattenedSources(source);
-  const filteredSources = filterLibrarySources(source, originalSources);
+  let filteredSources = filterLibrarySources(source, originalSources);
 
   if (Object.keys(filteredSources).length === 0) return null;
 
   const firstPath = Object.keys(filteredSources)[0]!;
   const firstSourceName = getRegistryItemName(firstPath);
+  const type = getRegistryItemType(firstPath);
+
+  if (type === "registry:example") {
+    const folderName = getExamplesFolderName(firstPath);
+    const extension = Object.keys(filteredSources).some((path) =>
+      path.endsWith(".tsx"),
+    )
+      ? "tsx"
+      : "ts";
+    const targetPath = `${EXAMPLES_PREFIX}${folderName}.${extension}`;
+
+    filteredSources = mergeFiles(filteredSources, () => targetPath);
+  }
 
   const item: RegistryItem = {
     name: firstSourceName,
-    type: getRegistryItemType(firstPath),
+    type,
     dependencies: !index ? getRegistryItemDependencies(source) : undefined,
     registryDependencies: !index
       ? getRegistryItemRegistryDependencies(
@@ -286,7 +353,7 @@ function getRegistryItemType(sourcePath: string) {
   return "registry:ui";
 }
 
-function getRegistryItemPath(sourcePath: string, itemName: string) {
+function getRegistryItemPath(sourcePath: string, _itemName: string) {
   const type = getRegistryItemType(sourcePath);
   const filename = getRegistryItemFilename(sourcePath);
   if (type === "registry:lib") return `registry/lib/${filename}`;
@@ -294,8 +361,7 @@ function getRegistryItemPath(sourcePath: string, itemName: string) {
   if (type === "registry:ui") {
     return `registry/ui/${filename.replace("ak-", "")}`;
   }
-  const exampleName = itemName.replace(/^[a-z-]+-(examples|components)-/, "");
-  return `registry/examples/${exampleName}/${filename}`;
+  return `registry/examples/${filename}`;
 }
 
 function getRegistryItemDependencies(source: Source | SourceFile | ModuleJson) {
@@ -330,6 +396,7 @@ function getRegistryItemRegistryDependencies(
   const dependencies = new Set<string>();
 
   if ("utilities" in source) {
+    dependencies.add(`${url.origin}/r/ariakit-tailwind.json`);
     for (const utility of Object.values(source.utilities)) {
       for (const dep of utility.dependencies) {
         if (!dep.module) continue;
