@@ -21,9 +21,9 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
-process.env["VITEST_RUNNER_BENCHMARK_OPTIONS"] = JSON.stringify({
-  benchmark: { cycles: 10 },
-  warmup: { cycles: 5 },
+process.env.VITEST_RUNNER_BENCHMARK_OPTIONS = JSON.stringify({
+  benchmark: { cycles: 1 },
+  warmup: { cycles: 1 },
 });
 
 const isReact17 = version.startsWith("17");

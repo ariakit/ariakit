@@ -2,6 +2,7 @@ import "@testing-library/jest-dom/vitest";
 
 import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
+import type { Test } from "@vitest/runner";
 import { createElement, Suspense as ReactSuspense, version } from "react";
 import {
   createComponent,
@@ -61,70 +62,65 @@ if (version.startsWith("17")) {
   });
 }
 
-async function tryImport(path: string) {
-  return import(path)
-    .then(({ default: component }) => ({ component, failedImport: false }))
-    .catch(() => ({ component: undefined, failedImport: true }));
-}
+function createLoaderReact(component: any) {
+  return async () => {
+    const element = createElement(ReactSuspense, {
+      fallback: null,
+      // biome-ignore lint/correctness/noChildrenProp: createElement requires children prop
+      children: createElement(component),
+    });
 
-async function loadReact(dir: string) {
-  const { component, failedImport } = await tryImport(
-    `./${dir}/index.react.tsx`,
-  );
-  if (failedImport) return false;
+    const { unmount } = await renderReact(element, {
+      strictMode: true,
+    });
 
-  const element = createElement(ReactSuspense, {
-    fallback: null,
-    // biome-ignore lint/correctness/noChildrenProp: createElement requires children prop
-    children: createElement(component),
-  });
-
-  // const container = document.createElement("div");
-  // document.body.prepend(container);
-
-  const { unmount } = await renderReact(element, {
-    strictMode: true,
-    // baseElement: document.body,
-    // container,
-  });
-
-  return () => {
-    unmount();
-    // document.body.removeChild(container);
+    return unmount;
   };
 }
 
-async function loadSolid(dir: string) {
-  const { component, failedImport } = await tryImport(
-    `./${dir}/index.solid.tsx`,
-  );
-  if (failedImport) return false;
-
-  const div = document.createElement("div");
-  document.body.appendChild(div);
-
-  const dispose = renderSolid(
-    () =>
-      createComponent(SolidSuspense, {
-        fallback: null,
-        get children() {
-          return createComponent(component, {});
-        },
-      }),
-    div,
-  );
+function createLoaderSolid(component: any) {
   return () => {
-    dispose();
-    document.body.removeChild(div);
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+
+    const dispose = renderSolid(
+      () =>
+        createComponent(SolidSuspense, {
+          fallback: null,
+          get children() {
+            return createComponent(component, {});
+          },
+        }),
+      div,
+    );
+
+    return () => {
+      dispose();
+      document.body.removeChild(div);
+    };
   };
 }
 
-const LOADERS = {
-  react: loadReact,
-  solid: loadSolid,
+type Awaitable<T> = T | PromiseLike<T>;
+type Cleanup = () => Awaitable<void>;
+type Loader = () => Awaitable<Cleanup>;
+type CreateLoader = (component: any) => Loader;
+
+const loadersConfig = {
+  react: {
+    deriveFilePath: (dir) => `./${dir}/index.react.tsx`,
+    createLoader: createLoaderReact,
+  },
+  solid: {
+    deriveFilePath: (dir) => `./${dir}/index.solid.tsx`,
+    createLoader: createLoaderSolid,
+  },
 } satisfies Record<
   AllowedTestLoader,
-  (dir: string) => Promise<void | (() => void) | false>
+  {
+    deriveFilePath(dir: string): string;
+    createLoader: CreateLoader;
+  }
 >;
 
 /*
@@ -149,33 +145,81 @@ Note: test files can also be named `test-<browser target>.` instead of `test.` t
 */
 
 function parseTest(filename?: string) {
-  if (!filename) return false;
+  if (!filename) return;
+
   const match = filename.match(
     // @ts-expect-error Test runner is not limited by ES2017 target.
     /(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
   );
-  if (!match?.groups) return false;
+
+  if (!match?.groups) return;
   const { dir, loader } = match.groups;
-  if (!dir) return false;
+  if (!dir) return;
+
   return {
     dir,
-    loader: (loader ?? "all") as AllowedTestLoader | "all",
+    loaderKind: (loader ?? "all") as AllowedTestLoader | "all",
   };
 }
 
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
-// let count = 0;
+const cache = new Map<string, Loader | null>();
+
+async function createCachedLoader(test: Readonly<Test>) {
+  const parsed = parseTest(test.file?.name);
+
+  // todo: throw?
+  if (!parsed) return;
+
+  const { dir, loaderKind } = parsed;
+
+  // todo: throw?
+  if (loaderKind !== "all" && loaderKind !== LOADER) {
+    cache.set(test.id, null);
+    return;
+  }
+  const config = loadersConfig[LOADER];
+
+  const filepath = config.deriveFilePath(dir);
+
+  const component = await import(filepath)
+    .then(({ default: component }) => component)
+    .catch(() => null);
+
+  // todo: throw?
+  if (component === null) {
+    cache.set(test.id, null);
+    return;
+  }
+
+  cache.set(test.id, config.createLoader(component));
+}
+
+let count = 1;
+
 beforeEach(async ({ task, skip }) => {
-  const parseResult = parseTest(task.file?.name);
-  if (!parseResult) return;
+  const c = count++;
+  console.log(c, "beforeEach");
 
-  const { dir, loader } = parseResult;
-  if (loader !== "all" && loader !== LOADER) skip();
+  if (!cache.has(task.id)) {
+    await createCachedLoader(task);
+  }
 
-  const result = await LOADERS[LOADER](dir);
-  if (result === false) skip();
+  const loader = cache.get(task.id);
 
-  return result;
+  switch (loader) {
+    case undefined:
+      throw new Error("Expected to find loader in cache");
+    case null:
+      return skip();
+  }
+
+  const cleanup = await loader();
+
+  return async () => {
+    console.log(c, "afterEach");
+    await cleanup();
+  };
 });
