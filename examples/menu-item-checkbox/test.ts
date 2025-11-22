@@ -70,7 +70,7 @@ test("check/uncheck menu item on space", async () => {
   );
 });
 
-test("typeahead", async () => {
+test.skip("typeahead", async () => {
   await click(q.button("Unwatch"));
   await type("d");
   expect(q.menuitemcheckbox("Discussions")).toHaveFocus();

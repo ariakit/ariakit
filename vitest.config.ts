@@ -21,6 +21,11 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
+process.env.VITEST_RUNNER_BENCHMARK_OPTIONS = JSON.stringify({
+  benchmark: { cycles: 1 },
+  warmup: { cycles: 1 },
+});
+
 const isReact17 = version.startsWith("17");
 
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
@@ -36,6 +41,10 @@ const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
   react: [reactPlugin()],
   solid: [solidPlugin()],
 };
+const runner =
+  process.env.ARIAKIT_BENCH === "1"
+    ? "./node_modules/vitest-runner-benchmark/runner"
+    : undefined;
 
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
@@ -50,17 +59,12 @@ export default defineConfig({
       ...configDefaults.exclude,
       ...(isReact17 ? excludeFromReact17 : []),
     ],
-    browser: {
-      name: "chromium",
-    },
     css: {
       include: includeWithStyles,
-    },
-    sequence: {
-      hooks: "parallel",
     },
     coverage: {
       include: ["packages"],
     },
+    runner,
   },
 });

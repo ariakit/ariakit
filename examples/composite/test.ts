@@ -53,7 +53,9 @@ test("navigate through items with keyboard", async () => {
   expect(q.button("🍊 Orange")).toHaveAttribute("data-active-item");
 });
 
-test("https://github.com/ariakit/ariakit/issues/4083", async () => {
+test("https://github.com/ariakit/ariakit/issues/4083", async ({ task }) => {
+  // todo: benchmark runner should handle this
+  task.context.expect.setState({ assertionCalls: 0 });
   expect.assertions(6);
 
   await press.Tab();
