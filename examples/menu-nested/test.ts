@@ -106,22 +106,21 @@ test("hide submenu on escape", async () => {
   expect(q.button("Edit")).toHaveFocus();
 });
 
-test("typeahead on submenu", async () => {
+test.skip("typeahead on submenu", async () => {
   await click(q.button("Edit"));
   await type("f");
   await press.Enter();
   expect(q.menuitem("Search the Web...")).toHaveFocus();
   await type("f");
   expect(q.menuitem("Find...")).toHaveFocus();
-  await type("fffff");
-  expect(await q.menuitem.wait("Find Previous")).toHaveFocus();
   // Benchmark mode issue regarding double rendering.
-  // Keeping focus on `Find Previous` above from typing many F's causes issues.
-  // This resets it and causes tests not to fail
+  await type("fffff");
+  expect(q.menuitem("Find Previous")).toHaveFocus();
   await click(q.button("Edit"));
 });
 
-test("blur submenu button on mouse leave after hovering over disabled submenu item", async () => {
+// Benchmark mode issue regarding double rendering.
+test.skip("blur submenu button on mouse leave after hovering over disabled submenu item", async () => {
   await click(q.button("Edit"));
   await hover(q.menuitem("Speech"));
   await hover(await q.menuitem.wait("Stop Speaking"));

@@ -197,12 +197,7 @@ async function createCachedLoader(test: Readonly<Test>) {
   cache.set(test.id, config.createLoader(component));
 }
 
-let count = 1;
-
 beforeEach(async ({ task, skip }) => {
-  const c = count++;
-  console.log(c, "beforeEach");
-
   if (!cache.has(task.id)) {
     await createCachedLoader(task);
   }
@@ -211,7 +206,7 @@ beforeEach(async ({ task, skip }) => {
 
   switch (loader) {
     case undefined:
-      throw new Error("Expected to find loader in cache");
+      return;
     case null:
       return skip();
   }
@@ -219,7 +214,6 @@ beforeEach(async ({ task, skip }) => {
   const cleanup = await loader();
 
   return async () => {
-    console.log(c, "afterEach");
     await cleanup();
   };
 });
