@@ -21,6 +21,11 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
+process.env["VITEST_RUNNER_BENCHMARK_OPTIONS"] = JSON.stringify({
+  benchmark: { cycles: 10 },
+  warmup: { cycles: 5 },
+});
+
 const isReact17 = version.startsWith("17");
 
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;

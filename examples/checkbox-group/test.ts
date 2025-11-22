@@ -1,6 +1,5 @@
 import { click, press, q } from "@ariakit/test";
 
-// we have to convert tests tasks to our new type: a cycle
 test("check/uncheck on click", async () => {
   expect(q.labeled("Apple")).toHaveAttribute("aria-checked", "false");
   expect(q.labeled("Orange")).toHaveAttribute("aria-checked", "false");
