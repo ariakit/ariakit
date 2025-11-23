@@ -38,11 +38,11 @@
     "#app/*": "./src/*"
   },
   "dependencies": {
-    "@astrojs/check": "0.9.4",
+    "@astrojs/check": "0.9.5",
     "@astrojs/cloudflare": "12.6.10",
     "@astrojs/react": "4.4.0",
     "@astrojs/solid-js": "5.1.1",
-    "@clerk/astro": "2.13.6",
+    "@clerk/astro": "2.16.2",
     "@stripe/stripe-js": "7.9.0",
     "@types/pluralize": "0.0.33",
     "astro-remote": "0.3.4",
