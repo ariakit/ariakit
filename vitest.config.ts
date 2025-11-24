@@ -21,17 +21,27 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
-process.env.VITEST_RUNNER_BENCHMARK_OPTIONS = JSON.stringify({
-  benchmark: { cycles: 1 },
-  warmup: { cycles: 1 },
-});
+const BENCH = process.env.ARIAKIT_BENCH === "1";
+const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
+  "react") as AllowedTestLoader;
+
+if (BENCH) {
+  process.env.VITEST_RUNNER_BENCHMARK_OPTIONS = JSON.stringify({
+    benchmark: {
+      minCycles: 8,
+      minMs: 5_000,
+    },
+    warmup: {
+      minCycles: 2,
+      minMs: 2_000,
+    },
+  });
+}
 
 const isReact17 = version.startsWith("17");
 
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
 export type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
-const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
-  "react") as AllowedTestLoader;
 if (!ALLOWED_TEST_LOADERS.includes(LOADER))
   throw new Error(`Invalid loader: ${LOADER}`);
 
@@ -41,10 +51,6 @@ const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
   react: [reactPlugin()],
   solid: [solidPlugin()],
 };
-const runner =
-  process.env.ARIAKIT_BENCH === "1"
-    ? "./node_modules/vitest-runner-benchmark/runner"
-    : undefined;
 
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
@@ -65,6 +71,6 @@ export default defineConfig({
     coverage: {
       include: ["packages"],
     },
-    runner,
+    runner: BENCH ? "./node_modules/vitest-runner-benchmark/runner" : undefined,
   },
 });
