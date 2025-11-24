@@ -1,4 +1,4 @@
-name: apply-generated-changes
+name: apply-generated-patch
 
 on:
   workflow_run:
