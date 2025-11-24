@@ -136,7 +136,6 @@ Note: test files can also be named `test-<browser target>.` instead of `test.` t
 function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
-    // @ts-expect-error Test runner is not limited by ES2017 target.
     /(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
   );
   if (!match?.groups) return false;

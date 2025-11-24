@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
-import { createRender } from "#app/examples/_lib/react/utils.ts";
+import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
 
 export interface DisclosureProps
   extends Omit<ak.RoleProps<"div">, "content">,

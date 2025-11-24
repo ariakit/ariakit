@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { createContext, useContext } from "react";
-import { createRender } from "#app/examples/_lib/react/utils.ts";
 import type {
   DisclosureButtonProps,
   DisclosureContentProps,
@@ -12,6 +11,7 @@ import {
   DisclosureContent,
   DisclosureContentBody,
 } from "#app/examples/_lib/react-aria/disclosure.react.tsx";
+import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
 
 const NestedReasoningContext = createContext(false);
 

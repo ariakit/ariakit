@@ -1,7 +1,8 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
-import { createRender, isIterable } from "#app/examples/_lib/react/utils.ts";
+import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
+import { isIterable } from "#app/examples/_lib/react-utils/is-iterable.ts";
 
 type TableRowGroup = "head" | "body" | "foot";
 

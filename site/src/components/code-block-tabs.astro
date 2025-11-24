@@ -11,8 +11,8 @@
 import * as icons from "#app/icons/icons.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import { getLangFromFilename } from "#app/lib/shiki.ts";
+import type { Source } from "#app/lib/source.ts";
 import { importThumbnail } from "#app/lib/thumbnail.ts";
-import type { Source } from "#app/lib/types.ts";
 import type { ComponentProps } from "astro/types";
 import { getEntry } from "astro:content";
 import CodeBlockContent from "./code-block-content.astro";
@@ -63,7 +63,7 @@ if (source === null) {
 }
 
 const tabsFromSource = source
-  ? Object.entries(source.files).map(([filename, code]) => {
+  ? Object.entries(source.files).map(([filename, { content }]) => {
       const lang = getLangFromFilename(filename);
       const filenameIcon =
         lang === "tsx" && framework && isTsxFramework(framework)
@@ -72,7 +72,7 @@ const tabsFromSource = source
             ? lang
             : undefined;
       return {
-        code,
+        code: content,
         filename,
         filenameIcon,
       } satisfies CodeBlockTabProps;

@@ -193,6 +193,7 @@
     "remark-gfm": "3.0.1",
     "resolve-from": "5.0.0",
     "rimraf": "6.0.1",
+    "shadcn": "3.4.0",
     "sharp": "0.34.4",
     "shiki": "1.29.2",
     "solid-js": "1.9.9",
