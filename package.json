@@ -41,6 +41,7 @@
     "test-android": "npm run playwright -- --project=android",
     "test-android-headed": "npm run test-android -- --headed",
     "test-android-debug": "npm run test-android -- --ui",
+    "bench":"ARIAKIT_BENCH=1",
     "coverage": "npm test -- --coverage",
     "postcoverage": "open-cli coverage/index.html",
     "lint": "biome check",
