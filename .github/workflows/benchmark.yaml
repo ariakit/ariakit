@@ -1,0 +1,46 @@
+name: Benchmark via Bencher
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ${{ matrix.machine }}
+    strategy:
+      fail-fast: true
+      matrix:
+        machine:
+          - ubuntu-latest
+        command:
+          - benchmark
+          - benchmark-reactnext
+          - benchmark-react17
+          - benchmark-solid
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+
+      - uses: bencherdev/bencher@main
+      - name: Track base branch benchmarks with Bencher
+        run: |
+          bencher run \
+          --project FILL ME IN \
+          --token '${{ secrets.BENCHER_API_TOKEN }}' \
+          --branch main \
+          --testbed '${{ matrix.machine }}' \
+          --err \
+          --adapter json \
+          --github-actions '${{ secrets.GITHUB_TOKEN }}' \
+          npm run --silent '${{ matrix.command }}' -- --reporter="vitest-runner-benchmark/bmf-reporter"
