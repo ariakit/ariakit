@@ -129,7 +129,7 @@
     "babel-plugin-transform-rewrite-imports": "1.5.4",
     "babel-preset-solid": "1.9.9",
     "babylon": "6.18.0",
-    "canvas-confetti": "1.9.3",
+    "canvas-confetti": "1.9.4",
     "chalk": "5.6.2",
     "chokidar": "4.0.3",
     "clsx": "2.1.1",
