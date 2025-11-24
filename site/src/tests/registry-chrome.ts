@@ -26,6 +26,7 @@ test("registry index has specific fields", async ({ page }) => {
 
 test("registry index has theme", async ({ page }) => {
   const registry = await fetchRegistry(page);
+  expect(registry.items.length).toBeGreaterThan(0);
   const firstItem = registry.items[0];
   expect(firstItem?.name).toBe("ariakit-tailwind");
   expect(firstItem?.type).toBe("registry:theme");
