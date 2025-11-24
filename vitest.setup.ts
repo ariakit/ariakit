@@ -165,20 +165,25 @@ function parseTest(filename?: string) {
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
-const cache = new Map<string, Loader | null>();
+const cache = new Map<string, TestKind>();
 
-async function createCachedLoader(test: Readonly<Test>) {
+type TestKind =
+  | { type: "standard" }
+  | { type: "skip" }
+  | { type: "framework"; loader: Loader };
+
+async function createCachedLoader(test: Readonly<Test>): Promise<TestKind> {
+  const standard = { type: "standard" } as const;
+  const skip = { type: "skip" } as const;
+
   const parsed = parseTest(test.file?.name);
 
-  // todo: throw?
-  if (!parsed) return;
+  if (!parsed) return standard;
 
   const { dir, loaderKind } = parsed;
 
-  // todo: throw?
   if (loaderKind !== "all" && loaderKind !== LOADER) {
-    cache.set(test.id, null);
-    return;
+    return skip;
   }
   const config = loadersConfig[LOADER];
 
@@ -190,30 +195,28 @@ async function createCachedLoader(test: Readonly<Test>) {
 
   // todo: throw?
   if (component === null) {
-    cache.set(test.id, null);
-    return;
+    return skip;
   }
 
-  cache.set(test.id, config.createLoader(component));
+  return { type: "framework", loader: config.createLoader(component) } as const;
 }
 
 beforeEach(async ({ task, skip }) => {
   if (!cache.has(task.id)) {
-    await createCachedLoader(task);
+    cache.set(task.id, await createCachedLoader(task));
   }
 
-  const loader = cache.get(task.id);
+  const kind = cache.get(task.id)!;
 
-  switch (loader) {
-    case undefined:
-      return;
-    case null:
+  switch (kind?.type) {
+    case "framework": {
+      return await kind.loader();
+    }
+    case "skip":
       return skip();
+    case "standard":
+      return;
+    default:
+      throw new Error("Shouldn't reach here");
   }
-
-  const cleanup = await loader();
-
-  return async () => {
-    await cleanup();
-  };
 });

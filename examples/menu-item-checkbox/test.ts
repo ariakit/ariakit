@@ -70,7 +70,7 @@ test("check/uncheck menu item on space", async () => {
   );
 });
 
-test.skip("typeahead", async () => {
+test.skipIf(process.env.ARIAKIT_BENCH === "1")("typeahead", async () => {
   await click(q.button("Unwatch"));
   await type("d");
   expect(q.menuitemcheckbox("Discussions")).toHaveFocus();

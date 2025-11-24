@@ -8,7 +8,7 @@ beforeEach(() => {
   return () => {
     before.remove();
   };
-})
+});
 
 test("toolbar is still accessible with stale activeId", async () => {
   await press.Tab();

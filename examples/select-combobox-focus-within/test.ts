@@ -8,7 +8,7 @@ beforeEach(() => {
   return () => {
     externalButton.remove();
   };
-})
+});
 
 test("show/hide cancel button", async () => {
   await click(q.combobox("Favorite fruit"));

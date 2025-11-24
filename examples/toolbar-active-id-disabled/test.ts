@@ -12,7 +12,7 @@ beforeEach(() => {
     before.remove();
     after.remove();
   };
-})
+});
 
 test("toolbar is still accessible with disabled activeId", async () => {
   await press.Tab();

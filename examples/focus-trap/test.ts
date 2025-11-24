@@ -12,7 +12,7 @@ beforeEach(() => {
     before.remove();
     after.remove();
   };
-})
+});
 
 test("correctly traps focus", async () => {
   await press.Tab();
