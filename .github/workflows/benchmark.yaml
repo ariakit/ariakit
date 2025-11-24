@@ -36,7 +36,7 @@ jobs:
       - name: Track base branch benchmarks with Bencher
         run: |
           bencher run \
-          --project FILL ME IN \
+          --project e63bc897-b5fa-43e4-87d9-f294fcab62b9 \
           --token '${{ secrets.BENCHER_API_TOKEN }}' \
           --branch main \
           --testbed '${{ matrix.machine }}' \

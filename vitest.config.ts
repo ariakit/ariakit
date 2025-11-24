@@ -39,13 +39,13 @@ if (BENCH) {
         },
       }
     : {
-        // long enough to know it works
+        // 1 cycle of warmup and benchmark respectively is enough to catch errors.
         benchmark: {
-          minCycles: 4,
+          minCycles: 2,
           minMs: 5_000,
         },
         warmup: {
-          minCycles: 2,
+          minCycles: 1,
           minMs: 2_000,
         },
       };
