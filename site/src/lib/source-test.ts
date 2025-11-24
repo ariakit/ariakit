@@ -404,17 +404,34 @@ test("mergeFiles rewrites type-only imports on non-merged files", () => {
   `);
 });
 
-test("mergeFiles removes default and namespace internal imports", () => {
+test("mergeFiles throws on internal namespace imports", () => {
   const files = {
     "/path/to/utils/a.ts": {
       id: "/path/to/utils/a.ts",
       content: [
-        'import def from "./b";',
         'import * as ns from "./b";',
         "",
-        "export const x = def + (ns as any);",
+        "export const x = ns;",
         "",
       ].join("\n"),
+    },
+    "/path/to/utils/b.ts": {
+      id: "/path/to/utils/b.ts",
+      content: ["export const b = 1;", ""].join("\n"),
+    },
+  };
+  expect(() => mergeFiles(files)).toThrow(
+    'Namespace imports from internal files are not supported: "./b"',
+  );
+});
+
+test("mergeFiles removes default internal imports", () => {
+  const files = {
+    "/path/to/utils/a.ts": {
+      id: "/path/to/utils/a.ts",
+      content: ['import def from "./b";', "", "export const x = def;", ""].join(
+        "\n",
+      ),
     },
     "/path/to/utils/b.ts": {
       id: "/path/to/utils/b.ts",
@@ -432,7 +449,7 @@ test("mergeFiles removes default and namespace internal imports", () => {
     export default def;
     export const B = 2;
 
-    export const x = def + (ns as any);
+    export const x = def;
     "
   `);
 });

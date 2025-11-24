@@ -562,6 +562,11 @@ function stripInternalNamedImports(
       const abs = resolveSpecifierToId(files, fromId, spec);
       if (!abs) return match;
       if (!groupIds.has(abs)) return match;
+      if (/\bimport\s+\*\s+as\s+/.test(match)) {
+        throw new Error(
+          `Namespace imports from internal files are not supported: "${spec}"`,
+        );
+      }
       // Remove declaration; stray semicolon cleanup will handle leftover ';' lines
       return "";
     });
