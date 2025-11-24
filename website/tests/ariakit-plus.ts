@@ -214,7 +214,7 @@ async function fillCheckout(page: Page, assertEmail?: string) {
   await q.textbox("Expiration").fill("12/40");
   await q.textbox("CVC").fill("123");
   await q.textbox("Cardholder name").fill("John Doe");
-  await q.combobox("Country").selectOption("Spain");
+  await q.combobox("Country or region").selectOption("Spain");
   return frame;
 }
 
