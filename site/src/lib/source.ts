@@ -28,6 +28,10 @@ const IMPORT_TYPE_NAMED = new RegExp(
   String.raw`import\s+type\s+\{[\s\S]*?\}${FROM_CLAUSE}`,
   "g",
 );
+const IMPORT_TYPE_NAMESPACE = new RegExp(
+  String.raw`import\s+type\s+\*\s+as\s+[^;]*?${FROM_CLAUSE}`,
+  "g",
+);
 const IMPORT_DYNAMIC = new RegExp(
   String.raw`\bimport\s*\(\s*${PATH_QUOTED}\s*\)`,
   "g",
@@ -104,6 +108,7 @@ export type ImportPathType =
 // Central registry of patterns and their classification
 const PATTERNS: Array<[RegExp, ImportPathType]> = [
   [IMPORT_TYPE_NAMED, "import-type"],
+  [IMPORT_TYPE_NAMESPACE, "import-type"],
   [IMPORT_DYNAMIC, "import-dynamic"],
   [IMPORT_FROM_ANY, "import"],
   [IMPORT_SIDE_EFFECT, "import"],
@@ -633,14 +638,39 @@ export function hoistImports(content: string) {
 
   extract(IMPORT_SIDE_EFFECT);
   extract(IMPORT_TYPE_NAMED);
+  extract(IMPORT_TYPE_NAMESPACE);
   extract(IMPORT_FROM_ANY);
 
   body = cleanSemicolonOnlyLines(body);
   body = collapseExcessBlankLines(body);
 
-  if (imports.size === 0) return content;
+  const namespaceValueImports = new Set<string>();
+  for (const imp of imports) {
+    const match = imp.match(
+      /^import\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
+    );
+    if (match) {
+      namespaceValueImports.add(`${match[1]}|${match[2]}`);
+    }
+  }
 
-  return `${sortKeys(imports).join("\n")}\n\n${body.trimStart()}`;
+  const finalImports = new Set<string>();
+  for (const imp of imports) {
+    const typeMatch = imp.match(
+      /^import\s+type\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
+    );
+    if (typeMatch) {
+      const key = `${typeMatch[1]}|${typeMatch[2]}`;
+      if (namespaceValueImports.has(key)) {
+        continue;
+      }
+    }
+    finalImports.add(imp);
+  }
+
+  if (finalImports.size === 0) return content;
+
+  return `${sortKeys(finalImports).join("\n")}\n\n${body.trimStart()}`;
 }
 
 /**

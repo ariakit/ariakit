@@ -1,3 +1,5 @@
+import type * as React from "react";
+
 /**
  * Merges two React props objects with special handling for className, style,
  * and event handlers (override runs before base).

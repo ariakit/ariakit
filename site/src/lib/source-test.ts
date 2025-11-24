@@ -10,6 +10,7 @@
 
 import {
   getImportPaths,
+  hoistImports,
   mergeFiles,
   mergeImports,
   replaceImportPaths,
@@ -492,4 +493,54 @@ test("mergeFiles hoists external imports", () => {
     export const a = b + ext;
     "
   `);
+});
+
+test("hoistImports hoists import type namespace", () => {
+  const code = [
+    'import type * as React from "react";',
+    "export const a = 1;",
+  ].join("\n");
+  expect(hoistImports(code)).toBe(
+    'import type * as React from "react";\n\nexport const a = 1;',
+  );
+});
+
+test("mergeFiles hoists and merges namespace imports", () => {
+  const files = {
+    "/path/to/utils/a.ts": {
+      id: "/path/to/utils/a.ts",
+      content: [
+        'import * as React from "react";',
+        "",
+        "export const a = React.createElement('div');",
+        "",
+      ].join("\n"),
+    },
+    "/path/to/utils/b.ts": {
+      id: "/path/to/utils/b.ts",
+      content: [
+        'import type * as React from "react";',
+        "",
+        "export type B = React.ReactNode;",
+        "",
+      ].join("\n"),
+    },
+  };
+  const merged = mergeFiles(files);
+  expect(merged["/path/to/utils.ts"]?.content).toMatchInlineSnapshot(`
+    "import * as React from "react";
+
+    export const a = React.createElement('div');
+
+    export type B = React.ReactNode;
+    "
+  `);
+});
+
+test("getImportPaths captures import type namespace", () => {
+  const code = 'import type * as React from "react";';
+  const paths = getImportPaths(code);
+  expect(paths).toEqual(new Set(["react"]));
+  const types = getImportPaths(code, (_p, t) => t === "import-type");
+  expect(types).toEqual(new Set(["react"]));
 });
