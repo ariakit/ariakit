@@ -24,18 +24,33 @@ const includeWithStyles = [
 const BENCH = process.env.ARIAKIT_BENCH === "1";
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
+const CI = process.env.CI;
 
 if (BENCH) {
-  process.env.VITEST_RUNNER_BENCHMARK_OPTIONS = JSON.stringify({
-    benchmark: {
-      minCycles: 8,
-      minMs: 5_000,
-    },
-    warmup: {
-      minCycles: 2,
-      minMs: 2_000,
-    },
-  });
+  const config = CI
+    ? {
+        benchmark: {
+          minCycles: 100,
+          minMs: 30_000,
+        },
+        warmup: {
+          minCycles: 5,
+          minMs: 2_000,
+        },
+      }
+    : {
+        // long enough to know it works
+        benchmark: {
+          minCycles: 4,
+          minMs: 5_000,
+        },
+        warmup: {
+          minCycles: 2,
+          minMs: 2_000,
+        },
+      };
+
+  process.env.VITEST_RUNNER_BENCHMARK_OPTIONS = JSON.stringify(config);
 }
 
 const isReact17 = version.startsWith("17");
