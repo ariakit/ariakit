@@ -164,7 +164,6 @@ function extractLiveExamples(text: string) {
       return urlMatch?.[1];
     })
     .filter((url): url is string => !!url);
-  // @ts-expect-error
   const cleanedDescription = text.replace(/\s*Live examples:.*$/is, "").trim();
 
   return { description: cleanedDescription, liveExamples };
@@ -255,7 +254,6 @@ function getExamples(node: Node) {
     const text = String(rawText);
     // Parse example with optional description and code block
     const match = text.match(
-      // @ts-expect-error
       /^(?<description>(.|\n)*)```(?<language>\S+)(?<modifiers>[^\n]*)\n(?<code>(.|\n)+)\n```$/m,
     );
     examples.push({
