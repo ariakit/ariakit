@@ -18,27 +18,37 @@ jobs:
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'
     steps:
+      - name: Create artifact temp directory
+        run: mkdir -p "${{ runner.temp }}/artifacts"
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/artifacts
 
       - name: Determine patch file
         id: patch
         run: |
-          if [ -f "og-images-diff/og-images.patch" ]; then
-            echo "file=og-images-diff/og-images.patch" >> $GITHUB_OUTPUT
+          ARTIFACTS_DIR="${{ runner.temp }}/artifacts"
+          if [ -f "$ARTIFACTS_DIR/og-images-diff/og-images.patch" ]; then
+            echo "file=$ARTIFACTS_DIR/og-images-diff/og-images.patch" >> $GITHUB_OUTPUT
             echo "message=Update OG images" >> $GITHUB_OUTPUT
-          elif [ -f "build-styles-diff/build-styles.patch" ]; then
-            echo "file=build-styles-diff/build-styles.patch" >> $GITHUB_OUTPUT
+          elif [ -f "$ARTIFACTS_DIR/build-styles-diff/build-styles.patch" ]; then
+            echo "file=$ARTIFACTS_DIR/build-styles-diff/build-styles.patch" >> $GITHUB_OUTPUT
             echo "message=Update styles" >> $GITHUB_OUTPUT
           fi
+
+      - name: Checkout trusted repository
+        if: steps.patch.outputs.file
+        uses: actions/checkout@v5
 
       - name: Checkout PR
         if: steps.patch.outputs.file
         uses: actions/checkout@v5
         with:
+          path: pr
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
@@ -46,12 +56,14 @@ jobs:
       - name: Apply patch
         if: steps.patch.outputs.file
         run: |
-          git apply ${{ steps.patch.outputs.file }}
+          cd pr
+          git apply "${{ steps.patch.outputs.file }}"
 
       - name: Commit changes
         if: steps.patch.outputs.file
         uses: ./.github/workflows/commit-or-pr
         with:
+          working-directory: pr
           event: pull_request
           message: ${{ steps.patch.outputs.message }}
           head-branch: ${{ github.event.workflow_run.head_branch }}
