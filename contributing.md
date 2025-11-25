@@ -272,6 +272,13 @@ npm test watch my-component
 
 Benchmarks provide us an opportunity to compare performance of examples between commits and frameworks. We use exising tests to create benchmarks via `vitest-runner-benchmark`.
 
+Benchmarks can be ran with the following scripts:
+
+- `npm run bench`
+- `npm run bench-react17`
+- `npm run bench-reactnext`
+- `npm run bench-solid`
+
 If a test fails as a benchmark, there's likely an issue between setup and teardown functions.
 
 If the issue is likely downstream from `vitest-runner-benchmark`, then the test can be skipped with the following pattern.
