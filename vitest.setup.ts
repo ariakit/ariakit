@@ -148,7 +148,6 @@ function parseTest(filename?: string) {
   if (!filename) return;
 
   const match = filename.match(
-    // @ts-expect-error Test runner is not limited by ES2017 target.
     /(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
   );
 

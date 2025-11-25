@@ -97,19 +97,34 @@ export function getFramework(framework: keyof typeof frameworks) {
 
 export function getFrameworkByFilename(
   filename: string,
-): keyof typeof frameworks {
-  if (filename.includes(".astro")) return "astro";
-  if (filename.includes(".html")) return "html";
-  if (filename.includes(".preact.tsx")) return "preact";
-  if (filename.includes(".react.tsx")) return "react";
-  if (filename.includes(".solid.tsx")) return "solid";
-  if (filename.includes(".svelte")) return "svelte";
-  if (filename.includes(".vue")) return "vue";
-  return "html";
+): keyof typeof frameworks | null {
+  if (filename.endsWith(".astro")) return "astro";
+  if (filename.endsWith(".html")) return "html";
+  if (filename.endsWith(".preact.tsx")) return "preact";
+  if (filename.endsWith(".react.tsx")) return "react";
+  if (filename.endsWith(".solid.tsx")) return "solid";
+  if (filename.endsWith(".svelte")) return "svelte";
+  if (filename.endsWith(".vue")) return "vue";
+  return null;
+}
+
+export function removeFrameworkSuffix(path: string) {
+  return path
+    .replace(/\.preact\.([tj]sx?)$/, ".$1")
+    .replace(/\.react\.([tj]sx?)$/, ".$1")
+    .replace(/\.solid\.([tj]sx?)$/, ".$1");
 }
 
 export function getIndexFile(framework: keyof typeof frameworks) {
   const frameworkDetail = getFramework(framework);
   if (!("indexFile" in frameworkDetail)) return null;
   return frameworkDetail.indexFile;
+}
+
+export function isFrameworkDependency(
+  pkg: string,
+): pkg is keyof typeof frameworks {
+  return Object.values(frameworks).some((framework) =>
+    framework.dependencies.includes(pkg as never),
+  );
 }

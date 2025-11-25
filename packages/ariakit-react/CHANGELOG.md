@@ -1,5 +1,11 @@
 # @ariakit/react
 
+## 0.4.20
+
+- Fixed `RefObject` types for React 19.
+- Updated packages to target ES2018 (previously ES2017).
+- Updated dependencies: `@ariakit/react-core@0.4.20`
+
 ## 0.4.19
 
 - Updated `Array` types to `ReadonlyArray` for better compatibility.

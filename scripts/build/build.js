@@ -123,7 +123,10 @@ function buildSolid({ format, outDir }) {
       options.chunkNames = "__chunks/[hash]";
       options.jsx = "preserve";
     },
-    esbuildPlugins: [solidPlugin({ solid: { generate: "dom" } })],
+    esbuildPlugins: [
+      // @ts-expect-error there are multiple esbuild dependencies installed
+      solidPlugin({ solid: { generate: "dom" } }),
+    ],
   });
 }
 

@@ -202,7 +202,7 @@ export function useDeferredValue<T>(value: T): T {
  * }
  */
 export function useTagName(
-  refOrElement?: RefObject<HTMLElement> | HTMLElement | null,
+  refOrElement?: RefObject<HTMLElement | null> | HTMLElement | null,
   type?: string | ComponentType,
 ) {
   const stringOrUndefined = (type?: string | ComponentType) => {
@@ -233,7 +233,7 @@ export function useTagName(
  * }
  */
 export function useAttribute(
-  refOrElement: RefObject<HTMLElement> | HTMLElement | null,
+  refOrElement: RefObject<HTMLElement | null> | HTMLElement | null,
   attributeName: string,
   defaultValue?: string,
 ) {

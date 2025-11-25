@@ -122,15 +122,16 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Cache Next.js
-        uses: actions/cache@v4
-        with:
-          path: website/.next
-          key: nextjs-${{ github.run_id }}
-          restore-keys: nextjs-
-
       - name: Build website
         run: npm run build-website-lite
+
+      - name: Upload website artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-dist
+          path: website/.next
+          retention-days: 7
+          include-hidden-files: true
 
   test-chrome:
     name: Test ${{ matrix.name }}
@@ -163,11 +164,11 @@ jobs:
         with:
           engine: ${{ matrix.engine }}
 
-      - name: Restore website
-        uses: actions/cache/restore@v4
+      - name: Download website artifact
+        uses: actions/download-artifact@v5
         with:
+          name: website-dist
           path: website/.next
-          key: nextjs-${{ github.run_id }}
 
       - name: Test
         id: test
@@ -205,11 +206,11 @@ jobs:
         with:
           engine: webkit
 
-      - name: Restore website
-        uses: actions/cache/restore@v4
+      - name: Download website artifact
+        uses: actions/download-artifact@v5
         with:
+          name: website-dist
           path: website/.next
-          key: nextjs-${{ github.run_id }}
 
       - name: Test
         id: test

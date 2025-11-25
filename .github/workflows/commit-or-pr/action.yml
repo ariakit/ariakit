@@ -18,6 +18,10 @@ inputs:
     description: Token used for PR creation (defaults to GITHUB_TOKEN)
     required: false
     default: ""
+  working-directory:
+    description: Directory where the repository is checked out
+    required: false
+    default: "."
 
 runs:
   using: "composite"
@@ -25,6 +29,7 @@ runs:
     - name: Configure git
       shell: bash
       run: |
+        cd "${{ inputs.working-directory }}"
         git config user.name "ariakit-bot"
         git config user.email "ariakit-bot@users.noreply.github.com"
 
@@ -32,6 +37,7 @@ runs:
       if: inputs.event == 'push'
       uses: peter-evans/create-pull-request@v7
       with:
+        path: ${{ inputs.working-directory }}
         commit-message: ${{ inputs.message }}
         title: ${{ inputs.message }}
         base: ${{ inputs.head-branch }}
@@ -48,6 +54,7 @@ runs:
       env:
         MESSAGE: ${{ inputs.message }}
       run: |
+        cd "${{ inputs.working-directory }}"
         git add -A
         if git diff --cached --quiet --exit-code; then
           echo "No files to commit."
@@ -64,6 +71,7 @@ runs:
         HEAD_REF: ${{ inputs.head-branch }}
         GH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
       run: |
+        cd "${{ inputs.working-directory }}"
         set +e
         printf "%s" "$GH_TOKEN" | gh auth login --with-token
         gh auth setup-git
