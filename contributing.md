@@ -270,7 +270,7 @@ npm test watch my-component
 
 ## Benchmarking the example
 
-Benchmarks provide us an opportunity to compare performance of examples between commits and frameworks. We use exising tests to create benchmarks via `vitest-runner-benchmark`.
+Benchmarks provide us an opportunity to compare performance of examples between commits and frameworks. We use existing tests to create benchmarks via `vitest-runner-benchmark`.
 
 Benchmarks can be ran with the following scripts:
 
@@ -283,13 +283,6 @@ If a test fails as a benchmark, there's likely an issue between setup and teardo
 
 If the issue is likely downstream from `vitest-runner-benchmark`, then the test can be skipped with the following pattern.
 
-```ts
-import * as process from 'node:process'
-
-test.skipIf(process.env.ARIAKIT_BENCH === "1")("test name", () => {
-  /* test case */
-})
-```
 
 ## Writing another example
 
