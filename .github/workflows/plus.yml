@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: plus-test-results
           path: test-results

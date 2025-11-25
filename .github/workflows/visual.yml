@@ -63,7 +63,7 @@ jobs:
 
       - name: Download snapshots
         if: steps.check-artifacts.outputs.result == 'true'
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

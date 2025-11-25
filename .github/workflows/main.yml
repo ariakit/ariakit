@@ -126,7 +126,7 @@ jobs:
         run: npm run build-website-lite
 
       - name: Upload website artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: website-dist
           path: website/.next
@@ -165,7 +165,7 @@ jobs:
           engine: ${{ matrix.engine }}
 
       - name: Download website artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: website-dist
           path: website/.next
@@ -176,7 +176,7 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.project }}-test-results
           path: test-results
@@ -207,7 +207,7 @@ jobs:
           engine: webkit
 
       - name: Download website artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: website-dist
           path: website/.next
@@ -218,7 +218,7 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: safari-test-results
           path: test-results

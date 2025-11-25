@@ -30,7 +30,7 @@ runs:
 
     - name: Upload patch
       if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: ${{ inputs.patch-name }}
         path: ${{ inputs.patch-file }}
