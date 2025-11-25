@@ -30,23 +30,23 @@ if (BENCH) {
   const config = CI
     ? {
         benchmark: {
-          minCycles: 100,
-          minMs: 30_000,
+          minCycles: 1,
+          minMs: 27_000,
         },
         warmup: {
-          minCycles: 5,
-          minMs: 2_000,
+          minCycles: 0,
+          minMs: 3_000,
         },
       }
     : {
         // 1 cycle of warmup and benchmark respectively is enough to catch errors.
         benchmark: {
           minCycles: 2,
-          minMs: 5_000,
+          minMs: 0,
         },
         warmup: {
           minCycles: 1,
-          minMs: 2_000,
+          minMs: 0,
         },
       };
 
