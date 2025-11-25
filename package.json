@@ -99,7 +99,7 @@
     "@stackblitz/sdk": "1.11.0",
     "@stripe/react-stripe-js": "3.10.0",
     "@stripe/stripe-js": "6.1.0",
-    "@tailwindcss/vite": "4.1.14",
+    "@tailwindcss/vite": "4.1.17",
     "@tanstack/react-query": "5.90.10",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "6.9.1",

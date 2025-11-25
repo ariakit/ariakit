@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@types/color-string": "^1.5.5",
-    "tailwindcss": "4.1.14"
+    "tailwindcss": "4.1.17"
   },
   "peerDependencies": {
     "tailwindcss": "^4.0.3"
