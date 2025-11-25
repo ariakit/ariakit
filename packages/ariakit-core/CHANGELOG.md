@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.4.17
+
+- Updated packages to target ES2018 (previously ES2017).
+
 ## 0.4.16
 
 - Updated `Array` types to `ReadonlyArray` for better compatibility.

@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/tailwind",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Tailwind CSS utilities for building accessible web apps",
   "sideEffects": false,
   "license": "MIT",
