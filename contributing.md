@@ -270,40 +270,18 @@ npm test watch my-component
 
 ## Benchmarking the example
 
-Benchmarks provide us an opportunity to compare performance of examples between commits and frameworks.
+Benchmarks provide us an opportunity to compare performance of examples between commits and frameworks. We use exising tests to create benchmarks via `vitest-runner-benchmark`.
 
-By default, all non-browser tests can be run in benchmark mode with the script `npm run test:benchmark`.
+If a test fails as a benchmark, there's likely an issue between setup and teardown functions.
 
-To add benchmark specific test, follow these steps.
-
-1. Create file called `perf.ts` in the example folder.
-2. Create the benchmarking test utility, which provides important setup.
-3. Ensure there are no assertions.
+If the issue is likely downstream from `vitest-runner-benchmark`, then the test can be skipped with the following pattern.
 
 ```ts
-// perf.ts
-import { focus, press, q } from "@ariakit/test";
-import { bench } from "vitest";
+import * as process from 'node:process'
 
-bench("correctly traps focus", async () => {
-  const qq = q.within(q.group("trap"));
-
-  await focus(qq.text("Start"));
-  await press.Tab();
-  await press.Tab();
-  await press.Tab();
-});
-
-bench("correctly redirects focus", async () => {
-  const qq = q.within(q.group("redirect"));
-
-  await focus(qq.text("Start"));
-  await press.Tab();
-  await press.Tab();
-  await press.ShiftTab();
-  await press.ShiftTab();
-});
-
+test.skipIf(process.env.ARIAKIT_BENCH === "1")(() => {
+  /* test case */
+})
 ```
 
 ## Writing another example
