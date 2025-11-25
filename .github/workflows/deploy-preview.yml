@@ -71,7 +71,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Download app artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: app-dist
           path: site/dist
