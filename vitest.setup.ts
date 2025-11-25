@@ -164,13 +164,18 @@ function parseTest(filename?: string) {
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
-const cache = new Map<string, TestKind>();
-
 type TestKind =
   | { type: "standard" }
   | { type: "skip" }
   | { type: "framework"; loader: Loader };
 
+const cache = new Map<string, TestKind>();
+
+/**
+ * @summary
+ * Cache the loader, if any, and the type of test.
+ * Benchmarks would otherwise import the component on every cycle.
+ */
 async function createCachedLoader(test: Readonly<Test>): Promise<TestKind> {
   const standard = { type: "standard" } as const;
   const skip = { type: "skip" } as const;
@@ -207,15 +212,13 @@ beforeEach(async ({ task, skip }) => {
 
   const kind = cache.get(task.id)!;
 
-  switch (kind?.type) {
+  switch (kind.type) {
+    case "standard":
+      return;
+    case "skip":
+      return skip();
     case "framework": {
       return await kind.loader();
     }
-    case "skip":
-      return skip();
-    case "standard":
-      return;
-    default:
-      throw new Error("Shouldn't reach here");
   }
 });
