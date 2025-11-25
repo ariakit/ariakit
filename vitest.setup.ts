@@ -106,7 +106,12 @@ type Cleanup = () => Awaitable<void>;
 type Loader = () => Awaitable<Cleanup>;
 type CreateLoader = (component: any) => Loader;
 
-const loadersConfig = {
+interface Strategy {
+  deriveFilePath(dir: string): string;
+  createLoader: CreateLoader;
+}
+
+const loaderStrategy = {
   react: {
     deriveFilePath: (dir) => `./${dir}/index.react.tsx`,
     createLoader: createLoaderReact,
@@ -115,13 +120,7 @@ const loadersConfig = {
     deriveFilePath: (dir) => `./${dir}/index.solid.tsx`,
     createLoader: createLoaderSolid,
   },
-} satisfies Record<
-  AllowedTestLoader,
-  {
-    deriveFilePath(dir: string): string;
-    createLoader: CreateLoader;
-  }
->;
+} satisfies Record<AllowedTestLoader, Strategy>;
 
 /*
 
@@ -157,26 +156,26 @@ function parseTest(filename?: string) {
 
   return {
     dir,
-    loaderKind: (loader ?? "all") as AllowedTestLoader | "all",
+    loader: (loader ?? "all") as AllowedTestLoader | "all",
   };
 }
 
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
-type TestKind =
+type TestStrategy =
   | { type: "standard" }
   | { type: "skip" }
   | { type: "framework"; loader: Loader };
 
-const cache = new Map<string, TestKind>();
+const strategies = new Map<string, TestStrategy>();
 
 /**
  * @summary
  * Cache the loader, if any, and the type of test.
  * Benchmarks would otherwise import the component on every cycle.
  */
-async function createCachedLoader(test: Readonly<Test>): Promise<TestKind> {
+async function createTestStrategy(test: Readonly<Test>): Promise<TestStrategy> {
   const standard = { type: "standard" } as const;
   const skip = { type: "skip" } as const;
 
@@ -184,12 +183,13 @@ async function createCachedLoader(test: Readonly<Test>): Promise<TestKind> {
 
   if (!parsed) return standard;
 
-  const { dir, loaderKind } = parsed;
+  const { dir, loader } = parsed;
 
-  if (loaderKind !== "all" && loaderKind !== LOADER) {
+  if (loader !== "all" && loader !== LOADER) {
     return skip;
   }
-  const config = loadersConfig[LOADER];
+
+  const config = loaderStrategy[LOADER];
 
   const filepath = config.deriveFilePath(dir);
 
@@ -197,7 +197,6 @@ async function createCachedLoader(test: Readonly<Test>): Promise<TestKind> {
     .then(({ default: component }) => component)
     .catch(() => null);
 
-  // todo: throw?
   if (component === null) {
     return skip;
   }
@@ -206,19 +205,19 @@ async function createCachedLoader(test: Readonly<Test>): Promise<TestKind> {
 }
 
 beforeEach(async ({ task, skip }) => {
-  if (!cache.has(task.id)) {
-    cache.set(task.id, await createCachedLoader(task));
+  if (!strategies.has(task.id)) {
+    strategies.set(task.id, await createTestStrategy(task));
   }
 
-  const kind = cache.get(task.id)!;
+  const strategy = strategies.get(task.id)!;
 
-  switch (kind.type) {
+  switch (strategy.type) {
     case "standard":
       return;
     case "skip":
       return skip();
     case "framework": {
-      return await kind.loader();
+      return await strategy.loader();
     }
   }
 });
