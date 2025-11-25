@@ -195,7 +195,15 @@ async function createTestStrategy(test: Readonly<Test>): Promise<TestStrategy> {
 
   const component = await import(filepath)
     .then(({ default: component }) => component)
-    .catch(() => null);
+    .catch((error) => {
+      // Missing file is expected for some loader/test combinations
+      if (error?.code === "ERR_MODULE_NOT_FOUND") {
+        return null;
+      }
+
+      // Re-throw unexpected errors (syntax errors, etc.)
+      throw error;
+    });
 
   if (component === null) {
     return skip;
