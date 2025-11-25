@@ -115,14 +115,12 @@ test.skipIf(process.env.ARIAKIT_BENCH === "1")(
     expect(q.menuitem("Search the Web...")).toHaveFocus();
     await type("f");
     expect(q.menuitem("Find...")).toHaveFocus();
-    // Benchmark mode issue regarding double rendering.
     await type("fffff");
     expect(q.menuitem("Find Previous")).toHaveFocus();
     await click(q.button("Edit"));
   },
 );
 
-// Benchmark mode issue regarding double rendering.
 test.skipIf(process.env.ARIAKIT_BENCH === "1")(
   "blur submenu button on mouse leave after hovering over disabled submenu item",
   async () => {
