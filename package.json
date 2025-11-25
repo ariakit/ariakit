@@ -216,11 +216,9 @@
     "vite-plugin-solid": "2.11.0",
     "vitest": "4.0.12",
     "vitest-fail-on-console": "0.10.1",
+    "vitest-runner-benchmark": "github:waynevanson/vitest-runner-benchmark",
     "webpack": "5.102.1",
     "wrangler": "4.50.0",
     "zod": "3.25.76"
-  },
-  "devDependencies": {
-    "vitest-runner-benchmark": "github:waynevanson/vitest-runner-benchmark"
   }
 }
