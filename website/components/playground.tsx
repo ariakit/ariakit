@@ -1,6 +1,3 @@
-// import type { IVSCodeTheme } from "monaco-vscode-textmate-theme-converter";
-// import { convertTheme } from "monaco-vscode-textmate-theme-converter";
-// import darkPlus from "shiki/themes/dark-plus.json" assert { type: "json" };
 import { defer } from "@/lib/defer.ts";
 import { tsToJs } from "@/lib/ts-to-js.ts";
 import { tsToJsFilename } from "@/lib/ts-to-js-filename.ts";
