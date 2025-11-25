@@ -1,13 +1,13 @@
-import type { Locator, Page } from "@playwright/test";
+import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { test } from "../test-utils.ts";
 
-function query(locator: Page | Locator) {
-  return {
-    menu: (name: string) => locator.getByRole("menu", { name }),
-    menuitem: (name: string) => locator.getByRole("menuitem", { name }),
-  };
-}
+// function query(locator: Page | Locator) {
+//   return {
+//     menu: (name: string) => locator.getByRole("menu", { name }),
+//     menuitem: (name: string) => locator.getByRole("menuitem", { name }),
+//   };
+// }
 
 test("re-open submenu and shift-tab back to the parent menu", async ({
   page,
