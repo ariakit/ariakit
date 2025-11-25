@@ -275,7 +275,7 @@ function getViewport(scroller: Element) {
   return scroller;
 }
 
-function useScroller(rendererRef: RefObject<HTMLElement> | null) {
+function useScroller(rendererRef: RefObject<HTMLElement | null> | null) {
   const [scroller, setScroller] = useState<Element | null>(null);
   useEffect(() => {
     const renderer = rendererRef?.current;
