@@ -4,7 +4,7 @@ import { press, q } from "@ariakit/test";
 beforeEach(() => {
   const before = document.createElement("button");
   before.textContent = "Before";
-  const after = before.cloneNode() as HTMLDivElement;
+  const after = before.cloneNode() as HTMLButtonElement;
   after.textContent = "After";
   document.body.prepend(before);
   document.body.append(after);
