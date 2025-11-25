@@ -403,7 +403,7 @@ export function PageSection({
                     </PageSection>
                   </div>
                   <div className="my-4 flex w-full gap-4 md:mx-4 md:w-60 md:flex-col">
-                    {media?.slice(0, 3).map((item) => {
+                    {/* {media?.slice(0, 3).map((item) => {
                       if (item.type === "image") {
                         return (
                           <PageImage
@@ -414,7 +414,7 @@ export function PageSection({
                         );
                       }
                       return null;
-                    })}
+                    })} */}
                   </div>
                 </div>
               </NotSubscribed>
