@@ -286,7 +286,7 @@ If the issue is likely downstream from `vitest-runner-benchmark`, then the test 
 ```ts
 import * as process from 'node:process'
 
-test.skipIf(process.env.ARIAKIT_BENCH === "1")(() => {
+test.skipIf(process.env.ARIAKIT_BENCH === "1")("test name", () => {
   /* test case */
 })
 ```
