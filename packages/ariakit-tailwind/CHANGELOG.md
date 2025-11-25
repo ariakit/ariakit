@@ -1,5 +1,9 @@
 # @ariakit/tailwind
 
+## 0.1.9
+
+- Updated packages to target ES2018 (previously ES2017).
+
 ## 0.1.8
 
 - Added new `ak-bordering` utility.
