@@ -58,7 +58,7 @@ async function generateImage(browser: Browser, item: OGImageItem) {
 
 async function main() {
   console.log("🔥 Generating OG images");
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ headless: false });
   try {
     const items = await getItemsToGenerate();
     if (!items.length) return;
