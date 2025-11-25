@@ -106,6 +106,8 @@ test("hide submenu on escape", async () => {
   expect(q.button("Edit")).toHaveFocus();
 });
 
+// Benchmark fails when running the cycle (test) twice,
+// even with setup/teardown applied.
 test.skipIf(process.env.ARIAKIT_BENCH === "1")(
   "typeahead on submenu",
   async () => {
@@ -117,10 +119,11 @@ test.skipIf(process.env.ARIAKIT_BENCH === "1")(
     expect(q.menuitem("Find...")).toHaveFocus();
     await type("fffff");
     expect(q.menuitem("Find Previous")).toHaveFocus();
-    await click(q.button("Edit"));
   },
 );
 
+// Benchmark fails when running the cycle (test) twice,
+// even with setup/teardown applied.
 test.skipIf(process.env.ARIAKIT_BENCH === "1")(
   "blur submenu button on mouse leave after hovering over disabled submenu item",
   async () => {
