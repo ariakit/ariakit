@@ -29,16 +29,17 @@ import {
 } from "./auth.tsx";
 import { CodePlaceholder } from "./code-placeholder.tsx";
 import { Command } from "./command.tsx";
-import type { EditorProps } from "./editor.ts";
-// import { Editor } from "./editor.ts";
 import { PageHeroContext } from "./page-context.tsx";
 import { PlaygroundBrowser } from "./playground-browser.tsx";
 import { PlaygroundEditButton } from "./playground-edit.tsx";
 import { PlaygroundToolbar } from "./playground-toolbar.tsx";
 import { TooltipButton } from "./tooltip-button.tsx";
 
-export interface PlaygroundClientProps extends EditorProps {
+export interface PlaygroundClientProps {
   id: string;
+  files: Record<string, string>;
+  codeBlocks: Record<string, ReactNode>;
+  javascript?: Record<string, { code: string; codeBlock: ReactNode }>;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   githubLink?: string;
