@@ -16,6 +16,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fetch main branch
+        run: git fetch origin main:main
+
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
         with:
