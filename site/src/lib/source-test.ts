@@ -561,3 +561,19 @@ test("getImportPaths captures import type namespace", () => {
   const types = getImportPaths(code, (_p, t) => t === "import-type");
   expect(types).toEqual(new Set(["react"]));
 });
+
+test("mergeImports handles specifiers containing 'from' substring", () => {
+  const code = [
+    'import { transformFrom, convertFromJSON } from "./utils";',
+    'import { fromDate, type FromConfig } from "./date";',
+    "",
+    "export const x = transformFrom(fromDate);",
+  ].join("\n");
+  expect(mergeImports(code, (p) => p)).toMatchInlineSnapshot(`
+    "import type { FromConfig } from "./date";
+    import { fromDate } from "./date";
+    import { convertFromJSON, transformFrom } from "./utils";
+
+    export const x = transformFrom(fromDate);"
+  `);
+});
