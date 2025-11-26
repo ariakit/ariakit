@@ -33,7 +33,7 @@ jobs:
             const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
 
             const packages = output.packages
-              .map((p) => `- \`${p.name}\`\n\n   \`\`\`\n   npm i ${p.url}\n   \`\`\``)
+              .map((p) => `\`\`\`sh\nnpm i ${p.url}\n\`\`\``)
               .join('\n');
             const templates = output.templates
               .map((t) => `- [${t.name}](${t.url})`)
@@ -46,17 +46,13 @@ jobs:
 
             const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${sha}`;
             const title = "## Preview Packages";
-            const body = `${title}
+            let body = `${title}\n\n${packages}`;
 
-            ### Published Packages:
+            if (templates.length) {
+              body += `\n\n### Templates\n\n${templates}`;
+            }
 
-            ${packages}
-
-            ### Templates:
-
-            ${templates}
-
-            [View Commit](${commitUrl})`;
+            body += `\n\n[View Commit](${commitUrl})`;
 
             async function findBotComment(issueNumber) {
               if (!issueNumber) return null;
