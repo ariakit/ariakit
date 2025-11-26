@@ -192,7 +192,7 @@ function getRegistryItemName(sourcePath: string) {
     : `${isComponent ? "components" : "examples"}-${getExamplesFolderName(relativePath)}`;
 
   const filename = getRegistryItemFilename(relativePath);
-  const filenameNoExt = basename(filename, extname(relativePath));
+  const filenameNoExt = basename(filename, extname(filename));
   const framework = getFrameworkByFilename(relativePath);
 
   if (!framework) {
