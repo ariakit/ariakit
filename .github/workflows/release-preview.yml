@@ -52,7 +52,7 @@ jobs:
               const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
               return [pkg.name, dir];
             }));
-            const affectedPackages = [...new Set(changes.changesets.flatMap(c => c.releases.map(r => packagesMap[r.name]).filter(Boolean)))];
+            const affectedPackages = changes.releases.map(r => packagesMap[r.name]).filter(Boolean);
             core.setOutput('affected-packages', JSON.stringify(affectedPackages));
 
       - name: Publish preview
