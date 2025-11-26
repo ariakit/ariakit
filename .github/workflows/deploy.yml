@@ -13,7 +13,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules

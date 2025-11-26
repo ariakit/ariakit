@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
@@ -26,7 +26,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
@@ -49,7 +49,7 @@ jobs:
         run: npm run build-lite -w site
 
       - name: Upload app artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-dist
           path: site/dist
@@ -91,7 +91,7 @@ jobs:
           #   run: npm run test-visual -w site --
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
@@ -102,7 +102,7 @@ jobs:
           engine: ${{ matrix.engine }}
 
       - name: Download app artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: app-dist
           path: site/dist
@@ -126,7 +126,7 @@ jobs:
 
       - name: Upload snapshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-visual-${{ matrix.project }}
           path: site/src/tests/visual

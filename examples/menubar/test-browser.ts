@@ -1,15 +1,6 @@
-import type { Locator, Page } from "@playwright/test";
+import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { test } from "../test-utils.ts";
-
-function query(locator: Page | Locator) {
-  return {
-    menu: (name: string) => locator.getByRole("menu", { name }),
-    menuitem: (name: string) => locator.getByRole("menuitem", { name }),
-  };
-}
-
-test.describe.configure({ retries: 3 });
 
 test("re-open submenu and shift-tab back to the parent menu", async ({
   page,
@@ -21,6 +12,7 @@ test("re-open submenu and shift-tab back to the parent menu", async ({
   await page.keyboard.press("ArrowLeft");
   await expect(q.menu("Share")).not.toBeVisible();
   await page.keyboard.press("ArrowRight");
+  await expect(q.menuitem("Email Link")).toHaveAttribute("data-active-item");
   await page.keyboard.press("Shift+Tab");
   await expect(q.menu("File")).toBeVisible();
   await expect(q.menu("Share")).toBeVisible();

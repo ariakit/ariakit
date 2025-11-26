@@ -31,8 +31,24 @@ jobs:
       contents: write
       pull-requests: write
     steps:
+      - name: Check for snapshot artifacts
+        id: check-artifacts
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: ${{ github.event.workflow_run.id }}
+            });
+            const hasSnapshots = artifacts.data.artifacts.some(a => a.name.startsWith('app-visual-'));
+            console.log(`Found ${artifacts.data.artifacts.length} artifacts, hasSnapshots: ${hasSnapshots}`);
+            return hasSnapshots;
+          result-encoding: string
+
       - name: Checkout repository
-        uses: actions/checkout@v5
+        if: steps.check-artifacts.outputs.result == 'true'
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
@@ -40,12 +56,14 @@ jobs:
           persist-credentials: false
 
       - name: Prepare visual directory
+        if: steps.check-artifacts.outputs.result == 'true'
         run: |
           rm -rf site/src/tests/visual
           mkdir -p site/src/tests/visual
 
       - name: Download snapshots
-        uses: actions/download-artifact@v5
+        if: steps.check-artifacts.outputs.result == 'true'
+        uses: actions/download-artifact@v6
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}

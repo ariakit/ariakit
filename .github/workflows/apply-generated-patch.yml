@@ -24,7 +24,7 @@ jobs:
         run: mkdir -p "${{ runner.temp }}/artifacts"
 
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -44,11 +44,11 @@ jobs:
 
       - name: Checkout trusted repository
         if: steps.patch.outputs.file
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Checkout PR
         if: steps.patch.outputs.file
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: pr
           repository: ${{ github.event.workflow_run.head_repository.full_name }}

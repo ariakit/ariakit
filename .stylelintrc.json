@@ -1,6 +1,6 @@
 {
   "extends": "stylelint-config-standard",
-  "ignoreFiles": ["packages/ariakit-tailwind/**", "site/**"],
+  "ignoreFiles": ["packages/ariakit-tailwind/**", "site/**", "templates/**"],
   "rules": {
     "no-duplicate-at-import-rules": null,
     "no-descending-specificity": null,
@@ -9,6 +9,7 @@
     "length-zero-no-unit": null,
     "value-keyword-case": null,
     "custom-property-pattern": null,
+    "color-function-notation": null,
     "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
     "selector-pseudo-class-no-unknown": [
       true,

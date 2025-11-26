@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: plus-test-results
           path: test-results

@@ -813,7 +813,6 @@ export async function buildAkStylesIndex(outputPath: string = OUTPUT_JSON) {
   return outputPath;
 }
 
-// Allow running directly via node --experimental-strip-types
 async function main() {
   const args = process.argv.slice(2);
   const isCheck = args.includes("--check");
