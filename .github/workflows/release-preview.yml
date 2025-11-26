@@ -1,13 +1,14 @@
 name: release-preview
-permissions:
-  contents: read
 
-on: [push, pull_request]
+on:
+  pull_request:
 
 jobs:
   version:
     name: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -21,4 +22,111 @@ jobs:
         run: npm run build
 
       - name: Publish preview
-        run: npx pkg-pr-new publish --compact ./packages/*
+        run: npx pkg-pr-new publish --json output.json --comment=off --compact ./packages/*
+
+      - name: Post or update comment
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          script: |
+            import fs from "fs";
+            import output from "./output.json" with { type: "json" };
+
+            const packages = output.packages
+              .map((p) => `- \`${p.name}\`\n\n   \`\`\`\n   npm i ${p.url}\n   \`\`\``)
+              .join('\n');
+            const templates = output.templates
+              .map((t) => `- [${t.name}](${t.url})`)
+              .join('\n');
+
+            const sha =
+              context.event_name === 'pull_request'
+                ? context.payload.pull_request.head.sha
+                : context.payload.after;
+
+            const commitUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${sha}`;
+            const title = "## Preview Packages";
+            const body = `${title}
+
+            ### Published Packages:
+
+            ${packages}
+
+            ### Templates:
+
+            ${templates}
+
+            [View Commit](${commitUrl})`;
+
+            async function findBotComment(issueNumber) {
+              if (!issueNumber) return null;
+              const comments = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+              });
+              return comments.data.find((comment) =>
+                comment.body.includes(title)
+              );
+            }
+
+            async function createOrUpdateComment(issueNumber) {
+              if (!issueNumber) {
+                console.log('No issue number provided. Cannot post or update comment.');
+                return;
+              }
+
+              const existingComment = await findBotComment(issueNumber);
+              if (existingComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existingComment.id,
+                  body: body,
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  issue_number: issueNumber,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body: body,
+                });
+              }
+            }
+
+            async function logPublishInfo() {
+              console.log('\n' + '='.repeat(50));
+              console.log('Publish Information');
+              console.log('='.repeat(50));
+              console.log('\nPublished Packages:');
+              console.log(packages);
+              console.log('\nTemplates:');
+              console.log(templates);
+              console.log(`\nCommit URL: ${commitUrl}`);
+              console.log('\n' + '='.repeat(50));
+            }
+
+            if (context.eventName === 'pull_request') {
+              if (context.issue.number) {
+                await createOrUpdateComment(context.issue.number);
+              }
+            } else if (context.eventName === 'push') {
+              const pullRequests = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                head: `${context.repo.owner}:${context.ref.replace(
+                  'refs/heads/',
+                  ''
+                )}`,
+              });
+
+              if (pullRequests.data.length > 0) {
+                await createOrUpdateComment(pullRequests.data[0].number);
+              } else {
+                console.log(
+                  'No open pull request found for this push. Logging publish information to console:'
+                );
+                await logPublishInfo();
+              }
+            }
