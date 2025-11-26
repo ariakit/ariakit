@@ -11,10 +11,17 @@
 import { dirname, extname, relative, resolve } from "node:path";
 import type { StyleDependency } from "./styles.ts";
 
-// Shared quoted path fragment to capture module specifiers and preserve quote type
+// ============================================================================
+// Regex Patterns
+// ============================================================================
+
+// Shared quoted path fragment to capture module specifiers and preserve quote
+// type. Supports single quotes, double quotes, and template literals (without
+// interpolation).
 const PATH_QUOTED = String.raw`(?:'(?<single>[^']+)'|"(?<double>[^"]+)"|\`(?<template>(?:[^\`$]|\$(?!\{))+?)\`)`;
 const FROM_CLAUSE = String.raw`\s+from\s+${PATH_QUOTED}`;
 
+// Import patterns
 const IMPORT_SIDE_EFFECT = new RegExp(String.raw`import\s+${PATH_QUOTED}`, "g");
 const IMPORT_NAMED = new RegExp(
   String.raw`import\s+(?!type\b)\{[\s\S]*?\}${FROM_CLAUSE}`,
@@ -36,6 +43,8 @@ const IMPORT_DYNAMIC = new RegExp(
   String.raw`\bimport\s*\(\s*${PATH_QUOTED}\s*\)`,
   "g",
 );
+
+// Export patterns
 const EXPORT_FROM_NAMED = new RegExp(
   String.raw`export\s+\{[\s\S]*?\}${FROM_CLAUSE}`,
   "g",
@@ -48,6 +57,10 @@ const EXPORT_FROM_ALL = new RegExp(
   String.raw`export\s+\*[^;]*?${FROM_CLAUSE}`,
   "g",
 );
+
+// ============================================================================
+// Types
+// ============================================================================
 
 export interface SourceFile {
   id: string;
@@ -66,9 +79,7 @@ export interface SourceFile {
 }
 
 export interface Source {
-  /**
-   * The name of the source.
-   */
+  /** The name of the source. */
   name: string;
   /**
    * Dependencies of the source. The key is the name of the dependency and the
@@ -80,9 +91,7 @@ export interface Source {
    * dependency and the value is the version.
    */
   devDependencies: Record<string, string>;
-  /**
-   * Original unmodified files keyed by absolute id.
-   */
+  /** Original unmodified files keyed by absolute id. */
   sources: Record<string, SourceFile>;
   /**
    * Files referenced by the source code where the key is the final relative
@@ -117,28 +126,30 @@ const PATTERNS: Array<[RegExp, ImportPathType]> = [
   [EXPORT_FROM_ALL, "export-all"],
 ];
 
-function sortKeys<T extends string>(values: Iterable<T>): T[] {
+// ============================================================================
+// Generic Helpers
+// ============================================================================
+
+/** Sorts an iterable of strings lexicographically. */
+function sortStrings<T extends string>(values: Iterable<T>): T[] {
   return Array.from(values).sort((a, b) => a.localeCompare(b));
 }
 
-function getPathFromGroups(groups: RegExpExecArray["groups"]) {
-  return groups?.single ?? groups?.double ?? groups?.template;
+/**
+ * Gets or creates a value in a Map. If the key doesn't exist, the factory
+ * function is called to create the initial value.
+ */
+function getOrCreate<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
+  const existing = map.get(key);
+  if (existing !== undefined) return existing;
+  const created = factory();
+  map.set(key, created);
+  return created;
 }
 
-/**
- * Extracts the comma-separated specifier text inside braces from an import-like
- * declaration string. Example: `import { A, type B } from "mod";` →
- * returns `"A, type B"`. Returns null if braces cannot be found before `from`.
- */
-function extractSpecifiersInsideBraces(matchText: string): string | null {
-  const beforeFrom = matchText.slice(0, matchText.indexOf("from"));
-  const braceStart = beforeFrom.indexOf("{");
-  const braceEnd = beforeFrom.lastIndexOf("}");
-  if (braceStart < 0 || braceEnd < 0) {
-    return null;
-  }
-  return beforeFrom.slice(braceStart + 1, braceEnd);
-}
+// ============================================================================
+// Text Processing Helpers
+// ============================================================================
 
 /**
  * Removes lines that only contain a semicolon, which may be left after
@@ -156,98 +167,89 @@ function collapseExcessBlankLines(text: string): string {
   return text.replace(/\n{3,}/g, "\n\n");
 }
 
-/**
- * Returns the set of module specifiers found in the given `content` across
- * imports, dynamic imports, and re-exports. Inline `type` specifiers within
- * named imports/exports are also considered for their corresponding type kind.
- */
-export function getImportPaths(
-  content: string,
-  filter?: (path: string, type: ImportPathType) => boolean,
-) {
-  const paths = new Set<string>();
-  const addPath = (pattern: RegExp, type: ImportPathType) => {
-    for (const match of content.matchAll(pattern)) {
-      const groups = match.groups;
-      if (!groups) continue;
-      const path = getPathFromGroups(groups);
-      if (!path) continue;
-      if (filter && !filter(path, type)) continue;
-      paths.add(path);
-    }
-  };
-  for (const [pattern, type] of PATTERNS) {
-    addPath(pattern, type);
-  }
-  // Inline type specifiers mixed with value imports/exports
-  // import { A, type B } from "..." → also count as import-type
-  // export { A, type T } from "..." → also count as export-type
-  const addInline = (pattern: RegExp, type: ImportPathType) => {
-    for (const match of content.matchAll(pattern)) {
-      const groups = match.groups;
-      if (!groups) continue;
-      const path = getPathFromGroups(groups);
-      if (!path) continue;
-      const inside = extractSpecifiersInsideBraces(match[0]);
-      if (inside == null) continue;
-      if (!/\btype\b/.test(inside)) continue;
-      if (filter && !filter(path, type)) continue;
-      paths.add(path);
-    }
-  };
-  addInline(IMPORT_NAMED, "import-type");
-  addInline(EXPORT_FROM_NAMED, "export-type");
-  return paths;
+/** Applies common cleanup transformations to text after import manipulation. */
+function cleanupText(text: string): string {
+  return collapseExcessBlankLines(cleanSemicolonOnlyLines(text));
+}
+
+// ============================================================================
+// Module Path Extraction Helpers
+// ============================================================================
+
+/** Extracts the module path from regex match groups (single/double/template). */
+function getPathFromGroups(
+  groups: RegExpExecArray["groups"],
+): string | undefined {
+  return groups?.single ?? groups?.double ?? groups?.template;
 }
 
 /**
- * Replaces module specifiers in any import/export form using the provided
- * `replacer(path, type)` function. Only the quoted path segment is changed so
- * surrounding code remains untouched.
+ * Determines the quote character used in regex match groups.
+ * Defaults to double quote if no match found.
  */
-export function replaceImportPaths(
-  content: string,
-  replacer: (path: string, type: ImportPathType) => string,
-) {
-  const replaceFor = (pattern: RegExp, type: ImportPathType) => {
-    content = content.replace(pattern, (match, ...args) => {
-      const groups = args.at(-1) as RegExpExecArray["groups"];
-      const path = getPathFromGroups(groups);
-      if (!path) return match;
-      const next = replacer(path, type);
-      if (next === path) return match;
-      // Replace only the quoted path segment to avoid touching other text
-      const quote =
-        groups?.single != null ? "'" : groups?.double != null ? '"' : "`";
-      const quoted = `${quote}${path}${quote}`;
-      const nextQuoted = `${quote}${next}${quote}`;
-      const idx = match.indexOf(quoted);
-      if (idx < 0) return match; // Fallback: no change
-      return (
-        match.slice(0, idx) + nextQuoted + match.slice(idx + quoted.length)
-      );
-    });
-  };
-  for (const [re, type] of PATTERNS) replaceFor(re, type);
-  return content;
+function getQuoteFromGroups(groups: RegExpExecArray["groups"]): string {
+  if (groups?.single != null) return "'";
+  if (groups?.double != null) return '"';
+  return "`";
 }
 
 /**
- * Parse a named import specifier list, separating runtime and type names
+ * Extracts the comma-separated specifier text inside braces from an
+ * import-like declaration string.
+ * @example
+ * extractSpecifiersInsideBraces('import { A, type B } from "mod";')
+ * // Returns "A, type B"
  */
-function parseNamedSpecifiers(inside: string) {
+function extractSpecifiersInsideBraces(matchText: string): string | null {
+  const beforeFrom = matchText.slice(0, matchText.indexOf("from"));
+  const braceStart = beforeFrom.indexOf("{");
+  const braceEnd = beforeFrom.lastIndexOf("}");
+  if (braceStart < 0 || braceEnd < 0) return null;
+  return beforeFrom.slice(braceStart + 1, braceEnd);
+}
+
+// ============================================================================
+// Import Specifier Parsing
+// ============================================================================
+
+interface ParsedSpecifiers {
+  runtime: string[];
+  typeOnly: string[];
+}
+
+/**
+ * Extracts the base name from an import specifier, handling `as` aliases.
+ * @example
+ * extractSpecifierName("Foo as Bar") // Returns "Foo"
+ * extractSpecifierName("Foo") // Returns "Foo"
+ */
+function extractSpecifierName(specifier: string): string {
+  const beforeAs = specifier.split(/\s+as\s+/i)[0] ?? "";
+  return beforeAs.trim();
+}
+
+/**
+ * Parses a named import specifier list, separating runtime and type-only
+ * names. Handles inline `type` modifiers.
+ * @example
+ * parseNamedSpecifiers("A, type B, C as D")
+ * // Returns { runtime: ["A", "C"], typeOnly: ["B"] }
+ */
+function parseNamedSpecifiers(inside: string): ParsedSpecifiers {
   const runtime: string[] = [];
   const typeOnly: string[] = [];
+
   const items = inside
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
+
   for (const item of items) {
     const isType = /^type\s+/i.test(item);
     const raw = isType ? item.replace(/^type\s+/i, "") : item;
-    const first = raw.split(/\s+as\s+/i)[0] ?? "";
-    const name = first.trim();
+    const name = extractSpecifierName(raw);
     if (!name) continue;
+
     if (isType) {
       typeOnly.push(name);
     } else {
@@ -257,13 +259,197 @@ function parseNamedSpecifiers(inside: string) {
   return { runtime, typeOnly };
 }
 
-function parseTypeOnlySpecifiers(inside: string) {
+/**
+ * Parses a type-only import specifier list (from `import type { ... }`).
+ * All specifiers are assumed to be type-only.
+ */
+function parseTypeOnlySpecifiers(inside: string): string[] {
   return inside
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean)
-    .map((s) => (s.split(/\s+as\s+/i)[0] ?? "").trim())
+    .map(extractSpecifierName)
     .filter(Boolean);
+}
+
+// ============================================================================
+// Public API: Import Path Operations
+// ============================================================================
+
+/**
+ * Returns the set of module specifiers found in the given `content` across
+ * imports, dynamic imports, and re-exports. Inline `type` specifiers within
+ * named imports/exports are also considered for their corresponding type kind.
+ * @param content - The source code to analyze
+ * @param filter - Optional filter to include only specific paths/types
+ */
+export function getImportPaths(
+  content: string,
+  filter?: (path: string, type: ImportPathType) => boolean,
+): Set<string> {
+  const paths = new Set<string>();
+
+  const addPathsFromPattern = (pattern: RegExp, type: ImportPathType) => {
+    for (const match of content.matchAll(pattern)) {
+      const path = getPathFromGroups(match.groups);
+      if (!path) continue;
+      if (filter && !filter(path, type)) continue;
+      paths.add(path);
+    }
+  };
+
+  // Process all standard patterns
+  for (const [pattern, type] of PATTERNS) {
+    addPathsFromPattern(pattern, type);
+  }
+
+  // Handle inline type specifiers mixed with value imports/exports:
+  // - import { A, type B } from "..." → also count as import-type
+  // - export { A, type T } from "..." → also count as export-type
+  const addInlineTypeSpecifiers = (pattern: RegExp, type: ImportPathType) => {
+    for (const match of content.matchAll(pattern)) {
+      const path = getPathFromGroups(match.groups);
+      if (!path) continue;
+
+      const inside = extractSpecifiersInsideBraces(match[0]);
+      if (inside == null) continue;
+      if (!/\btype\b/.test(inside)) continue;
+
+      if (filter && !filter(path, type)) continue;
+      paths.add(path);
+    }
+  };
+
+  addInlineTypeSpecifiers(IMPORT_NAMED, "import-type");
+  addInlineTypeSpecifiers(EXPORT_FROM_NAMED, "export-type");
+
+  return paths;
+}
+
+/**
+ * Replaces module specifiers in any import/export form using the provided
+ * `replacer(path, type)` function. Only the quoted path segment is changed so
+ * surrounding code remains untouched.
+ * @param content - The source code to transform
+ * @param replacer - Function that returns the new path for each module
+ */
+export function replaceImportPaths(
+  content: string,
+  replacer: (path: string, type: ImportPathType) => string,
+): string {
+  let result = content;
+
+  const replacePathsForPattern = (pattern: RegExp, type: ImportPathType) => {
+    result = result.replace(pattern, (match, ...args) => {
+      const groups = args.at(-1) as RegExpExecArray["groups"];
+      const path = getPathFromGroups(groups);
+      if (!path) return match;
+
+      const newPath = replacer(path, type);
+      if (newPath === path) return match;
+
+      // Replace only the quoted path segment to preserve surrounding code
+      const quote = getQuoteFromGroups(groups);
+      const original = `${quote}${path}${quote}`;
+      const replacement = `${quote}${newPath}${quote}`;
+      const index = match.indexOf(original);
+      if (index < 0) return match;
+
+      return (
+        match.slice(0, index) +
+        replacement +
+        match.slice(index + original.length)
+      );
+    });
+  };
+
+  for (const [pattern, type] of PATTERNS) {
+    replacePathsForPattern(pattern, type);
+  }
+
+  return result;
+}
+
+// ============================================================================
+// Import Merging
+// ============================================================================
+
+/**
+ * Builds hoisted import declaration strings from collected specifier maps.
+ * Orders type-only imports before value imports for each module.
+ */
+function buildHoistedImports(
+  valueNamed: Map<string, Set<string>>,
+  typeNamed: Map<string, Set<string>>,
+): string {
+  const allPaths = sortStrings(
+    new Set<string>([...valueNamed.keys(), ...typeNamed.keys()]),
+  );
+
+  const lines: string[] = [];
+  for (const modulePath of allPaths) {
+    const typeNames = typeNamed.get(modulePath);
+    const valueNames = valueNamed.get(modulePath);
+
+    if (typeNames?.size) {
+      const sorted = sortStrings(typeNames).join(", ");
+      lines.push(`import type { ${sorted} } from "${modulePath}";`);
+    }
+    if (valueNames?.size) {
+      const sorted = sortStrings(valueNames).join(", ");
+      lines.push(`import { ${sorted} } from "${modulePath}";`);
+    }
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * Builds a replacement import statement for remaining (non-transformed)
+ * specifiers. Returns empty string if no specifiers remain.
+ */
+function buildRemainingImport(
+  remainingRuntime: string[],
+  remainingType: string[],
+  modulePath: string,
+): string {
+  // All specifiers transformed - remove the line
+  if (remainingRuntime.length === 0 && remainingType.length === 0) {
+    return "";
+  }
+
+  // Both kinds remain - split into two lines
+  if (remainingRuntime.length > 0 && remainingType.length > 0) {
+    return [
+      `import { ${remainingRuntime.join(", ")} } from "${modulePath}"`,
+      `import type { ${remainingType.join(", ")} } from "${modulePath}"`,
+    ].join("\n");
+  }
+
+  // Only runtime specifiers remain
+  if (remainingRuntime.length > 0) {
+    return `import { ${remainingRuntime.join(", ")} } from "${modulePath}"`;
+  }
+
+  // Only type specifiers remain
+  return `import type { ${remainingType.join(", ")} } from "${modulePath}"`;
+}
+
+/**
+ * Inserts hoisted imports into the body, placing them after any existing
+ * leading imports or at the top if none exist.
+ */
+function insertHoistedImports(hoisted: string, body: string): string {
+  if (!hoisted) return collapseExcessBlankLines(body);
+
+  const leadingImports = body.match(/^(?:[\t ]*import[\s\S]*?;\r?\n)+/);
+  if (leadingImports) {
+    const head = leadingImports[0] ?? "";
+    const tail = body.slice(head.length);
+    return collapseExcessBlankLines(`${head}${hoisted}\n${tail}`);
+  }
+
+  return collapseExcessBlankLines(`${hoisted}\n${body}`);
 }
 
 /**
@@ -291,218 +477,211 @@ function parseTypeOnlySpecifiers(inside: string) {
  * - Default imports and namespace imports are not handled here.
  * - Inline `type` specifiers (e.g., `import { A, type T } from "..."`) are
  *   split across runtime and type groups for the same module.
+ *
+ * @param content - The source code to transform
+ * @param transform - Function returning new path or false to skip
  */
 export function mergeImports(
   content: string,
   transform: (path: string, type: ImportPathType) => string | false,
-) {
+): string {
   // Collect value and type-only named imports keyed by the final transformed path
   const valueNamed = new Map<string, Set<string>>();
   const typeNamed = new Map<string, Set<string>>();
 
-  const addMany = (
+  const addSpecifiers = (
     originalPath: string,
     names: string[],
     type: ImportPathType,
   ) => {
-    const nextPath = transform(originalPath, type);
-    if (nextPath === false) return;
+    const transformedPath = transform(originalPath, type);
+    if (transformedPath === false) return;
+
     const collector = type === "import" ? valueNamed : typeNamed;
-    if (!collector.has(nextPath)) {
-      collector.set(nextPath, new Set());
-    }
-    const set = collector.get(nextPath)!;
+    const specifiers = getOrCreate(collector, transformedPath, () => new Set());
     for (const name of names) {
-      set.add(name);
+      specifiers.add(name);
     }
   };
 
-  const handleMatches = (pattern: RegExp, forcedTypeOnly: boolean) => {
+  const collectFromMatches = (pattern: RegExp, isTypeOnly: boolean) => {
     for (const match of content.matchAll(pattern)) {
-      const groups = match.groups;
-      const path = getPathFromGroups(groups);
+      const path = getPathFromGroups(match.groups);
       if (!path) continue;
+
       const inside = extractSpecifiersInsideBraces(match[0]);
       if (inside == null) continue;
-      if (forcedTypeOnly) {
+
+      if (isTypeOnly) {
         const items = parseTypeOnlySpecifiers(inside);
         if (items.length) {
-          addMany(path, items, "import-type");
+          addSpecifiers(path, items, "import-type");
         }
         continue;
       }
+
       const { runtime, typeOnly } = parseNamedSpecifiers(inside);
       if (runtime.length) {
-        addMany(path, runtime, "import");
+        addSpecifiers(path, runtime, "import");
       }
       if (typeOnly.length) {
-        addMany(path, typeOnly, "import-type");
+        addSpecifiers(path, typeOnly, "import-type");
       }
     }
   };
 
-  handleMatches(IMPORT_NAMED, false);
-  handleMatches(IMPORT_TYPE_NAMED, true);
+  collectFromMatches(IMPORT_NAMED, false);
+  collectFromMatches(IMPORT_TYPE_NAMED, true);
 
-  // Build merged import declarations per final path (sorted), always placing
-  // type-only imports before value imports for each module.
-  const finalPaths = sortKeys(
-    new Set<string>([...valueNamed.keys(), ...typeNamed.keys()]),
-  );
+  const hoisted = buildHoistedImports(valueNamed, typeNamed);
 
-  const hoistedLines: string[] = [];
-  for (const mod of finalPaths) {
-    const typeNames = typeNamed.get(mod);
-    const valueNames = valueNamed.get(mod);
-    if (typeNames?.size) {
-      hoistedLines.push(
-        `import type { ${sortKeys(typeNames.keys()).join(", ")} } from "${mod}";`,
-      );
-    }
-    if (valueNames?.size) {
-      hoistedLines.push(
-        `import { ${sortKeys(valueNames.keys()).join(", ")} } from "${mod}";`,
-      );
-    }
-  }
-  const hoisted = hoistedLines.join("\n");
-
-  // Remove or rewrite ONLY the named import declarations that are transformed.
-  // Non-transformed imports are left intact.
+  // Remove or rewrite the named import declarations that are transformed
   let body = content;
 
-  const replaceImportDecls = (pattern: RegExp, forcedTypeOnly: boolean) => {
+  const replaceImportDeclarations = (pattern: RegExp, isTypeOnly: boolean) => {
     body = body.replace(pattern, (match, ...args) => {
       const groups = args.at(-1) as RegExpExecArray["groups"];
-      const offset = (args.at(-3) as number) ?? 0;
-      const full = (args.at(-2) as string) ?? body;
       const path = getPathFromGroups(groups);
       if (!path) return match;
+
       const inside = extractSpecifiersInsideBraces(match);
       if (inside == null) return match;
 
-      if (forcedTypeOnly) {
+      if (isTypeOnly) {
         const items = parseTypeOnlySpecifiers(inside);
         if (!items.length) return match;
-        const next = transform(path, "import-type");
-        if (next === false) return match; // ignore non-transformed imports
-        // Entire declaration is transformed; drop it (it will be hoisted).
-        // Also consume a trailing semicolon if present immediately after match.
-        const end = offset + match.length;
-        if (full[end] === ";") return ""; // the semicolon remains but we'll remove stray ; lines below
+
+        const transformed = transform(path, "import-type");
+        if (transformed === false) return match;
+
+        // Entire declaration is transformed - remove it (will be hoisted)
         return "";
       }
 
       const { runtime, typeOnly } = parseNamedSpecifiers(inside);
-      const nextValue = runtime.length ? transform(path, "import") : false;
-      const nextType = typeOnly.length ? transform(path, "import-type") : false;
+      const transformedValue = runtime.length
+        ? transform(path, "import")
+        : false;
+      const transformedType = typeOnly.length
+        ? transform(path, "import-type")
+        : false;
 
-      const remainingRuntime = nextValue === false ? runtime : [];
-      const remainingType = nextType === false ? typeOnly : [];
+      // Keep specifiers that weren't transformed
+      const remainingRuntime = transformedValue === false ? runtime : [];
+      const remainingType = transformedType === false ? typeOnly : [];
 
-      // If nothing remains (all specifiers transformed), remove the line.
-      if (remainingRuntime.length === 0 && remainingType.length === 0) {
-        return "";
-      }
-
-      // Keep remaining specifiers. If both kinds remain, split into two lines
-      // to avoid reintroducing transformed specifiers inline. Do NOT include
-      // semicolons here; we'll reuse the original trailing semicolon.
-      if (remainingRuntime.length > 0 && remainingType.length > 0) {
-        return [
-          `import { ${remainingRuntime.join(", ")} } from "${path}"`,
-          `import type { ${remainingType.join(", ")} } from "${path}"`,
-        ].join("\n");
-      }
-      if (remainingRuntime.length > 0) {
-        return `import { ${remainingRuntime.join(", ")} } from "${path}"`;
-      }
-      return `import type { ${remainingType.join(", ")} } from "${path}"`;
+      return buildRemainingImport(remainingRuntime, remainingType, path);
     });
   };
 
-  replaceImportDecls(IMPORT_TYPE_NAMED, true);
-  replaceImportDecls(IMPORT_NAMED, false);
+  replaceImportDeclarations(IMPORT_TYPE_NAMED, true);
+  replaceImportDeclarations(IMPORT_NAMED, false);
 
-  // Clean up stray semicolon-only lines that can be left behind by the regex
   body = cleanSemicolonOnlyLines(body);
 
-  // Insert hoisted imports after any leading import declarations (of any kind)
-  // that remain in the body; otherwise, place them at the very top. This keeps
-  // non-transformed imports in the same relative position.
-  if (hoisted) {
-    const leadingImports = body.match(/^(?:[\t ]*import[\s\S]*?;\r?\n)+/);
-    if (leadingImports) {
-      const head = leadingImports[0] ?? "";
-      const tail = body.slice(head.length);
-      return collapseExcessBlankLines(`${head}${hoisted}\n${tail}`);
-    }
-    return collapseExcessBlankLines(`${hoisted}\n${body}`);
-  }
-  return collapseExcessBlankLines(body);
+  return insertHoistedImports(hoisted, body);
 }
 
+// ============================================================================
+// File Resolution
+// ============================================================================
+
 /**
- * Resolve a relative import specifier from a given file id to an absolute id
- * present in the input map. Handles extensionless specifiers by trying .ts.
- * Does not attempt index files.
+ * Resolves a relative import specifier from a given file id to an absolute id
+ * present in the input map. Handles extensionless specifiers by trying .ts and
+ * .tsx extensions. Does not attempt index files.
  */
 function resolveSpecifierToId(
   files: Record<string, SourceFile>,
   fromId: string,
-  spec: string,
+  specifier: string,
 ): string | null {
-  if (!spec || !spec.startsWith(".")) return null;
+  if (!specifier || !specifier.startsWith(".")) return null;
+
   const baseDir = dirname(fromId);
-  const absolute = resolve(baseDir, spec);
+  const absolute = resolve(baseDir, specifier);
+
   if (files[absolute]) return absolute;
+
+  // Try adding extensions for extensionless specifiers
   if (!extname(absolute)) {
     const withTs = `${absolute}.ts`;
     if (files[withTs]) return withTs;
+
     const withTsx = `${absolute}.tsx`;
     if (files[withTsx]) return withTsx;
   }
+
   return null;
 }
 
+// ============================================================================
+// Topological Sorting
+// ============================================================================
+
 /**
- * Compute topological order of a group's members based on internal named/type imports.
- * Edges: A -> B if A imports B (relative specifier resolving to B in the group).
+ * Inserts a value into a sorted array, maintaining lexical order.
  */
-function topoOrderGroup(
+function insertSorted(array: string[], value: string): void {
+  for (let i = 0; i < array.length; i++) {
+    const current = array[i];
+    if (current && value.localeCompare(current) < 0) {
+      array.splice(i, 0, value);
+      return;
+    }
+  }
+  array.push(value);
+}
+
+/**
+ * Computes topological order of a group's members based on internal imports.
+ * Files that import other files are placed after their dependencies.
+ * Uses Kahn's algorithm with lexical tie-breaker for determinism.
+ * Falls back to lexicographic order if a cycle is detected.
+ */
+function computeTopologicalOrder(
   files: Record<string, SourceFile>,
   memberIds: string[],
 ): string[] {
   const memberSet = new Set(memberIds);
-  // Build adjacency and indegree
-  const adj = new Map<string, Set<string>>();
+
+  // Build adjacency list and indegree map
+  const adjacency = new Map<string, Set<string>>();
   const indegree = new Map<string, number>();
+
   for (const id of memberIds) {
-    adj.set(id, new Set());
+    adjacency.set(id, new Set());
     indegree.set(id, 0);
   }
+
+  // Add edges based on imports: if A imports B, then B → A (B comes before A)
   for (const id of memberIds) {
     const content = files[id]?.content ?? "";
-    const addDeps = (pattern: RegExp) => {
-      for (const m of content.matchAll(pattern)) {
-        const groups = m.groups;
-        const p = getPathFromGroups(groups);
-        if (!p) continue;
-        const abs = resolveSpecifierToId(files, id, p);
-        if (!abs) continue;
-        if (!memberSet.has(abs)) continue;
-        // Place dependency before dependent: edge abs -> id
-        if (!adj.get(abs)!.has(id)) {
-          adj.get(abs)!.add(id);
+
+    const addDependencyEdges = (pattern: RegExp) => {
+      for (const match of content.matchAll(pattern)) {
+        const importPath = getPathFromGroups(match.groups);
+        if (!importPath) continue;
+
+        const resolvedId = resolveSpecifierToId(files, id, importPath);
+        if (!resolvedId) continue;
+        if (!memberSet.has(resolvedId)) continue;
+
+        // Edge: dependency → dependent (resolvedId → id)
+        const neighbors = adjacency.get(resolvedId);
+        if (neighbors && !neighbors.has(id)) {
+          neighbors.add(id);
           indegree.set(id, (indegree.get(id) ?? 0) + 1);
         }
       }
     };
-    // Consider any value import (default, namespace, named) and type-only named imports
-    addDeps(IMPORT_FROM_ANY);
-    addDeps(IMPORT_TYPE_NAMED);
+
+    // Consider value imports (default, namespace, named) and type-only imports
+    addDependencyEdges(IMPORT_FROM_ANY);
+    addDependencyEdges(IMPORT_TYPE_NAMED);
   }
-  // Kahn's algorithm with lexical tie-breaker for determinism
+
+  // Kahn's algorithm with lexical tie-breaker
   const queue: string[] = [];
   for (const id of memberIds) {
     if ((indegree.get(id) ?? 0) === 0) {
@@ -510,319 +689,405 @@ function topoOrderGroup(
     }
   }
   queue.sort((a, b) => a.localeCompare(b));
+
   const ordered: string[] = [];
   while (queue.length > 0) {
-    const cur = queue.shift();
-    if (!cur) break;
-    ordered.push(cur);
-    const neighbors = Array.from(adj.get(cur) ?? []);
-    neighbors.sort((a, b) => a.localeCompare(b));
-    for (const nb of neighbors) {
-      const nextDeg = (indegree.get(nb) ?? 0) - 1;
-      indegree.set(nb, nextDeg);
-      if (nextDeg === 0) {
-        // Insert maintaining lexical order
-        let inserted = false;
-        for (let i = 0; i < queue.length; i++) {
-          if (nb.localeCompare(queue[i]!) < 0) {
-            queue.splice(i, 0, nb);
-            inserted = true;
-            break;
-          }
-        }
-        if (!inserted) {
-          queue.push(nb);
-        }
+    const current = queue.shift();
+    if (!current) break;
+
+    ordered.push(current);
+
+    const neighbors = sortStrings(adjacency.get(current) ?? []);
+    for (const neighbor of neighbors) {
+      const newDegree = (indegree.get(neighbor) ?? 0) - 1;
+      indegree.set(neighbor, newDegree);
+
+      if (newDegree === 0) {
+        insertSorted(queue, neighbor);
       }
     }
   }
+
+  // Cycle detected - fall back to lexicographic order
   if (ordered.length !== memberIds.length) {
-    // Cycle detected; fall back to lexicographic
     return [...memberIds].sort((a, b) => a.localeCompare(b));
   }
+
   return ordered;
 }
 
+// ============================================================================
+// Internal Import Stripping
+// ============================================================================
+
 /**
- * Remove named import declarations that target other members of the same group.
- * Leaves default/namespace/side-effect imports intact.
+ * Removes import declarations that target other members of the same group.
+ * Throws if namespace imports are found (not supported for merging).
  */
-function stripInternalNamedImports(
+function stripInternalImports(
   files: Record<string, SourceFile>,
   fromId: string,
   content: string,
   groupIds: Set<string>,
-) {
+): string {
   let body = content;
-  const removeFor = (pattern: RegExp) => {
+
+  const removeMatchingImports = (pattern: RegExp) => {
     body = body.replace(pattern, (match, ...args) => {
       const groups = args.at(-1) as RegExpExecArray["groups"];
-      const spec = getPathFromGroups(groups);
-      if (!spec) return match;
-      const abs = resolveSpecifierToId(files, fromId, spec);
-      if (!abs) return match;
-      if (!groupIds.has(abs)) return match;
+      const specifier = getPathFromGroups(groups);
+      if (!specifier) return match;
+
+      const resolvedId = resolveSpecifierToId(files, fromId, specifier);
+      if (!resolvedId) return match;
+      if (!groupIds.has(resolvedId)) return match;
+
+      // Namespace imports from internal files are not supported
       if (/\bimport\s+\*\s+as\s+/.test(match)) {
         throw new Error(
-          `Namespace imports from internal files are not supported: "${spec}"`,
+          `Namespace imports from internal files are not supported: "${specifier}"`,
         );
       }
-      // Remove declaration; stray semicolon cleanup will handle leftover ';' lines
+
       return "";
     });
   };
-  // Remove any internal import declarations (named, type-only, default, namespace, side-effect)
-  removeFor(IMPORT_TYPE_NAMED);
-  removeFor(IMPORT_NAMED);
-  removeFor(IMPORT_FROM_ANY);
-  removeFor(IMPORT_SIDE_EFFECT);
-  // Clean up and collapse excessive blank lines
-  body = collapseExcessBlankLines(cleanSemicolonOnlyLines(body));
-  return body;
+
+  // Remove all internal import declarations
+  removeMatchingImports(IMPORT_TYPE_NAMED);
+  removeMatchingImports(IMPORT_NAMED);
+  removeMatchingImports(IMPORT_FROM_ANY);
+  removeMatchingImports(IMPORT_SIDE_EFFECT);
+
+  return cleanupText(body);
+}
+
+// ============================================================================
+// Style and Dependency Merging
+// ============================================================================
+
+/** Creates a unique key for a style dependency. */
+function getStyleKey(dep: StyleDependency): string {
+  return `${dep.type}:${dep.name}:${dep.module ?? ""}:${dep.import ?? ""}`;
 }
 
 /**
- * Merge styles arrays, deduplicating by identity of type+name+module+import.
+ * Merges multiple style dependency arrays, deduplicating by identity.
+ * Returns undefined if no styles remain.
  */
 function mergeStyles(
   ...lists: Array<StyleDependency[] | undefined>
 ): StyleDependency[] | undefined {
-  const acc: StyleDependency[] = [];
+  const result: StyleDependency[] = [];
   const seen = new Set<string>();
-  const idOf = (d: StyleDependency) =>
-    `${d.type}:${d.name}:${d.module ?? ""}:${d.import ?? ""}`;
+
   for (const list of lists) {
     if (!list) continue;
     for (const dep of list) {
-      const key = idOf(dep);
+      const key = getStyleKey(dep);
       if (seen.has(key)) continue;
       seen.add(key);
-      acc.push(dep);
+      result.push(dep);
     }
   }
-  return acc.length ? acc : undefined;
+
+  return result.length ? result : undefined;
 }
 
 /**
- * Merge dependency maps, preserving first-seen version on conflicts.
+ * Merges multiple dependency maps, preserving first-seen version on conflicts.
+ * Returns undefined if no dependencies remain.
  */
-function mergeDepMaps(
+function mergeDependencyMaps(
   ...maps: Array<Record<string, string> | undefined>
 ): Record<string, string> | undefined {
   const result: Record<string, string> = {};
-  for (const m of maps) {
-    if (!m) continue;
-    for (const [k, v] of Object.entries(m)) {
-      if (result[k] != null) continue;
-      result[k] = v;
+
+  for (const map of maps) {
+    if (!map) continue;
+    for (const [pkg, version] of Object.entries(map)) {
+      if (result[pkg] != null) continue;
+      result[pkg] = version;
     }
   }
+
   return Object.keys(result).length ? result : undefined;
+}
+
+// ============================================================================
+// Import Hoisting
+// ============================================================================
+
+/**
+ * Parses a namespace value import statement.
+ * @returns Tuple of [alias, modulePath] or null if not a match
+ */
+function parseNamespaceValueImport(stmt: string): [string, string] | null {
+  const match = stmt.match(
+    /^import\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
+  );
+  return match ? [match[1]!, match[2]!] : null;
+}
+
+/**
+ * Parses a namespace type import statement.
+ * @returns Tuple of [alias, modulePath] or null if not a match
+ */
+function parseNamespaceTypeImport(stmt: string): [string, string] | null {
+  const match = stmt.match(
+    /^import\s+type\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
+  );
+  return match ? [match[1]!, match[2]!] : null;
 }
 
 /**
  * Hoists import declarations to the top of the content.
+ * Deduplicates namespace imports where a value import makes a type import
+ * redundant.
  */
-export function hoistImports(content: string) {
+export function hoistImports(content: string): string {
   const imports = new Set<string>();
   let body = content;
 
-  const extract = (pattern: RegExp) => {
+  const extractImports = (pattern: RegExp) => {
     body = body.replace(pattern, (match, ...args) => {
       const offset = (args.at(-3) as number) ?? 0;
-      const full = (args.at(-2) as string) ?? body;
+      const fullText = (args.at(-2) as string) ?? body;
 
-      let stmt = match;
-      if (full[offset + match.length] === ";") {
-        stmt += ";";
+      let statement = match;
+      // Include trailing semicolon if present
+      if (fullText[offset + match.length] === ";") {
+        statement += ";";
       }
-      imports.add(stmt);
+      imports.add(statement);
       return "";
     });
   };
 
-  extract(IMPORT_SIDE_EFFECT);
-  extract(IMPORT_TYPE_NAMED);
-  extract(IMPORT_TYPE_NAMESPACE);
-  extract(IMPORT_FROM_ANY);
+  extractImports(IMPORT_SIDE_EFFECT);
+  extractImports(IMPORT_TYPE_NAMED);
+  extractImports(IMPORT_TYPE_NAMESPACE);
+  extractImports(IMPORT_FROM_ANY);
 
-  body = cleanSemicolonOnlyLines(body);
-  body = collapseExcessBlankLines(body);
+  body = cleanupText(body);
 
+  if (imports.size === 0) return content;
+
+  // Track namespace value imports to remove redundant type imports
   const namespaceValueImports = new Set<string>();
-  for (const imp of imports) {
-    const match = imp.match(
-      /^import\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
-    );
-    if (match) {
-      namespaceValueImports.add(`${match[1]}|${match[2]}`);
+  for (const stmt of imports) {
+    const parsed = parseNamespaceValueImport(stmt);
+    if (parsed) {
+      namespaceValueImports.add(`${parsed[0]}|${parsed[1]}`);
     }
   }
 
+  // Filter out type namespace imports that duplicate value imports
   const finalImports = new Set<string>();
-  for (const imp of imports) {
-    const typeMatch = imp.match(
-      /^import\s+type\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
-    );
-    if (typeMatch) {
-      const key = `${typeMatch[1]}|${typeMatch[2]}`;
-      if (namespaceValueImports.has(key)) {
-        continue;
-      }
+  for (const stmt of imports) {
+    const parsed = parseNamespaceTypeImport(stmt);
+    if (parsed) {
+      const key = `${parsed[0]}|${parsed[1]}`;
+      if (namespaceValueImports.has(key)) continue;
     }
-    finalImports.add(imp);
+    finalImports.add(stmt);
   }
 
-  if (finalImports.size === 0) return content;
-
-  return `${sortKeys(finalImports).join("\n")}\n\n${body.trimStart()}`;
+  return `${sortStrings(finalImports).join("\n")}\n\n${body.trimStart()}`;
 }
+
+// ============================================================================
+// File Grouping
+// ============================================================================
+
+interface MergedGroup {
+  target: string;
+  content: string;
+  styles?: StyleDependency[];
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
+/**
+ * Builds a mapping from file ids to their merge target (or null to keep as-is).
+ */
+function buildTargetMapping(
+  files: Record<string, SourceFile>,
+  filter?: (path: string) => string | boolean,
+): Map<string, string | null> {
+  const targetById = new Map<string, string | null>();
+
+  if (filter) {
+    for (const id of Object.keys(files)) {
+      const result = filter(id);
+      targetById.set(id, typeof result === "string" ? result : null);
+    }
+    return targetById;
+  }
+
+  // Default: group by parent directory; merge directories with 2+ files
+  const filesByDirectory = new Map<string, string[]>();
+  for (const id of Object.keys(files)) {
+    const dir = dirname(id);
+    const dirFiles = getOrCreate(filesByDirectory, dir, () => []);
+    dirFiles.push(id);
+  }
+
+  for (const [dir, ids] of filesByDirectory) {
+    const target = ids.length >= 2 ? `${dir}.ts` : null;
+    for (const id of ids) {
+      targetById.set(id, target);
+    }
+  }
+
+  return targetById;
+}
+
+/**
+ * Groups file ids by their merge target.
+ */
+function groupFilesByTarget(
+  targetById: Map<string, string | null>,
+): Map<string, string[]> {
+  const membersByTarget = new Map<string, string[]>();
+
+  for (const [id, target] of targetById) {
+    if (!target) continue;
+    const members = getOrCreate(membersByTarget, target, () => []);
+    members.push(id);
+  }
+
+  // Sort members for deterministic ordering
+  for (const members of membersByTarget.values()) {
+    members.sort((a, b) => a.localeCompare(b));
+  }
+
+  return membersByTarget;
+}
+
+/**
+ * Merges a group of files into a single output.
+ */
+function mergeFileGroup(
+  files: Record<string, SourceFile>,
+  target: string,
+  memberIds: string[],
+): MergedGroup {
+  const order = computeTopologicalOrder(files, memberIds);
+  const groupSet = new Set(memberIds);
+
+  // Build merged content from files in topological order
+  const parts: string[] = [];
+  for (let i = 0; i < order.length; i++) {
+    const id = order[i]!;
+    const file = files[id];
+    if (!file) continue;
+
+    let stripped = stripInternalImports(files, id, file.content, groupSet);
+    stripped = i === 0 ? stripped.trimEnd() : stripped.trim();
+    parts.push(stripped);
+  }
+
+  // Merge styles and dependencies using lexical order for determinism
+  const sortedIds = [...memberIds].sort((a, b) => a.localeCompare(b));
+  let mergedStyles: StyleDependency[] | undefined;
+  let mergedDeps: Record<string, string> | undefined;
+  let mergedDevDeps: Record<string, string> | undefined;
+
+  for (const id of sortedIds) {
+    const file = files[id];
+    if (!file) continue;
+    mergedStyles = mergeStyles(mergedStyles, file.styles);
+    mergedDeps = mergeDependencyMaps(mergedDeps, file.dependencies);
+    mergedDevDeps = mergeDependencyMaps(mergedDevDeps, file.devDependencies);
+  }
+
+  const content = `${parts.join("\n\n").trimEnd()}\n`;
+  const hoistedContent = hoistImports(content);
+
+  return {
+    target,
+    content: hoistedContent,
+    styles: mergedStyles,
+    dependencies: mergedDeps,
+    devDependencies: mergedDevDeps,
+  };
+}
+
+/**
+ * Rewrites imports in a non-merged file to point to merged targets.
+ */
+function rewriteImportsForMergedTargets(
+  files: Record<string, SourceFile>,
+  file: SourceFile,
+  targetById: Map<string, string | null>,
+): SourceFile {
+  const fileDir = dirname(file.id);
+
+  const rewritten = mergeImports(file.content, (importPath) => {
+    const resolvedId = resolveSpecifierToId(files, file.id, importPath);
+    if (!resolvedId) return false;
+
+    const target = targetById.get(resolvedId);
+    if (!target) return false;
+
+    const relativePath = relative(fileDir, target).replace(/\\/g, "/");
+    // Ensure relative paths start with ./ or ../
+    return relativePath.startsWith(".") ? relativePath : `./${relativePath}`;
+  });
+
+  return {
+    id: file.id,
+    content: rewritten,
+    styles: file.styles,
+    dependencies: file.dependencies,
+    devDependencies: file.devDependencies,
+  };
+}
+
+// ============================================================================
+// Public API: File Merging
+// ============================================================================
 
 /**
  * Merges related files into grouped targets and rewrites named imports to point
  * at the merged output when appropriate. By default groups files by their
  * parent directory (directories with 2+ files produce `<dir>.ts`).
+ *
+ * @param files - Input files keyed by absolute path
+ * @param filter - Optional function to determine merge targets. Return a string
+ *   path to merge to that target, or false/boolean to keep the file as-is.
  */
 export function mergeFiles(
   files: Record<string, SourceFile>,
   filter?: (path: string) => string | boolean,
 ): Record<string, SourceFile> {
-  /**
-   * Build grouping: map each file id to a target merged id, or null to keep as-is.
-   */
-  const targetById = new Map<string, string | null>();
-  if (filter) {
-    for (const id of Object.keys(files)) {
-      const next = filter(id);
-      if (next && typeof next === "string") {
-        targetById.set(id, next);
-      } else {
-        targetById.set(id, null);
-      }
-    }
-  } else {
-    // Default: group by parent directory; merge directories with 2+ files into <dir>.ts
-    const byDir = new Map<string, string[]>();
-    for (const id of Object.keys(files)) {
-      const dir = dirname(id);
-      if (!byDir.has(dir)) {
-        byDir.set(dir, []);
-      }
-      byDir.get(dir)!.push(id);
-    }
-    for (const [dir, ids] of byDir) {
-      if (ids.length >= 2) {
-        const target = `${dir}.ts`;
-        for (const id of ids) {
-          targetById.set(id, target);
-        }
-      } else {
-        for (const id of ids) {
-          targetById.set(id, null);
-        }
-      }
-    }
+  const targetById = buildTargetMapping(files, filter);
+  const membersByTarget = groupFilesByTarget(targetById);
+
+  // Process merged groups
+  const mergedGroups: MergedGroup[] = [];
+  for (const [target, memberIds] of membersByTarget) {
+    mergedGroups.push(mergeFileGroup(files, target, memberIds));
   }
 
-  /**
-   * Build members by target id for groups to merge.
-   */
-  const membersByTarget = new Map<string, string[]>();
-  for (const [id, tgt] of targetById) {
-    if (!tgt) continue;
-    if (!membersByTarget.has(tgt)) {
-      membersByTarget.set(tgt, []);
-    }
-    membersByTarget.get(tgt)!.push(id);
-  }
-  // Ensure deterministic ordering of members per group
-  for (const ids of membersByTarget.values()) {
-    ids.sort((a, b) => a.localeCompare(b));
-  }
-
+  // Build result: first add non-merged files with rewritten imports
   const result: Record<string, SourceFile> = {};
 
-  // We'll collect merged groups after processing non-merged files to match expected order
-  const mergedGroups: Array<{
-    target: string;
-    content: string;
-    styles?: StyleDependency[];
-    dependencies?: Record<string, string>;
-    devDependencies?: Record<string, string>;
-  }> = [];
-  for (const [target, memberIds] of membersByTarget) {
-    const order = topoOrderGroup(files, memberIds);
-    const groupSet = new Set(memberIds);
-    const parts: string[] = [];
-    for (let i = 0; i < order.length; i++) {
-      const id = order[i]!;
-      const file = files[id];
-      if (!file) continue;
-      let stripped = stripInternalNamedImports(
-        files,
-        id,
-        file.content,
-        groupSet,
-      );
-      stripped = i === 0 ? stripped.trimEnd() : stripped.trimStart().trimEnd();
-      parts.push(stripped);
-    }
-    // Merge styles/deps using lexical member order for deterministic union
-    let mergedStyles: StyleDependency[] | undefined;
-    let mergedDeps: Record<string, string> | undefined;
-    let mergedDevDeps: Record<string, string> | undefined;
-    const stylesOrder = [...memberIds].sort((a, b) => a.localeCompare(b));
-    for (const id of stylesOrder) {
-      const file = files[id];
-      if (!file) continue;
-      mergedStyles = mergeStyles(mergedStyles, file.styles);
-      mergedDeps = mergeDepMaps(mergedDeps, file.dependencies);
-      mergedDevDeps = mergeDepMaps(mergedDevDeps, file.devDependencies);
-    }
-    const content = `${parts.join("\n\n").trimEnd()}\n`;
-    const hoistedContent = hoistImports(content);
-    mergedGroups.push({
-      target,
-      content: hoistedContent,
-      styles: mergedStyles,
-      dependencies: mergedDeps,
-      devDependencies: mergedDevDeps,
-    });
-  }
-
-  // Then, add non-merged files, rewriting named imports that point to merged groups
   for (const [id, file] of Object.entries(files)) {
-    if (targetById.get(id)) continue; // Skip files that were merged into a group
-    const dir = dirname(id);
-    const rewritten = mergeImports(file.content, (p, _t) => {
-      // Only named (type/value) imports are processed by mergeImports; return false by default
-      const abs = resolveSpecifierToId(files, id, p);
-      if (!abs) return false;
-      const target = targetById.get(abs);
-      if (!target) return false;
-      const rel = relative(dir, target).replace(/\\/g, "/");
-      // Ensure relative paths start with ./ or ../
-      const normalized = rel.startsWith(".") ? rel : `./${rel}`;
-      return normalized;
-    });
-    result[id] = {
-      id,
-      content: rewritten,
-      styles: file.styles,
-      dependencies: file.dependencies,
-      devDependencies: file.devDependencies,
-    };
+    if (targetById.get(id)) continue; // Skip files that were merged
+    result[id] = rewriteImportsForMergedTargets(files, file, targetById);
   }
 
-  // Finally, append merged groups so their keys come last deterministically
+  // Append merged groups in deterministic order
   mergedGroups.sort((a, b) => a.target.localeCompare(b.target));
-  for (const g of mergedGroups) {
-    result[g.target] = {
-      id: g.target,
-      content: g.content,
-      styles: g.styles,
-      dependencies: g.dependencies,
-      devDependencies: g.devDependencies,
+  for (const group of mergedGroups) {
+    result[group.target] = {
+      id: group.target,
+      content: group.content,
+      styles: group.styles,
+      dependencies: group.dependencies,
+      devDependencies: group.devDependencies,
     };
   }
 
