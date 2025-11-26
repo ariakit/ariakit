@@ -32,6 +32,8 @@ jobs:
             const fs = require('fs');
             const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
 
+            console.log(output);
+
             const packages = output.packages
               .map((p) => `\`\`\`sh\nnpm i ${p.url}\n\`\`\``)
               .join('\n');
