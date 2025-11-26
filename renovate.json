@@ -1,37 +1,37 @@
 {
-  "extends": ["config:base"],
-  "semanticCommits": false,
+  "extends": ["config:recommended"],
+  "semanticCommits": "disabled",
   "packageRules": [
     {
-      "matchPackagePatterns": [
-        "hast",
-        "rehype",
-        "remark",
-        "unified",
-        "unist",
-        "react-markdown"
-      ],
-      "groupName": "unified"
+      "groupName": "unified",
+      "matchPackageNames": [
+        "/hast/",
+        "/rehype/",
+        "/remark/",
+        "/unified/",
+        "/unist/",
+        "/react-markdown/"
+      ]
     },
     {
-      "matchPackagePatterns": ["clerk"],
-      "groupName": "clerk"
+      "groupName": "clerk",
+      "matchPackageNames": ["/clerk/"]
     },
     {
-      "matchPackagePatterns": ["stripe"],
-      "groupName": "stripe"
+      "groupName": "stripe",
+      "matchPackageNames": ["/stripe/"]
     },
     {
-      "matchPackagePatterns": ["monaco"],
-      "groupName": "monaco"
+      "groupName": "monaco",
+      "matchPackageNames": ["/monaco/"]
     },
     {
-      "matchPackagePatterns": ["@testing-library/"],
-      "groupName": "testing-library"
+      "groupName": "testing-library",
+      "matchPackageNames": ["/@testing-library//"]
     },
     {
-      "matchPackagePatterns": ["@radix-ui/"],
-      "groupName": "radix"
+      "groupName": "radix",
+      "matchPackageNames": ["/@radix-ui//"]
     },
     {
       "matchPackageNames": [
@@ -56,20 +56,18 @@
         "tsup",
         "typescript",
         "webpack",
-        "zod"
-      ],
-      "matchPackagePatterns": [
-        "^@babel/",
-        "^@biomejs/",
-        "^@playwright/",
-        "^@radix-ui/",
-        "^@rollup/",
-        "^@testing-library/",
-        "^@types/",
-        "^@vitest/",
-        "^prettier",
-        "^vitest",
-        "^stylelint"
+        "zod",
+        "/^@babel//",
+        "/^@biomejs//",
+        "/^@playwright//",
+        "/^@radix-ui//",
+        "/^@rollup//",
+        "/^@testing-library//",
+        "/^@types//",
+        "/^@vitest//",
+        "/^prettier/",
+        "/^vitest/",
+        "/^stylelint/"
       ],
       "automerge": true,
       "automergeType": "pr",
