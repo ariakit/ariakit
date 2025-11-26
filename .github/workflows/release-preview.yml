@@ -1,4 +1,6 @@
 name: release-preview
+permissions:
+  contents: read
 
 on: [push, pull_request]
 
