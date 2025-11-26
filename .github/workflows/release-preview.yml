@@ -31,33 +31,32 @@ jobs:
         id: changeset-status
         run: |
           if npx changeset status --output changes.json 2>/dev/null; then
-            echo "changes-output=$(cat changes.json | jq -c .)" >> $GITHUB_OUTPUT
+            echo "has-changesets=true" >> $GITHUB_OUTPUT
           else
-            echo "changes-output={\"changesets\":[]}" >> $GITHUB_OUTPUT
+            echo "has-changesets=false" >> $GITHUB_OUTPUT
           fi
-
-      - name: Get npm packages
-        id: npm-packages
-        run: |
-          npm query ':root > *' > npm-packages.json
-          echo "packages-output=$(cat npm-packages.json | jq -c .)" >> $GITHUB_OUTPUT
 
       - name: Compute affected packages
         id: compute-affected-packages
-        uses: actions/github-script@v7
-        env:
-          CHANGES: ${{ steps.changeset-status.outputs.changes-output }}
-          PACKAGES: ${{ steps.npm-packages.outputs.packages-output }}
+        if: steps.changeset-status.outputs.has-changesets == 'true'
+        uses: actions/github-script@v8
         with:
           script: |
-            const { relative } = require('node:path');
-            const changes = JSON.parse(process.env.CHANGES);
-            const packages = JSON.parse(process.env.PACKAGES);
-            const packagesMap = Object.fromEntries(packages.map(p => [p.name, relative(process.cwd(), p.location)]));
-            const affectedPackages = [...new Set(changes.changesets.flatMap(c => c.releases.map(r => packagesMap[r.name])))];
+            const fs = require('node:fs');
+            const path = require('node:path');
+            const changes = JSON.parse(fs.readFileSync('changes.json', 'utf8'));
+            const packageDirs = fs.readdirSync('packages', { withFileTypes: true })
+              .filter(d => d.isDirectory())
+              .map(d => path.join('packages', d.name));
+            const packagesMap = Object.fromEntries(packageDirs.map(dir => {
+              const pkg = JSON.parse(fs.readFileSync(path.join(dir, 'package.json'), 'utf8'));
+              return [pkg.name, dir];
+            }));
+            const affectedPackages = [...new Set(changes.changesets.flatMap(c => c.releases.map(r => packagesMap[r.name]).filter(Boolean)))];
             core.setOutput('affected-packages', JSON.stringify(affectedPackages));
 
       - name: Publish preview
+        if: steps.changeset-status.outputs.has-changesets == 'true'
         env:
           AFFECTED_PACKAGES: ${{ steps.compute-affected-packages.outputs.affected-packages }}
         run: |
