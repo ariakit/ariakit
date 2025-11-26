@@ -38,6 +38,7 @@
     "coverage",
     "website",
     "site",
+    "templates",
     "packages/*solid*",
     "examples/**/*.solid.tsx"
   ]
