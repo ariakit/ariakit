@@ -1,0 +1,22 @@
+name: release-preview
+
+on: [push, pull_request]
+
+jobs:
+  version:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+        with:
+          cache-npm: true
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish preview
+        run: npx pkg-pr-new publish --compact ./packages/*
