@@ -30,8 +30,11 @@ jobs:
       - name: Get changeset status
         id: changeset-status
         run: |
-          npx changeset status --output changes.json
-          echo "changes-output=$(cat changes.json | jq -c .)" >> $GITHUB_OUTPUT
+          if npx changeset status --output changes.json 2>/dev/null; then
+            echo "changes-output=$(cat changes.json | jq -c .)" >> $GITHUB_OUTPUT
+          else
+            echo "changes-output={\"changesets\":[]}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Get npm packages
         id: npm-packages
@@ -51,7 +54,7 @@ jobs:
             const changes = JSON.parse(process.env.CHANGES);
             const packages = JSON.parse(process.env.PACKAGES);
             const packagesMap = Object.fromEntries(packages.map(p => [p.name, relative(process.cwd(), p.location)]));
-            const affectedPackages = [...new Set(changes.changesets.map(c => c.releases.map(r => packagesMap[r.name])).flat())];
+            const affectedPackages = [...new Set(changes.changesets.flatMap(c => c.releases.map(r => packagesMap[r.name])))];
             core.setOutput('affected-packages', JSON.stringify(affectedPackages));
 
       - name: Publish preview
