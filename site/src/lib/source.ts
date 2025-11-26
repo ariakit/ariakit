@@ -201,7 +201,11 @@ function getQuoteFromGroups(groups: RegExpExecArray["groups"]): string {
  * // Returns "A, type B"
  */
 function extractSpecifiersInsideBraces(matchText: string): string | null {
-  const beforeFrom = matchText.slice(0, matchText.indexOf("from"));
+  // Match ` from ` followed by a quote to avoid matching "from" inside identifiers
+  // (e.g., `transformFrom`)
+  const fromIndex = matchText.search(/\sfrom\s+['"`]/);
+  if (fromIndex < 0) return null;
+  const beforeFrom = matchText.slice(0, fromIndex);
   const braceStart = beforeFrom.indexOf("{");
   const braceEnd = beforeFrom.lastIndexOf("}");
   if (braceStart < 0 || braceEnd < 0) return null;
