@@ -22,7 +22,7 @@ jobs:
         run: npm run build
 
       - name: Publish preview
-        run: npx pkg-pr-new publish --json output.json --comment=off --compact --template ./templates/* ./packages/*
+        run: npx pkg-pr-new publish --json output.json --comment=off --compact --template './templates/*' './packages/*'
 
       - name: Post or update comment
         uses: actions/github-script@v8
