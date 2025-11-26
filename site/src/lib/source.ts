@@ -983,7 +983,8 @@ function mergeFileGroup(
   // Build merged content from files in topological order
   const parts: string[] = [];
   for (let i = 0; i < order.length; i++) {
-    const id = order[i]!;
+    const id = order[i];
+    if (!id) continue;
     const file = files[id];
     if (!file) continue;
 
