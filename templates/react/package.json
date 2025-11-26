@@ -1,5 +1,6 @@
 {
-  "name": "@ariakit-templates/react",
+  "name": "ariakit-template-react",
+  "description": "Ariakit React template",
   "private": true,
   "version": "0.0.0",
   "type": "module",
