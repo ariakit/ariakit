@@ -90,6 +90,8 @@ jobs:
               }
             }
 
+            console.log(output);
+
             async function logPublishInfo() {
               console.log('\n' + '='.repeat(50));
               console.log('Publish Information');
