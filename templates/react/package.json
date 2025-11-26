@@ -1,0 +1,29 @@
+{
+  "name": "template-react",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "tsc": "tsc",
+    "build": "npm run tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ariakit/core": "0.4.17",
+    "@ariakit/react": "0.4.20",
+    "@ariakit/react-core": "0.4.20",
+    "@ariakit/tailwind": "0.1.9",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.1.17",
+    "@types/react": "18.3.27",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "5.1.1",
+    "tailwindcss": "4.1.17",
+    "typescript": "5.9.3",
+    "vite": "7.2.4"
+  }
+}
