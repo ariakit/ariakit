@@ -29,8 +29,8 @@ jobs:
         with:
           github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
           script: |
-            import fs from "fs";
-            import output from "./output.json" with { type: "json" };
+            const fs = require('fs');
+            const output = JSON.parse(fs.readFileSync('output.json', 'utf8'));
 
             const packages = output.packages
               .map((p) => `- \`${p.name}\`\n\n   \`\`\`\n   npm i ${p.url}\n   \`\`\``)
