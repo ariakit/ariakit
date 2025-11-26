@@ -71,9 +71,9 @@
         # todo: playwright support
         nativeBuildInputs = with pkgs; [
           direnv
-          nodejs_22
+          nodejs_24
           bencher
-          corepack_22
+          corepack_24
         ];
       in {
         packages = {inherit bencher;};
