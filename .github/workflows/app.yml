@@ -129,6 +129,6 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: app-visual-${{ matrix.project }}
-          path: site/src/tests/visual
+          path: site/src/tests/visual/*-${{ matrix.project }}-*.png
           if-no-files-found: ignore
           retention-days: 1
