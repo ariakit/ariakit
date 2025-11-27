@@ -51,7 +51,7 @@ function getSource(source: typeof sourceProp) {
   if (!source) return;
   if ("files" in source) return source;
   if (!framework) return null;
-  return source[framework] || null;
+  return source[framework] ?? null;
 }
 
 const source = getSource(sourceProp);
@@ -62,7 +62,7 @@ if (source === null) {
   return null;
 }
 
-const tabsFromSource = source
+const tabsFromSource = source?.files
   ? Object.entries(source.files).map(([filename, { content }]) => {
       const lang = getLangFromFilename(filename);
       const filenameIcon =
@@ -82,10 +82,17 @@ const tabsFromSource = source
 const tabs = tabsProp || tabsFromSource;
 const example = exampleProp ?? source?.name;
 
-const isMainPreview =
-  !source?.name.includes("/") || source.name.includes("_component");
+// Don't render if there are no tabs
+if (tabs.length === 0) {
+  return null;
+}
 
-const preview = source && (await getEntry("previews", source.name));
+const isMainPreview =
+  !source?.name?.includes("/") || source?.name?.includes("_component");
+
+const preview = source?.name
+  ? await getEntry("previews", source.name)
+  : undefined;
 const fullscreen = !!preview?.data.fullscreen;
 const title = preview?.data.title;
 

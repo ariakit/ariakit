@@ -29,7 +29,7 @@ export function getStackblitzFramework(
   const hasNextDependency = Boolean(
     source.dependencies?.next || source.devDependencies?.next,
   );
-  const hasNextFiles = Object.keys(source.files).some((filename) =>
+  const hasNextFiles = Object.keys(source.files ?? {}).some((filename) =>
     filename.startsWith("app/"),
   );
 
@@ -82,6 +82,7 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
           if (!stackblitzFramework) return;
           if (!framework) return;
           if (!source) return;
+          if (!source.files) return;
           const id = example ?? source.name;
           if (!id) return;
           openInStackblitz({
@@ -92,9 +93,9 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
                 value.content,
               ]),
             ),
-            dependencies: source.dependencies,
-            devDependencies: source.devDependencies,
-            styles: source.styles,
+            dependencies: source.dependencies ?? {},
+            devDependencies: source.devDependencies ?? {},
+            styles: source.styles ?? [],
             framework: stackblitzFramework,
           });
         }}

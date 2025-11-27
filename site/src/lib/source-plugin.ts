@@ -465,6 +465,13 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
 }
 
 /**
+ * Check if a file is a static file type that doesn't need import processing
+ */
+function isStaticFileType(filePath: string) {
+  return /\.(html|css|json|md|mdx)$/.test(filePath);
+}
+
+/**
  * Custom plugin to extract source code and dependencies using Vite's module
  * graph
  */
@@ -479,13 +486,23 @@ export function sourcePlugin(root?: string): Plugin {
       const realId = id.replace(queryString, "");
 
       const source: Source = {
-        name: dirname(id).replace(root ?? "", ""),
+        name: dirname(realId).replace(root ?? "", ""),
         sources: {},
         dependencies: {},
         devDependencies: {},
         styles: [],
         files: {},
       };
+
+      // Handle static file types (HTML, CSS, etc.) that don't have imports
+      if (isStaticFileType(realId)) {
+        const content = await fs.promises.readFile(realId, "utf-8");
+        const filename = basename(realId);
+        source.sources[realId] = { id: realId, content };
+        source.files[filename] = { id: realId, content };
+        source.styles = resolveStyles(content);
+        return `export default ${JSON.stringify(source, null, 2)}`;
+      }
 
       await processFile(this, source, realId);
 

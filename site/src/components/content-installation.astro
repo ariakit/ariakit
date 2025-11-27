@@ -50,21 +50,25 @@ const frameworkStyles = new Map<string, StyleDependency>();
 for (const source of sources) {
   const frameworkSource = getSource(source);
   if (!frameworkSource) continue;
-  for (const [key, value] of Object.entries(frameworkSource.dependencies)) {
+  for (const [key, value] of Object.entries(
+    frameworkSource.dependencies ?? {}
+  )) {
     if (frameworkLookupDependencies.includes(key)) {
       frameworkDependencies[key] = value;
       continue;
     }
     dependencies[key] = value;
   }
-  for (const [key, value] of Object.entries(frameworkSource.devDependencies)) {
+  for (const [key, value] of Object.entries(
+    frameworkSource.devDependencies ?? {}
+  )) {
     if (frameworkLookupDependencies.includes(key)) {
       frameworkDevDependencies[key] = value;
       continue;
     }
     devDependencies[key] = value;
   }
-  for (const style of frameworkSource.styles) {
+  for (const style of frameworkSource.styles ?? []) {
     if ("import" in style) continue;
     frameworkStyles.set(style.name, style);
   }

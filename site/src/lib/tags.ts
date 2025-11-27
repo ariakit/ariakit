@@ -18,6 +18,7 @@ const customTags = {
   modals: { label: "Modals" },
   forms: { label: "Forms" },
   nextjs: { label: "Next.js", frameworks: ["react"] },
+  html: { label: "HTML" },
   "no-ui-library": { label: "No UI Library" },
   "nextjs-app-router": { label: "Next.js App Router", frameworks: ["react"] },
   "framer-motion": { label: "Framer Motion" },
