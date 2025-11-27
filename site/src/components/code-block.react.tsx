@@ -385,11 +385,14 @@ export function CodeBlockPreviewIframe({
       // Make the iframe inert so we can interact with it without moving focus
       doc.body.inert = true;
 
-      let attempts = 0;
+      let clickAttempts = 0;
 
-      const clickAndWaitForPopup = (button: HTMLButtonElement) => {
-        attempts++;
-        log("clickAndWaitForPopup attempt", attempts);
+      const clickAndWaitForPopup = (
+        currentDoc: Document,
+        button: HTMLButtonElement,
+      ) => {
+        clickAttempts++;
+        log("clickAndWaitForPopup attempt", clickAttempts);
 
         const eventInit = { bubbles: true, cancelable: true };
         button.dispatchEvent(new MouseEvent("pointerdown", eventInit));
@@ -400,7 +403,7 @@ export function CodeBlockPreviewIframe({
 
         // Wait for the popup to be visible
         timeout = window.setTimeout(() => {
-          const popup = doc.querySelector<HTMLElement>("[data-dialog]");
+          const popup = currentDoc.querySelector<HTMLElement>("[data-dialog]");
           const hasHidden = popup?.hasAttribute("hidden");
           log("checking popup:", {
             popupFound: !!popup,
@@ -412,7 +415,10 @@ export function CodeBlockPreviewIframe({
             // If the popup is missing or hidden, it might not have been
             // hydrated yet. We'll try again shortly.
             log("popup not ready, scheduling retry");
-            timeout = window.setTimeout(() => clickAndWaitForPopup(button), 84);
+            timeout = window.setTimeout(
+              () => clickAndWaitForPopup(currentDoc, button),
+              84,
+            );
             return;
           }
           log("popup is visible, proceeding");
@@ -421,44 +427,72 @@ export function CodeBlockPreviewIframe({
           raf = requestAnimationFrame(() => {
             log("setLoaded(true) and scroll");
             setLoaded(true);
-            scroll(doc, button, popup);
+            scroll(currentDoc, button, popup);
             // Reset the transition
             popup.style.removeProperty("transition");
             // Toggle the iframe visibility to trigger the transition when it's
             // visible in the viewport
-            doc.body.style.display = "none";
+            currentDoc.body.style.display = "none";
             raf = requestAnimationFrame(() => {
-              doc.body.style.removeProperty("display");
+              currentDoc.body.style.removeProperty("display");
               log("body display restored");
             });
             timeout = window.setTimeout(() => {
-              doc.body.inert = false;
+              currentDoc.body.inert = false;
               log("body inert set to false");
             }, 42);
           });
         }, 42);
       };
 
+      // Maximum retries for finding the button (~4 seconds at 84ms intervals)
+      const maxButtonRetries = 50;
+      let buttonRetries = 0;
+
       const waitForButton = () => {
-        const button = doc.querySelector<HTMLButtonElement>(triggerSelector);
+        // Re-query contentDocument each time as it may change after navigation
+        const currentDoc = iframe.contentDocument;
+        if (!currentDoc) {
+          log("waitForButton: no contentDocument");
+          buttonRetries++;
+          if (buttonRetries < maxButtonRetries) {
+            timeout = window.setTimeout(waitForButton, 84);
+          } else {
+            log("waitForButton: max retries reached, giving up");
+            setLoaded(true);
+          }
+          return;
+        }
+
+        const button =
+          currentDoc.querySelector<HTMLButtonElement>(triggerSelector);
         log(
           "waitForButton: button found?",
           !!button,
           "selector:",
           triggerSelector,
+          "retry:",
+          buttonRetries,
         );
         if (!button) {
           // The iframe document is loaded but the React app hasn't hydrated
           // yet. Retry after a short delay.
-          log("waitForButton: no button, scheduling retry");
-          timeout = window.setTimeout(waitForButton, 84);
+          buttonRetries++;
+          if (buttonRetries < maxButtonRetries) {
+            log("waitForButton: no button, scheduling retry");
+            timeout = window.setTimeout(waitForButton, 84);
+          } else {
+            log("waitForButton: max retries reached, giving up");
+            setLoaded(true);
+          }
           return;
         }
 
+        const currentHtml = currentDoc.documentElement;
         const { top } = button.getBoundingClientRect();
-        html.scrollTo({ top });
+        currentHtml.scrollTo({ top });
 
-        clickAndWaitForPopup(button);
+        clickAndWaitForPopup(currentDoc, button);
       };
 
       waitForButton();
