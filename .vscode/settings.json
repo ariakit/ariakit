@@ -7,9 +7,9 @@
   "files.insertFinalNewline": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.experimental.configFile": {
+    "tailwind.config.cjs": "**/*",
     "site/src/styles/global.css": "site/**/*",
-    "templates/react/src/style.css": "templates/react/**/*",
-    "tailwind.config.cjs": "**/*"
+    "templates/react/src/style.css": "templates/react/**/*"
   },
   "tailwindCSS.experimental.classRegex": [
     ["(?:twMerge|twJoin|clsx)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]

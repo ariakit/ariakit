@@ -767,7 +767,7 @@ export function CodeBlockTabs({
                   >
                     <ak.TabList
                       className={clsx(
-                        "ak-tab-list ak-layer-(--ak-layer-parent) !rounded-b-none",
+                        "ak-tab-list ak-layer-(--ak-layer-parent) rounded-b-none!",
                         hasToolbar && "sm:ak-frame-overflow/1",
                       )}
                     >

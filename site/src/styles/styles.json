@@ -807,7 +807,7 @@
               "value": {}
             },
             {
-              "name": "@apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-gradient-to-b from-50% bg-clip-padding",
+              "name": "@apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-linear-to-b from-50% bg-clip-padding",
               "value": {}
             },
             {
@@ -2277,7 +2277,7 @@
               "value": {}
             },
             {
-              "name": "@apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain !pb-0",
+              "name": "@apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) pb-0! relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain",
               "value": {}
             },
             {
@@ -2288,7 +2288,7 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) pointer-events-none sticky h-full w-8 flex-none bg-gradient-to-l to-transparent bg-clip-padding content-['']",
+                  "name": "@apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) bg-linear-to-l pointer-events-none sticky h-full w-8 flex-none to-transparent bg-clip-padding content-['']",
                   "value": {}
                 }
               ]
@@ -2300,7 +2300,7 @@
                   "name": "&::after",
                   "value": [
                     {
-                      "name": "@apply bg-gradient-to-r",
+                      "name": "@apply bg-linear-to-r",
                       "value": {}
                     }
                   ]
@@ -2330,7 +2330,7 @@
               "value": {}
             },
             {
-              "name": "@apply !border-(--ak-tab-border-color) relative",
+              "name": "@apply border-(--ak-tab-border-color)! relative",
               "value": {}
             }
           ],
@@ -2387,7 +2387,7 @@
               "value": {}
             },
             {
-              "name": "@apply border-(length:--ak-tab-border-width) !border-b-0 border-transparent",
+              "name": "@apply border-(length:--ak-tab-border-width) border-b-0! border-transparent",
               "value": {}
             },
             {
@@ -2569,11 +2569,11 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-(--ak-tab-bg) ak-text/100",
+              "name": "@apply ak-layer-(--ak-tab-bg) ak-text",
               "value": {}
             },
             {
-              "name": "@apply z-2 !border-(--ak-tab-border-color) !rounded-b-none",
+              "name": "@apply z-2 border-(--ak-tab-border-color)! rounded-b-none!",
               "value": {}
             },
             {
@@ -2680,7 +2680,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text/100",
+              "name": "ak-text",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2817,7 +2817,7 @@
               "value": {}
             },
             {
-              "name": "@apply ease-[linear(0,_0.008_1.1%,_0.031_2.2%,_0.129_4.8%,_0.257_7.2%,_0.671_14.2%,_0.789_16.5%,_0.881_18.6%,_0.957_20.7%,_1.019_22.9%,_1.063_25.1%,_1.094_27.4%,_1.114_30.7%,_1.112_34.5%,_1.018_49.9%,_0.99_59.1%,_1)]",
+              "name": "@apply ease-[linear(0,0.008_1.1%,0.031_2.2%,0.129_4.8%,0.257_7.2%,0.671_14.2%,0.789_16.5%,0.881_18.6%,0.957_20.7%,1.019_22.9%,1.063_25.1%,1.094_27.4%,1.114_30.7%,1.112_34.5%,1.018_49.9%,0.99_59.1%,1)]",
               "value": {}
             },
             {
@@ -7077,7 +7077,7 @@
               "name": "li:last-of-type > &::after,\n  &:is(li):last-of-type::after",
               "value": [
                 {
-                  "name": "@apply from-(--ak-layer) bg-transparent bg-gradient-to-b from-[calc(100%-1rem)] to-transparent",
+                  "name": "@apply from-(--ak-layer) bg-linear-to-b bg-transparent from-[calc(100%-1rem)] to-transparent",
                   "value": {}
                 },
                 {

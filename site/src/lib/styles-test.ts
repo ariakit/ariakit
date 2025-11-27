@@ -124,7 +124,7 @@ test("styleDefToCss renders ak-list-item-ol-border utility fully", () => {
       /* Make the final border segment match the content’s height */
       li:last-of-type > &::after,
       &:is(li):last-of-type::after {
-        @apply from-(--ak-layer) bg-transparent bg-gradient-to-b from-[calc(100%-1rem)] to-transparent;
+        @apply from-(--ak-layer) bg-linear-to-b bg-transparent from-[calc(100%-1rem)] to-transparent;
         height: calc(100% - var(--ak-list-border-top));
       }
     }"

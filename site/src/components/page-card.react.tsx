@@ -66,7 +66,7 @@ export function PageCard({
             </span>
           )}
           <span
-            className="group-ak-command-focus/card:ak-layer-white -m-10 !bg-transparent grid content-center-safe group-ak-command-hover/card:scale-75 scale-70 origin-center relative transition-transform duration-600"
+            className="group-ak-command-focus/card:ak-layer-white -m-10 bg-transparent! grid content-center-safe group-ak-command-hover/card:scale-75 scale-70 origin-center relative transition-transform duration-600"
             dangerouslySetInnerHTML={{ __html: thumbnail || "" }}
           />
         </span>

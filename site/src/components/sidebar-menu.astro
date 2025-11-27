@@ -66,7 +66,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
   id={id}
   data-sidebar-menu={id}
   class:list={[
-    "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size_+_--spacing(4))] z-3 @max-5xl:hidden ak-layer-current border-e max-h-[inherit] h-full",
+    "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size+--spacing(4))] z-3 @max-5xl:hidden ak-layer-current border-e max-h-[inherit] h-full",
     props.class,
   ]}
   {...props}
@@ -112,7 +112,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
                 ) : (
                   label
                 )}
-                <span class="absolute inset-y-0 end-0 w-(--ak-frame-padding) bg-gradient-to-l from-(--ak-layer) from-25% to-transparent z-10 rounded-r-[inherit]" />
+                <span class="absolute inset-y-0 end-0 w-(--ak-frame-padding) bg-linear-to-l from-(--ak-layer) from-25% to-transparent z-10 rounded-r-[inherit]" />
               </a>
               <div
                 class="absolute inset-y-0 -right-(--p) w-[calc(2px+0.03rem*var(--contrast))] bg-current opacity-0 peer-aria-[current=page]:opacity-100"

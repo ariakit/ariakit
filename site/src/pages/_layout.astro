@@ -35,7 +35,7 @@ const { title, headerBorder = false } = Astro.props;
     class="ak-container-size-default/3 overflow-x-clip [--header-height:calc(--spacing(14)+1px)] [--theme-sidebar-width:--spacing(100)]"
   >
     <div class="flex">
-      <div class="flex flex-col flex-1 @container/main min-h-[100dvh]">
+      <div class="flex flex-col flex-1 @container/main min-h-dvh">
         <header
           class:list={[
             "sticky ak-container-size-default top-0 z-10",
@@ -116,7 +116,7 @@ const { title, headerBorder = false } = Astro.props;
         id="theme-sidebar"
         data-state="closed"
         transition:persist
-        class="hidden data-[state=open]:block sticky w-(--theme-sidebar-width) h-[100dvh] top-0 z-10 ak-layer-current border-s -ms-px flex-none not-data-view-transitioning:starting:w-0 data-[state=closed]:w-0 transition-discrete transition-[display,width,min-width]"
+        class="hidden data-[state=open]:block sticky w-(--theme-sidebar-width) h-dvh top-0 z-10 ak-layer-current border-s -ms-px flex-none not-data-view-transitioning:starting:w-0 data-[state=closed]:w-0 transition-discrete transition-[display,width,min-width]"
       >
         Theme
       </div>
