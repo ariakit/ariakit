@@ -3,8 +3,11 @@
   "name": "ariakit",
   "main": "./site/dist/_worker.js/index.js",
   "preview_urls": false,
-  "compatibility_date": "2025-08-13",
+  "compatibility_date": "2025-11-27",
   "compatibility_flags": ["nodejs_compat"],
+  "placement": {
+    "mode": "smart"
+  },
   "observability": {
     "enabled": true
   },
