@@ -13,7 +13,6 @@ withFramework(import.meta.dirname, async () => {
   test("open @visual", async ({ page }) => {
     const q = query(page);
     await q.button("Brightside Studio").click();
-    await q.cell("Ceramic Mug (Matte Black)").hover();
     await visual(page);
   });
 
