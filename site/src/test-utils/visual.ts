@@ -127,7 +127,10 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
       // Ignore visually hidden elements.
       if (rect.width <= 1 && rect.height <= 1) {
         const style = window.getComputedStyle(el);
-        if (style.clip !== "auto" && style.position === "absolute") {
+        if (
+          style.clip !== "auto" &&
+          (style.position === "absolute" || style.position === "fixed")
+        ) {
           return;
         }
       }
