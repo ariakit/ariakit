@@ -13,12 +13,15 @@ body:
       required: true
     attributes:
       label: Steps to reproduce the bug
-      description: >
+      description: |
         Provide a repository or
         [StackBlitz](https://stackblitz.com/github/ariakit/ariakit/tree/main/templates/react?file=src%2Fapp.tsx)
-        link with the bug and describe the steps to reproduce it. You can use
+        link with the bug and describe the steps to reproduce it.
+        
+        You can use
         one of the following templates to get started:
-        [React](https://stackblitz.com/github/ariakit/ariakit/tree/main/templates/react?file=src%2Fapp.tsx).
+        - [React](https://stackblitz.com/github/ariakit/ariakit/tree/main/templates/react?file=src%2Fapp.tsx)
+        
         _Bug reports without a reproduction may be ignored_.
       value: |
         1. Open https://stackblitz.com/github/ariakit/ariakit/tree/main/templates/react?file=src%2Fapp.tsx
