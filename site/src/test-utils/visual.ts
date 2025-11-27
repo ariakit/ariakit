@@ -124,6 +124,16 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
     const rects: Rect[] = [];
     const walk = (el: Element, padded = true) => {
       const rect = el.getBoundingClientRect();
+      // Ignore visually hidden elements.
+      if (rect.width <= 1 && rect.height <= 1) {
+        const style = window.getComputedStyle(el);
+        if (
+          style.clip !== "auto" &&
+          (style.position === "absolute" || style.position === "fixed")
+        ) {
+          return;
+        }
+      }
       const isSized = rect.width > 0 && rect.height > 0;
       if (isSized && (!padded || Math.round(rect.width) < viewportWidth)) {
         rects.push(rect);
@@ -266,4 +276,10 @@ export async function visual(page: Page, options: ScreenshotOptions = {}) {
       }
     });
   }
+}
+
+export async function reduceMotionBeforeEach() {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+  });
 }
