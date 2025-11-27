@@ -13,6 +13,8 @@ import { getReferenceItemId } from "#app/lib/reference.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 
+// #region Types
+
 export type ReferenceLabelKind = "component" | "function" | "store" | "prop";
 
 export interface CodeReferenceAnchorRange {
@@ -42,10 +44,214 @@ interface ImportInfo {
   namedImports: Map<string, string>; // localName -> exportedName
 }
 
+interface TokenRange {
+  start: number;
+  end: number;
+  name: string;
+}
+
+// #endregion
+
+// #region Common Patterns
+
+/** Matches a valid JavaScript identifier */
+const IDENTIFIER_PATTERN = "[A-Za-z_$][\\w$]*";
+
+/** Matches an identifier starting with uppercase (component-like) */
+const COMPONENT_NAME_PATTERN = "[A-Z][\\w$]*";
+
+/** Characters that can precede a JSX tag (not identifier characters) */
+const NON_IDENTIFIER_CHAR_PATTERN = /[_$A-Za-z0-9]/;
+
+/** Quote characters for string literals */
+type QuoteChar = '"' | "'" | "`";
+
+// #endregion
+
+// #region String Utilities
+
 function escapeRegExp(str: string) {
-  // $& = the matched character; prefix each with a backslash
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
+
+/**
+ * Checks if a character is a quote character.
+ */
+function isQuoteChar(char: string): char is QuoteChar {
+  return char === '"' || char === "'" || char === "`";
+}
+
+/**
+ * Scans forward in code, skipping over a string literal (starting at the
+ * opening quote position). Returns the index after the closing quote.
+ */
+function skipStringLiteral(code: string, startIndex: number): number {
+  const quote = code[startIndex];
+  if (!quote || !isQuoteChar(quote)) return startIndex + 1;
+
+  let index = startIndex + 1;
+  while (index < code.length) {
+    const char = code[index]!;
+    if (char === "\\") {
+      index += 2;
+      continue;
+    }
+    if (char === quote) return index + 1;
+    index++;
+  }
+  return index;
+}
+
+/**
+ * Finds the index of a closing bracket/brace/paren, respecting nesting and
+ * string literals.
+ */
+function findMatchingClose(
+  code: string,
+  openIndex: number,
+  openChar: string,
+  closeChar: string,
+): number | null {
+  let depth = 1;
+  let index = openIndex + 1;
+
+  while (index < code.length && depth > 0) {
+    const char = code[index]!;
+    if (isQuoteChar(char)) {
+      index = skipStringLiteral(code, index);
+      continue;
+    }
+    if (char === openChar) {
+      depth++;
+    } else if (char === closeChar) {
+      depth--;
+    }
+    index++;
+  }
+
+  return depth === 0 ? index - 1 : null;
+}
+
+// #endregion
+
+// #region Import Parsing
+
+/**
+ * Parses Ariakit imports to extract namespace aliases and named imports.
+ */
+function parseAriakitImports(code: string): ImportInfo {
+  const namespaceAliases = new Set<string>();
+  const namedImports = new Map<string, string>();
+  let hasAriakitImport = false;
+
+  const importRegex =
+    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = importRegex.exec(code))) {
+    hasAriakitImport = true;
+    const importClause = match[1] || "";
+
+    extractNamespaceAliases(importClause, namespaceAliases);
+    extractNamedImports(importClause, namedImports);
+  }
+
+  return { hasAriakitImport, namespaceAliases, namedImports };
+}
+
+/**
+ * Extracts namespace aliases (e.g., `* as ak`) from an import clause.
+ */
+function extractNamespaceAliases(clause: string, aliases: Set<string>) {
+  const nsRegex = new RegExp(`\\*\\s+as\\s+(${IDENTIFIER_PATTERN})`, "g");
+  let match: RegExpExecArray | null;
+  while ((match = nsRegex.exec(clause))) {
+    const alias = match[1];
+    if (alias) {
+      aliases.add(alias);
+    }
+  }
+}
+
+/**
+ * Extracts named imports (e.g., `{ A, B as C }`) from an import clause.
+ */
+function extractNamedImports(clause: string, imports: Map<string, string>) {
+  const namedBlockRegex = /\{([\s\S]*?)\}/g;
+  let blockMatch: RegExpExecArray | null;
+
+  while ((blockMatch = namedBlockRegex.exec(clause))) {
+    const inside = blockMatch[1] || "";
+    const specRegex = new RegExp(
+      `(${IDENTIFIER_PATTERN})(?:\\s+as\\s+(${IDENTIFIER_PATTERN}))?`,
+      "g",
+    );
+    let specMatch: RegExpExecArray | null;
+
+    while ((specMatch = specRegex.exec(inside))) {
+      const exported = specMatch[1]!;
+      const local = specMatch[2] || exported;
+      imports.set(local, exported);
+    }
+  }
+}
+
+/**
+ * Parses all imports to build a map of local names to their source modules.
+ */
+function parseLocalImports(code: string): Map<string, string> {
+  const localToSource = new Map<string, string>();
+  const importRegex =
+    /import\s+(type\s+)?([\s\S]*?)\s+from\s*["']([^"']+)["']/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = importRegex.exec(code))) {
+    const isTypeImport = Boolean(match[1]);
+    if (isTypeImport) continue;
+
+    const clause = match[2] || "";
+    const source = match[3] || "";
+
+    // Namespace imports: * as X
+    const nsRegex = new RegExp(`\\*\\s+as\\s+(${IDENTIFIER_PATTERN})`, "g");
+    let nsMatch: RegExpExecArray | null;
+    while ((nsMatch = nsRegex.exec(clause))) {
+      const alias = nsMatch[1];
+      if (alias) {
+        localToSource.set(alias, source);
+      }
+    }
+
+    // Default imports: Name, ...
+    const defaultRegex = new RegExp(`^\\s*(${IDENTIFIER_PATTERN})\\s*(?:,|$)`);
+    const defaultMatch = defaultRegex.exec(clause);
+    if (defaultMatch?.[1]) {
+      localToSource.set(defaultMatch[1], source);
+    }
+
+    // Named imports: { A, B as C }
+    const namedBlockRegex = /\{([\s\S]*?)\}/g;
+    let blockMatch: RegExpExecArray | null;
+    while ((blockMatch = namedBlockRegex.exec(clause))) {
+      const inside = blockMatch[1] || "";
+      const specRegex = new RegExp(
+        `(${IDENTIFIER_PATTERN})(?:\\s+as\\s+(${IDENTIFIER_PATTERN}))?`,
+        "g",
+      );
+      let specMatch: RegExpExecArray | null;
+      while ((specMatch = specRegex.exec(inside))) {
+        const local = specMatch[2] || specMatch[1]!;
+        localToSource.set(local, source);
+      }
+    }
+  }
+
+  return localToSource;
+}
+
+// #endregion
+
+// #region Reference Helpers
 
 function getFrameworkReferences(
   references: CollectionEntry<"references">[],
@@ -56,92 +262,36 @@ function getFrameworkReferences(
     : references;
   const nameToRef: NameToReference = Object.create(null);
   const kindByName: KindByName = Object.create(null);
+
   for (const ref of list) {
     nameToRef[ref.data.name] = ref;
-    if (ref.data.kind === "component") kindByName[ref.data.name] = "component";
-    else if (ref.data.kind === "store") kindByName[ref.data.name] = "store";
-    else kindByName[ref.data.name] = "function";
+    if (ref.data.kind === "component") {
+      kindByName[ref.data.name] = "component";
+    } else if (ref.data.kind === "store") {
+      kindByName[ref.data.name] = "store";
+    } else {
+      kindByName[ref.data.name] = "function";
+    }
   }
+
   return { list, nameToRef, kindByName } as const;
 }
 
-function parseAriakitImports(code: string): ImportInfo {
-  const namespaceAliases = new Set<string>();
-  const namedImports = new Map<string, string>();
-  let hasAriakitImport = false;
-
-  const importRe =
-    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
-  let m: RegExpExecArray | null;
-  while ((m = importRe.exec(code))) {
-    hasAriakitImport = true;
-    const importClause = m[1] || "";
-
-    // Namespace import: * as ak
-    const nsRe = /\*\s+as\s+([A-Za-z_$][\w$]*)/g;
-    let nsMatch: RegExpExecArray | null;
-    while ((nsMatch = nsRe.exec(importClause))) {
-      namespaceAliases.add(nsMatch[1]!);
-    }
-
-    // Named imports: { A, B as C }
-    const namedBlockRe = /\{([\s\S]*?)\}/g;
-    let nb: RegExpExecArray | null;
-    while ((nb = namedBlockRe.exec(importClause))) {
-      const inside = nb[1] || "";
-      const specRe = /([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?/g;
-      let s: RegExpExecArray | null;
-      while ((s = specRe.exec(inside))) {
-        const exported = s[1]!;
-        const local = (s[2] || s[1])!;
-        namedImports.set(local, exported);
-      }
-    }
-  }
-
-  return { hasAriakitImport, namespaceAliases, namedImports };
+/**
+ * Gets the label kind for a reference.
+ */
+function getLabelKind(
+  ref: CollectionEntry<"references"> | undefined,
+): ReferenceLabelKind {
+  if (!ref) return "function";
+  if (ref.data.kind === "component") return "component";
+  if (ref.data.kind === "store") return "store";
+  return "function";
 }
 
-function parseLocalImports(code: string) {
-  const localToSource = new Map<string, string>();
-  const allImportRe =
-    /import\s+(type\s+)?([\s\S]*?)\s+from\s*["']([^"']+)["']/g;
-  let m: RegExpExecArray | null;
-  while ((m = allImportRe.exec(code))) {
-    const isType = Boolean(m[1]);
-    if (isType) continue;
-    const clause = m[2] || "";
-    const source = m[3] || "";
+// #endregion
 
-    // Namespace import: * as X
-    const nsRe = /\*\s+as\s+([A-Za-z_$][\w$]*)/g;
-    let nsm: RegExpExecArray | null;
-    while ((nsm = nsRe.exec(clause))) {
-      localToSource.set(nsm[1]!, source);
-    }
-
-    // Default import: Name, optionally followed by ,
-    const defRe = /^\s*([A-Za-z_$][\w$]*)\s*(?:,|$)/;
-    const def = defRe.exec(clause);
-    if (def) {
-      localToSource.set(def[1]!, source);
-    }
-
-    // Named imports: { A, B as C }
-    const namedBlockRe = /\{([\s\S]*?)\}/g;
-    let nb: RegExpExecArray | null;
-    while ((nb = namedBlockRe.exec(clause))) {
-      const inside = nb[1] || "";
-      const specRe = /([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?/g;
-      let s: RegExpExecArray | null;
-      while ((s = specRe.exec(inside))) {
-        const local = (s[2] || s[1])!;
-        localToSource.set(local, source);
-      }
-    }
-  }
-  return localToSource;
-}
+// #region Range Helpers
 
 function pushRange(
   ranges: CodeReferenceAnchorRange[],
@@ -155,492 +305,599 @@ function pushRange(
   ranges.push({ start, end, href, kind });
 }
 
-function findClosingAngleBracket(code: string, fromIndex: number) {
-  // Naive scan until next ">"; this is good enough for our usage
-  const idx = code.indexOf(">", fromIndex);
-  return idx === -1 ? null : idx;
+// #endregion
+
+// #region JSX Parsing
+
+/**
+ * Finds the closing `>` of a JSX tag starting at the given index.
+ */
+function findClosingAngleBracket(
+  code: string,
+  fromIndex: number,
+): number | null {
+  const index = code.indexOf(">", fromIndex);
+  return index === -1 ? null : index;
 }
 
+/**
+ * Finds prop ranges within a JSX component tag.
+ */
 function findComponentPropRanges(
   code: string,
   tagStartIndex: number,
   componentRef: CollectionEntry<"references">,
-) {
-  const result: Array<{ start: number; end: number; name: string }> = [];
-  const end = findClosingAngleBracket(code, tagStartIndex);
-  if (end == null) return result;
-  const tagText = code.slice(tagStartIndex, end);
+): TokenRange[] {
+  const result: TokenRange[] = [];
+  const endIndex = findClosingAngleBracket(code, tagStartIndex);
+  if (endIndex == null) return result;
 
+  const tagText = code.slice(tagStartIndex, endIndex);
   const propsParam = componentRef.data.params.find((p) => p.name === "props");
-  const allowed = new Set(
+  const allowedProps = new Set(
     (propsParam?.props || []).map((p) => p.name).filter(Boolean),
   );
-  if (!allowed.size) return result;
 
-  const re = /(^|\s)([A-Za-z_$][\w$-]*)(?=\s*(=|[\s/>]|$))/g;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(tagText))) {
-    const prop = m[2]!;
-    if (!allowed.has(prop)) continue;
-    const abs = (m.index || 0) + tagStartIndex + (m[1] ? m[1].length : 0);
-    result.push({ start: abs, end: abs + prop.length, name: prop });
+  if (!allowedProps.size) return result;
+
+  // Match prop names that are followed by = or whitespace/closing tag
+  const propRegex = new RegExp(
+    `(^|\\s)(${IDENTIFIER_PATTERN}(?:-${IDENTIFIER_PATTERN})*)(?=\\s*(=|[\\s/>]|$))`,
+    "g",
+  );
+  let match: RegExpExecArray | null;
+
+  while ((match = propRegex.exec(tagText))) {
+    const propName = match[2]!;
+    if (!allowedProps.has(propName)) continue;
+
+    const leadingWhitespace = match[1] ? match[1].length : 0;
+    const absoluteStart =
+      (match.index || 0) + tagStartIndex + leadingWhitespace;
+    result.push({
+      start: absoluteStart,
+      end: absoluteStart + propName.length,
+      name: propName,
+    });
   }
+
   return result;
 }
 
-function findObjectLiteralAtFirstArg(code: string, callStartIndex: number) {
-  // Find the opening parenthesis after the function name
+// #endregion
+
+// #region Function Call Parsing
+
+/**
+ * Finds the object literal passed as the first argument to a function call.
+ */
+function findObjectLiteralAtFirstArg(
+  code: string,
+  callStartIndex: number,
+): { start: number; end: number } | null {
   const openParen = code.indexOf("(", callStartIndex);
   if (openParen === -1) return null;
-  let i = openParen + 1;
+
+  let index = openParen + 1;
   let depth = 0;
-  let inString: false | '"' | "'" | "`" = false;
-  while (i < code.length) {
-    const ch = code[i]!;
+  let inString: false | QuoteChar = false;
+
+  while (index < code.length) {
+    const char = code[index]!;
+
     if (inString) {
-      if (ch === inString) inString = false;
-      else if (ch === "\\") i++;
-      i++;
+      if (char === inString) {
+        inString = false;
+      } else if (char === "\\") {
+        index++;
+      }
+      index++;
       continue;
     }
-    if (ch === '"' || ch === "'" || ch === "`") {
-      inString = ch;
-      i++;
+
+    if (isQuoteChar(char)) {
+      inString = char;
+      index++;
       continue;
     }
-    if (ch === "(") depth++;
-    if (ch === ")") {
+
+    if (char === "(") depth++;
+    if (char === ")") {
       if (depth === 0) break;
       depth--;
     }
-    if (ch === "{" && depth === 0) {
+
+    if (char === "{" && depth === 0) {
       // Found first-arg object literal start
-      const start = i;
-      // Find its end
-      let j = i + 1;
-      let braceDepth = 1;
-      let inStr: false | '"' | "'" | "`" = false;
-      while (j < code.length && braceDepth > 0) {
-        const c = code[j]!;
-        if (inStr) {
-          if (c === inStr) inStr = false;
-          else if (c === "\\") j++;
-          j++;
-          continue;
-        }
-        if (c === '"' || c === "'" || c === "`") {
-          inStr = c;
-          j++;
-          continue;
-        }
-        if (c === "{") braceDepth++;
-        else if (c === "}") braceDepth--;
-        j++;
-      }
-      const end = j; // position after closing }
-      return { start, end } as const;
+      const objStart = index;
+      const closeIndex = findMatchingClose(code, index, "{", "}");
+      if (closeIndex == null) return null;
+      return { start: objStart, end: closeIndex + 1 };
     }
-    i++;
+
+    index++;
   }
+
   return null;
 }
 
+/**
+ * Finds top-level keys within an object literal.
+ */
 function findTopLevelObjectKeys(
   code: string,
   objStart: number,
   objEnd: number,
-) {
-  const keys: Array<{ start: number; end: number; name: string }> = [];
+): TokenRange[] {
+  const keys: TokenRange[] = [];
   const text = code.slice(objStart, objEnd);
   let depth = 0;
-  let i = 0;
-  let inString: false | '"' | "'" | "`" = false;
-  while (i < text.length) {
-    const ch = text[i]!;
+  let index = 0;
+  let inString: false | QuoteChar = false;
+
+  while (index < text.length) {
+    const char = text[index]!;
+
     if (inString) {
-      if (ch === inString) inString = false;
-      else if (ch === "\\") i++;
-      i++;
+      if (char === inString) {
+        inString = false;
+      } else if (char === "\\") {
+        index++;
+      }
+      index++;
       continue;
     }
-    if (ch === '"' || ch === "'" || ch === "`") {
-      inString = ch;
-      i++;
+
+    if (isQuoteChar(char)) {
+      inString = char;
+      index++;
       continue;
     }
-    if (ch === "{") depth++;
-    if (ch === "}") depth--;
+
+    if (char === "{") depth++;
+    if (char === "}") depth--;
+
+    // At top level inside the object, look for identifier keys
     if (depth === 1) {
-      // At top level inside the object
-      const idMatch = /([A-Za-z_$][\w$]*)/y; // sticky regex
-      idMatch.lastIndex = i;
-      const m = idMatch.exec(text);
-      if (m) {
-        const name = m[1]!;
-        const start = objStart + m.index!;
+      const idRegex = new RegExp(`(${IDENTIFIER_PATTERN})`, "y");
+      idRegex.lastIndex = index;
+      const match = idRegex.exec(text);
+      if (match) {
+        const name = match[1]!;
+        const start = objStart + match.index!;
         const end = start + name.length;
         keys.push({ start, end, name });
-        i = m.index! + name.length;
+        index = match.index! + name.length;
         continue;
       }
     }
-    i++;
+
+    index++;
   }
+
   return keys;
 }
 
-function findUseStoreStateStateRanges(code: string, callStartIndex: number) {
-  const ranges: Array<{ start: number; end: number; name: string }> = [];
+/**
+ * Finds state key ranges in useStoreState calls (both string and arrow
+ * selector variants).
+ */
+function findUseStoreStateStateRanges(
+  code: string,
+  callStartIndex: number,
+): TokenRange[] {
+  const ranges: TokenRange[] = [];
   const callText = code.slice(callStartIndex);
-  // String literal variant
-  const strRe = /useStoreState\s*\(\s*[^,]*,\s*(["'`])([A-Za-z_$][\w$]*)\1/;
-  const strMatch = strRe.exec(callText);
-  if (strMatch) {
-    const idx = (strMatch.index || 0) + callStartIndex;
-    const quote = strMatch[1]!;
-    const name = strMatch[2]!;
-    // Start inside the quotes
-    const absoluteStart =
-      idx + strMatch[0]!.lastIndexOf(quote + name + quote) + 1;
+
+  // String literal variant: useStoreState(store, "value")
+  const stringRegex = new RegExp(
+    `useStoreState\\s*\\(\\s*[^,]*,\\s*(["'\`])(${IDENTIFIER_PATTERN})\\1`,
+  );
+  const stringMatch = stringRegex.exec(callText);
+  if (stringMatch) {
+    const matchIndex = (stringMatch.index || 0) + callStartIndex;
+    const quote = stringMatch[1]!;
+    const name = stringMatch[2]!;
+    const quotePosition = stringMatch[0]!.lastIndexOf(quote + name + quote);
+    const absoluteStart = matchIndex + quotePosition + 1;
     ranges.push({
       start: absoluteStart,
       end: absoluteStart + name.length,
       name,
     });
   }
-  // Arrow selector variant: (s) => s.value
-  const arrowRe =
-    /useStoreState\s*\(\s*[^,]*,\s*\(?([A-Za-z_$][\w$]*)\)?\s*=>\s*\1\s*\.\s*([A-Za-z_$][\w$]*)/;
-  const arrowMatch = arrowRe.exec(callText);
+
+  // Arrow selector variant: useStoreState(store, (s) => s.value)
+  const arrowRegex = new RegExp(
+    `useStoreState\\s*\\(\\s*[^,]*,\\s*\\(?(${IDENTIFIER_PATTERN})\\)?\\s*=>\\s*\\1\\s*\\.\\s*(${IDENTIFIER_PATTERN})`,
+  );
+  const arrowMatch = arrowRegex.exec(callText);
   if (arrowMatch) {
-    const idx = (arrowMatch.index || 0) + callStartIndex;
+    const matchIndex = (arrowMatch.index || 0) + callStartIndex;
     const name = arrowMatch[2]!;
-    const absoluteStart = idx + arrowMatch[0]!.lastIndexOf(name);
+    const absoluteStart = matchIndex + arrowMatch[0]!.lastIndexOf(name);
     ranges.push({
       start: absoluteStart,
       end: absoluteStart + name.length,
       name,
     });
   }
+
   return ranges;
 }
 
-function findClassTokenRanges(code: string) {
-  const ranges: Array<{ start: number; end: number; name: string }> = [];
+// #endregion
+
+// #region Class Token Parsing
+
+/**
+ * Finds ak- class tokens within className/class attributes.
+ */
+function findClassTokenRanges(code: string): TokenRange[] {
+  const ranges: TokenRange[] = [];
   if (!code.includes("ak-")) return ranges;
 
-  function findAkTokensInRange(start: number, end: number) {
-    let i = start;
-    while (i < end) {
-      // Skip whitespace
-      const ws = /\s+/y;
-      ws.lastIndex = i;
-      const wsMatch = ws.exec(code);
-      if (wsMatch) {
-        i = ws.lastIndex;
-        if (i >= end) break;
-      }
-      const segRe = /\S+/y;
-      segRe.lastIndex = i;
-      const seg = segRe.exec(code);
-      if (!seg) break;
-      const segText = seg[0]!;
-      const segStart = seg.index!;
-      const segAbsEnd = Math.min(segStart + segText.length, end);
+  /**
+   * Scans a range of code for ak- tokens, handling Tailwind-style modifiers
+   * (e.g., `hover:ak-button`).
+   */
+  const findAkTokensInRange = (start: number, end: number) => {
+    let index = start;
 
-      // Split by colons, but ignore colons inside [] or ()
-      let partStart = segStart;
-      let depthBrackets = 0;
-      let depthParens = 0;
-      for (let j = 0; j <= segText.length && segStart + j <= end; j++) {
-        const isEnd = j === segText.length || segStart + j === end;
-        const c = isEnd ? "" : segText[j]!;
+    while (index < end) {
+      // Skip whitespace
+      const wsRegex = /\s+/y;
+      wsRegex.lastIndex = index;
+      const wsMatch = wsRegex.exec(code);
+      if (wsMatch) {
+        index = wsRegex.lastIndex;
+        if (index >= end) break;
+      }
+
+      // Find next segment (non-whitespace)
+      const segmentRegex = /\S+/y;
+      segmentRegex.lastIndex = index;
+      const segment = segmentRegex.exec(code);
+      if (!segment) break;
+
+      const segmentText = segment[0]!;
+      const segmentStart = segment.index!;
+      const segmentAbsEnd = Math.min(segmentStart + segmentText.length, end);
+
+      // Split by colons (Tailwind modifiers), ignoring colons inside [] or ()
+      let partStart = segmentStart;
+      let bracketDepth = 0;
+      let parenDepth = 0;
+
+      for (
+        let charIndex = 0;
+        charIndex <= segmentText.length && segmentStart + charIndex <= end;
+        charIndex++
+      ) {
+        const isEnd =
+          charIndex === segmentText.length || segmentStart + charIndex === end;
+        const char = isEnd ? "" : segmentText[charIndex]!;
+
         if (!isEnd) {
-          if (c === "[") depthBrackets++;
-          else if (c === "]") depthBrackets = Math.max(0, depthBrackets - 1);
-          else if (c === "(") depthParens++;
-          else if (c === ")") depthParens = Math.max(0, depthParens - 1);
+          if (char === "[") bracketDepth++;
+          else if (char === "]") bracketDepth = Math.max(0, bracketDepth - 1);
+          else if (char === "(") parenDepth++;
+          else if (char === ")") parenDepth = Math.max(0, parenDepth - 1);
         }
+
         const isColonBoundary =
-          !isEnd && c === ":" && depthBrackets === 0 && depthParens === 0;
+          !isEnd && char === ":" && bracketDepth === 0 && parenDepth === 0;
+
         if (isColonBoundary || isEnd) {
-          const partEnd = Math.min(segStart + j, end);
+          const partEnd = Math.min(segmentStart + charIndex, end);
           const partText = code.slice(partStart, partEnd);
           if (partText.startsWith("ak-")) {
             ranges.push({ start: partStart, end: partEnd, name: partText });
           }
-          partStart = segStart + j + 1; // skip colon
+          partStart = segmentStart + charIndex + 1; // skip colon
         }
       }
-      i = segAbsEnd + 1;
-    }
-  }
 
-  // Scan a generic JS expression starting at `start` (position right after ':'
-  // or after '{'), and extract string/template literal segments to look for ak-
-  // tokens. Returns the end index.
-  function scanExpressionStringSegments(start: number) {
-    let i = start;
-    let curly = 0;
-    let paren = 0;
-    let bracket = 0;
-    let inStr: false | '"' | "'" | "`" = false;
-    while (i < code.length) {
-      const ch = code[i]!;
-      if (inStr) {
-        if (inStr === '"' || inStr === "'") {
-          const quote = inStr;
-          let j = i + 1;
-          while (j < code.length) {
-            const cj = code[j]!;
-            if (cj === "\\") {
-              j += 2;
-              continue;
-            }
-            if (cj === quote) break;
-            j++;
-          }
-          const segStart = i + 1;
-          const segEnd = Math.min(j, code.length);
-          if (segEnd > segStart) findAkTokensInRange(segStart, segEnd);
-          inStr = false;
-          i = Math.min(j + 1, code.length);
-          continue;
-        }
-        if (inStr === "`") {
-          let j = i + 1;
-          let segStart = j;
-          let tplDepth = 0;
-          while (j < code.length) {
-            const cj = code[j]!;
-            if (cj === "\\") {
-              j += 2;
-              continue;
-            }
-            if (cj === "$" && code[j + 1] === "{") {
-              if (j > segStart) findAkTokensInRange(segStart, j);
-              j += 2;
-              tplDepth = 1;
-              while (j < code.length && tplDepth > 0) {
-                const ce = code[j]!;
-                if (ce === "\\") {
-                  j += 2;
-                  continue;
-                }
-                if (ce === "{") tplDepth++;
-                else if (ce === "}") tplDepth--;
-                j++;
-              }
-              segStart = j;
-              continue;
-            }
-            if (cj === "`") break;
-            j++;
-          }
-          if (j > segStart) findAkTokensInRange(segStart, j);
-          inStr = false;
-          i = Math.min(j + 1, code.length);
-        }
-      } else {
-        if (ch === '"' || ch === "'" || ch === "`") {
-          inStr = ch;
-          i++;
-          continue;
-        }
-        if (ch === "(") {
-          paren++;
-          i++;
-          continue;
-        }
-        if (ch === ")") {
-          if (paren > 0) paren--;
-          i++;
-          continue;
-        }
-        if (ch === "[") {
-          bracket++;
-          i++;
-          continue;
-        }
-        if (ch === "]") {
-          if (bracket > 0) bracket--;
-          i++;
-          continue;
-        }
-        if (ch === "{") {
-          curly++;
-          i++;
-          continue;
-        }
-        if (ch === "}") {
-          if (curly === 0 && paren === 0 && bracket === 0) {
-            return i;
-          }
-          if (curly > 0) curly--;
-          i++;
-          continue;
-        }
-        if (ch === "," && curly === 0 && paren === 0 && bracket === 0) {
-          return i;
-        }
-        i++;
-      }
+      index = segmentAbsEnd + 1;
     }
-    return i;
-  }
+  };
 
-  // Quoted: className="..." or className={"..."}
-  const attrQuotedRe = /(className|class)\s*=\s*(\{\s*["'`]|["'`])/g;
-  let mq: RegExpExecArray | null;
-  while ((mq = attrQuotedRe.exec(code))) {
-    const after = mq[2]!;
-    const isWrapped = after.startsWith("{");
-    const quote = after[isWrapped ? 1 : 0] as '"' | "'" | "`";
-    const contentStart = attrQuotedRe.lastIndex;
-    // Find closing quote strictly within the attribute
-    let k = contentStart;
-    while (k < code.length) {
-      const ch = code[k]!;
-      if (ch === "\\") {
-        k += 2;
+  /**
+   * Scans a template string for ak- tokens in static segments.
+   */
+  const scanTemplateStringSegments = (start: number, endBound: number) => {
+    let index = start;
+    let segmentStart = index;
+    let templateDepth = 0;
+
+    while (index < endBound) {
+      const char = code[index]!;
+
+      if (char === "\\") {
+        index += 2;
         continue;
       }
-      if (ch === quote) break;
-      k++;
+
+      // Handle template expression ${...}
+      if (char === "$" && code[index + 1] === "{") {
+        if (index > segmentStart) {
+          findAkTokensInRange(segmentStart, index);
+        }
+        index += 2;
+        templateDepth = 1;
+        while (index < endBound && templateDepth > 0) {
+          const exprChar = code[index]!;
+          if (exprChar === "\\") {
+            index += 2;
+            continue;
+          }
+          if (exprChar === "{") templateDepth++;
+          else if (exprChar === "}") templateDepth--;
+          index++;
+        }
+        segmentStart = index;
+        continue;
+      }
+
+      if (char === "`") break;
+      index++;
     }
-    const contentEnd = k;
+
+    if (index > segmentStart) {
+      findAkTokensInRange(segmentStart, index);
+    }
+
+    return index + 1; // position after closing backtick
+  };
+
+  /**
+   * Scans a simple string (single or double quoted) for ak- tokens.
+   */
+  const scanSimpleString = (
+    start: number,
+    quote: '"' | "'",
+    endBound: number,
+  ): number => {
+    let index = start;
+    while (index < endBound) {
+      const char = code[index]!;
+      if (char === "\\") {
+        index += 2;
+        continue;
+      }
+      if (char === quote) break;
+      index++;
+    }
+    const contentStart = start;
+    const contentEnd = Math.min(index, endBound);
+    if (contentEnd > contentStart) {
+      findAkTokensInRange(contentStart, contentEnd);
+    }
+    return index + 1;
+  };
+
+  /**
+   * Scans a JS expression for string literals containing ak- tokens.
+   */
+  const scanExpressionForStrings = (start: number): number => {
+    let index = start;
+    let curlyDepth = 0;
+    let parenDepth = 0;
+    let bracketDepth = 0;
+    let inString: false | QuoteChar = false;
+
+    while (index < code.length) {
+      const char = code[index]!;
+
+      if (inString) {
+        if (inString === '"' || inString === "'") {
+          index = scanSimpleString(index, inString, code.length);
+          inString = false;
+          continue;
+        }
+        // Template string
+        if (inString === "`") {
+          index = scanTemplateStringSegments(index, code.length);
+          inString = false;
+          continue;
+        }
+      }
+
+      if (isQuoteChar(char)) {
+        inString = char;
+        index++;
+        continue;
+      }
+
+      if (char === "(") {
+        parenDepth++;
+        index++;
+        continue;
+      }
+      if (char === ")") {
+        if (parenDepth > 0) parenDepth--;
+        index++;
+        continue;
+      }
+      if (char === "[") {
+        bracketDepth++;
+        index++;
+        continue;
+      }
+      if (char === "]") {
+        if (bracketDepth > 0) bracketDepth--;
+        index++;
+        continue;
+      }
+      if (char === "{") {
+        curlyDepth++;
+        index++;
+        continue;
+      }
+      if (char === "}") {
+        if (curlyDepth === 0 && parenDepth === 0 && bracketDepth === 0) {
+          return index;
+        }
+        if (curlyDepth > 0) curlyDepth--;
+        index++;
+        continue;
+      }
+
+      // Comma at depth 0 ends expression
+      if (
+        char === "," &&
+        curlyDepth === 0 &&
+        parenDepth === 0 &&
+        bracketDepth === 0
+      ) {
+        return index;
+      }
+
+      index++;
+    }
+
+    return index;
+  };
+
+  // Process className="..." or className={"..."} attributes
+  const quotedAttrRegex = /(className|class)\s*=\s*(\{\s*["'`]|["'`])/g;
+  let quotedMatch: RegExpExecArray | null;
+
+  while ((quotedMatch = quotedAttrRegex.exec(code))) {
+    const afterEquals = quotedMatch[2]!;
+    const isWrapped = afterEquals.startsWith("{");
+    const quote = afterEquals[isWrapped ? 1 : 0] as QuoteChar;
+    const contentStart = quotedAttrRegex.lastIndex;
+
+    // Find closing quote
+    let index = contentStart;
+    while (index < code.length) {
+      const char = code[index]!;
+      if (char === "\\") {
+        index += 2;
+        continue;
+      }
+      if (char === quote) break;
+      index++;
+    }
+
+    const contentEnd = index;
     if (contentEnd > contentStart) {
       findAkTokensInRange(contentStart, contentEnd);
     }
   }
 
-  // Expression: className={ ... clsx("ak-...", cond && "ak-...") ... }
-  const attrExprRe = /(className|class)\s*=\s*\{/g;
-  for (let me = attrExprRe.exec(code); me; me = attrExprRe.exec(code)) {
-    const i = attrExprRe.lastIndex; // position right after '{'
-    // If the next non-space is a quote, it's already handled by the quoted path
-    const nextNonSpace = /\S/y;
-    nextNonSpace.lastIndex = i;
-    const nn = nextNonSpace.exec(code);
-    if (!nn) break;
-    if (nn[0] === '"' || nn[0] === "'" || nn[0] === "`") continue;
+  // Process className={ expression } attributes
+  const exprAttrRegex = /(className|class)\s*=\s*\{/g;
 
-    // Find matching closing '}' while respecting quotes and template ${}
+  while (exprAttrRegex.exec(code)) {
+    const afterBrace = exprAttrRegex.lastIndex;
+
+    // Check if next non-space is a quote (already handled above)
+    const nextNonSpace = /\S/y;
+    nextNonSpace.lastIndex = afterBrace;
+    const nextChar = nextNonSpace.exec(code);
+    if (!nextChar) break;
+    if (isQuoteChar(nextChar[0]!)) continue;
+
+    // Find matching closing brace while respecting strings
     let depth = 1;
-    let pos = i;
-    let inStr: false | '"' | "'" | "`" = false;
+    let index = afterBrace;
+    let inString: false | QuoteChar = false;
     let templateExprDepth = 0;
-    while (pos < code.length && depth > 0) {
-      const ch = code[pos]!;
-      if (inStr) {
-        if (ch === "\\") {
-          pos += 2;
+
+    while (index < code.length && depth > 0) {
+      const char = code[index]!;
+
+      if (inString) {
+        if (char === "\\") {
+          index += 2;
           continue;
         }
-        if (inStr === "`" && ch === "$" && code[pos + 1] === "{") {
+        if (inString === "`" && char === "$" && code[index + 1] === "{") {
           templateExprDepth++;
-          pos += 2;
+          index += 2;
           continue;
         }
-        if (inStr === "`" && ch === "}" && templateExprDepth > 0) {
+        if (inString === "`" && char === "}" && templateExprDepth > 0) {
           templateExprDepth--;
-          pos++;
+          index++;
           continue;
         }
-        if (ch === inStr && templateExprDepth === 0) {
-          inStr = false;
-          pos++;
+        if (char === inString && templateExprDepth === 0) {
+          inString = false;
+          index++;
           continue;
         }
-        pos++;
+        index++;
         continue;
       }
-      if (ch === '"' || ch === "'" || ch === "`") {
-        inStr = ch;
-        pos++;
+
+      if (isQuoteChar(char)) {
+        inString = char;
+        index++;
         continue;
       }
-      if (ch === "{") depth++;
-      else if (ch === "}") depth--;
-      pos++;
+
+      if (char === "{") depth++;
+      else if (char === "}") depth--;
+      index++;
     }
-    const exprEnd = pos - 1; // position of matching '}'
-    const exprStart = i;
+
+    const exprEnd = index - 1;
+    const exprStart = afterBrace;
     if (exprEnd <= exprStart) continue;
 
-    // Within the expression, find all string literal content ranges and scan for ak- tokens
-    let p = exprStart;
-    while (p < exprEnd) {
-      const c = code[p]!;
-      if (c === '"' || c === "'") {
-        // simple string
-        let j = p + 1;
-        while (j < exprEnd) {
-          const cj = code[j]!;
-          if (cj === "\\") {
-            j += 2;
+    // Scan expression for string literals
+    let pos = exprStart;
+    while (pos < exprEnd) {
+      const char = code[pos]!;
+
+      if (char === '"' || char === "'") {
+        const quote = char;
+        let endPos = pos + 1;
+        while (endPos < exprEnd) {
+          const c = code[endPos]!;
+          if (c === "\\") {
+            endPos += 2;
             continue;
           }
-          if (cj === c) break;
-          j++;
+          if (c === quote) break;
+          endPos++;
         }
-        const strStart = p + 1;
-        const strEnd = Math.min(j, exprEnd);
-        if (strEnd > strStart) findAkTokensInRange(strStart, strEnd);
-        p = j + 1;
+        const strStart = pos + 1;
+        const strEnd = Math.min(endPos, exprEnd);
+        if (strEnd > strStart) {
+          findAkTokensInRange(strStart, strEnd);
+        }
+        pos = endPos + 1;
         continue;
       }
-      if (c === "`") {
-        // template string with possible ${}
-        let j = p + 1;
-        let segStart = j;
-        let tplExprDepth = 0;
-        while (j < exprEnd) {
-          const cj = code[j]!;
-          if (cj === "\\") {
-            j += 2;
-            continue;
-          }
-          if (cj === "$" && code[j + 1] === "{") {
-            // flush current static segment
-            if (j > segStart) findAkTokensInRange(segStart, j);
-            // skip ${...}
-            j += 2;
-            tplExprDepth = 1;
-            while (j < exprEnd && tplExprDepth > 0) {
-              const ce = code[j]!;
-              if (ce === "\\") {
-                j += 2;
-                continue;
-              }
-              if (ce === "{") tplExprDepth++;
-              else if (ce === "}") tplExprDepth--;
-              j++;
-            }
-            segStart = j;
-            continue;
-          }
-          if (cj === "`") break;
-          j++;
-        }
-        if (j > segStart) findAkTokensInRange(segStart, j);
-        p = j + 1;
+
+      if (char === "`") {
+        pos = scanTemplateStringSegments(pos + 1, exprEnd);
         continue;
       }
-      p++;
+
+      pos++;
     }
   }
 
-  // Object literal: ... { className: "ak-..." | `...` | clsx("ak-...") }
-  const propClassRe = /\bclassName\b\s*:/g;
-  for (let m = propClassRe.exec(code); m; m = propClassRe.exec(code)) {
-    const valueStart = propClassRe.lastIndex;
-    const exprEnd = scanExpressionStringSegments(valueStart);
-    propClassRe.lastIndex = Math.max(propClassRe.lastIndex, exprEnd);
+  // Process object property: className: "..." or className: clsx(...)
+  const propClassRegex = /\bclassName\b\s*:/g;
+
+  while (propClassRegex.exec(code)) {
+    const valueStart = propClassRegex.lastIndex;
+    const exprEnd = scanExpressionForStrings(valueStart);
+    propClassRegex.lastIndex = Math.max(propClassRegex.lastIndex, exprEnd);
   }
 
   return ranges;
 }
+
+// #endregion
+
+// #region Main Export
 
 /**
  * Scans the provided source code and computes per-line anchor ranges for
@@ -661,22 +918,25 @@ export function findCodeReferenceAnchors({
   const trimmed = code.trim();
   const anchors: CodeReferenceAnchorRange[] = [];
 
-  // Fast bailouts
+  // Fast bailout for empty references
   if (!references.length) {
     const lines = trimmed.split("\n");
     return lines.map(() => []);
   }
-  const likelyHasComponents = trimmed.indexOf("<") !== -1;
-  const likelyHasCalls = trimmed.indexOf("(") !== -1;
-  const likelyHasAkClasses = trimmed.indexOf("ak-") !== -1;
-  const likelyHasUseStoreState = trimmed.indexOf("useStoreState") !== -1;
-  const likelyHasAriakitImport = trimmed.indexOf("@ariakit/") !== -1;
+
+  // Quick pattern checks to avoid expensive parsing
+  const hasComponents = trimmed.includes("<");
+  const hasCalls = trimmed.includes("(");
+  const hasAkClasses = trimmed.includes("ak-");
+  const hasUseStoreState = trimmed.includes("useStoreState");
+  const hasAriakitImport = trimmed.includes("@ariakit/");
+
   if (
-    !likelyHasComponents &&
-    !likelyHasCalls &&
-    !likelyHasAkClasses &&
-    !likelyHasUseStoreState &&
-    !likelyHasAriakitImport
+    !hasComponents &&
+    !hasCalls &&
+    !hasAkClasses &&
+    !hasUseStoreState &&
+    !hasAriakitImport
   ) {
     const lines = trimmed.split("\n");
     return lines.map(() => []);
@@ -684,404 +944,640 @@ export function findCodeReferenceAnchors({
 
   const { nameToRef } = getFrameworkReferences(references, framework);
 
-  // Lazily parse imports only if present to avoid a regex pass otherwise
-  // Note: we no longer branch on "has any Ariakit". Keep local imports and
-  // a generic no-import fallback instead.
+  // Parse imports lazily
   let namedImports: Map<string, string> = new Map();
   let namespaceAliases: Set<string> = new Set();
-  let localImports: Map<string, string> = new Map();
-  if (likelyHasAriakitImport) {
+
+  if (hasAriakitImport) {
     const parsed = parseAriakitImports(trimmed);
     namedImports = parsed.namedImports;
     namespaceAliases = parsed.namespaceAliases;
   }
-  // Always parse local imports (cheap), so we can avoid false positives when
-  // components are locally imported from non-Ariakit sources.
-  localImports = parseLocalImports(trimmed);
+
+  // Always parse local imports to avoid false positives
+  const localImports = parseLocalImports(trimmed);
   const hasAnyImport = /(^|\n)\s*import\b/.test(trimmed);
 
-  // Memoize expensive lookups
+  // Cache href lookups
   const hrefCache = new Map<string, string>();
-  function getHref(reference: CollectionEntry<"references">, item?: string) {
+
+  const getHref = (
+    reference: CollectionEntry<"references">,
+    item?: string,
+  ): string | undefined => {
     const key = reference.id + (item ? `#${item}` : "");
     const cached = hrefCache.get(key);
     if (cached) return cached;
     const href = getReferencePath({ reference, item });
-    if (href) hrefCache.set(key, href);
+    if (href) {
+      hrefCache.set(key, href);
+    }
     return href;
-  }
+  };
 
-  // Helper: derive store ref from a callable name (e.g., useXxxContext -> useXxxStore)
-  function getStoreRefFromCallableName(name: string) {
-    if (nameToRef[name]?.data.kind === "store") return nameToRef[name]!;
+  /**
+   * Gets the store reference from a callable name (handles useXxxContext ->
+   * useXxxStore).
+   */
+  const getStoreRefFromCallableName = (name: string) => {
+    const directRef = nameToRef[name];
+    if (directRef?.data.kind === "store") return directRef;
+
     const contextMatch = /^use(.+)Context$/.exec(name);
     if (contextMatch) {
       const base = contextMatch[1]!;
       const storeName = `use${base}Store`;
       const storeRef = nameToRef[storeName];
-      if (storeRef && storeRef.data.kind === "store") return storeRef;
+      if (storeRef?.data.kind === "store") return storeRef;
     }
+
     return undefined;
+  };
+
+  // Track store variable assignments for return-prop lookups
+  const storeVarToRef = new Map<string, CollectionEntry<"references">>();
+
+  // 1) Named imports: anchor local identifiers in import statements
+  if (hasAriakitImport) {
+    processNamedImports(trimmed, nameToRef, anchors, getHref);
   }
 
-  // 1) Named imports: anchor local identifiers
-  if (likelyHasAriakitImport) {
-    const namedImportRe =
-      /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
-    let imp: RegExpExecArray | null;
-    while ((imp = namedImportRe.exec(trimmed))) {
-      const clause = imp[1] || "";
-      const blockRe = /\{([\s\S]*?)\}/g;
-      let block: RegExpExecArray | null;
-      while ((block = blockRe.exec(clause))) {
-        const inside = block[1] || "";
-        const full = imp[0] || "";
-        const clauseStartInFull = full.indexOf(clause);
-        const blockStartInClause = block.index || 0;
-        const base =
-          (imp.index || 0) +
-          (clauseStartInFull >= 0 ? clauseStartInFull : 0) +
-          blockStartInClause +
-          1; // position after '{'
-        const specRe = /([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?/g;
-        let s: RegExpExecArray | null;
-        while ((s = specRe.exec(inside))) {
-          const exported = s[1]!;
-          const local = (s[2] || s[1])!;
-          const ref = nameToRef[exported];
-          if (!ref) continue;
-          // Absolute start of the local name within code
-          const specText = s[0]!;
-          const exportedIdx = specText.indexOf(exported);
-          const localPosInSpec =
-            exportedIdx === 0 && s[2] ? specText.indexOf(local) : exportedIdx;
-          const start = base + (s.index || 0) + Math.max(0, localPosInSpec);
-          const end = start + local.length;
-          const href = getHref(ref);
-          const labelKind = (
-            ref.data.kind === "component"
-              ? "component"
-              : ref.data.kind === "store"
-                ? "store"
-                : "function"
-          ) as ReferenceLabelKind;
-          pushRange(anchors, start, end, href, labelKind);
-        }
+  // 2) Component opening tags
+  if (hasComponents) {
+    processComponentTags(
+      trimmed,
+      nameToRef,
+      namedImports,
+      localImports,
+      hasAnyImport,
+      anchors,
+      getHref,
+    );
+  }
+
+  // 3) Namespaced calls: ak.useDisclosureStore(...)
+  if (hasCalls) {
+    processNamespacedCalls(
+      trimmed,
+      nameToRef,
+      localImports,
+      hasAnyImport,
+      anchors,
+      storeVarToRef,
+      getHref,
+      getStoreRefFromCallableName,
+    );
+  }
+
+  // 4) Plain calls: useDisclosureStore(...)
+  if (hasCalls) {
+    processPlainCalls(
+      trimmed,
+      nameToRef,
+      namedImports,
+      localImports,
+      hasAnyImport,
+      anchors,
+      storeVarToRef,
+      getHref,
+      getStoreRefFromCallableName,
+    );
+  }
+
+  // 5) useStoreState state keys
+  const hasUseStoreStateAvailable =
+    namedImports.has("useStoreState") ||
+    namespaceAliases.size > 0 ||
+    !hasAnyImport;
+
+  if (hasUseStoreStateAvailable && hasCalls) {
+    processUseStoreStateCalls(trimmed, storeVarToRef, anchors, getHref);
+  }
+
+  // 6) Return-prop accesses on store variables
+  if (storeVarToRef.size) {
+    processStoreReturnProps(trimmed, storeVarToRef, anchors, getHref);
+  }
+
+  // 7) ak- class tokens
+  if (hasAkClasses) {
+    const classRanges = findClassTokenRanges(trimmed);
+    for (const range of classRanges) {
+      // Placeholder href for class tokens
+      pushRange(anchors, range.start, range.end, "#", "prop");
+    }
+  }
+
+  // Build per-line anchors
+  return buildPerLineAnchors(trimmed, anchors);
+}
+
+// #endregion
+
+// #region Processing Functions
+
+/**
+ * Processes named imports to create anchors for imported identifiers.
+ */
+function processNamedImports(
+  code: string,
+  nameToRef: NameToReference,
+  anchors: CodeReferenceAnchorRange[],
+  getHref: (
+    ref: CollectionEntry<"references">,
+    item?: string,
+  ) => string | undefined,
+) {
+  const importRegex =
+    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
+  let importMatch: RegExpExecArray | null;
+
+  while ((importMatch = importRegex.exec(code))) {
+    const clause = importMatch[1] || "";
+    const blockRegex = /\{([\s\S]*?)\}/g;
+    let blockMatch: RegExpExecArray | null;
+
+    while ((blockMatch = blockRegex.exec(clause))) {
+      const inside = blockMatch[1] || "";
+      const fullMatch = importMatch[0] || "";
+      const clauseStartInFull = fullMatch.indexOf(clause);
+      const blockStartInClause = blockMatch.index || 0;
+      const basePosition =
+        (importMatch.index || 0) +
+        (clauseStartInFull >= 0 ? clauseStartInFull : 0) +
+        blockStartInClause +
+        1; // position after '{'
+
+      const specRegex = new RegExp(
+        `(${IDENTIFIER_PATTERN})(?:\\s+as\\s+(${IDENTIFIER_PATTERN}))?`,
+        "g",
+      );
+      let specMatch: RegExpExecArray | null;
+
+      while ((specMatch = specRegex.exec(inside))) {
+        const exported = specMatch[1]!;
+        const local = specMatch[2] || exported;
+        const ref = nameToRef[exported];
+        if (!ref) continue;
+
+        // Calculate precise position of the local name
+        const specText = specMatch[0]!;
+        const exportedIndex = specText.indexOf(exported);
+        const localPosInSpec =
+          exportedIndex === 0 && specMatch[2]
+            ? specText.indexOf(local)
+            : exportedIndex;
+        const start =
+          basePosition + (specMatch.index || 0) + Math.max(0, localPosInSpec);
+        const end = start + local.length;
+        const href = getHref(ref);
+        const labelKind = getLabelKind(ref);
+
+        pushRange(anchors, start, end, href, labelKind);
       }
     }
   }
+}
 
-  // Helper to anchor component by name with start/end
-  function anchorComponentToken(start: number, end: number, name: string) {
+/**
+ * Processes JSX component tags to create anchors for component names and
+ * props.
+ */
+function processComponentTags(
+  code: string,
+  nameToRef: NameToReference,
+  namedImports: Map<string, string>,
+  localImports: Map<string, string>,
+  hasAnyImport: boolean,
+  anchors: CodeReferenceAnchorRange[],
+  getHref: (
+    ref: CollectionEntry<"references">,
+    item?: string,
+  ) => string | undefined,
+) {
+  const anchorComponent = (start: number, end: number, name: string) => {
     const exportedName = namedImports.get(name) || name;
     const ref = nameToRef[exportedName];
     if (!ref) return;
     pushRange(anchors, start, end, getHref(ref), "component");
-  }
+  };
 
-  // 2) Component opening tags
-  // Quick reject for component scanning if there are no '<' or '>'
-  if (likelyHasComponents) {
-    const nsCompRe = /<([A-Za-z_$][\w$]*)\.([A-Z][\w$]*)(?=[\s/>])/g;
-    let mc: RegExpExecArray | null;
-    while ((mc = nsCompRe.exec(trimmed))) {
-      const full = mc[0]!;
-      const ns = mc[1]!;
-      const name = mc[2]!;
-      const dotPos = full.lastIndexOf(".");
-      const tokenStart = (mc.index || 0) + dotPos + 1;
-      // Heuristic: avoid matching generics like Foo<T> by requiring that the
-      // character before '<' is not an identifier character.
-      const beforeLt = trimmed[(mc.index || 0) - 1] || "";
-      if (/[_$A-Za-z0-9]/.test(beforeLt)) continue;
-      const tokenEnd = tokenStart + name.length;
-      const nsSource = localImports.get(ns);
-      const allowNs = nsSource?.startsWith("@ariakit/") || !hasAnyImport;
-      if (allowNs) {
-        anchorComponentToken(tokenStart, tokenEnd, name);
-        // Props inside this tag
-        const ref = nameToRef[name];
-        if (ref) {
-          const propRanges = findComponentPropRanges(
-            trimmed,
-            mc.index || 0,
-            ref,
-          );
-          for (const r of propRanges) {
-            const href = getHref(ref, getReferenceItemId("prop", r.name));
-            pushRange(anchors, r.start, r.end, href, "prop");
-          }
-        }
-      }
+  const anchorProps = (tagIndex: number, componentName: string) => {
+    const exportedName = namedImports.get(componentName) || componentName;
+    const ref = nameToRef[exportedName];
+    if (!ref) return;
+
+    const propRanges = findComponentPropRanges(code, tagIndex, ref);
+    for (const propRange of propRanges) {
+      const href = getHref(ref, getReferenceItemId("prop", propRange.name));
+      pushRange(anchors, propRange.start, propRange.end, href, "prop");
     }
+  };
 
-    const compRe = /<([A-Z][\w$]*)(?=[\s/>])/g;
-    let mcn: RegExpExecArray | null;
-    while ((mcn = compRe.exec(trimmed))) {
-      const name = mcn[1]!;
-      // Heuristic: avoid matching TypeScript generics like function f<T>() by
-      // ensuring the character before '<' is not an identifier character.
-      const beforeLt = trimmed[(mcn.index || 0) - 1] || "";
-      if (/[_$A-Za-z0-9]/.test(beforeLt)) continue;
-      const importedSource = localImports.get(name);
-      const isFromAriakit = importedSource?.startsWith("@ariakit/");
-      if (isFromAriakit || (!importedSource && !hasAnyImport)) {
-        const start = (mcn.index || 0) + 1; // after '<'
-        const end = start + name.length;
-        anchorComponentToken(start, end, name);
-        const exportedName = namedImports.get(name) || name;
-        const ref = nameToRef[exportedName];
-        if (ref) {
-          const propRanges = findComponentPropRanges(
-            trimmed,
-            mcn.index || 0,
-            ref,
-          );
-          for (const r of propRanges) {
-            const href = getHref(ref, getReferenceItemId("prop", r.name));
-            pushRange(anchors, r.start, r.end, href, "prop");
-          }
-        }
-      }
+  // Namespaced components: <ak.Disclosure ...>
+  const nsCompRegex = new RegExp(
+    `<(${IDENTIFIER_PATTERN})\\.(${COMPONENT_NAME_PATTERN})(?=[\\s/>])`,
+    "g",
+  );
+  let nsMatch: RegExpExecArray | null;
+
+  while ((nsMatch = nsCompRegex.exec(code))) {
+    const fullMatch = nsMatch[0]!;
+    const namespace = nsMatch[1]!;
+    const componentName = nsMatch[2]!;
+
+    // Avoid matching generics like Foo<T>
+    const charBeforeLt = code[(nsMatch.index || 0) - 1] || "";
+    if (NON_IDENTIFIER_CHAR_PATTERN.test(charBeforeLt)) continue;
+
+    const dotPosition = fullMatch.lastIndexOf(".");
+    const tokenStart = (nsMatch.index || 0) + dotPosition + 1;
+    const tokenEnd = tokenStart + componentName.length;
+
+    const nsSource = localImports.get(namespace);
+    const isAllowedNs = nsSource?.startsWith("@ariakit/") || !hasAnyImport;
+
+    if (isAllowedNs) {
+      anchorComponent(tokenStart, tokenEnd, componentName);
+      anchorProps(nsMatch.index || 0, componentName);
     }
   }
 
-  // 3) Store and function calls, plus their option props
-  // Namespaced calls: ak.useDisclosureStore(...)
-  const nsCallRe = /\b([A-Za-z_$][\w$]*)\.([A-Za-z_$][\w$]*)\s*\(/g;
-  let call: RegExpExecArray | null;
-  const storeVarToRef = new Map<string, CollectionEntry<"references">>();
-  if (likelyHasCalls)
-    while ((call = nsCallRe.exec(trimmed))) {
-      const ns = call[1]!;
-      const fn = call[2]!;
-      const nsSource = localImports.get(ns);
-      if (!(nsSource?.startsWith("@ariakit/") || !hasAnyImport)) continue;
-      const importedSourceFn = localImports.get(fn);
-      if (importedSourceFn && !importedSourceFn.startsWith("@ariakit/"))
-        continue;
-      const ref = nameToRef[fn];
-      const storeRef = getStoreRefFromCallableName(fn);
-      if (!ref && !storeRef) continue;
-      const labelKind = (
-        (ref?.data.kind || storeRef?.data.kind) === "store"
-          ? "store"
-          : (ref?.data.kind || storeRef?.data.kind) === "component"
-            ? "component"
-            : "function"
-      ) as ReferenceLabelKind;
-      const start = (call.index || 0) + ns.length + 1; // after ns.
-      const end = start + fn.length;
-      const targetRef = ref ?? storeRef;
-      if (targetRef) {
-        pushRange(anchors, start, end, getHref(targetRef), labelKind);
-      }
+  // Direct components: <Disclosure ...>
+  const compRegex = new RegExp(`<(${COMPONENT_NAME_PATTERN})(?=[\\s/>])`, "g");
+  let compMatch: RegExpExecArray | null;
 
-      // If assigned to a variable, remember it
-      const leftSpan = trimmed.slice(
-        Math.max(0, (call.index || 0) - 60),
-        call.index,
-      );
-      const assignMatch = /(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/m.exec(
-        leftSpan,
-      );
-      if (assignMatch) {
-        const varName = assignMatch[2]!;
-        const refForVar =
-          storeRef || (ref?.data.kind === "store" ? ref : undefined);
-        if (refForVar) storeVarToRef.set(varName, refForVar);
-      }
+  while ((compMatch = compRegex.exec(code))) {
+    const componentName = compMatch[1]!;
 
-      // First-arg object literal props
-      const obj = findObjectLiteralAtFirstArg(trimmed, call.index || 0);
-      const refForProps = ref || storeRef;
-      const firstParam = refForProps?.data.params?.[0];
-      const firstParamProps = firstParam?.props;
-      if (obj && refForProps && firstParamProps && firstParamProps.length > 0) {
-        const allowed = new Set(firstParamProps.map((p) => p.name));
-        const keys = findTopLevelObjectKeys(trimmed, obj.start, obj.end);
-        for (const k of keys) {
-          if (!allowed.has(k.name)) continue;
-          const href = getHref(refForProps, getReferenceItemId("prop", k.name));
-          pushRange(anchors, k.start, k.end, href, "prop");
-        }
-      }
+    // Avoid matching TypeScript generics
+    const charBeforeLt = code[(compMatch.index || 0) - 1] || "";
+    if (NON_IDENTIFIER_CHAR_PATTERN.test(charBeforeLt)) continue;
+
+    const importedSource = localImports.get(componentName);
+    const isFromAriakit = importedSource?.startsWith("@ariakit/");
+    const shouldProcess = isFromAriakit || (!importedSource && !hasAnyImport);
+
+    if (shouldProcess) {
+      const start = (compMatch.index || 0) + 1; // after '<'
+      const end = start + componentName.length;
+      anchorComponent(start, end, componentName);
+      anchorProps(compMatch.index || 0, componentName);
+    }
+  }
+}
+
+/**
+ * Processes namespaced function calls like ak.useDisclosureStore(...).
+ */
+function processNamespacedCalls(
+  code: string,
+  nameToRef: NameToReference,
+  localImports: Map<string, string>,
+  hasAnyImport: boolean,
+  anchors: CodeReferenceAnchorRange[],
+  storeVarToRef: Map<string, CollectionEntry<"references">>,
+  getHref: (
+    ref: CollectionEntry<"references">,
+    item?: string,
+  ) => string | undefined,
+  getStoreRefFromCallableName: (
+    name: string,
+  ) => CollectionEntry<"references"> | undefined,
+) {
+  const nsCallRegex = new RegExp(
+    `\\b(${IDENTIFIER_PATTERN})\\.(${IDENTIFIER_PATTERN})\\s*\\(`,
+    "g",
+  );
+  let callMatch: RegExpExecArray | null;
+
+  while ((callMatch = nsCallRegex.exec(code))) {
+    const namespace = callMatch[1]!;
+    const funcName = callMatch[2]!;
+
+    const nsSource = localImports.get(namespace);
+    const isAllowedNs = nsSource?.startsWith("@ariakit/") || !hasAnyImport;
+    if (!isAllowedNs) continue;
+
+    const funcSource = localImports.get(funcName);
+    if (funcSource && !funcSource.startsWith("@ariakit/")) continue;
+
+    const ref = nameToRef[funcName];
+    const storeRef = getStoreRefFromCallableName(funcName);
+    if (!ref && !storeRef) continue;
+
+    const targetRef = ref ?? storeRef;
+    const labelKind = getLabelKind(targetRef);
+    const start = (callMatch.index || 0) + namespace.length + 1; // after "ns."
+    const end = start + funcName.length;
+
+    if (targetRef) {
+      pushRange(anchors, start, end, getHref(targetRef), labelKind);
     }
 
-  // Non-namespaced calls (named imports): useDisclosureStore(...)
-  // Quick reject if there are no parentheses at all
-  const plainCallRe = /\b([A-Za-z_$][\w$]*)\s*\(/g;
-  let pc: RegExpExecArray | null;
-  if (likelyHasCalls)
-    while ((pc = plainCallRe.exec(trimmed))) {
-      const local = pc[1]!;
-      // Skip function declarations: export function Local( ... ) or function Local(
-      const beforeIdx = pc.index || 0;
-      const pre = trimmed.slice(Math.max(0, beforeIdx - 64), beforeIdx);
-      if (/(?:^|[^\w])(export\s+)?(?:async\s+)?function\s*$/.test(pre))
-        continue;
-      const localSource = localImports.get(local);
-      // If the local identifier is imported from a non-Ariakit source, skip
-      if (localSource && !localSource.startsWith("@ariakit/")) continue;
-      const exported =
-        namedImports.get(local) || (!hasAnyImport ? local : undefined);
-      if (!exported) continue;
-      const ref = nameToRef[exported];
-      const storeRef = getStoreRefFromCallableName(exported);
-      if (!ref && !storeRef) continue;
-      const labelKind = (
-        (ref?.data.kind || storeRef?.data.kind) === "store"
-          ? "store"
-          : (ref?.data.kind || storeRef?.data.kind) === "component"
-            ? "component"
-            : "function"
-      ) as ReferenceLabelKind;
-      const start = pc.index || 0;
-      const end = start + local.length;
-      const targetRef = ref ?? storeRef;
-      if (targetRef) {
-        pushRange(anchors, start, end, getHref(targetRef), labelKind);
-      }
+    // Track store variable assignment
+    trackStoreAssignment(
+      code,
+      callMatch.index || 0,
+      storeRef,
+      ref,
+      storeVarToRef,
+    );
 
-      // If assigned to a variable, remember it
-      const leftSpan = trimmed.slice(
-        Math.max(0, (pc.index || 0) - 200),
-        pc.index,
-      );
-      const assignMatch = /(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/m.exec(
-        leftSpan,
-      );
-      if (assignMatch) {
-        const varName = assignMatch[2]!;
-        const refForVar =
-          storeRef || (ref?.data.kind === "store" ? ref : undefined);
-        if (refForVar) storeVarToRef.set(varName, refForVar);
-      }
+    // Process first-arg object props
+    processFirstArgProps(
+      code,
+      callMatch.index || 0,
+      ref,
+      storeRef,
+      anchors,
+      getHref,
+    );
+  }
+}
 
-      // First-arg object literal props
-      const obj = findObjectLiteralAtFirstArg(trimmed, pc.index || 0);
-      const refForProps = ref || storeRef;
-      const firstParam = refForProps?.data.params?.[0];
-      const firstParamProps = firstParam?.props;
-      if (obj && refForProps && firstParamProps && firstParamProps.length > 0) {
-        const allowed = new Set(firstParamProps.map((p) => p.name));
-        const keys = findTopLevelObjectKeys(trimmed, obj.start, obj.end);
-        for (const k of keys) {
-          if (!allowed.has(k.name)) continue;
-          const href = getHref(refForProps, getReferenceItemId("prop", k.name));
-          pushRange(anchors, k.start, k.end, href, "prop");
-        }
-      }
+/**
+ * Processes plain function calls like useDisclosureStore(...).
+ */
+function processPlainCalls(
+  code: string,
+  nameToRef: NameToReference,
+  namedImports: Map<string, string>,
+  localImports: Map<string, string>,
+  hasAnyImport: boolean,
+  anchors: CodeReferenceAnchorRange[],
+  storeVarToRef: Map<string, CollectionEntry<"references">>,
+  getHref: (
+    ref: CollectionEntry<"references">,
+    item?: string,
+  ) => string | undefined,
+  getStoreRefFromCallableName: (
+    name: string,
+  ) => CollectionEntry<"references"> | undefined,
+) {
+  const plainCallRegex = new RegExp(`\\b(${IDENTIFIER_PATTERN})\\s*\\(`, "g");
+  let callMatch: RegExpExecArray | null;
+
+  while ((callMatch = plainCallRegex.exec(code))) {
+    const localName = callMatch[1]!;
+    const callIndex = callMatch.index || 0;
+
+    // Skip function declarations
+    const precedingText = code.slice(Math.max(0, callIndex - 64), callIndex);
+    if (
+      /(?:^|[^\w])(export\s+)?(?:async\s+)?function\s*$/.test(precedingText)
+    ) {
+      continue;
     }
 
-  // 4) useStoreState states (only if we imported it or namespaced alias exists)
-  // Determine whether useStoreState is available
-  const hasUseStoreState =
-    namedImports.has("useStoreState") ||
-    namespaceAliases.size > 0 ||
-    !hasAnyImport;
-  if (hasUseStoreState && likelyHasCalls) {
-    const useStoreRe =
-      /\buseStoreState\b|\b([A-Za-z_$][\w$]*)\.useStoreState\b/g;
-    let ms: RegExpExecArray | null;
-    while ((ms = useStoreRe.exec(trimmed))) {
-      const callIndex = ms.index || 0;
-      const stateRanges = findUseStoreStateStateRanges(trimmed, callIndex);
-      for (const r of stateRanges) {
-        // Try to resolve reference by looking at the first argument variable name
-        // Grab a small window to the left to find variable name inside the call
-        const argSlice = trimmed.slice(callIndex, callIndex + 120);
-        const firstArgVarMatch = /useStoreState\s*\(\s*([A-Za-z_$][\w$]*)/.exec(
-          argSlice,
-        );
-        const varName = firstArgVarMatch?.[1];
-        const ref = (varName && storeVarToRef.get(varName)) || undefined;
-        if (ref) {
-          const href = getHref(ref, getReferenceItemId("state", r.name));
-          pushRange(anchors, r.start, r.end, href, "prop");
-        }
+    const localSource = localImports.get(localName);
+    if (localSource && !localSource.startsWith("@ariakit/")) continue;
+
+    const exported =
+      namedImports.get(localName) || (!hasAnyImport ? localName : undefined);
+    if (!exported) continue;
+
+    const ref = nameToRef[exported];
+    const storeRef = getStoreRefFromCallableName(exported);
+    if (!ref && !storeRef) continue;
+
+    const targetRef = ref ?? storeRef;
+    const labelKind = getLabelKind(targetRef);
+    const start = callIndex;
+    const end = start + localName.length;
+
+    if (targetRef) {
+      pushRange(anchors, start, end, getHref(targetRef), labelKind);
+    }
+
+    // Track store variable assignment
+    trackStoreAssignment(code, callIndex, storeRef, ref, storeVarToRef, 200);
+
+    // Process first-arg object props
+    processFirstArgProps(code, callIndex, ref, storeRef, anchors, getHref);
+  }
+}
+
+/**
+ * Tracks store variable assignments for later return-prop lookups.
+ */
+function trackStoreAssignment(
+  code: string,
+  callIndex: number,
+  storeRef: CollectionEntry<"references"> | undefined,
+  ref: CollectionEntry<"references"> | undefined,
+  storeVarToRef: Map<string, CollectionEntry<"references">>,
+  lookbackDistance = 60,
+) {
+  const leftSpan = code.slice(
+    Math.max(0, callIndex - lookbackDistance),
+    callIndex,
+  );
+  const assignMatch = /(const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/m.exec(
+    leftSpan,
+  );
+
+  if (assignMatch) {
+    const varName = assignMatch[2]!;
+    const refForVar =
+      storeRef || (ref?.data.kind === "store" ? ref : undefined);
+    if (refForVar) {
+      storeVarToRef.set(varName, refForVar);
+    }
+  }
+}
+
+/**
+ * Processes props in the first argument object of a function call.
+ */
+function processFirstArgProps(
+  code: string,
+  callIndex: number,
+  ref: CollectionEntry<"references"> | undefined,
+  storeRef: CollectionEntry<"references"> | undefined,
+  anchors: CodeReferenceAnchorRange[],
+  getHref: (
+    ref: CollectionEntry<"references">,
+    item?: string,
+  ) => string | undefined,
+) {
+  const obj = findObjectLiteralAtFirstArg(code, callIndex);
+  const refForProps = ref || storeRef;
+  const firstParam = refForProps?.data.params?.[0];
+  const firstParamProps = firstParam?.props;
+
+  if (!obj || !refForProps || !firstParamProps?.length) return;
+
+  const allowed = new Set(firstParamProps.map((p) => p.name));
+  const keys = findTopLevelObjectKeys(code, obj.start, obj.end);
+
+  for (const key of keys) {
+    if (!allowed.has(key.name)) continue;
+    const href = getHref(refForProps, getReferenceItemId("prop", key.name));
+    pushRange(anchors, key.start, key.end, href, "prop");
+  }
+}
+
+/**
+ * Processes useStoreState calls to create anchors for state keys.
+ */
+function processUseStoreStateCalls(
+  code: string,
+  storeVarToRef: Map<string, CollectionEntry<"references">>,
+  anchors: CodeReferenceAnchorRange[],
+  getHref: (
+    ref: CollectionEntry<"references">,
+    item?: string,
+  ) => string | undefined,
+) {
+  const useStoreRegex = new RegExp(
+    `\\buseStoreState\\b|\\b(${IDENTIFIER_PATTERN})\\.useStoreState\\b`,
+    "g",
+  );
+  let match: RegExpExecArray | null;
+
+  while ((match = useStoreRegex.exec(code))) {
+    const callIndex = match.index || 0;
+    const stateRanges = findUseStoreStateStateRanges(code, callIndex);
+
+    for (const range of stateRanges) {
+      // Try to resolve reference by store variable
+      const argSlice = code.slice(callIndex, callIndex + 120);
+      const firstArgMatch = /useStoreState\s*\(\s*([A-Za-z_$][\w$]*)/.exec(
+        argSlice,
+      );
+      const varName = firstArgMatch?.[1];
+      const ref = varName ? storeVarToRef.get(varName) : undefined;
+
+      if (ref) {
+        const href = getHref(ref, getReferenceItemId("state", range.name));
+        pushRange(anchors, range.start, range.end, href, "prop");
       }
     }
   }
+}
 
-  // 5) return-prop: accesses on known store variables
-  if (storeVarToRef.size) {
-    for (const [varName, ref] of storeVarToRef) {
-      const re = new RegExp(
-        String.raw`\b${escapeRegExp(varName)}\s*\.\s*([A-Za-z_$][\w$]*)`,
-        "g",
-      );
-      let rm: RegExpExecArray | null;
-      const allowed = new Set(
-        ref.data.returnValue?.props?.map((p) => p.name) || [],
-      );
-      while ((rm = re.exec(trimmed))) {
-        const name = rm[1]!;
-        if (!allowed.has(name)) continue;
-        const matchText = rm[0] || ""; // e.g., "disclosure.getState"
-        const groupStartInMatch = Math.max(0, matchText.lastIndexOf(name));
-        const start = (rm.index || 0) + groupStartInMatch;
-        const end = start + name.length;
-        const href = getHref(ref, getReferenceItemId("return-prop", name));
-        pushRange(anchors, start, end, href, "prop");
-      }
+/**
+ * Processes property accesses on store variables to create anchors for
+ * return-props.
+ */
+function processStoreReturnProps(
+  code: string,
+  storeVarToRef: Map<string, CollectionEntry<"references">>,
+  anchors: CodeReferenceAnchorRange[],
+  getHref: (
+    ref: CollectionEntry<"references">,
+    item?: string,
+  ) => string | undefined,
+) {
+  for (const [varName, ref] of storeVarToRef) {
+    const propAccessRegex = new RegExp(
+      String.raw`\b${escapeRegExp(varName)}\s*\.\s*(${IDENTIFIER_PATTERN})`,
+      "g",
+    );
+    let propMatch: RegExpExecArray | null;
+
+    const allowedProps = new Set(
+      ref.data.returnValue?.props?.map((p) => p.name) || [],
+    );
+
+    while ((propMatch = propAccessRegex.exec(code))) {
+      const propName = propMatch[1]!;
+      if (!allowedProps.has(propName)) continue;
+
+      const matchText = propMatch[0] || "";
+      const propStartInMatch = Math.max(0, matchText.lastIndexOf(propName));
+      const start = (propMatch.index || 0) + propStartInMatch;
+      const end = start + propName.length;
+      const href = getHref(ref, getReferenceItemId("return-prop", propName));
+
+      pushRange(anchors, start, end, href, "prop");
     }
   }
+}
 
-  // 6) ak- class tokens
-  const classRanges = findClassTokenRanges(trimmed);
-  for (const r of classRanges) {
-    // Placeholder: link to current page anchor so hovercard fetch will no-op
-    const href = "#";
-    pushRange(anchors, r.start, r.end, href, "prop");
-  }
-
-  // Build per-line anchors (anchors-first, binary search per anchor)
-  const lines = trimmed.split("\n");
+/**
+ * Builds per-line anchor arrays from absolute-position anchors.
+ */
+function buildPerLineAnchors(
+  code: string,
+  anchors: CodeReferenceAnchorRange[],
+): CodeReferenceAnchorRange[][] {
+  const lines = code.split("\n");
   const byLine: CodeReferenceAnchorRange[][] = lines.map(() => []);
+
+  // Calculate line start positions
   const lineStarts: number[] = new Array(lines.length);
-  {
-    let acc = 0;
-    for (let i = 0; i < lines.length; i++) {
-      lineStarts[i] = acc;
-      acc += lines[i]!.length + 1; // include \n
+  let accumulator = 0;
+  for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+    lineStarts[lineIndex] = accumulator;
+    const line = lines[lineIndex];
+    if (line != null) {
+      accumulator += line.length + 1; // include \n
     }
   }
-  function findLineIndex(pos: number) {
+
+  // Binary search to find line index for a position
+  const findLineIndex = (position: number): number => {
     let low = 0;
     let high = lineStarts.length - 1;
+
     while (low <= high) {
       const mid = (low + high) >> 1;
       const start = lineStarts[mid]!;
       const next =
         mid + 1 < lineStarts.length ? lineStarts[mid + 1]! : Infinity;
-      if (pos < start) high = mid - 1;
-      else if (pos >= next) low = mid + 1;
-      else return mid;
+
+      if (position < start) {
+        high = mid - 1;
+      } else if (position >= next) {
+        low = mid + 1;
+      } else {
+        return mid;
+      }
     }
+
     return Math.max(0, Math.min(lineStarts.length - 1, low));
+  };
+
+  // Assign anchors to lines with relative positions
+  for (const anchor of anchors) {
+    const lineIndex = findLineIndex(anchor.start);
+    const lineStart = lineStarts[lineIndex]!;
+    const line = lines[lineIndex];
+    if (line == null) continue;
+
+    const lineLength = line.length;
+    const relativeStart = Math.max(0, anchor.start - lineStart);
+    const relativeEnd = Math.min(lineLength, anchor.end - lineStart);
+
+    if (relativeEnd > relativeStart) {
+      const lineAnchors = byLine[lineIndex];
+      if (lineAnchors) {
+        lineAnchors.push({
+          ...anchor,
+          start: relativeStart,
+          end: relativeEnd,
+        });
+      }
+    }
   }
-  for (const a of anchors) {
-    const li = findLineIndex(a.start);
-    const lineStart = lineStarts[li]!;
-    const lineLen = lines[li]!.length;
-    const start = Math.max(0, a.start - lineStart);
-    const end = Math.min(lineLen, a.end - lineStart);
-    if (end > start) byLine[li]!.push({ ...a, start, end });
-  }
-  // Sort by start index per line and merge if overlapping and identical target
-  for (const list of byLine) {
-    list.sort((a, b) => a.start - b.start);
-    for (let i = 1; i < list.length; i++) {
-      const prev = list[i - 1]!;
-      const cur = list[i]!;
+
+  // Sort and merge overlapping anchors on each line
+  for (const lineAnchors of byLine) {
+    lineAnchors.sort((a, b) => a.start - b.start);
+
+    for (let i = 1; i < lineAnchors.length; i++) {
+      const prev = lineAnchors[i - 1]!;
+      const current = lineAnchors[i]!;
+
       if (
-        cur.start <= prev.end &&
-        cur.href === prev.href &&
-        cur.kind === prev.kind
+        current.start <= prev.end &&
+        current.href === prev.href &&
+        current.kind === prev.kind
       ) {
-        prev.end = Math.max(prev.end, cur.end);
-        list.splice(i, 1);
+        prev.end = Math.max(prev.end, current.end);
+        lineAnchors.splice(i, 1);
         i--;
       }
     }
@@ -1089,3 +1585,5 @@ export function findCodeReferenceAnchors({
 
   return byLine;
 }
+
+// #endregion

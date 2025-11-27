@@ -96,7 +96,7 @@ function refs(): CollectionEntry<"references">[] {
     createRefData("store", "useComboboxStore", "combobox", {
       state: [createProp("value")],
       params: [
-        createProp("options", {
+        createProp("props", {
           optional: true,
           props: [createProp("setMounted")],
         }),
@@ -127,7 +127,7 @@ function refs(): CollectionEntry<"references">[] {
     "react/disclosure/store",
     createRefData("store", "useDisclosureStore", "disclosure", {
       state: [createProp("mounted")],
-      params: [createProp("options", { optional: true })],
+      params: [createProp("props", { optional: true })],
       returnProps: [
         createProp("getState"),
         createProp("open"),
@@ -165,7 +165,7 @@ function refs(): CollectionEntry<"references">[] {
       params: [
         createProp("props", {
           optional: true,
-          props: [createProp("orientation"), createProp("class")],
+          props: [createProp("orientation")],
         }),
       ],
     }),
@@ -210,7 +210,20 @@ const value = ak.useStoreState(combobox, "value");
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.text === "value" && t.kind === "prop")).toBe(true);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useComboboxStore",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "value",
+      },
+    ]
+  `);
 });
 
 test("tokenizes useStoreState state key (arrow) with ak namespace", () => {
@@ -225,7 +238,20 @@ const value = ak.useStoreState(combobox, (state) => state.value);
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.text === "value" && t.kind === "prop")).toBe(true);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useComboboxStore",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "value",
+      },
+    ]
+  `);
 });
 
 test("does not tokenize props on non-Ariakit namespaced components (rac.Disclosure)", () => {
@@ -239,7 +265,7 @@ export function X(){return (<rac.Disclosure render />)}
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.text === "render")).toBe(false);
+  expect(ts.length).toBe(0);
 });
 
 test("tokenizes defaultOpen boolean prop on ak.DisclosureProvider", () => {
@@ -253,9 +279,20 @@ export function X(){return (<ak.DisclosureProvider defaultOpen />)}
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.text === "defaultOpen" && t.kind === "prop")).toBe(
-    true,
-  );
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "component",
+        "line": 2,
+        "text": "DisclosureProvider",
+      },
+      {
+        "kind": "prop",
+        "line": 2,
+        "text": "defaultOpen",
+      },
+    ]
+  `);
 });
 
 test("tokenizes ak- classes inside nested clsx in object props", () => {
@@ -272,7 +309,20 @@ export function X(){return (
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.text.includes("ak-text/0"))).toBe(true);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "component",
+        "line": 4,
+        "text": "Disclosure",
+      },
+      {
+        "kind": "prop",
+        "line": 4,
+        "text": "ak-text/0",
+      },
+    ]
+  `);
 });
 
 test("does not tokenize props for rac.Disclosure but tokenizes ak- in className", () => {
@@ -291,8 +341,20 @@ export function X(){return (
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.text === "render")).toBe(false);
-  expect(ts.some((t) => t.text.includes("ak-text/0"))).toBe(true);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "prop",
+        "line": 5,
+        "text": "ak-disclosure",
+      },
+      {
+        "kind": "prop",
+        "line": 5,
+        "text": "ak-text/0",
+      },
+    ]
+  `);
 });
 
 test("tokenizes renamed component import and tag", () => {
@@ -306,9 +368,20 @@ export function X(){return (<AriakitDisclosure />)}
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(
-    ts.some((t) => t.text === "AriakitDisclosure" && t.kind === "component"),
-  ).toBe(true);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "component",
+        "line": 1,
+        "text": "AriakitDisclosure",
+      },
+      {
+        "kind": "component",
+        "line": 2,
+        "text": "AriakitDisclosure",
+      },
+    ]
+  `);
 });
 
 test("tokenizes import named identifier position precisely", () => {
@@ -321,11 +394,15 @@ import { Separator } from "@ariakit/react";
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  // ensure only the word Separator is tokenized
-  expect(ts).toContainEqual(
-    expect.objectContaining({ text: "Separator", kind: "component" }),
-  );
-  expect(ts.some((t) => /port|\{\s*Se/.test(t.text))).toBe(false);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "component",
+        "line": 1,
+        "text": "Separator",
+      },
+    ]
+  `);
 });
 
 test("solid: tokenizes component usage after named import", () => {
@@ -341,21 +418,30 @@ export default function Example() {
     framework: "solid",
   });
   const ts = tokensAt(code, perLine);
-  const usageLine = 3;
-  expect(
-    ts.some(
-      (t) =>
-        t.line === usageLine &&
-        t.text === "Separator" &&
-        t.kind === "component",
-    ),
-  ).toBe(true);
-  expect(
-    ts.some(
-      (t) =>
-        t.line === usageLine && t.text === "orientation" && t.kind === "prop",
-    ),
-  ).toBe(true);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "component",
+        "line": 1,
+        "text": "Separator",
+      },
+      {
+        "kind": "component",
+        "line": 3,
+        "text": "Separator",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "orientation",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "ak-layer-current",
+      },
+    ]
+  `);
 });
 
 test("tokenizes return-prop without trailing punctuation", () => {
@@ -371,8 +457,25 @@ function demo(){ if(!disclosure) return; const { contentElement } = disclosure.g
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.text === "getState" && t.kind === "prop")).toBe(true);
-  expect(ts.some((t) => t.text === "getState;")).toBe(false);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "function",
+        "line": 2,
+        "text": "useDisclosureContext",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "mounted",
+      },
+      {
+        "kind": "prop",
+        "line": 4,
+        "text": "getState",
+      },
+    ]
+  `);
 });
 
 test("fallback with no imports: namespaced calls are allowed", () => {
@@ -386,7 +489,20 @@ const value = Ariakit.useStoreState(combobox, "value");
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.text === "value" && t.kind === "prop")).toBe(true);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useComboboxStore",
+      },
+      {
+        "kind": "prop",
+        "line": 2,
+        "text": "value",
+      },
+    ]
+  `);
 });
 
 test("does not tokenize function declarations as components", () => {
@@ -400,7 +516,7 @@ export function DisclosureContent(){ return null }
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  expect(ts.some((t) => t.kind === "component")).toBe(false);
+  expect(ts.length).toBe(0);
 });
 
 test("does not tokenize generic type parameters as JSX tags", () => {
@@ -411,6 +527,288 @@ test("does not tokenize generic type parameters as JSX tags", () => {
     framework: "react",
   });
   const ts = tokensAt(code, perLine);
-  // Ensure no component tokens produced
-  expect(ts.some((t) => t.kind === "component")).toBe(false);
+  expect(ts.length).toBe(0);
+});
+
+test("tokenizes namespace component tag with props", () => {
+  const code = `
+import * as ak from "@ariakit/react";
+export function X() { return <ak.Disclosure render />; }
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "component",
+        "line": 2,
+        "text": "Disclosure",
+      },
+      {
+        "kind": "prop",
+        "line": 2,
+        "text": "render",
+      },
+    ]
+  `);
+});
+
+test("tokenizes direct named import store call with object props", () => {
+  const code = `
+import { useComboboxStore } from "@ariakit/react";
+const combobox = useComboboxStore({ setMounted: () => {} });
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useComboboxStore",
+      },
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useComboboxStore",
+      },
+      {
+        "kind": "prop",
+        "line": 2,
+        "text": "setMounted",
+      },
+    ]
+  `);
+});
+
+test("tokenizes aliased store import and usage", () => {
+  const code = `
+import { useDisclosureStore as useStore } from "@ariakit/react";
+const store = useStore();
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useStore",
+      },
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useStore",
+      },
+    ]
+  `);
+});
+
+test("tokenizes multiple ak- classes in one className", () => {
+  const code = `<div className="ak-button ak-primary ak-disabled" />`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "prop",
+        "line": 1,
+        "text": "ak-button",
+      },
+      {
+        "kind": "prop",
+        "line": 1,
+        "text": "ak-primary",
+      },
+      {
+        "kind": "prop",
+        "line": 1,
+        "text": "ak-disabled",
+      },
+    ]
+  `);
+});
+
+test("tokenizes ak- classes in template literal static parts only", () => {
+  // Note: ak- classes inside ${} interpolations are intentionally skipped
+  // because they could be dynamic values (variables, expressions, etc.)
+  const code = `<div className={\`ak-button ak-primary \${isActive ? "active" : "inactive"}\`} />`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "prop",
+        "line": 1,
+        "text": "ak-button",
+      },
+      {
+        "kind": "prop",
+        "line": 1,
+        "text": "ak-primary",
+      },
+    ]
+  `);
+});
+
+test("tokenizes multiple store return-props", () => {
+  const code = `
+import * as ak from "@ariakit/react";
+const disclosure = ak.useDisclosureStore();
+disclosure.open;
+disclosure.setOpen(true);
+disclosure.getState();
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "open",
+      },
+      {
+        "kind": "prop",
+        "line": 4,
+        "text": "setOpen",
+      },
+      {
+        "kind": "prop",
+        "line": 5,
+        "text": "getState",
+      },
+    ]
+  `);
+});
+
+test("does not tokenize closing tags", () => {
+  const code = `
+import { Disclosure } from "@ariakit/react";
+export function X() {
+  return <Disclosure>content</Disclosure>;
+}
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "component",
+        "line": 1,
+        "text": "Disclosure",
+      },
+      {
+        "kind": "component",
+        "line": 3,
+        "text": "Disclosure",
+      },
+    ]
+  `);
+});
+
+test("tokenizes context hook with store state reference", () => {
+  const code = `
+import { useDisclosureContext, useStoreState } from "@ariakit/react";
+const disclosure = useDisclosureContext();
+const mounted = useStoreState(disclosure, "mounted");
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "function",
+        "line": 1,
+        "text": "useDisclosureContext",
+      },
+      {
+        "kind": "function",
+        "line": 2,
+        "text": "useDisclosureContext",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "mounted",
+      },
+    ]
+  `);
+});
+
+test("does not tokenize locally defined functions with same name", () => {
+  const code = `
+import { something } from "other-lib";
+function useDisclosureStore() { return {}; }
+const store = useDisclosureStore();
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts.length).toBe(0);
+});
+
+test("handles empty references gracefully", () => {
+  const code = `
+import { Disclosure } from "@ariakit/react";
+<Disclosure render />
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: [],
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts.length).toBe(0);
+});
+
+test("handles code without any relevant patterns", () => {
+  const code = `const x = 1; const y = 2;`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts.length).toBe(0);
 });
