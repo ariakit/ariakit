@@ -86,6 +86,8 @@ export default defineConfig({
     coverage: {
       include: ["packages"],
     },
-    runner: BENCH ? "./node_modules/vitest-runner-benchmark/runner" : undefined,
+    runner: BENCH
+      ? "./node_modules/@waynevanson/vitest-benchmark/runner"
+      : undefined,
   },
 });

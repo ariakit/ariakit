@@ -41,4 +41,4 @@ jobs:
           --err \
           --adapter json \
           --github-actions '${{ secrets.GITHUB_TOKEN }}' \
-          npm run --silent '${{ matrix.command }}' -- --reporter="vitest-runner-benchmark/bmf-reporter"
+          npm run --silent '${{ matrix.command }}' -- --reporter="@waynevanson/vitest-benchmark/bmf-reporter"
