@@ -280,12 +280,6 @@ export function CodeBlockPreviewIframe({
     let timeout = 0;
     let raf = 0;
 
-    console.log(`[CodeBlockPreviewIframe ${previewUrl}] effect initialized`, {
-      clickAndWait,
-      scrollTop,
-      fullscreen,
-    });
-
     const triggerSelector =
       typeof clickAndWait === "string" ? clickAndWait : "input, button";
 
@@ -294,46 +288,21 @@ export function CodeBlockPreviewIframe({
       button = doc?.querySelector<HTMLButtonElement>(triggerSelector),
       popup = doc?.querySelector<HTMLElement>("[data-dialog]"),
     ) => {
-      if (!doc) {
-        console.log(`[CodeBlockPreviewIframe ${previewUrl}] scroll: no doc`);
-        return;
-      }
-      if (!doc.documentElement) {
-        console.log(
-          `[CodeBlockPreviewIframe ${previewUrl}] scroll: no documentElement`,
-        );
-        return;
-      }
+      if (!doc) return;
       if (scrollTop) {
-        console.log(
-          `[CodeBlockPreviewIframe ${previewUrl}] scroll: scrollTop=${scrollTop}`,
-        );
         doc.documentElement.scrollTo({ top: scrollTop });
         return;
       }
-      if (!button) {
-        console.log(`[CodeBlockPreviewIframe ${previewUrl}] scroll: no button`);
-        return;
-      }
+      if (!button) return;
       const { top, bottom: buttonBottom } = button.getBoundingClientRect();
       const { bottom = buttonBottom } = popup?.getBoundingClientRect() || {};
       const iframeHeight = iframe.contentWindow?.innerHeight;
-      if (top == null || bottom == null || iframeHeight == null) {
-        console.log(
-          `[CodeBlockPreviewIframe ${previewUrl}] scroll: missing values`,
-          { top, bottom, iframeHeight },
-        );
-        return;
-      }
+      if (top == null || bottom == null || iframeHeight == null) return;
       const currentScrollTop = doc.documentElement.scrollTop || 0;
-      const scrollToValue =
-        currentScrollTop - (iframeHeight - bottom - top) / 2;
-      console.log(
-        `[CodeBlockPreviewIframe ${previewUrl}] scroll: scrolling to`,
-        scrollToValue,
-      );
       // Scroll the iframe to center the combined element
-      doc.documentElement.scrollTo({ top: scrollToValue });
+      doc.documentElement.scrollTo({
+        top: currentScrollTop - (iframeHeight - bottom - top) / 2,
+      });
     };
 
     const setDataFocus = (event: FocusEvent) => {
@@ -356,17 +325,9 @@ export function CodeBlockPreviewIframe({
       }
     };
 
-    const log = (...args: unknown[]) => {
-      console.log(`[CodeBlockPreviewIframe ${previewUrl}]`, ...args);
-    };
-
     const onLoad = () => {
-      log("onLoad called");
       const doc = iframe.contentDocument;
-      if (!doc) {
-        log("onLoad: no contentDocument");
-        return;
-      }
+      if (!doc) return;
       const html = doc.documentElement;
       doc.body.classList.add("!ak-layer-canvas-down-0.15");
       html.classList.add("scheme-light", "dark:scheme-dark");
@@ -387,29 +348,17 @@ export function CodeBlockPreviewIframe({
       win?.addEventListener("blur", setDataFocus);
       win?.addEventListener("mousemove", disableHover, true);
 
-      if (!clickAndWait) {
-        log("onLoad: no clickAndWait, setLoaded(true)");
-        return setLoaded(true);
-      }
+      if (!clickAndWait) return setLoaded(true);
       // Make the iframe inert so we can interact with it without moving focus
       doc.body.inert = true;
 
       const button = doc.querySelector<HTMLButtonElement>(triggerSelector);
-      log("onLoad: button found?", !!button, "selector:", triggerSelector);
-      if (!button) {
-        log("onLoad: no button found, setLoaded(true)");
-        return setLoaded(true);
-      }
+      if (!button) return setLoaded(true);
 
       const { top } = button.getBoundingClientRect();
       html.scrollTo({ top });
 
-      let attempts = 0;
-
       const clickAndWaitForPopup = () => {
-        attempts++;
-        log("clickAndWaitForPopup attempt", attempts);
-
         const eventInit = { bubbles: true, cancelable: true };
         button.dispatchEvent(new MouseEvent("pointerdown", eventInit));
         button.dispatchEvent(new MouseEvent("mousedown", eventInit));
@@ -420,25 +369,15 @@ export function CodeBlockPreviewIframe({
         // Wait for the popup to be visible
         timeout = window.setTimeout(() => {
           const popup = doc.querySelector<HTMLElement>("[data-dialog]");
-          const hasHidden = popup?.hasAttribute("hidden");
-          log("checking popup:", {
-            popupFound: !!popup,
-            hasHidden,
-            popupId: popup?.id,
-            popupClasses: popup?.className,
-          });
-          if (!popup || hasHidden) {
+          if (!popup || popup.hasAttribute("hidden")) {
             // If the popup is missing or hidden, it might not have been
             // hydrated yet. We'll try again shortly.
-            log("popup not ready, scheduling retry");
             timeout = window.setTimeout(clickAndWaitForPopup, 84);
             return;
           }
-          log("popup is visible, proceeding");
           // Make the popup transition immediately so we can check its position
           popup.style.setProperty("transition", "none", "important");
           raf = requestAnimationFrame(() => {
-            log("setLoaded(true) and scroll");
             setLoaded(true);
             scroll(doc, button, popup);
             // Reset the transition
@@ -448,11 +387,9 @@ export function CodeBlockPreviewIframe({
             doc.body.style.display = "none";
             raf = requestAnimationFrame(() => {
               doc.body.style.removeProperty("display");
-              log("body display restored");
             });
             timeout = window.setTimeout(() => {
               doc.body.inert = false;
-              log("body inert set to false");
             }, 42);
           });
         }, 42);
@@ -460,29 +397,22 @@ export function CodeBlockPreviewIframe({
       clickAndWaitForPopup();
     };
 
-    const readyState = iframe.contentDocument?.readyState;
-    log("initial readyState:", readyState);
-    if (readyState === "complete") {
-      log("calling onLoad immediately");
+    if (iframe.contentDocument?.readyState === "complete") {
       onLoad();
     } else {
-      log("adding load event listener");
       iframe.addEventListener("load", onLoad);
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
-        log("IntersectionObserver: iframe is intersecting, calling scroll");
         scroll();
       },
       { rootMargin: "50%" },
     );
     observer.observe(iframe);
-    log("IntersectionObserver created and observing iframe");
 
     return () => {
-      log("cleanup");
       observer.disconnect();
       clearTimeout(timeout);
       cancelAnimationFrame(raf);
