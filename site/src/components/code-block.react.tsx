@@ -385,19 +385,9 @@ export function CodeBlockPreviewIframe({
       // Make the iframe inert so we can interact with it without moving focus
       doc.body.inert = true;
 
-      const button = doc.querySelector<HTMLButtonElement>(triggerSelector);
-      log("onLoad: button found?", !!button, "selector:", triggerSelector);
-      if (!button) {
-        log("onLoad: no button found, setLoaded(true)");
-        return setLoaded(true);
-      }
-
-      const { top } = button.getBoundingClientRect();
-      html.scrollTo({ top });
-
       let attempts = 0;
 
-      const clickAndWaitForPopup = () => {
+      const clickAndWaitForPopup = (button: HTMLButtonElement) => {
         attempts++;
         log("clickAndWaitForPopup attempt", attempts);
 
@@ -422,7 +412,7 @@ export function CodeBlockPreviewIframe({
             // If the popup is missing or hidden, it might not have been
             // hydrated yet. We'll try again shortly.
             log("popup not ready, scheduling retry");
-            timeout = window.setTimeout(clickAndWaitForPopup, 84);
+            timeout = window.setTimeout(() => clickAndWaitForPopup(button), 84);
             return;
           }
           log("popup is visible, proceeding");
@@ -448,7 +438,30 @@ export function CodeBlockPreviewIframe({
           });
         }, 42);
       };
-      clickAndWaitForPopup();
+
+      const waitForButton = () => {
+        const button = doc.querySelector<HTMLButtonElement>(triggerSelector);
+        log(
+          "waitForButton: button found?",
+          !!button,
+          "selector:",
+          triggerSelector,
+        );
+        if (!button) {
+          // The iframe document is loaded but the React app hasn't hydrated
+          // yet. Retry after a short delay.
+          log("waitForButton: no button, scheduling retry");
+          timeout = window.setTimeout(waitForButton, 84);
+          return;
+        }
+
+        const { top } = button.getBoundingClientRect();
+        html.scrollTo({ top });
+
+        clickAndWaitForPopup(button);
+      };
+
+      waitForButton();
     };
 
     const readyState = iframe.contentDocument?.readyState;
