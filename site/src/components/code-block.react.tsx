@@ -293,6 +293,7 @@ export function CodeBlockPreviewIframe({
       // documentElement may be null if the iframe document hasn't fully loaded.
       // Wait for the next frame to retry.
       if (!doc.documentElement) {
+        cancelAnimationFrame(scrollRaf);
         scrollRaf = requestAnimationFrame(() => scroll());
         return;
       }
