@@ -2,7 +2,7 @@ import { query } from "@ariakit/test/playwright";
 import type { Locator } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { visual } from "#app/test-utils/visual.ts";
+import { reduceMotionBeforeEach, visual } from "#app/test-utils/visual.ts";
 
 async function getContent(button: Locator) {
   const contentId = await button.getAttribute("aria-controls");
@@ -10,9 +10,7 @@ async function getContent(button: Locator) {
 }
 
 withFramework(import.meta.dirname, async () => {
-  test.beforeEach(async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-  });
+  reduceMotionBeforeEach();
 
   test("hover @visual", async ({ page }) => {
     const q = query(page);

@@ -277,3 +277,9 @@ export async function visual(page: Page, options: ScreenshotOptions = {}) {
     });
   }
 }
+
+export async function reduceMotionBeforeEach() {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+  });
+}
