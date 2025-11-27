@@ -279,6 +279,7 @@ export function CodeBlockPreviewIframe({
     if (!iframe) return;
     let timeout = 0;
     let raf = 0;
+    let scrollRaf = 0;
 
     const triggerSelector =
       typeof clickAndWait === "string" ? clickAndWait : "input, button";
@@ -289,6 +290,12 @@ export function CodeBlockPreviewIframe({
       popup = doc?.querySelector<HTMLElement>("[data-dialog]"),
     ) => {
       if (!doc) return;
+      // documentElement may be null if the iframe document hasn't fully loaded.
+      // Wait for the next frame to retry.
+      if (!doc.documentElement) {
+        scrollRaf = requestAnimationFrame(() => scroll());
+        return;
+      }
       if (scrollTop) {
         doc.documentElement.scrollTo({ top: scrollTop });
         return;
@@ -416,6 +423,7 @@ export function CodeBlockPreviewIframe({
       observer.disconnect();
       clearTimeout(timeout);
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(scrollRaf);
       iframe.removeEventListener("load", onLoad);
       iframe.contentWindow?.removeEventListener("focus", setDataFocus);
       iframe.contentWindow?.removeEventListener("blur", setDataFocus);
