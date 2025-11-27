@@ -3,6 +3,7 @@ import { version } from "react";
 import solidPlugin from "vite-plugin-solid";
 import type { Plugin } from "vitest/config";
 import { configDefaults, defineConfig } from "vitest/config";
+import "@waynevanson/vitest-benchmark/runner";
 
 const excludeFromReact17 = [
   "examples/form-callback-queue",
@@ -26,32 +27,28 @@ const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 const CI = process.env.CI;
 
-if (BENCH) {
-  const config = CI
-    ? {
-        benchmark: {
-          minCycles: 1,
-          minMs: 27_000,
-        },
-        warmup: {
-          minCycles: 0,
-          minMs: 3_000,
-        },
-      }
-    : {
-        // 1 cycle of warmup and benchmark respectively is enough to catch errors.
-        benchmark: {
-          minCycles: 2,
-          minMs: 0,
-        },
-        warmup: {
-          minCycles: 1,
-          minMs: 0,
-        },
-      };
-
-  process.env.VITEST_RUNNER_BENCHMARK_OPTIONS = JSON.stringify(config);
-}
+const benchrunner = CI
+  ? {
+      benchmark: {
+        minCycles: 1,
+        minMs: 27_000,
+      },
+      warmup: {
+        minCycles: 0,
+        minMs: 3_000,
+      },
+    }
+  : {
+      // 1 cycle of warmup and benchmark respectively is enough to catch errors.
+      benchmark: {
+        minCycles: 2,
+        minMs: 0,
+      },
+      warmup: {
+        minCycles: 1,
+        minMs: 0,
+      },
+    };
 
 const isReact17 = version.startsWith("17");
 
@@ -89,5 +86,8 @@ export default defineConfig({
     runner: BENCH
       ? "./node_modules/@waynevanson/vitest-benchmark/runner"
       : undefined,
+    provide: {
+      benchrunner,
+    },
   },
 });

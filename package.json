@@ -126,7 +126,7 @@
     "@vitejs/plugin-react": "5.1.1",
     "@vitest/coverage-v8": "4.0.14",
     "@vitest/runner": "4.0.14",
-    "@waynevanson/vitest-benchmark": "0.2.3",
+    "@waynevanson/vitest-benchmark": "0.2.6",
     "@wordpress/components": "30.9.0",
     "astro": "5.15.9",
     "autoprefixer": "10.4.22",
