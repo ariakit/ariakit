@@ -807,7 +807,7 @@
               "value": {}
             },
             {
-              "name": "@apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-gradient-to-b from-50% bg-clip-padding",
+              "name": "@apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-linear-to-b from-50% bg-clip-padding",
               "value": {}
             },
             {
@@ -2288,7 +2288,7 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) pointer-events-none sticky h-full w-8 flex-none bg-gradient-to-l to-transparent bg-clip-padding content-['']",
+                  "name": "@apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) pointer-events-none sticky h-full w-8 flex-none bg-linear-to-l to-transparent bg-clip-padding content-['']",
                   "value": {}
                 }
               ]
@@ -2300,7 +2300,7 @@
                   "name": "&::after",
                   "value": [
                     {
-                      "name": "@apply bg-gradient-to-r",
+                      "name": "@apply bg-linear-to-r",
                       "value": {}
                     }
                   ]
@@ -7077,7 +7077,7 @@
               "name": "li:last-of-type > &::after,\n  &:is(li):last-of-type::after",
               "value": [
                 {
-                  "name": "@apply from-(--ak-layer) bg-transparent bg-gradient-to-b from-[calc(100%-1rem)] to-transparent",
+                  "name": "@apply from-(--ak-layer) bg-linear-to-b bg-linear-tom-[calc(100%-1rem)] to-transparent",
                   "value": {}
                 },
                 {
