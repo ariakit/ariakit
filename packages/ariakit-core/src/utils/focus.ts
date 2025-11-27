@@ -81,10 +81,10 @@ export function getAllFocusableIn(
   const focusableElements = elements.filter(isFocusable);
 
   focusableElements.forEach((element, i) => {
-    if (isFrame(element) && element.contentDocument) {
-      const frameBody = element.contentDocument.body;
-      focusableElements.splice(i, 1, ...getAllFocusableIn(frameBody));
-    }
+    if (!isFrame(element)) return;
+    const frameBody = element.contentDocument?.body;
+    if (!frameBody) return;
+    focusableElements.splice(i, 1, ...getAllFocusableIn(frameBody));
   });
 
   return focusableElements;
@@ -134,15 +134,15 @@ export function getAllTabbableIn(
   }
 
   tabbableElements.forEach((element, i) => {
-    if (isFrame(element) && element.contentDocument) {
-      const frameBody = element.contentDocument.body;
-      const allFrameTabbable = getAllTabbableIn(
-        frameBody,
-        false,
-        fallbackToFocusable,
-      );
-      tabbableElements.splice(i, 1, ...allFrameTabbable);
-    }
+    if (!isFrame(element)) return;
+    const frameBody = element.contentDocument?.body;
+    if (!frameBody) return;
+    const allFrameTabbable = getAllTabbableIn(
+      frameBody,
+      false,
+      fallbackToFocusable,
+    );
+    tabbableElements.splice(i, 1, ...allFrameTabbable);
   });
 
   if (!tabbableElements.length && fallbackToFocusable) {
