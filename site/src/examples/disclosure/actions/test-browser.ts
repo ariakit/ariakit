@@ -1,7 +1,13 @@
 import { query } from "@ariakit/test/playwright";
-import { test } from "@playwright/test";
+import type { Locator } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 import { visual } from "#app/test-utils/visual.ts";
+
+async function getContent(button: Locator) {
+  const contentId = await button.getAttribute("aria-controls");
+  return button.page().locator(`[id="${contentId}"]`);
+}
 
 withFramework(import.meta.dirname, async () => {
   test("hover @visual", async ({ page }) => {
@@ -13,6 +19,8 @@ withFramework(import.meta.dirname, async () => {
   test("open @visual", async ({ page }) => {
     const q = query(page);
     await q.button("Brightside Studio").click();
+    const content = await getContent(q.button("Brightside Studio"));
+    await expect(content).toBeVisible();
     await visual(page);
   });
 
