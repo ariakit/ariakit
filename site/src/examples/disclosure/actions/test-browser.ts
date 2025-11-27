@@ -10,6 +10,10 @@ async function getContent(button: Locator) {
 }
 
 withFramework(import.meta.dirname, async () => {
+  test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+  });
+
   test("hover @visual", async ({ page }) => {
     const q = query(page);
     await q.button("Lina Park").hover();
