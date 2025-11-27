@@ -387,7 +387,7 @@ async function parseDescription(description: string) {
             <SidebarMenu id="api-reference-menu" items={referenceMenu}>
               <div slot="before" class="p-2">
                 <button class="ak-input ak-edge/15 ak-frame-field/2 flex h-10 gap-2 items-center text-start w-full text-sm">
-                  <div class="flex items-center gap-2 flex-grow min-w-0 ak-frame/1">
+                  <div class="flex items-center gap-2 grow min-w-0 ak-frame/1">
                     <Icon name="search" strokeWidth={2} className="flex-none" />
                     <div class="ak-input-placeholder truncate">
                       Search API Reference
@@ -413,7 +413,7 @@ async function parseDescription(description: string) {
                 <a
                   data-expand="true"
                   href={referenceHref}
-                  class="absolute group/expand outline-none inset-0 ak-layer-current bg-transparent bg-gradient-to-b from-transparent from-20% to-[calc(100%-2rem)] to-(--ak-layer) z-2"
+                  class="absolute group/expand outline-none inset-0 ak-layer-current bg-transparent bg-linear-to-b from-transparent from-20% to-[calc(100%-2rem)] to-(--ak-layer) z-2"
                 >
                   <ContainerRightMenu
                     as="span"

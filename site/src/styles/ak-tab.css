@@ -24,12 +24,12 @@
   scrollbar-width: none;
 
   &::after {
-    @apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) pointer-events-none sticky h-full w-8 flex-none bg-gradient-to-l to-transparent bg-clip-padding content-[''];
+    @apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) pointer-events-none sticky h-full w-8 flex-none bg-linear-to-l to-transparent bg-clip-padding content-[''];
   }
 
   &:dir(rtl) {
     &::after {
-      @apply bg-gradient-to-r;
+      @apply bg-linear-to-r;
     }
   }
 }
