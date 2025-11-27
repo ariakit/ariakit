@@ -25,6 +25,7 @@ withFramework(import.meta.dirname, async () => {
     await expect(content).toBeVisible();
     await q.button().click();
     await expect(content).toBeHidden();
+    await page.mouse.move(0, 0);
     await visual(page);
   });
 });

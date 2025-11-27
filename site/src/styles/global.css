@@ -63,7 +63,7 @@ astro-static-slot {
 
 html,
 body {
-  @apply font-sans min-h-[100dvh] antialiased;
+  @apply font-sans min-h-dvh antialiased;
 }
 
 body > * {

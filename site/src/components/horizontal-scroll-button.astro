@@ -22,8 +22,8 @@ const { direction, ...props } = Astro.props;
   class:list={[
     "group/scroll-button h-full items-center justify-end from-(--ak-layer) from-70% to-transparent px-3 absolute top-0 z-10 hidden @3xl:flex",
     direction === "left"
-      ? "bg-gradient-to-r start-0 pe-6"
-      : "bg-gradient-to-l end-0 ps-6",
+      ? "bg-linear-to-r start-0 pe-6"
+      : "bg-linear-to-l end-0 ps-6",
     props.class,
   ]}
   {...props}

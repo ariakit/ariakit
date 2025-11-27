@@ -21,17 +21,17 @@ jobs:
         with:
           cache-npm: true
 
-  install-macos:
-    name: Install node modules (macOS)
-    runs-on: macos-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+  # install-macos:
+  #   name: Install node modules (macOS)
+  #   runs-on: macos-latest
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
-        with:
-          cache-npm: true
+  #     - name: Install node modules
+  #       uses: ./.github/workflows/install-node-modules
+  #       with:
+  #         cache-npm: true
 
   build:
     name: Build app
@@ -58,7 +58,7 @@ jobs:
 
   test:
     name: Test ${{ matrix.name }}
-    needs: [build, install-macos]
+    needs: [build]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -129,6 +129,6 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: app-visual-${{ matrix.project }}
-          path: site/src/tests/visual
+          path: site/src/tests/visual/*-${{ matrix.project }}-*.png
           if-no-files-found: ignore
           retention-days: 1

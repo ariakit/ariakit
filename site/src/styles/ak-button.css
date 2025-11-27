@@ -54,7 +54,7 @@
 
 @utility ak-button-classic_idle {
   @apply ak-button_idle ak-layer;
-  @apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-gradient-to-b from-50% bg-clip-padding;
+  @apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-linear-to-b from-50% bg-clip-padding;
 
   --ak-button-min-l: 0.25;
   --ak-button-max-l: 1;
