@@ -6,14 +6,12 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "tailwindCSS.classFunctions": ["clsx", "twMerge", "twJoin"],
   "tailwindCSS.experimental.configFile": {
     "tailwind.config.cjs": "**/*",
     "site/src/styles/global.css": "site/**/*",
     "templates/react/src/style.css": "templates/react/**/*"
   },
-  "tailwindCSS.experimental.classRegex": [
-    ["(?:twMerge|twJoin|clsx)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
-  ],
   "css.validate": false,
   "stylelint.enable": true,
   "editor.snippetSuggestions": "bottom",
