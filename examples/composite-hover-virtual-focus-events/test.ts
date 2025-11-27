@@ -1,4 +1,5 @@
 import { click, hover, press, q } from "@ariakit/test";
+import { version } from "react";
 import type { MockInstance } from "vitest";
 
 function expectCalls(mock: MockInstance) {
@@ -7,17 +8,26 @@ function expectCalls(mock: MockInstance) {
   return expect(calls);
 }
 
-test("events", async () => {
+const log = vi.spyOn(console, "log").mockImplementation(() => {});
+
+beforeEach(() => {
   const externalButton = document.createElement("button");
   externalButton.textContent = "External button";
   document.body.append(externalButton);
 
-  const log = vi.spyOn(console, "log").mockImplementation(() => {});
+  return () => {
+    log.mockClear();
+    externalButton.remove();
+  };
+});
 
-  await press.Tab();
-  await press.Tab();
+test.skipIf(version.startsWith("17") && process.env.ARIAKIT_BENCH === "1")(
+  "events",
+  async () => {
+    await press.Tab();
+    await press.Tab();
 
-  expectCalls(log).toMatchInlineSnapshot(`
+    expectCalls(log).toMatchInlineSnapshot(`
     [
       "event: focus | currentTarget: toolbar | target: toolbar",
       "event: focus | currentTarget: item-1 | target: item-1 | relatedTarget: toolbar",
@@ -32,9 +42,9 @@ test("events", async () => {
     ]
   `);
 
-  await hover(q.button("item-3"));
+    await hover(q.button("item-3"));
 
-  expectCalls(log).toMatchInlineSnapshot(`
+    expectCalls(log).toMatchInlineSnapshot(`
     [
       "event: mouseenter | currentTarget: toolbar | target: item-3",
       "event: mouseenter | currentTarget: item-3 | target: item-3",
@@ -44,13 +54,13 @@ test("events", async () => {
     ]
   `);
 
-  expect(q.toolbar()).toHaveAttribute("data-focus-visible");
-  expect(q.button("item-3")).toHaveAttribute("data-focus-visible");
-  expect(q.button("item-3")).toHaveAttribute("data-active-item");
+    expect(q.toolbar()).toHaveAttribute("data-focus-visible");
+    expect(q.button("item-3")).toHaveAttribute("data-focus-visible");
+    expect(q.button("item-3")).toHaveAttribute("data-active-item");
 
-  await press.ArrowLeft();
+    await press.ArrowLeft();
 
-  expectCalls(log).toMatchInlineSnapshot(`
+    expectCalls(log).toMatchInlineSnapshot(`
     [
       "event: keydown | currentTarget: item-3 | target: item-3",
       "event: keydown | currentTarget: toolbar | target: item-3",
@@ -63,15 +73,15 @@ test("events", async () => {
     ]
   `);
 
-  expect(q.toolbar()).toHaveAttribute("data-focus-visible");
-  expect(q.button("item-3")).not.toHaveAttribute("data-focus-visible");
-  expect(q.button("item-3")).not.toHaveAttribute("data-active-item");
-  expect(q.button("item-2")).toHaveAttribute("data-focus-visible");
-  expect(q.button("item-2")).toHaveAttribute("data-active-item");
+    expect(q.toolbar()).toHaveAttribute("data-focus-visible");
+    expect(q.button("item-3")).not.toHaveAttribute("data-focus-visible");
+    expect(q.button("item-3")).not.toHaveAttribute("data-active-item");
+    expect(q.button("item-2")).toHaveAttribute("data-focus-visible");
+    expect(q.button("item-2")).toHaveAttribute("data-active-item");
 
-  await hover(q.button("item-1"));
+    await hover(q.button("item-1"));
 
-  expectCalls(log).toMatchInlineSnapshot(`
+    expectCalls(log).toMatchInlineSnapshot(`
     [
       "event: blur | currentTarget: item-2 | target: item-2 | relatedTarget: item-3",
       "event: blur | currentTarget: toolbar | target: item-2 | relatedTarget: item-3",
@@ -79,15 +89,15 @@ test("events", async () => {
     ]
   `);
 
-  expect(q.toolbar()).toHaveAttribute("data-focus-visible");
-  expect(q.button("item-2")).not.toHaveAttribute("data-focus-visible");
-  expect(q.button("item-2")).not.toHaveAttribute("data-active-item");
-  expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
-  expect(q.button("item-1")).toHaveAttribute("data-active-item");
+    expect(q.toolbar()).toHaveAttribute("data-focus-visible");
+    expect(q.button("item-2")).not.toHaveAttribute("data-focus-visible");
+    expect(q.button("item-2")).not.toHaveAttribute("data-active-item");
+    expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
+    expect(q.button("item-1")).toHaveAttribute("data-active-item");
 
-  await press.ArrowRight();
+    await press.ArrowRight();
 
-  expectCalls(log).toMatchInlineSnapshot(`
+    expectCalls(log).toMatchInlineSnapshot(`
     [
       "event: focus | currentTarget: item-1 | target: item-1 | relatedTarget: toolbar",
       "event: focus | currentTarget: toolbar | target: item-1 | relatedTarget: toolbar",
@@ -102,15 +112,15 @@ test("events", async () => {
     ]
   `);
 
-  expect(q.toolbar()).toHaveAttribute("data-focus-visible");
-  expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
-  expect(q.button("item-1")).not.toHaveAttribute("data-active-item");
-  expect(q.button("item-2")).toHaveAttribute("data-focus-visible");
-  expect(q.button("item-2")).toHaveAttribute("data-active-item");
+    expect(q.toolbar()).toHaveAttribute("data-focus-visible");
+    expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
+    expect(q.button("item-1")).not.toHaveAttribute("data-active-item");
+    expect(q.button("item-2")).toHaveAttribute("data-focus-visible");
+    expect(q.button("item-2")).toHaveAttribute("data-active-item");
 
-  await click(q.button("item-1"));
+    await click(q.button("item-1"));
 
-  expectCalls(log).toMatchInlineSnapshot(`
+    expectCalls(log).toMatchInlineSnapshot(`
     [
       "event: blur | currentTarget: item-2 | target: item-2 | relatedTarget: item-1",
       "event: blur | currentTarget: toolbar | target: item-2 | relatedTarget: item-1",
@@ -119,13 +129,10 @@ test("events", async () => {
     ]
   `);
 
-  expect(q.toolbar()).not.toHaveAttribute("data-focus-visible");
-  expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
-  expect(q.button("item-1")).toHaveAttribute("data-active-item");
-  expect(q.button("item-2")).not.toHaveAttribute("data-focus-visible");
-  expect(q.button("item-2")).not.toHaveAttribute("data-active-item");
-
-  log.mockReset();
-
-  externalButton.remove();
-});
+    expect(q.toolbar()).not.toHaveAttribute("data-focus-visible");
+    expect(q.button("item-1")).not.toHaveAttribute("data-focus-visible");
+    expect(q.button("item-1")).toHaveAttribute("data-active-item");
+    expect(q.button("item-2")).not.toHaveAttribute("data-focus-visible");
+    expect(q.button("item-2")).not.toHaveAttribute("data-active-item");
+  },
+);

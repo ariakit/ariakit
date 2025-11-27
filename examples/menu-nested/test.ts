@@ -106,22 +106,32 @@ test("hide submenu on escape", async () => {
   expect(q.button("Edit")).toHaveFocus();
 });
 
-test("typeahead on submenu", async () => {
-  await click(q.button("Edit"));
-  await type("f");
-  await press.Enter();
-  expect(q.menuitem("Search the Web...")).toHaveFocus();
-  await type("f");
-  expect(q.menuitem("Find...")).toHaveFocus();
-  await type("fffff");
-  expect(q.menuitem("Find Previous")).toHaveFocus();
-});
+// Benchmark fails when running the cycle (test) twice,
+// even with setup/teardown applied.
+test.skipIf(process.env.ARIAKIT_BENCH === "1")(
+  "typeahead on submenu",
+  async () => {
+    await click(q.button("Edit"));
+    await type("f");
+    await press.Enter();
+    expect(q.menuitem("Search the Web...")).toHaveFocus();
+    await type("f");
+    expect(q.menuitem("Find...")).toHaveFocus();
+    await type("fffff");
+    expect(q.menuitem("Find Previous")).toHaveFocus();
+  },
+);
 
-test("blur submenu button on mouse leave after hovering over disabled submenu item", async () => {
-  await click(q.button("Edit"));
-  await hover(q.menuitem("Speech"));
-  await hover(await q.menuitem.wait("Stop Speaking"));
-  await hover(document.body);
-  expect(q.menu("Speech")).not.toBeInTheDocument();
-  expect(q.menuitem("Speech")).not.toHaveAttribute("data-active-item");
-});
+// Benchmark fails when running the cycle (test) twice,
+// even with setup/teardown applied.
+test.skipIf(process.env.ARIAKIT_BENCH === "1")(
+  "blur submenu button on mouse leave after hovering over disabled submenu item",
+  async () => {
+    await click(q.button("Edit"));
+    await hover(q.menuitem("Speech"));
+    await hover(await q.menuitem.wait("Stop Speaking"));
+    await hover(document.body);
+    expect(q.menu("Speech")).not.toBeInTheDocument();
+    expect(q.menuitem("Speech")).not.toHaveAttribute("data-active-item");
+  },
+);
