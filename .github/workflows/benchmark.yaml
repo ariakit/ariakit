@@ -23,8 +23,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
 
       - name: Checkout repository
         uses: actions/checkout@v5
