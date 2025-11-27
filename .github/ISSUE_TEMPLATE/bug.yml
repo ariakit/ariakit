@@ -15,11 +15,15 @@ body:
       label: Steps to reproduce the bug
       description: >
         Provide a repository or
-        [StackBlitz](https://stackblitz.com/edit/ariakit?devToolsHeight=33&file=src%2FApp.tsx)
-        link with the bug and describe the steps to reproduce it. _Bug reports
-        without a reproduction may be ignored_.
+        [StackBlitz](https://stackblitz.com/github/ariakit/ariakit/tree/main/templates/react?file=src%2Fapp.tsx)
+        link with the bug and describe the steps to reproduce it.
+
+        You can use one of the following templates to get started:
+        - [React](https://stackblitz.com/github/ariakit/ariakit/tree/main/templates/react?file=src%2Fapp.tsx)
+
+        _*Bug reports without a reproduction may be ignored*_.
       value: |
-        1. Open https://stackblitz.com/edit/ariakit?devToolsHeight=33&file=src%2FApp.tsx
+        1. Open https://stackblitz.com/github/ariakit/ariakit/tree/main/templates/react?file=src%2Fapp.tsx
         2. Remove any line
         3. See console logs
   - type: textarea
