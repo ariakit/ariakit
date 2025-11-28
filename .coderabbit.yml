@@ -1,0 +1,4 @@
+reviews:
+  auto_review:
+    ignore_usernames:
+      - ariakit-bot
