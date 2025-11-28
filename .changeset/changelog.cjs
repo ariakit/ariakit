@@ -13,9 +13,7 @@ async function getReleaseLine(changeset) {
     .split("\n")
     .map((l) => l.trimEnd());
 
-  if (!nextLines.length) {
-    return `- ${firstLine}`;
-  }
+  if (!nextLines.length) return `- ${firstLine}`;
 
   return `### ${firstLine}\n${nextLines.join("\n")}`;
 }
@@ -63,10 +61,7 @@ async function getChangelogEntry(release, changelogLines) {
   //   year: "numeric",
   // });
   const text = await getChangelogText(Object.values(changelogLines).flat());
-  const version = /^\d/.test(release.newVersion)
-    ? release.newVersion
-    : `\`${release.newVersion}\``;
-  return `## ${version}\n\n${text}`;
+  return `## ${release.newVersion}\n\n${text}`;
 }
 
 module.exports = {
