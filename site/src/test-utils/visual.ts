@@ -1,4 +1,5 @@
 import { invariant } from "@ariakit/core/utils/misc";
+import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { slugify } from "#app/lib/string.ts";
@@ -278,8 +279,15 @@ export async function visual(page: Page, options: ScreenshotOptions = {}) {
   }
 }
 
-export async function reduceMotionBeforeEach() {
-  test.beforeEach(async ({ page }) => {
+export const visualTest = test.extend<{
+  visual: (options?: ScreenshotOptions) => Promise<void>;
+  q: ReturnType<typeof query>;
+}>({
+  visual: async ({ page }, use) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-  });
-}
+    await use((options) => visual(page, options));
+  },
+  q: async ({ page }, use) => {
+    await use(query(page));
+  },
+});

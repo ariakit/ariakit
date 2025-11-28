@@ -1,31 +1,24 @@
-import { query } from "@ariakit/test/playwright";
-import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
-import { visual } from "#app/test-utils/visual.ts";
 
-async function getContent(page: Page) {
-  const q = query(page);
-  const button = q.button();
+async function getContent(button: Locator) {
   const contentId = await button.getAttribute("aria-controls");
-  return page.locator(`[id="${contentId}"]`);
+  return button.page().locator(`[id="${contentId}"]`);
 }
 
-withFramework(import.meta.dirname, async () => {
-  test("hover @visual", async ({ page }) => {
-    const q = query(page);
+withFramework(import.meta.dirname, async ({ test }) => {
+  test("hover @visual", async ({ q, visual }) => {
     await q.button().hover();
-    await visual(page);
+    await visual();
   });
 
-  test("hide @visual", async ({ page }) => {
-    const q = query(page);
-    const content = await getContent(page);
+  test("hide @visual", async ({ page, q, visual }) => {
+    const content = await getContent(q.button());
     await q.document().click();
-    await expect(content).toBeVisible();
+    await test.expect(content).toBeVisible();
     await q.button().click();
-    await expect(content).toBeHidden();
+    await test.expect(content).toBeHidden();
     await page.mouse.move(0, 0);
-    await visual(page);
+    await visual();
   });
 });
