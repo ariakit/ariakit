@@ -46,14 +46,13 @@ const fullscreen = entry.data.fullscreen;
       !fullscreen && "items-center-safe justify-center-safe",
     ]}
   >
-    {
-      fullscreen ? (
-        <Content {framework} />
-      ) : (
-        <div class="p-3 size-full @container flex items-center-safe justify-center-safe">
-          <Content {framework} />
-        </div>
-      )
-    }
+    <div
+      class:list={[
+        "@container size-full",
+        !fullscreen && "p-3 flex items-center-safe justify-center-safe",
+      ]}
+    >
+      <Content {framework} />
+    </div>
   </body>
 </html>
