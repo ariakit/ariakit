@@ -8,12 +8,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("open @visual", async ({ page, q, visual }) => {
     await q.button(/^What do "lifetime access"/).click();
-    await test.expect(page.getByText("Lifetime access and")).toBeVisible();
+    await test.expect(q.text("Lifetime access and")).toBeVisible();
     // Avoid hover state
     await page.mouse.move(0, 0);
     await visual();
     await q.button(/^How does the Team license/).click();
-    await test.expect(page.getByText("When you purchase a team")).toBeVisible();
+    await test.expect(q.text("When you purchase a team")).toBeVisible();
     // Avoid hover state
     await page.mouse.move(0, 0);
     await visual();
@@ -21,7 +21,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button(/^What do "lifetime access"/).hover();
     await visual();
     // Hover the content
-    await page.getByText("Lifetime access and").hover();
+    await q.text("Lifetime access and").hover();
     await visual();
   });
 });
