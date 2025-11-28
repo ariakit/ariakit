@@ -42,7 +42,7 @@ export function withFramework(
   for (const framework of frameworkNames) {
     test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page }) => {
-        await page.goto(`/${framework}/previews/${id}`, {
+        await page.goto(`/${framework}/previews/${id}/`, {
           waitUntil: "networkidle",
         });
       });
