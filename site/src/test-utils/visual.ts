@@ -231,7 +231,7 @@ async function withViewport(
 
 export async function visual(page: Page, options: ScreenshotOptions = {}) {
   expect(
-    test.info().title,
+    test.info().tags,
     "When running visual tests, the test title should contain @visual",
   ).toContain("@visual");
 
