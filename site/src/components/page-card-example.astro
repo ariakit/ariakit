@@ -28,7 +28,7 @@ const previews = await getCollection(
 );
 const length = previews.length;
 const description = `${length} ${pluralize(entry.collection, length)}`;
-const href = `/${framework}/${entry.collection}/${entry.id}`;
+const href = `/${framework}/${entry.collection}/${entry.id}/`;
 const plus = !!entry.data.tags?.includes("plus");
 ---
 
