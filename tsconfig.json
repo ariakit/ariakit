@@ -37,6 +37,7 @@
     "node_modules",
     "coverage",
     "website",
+    "nextjs",
     "site",
     "templates",
     "packages/*solid*",

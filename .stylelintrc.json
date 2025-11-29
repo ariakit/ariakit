@@ -1,6 +1,11 @@
 {
   "extends": "stylelint-config-standard",
-  "ignoreFiles": ["packages/ariakit-tailwind/**", "site/**", "templates/**"],
+  "ignoreFiles": [
+    "packages/ariakit-tailwind/**",
+    "site/**",
+    "templates/**",
+    "nextjs/**"
+  ],
   "rules": {
     "no-duplicate-at-import-rules": null,
     "no-descending-specificity": null,
