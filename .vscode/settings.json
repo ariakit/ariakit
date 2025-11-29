@@ -9,6 +9,7 @@
   "tailwindCSS.classFunctions": ["clsx", "twMerge", "twJoin"],
   "tailwindCSS.experimental.configFile": {
     "tailwind.config.cjs": "**/*",
+    "nextjs/app/globals.css": "nextjs/**/*",
     "site/src/styles/global.css": "site/**/*",
     "templates/react/src/style.css": "templates/react/**/*"
   },
