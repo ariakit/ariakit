@@ -25,15 +25,15 @@ export default defineConfig({
   snapshotPathTemplate: "src/tests/visual/{arg}{ext}",
   webServer: [
     {
-      command: "npm run preview-lite -w site -- --log-level warn",
+      command: "npm run preview-lite -w site",
       reuseExistingServer: !CI,
-      stdout: CI ? "pipe" : "ignore",
+      stdout: "pipe",
       port: 4321,
     },
     {
-      command: "npm run dev -w nextjs",
+      command: "npm run preview -w nextjs",
       reuseExistingServer: !CI,
-      stdout: CI ? "pipe" : "ignore",
+      stdout: "pipe",
       port: 3000,
     },
   ],
