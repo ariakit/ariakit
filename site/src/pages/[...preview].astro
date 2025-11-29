@@ -16,7 +16,7 @@ import { getCollection, render } from "astro:content";
 export const getStaticPaths = (async () => {
   const entries = await getCollection("previews");
   return entries
-    .filter((entry) => entry.id.includes("nextjs"))
+    .filter((entry) => !entry.id.includes("nextjs"))
     .flatMap((entry) => {
       return entry.data.frameworks.map((framework) => ({
         params: { preview: `${framework}/previews/${entry.id}` },
