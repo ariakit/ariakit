@@ -1,5 +1,10 @@
 # @ariakit/react
 
+## 0.4.21
+
+- Fixed an error when trying to reach focusable elements within iframes.
+- Updated dependencies: `@ariakit/react-core@0.4.21`
+
 ## 0.4.20
 
 - Fixed `RefObject` types for React 19.
