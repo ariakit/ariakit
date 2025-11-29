@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@ariakit/react": "0.4.20",
