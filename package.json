@@ -86,7 +86,8 @@
   "overrides": {
     "@wordpress/components": {
       "@ariakit/react": "file:packages/ariakit-react"
-    }
+    },
+    "nextjs > next": "16.0.5"
   },
   "dependencies": {
     "@astrojs/mdx": "4.3.12",
