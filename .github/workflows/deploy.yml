@@ -20,10 +20,22 @@ jobs:
         with:
           cache-npm: true
 
-      - name: Build app
+      - name: Build nextjs app
+        run: npm run build -w nextjs
+
+      - name: Build site app
         run: npm run build -w site
 
-      - name: Deploy to Cloudflare
+      - name: Deploy nextjs to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: nextjs
+          command: deploy
+
+      - name: Deploy site to Cloudflare
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

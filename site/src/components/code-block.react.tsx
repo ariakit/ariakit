@@ -597,6 +597,11 @@ export interface CodeBlockTabsProps
   iframe?: boolean;
   edit?: boolean;
   wide?: boolean;
+  /**
+   * External preview URL that overrides the auto-generated preview URL.
+   * Used for Next.js examples that are served from a different domain.
+   */
+  externalPreviewUrl?: string;
   slot0?: React.ReactElement;
   slot1?: React.ReactElement;
   slot2?: React.ReactElement;
@@ -628,6 +633,7 @@ export function CodeBlockTabs({
   scrollTop,
   minHeight,
   title,
+  externalPreviewUrl,
   slot0,
   slot1,
   slot2,
@@ -645,8 +651,13 @@ export function CodeBlockTabs({
   const [firstTab] = tabs;
   invariant(firstTab, "At least one tab is required");
 
-  const preview = getPreviewValue(framework, example, previewProp);
-  const previewUrl = getPreviewUrl(framework, example, preview);
+  // Use external preview URL if provided, otherwise generate from
+  // framework/example
+  const preview = externalPreviewUrl
+    ? (previewProp ?? true)
+    : getPreviewValue(framework, example, previewProp);
+  const previewUrl =
+    externalPreviewUrl || getPreviewUrl(framework, example, preview);
   const fullscreen = preview === "full";
   const hasToolbar = !!previewUrl || edit;
   const stackblitzFramework = React.useMemo(() => {

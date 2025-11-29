@@ -78,6 +78,27 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download nextjs artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload nextjs version
+        id: nextjs-versions
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: nextjs
+          command: >-
+            versions upload
+            ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
+
       - name: Upload app version
         id: versions
         uses: cloudflare/wrangler-action@v3
@@ -89,6 +110,18 @@ jobs:
           command: >-
             versions upload --env preview
             ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
+
+      - name: Deploy nextjs version
+        if: steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'
+        id: nextjs-deploy
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: nextjs
+          command: deploy
 
       - name: Deploy app version
         if: steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'

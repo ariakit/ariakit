@@ -1,0 +1,6 @@
+import CodeBlockTabs from "#app/components/code-block-tabs.astro";
+import { source } from "./preview.astro";
+import { getNextjsPreviewUrl } from "#app/lib/nextjs.ts";
+
+<CodeBlockTabs source={source.react} externalPreviewUrl={getNextjsPreviewUrl("/tab-nextjs")} />
+

@@ -2,6 +2,7 @@ import { readdirSync } from "node:fs";
 import { query } from "@ariakit/test/playwright";
 import { test } from "@playwright/test";
 import { frameworks, getIndexFile } from "#app/lib/frameworks.ts";
+import { getNextjsPreviewUrl } from "#app/lib/nextjs.ts";
 import { keys } from "#app/lib/object.ts";
 import { visualTest } from "./visual.ts";
 
@@ -49,4 +50,31 @@ export function withFramework(
       callback({ id, framework, query, test: visualTest });
     });
   }
+}
+
+interface WithNextjsCallbackParams {
+  id: string;
+  test: typeof visualTest;
+  query: typeof query;
+}
+
+/**
+ * Test utility for Next.js examples. Navigates to the Next.js preview URL
+ * instead of the Astro preview URL.
+ */
+export function withNextjs(
+  dirname: string,
+  callback: (params: WithNextjsCallbackParams) => Promise<void>,
+) {
+  const id = getPreviewId(dirname);
+  if (!id) {
+    throw new Error(`Cannot parse preview id from ${dirname}`);
+  }
+  test.describe("react", { tag: "@react" }, () => {
+    test.beforeEach(async ({ page }) => {
+      const url = getNextjsPreviewUrl(`/${id}`);
+      await page.goto(url, { waitUntil: "networkidle" });
+    });
+    callback({ id, query, test: visualTest });
+  });
 }

@@ -45,14 +45,25 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Build app
+      - name: Build nextjs app
+        run: npm run build -w nextjs
+
+      - name: Build site app
         run: npm run build-lite -w site
 
-      - name: Upload app artifact
+      - name: Upload site artifact
         uses: actions/upload-artifact@v5
         with:
           name: app-dist
           path: site/dist
+          retention-days: 7
+          include-hidden-files: true
+
+      - name: Upload nextjs artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
           retention-days: 7
           include-hidden-files: true
 
@@ -101,11 +112,17 @@ jobs:
         with:
           engine: ${{ matrix.engine }}
 
-      - name: Download app artifact
+      - name: Download site artifact
         uses: actions/download-artifact@v6
         with:
           name: app-dist
           path: site/dist
+
+      - name: Download nextjs artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
 
       - name: Test
         id: test
