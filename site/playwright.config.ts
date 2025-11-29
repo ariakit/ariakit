@@ -31,7 +31,7 @@ export default defineConfig({
       port: 4321,
     },
     {
-      command: "npm run preview -w nextjs",
+      command: "npm run dev -w nextjs",
       reuseExistingServer: !CI,
       stdout: "pipe",
       port: 3000,
