@@ -38,6 +38,7 @@ export default defineConfig({
     },
   ],
   use: {
+    baseURL: "http://localhost:4321",
     screenshot: "only-on-failure",
     trace: "on-first-retry",
     launchOptions: {
