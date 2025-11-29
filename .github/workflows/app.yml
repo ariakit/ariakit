@@ -46,7 +46,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build nextjs app
-        run: npm run build -w nextjs
+        run: npm run build:worker -w nextjs
 
       - name: Build site app
         run: npm run build-lite -w site

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "opennextjs-cloudflare build",
+    "build": "next build",
+    "build:worker": "opennextjs-cloudflare build",
     "preview": "opennextjs-cloudflare preview",
     "start": "next start",
     "tsc": "tsc"
@@ -18,11 +19,11 @@
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "1.3.0",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@tailwindcss/postcss": "4.1.17",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
-    "tailwindcss": "^4"
+    "tailwindcss": "4.1.17"
   }
 }
