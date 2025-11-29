@@ -13,6 +13,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/clerk-react": "4.32.5",
+    "@clerk/nextjs": "4.31.8",
+    "@clerk/types": "3.65.5",
+    "@vercel/analytics": "1.5.0",
+    "geist": "1.5.1",
     "next": "14.2.33"
   }
 }
