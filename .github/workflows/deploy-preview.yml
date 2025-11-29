@@ -70,16 +70,43 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Download app artifact
+      - name: Download nextjs artifact
+        id: download-nextjs-artifact
         uses: actions/download-artifact@v6
+        continue-on-error: true
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download app artifact
+        id: download-app-artifact
+        uses: actions/download-artifact@v6
+        continue-on-error: true
         with:
           name: app-dist
           path: site/dist
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Upload nextjs version
+        id: nextjs-versions
+        if: steps.download-nextjs-artifact.outcome == 'success'
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: nextjs
+          command: >-
+            versions upload
+            ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
+
       - name: Upload app version
         id: versions
+        if: steps.download-app-artifact.outcome == 'success'
         uses: cloudflare/wrangler-action@v3
         continue-on-error: true
         with:
@@ -90,8 +117,20 @@ jobs:
             versions upload --env preview
             ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
 
+      - name: Deploy nextjs version
+        if: steps.download-nextjs-artifact.outcome == 'success' && steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'
+        id: nextjs-deploy
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: nextjs
+          command: deploy
+
       - name: Deploy app version
-        if: steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'
+        if: steps.download-app-artifact.outcome == 'success' && steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'
         id: deploy
         uses: cloudflare/wrangler-action@v3
         continue-on-error: true
