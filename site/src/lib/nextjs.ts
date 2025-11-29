@@ -16,6 +16,31 @@ const NEXTJS_PRODUCTION_URL = "https://nextjs.ariakit.org";
 const NEXTJS_DEV_URL = "http://localhost:3000";
 
 /**
+ * Determines if a URL represents a preview deployment by parsing the hostname.
+ * Uses proper URL parsing instead of substring matching for security.
+ * @param url - The URL to check
+ * @returns True if the URL is a preview deployment, false otherwise
+ */
+function isPreviewDeployment(url: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    // Workers.dev domain indicates preview deployment
+    if (hostname.endsWith(".workers.dev")) {
+      return true;
+    }
+    // Preview subdomain pattern (e.g., pr-123-preview.ariakit.org)
+    if (hostname.includes("-preview")) {
+      return true;
+    }
+    // Production domain check - if on ariakit.org, it's not a preview
+    return hostname !== "ariakit.org" && !hostname.endsWith(".ariakit.org");
+  } catch {
+    // If URL parsing fails, assume production (safe default)
+    return false;
+  }
+}
+
+/**
  * Gets the base URL for the Next.js app based on the environment.
  * In development, defaults to http://localhost:3000.
  * In production, defaults to https://nextjs.ariakit.org.
@@ -42,23 +67,15 @@ export function getNextjsBaseUrl(): string {
   // In production/preview, check the site URL to determine if we're on a
   // preview deployment
   const siteUrl = import.meta.env?.SITE;
-  if (siteUrl) {
-    // Check if we're on a preview deployment (contains workers.dev or has a
-    // preview subdomain pattern)
-    const isPreview =
-      siteUrl.includes("workers.dev") ||
-      siteUrl.includes("-preview.") ||
-      !siteUrl.includes("next.ariakit.org");
-    if (isPreview) {
-      // Extract the alias from the site URL if present (e.g.,
-      // https://alias.ariakit-preview.workers.dev)
-      const match = siteUrl.match(/https?:\/\/([^.]+)\./);
-      const alias = match?.[1];
-      if (alias && alias !== "ariakit-preview") {
-        return `https://${alias}.${NEXTJS_WORKERS_DOMAIN}`;
-      }
-      return `https://${NEXTJS_WORKERS_DOMAIN}`;
+  if (siteUrl && isPreviewDeployment(siteUrl)) {
+    // Extract the alias from the site URL if present (e.g.,
+    // https://alias.ariakit-preview.workers.dev)
+    const match = siteUrl.match(/https?:\/\/([^.]+)\./);
+    const alias = match?.[1];
+    if (alias && alias !== "ariakit-preview") {
+      return `https://${alias}.${NEXTJS_WORKERS_DOMAIN}`;
     }
+    return `https://${NEXTJS_WORKERS_DOMAIN}`;
   }
   return NEXTJS_PRODUCTION_URL;
 }
