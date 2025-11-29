@@ -21,7 +21,7 @@ jobs:
           cache-npm: true
 
       - name: Build nextjs app
-        run: npm run build:worker -w nextjs
+        run: npm run build-worker -w nextjs
 
       - name: Build site app
         run: npm run build -w site
