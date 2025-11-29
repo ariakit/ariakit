@@ -8,86 +8,84 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-// Cloudflare Workers domain for Next.js app (same for production and preview)
+// Cloudflare Workers domain for Next.js app
 const NEXTJS_WORKERS_DOMAIN = "ariakit-nextjs.workers.dev";
 // Production domain for Next.js app
-const NEXTJS_PRODUCTION_URL = "https://nextjs.ariakit.org";
+const NEXTJS_PRODUCTION_DOMAIN = "nextjs.ariakit.org";
 // Development URL for Next.js app
 const NEXTJS_DEV_URL = "http://localhost:3000";
 
 /**
- * Determines if a URL represents a preview deployment by parsing the hostname.
- * Uses proper URL parsing instead of substring matching for security.
- * @param url - The URL to check
- * @returns True if the URL is a preview deployment, false otherwise
- */
-function isPreviewDeployment(url: string): boolean {
-  try {
-    const { hostname } = new URL(url);
-    // Workers.dev domain indicates preview deployment
-    if (hostname.endsWith(".workers.dev")) {
-      return true;
-    }
-    // Preview subdomain pattern (e.g., pr-123-preview.ariakit.org)
-    if (hostname.includes("-preview")) {
-      return true;
-    }
-    // Production domain check - if on ariakit.org, it's not a preview
-    return hostname !== "ariakit.org" && !hostname.endsWith(".ariakit.org");
-  } catch {
-    // If URL parsing fails, assume production (safe default)
-    return false;
-  }
-}
-
-/**
- * Gets the base URL for the Next.js app based on the environment.
- * In development, defaults to http://localhost:3000.
- * In production, defaults to https://nextjs.ariakit.org.
- * In preview environments, derives the URL from the current site URL.
- * Can be overridden with the PUBLIC_NEXTJS_URL environment variable.
- */
-export function getNextjsBaseUrl(): string {
-  // Check process.env first (for Node.js/Playwright context)
-  if (typeof process !== "undefined" && process.env?.PUBLIC_NEXTJS_URL) {
-    return process.env.PUBLIC_NEXTJS_URL;
-  }
-  // Check import.meta.env (for Astro context)
-  if (import.meta.env?.PUBLIC_NEXTJS_URL) {
-    return import.meta.env.PUBLIC_NEXTJS_URL;
-  }
-  // Determine if we're in development
-  const isDev =
-    (typeof process !== "undefined" &&
-      process.env?.NODE_ENV !== "production") ||
-    import.meta.env?.DEV;
-  if (isDev) {
-    return NEXTJS_DEV_URL;
-  }
-  // In production/preview, check the site URL to determine if we're on a
-  // preview deployment
-  const siteUrl = import.meta.env?.SITE;
-  if (siteUrl && isPreviewDeployment(siteUrl)) {
-    // Extract the alias from the site URL if present (e.g.,
-    // https://alias.ariakit-preview.workers.dev)
-    const match = siteUrl.match(/https?:\/\/([^.]+)\./);
-    const alias = match?.[1];
-    if (alias && alias !== "ariakit-preview") {
-      return `https://${alias}.${NEXTJS_WORKERS_DOMAIN}`;
-    }
-    return `https://${NEXTJS_WORKERS_DOMAIN}`;
-  }
-  return NEXTJS_PRODUCTION_URL;
-}
-
-/**
- * Generates a full URL for a Next.js preview page.
- * @param path - The path within the Next.js app (e.g., "tab-nextjs")
+ * Derives the Next.js app URL from the current request URL. This allows dynamic
+ * URL determination at runtime without needing build-time configuration.
+ *
+ * URL mapping:
+ * - localhost:* → http://localhost:3000
+ * - {alias}.ariakit-preview.workers.dev → {alias}.ariakit-nextjs.workers.dev
+ * - ariakit-preview.workers.dev → ariakit-nextjs.workers.dev
+ * - next.ariakit.org → nextjs.ariakit.org
+ * - *.ariakit.org → nextjs.ariakit.org
+ *
+ * @param requestUrl - The current request URL (e.g., from Astro context)
+ * @param path - The path within the Next.js app (e.g., "/tab-nextjs")
  * @returns The full URL to the Next.js page
  */
-export function getNextjsPreviewUrl(path: string): string {
-  const baseUrl = getNextjsBaseUrl();
-  // Ensure path starts with /
+export function getNextjsUrlFromRequest(
+  requestUrl: string,
+  path: string,
+): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `${baseUrl}${normalizedPath}`;
+
+  try {
+    const url = new URL(requestUrl);
+    const { hostname, protocol } = url;
+
+    // Development: localhost
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      return `${NEXTJS_DEV_URL}${normalizedPath}`;
+    }
+
+    // Preview deployment on workers.dev
+    if (hostname.endsWith(".workers.dev")) {
+      // Extract alias if present (e.g., pr-123.ariakit-preview.workers.dev)
+      const match = hostname.match(/^([^.]+)\.ariakit-preview\.workers\.dev$/);
+      if (match) {
+        const alias = match[1];
+        return `${protocol}//${alias}.${NEXTJS_WORKERS_DOMAIN}${normalizedPath}`;
+      }
+      // No alias, use main workers domain
+      return `${protocol}//${NEXTJS_WORKERS_DOMAIN}${normalizedPath}`;
+    }
+
+    // Production or custom domain on ariakit.org
+    if (hostname.endsWith(".ariakit.org") || hostname === "ariakit.org") {
+      return `${protocol}//${NEXTJS_PRODUCTION_DOMAIN}${normalizedPath}`;
+    }
+
+    // Fallback: replace hostname with production Next.js domain
+    return `${protocol}//${NEXTJS_PRODUCTION_DOMAIN}${normalizedPath}`;
+  } catch {
+    // If URL parsing fails, fallback to production
+    return `https://${NEXTJS_PRODUCTION_DOMAIN}${normalizedPath}`;
+  }
+}
+
+/**
+ * Regex pattern to match Next.js preview URLs.
+ * Matches: /{framework}/previews/{example}/ where example contains "nextjs"
+ * Examples:
+ * - /react/previews/tab-nextjs/
+ * - /react/previews/menu-nextjs-app-router/
+ */
+export const NEXTJS_PREVIEW_PATTERN =
+  /^\/\w+\/previews\/([^/]*nextjs[^/]*)\/?$/i;
+
+/**
+ * Checks if a URL path is a Next.js preview that should be redirected.
+ * @param pathname - The URL pathname to check
+ * @returns The example ID if it's a Next.js preview, null otherwise
+ */
+export function getNextjsPreviewId(pathname: string): string | null {
+  const match = pathname.match(NEXTJS_PREVIEW_PATTERN);
+  return match ? (match[1] ?? null) : null;
 }

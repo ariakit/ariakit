@@ -43,13 +43,6 @@ declare namespace App {
       limit?: number;
     };
   }
-  interface ImportMetaEnv {
-    /**
-     * Base URL for the Next.js app (e.g., "http://localhost:3000" or
-     * "https://nextjs.ariakit.org")
-     * */
-    readonly PUBLIC_NEXTJS_URL?: string;
-  }
 }
 
 declare interface UserPublicMetadata {
