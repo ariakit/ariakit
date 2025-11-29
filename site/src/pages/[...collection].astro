@@ -188,7 +188,11 @@ const hasGuides = guides.length > 0;
           revealAnchorName="sidebar-menu"
           id="tags-menu"
           items={[
-            { label: capitalize(type), href: groupPath, currentPage: !!tag },
+            {
+              label: capitalize(type),
+              href: `${groupPath}/`,
+              currentPage: !!tag,
+            },
             { label: "Guides" },
             ...guides.map((guide) => ({
               label: guide.data.title,
