@@ -19,8 +19,6 @@ const clerk = clerkMiddleware();
 export async function onRequest(context: APIContext, next: MiddlewareNext) {
   const url = new URL(context.request.url);
 
-  console.log("URL", context.request.url);
-
   // Check if this is a Next.js preview request and redirect
   const nextjsExampleId = getNextjsPreviewId(url.pathname);
   if (nextjsExampleId) {

@@ -15,12 +15,14 @@ import { getCollection, render } from "astro:content";
 
 export const getStaticPaths = (async () => {
   const entries = await getCollection("previews");
-  return entries.flatMap((entry) => {
-    return entry.data.frameworks.map((framework) => ({
-      params: { preview: `${framework}/previews/${entry.id}` },
-      props: { framework, entry },
-    }));
-  });
+  return entries
+    .filter((entry) => entry.id.includes("nextjs"))
+    .flatMap((entry) => {
+      return entry.data.frameworks.map((framework) => ({
+        params: { preview: `${framework}/previews/${entry.id}` },
+        props: { framework, entry },
+      }));
+    });
 }) satisfies GetStaticPaths;
 
 const { framework, entry } = Astro.props;
