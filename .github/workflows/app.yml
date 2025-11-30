@@ -45,13 +45,10 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Build nextjs app
-        run: npm run build-worker -w nextjs
-
-      - name: Build site app
+      - name: Build app
         run: npm run build-lite -w site
 
-      - name: Upload site artifact
+      - name: Upload app artifact
         uses: actions/upload-artifact@v5
         with:
           name: app-dist
@@ -59,7 +56,22 @@ jobs:
           retention-days: 7
           include-hidden-files: true
 
-      - name: Upload nextjs artifact
+  build-nextjs:
+    name: Build Next.js app
+    needs: install-linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+
+      - name: Build Next.js app
+        run: npm run build-worker -w nextjs
+
+      - name: Upload Next.js artifact
         uses: actions/upload-artifact@v5
         with:
           name: nextjs-dist
@@ -112,17 +124,11 @@ jobs:
         with:
           engine: ${{ matrix.engine }}
 
-      - name: Download site artifact
+      - name: Download app artifact
         uses: actions/download-artifact@v6
         with:
           name: app-dist
           path: site/dist
-
-      - name: Download nextjs artifact
-        uses: actions/download-artifact@v6
-        with:
-          name: nextjs-dist
-          path: nextjs/.open-next
 
       - name: Test
         id: test
