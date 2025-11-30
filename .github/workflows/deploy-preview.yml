@@ -157,18 +157,20 @@ jobs:
         with:
           script: |
             const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, SAME_REPO, VERSIONS_SUCCESS, DEPLOY_SUCCESS, DEPLOY_URL, VERSION_URL, ALIAS_URL } = process.env;
+            const versionsSuccess = VERSIONS_SUCCESS === 'true';
+            const deploySuccess = DEPLOY_SUCCESS === 'true';
             const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
             const deployUrl = DEPLOY_URL;
             const versionUrl = VERSION_URL;
             const aliasUrl = ALIAS_URL && versionUrl
               ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${ALIAS_URL}`)
               : '';
-            const commitTarget = VERSIONS_SUCCESS && versionUrl
+            const commitTarget = versionsSuccess && versionUrl
               ? versionUrl
               : '';
-            const branchTarget = VERSIONS_SUCCESS && aliasUrl
+            const branchTarget = versionsSuccess && aliasUrl
               ? aliasUrl
-              : DEPLOY_SUCCESS && deployUrl ? deployUrl : '';
+              : deploySuccess && deployUrl ? deployUrl : '';
             const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
