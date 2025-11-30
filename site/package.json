@@ -43,8 +43,8 @@
     "#app/*": "./src/*"
   },
   "dependencies": {
-    "@astrojs/check": "0.9.5",
-    "@astrojs/cloudflare": "12.6.11",
+    "@astrojs/check": "0.9.6",
+    "@astrojs/cloudflare": "12.6.12",
     "@astrojs/react": "4.4.2",
     "@astrojs/solid-js": "5.1.3",
     "@clerk/astro": "2.16.3",
