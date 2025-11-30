@@ -39,7 +39,7 @@ jobs:
         env:
           SERVER_URL: ${{ github.server_url }}
           REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ID: ${{ github.run_id }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           SAME_REPO: ${{ steps.check-repo.outputs.same_repo }}
         with:
@@ -70,7 +70,7 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Download nextjs artifact
+      - name: Download Next.js app artifact
         id: download-nextjs-artifact
         uses: actions/download-artifact@v6
         continue-on-error: true
@@ -90,8 +90,8 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload nextjs version
-        id: nextjs-versions
+      - name: Upload Next.js app version
+        id: versions-nextjs
         if: steps.download-nextjs-artifact.outcome == 'success'
         uses: cloudflare/wrangler-action@v3
         continue-on-error: true
@@ -117,9 +117,9 @@ jobs:
             versions upload --env preview
             ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
 
-      - name: Deploy nextjs version
+      - name: Deploy Next.js app version
         if: steps.download-nextjs-artifact.outcome == 'success' && steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'
-        id: nextjs-deploy
+        id: deploy-nextjs
         uses: cloudflare/wrangler-action@v3
         continue-on-error: true
         with:
@@ -146,31 +146,29 @@ jobs:
         env:
           SERVER_URL: ${{ github.server_url }}
           REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ID: ${{ github.run_id }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           SAME_REPO: ${{ steps.check-repo.outputs.same_repo }}
-          VERSIONS_OUTCOME: ${{ steps.versions.outcome }}
-          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
+          VERSIONS_SUCCESS: ${{ steps.versions.outcome == 'success' && steps.versions-nextjs.outcome == 'success' }}
+          DEPLOY_SUCCESS: ${{ steps.deploy.outcome == 'success' && steps.deploy-nextjs.outcome == 'success' }}
           DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
           VERSION_URL: ${{ steps.versions.outputs.deployment-url }}
           ALIAS_URL: ${{ steps.alias.outputs.slug }}
         with:
           script: |
-            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, SAME_REPO, VERSIONS_OUTCOME, DEPLOY_OUTCOME, DEPLOY_URL, VERSION_URL, ALIAS_URL } = process.env;
+            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, SAME_REPO, VERSIONS_SUCCESS, DEPLOY_SUCCESS, DEPLOY_URL, VERSION_URL, ALIAS_URL } = process.env;
             const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
-            const versionsOutcome = VERSIONS_OUTCOME;
-            const deployOutcome = DEPLOY_OUTCOME;
             const deployUrl = DEPLOY_URL;
             const versionUrl = VERSION_URL;
             const aliasUrl = ALIAS_URL && versionUrl
               ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${ALIAS_URL}`)
               : '';
-            const commitTarget = (versionsOutcome === 'success' && versionUrl)
+            const commitTarget = VERSIONS_SUCCESS && versionUrl
               ? versionUrl
               : '';
-            const branchTarget = (versionsOutcome === 'success' && aliasUrl)
+            const branchTarget = VERSIONS_SUCCESS && aliasUrl
               ? aliasUrl
-              : (deployOutcome === 'success' && deployUrl) ? deployUrl : '';
+              : DEPLOY_SUCCESS && deployUrl ? deployUrl : '';
             const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
