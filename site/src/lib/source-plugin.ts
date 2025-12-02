@@ -37,13 +37,15 @@ const NEXTJS_CONVENTION_FILES = [
   "default.tsx",
 ] as const;
 
+type NextjsConventionFile = (typeof NEXTJS_CONVENTION_FILES)[number];
+
 /**
  * Checks if a filename is a Next.js App Router convention file.
  */
-function isNextjsConventionFile(filename: string): boolean {
-  return NEXTJS_CONVENTION_FILES.includes(
-    filename as (typeof NEXTJS_CONVENTION_FILES)[number],
-  );
+function isNextjsConventionFile(
+  filename: string,
+): filename is NextjsConventionFile {
+  return NEXTJS_CONVENTION_FILES.includes(filename as NextjsConventionFile);
 }
 
 /**
@@ -78,7 +80,6 @@ async function findSiblingConventionFiles(
  */
 async function findNestedRouteFiles(baseDir: string): Promise<string[]> {
   const nestedFiles: string[] = [];
-
   const scanDirectory = async (dir: string) => {
     let entries: fs.Dirent[];
     try {
@@ -86,15 +87,12 @@ async function findNestedRouteFiles(baseDir: string): Promise<string[]> {
     } catch {
       return;
     }
-
     for (const entry of entries) {
       const fullPath = join(dir, entry.name);
-
       if (entry.isDirectory()) {
         // Skip special directories
-        if (entry.name.startsWith(".") || entry.name === "node_modules") {
-          continue;
-        }
+        if (entry.name.startsWith(".")) continue;
+        if (entry.name === "node_modules") continue;
         // Recursively scan subdirectory
         await scanDirectory(fullPath);
       } else if (entry.isFile() && isNextjsConventionFile(entry.name)) {
@@ -102,7 +100,6 @@ async function findNestedRouteFiles(baseDir: string): Promise<string[]> {
       }
     }
   };
-
   // Start scanning from subdirectories of the base directory
   let entries: fs.Dirent[];
   try {
@@ -110,16 +107,12 @@ async function findNestedRouteFiles(baseDir: string): Promise<string[]> {
   } catch {
     return nestedFiles;
   }
-
   for (const entry of entries) {
-    if (entry.isDirectory()) {
-      if (entry.name.startsWith(".") || entry.name === "node_modules") {
-        continue;
-      }
-      await scanDirectory(join(baseDir, entry.name));
-    }
+    if (!entry.isDirectory()) continue;
+    if (entry.name.startsWith(".")) continue;
+    if (entry.name === "node_modules") continue;
+    await scanDirectory(join(baseDir, entry.name));
   }
-
   return nestedFiles;
 }
 
@@ -138,8 +131,10 @@ const fileProcessCache = new Map<string, CachedFileData>();
 
 // Cache generated flattened files (final files record entries), keyed by abs id
 interface FlattenedCacheData {
-  key: string; // files record key (basename)
-  file: SourceFile; // flattened content and metadata
+  // files record key (basename)
+  key: string;
+  // flattened content and metadata
+  file: SourceFile;
 }
 const flattenedFileCache = new Map<string, FlattenedCacheData>();
 /**
@@ -178,10 +173,11 @@ function getPackageName(source: string) {
 }
 
 /**
- * Whether an import path uses the package.json imports map alias (starts with #)
+ * Whether an import path uses the package.json imports map alias (starts with
+ * #)
  */
-function isImportMapAliasPath(importPath: string) {
-  return importPath.startsWith("#");
+function isAppImportPath(importPath: string) {
+  return importPath.startsWith("#") || importPath.startsWith("site/");
 }
 
 /**
@@ -204,32 +200,18 @@ function isUtilsPath(filePath: string) {
  * When preserveRelativePaths is true, keeps relative path structure instead of
  * flattening to basename (used for Next.js nested routes).
  */
-function normalizeImportPath(
-  importPath: string,
-  preserveRelativePaths = false,
-) {
+function normalizeImportPath(importPath: string) {
   const noFrameworkSuffix = removeFrameworkSuffix(importPath);
   // Treat # aliases as local and collapse path to just the filename
-  if (isImportMapAliasPath(noFrameworkSuffix)) {
+  if (isAppImportPath(noFrameworkSuffix)) {
     return `./${basename(noFrameworkSuffix)}`;
   }
-  // Any relative path should be reduced to just the basename to match flattened
-  // output (unless preserving relative paths for Next.js)
-  if (/^\./.test(noFrameworkSuffix)) {
-    if (preserveRelativePaths) {
-      // Normalize to start with ./ and keep the relative structure
-      return noFrameworkSuffix.replace(/^\.\.\//, "./");
-    }
+  // Any relative path outside the current directory should be reduced to just
+  // the basename to match flattened output.
+  if (/^\.\.\//.test(noFrameworkSuffix)) {
     return `./${basename(noFrameworkSuffix)}`;
   }
   return noFrameworkSuffix;
-}
-
-/**
- * Remove framework-specific suffixes and leading ./ or ../
- */
-function normalizeFilename(filename: string) {
-  return removeFrameworkSuffix(filename).replace(/^(\.\.\/)+/, "");
 }
 
 /**
@@ -281,7 +263,7 @@ async function resolveImport(
   const { resolvedModule } = ts.resolveModuleName(id, importer, {}, host);
   const external =
     resolvedModule?.isExternalLibraryImport ??
-    (!id.startsWith(".") && !isImportMapAliasPath(id));
+    (!id.startsWith(".") && !isAppImportPath(id));
   if (external) {
     return {
       id,
@@ -414,7 +396,7 @@ async function rewriteAliasesToRelativeForMerge(
   const out: Record<string, SourceFile> = {};
   for (const [absId, file] of Object.entries(files)) {
     const aliasPaths = Array.from(
-      getImportPaths(file.content, (p) => isImportMapAliasPath(p)),
+      getImportPaths(file.content, (p) => isAppImportPath(p)),
     );
     if (aliasPaths.length === 0) {
       out[absId] = file;
@@ -484,20 +466,16 @@ function getCommonAncestorDir(fileIds: string[]) {
 
 /**
  * Build a flattened files map and ensure no duplicate basenames are produced.
- * @param preserveRelativePaths - When true, keeps relative path structure
- *   instead of flattening to basename (used for Next.js nested routes)
  */
 async function buildFlattenedFiles(
   baseDir: string,
   input: Record<string, SourceFile>,
-  preserveRelativePaths = false,
 ) {
   const files: Record<string, SourceFile> = {};
   for (const file of Object.values(input)) {
     const { key, file: generated } = await generateFlattenedFileCached(
       baseDir,
       file,
-      preserveRelativePaths,
     );
     const previous = files[key];
     if (previous) {
@@ -553,21 +531,18 @@ function computeSourceStylesFromSources(sources: Record<string, SourceFile>) {
  * @param preserveRelativePaths - When true, keeps relative path structure
  *   instead of flattening to basename (used for Next.js nested routes)
  */
-async function generateFlattenedFileCached(
-  baseDir: string,
-  file: SourceFile,
-  preserveRelativePaths = false,
-) {
-  const cacheKey = `${cacheKeyForFile(file.id, file.content)}:preserve=${preserveRelativePaths}`;
+async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
+  const cacheKey = cacheKeyForFile(file.id, file.content);
   const cached = flattenedFileCache.get(cacheKey);
   if (cached) return cached;
-  const rel = normalizeFilename(getRelativePath(baseDir, file.id));
-  const filename = preserveRelativePaths ? rel : basename(rel);
+  const filename = normalizeImportPath(
+    getRelativePath(baseDir, file.id),
+  ).replace(/^\.\//, "");
   let content = replaceImportPaths(file.content, (path) =>
-    normalizeImportPath(path, preserveRelativePaths),
+    normalizeImportPath(path),
   );
   if (content !== file.content) {
-    content = await formatWithPrettier(content, file.id, basename(rel));
+    content = await formatWithPrettier(content, file.id, basename(filename));
   }
   const out: FlattenedCacheData = {
     key: filename,
@@ -598,7 +573,9 @@ export function sourcePlugin(root?: string): Plugin {
       const realId = id.replace(queryString, "");
 
       const source: Source = {
-        name: dirname(id).replace(root ?? "", ""),
+        name: dirname(id)
+          .replace(root ?? "", "")
+          .replace(/^.+\/nextjs\/app\//, ""),
         sources: {},
         dependencies: {},
         devDependencies: {},
@@ -651,11 +628,9 @@ export function sourcePlugin(root?: string): Plugin {
         });
       }
 
-      // Build files by normalizing paths and flattening to basenames
-      // For Next.js convention files, preserve relative paths for nested routes
-      const isNextjsEntry = isNextjsConventionFile(entryFilename);
+      // Build files by normalizing paths
       const baseDir = dirname(realId);
-      const files = await buildFlattenedFiles(baseDir, merged, isNextjsEntry);
+      const files = await buildFlattenedFiles(baseDir, merged);
 
       // Move merged utils.ts to the end if present
       moveUtilsToEnd(files);

@@ -42,6 +42,9 @@
   "imports": {
     "#app/*": "./src/*"
   },
+  "exports": {
+    "./*": "./src/examples/_lib/*"
+  },
   "dependencies": {
     "@astrojs/check": "0.9.6",
     "@astrojs/cloudflare": "12.6.12",
