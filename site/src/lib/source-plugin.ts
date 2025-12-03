@@ -10,7 +10,7 @@
 
 import { createHash } from "node:crypto";
 import fs from "node:fs";
-import { basename, dirname, join, relative, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import prettier from "prettier";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
@@ -22,99 +22,14 @@ import {
   getFrameworkByFilename,
   removeFrameworkSuffix,
 } from "./frameworks.ts";
+import {
+  findNestedRouteFiles,
+  findSiblingConventionFiles,
+  isNextjsConventionFile,
+} from "./nextjs.ts";
 import type { Source, SourceFile } from "./source.ts";
 import { getImportPaths, mergeFiles, replaceImportPaths } from "./source.ts";
 import { resolveStyles } from "./styles.ts";
-
-// Next.js App Router convention files that should be auto-included
-const NEXTJS_CONVENTION_FILES = [
-  "layout.tsx",
-  "page.tsx",
-  "loading.tsx",
-  "error.tsx",
-  "not-found.tsx",
-  "template.tsx",
-  "default.tsx",
-] as const;
-
-type NextjsConventionFile = (typeof NEXTJS_CONVENTION_FILES)[number];
-
-/**
- * Checks if a filename is a Next.js App Router convention file.
- */
-function isNextjsConventionFile(
-  filename: string,
-): filename is NextjsConventionFile {
-  return NEXTJS_CONVENTION_FILES.includes(filename as NextjsConventionFile);
-}
-
-/**
- * Finds sibling Next.js convention files in the same directory as the given
- * file. Returns absolute paths to existing convention files, excluding the
- * entry file itself.
- */
-async function findSiblingConventionFiles(
-  entryFilePath: string,
-): Promise<string[]> {
-  const dir = dirname(entryFilePath);
-  const entryFilename = basename(entryFilePath);
-  const siblingFiles: string[] = [];
-
-  for (const conventionFile of NEXTJS_CONVENTION_FILES) {
-    if (conventionFile === entryFilename) continue;
-    const filePath = join(dir, conventionFile);
-    try {
-      await fs.promises.access(filePath);
-      siblingFiles.push(filePath);
-    } catch {
-      // File doesn't exist, skip
-    }
-  }
-
-  return siblingFiles;
-}
-
-/**
- * Recursively finds nested route directories and their convention files.
- * Returns absolute paths to all convention files found in nested directories.
- */
-async function findNestedRouteFiles(baseDir: string): Promise<string[]> {
-  const nestedFiles: string[] = [];
-  const scanDirectory = async (dir: string) => {
-    let entries: fs.Dirent[];
-    try {
-      entries = await fs.promises.readdir(dir, { withFileTypes: true });
-    } catch {
-      return;
-    }
-    for (const entry of entries) {
-      const fullPath = join(dir, entry.name);
-      if (entry.isDirectory()) {
-        // Skip special directories
-        if (entry.name.startsWith(".")) continue;
-        if (entry.name === "node_modules") continue;
-        // Recursively scan subdirectory
-        await scanDirectory(fullPath);
-      } else if (entry.isFile() && isNextjsConventionFile(entry.name)) {
-        nestedFiles.push(fullPath);
-      }
-    }
-  };
-  // Start scanning from subdirectories of the base directory
-  let entries: fs.Dirent[];
-  try {
-    entries = await fs.promises.readdir(baseDir, { withFileTypes: true });
-  } catch {
-    return nestedFiles;
-  }
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    if (entry.name.startsWith(".")) continue;
-    if (entry.name === "node_modules") continue;
-    await scanDirectory(join(baseDir, entry.name));
-  }
-  return nestedFiles;
-}
 
 // Cache for package information to avoid repeated lookups
 const packageCache = new Map<string, any>();
@@ -358,8 +273,6 @@ async function loadSourceFileCached(
   fileProcessCache.set(cacheKey, data);
   return data;
 }
-
-// (legacy helper removed)
 
 /**
  * Process a single file and extract its dependencies

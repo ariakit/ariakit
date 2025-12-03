@@ -1,0 +1,19 @@
+---
+import {
+  getNextjsPreviewId,
+  getNextjsUrlFromRequest,
+} from "#app/lib/nextjs.ts";
+import { notFound } from "#app/lib/response.ts";
+
+export const prerender = false;
+
+const url = Astro.url;
+
+const nextjsExampleId = getNextjsPreviewId(url.pathname);
+if (!nextjsExampleId) {
+  return notFound();
+}
+
+const nextjsUrl = getNextjsUrlFromRequest(url.href, `/${nextjsExampleId}`);
+return Astro.redirect(nextjsUrl, 307);
+---
