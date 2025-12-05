@@ -73,7 +73,10 @@ const moduleById = new Map<string, ModuleJson>();
 function ensureModuleCache() {
   if (moduleById.size) return;
   for (const mod of styles.modules) {
-    moduleById.set(mod.id, mod);
+    // TODO: We need to cast mod to ModuleJson to avoid type errors from the
+    // root tsconfig.json. After we finish the migration to the new app, we can
+    // remove this cast.
+    moduleById.set(mod.id, mod as unknown as ModuleJson);
   }
 }
 

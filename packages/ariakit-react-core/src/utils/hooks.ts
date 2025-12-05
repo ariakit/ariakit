@@ -56,7 +56,7 @@ export function useInitialValue<T>(value: T | (() => T)) {
  * }
  */
 export function useLazyValue<T>(init: () => T) {
-  const ref = useRef<T>();
+  const ref = useRef<T>(undefined);
   if (ref.current === undefined) {
     ref.current = init();
   }

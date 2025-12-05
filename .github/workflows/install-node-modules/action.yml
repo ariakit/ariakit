@@ -30,6 +30,8 @@ runs:
         restore-keys: node-modules-${{ runner.os }}-
         path: |
           node_modules
+          nextjs/node_modules
+          website/node_modules
           site/node_modules
           packages/*/node_modules
 

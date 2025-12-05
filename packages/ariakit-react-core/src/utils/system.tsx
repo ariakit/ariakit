@@ -10,7 +10,10 @@ import type { Hook, HTMLProps, Options, Props } from "./types.ts";
  * component with the same generic type.
  */
 export function forwardRef<T extends React.FC<any>>(render: T) {
-  const Role = React.forwardRef((props, ref) => render({ ...props, ref }));
+  const Role = React.forwardRef(
+    // @ts-ignore Incompatible with React 19 types. Ignore for now.
+    (props, ref) => render({ ...props, ref }),
+  );
   Role.displayName = render.displayName || render.name;
   return Role as unknown as T;
 }
@@ -41,7 +44,11 @@ export function createElement(
   let element: React.ReactElement;
 
   if (React.isValidElement<any>(render)) {
-    const renderProps = { ...render.props, ref: mergedRef };
+    const renderProps = {
+      // @ts-ignore Incompatible with React 19 types. Ignore for now.
+      ...render.props,
+      ref: mergedRef,
+    };
     element = React.cloneElement(render, mergeProps(rest, renderProps));
   } else if (render) {
     element = render(rest) as React.ReactElement;

@@ -19,8 +19,10 @@ import CodeBlockContent from "./code-block-content.astro";
 import { CodeBlockTabs as CodeBlockTabsReact } from "./code-block.react.tsx";
 import type { CodeBlockTabProps } from "./code-block.types";
 
-interface Props
-  extends Omit<ComponentProps<typeof CodeBlockTabsReact>, "source"> {
+interface Props extends Omit<
+  ComponentProps<typeof CodeBlockTabsReact>,
+  "source"
+> {
   source?: Source | Record<Framework, Source>;
   span?: boolean;
 }

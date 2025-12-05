@@ -1,7 +1,7 @@
 import { fireEvent } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
-import type { ElementType, MutableRefObject, RefObject } from "react";
+import type { ElementType, MutableRefObject } from "react";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
@@ -76,7 +76,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   props = menuListProps;
 
   const [initialFocusRef, setInitialFocusRef] =
-    useState<RefObject<HTMLElement>>();
+    useState<MutableRefObject<HTMLElement | null>>();
 
   const autoFocusOnShowState = store.useState("autoFocusOnShow");
   const initialFocus = store.useState("initialFocus");

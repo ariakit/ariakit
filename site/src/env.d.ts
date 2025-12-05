@@ -9,6 +9,7 @@
  */
 /// <reference types="astro/client" />
 /// <reference types="@clerk/astro/env" />
+/// <reference path="../.astro/types.d.ts" />
 
 declare module "*?source" {
   const source: import("./lib/source.ts").Source;
@@ -53,7 +54,6 @@ declare interface UserPrivateMetadata {
   credit?: number | null;
   currency?: string | null;
 }
-
 declare interface CustomJwtSessionClaims {
   publicMetadata: UserPublicMetadata;
   teams: Record<string, string>;
@@ -73,7 +73,6 @@ declare interface ImportMetaEnv {
 declare interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
-
 declare namespace astroHTML.JSX {
   interface ButtonHTMLAttributes {
     command?:

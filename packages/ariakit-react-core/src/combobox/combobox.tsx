@@ -177,7 +177,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // selected and isn't one of the previously selected values. See
     // tag-combobox test named "deselecting a tag should not highlight the input
     // text if it is not the first combobox item".
-    const prevSelectedValueRef = useRef<ComboboxStoreSelectedValue>();
+    const prevSelectedValueRef = useRef<ComboboxStoreSelectedValue>(undefined);
     useEffect(() => {
       return sync(store, ["selectedValue", "activeId"], (_, prev) => {
         prevSelectedValueRef.current = prev.selectedValue;
