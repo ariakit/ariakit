@@ -9,7 +9,7 @@
     "build-worker": "opennextjs-cloudflare build",
     "preview": "opennextjs-cloudflare preview",
     "start": "next start",
-    "tsc": "tsc"
+    "tsc": "next typegen && tsc"
   },
   "imports": {
     "#app/*": "./*"
