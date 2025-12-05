@@ -14,7 +14,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeVisible();
     await q.button("Ensuring Accessibility and Semantics").click();
     const content = await getContent(q.button("Thoughts"));
-    await content.evaluate((el) => el.scrollTo(0, el.scrollHeight));
+    await content.evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+    });
     await visual();
   });
 });
