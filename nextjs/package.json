@@ -11,6 +11,9 @@
     "start": "next start",
     "tsc": "tsc"
   },
+  "imports": {
+    "#app/*": "./*"
+  },
   "dependencies": {
     "@ariakit/react": "0.4.20",
     "next": "16.0.5",

@@ -10,7 +10,7 @@
 
 import { createHash } from "node:crypto";
 import fs from "node:fs";
-import { basename, dirname, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import prettier from "prettier";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
@@ -30,6 +30,9 @@ import {
 import type { Source, SourceFile } from "./source.ts";
 import { getImportPaths, mergeFiles, replaceImportPaths } from "./source.ts";
 import { resolveStyles } from "./styles.ts";
+
+const APP_LIB_PATH = join(import.meta.dirname, "../examples/_lib");
+const NEXTJS_LIB_PATH = join(import.meta.dirname, "../../../nextjs/components");
 
 // Cache for package information to avoid repeated lookups
 const packageCache = new Map<string, any>();
@@ -88,11 +91,15 @@ function getPackageName(source: string) {
 }
 
 /**
- * Whether an import path uses the package.json imports map alias (starts with
- * #)
+ * Whether a path references a local library file.
  */
-function isAppImportPath(importPath: string) {
-  return importPath.startsWith("#") || importPath.startsWith("site/");
+function isLibPath(path: string) {
+  return (
+    path.startsWith("#") ||
+    path.startsWith("site/") ||
+    path.startsWith(APP_LIB_PATH) ||
+    path.startsWith(NEXTJS_LIB_PATH)
+  );
 }
 
 /**
@@ -111,6 +118,17 @@ function isUtilsPath(filePath: string) {
 }
 
 /**
+ * Normalize a filename to a basename without framework suffix and relative path.
+ */
+function normalizeFilename(filename: string, baseDir: string) {
+  const noFrameworkSuffix = removeFrameworkSuffix(filename);
+  if (isLibPath(noFrameworkSuffix)) {
+    return basename(noFrameworkSuffix);
+  }
+  return relative(baseDir, noFrameworkSuffix).replaceAll(/\.\.?\//g, "");
+}
+
+/**
  * Remove framework-specific suffixes and replace ../ with ./
  * When preserveRelativePaths is true, keeps relative path structure instead of
  * flattening to basename (used for Next.js nested routes).
@@ -118,7 +136,7 @@ function isUtilsPath(filePath: string) {
 function normalizeImportPath(importPath: string) {
   const noFrameworkSuffix = removeFrameworkSuffix(importPath);
   // Treat # aliases as local and collapse path to just the filename
-  if (isAppImportPath(noFrameworkSuffix)) {
+  if (isLibPath(noFrameworkSuffix)) {
     return `./${basename(noFrameworkSuffix)}`;
   }
   // Any relative path outside the current directory should be reduced to just
@@ -160,14 +178,6 @@ async function formatWithPrettier(
 }
 
 /**
- * Convert absolute path to relative path without leading ./
- */
-function getRelativePath(baseDir: string, filePath: string) {
-  const relativePath = relative(baseDir, filePath);
-  return relativePath.replace(/^\.{1,2}\//, "");
-}
-
-/**
  * Resolve an import to a full path
  */
 async function resolveImport(
@@ -178,7 +188,7 @@ async function resolveImport(
   const { resolvedModule } = ts.resolveModuleName(id, importer, {}, host);
   const external =
     resolvedModule?.isExternalLibraryImport ??
-    (!id.startsWith(".") && !isAppImportPath(id));
+    (!id.startsWith(".") && !isLibPath(id));
   if (external) {
     return {
       id,
@@ -309,7 +319,7 @@ async function rewriteAliasesToRelativeForMerge(
   const out: Record<string, SourceFile> = {};
   for (const [absId, file] of Object.entries(files)) {
     const aliasPaths = Array.from(
-      getImportPaths(file.content, (p) => isAppImportPath(p)),
+      getImportPaths(file.content, (p) => isLibPath(p)),
     );
     if (aliasPaths.length === 0) {
       out[absId] = file;
@@ -448,9 +458,7 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
   const cacheKey = cacheKeyForFile(file.id, file.content);
   const cached = flattenedFileCache.get(cacheKey);
   if (cached) return cached;
-  const filename = normalizeImportPath(
-    getRelativePath(baseDir, file.id),
-  ).replace(/^\.\//, "");
+  const filename = normalizeFilename(file.id, baseDir);
   let content = replaceImportPaths(file.content, (path) =>
     normalizeImportPath(path),
   );

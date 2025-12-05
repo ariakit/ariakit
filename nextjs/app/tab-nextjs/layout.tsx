@@ -1,14 +1,16 @@
-"use client";
-import Link from "next/link.js";
-import type { ReactNode } from "react";
-import { Disclosure } from "site/ariakit/disclosure.react.tsx";
-import { Tab, TabList, TabPanel, Tabs } from "./tabs.tsx";
+import Link from "next/link";
+import {
+  RouterTab,
+  RouterTabPanel,
+  RouterTabs,
+  TabList,
+} from "#app/components/router-tabs.tsx";
 
-export default function Layout(props: { tabs: ReactNode }) {
+export default function Layout(props: LayoutProps<"/tab-nextjs">) {
   return (
-    <main className="main">
+    <main className="ak-prose">
       <h1 className="heading">Posts</h1>
-      <Disclosure button="Open">Test</Disclosure>
+
       <p>
         Check out the{" "}
         <Link href="/tab-nextjs" className="link">
@@ -19,16 +21,15 @@ export default function Layout(props: { tabs: ReactNode }) {
           latest posts
         </Link>
       </p>
-      <div className="wrapper">
-        <Tabs>
+      <div className="p-10">
+        <Link href="/">Hot</Link>
+        <RouterTabs>
           <TabList>
-            <Tab href="/tab-nextjs">Hot</Tab>
-            <Tab href="/tab-nextjs/new">New</Tab>
+            <RouterTab href="/tab-nextjs">Hot</RouterTab>
+            <RouterTab href="/tab-nextjs/new">New</RouterTab>
           </TabList>
-          <TabPanel>
-            <div>{props.tabs}</div>
-          </TabPanel>
-        </Tabs>
+          <RouterTabPanel>{props.tabs}</RouterTabPanel>
+        </RouterTabs>
       </div>
     </main>
   );

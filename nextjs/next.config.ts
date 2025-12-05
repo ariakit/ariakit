@@ -5,6 +5,10 @@ initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  typedRoutes: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   // cacheComponents: true,
 
   // Allow cross-origin iframe embedding from the Astro site
