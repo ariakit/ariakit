@@ -6,7 +6,9 @@
     "baseUrl": ".",
     "paths": {
       "react": ["./node_modules/@types/react"],
-      "react-dom": ["./node_modules/@types/react-dom"]
+      "react-dom": ["./node_modules/@types/react-dom"],
+      "react/*": ["./node_modules/@types/react/*"],
+      "react-dom/*": ["./node_modules/@types/react-dom/*"]
     },
     "plugins": [
       {
