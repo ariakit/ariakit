@@ -125,7 +125,7 @@ function normalizeFilename(filename: string, baseDir: string) {
   if (isLibPath(noFrameworkSuffix)) {
     return basename(noFrameworkSuffix);
   }
-  return relative(baseDir, noFrameworkSuffix).replaceAll(/\.\.?\//g, "");
+  return relative(baseDir, noFrameworkSuffix).replace(/^(\.\.?\/)+/, "");
 }
 
 /**
