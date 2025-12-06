@@ -37,6 +37,20 @@ const benchrunner = CI
         minCycles: 0,
         minMs: 3_000,
       },
+      results: {
+        latency: {
+          average: true,
+          max: true,
+          min: true,
+          percentiles: [0.9, 0.5, 0.1],
+        },
+        throughput: {
+          average: true,
+          max: true,
+          min: true,
+          percentiles: [0.9, 0.5, 0.1],
+        },
+      },
     }
   : {
       // 1 cycle of warmup and benchmark respectively is enough to catch errors.
@@ -83,9 +97,7 @@ export default defineConfig({
     coverage: {
       include: ["packages"],
     },
-    runner: BENCH
-      ? "./node_modules/@waynevanson/vitest-benchmark/runner"
-      : undefined,
+    runner: BENCH ? "@waynevanson/vitest-benchmark/runner" : undefined,
     provide: {
       benchrunner,
     },
