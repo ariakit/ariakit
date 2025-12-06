@@ -2,6 +2,7 @@ import "@testing-library/jest-dom/vitest";
 
 import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
+import type { Test } from "@vitest/runner";
 import { createElement, Suspense as ReactSuspense, version } from "react";
 import {
   createComponent,
@@ -61,56 +62,65 @@ if (version.startsWith("17")) {
   });
 }
 
-async function tryImport(path: string) {
-  return import(path)
-    .then(({ default: component }) => ({ component, failedImport: false }))
-    .catch(() => ({ component: undefined, failedImport: true }));
-}
+function createLoaderReact(component: any) {
+  return async () => {
+    const element = createElement(ReactSuspense, {
+      fallback: null,
+      // biome-ignore lint/correctness/noChildrenProp: createElement requires children prop
+      children: createElement(component),
+    });
 
-async function loadReact(dir: string) {
-  const { component, failedImport } = await tryImport(
-    `./${dir}/index.react.tsx`,
-  );
-  if (failedImport) return false;
-  const element = createElement(ReactSuspense, {
-    fallback: null,
-    // biome-ignore lint/correctness/noChildrenProp: createElement requires children prop
-    children: createElement(component),
-  });
-  const { unmount } = await renderReact(element, { strictMode: true });
-  return unmount;
-}
+    const { unmount } = await renderReact(element, {
+      strictMode: true,
+    });
 
-async function loadSolid(dir: string) {
-  const { component, failedImport } = await tryImport(
-    `./${dir}/index.solid.tsx`,
-  );
-  if (failedImport) return false;
-  const div = document.createElement("div");
-  document.body.appendChild(div);
-  const dispose = renderSolid(
-    () =>
-      createComponent(SolidSuspense, {
-        fallback: null,
-        get children() {
-          return createComponent(component, {});
-        },
-      }),
-    div,
-  );
-  return () => {
-    dispose();
-    document.body.removeChild(div);
+    return unmount;
   };
 }
 
-const LOADERS = {
-  react: loadReact,
-  solid: loadSolid,
-} satisfies Record<
-  AllowedTestLoader,
-  (dir: string) => Promise<void | (() => void) | false>
->;
+function createLoaderSolid(component: any) {
+  return () => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+
+    const dispose = renderSolid(
+      () =>
+        createComponent(SolidSuspense, {
+          fallback: null,
+          get children() {
+            return createComponent(component, {});
+          },
+        }),
+      div,
+    );
+
+    return () => {
+      dispose();
+      document.body.removeChild(div);
+    };
+  };
+}
+
+type Awaitable<T> = T | PromiseLike<T>;
+type Cleanup = () => Awaitable<void>;
+type Loader = () => Awaitable<Cleanup>;
+type CreateLoader = (component: any) => Loader;
+
+interface Strategy {
+  deriveFilePath(dir: string): string;
+  createLoader: CreateLoader;
+}
+
+const loaderStrategy = {
+  react: {
+    deriveFilePath: (dir) => `./${dir}/index.react.tsx`,
+    createLoader: createLoaderReact,
+  },
+  solid: {
+    deriveFilePath: (dir) => `./${dir}/index.solid.tsx`,
+    createLoader: createLoaderSolid,
+  },
+} satisfies Record<AllowedTestLoader, Strategy>;
 
 /*
 
@@ -134,13 +144,16 @@ Note: test files can also be named `test-<browser target>.` instead of `test.` t
 */
 
 function parseTest(filename?: string) {
-  if (!filename) return false;
+  if (!filename) return;
+
   const match = filename.match(
     /(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
   );
-  if (!match?.groups) return false;
+
+  if (!match?.groups) return;
   const { dir, loader } = match.groups;
-  if (!dir) return false;
+  if (!dir) return;
+
   return {
     dir,
     loader: (loader ?? "all") as AllowedTestLoader | "all",
@@ -150,12 +163,69 @@ function parseTest(filename?: string) {
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
+type TestStrategy =
+  | { type: "standard" }
+  | { type: "skip" }
+  | { type: "framework"; loader: Loader };
+
+const strategies = new Map<string, TestStrategy>();
+
+/**
+ * @summary
+ * Cache the loader, if any, and the type of test.
+ * Benchmarks would otherwise import the component on every cycle.
+ */
+async function createTestStrategy(test: Readonly<Test>): Promise<TestStrategy> {
+  const standard = { type: "standard" } as const;
+  const skip = { type: "skip" } as const;
+
+  const parsed = parseTest(test.file?.name);
+
+  if (!parsed) return standard;
+
+  const { dir, loader } = parsed;
+
+  if (loader !== "all" && loader !== LOADER) {
+    return skip;
+  }
+
+  const config = loaderStrategy[LOADER];
+
+  const filepath = config.deriveFilePath(dir);
+
+  const component = await import(filepath)
+    .then(({ default: component }) => component)
+    .catch((error) => {
+      // Missing file is expected for some loader/test combinations
+      if (error?.code === "ERR_MODULE_NOT_FOUND") {
+        return null;
+      }
+
+      // Re-throw unexpected errors (syntax errors, etc.)
+      throw error;
+    });
+
+  if (component === null) {
+    return skip;
+  }
+
+  return { type: "framework", loader: config.createLoader(component) } as const;
+}
+
 beforeEach(async ({ task, skip }) => {
-  const parseResult = parseTest(task.file?.name);
-  if (!parseResult) return;
-  const { dir, loader } = parseResult;
-  if (loader !== "all" && loader !== LOADER) skip();
-  const result = await LOADERS[LOADER](dir);
-  if (result === false) skip();
-  return result;
+  if (!strategies.has(task.id)) {
+    strategies.set(task.id, await createTestStrategy(task));
+  }
+
+  const strategy = strategies.get(task.id)!;
+
+  switch (strategy.type) {
+    case "standard":
+      return;
+    case "skip":
+      return skip();
+    case "framework": {
+      return await strategy.loader();
+    }
+  }
 });
