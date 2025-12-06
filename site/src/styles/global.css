@@ -44,14 +44,14 @@
   }
 }
 
-/* astro-island,
+astro-island,
 astro-slot,
 astro-static-slot {
-  display: block !important;
+  display: inherit !important;
   :is(a, p, li, span, code) & {
     display: inline !important;
   }
-} */
+}
 
 /* .cl-cardBox {
   @apply ak-layer border shadow-none;

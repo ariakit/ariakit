@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ariakit-nextjs",
+  "main": ".open-next/worker.js",
+  "preview_urls": true,
+  "compatibility_date": "2025-11-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "placement": {
+    "mode": "smart"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "dev": {
+    "ip": "0.0.0.0",
+    "port": 3000
+  },
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "ariakit-nextjs-cache",
+      "preview_bucket_name": "ariakit-nextjs-cache-preview"
+    }
+  ]
+}

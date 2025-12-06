@@ -16,8 +16,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fetch main branch
-        run: git fetch origin main:main
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
@@ -30,7 +30,8 @@ jobs:
       - name: Get changeset status
         id: changeset-status
         run: |
-          if npx changeset status --output changes.json 2>/dev/null; then
+          # Only consider changesets added since the base branch (i.e., in this PR)
+          if npx changeset status --since=${{ github.base_ref }} --output changes.json 2>/dev/null; then
             echo "has-changesets=true" >> $GITHUB_OUTPUT
           else
             echo "has-changesets=false" >> $GITHUB_OUTPUT

@@ -69,7 +69,7 @@ export function getGuideDetail(entry: CollectionEntry<"guides">) {
   const segments = groupKey.split("-");
   const framework = segments.find((segment) => isFramework(segment));
   const groupPath = `/${getGroupPath(group, framework)}`;
-  const path = `${groupPath}/${id}`;
+  const path = `${groupPath}/${id}/`;
   return {
     ...entry,
     path,

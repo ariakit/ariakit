@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+reviews:
+  suggested_reviewers: false
+  in_progress_fortune: false
+  poem: false
+  auto_review:
+    ignore_usernames:
+      - ariakit-bot

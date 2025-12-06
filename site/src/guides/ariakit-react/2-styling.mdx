@@ -25,7 +25,7 @@ Ariakit components accept all native props, including `className`, `style`, and 
 
 ### `[aria-checked]`
 
-The `aria-checked` attribute is applied to the [Checkbox](/components/checkbox) component when the input is checked. It can be either `true` or `false`.
+The `aria-checked` attribute is applied to the [Checkbox](/components/checkbox/) component when the input is checked. It can be either `true` or `false`.
 
 ```css
 .checkbox[aria-checked="true"] {
@@ -36,7 +36,7 @@ The `aria-checked` attribute is applied to the [Checkbox](/components/checkbox) 
 
 ### `[aria-disabled]`
 
-Not all HTML elements accept the `disabled` attribute. That's why the [Focusable](/components/focusable) component and all components that use it underneath will apply the `aria-disabled` attribute to the rendered element when the `disabled` prop is set to `true`.
+Not all HTML elements accept the `disabled` attribute. That's why the [Focusable](/components/focusable/) component and all components that use it underneath will apply the `aria-disabled` attribute to the rendered element when the `disabled` prop is set to `true`.
 
 ```css
 .button[aria-disabled="true"] {
@@ -46,7 +46,7 @@ Not all HTML elements accept the `disabled` attribute. That's why the [Focusable
 
 ### `[aria-expanded]`
 
-The `aria-expanded` attribute is applied to the [Disclosure](/components/disclosure) component and all components that use it underneath, such as [PopoverDisclosure](/components/popover), [MenuButton](/components/menu), and [Select](/components/select), when the content element is shown.
+The `aria-expanded` attribute is applied to the [Disclosure](/components/disclosure/) component and all components that use it underneath, such as [PopoverDisclosure](/components/popover/), [MenuButton](/components/menu/), and [Select](/components/select/), when the content element is shown.
 
 ```css
 .button[aria-expanded="true"] {
@@ -56,7 +56,7 @@ The `aria-expanded` attribute is applied to the [Disclosure](/components/disclos
 
 ### `[aria-invalid]`
 
-The `aria-invalid` attribute is applied to [Form](/components/form) field components when there's a visible error message. You can use it to style the field differently when it's invalid.
+The `aria-invalid` attribute is applied to [Form](/components/form/) field components when there's a visible error message. You can use it to style the field differently when it's invalid.
 
 ```css
 .input[aria-invalid="true"] {
@@ -66,7 +66,7 @@ The `aria-invalid` attribute is applied to [Form](/components/form) field compon
 
 ### `[data-active]`
 
-The `data-active` attribute is applied to clickable components, such as [Command](/components/command) and [Button](/components/button), to simulate the `:active` pseudo-class when the components are not rendered as native `button` elements.
+The `data-active` attribute is applied to clickable components, such as [Command](/components/command/) and [Button](/components/button/), to simulate the `:active` pseudo-class when the components are not rendered as native `button` elements.
 
 It's important to note that, to avoid doing unnecessary work, the `data-active` attribute is not applied to components that are rendered as `button` elements. Therefore, you should use both the `:active` and `[data-active]` selectors to keep your styles consistent.
 
@@ -79,9 +79,9 @@ It's important to note that, to avoid doing unnecessary work, the `data-active` 
 
 ### `[data-active-item]`
 
-The `data-active-item` attribute is applied to composite widget items when they receive focus or are hovered (when the [`focusOnHover`](/reference/composite-hover#focusonhover) prop is set to `true`). Besides the [Composite](/components/composite) component itself, composite widgets include [Combobox](/components/combobox), [Menu](/components/menu), [Radio](/components/radio), [Select](/components/select), [Tab](/components/tab), and [Toolbar](/components/toolbar).
+The `data-active-item` attribute is applied to composite widget items when they receive focus or are hovered (when the [`focusOnHover`](/reference/composite-hover/#focusonhover) prop is set to `true`). Besides the [Composite](/components/composite/) component itself, composite widgets include [Combobox](/components/combobox/), [Menu](/components/menu/), [Radio](/components/radio/), [Select](/components/select/), [Tab](/components/tab/), and [Toolbar](/components/toolbar/).
 
-This attribute is also applied to the [`Combobox`](/reference/combobox) component when it's the only active item in the composite widget. In other words, when no [`ComboboxItem`](/reference/combobox-item) is active and the focus is solely on the combobox input. In this case, you can use this selector to provide additional affordance to users who pressed <kbd>↑</kbd> on the first item or <kbd>↓</kbd> on the last item to place both virtual and actual DOM focus on the combobox input.
+This attribute is also applied to the [`Combobox`](/reference/combobox/) component when it's the only active item in the composite widget. In other words, when no [`ComboboxItem`](/reference/combobox-item/) is active and the focus is solely on the combobox input. In this case, you can use this selector to provide additional affordance to users who pressed <kbd>↑</kbd> on the first item or <kbd>↓</kbd> on the last item to place both virtual and actual DOM focus on the combobox input.
 
 ```css
 .item[data-active-item] {
@@ -91,7 +91,7 @@ This attribute is also applied to the [`Combobox`](/reference/combobox) componen
 
 ### `[data-autofill]`
 
-The `data-autofill` attribute is applied to the [Select](/components/select) component when it's used within a form and the value has been autofilled by the browser.
+The `data-autofill` attribute is applied to the [Select](/components/select/) component when it's used within a form and the value has been autofilled by the browser.
 
 ```css
 .select[data-autofill] {
@@ -101,7 +101,7 @@ The `data-autofill` attribute is applied to the [Select](/components/select) com
 
 ### `[data-backdrop]`
 
-The `data-backdrop` attribute can be used to style all [Dialog](/components/dialog) backdrop elements at once.
+The `data-backdrop` attribute can be used to style all [Dialog](/components/dialog/) backdrop elements at once.
 
 ```css
 [data-backdrop] {
@@ -111,9 +111,9 @@ The `data-backdrop` attribute can be used to style all [Dialog](/components/dial
 
 ### `[data-open]`
 
-The `data-open` attribute is rendered on [Disclosure](/components/disclosure) components when the content element is shown. It's similar to [`data-enter`](#data-enter), but it's applied synchronously. This is equivalent to the `open` attribute applied to native disclosure elements.
+The `data-open` attribute is rendered on [Disclosure](/components/disclosure/) components when the content element is shown. It's similar to [`data-enter`](#data-enter), but it's applied synchronously. This is equivalent to the `open` attribute applied to native disclosure elements.
 
-This is handy for applying CSS animations to the content element. For [CSS transitions](/tags/css-transitions), you should use [`data-enter`](#data-enter) instead.
+This is handy for applying CSS animations to the content element. For [CSS transitions](/tags/css-transitions/), you should use [`data-enter`](#data-enter) instead.
 
 ```css
 .dialog[data-open] {
@@ -132,7 +132,7 @@ This is handy for applying CSS animations to the content element. For [CSS trans
 
 ### `[data-enter]`
 
-When [Disclosure](/components/disclosure) components are displayed, they assign the `data-enter` attribute to the rendered element. This occurs after a brief delay, allowing the browser to paint the starting style of the element before the transition begins.
+When [Disclosure](/components/disclosure/) components are displayed, they assign the `data-enter` attribute to the rendered element. This occurs after a brief delay, allowing the browser to paint the starting style of the element before the transition begins.
 
 ```css
 .dialog {
@@ -147,9 +147,9 @@ When [Disclosure](/components/disclosure) components are displayed, they assign 
 
 ### `[data-leave]`
 
-Similar to [`data-enter`](#data-enter), [Disclosure](/components/disclosure) components will apply the `data-leave` attribute to the rendered element when it's being hidden. This only occurs if an enter transition or animation was detected.
+Similar to [`data-enter`](#data-enter), [Disclosure](/components/disclosure/) components will apply the `data-leave` attribute to the rendered element when it's being hidden. This only occurs if an enter transition or animation was detected.
 
-Typically, when using [CSS transitions](/tags/css-transitions), [`data-enter`](#data-enter) is all you need. The CSS transition will reverse when the element is hidden. However, if you want to style the exit transition differently, or prefer to use CSS animations, you can use `data-leave` for this purpose.
+Typically, when using [CSS transitions](/tags/css-transitions/), [`data-enter`](#data-enter) is all you need. The CSS transition will reverse when the element is hidden. However, if you want to style the exit transition differently, or prefer to use CSS animations, you can use `data-leave` for this purpose.
 
 ```css
 .dialog {
@@ -164,9 +164,9 @@ Typically, when using [CSS transitions](/tags/css-transitions), [`data-enter`](#
 
 ### `[data-focus-visible]`
 
-The `data-focus-visible` attribute is applied to the [Focusable](/components/focusable) component and all components that use it underneath when there's a keyboard interaction on a focusable element.
+The `data-focus-visible` attribute is applied to the [Focusable](/components/focusable/) component and all components that use it underneath when there's a keyboard interaction on a focusable element.
 
-It works the same way as the [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) pseudo-class. However, unlike `:focus-visible`, the `data-focus-visible` attribute is also applied to composite widget items, such as [ComboboxItem](/components/combobox), when they receive [`virtualFocus`](/reference/use-composite-store#virtualfocus).
+It works the same way as the [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible) pseudo-class. However, unlike `:focus-visible`, the `data-focus-visible` attribute is also applied to composite widget items, such as [ComboboxItem](/components/combobox/), when they receive [`virtualFocus`](/reference/use-composite-store/#virtualfocus).
 
 If you're styling Ariakit components, it's recommended to use the `[data-focus-visible]` selector to keep your styles consistent.
 
@@ -178,7 +178,7 @@ If you're styling Ariakit components, it's recommended to use the `[data-focus-v
 
 ### `[data-user-value]`
 
-The `data-user-value` attribute is used on the `span` elements within [`ComboboxItemValue`](/reference/combobox-item-value) that correspond to the user's input. This is handy when you need to emphasize the matching segment of the item value.
+The `data-user-value` attribute is used on the `span` elements within [`ComboboxItemValue`](/reference/combobox-item-value/) that correspond to the user's input. This is handy when you need to emphasize the matching segment of the item value.
 
 ```css
 [data-user-value] {
@@ -188,7 +188,7 @@ The `data-user-value` attribute is used on the `span` elements within [`Combobox
 
 ### `[data-autocomplete-value]`
 
-The `data-autocomplete-value` attribute is applied to the `span` elements within [`ComboboxItemValue`](/reference/combobox-item-value) that do not correspond to the user's input. In other words, these are the sections of the item value that act as autocomplete suggestions.
+The `data-autocomplete-value` attribute is applied to the `span` elements within [`ComboboxItemValue`](/reference/combobox-item-value/) that do not correspond to the user's input. In other words, these are the sections of the item value that act as autocomplete suggestions.
 
 ```css
 [data-autocomplete-value] {
@@ -198,7 +198,7 @@ The `data-autocomplete-value` attribute is applied to the `span` elements within
 
 ## CSS variables
 
-Some components, such as [Dialog](/components/dialog), [Popover](/components/popover), [Menu](/components/menu), [Hovercard](/components/hovercard), [SelectPopover](/components/select), [ComboboxPopover](/components/combobox), among others, expose CSS variables that you can use to customize their appearance.
+Some components, such as [Dialog](/components/dialog/), [Popover](/components/popover/), [Menu](/components/menu/), [Hovercard](/components/hovercard/), [SelectPopover](/components/select/), [ComboboxPopover](/components/combobox/), among others, expose CSS variables that you can use to customize their appearance.
 
 ### `--dialog-viewport-height`
 
@@ -233,7 +233,7 @@ The `--popover-anchor-width` variable exposes the width value of the anchor elem
 
 ### `--popover-available-height`
 
-The `--popover-available-height` variable exposes the available vertical space in the viewport based on the popover's [`placement`](/reference/popover-provider#placement). You can use this to make the popover element have a maximum height that fits the available space.
+The `--popover-available-height` variable exposes the available vertical space in the viewport based on the popover's [`placement`](/reference/popover-provider/#placement). You can use this to make the popover element have a maximum height that fits the available space.
 
 ```css
 .popover {
@@ -243,7 +243,7 @@ The `--popover-available-height` variable exposes the available vertical space i
 
 ### `--popover-available-width`
 
-The `--popover-available-width` variable exposes the available horizontal space in the viewport based on the popover's [`placement`](/reference/popover-provider#placement). You can use this to make the popover element have a maximum width that fits the available space.
+The `--popover-available-width` variable exposes the available horizontal space in the viewport based on the popover's [`placement`](/reference/popover-provider/#placement). You can use this to make the popover element have a maximum width that fits the available space.
 
 ```css
 .popover {
@@ -273,7 +273,7 @@ You can adjust the transform origin value of the popover element using the `--po
 
 ### `--scrollbar-width`
 
-The [Dialog](/components/dialog) component will define a `--scrollbar-width` CSS variable on the `html` element when a modal dialog is open. Since the scrollbar is hidden when a modal dialog is open, this variable can be used to adjust the right padding of your `position: fixed` elements.
+The [Dialog](/components/dialog/) component will define a `--scrollbar-width` CSS variable on the `html` element when a modal dialog is open. Since the scrollbar is hidden when a modal dialog is open, this variable can be used to adjust the right padding of your `position: fixed` elements.
 
 ```css
 .header {
@@ -285,4 +285,4 @@ The [Dialog](/components/dialog) component will define a `--scrollbar-width` CSS
 
 ## Next steps
 
-Continue reading our [Guide](/guide) to learn more about Ariakit:
+Continue reading our [Guide](/guide/) to learn more about Ariakit:

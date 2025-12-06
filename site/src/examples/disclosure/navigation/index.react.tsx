@@ -105,7 +105,7 @@ export default function Example() {
   return (
     <div
       className={clsx(
-        "grid w-full transition-[grid-template-columns] duration-300",
+        "grid w-[100cqi] transition-[grid-template-columns] duration-300",
         "grid-cols-[--spacing(60)_1fr]",
       )}
     >

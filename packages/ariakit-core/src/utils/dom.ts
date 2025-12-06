@@ -44,7 +44,7 @@ export function getActiveElement(
     // with elements inside of an iframe.
     return null;
   }
-  if (isFrame(activeElement) && activeElement.contentDocument) {
+  if (isFrame(activeElement) && activeElement.contentDocument?.body) {
     return getActiveElement(
       activeElement.contentDocument.body,
       activeDescendant,

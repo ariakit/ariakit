@@ -16,7 +16,13 @@ export function query(locator: Page | Locator | FrameLocator) {
     return acc;
   }, {} as RoleQueries);
 
-  return roleQueries;
+  const text = (...args: Parameters<Page["getByText"]>) =>
+    locator.getByText(...args);
+
+  return {
+    ...roleQueries,
+    text,
+  };
 }
 
 export * from "@playwright/test";

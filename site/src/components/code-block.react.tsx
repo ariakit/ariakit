@@ -279,6 +279,7 @@ export function CodeBlockPreviewIframe({
     if (!iframe) return;
     let timeout = 0;
     let raf = 0;
+    let scrollRaf = 0;
 
     const triggerSelector =
       typeof clickAndWait === "string" ? clickAndWait : "input, button";
@@ -289,6 +290,13 @@ export function CodeBlockPreviewIframe({
       popup = doc?.querySelector<HTMLElement>("[data-dialog]"),
     ) => {
       if (!doc) return;
+      // documentElement may be null if the iframe document hasn't fully loaded.
+      // Wait for the next frame to retry.
+      if (!doc.documentElement) {
+        cancelAnimationFrame(scrollRaf);
+        scrollRaf = requestAnimationFrame(() => scroll());
+        return;
+      }
       if (scrollTop) {
         doc.documentElement.scrollTo({ top: scrollTop });
         return;
@@ -352,13 +360,10 @@ export function CodeBlockPreviewIframe({
       // Make the iframe inert so we can interact with it without moving focus
       doc.body.inert = true;
 
-      const button = doc.querySelector<HTMLButtonElement>(triggerSelector);
-      if (!button) return setLoaded(true);
-
-      const { top } = button.getBoundingClientRect();
-      html.scrollTo({ top });
-
-      const clickAndWaitForPopup = () => {
+      const clickAndWaitForPopup = (
+        currentDoc: Document,
+        button: HTMLButtonElement,
+      ) => {
         const eventInit = { bubbles: true, cancelable: true };
         button.dispatchEvent(new MouseEvent("pointerdown", eventInit));
         button.dispatchEvent(new MouseEvent("mousedown", eventInit));
@@ -368,33 +373,75 @@ export function CodeBlockPreviewIframe({
 
         // Wait for the popup to be visible
         timeout = window.setTimeout(() => {
-          const popup = doc.querySelector<HTMLElement>("[data-dialog]");
+          const popup = currentDoc.querySelector<HTMLElement>("[data-dialog]");
           if (!popup || popup.hasAttribute("hidden")) {
             // If the popup is missing or hidden, it might not have been
             // hydrated yet. We'll try again shortly.
-            timeout = window.setTimeout(clickAndWaitForPopup, 84);
+            timeout = window.setTimeout(
+              () => clickAndWaitForPopup(currentDoc, button),
+              84,
+            );
             return;
           }
           // Make the popup transition immediately so we can check its position
           popup.style.setProperty("transition", "none", "important");
           raf = requestAnimationFrame(() => {
             setLoaded(true);
-            scroll(doc, button, popup);
+            scroll(currentDoc, button, popup);
             // Reset the transition
             popup.style.removeProperty("transition");
             // Toggle the iframe visibility to trigger the transition when it's
             // visible in the viewport
-            doc.body.style.display = "none";
+            currentDoc.body.style.display = "none";
             raf = requestAnimationFrame(() => {
-              doc.body.style.removeProperty("display");
+              currentDoc.body.style.removeProperty("display");
             });
             timeout = window.setTimeout(() => {
-              doc.body.inert = false;
+              currentDoc.body.inert = false;
             }, 42);
           });
         }, 42);
       };
-      clickAndWaitForPopup();
+
+      // Maximum retries for finding the button (~4 seconds at 84ms intervals)
+      const maxButtonRetries = 50;
+      let buttonRetries = 0;
+
+      const waitForButton = () => {
+        // Re-query contentDocument each time as it may change after navigation
+        const currentDoc = iframe.contentDocument;
+        if (!currentDoc) {
+          buttonRetries++;
+          if (buttonRetries < maxButtonRetries) {
+            timeout = window.setTimeout(waitForButton, 84);
+          } else {
+            setLoaded(true);
+          }
+          return;
+        }
+
+        const button =
+          currentDoc.querySelector<HTMLButtonElement>(triggerSelector);
+        if (!button) {
+          // The iframe document is loaded but the React app hasn't hydrated
+          // yet. Retry after a short delay.
+          buttonRetries++;
+          if (buttonRetries < maxButtonRetries) {
+            timeout = window.setTimeout(waitForButton, 84);
+          } else {
+            setLoaded(true);
+          }
+          return;
+        }
+
+        const currentHtml = currentDoc.documentElement;
+        const { top } = button.getBoundingClientRect();
+        currentHtml.scrollTo({ top });
+
+        clickAndWaitForPopup(currentDoc, button);
+      };
+
+      waitForButton();
     };
 
     if (iframe.contentDocument?.readyState === "complete") {
@@ -416,6 +463,7 @@ export function CodeBlockPreviewIframe({
       observer.disconnect();
       clearTimeout(timeout);
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(scrollRaf);
       iframe.removeEventListener("load", onLoad);
       iframe.contentWindow?.removeEventListener("focus", setDataFocus);
       iframe.contentWindow?.removeEventListener("blur", setDataFocus);
