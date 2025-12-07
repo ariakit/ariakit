@@ -62,6 +62,20 @@ const benchrunner = CI
         minCycles: 1,
         minMs: 0,
       },
+      results: {
+        latency: {
+          average: true,
+          max: true,
+          min: true,
+          percentiles: [0.9, 0.5, 0.1],
+        },
+        throughput: {
+          average: true,
+          max: true,
+          min: true,
+          percentiles: [0.9, 0.5, 0.1],
+        },
+      },
     };
 
 const isReact17 = version.startsWith("17");
@@ -104,6 +118,8 @@ export default defineConfig({
     exclude: [
       ...configDefaults.exclude,
       ...(isReact17 ? excludeFromReact17 : []),
+      // Benchmark examples only
+      ...(BENCH ? ["!/examples"] : []),
     ],
     css: {
       include: includeWithStyles,
@@ -115,13 +131,15 @@ export default defineConfig({
     provide: {
       benchrunner,
     },
-    reporters: [
-      [
-        "bmf",
-        {
-          prefix: createPrefix(),
-        },
-      ],
-    ],
+    // use default reporters when not benchmarking
+    reporters: BENCH
+      ? undefined
+      : [
+          "default",
+          [
+            "@waynevanson/vitest-benchmark/reporter/bmf",
+            { prefix: createPrefix() },
+          ],
+        ],
   },
 });
