@@ -78,6 +78,20 @@ const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
   solid: [solidPlugin()],
 };
 
+function createPrefix() {
+  if (LOADER === "react") {
+    if (isReact17) {
+      return "react-17";
+    } else if (!version.startsWith("18")) {
+      return "react-next";
+    } else {
+      return "react";
+    }
+  } else {
+    return "solid";
+  }
+}
+
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
   test: {
@@ -101,5 +115,13 @@ export default defineConfig({
     provide: {
       benchrunner,
     },
+    reporters: [
+      [
+        "bmf",
+        {
+          prefix: createPrefix(),
+        },
+      ],
+    ],
   },
 });
