@@ -35,7 +35,7 @@ runs:
 
     - name: Create PR
       if: inputs.event == 'push'
-      uses: peter-evans/create-pull-request@v7
+      uses: peter-evans/create-pull-request@v8
       with:
         path: ${{ inputs.working-directory }}
         commit-message: ${{ inputs.message }}
