@@ -82,7 +82,7 @@
     }
   },
   "dependencies": {
-    "@astrojs/mdx": "4.3.12",
+    "@astrojs/mdx": "4.3.13",
     "@babel/core": "7.28.5",
     "@babel/preset-env": "7.28.5",
     "@babel/preset-react": "7.28.5",
@@ -122,7 +122,7 @@
     "@vitejs/plugin-react": "5.1.2",
     "@vitest/coverage-v8": "4.0.15",
     "@wordpress/components": "30.9.0",
-    "astro": "5.16.4",
+    "astro": "5.16.5",
     "autoprefixer": "10.4.22",
     "babel-loader": "10.0.0",
     "babel-plugin-transform-rewrite-imports": "1.5.4",
