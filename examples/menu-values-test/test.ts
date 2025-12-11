@@ -1,7 +1,10 @@
 import { click, press, q, type } from "@ariakit/test";
 
-const spyOnLog = () => vi.spyOn(console, "log").mockImplementation(() => {});
+// sets up the console.log spy before the component renders,
+// so we can see the spy being called as it renders.
+vi.setConfig({ sequence: { hooks: "parallel" } });
 
+const spyOnLog = () => vi.spyOn(console, "log").mockImplementation(() => {});
 let log = spyOnLog();
 
 beforeEach(() => {

@@ -36,5 +36,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# nix/direnv
+.direnv
+
 # generated types
 .astro/
+
+.benchmark

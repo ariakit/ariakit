@@ -14,13 +14,14 @@ This guide is intended to help you get started with contributing to the project.
 6. [Creating the default example](#creating-the-default-example)
 7. [Styling the example](#styling-the-example)
 8. [Testing the example](#testing-the-example)
-9. [Writing another example](#writing-another-example)
-10. [Importing styles from other examples](#importing-styles-from-other-examples)
-11. [Promoting the component](#promoting-the-component)
-12. [Updating the examples to import from `@ariakit/react`](#updating-the-examples-to-import-from-ariakitreact)
-13. [Writing the component documentation](#writing-the-component-documentation)
-14. [Writing documentation for other examples](#writing-documentation-for-other-examples)
-15. [Submitting a pull request](#submitting-a-pull-request)
+9. [Benchmarking the example](#benchmarking-the-example)
+10. [Writing another example](#writing-another-example)
+11. [Importing styles from other examples](#importing-styles-from-other-examples)
+12. [Promoting the component](#promoting-the-component)
+13. [Updating the examples to import from `@ariakit/react`](#updating-the-examples-to-import-from-ariakitreact)
+14. [Writing the component documentation](#writing-the-component-documentation)
+15. [Writing documentation for other examples](#writing-documentation-for-other-examples)
+16. [Submitting a pull request](#submitting-a-pull-request)
 
 ## Advanced tutorial
 
@@ -266,6 +267,22 @@ npm test watch my-component
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
+
+## Benchmarking the example
+
+Benchmarks provide us an opportunity to compare performance of examples between commits and frameworks. We use existing tests to create benchmarks via `vitest-runner-benchmark`.
+
+Benchmarks can be ran with the following scripts:
+
+- `npm run bench`
+- `npm run bench-react17`
+- `npm run bench-reactnext`
+- `npm run bench-solid`
+
+If a test fails as a benchmark, there's likely an issue between setup and teardown functions.
+
+If the issue is likely downstream from `vitest-runner-benchmark`, then the test can be skipped with the following pattern.
+
 
 ## Writing another example
 
