@@ -9,17 +9,26 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
+      "!**/node_modules",
       "!**/package.json",
-      "!**/website/.next",
-      "!**/website/.pages",
-      "!**/site/.astro",
-      "!**/site/.types",
+      "!**/dist",
+      "!**/build",
+      "!**/.next",
+      "!**/.pages",
+      "!**/.astro",
+      "!**/.types",
       "!**/*.astro",
       "!**/*.css",
       "!site/src/styles/styles.json"
     ]
   },
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "formatter": {
     "enabled": true,
     "indentStyle": "space"
