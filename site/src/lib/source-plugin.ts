@@ -45,6 +45,7 @@ interface CachedFileData {
   file: SourceFile;
   localDeps: string[];
 }
+
 const fileProcessCache = new Map<string, CachedFileData>();
 
 // Cache generated flattened files (final files record entries), keyed by abs id
@@ -54,7 +55,9 @@ interface FlattenedCacheData {
   // flattened content and metadata
   file: SourceFile;
 }
+
 const flattenedFileCache = new Map<string, FlattenedCacheData>();
+
 /**
  * Compute a stable hash for a given string content.
  */
@@ -330,7 +333,8 @@ async function rewriteAliasesToRelativeForMerge(
       const resolved = await resolveImport(context, a, absId);
       if (!resolved) continue;
       const targetId = resolved.id;
-      if (!files[targetId]) continue; // only rewrite if inside graph
+      // only rewrite if inside graph
+      if (!files[targetId]) continue;
       const dir = dirname(absId);
       let rel = toPosixPath(relative(dir, targetId));
       if (!rel.startsWith(".")) rel = `./${rel}`;
