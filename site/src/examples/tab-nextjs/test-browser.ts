@@ -1,7 +1,7 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("default tab selected @visual", async ({ q, visual }) => {
+  test("default tab selected @visual", async ({ visual }) => {
     // await test
     //   .expect(q.tab("Documentation"))
     //   .toHaveAttribute("aria-selected", "true");

@@ -35,7 +35,7 @@ jobs:
           engine: chromium
 
       - name: Cache Next.js
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}
@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: plus-test-results
           path: test-results
