@@ -23,13 +23,22 @@ export default defineConfig({
   retries: 1,
   testDir: "src",
   snapshotPathTemplate: "src/tests/visual/{arg}{ext}",
-  webServer: {
-    command: "npm run preview-lite -w site -- --log-level warn",
-    reuseExistingServer: !CI,
-    stdout: CI ? "pipe" : "ignore",
-    port: 4321,
-  },
+  webServer: [
+    {
+      command: "npm run preview-lite -w site",
+      reuseExistingServer: !CI,
+      stdout: "pipe",
+      port: 4321,
+    },
+    {
+      command: "npm run dev -w nextjs",
+      reuseExistingServer: !CI,
+      stdout: "pipe",
+      port: 3000,
+    },
+  ],
   use: {
+    baseURL: "http://localhost:4321",
     screenshot: "only-on-failure",
     trace: "on-first-retry",
     launchOptions: {
