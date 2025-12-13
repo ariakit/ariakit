@@ -7,11 +7,6 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-
-// Integration tests for the source-plugin Vite plugin. These tests import
-// actual example files with the ?source suffix to verify the plugin correctly
-// extracts source code, dependencies, and styles.
-
 import { join } from "node:path";
 import nextjs from "nextjs/app/tab-nextjs/layout.tsx?source";
 import disclosure from "#app/examples/disclosure/index.react.tsx?source";
