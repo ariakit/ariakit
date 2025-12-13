@@ -23,6 +23,15 @@ jobs:
       - name: Build app
         run: npm run build-site
 
+      - name: Deploy Next.js app to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: nextjs
+          command: deploy
+
       - name: Deploy app to Cloudflare
         uses: cloudflare/wrangler-action@v3
         with:

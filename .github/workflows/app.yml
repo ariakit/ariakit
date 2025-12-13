@@ -56,6 +56,29 @@ jobs:
           retention-days: 7
           include-hidden-files: true
 
+  build-nextjs:
+    name: Build Next.js app
+    needs: install-linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+
+      - name: Build Next.js app
+        run: npm run build-worker -w nextjs
+
+      - name: Upload Next.js artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
+          retention-days: 7
+          include-hidden-files: true
+
   test:
     name: Test ${{ matrix.name }}
     needs: [build]
@@ -136,7 +159,7 @@ jobs:
 
       - name: Upload test results to GitHub
         if: failure() && steps.update-snapshots.outcome == 'failure'
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.project }}-test-results
           path: site/test-results
