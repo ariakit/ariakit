@@ -1,8 +1,10 @@
+import { join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
 import { version } from "react";
 import solidPlugin from "vite-plugin-solid";
 import type { Plugin } from "vitest/config";
 import { configDefaults, defineConfig } from "vitest/config";
+import { sourcePlugin } from "./site/src/lib/source-plugin.ts";
 
 const excludeFromReact17 = [
   "examples/form-callback-queue",
@@ -30,11 +32,15 @@ const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
 if (!ALLOWED_TEST_LOADERS.includes(LOADER))
   throw new Error(`Invalid loader: ${LOADER}`);
 
+const sourcePluginInstance = sourcePlugin(
+  join(import.meta.dirname, "site/src/examples/"),
+);
+
 const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
   // @ts-expect-error I believe this error will go away when we regenerate
   // package-lock.json
-  react: [reactPlugin()],
-  solid: [solidPlugin()],
+  react: [reactPlugin(), sourcePluginInstance],
+  solid: [solidPlugin(), sourcePluginInstance],
 };
 
 export default defineConfig({
