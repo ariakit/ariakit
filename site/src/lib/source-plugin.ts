@@ -10,7 +10,7 @@
 
 import { createHash } from "node:crypto";
 import fs from "node:fs";
-import { basename, dirname, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import prettier from "prettier";
 import { readPackageUpSync } from "read-pkg-up";
 import resolveFrom from "resolve-from";
@@ -22,9 +22,17 @@ import {
   getFrameworkByFilename,
   removeFrameworkSuffix,
 } from "./frameworks.ts";
+import {
+  findNestedRouteFiles,
+  findSiblingConventionFiles,
+  isNextjsConventionFile,
+} from "./nextjs.ts";
 import type { Source, SourceFile } from "./source.ts";
 import { getImportPaths, mergeFiles, replaceImportPaths } from "./source.ts";
 import { resolveStyles } from "./styles.ts";
+
+const APP_LIB_PATH = join(import.meta.dirname, "../examples/_lib");
+const NEXTJS_LIB_PATH = join(import.meta.dirname, "../../../nextjs/components");
 
 // Cache for package information to avoid repeated lookups
 const packageCache = new Map<string, any>();
@@ -37,14 +45,19 @@ interface CachedFileData {
   file: SourceFile;
   localDeps: string[];
 }
+
 const fileProcessCache = new Map<string, CachedFileData>();
 
 // Cache generated flattened files (final files record entries), keyed by abs id
 interface FlattenedCacheData {
-  key: string; // files record key (basename)
-  file: SourceFile; // flattened content and metadata
+  // files record key (basename)
+  key: string;
+  // flattened content and metadata
+  file: SourceFile;
 }
+
 const flattenedFileCache = new Map<string, FlattenedCacheData>();
+
 /**
  * Compute a stable hash for a given string content.
  */
@@ -81,10 +94,15 @@ function getPackageName(source: string) {
 }
 
 /**
- * Whether an import path uses the package.json imports map alias (starts with #)
+ * Whether a path references a local library file.
  */
-function isImportMapAliasPath(importPath: string) {
-  return importPath.startsWith("#");
+function isLibPath(path: string) {
+  return (
+    path.startsWith("#") ||
+    path.startsWith("site/") ||
+    path.startsWith(APP_LIB_PATH) ||
+    path.startsWith(NEXTJS_LIB_PATH)
+  );
 }
 
 /**
@@ -103,26 +121,31 @@ function isUtilsPath(filePath: string) {
 }
 
 /**
+ * Normalize a filename to a basename without framework suffix and relative path.
+ */
+function normalizeFilename(filename: string, baseDir: string) {
+  const noFrameworkSuffix = removeFrameworkSuffix(filename);
+  if (isLibPath(noFrameworkSuffix)) {
+    return basename(noFrameworkSuffix);
+  }
+  return relative(baseDir, noFrameworkSuffix).replace(/^(\.\.?\/)+/, "");
+}
+
+/**
  * Remove framework-specific suffixes and replace ../ with ./
  */
 function normalizeImportPath(importPath: string) {
   const noFrameworkSuffix = removeFrameworkSuffix(importPath);
   // Treat # aliases as local and collapse path to just the filename
-  if (isImportMapAliasPath(noFrameworkSuffix)) {
+  if (isLibPath(noFrameworkSuffix)) {
     return `./${basename(noFrameworkSuffix)}`;
   }
-  // Any relative path should be reduced to just the basename to match flattened output
-  if (/^\./.test(noFrameworkSuffix)) {
+  // Any relative path outside the current directory should be reduced to just
+  // the basename to match flattened output.
+  if (/^\.\.\//.test(noFrameworkSuffix)) {
     return `./${basename(noFrameworkSuffix)}`;
   }
   return noFrameworkSuffix;
-}
-
-/**
- * Remove framework-specific suffixes and leading ./ or ../
- */
-function normalizeFilename(filename: string) {
-  return removeFrameworkSuffix(filename).replace(/^(\.\.\/)+/, "");
 }
 
 /**
@@ -156,14 +179,6 @@ async function formatWithPrettier(
 }
 
 /**
- * Convert absolute path to relative path without leading ./
- */
-function getRelativePath(baseDir: string, filePath: string) {
-  const relativePath = relative(baseDir, filePath);
-  return relativePath.replace(/^\.{1,2}\//, "");
-}
-
-/**
  * Resolve an import to a full path
  */
 async function resolveImport(
@@ -174,7 +189,7 @@ async function resolveImport(
   const { resolvedModule } = ts.resolveModuleName(id, importer, {}, host);
   const external =
     resolvedModule?.isExternalLibraryImport ??
-    (!id.startsWith(".") && !isImportMapAliasPath(id));
+    (!id.startsWith(".") && !isLibPath(id));
   if (external) {
     return {
       id,
@@ -270,8 +285,6 @@ async function loadSourceFileCached(
   return data;
 }
 
-// (legacy helper removed)
-
 /**
  * Process a single file and extract its dependencies
  */
@@ -307,7 +320,7 @@ async function rewriteAliasesToRelativeForMerge(
   const out: Record<string, SourceFile> = {};
   for (const [absId, file] of Object.entries(files)) {
     const aliasPaths = Array.from(
-      getImportPaths(file.content, (p) => isImportMapAliasPath(p)),
+      getImportPaths(file.content, (p) => isLibPath(p)),
     );
     if (aliasPaths.length === 0) {
       out[absId] = file;
@@ -318,7 +331,8 @@ async function rewriteAliasesToRelativeForMerge(
       const resolved = await resolveImport(context, a, absId);
       if (!resolved) continue;
       const targetId = resolved.id;
-      if (!files[targetId]) continue; // only rewrite if inside graph
+      // only rewrite if inside graph
+      if (!files[targetId]) continue;
       const dir = dirname(absId);
       let rel = toPosixPath(relative(dir, targetId));
       if (!rel.startsWith(".")) rel = `./${rel}`;
@@ -444,11 +458,12 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
   const cacheKey = cacheKeyForFile(file.id, file.content);
   const cached = flattenedFileCache.get(cacheKey);
   if (cached) return cached;
-  const rel = normalizeFilename(getRelativePath(baseDir, file.id));
-  const filename = basename(rel);
-  let content = replaceImportPaths(file.content, normalizeImportPath);
+  const filename = normalizeFilename(file.id, baseDir);
+  let content = replaceImportPaths(file.content, (path) =>
+    normalizeImportPath(path),
+  );
   if (content !== file.content) {
-    content = await formatWithPrettier(content, file.id, filename);
+    content = await formatWithPrettier(content, file.id, basename(filename));
   }
   const out: FlattenedCacheData = {
     key: filename,
@@ -479,7 +494,9 @@ export function sourcePlugin(root?: string): Plugin {
       const realId = id.replace(queryString, "");
 
       const source: Source = {
-        name: dirname(id).replace(root ?? "", ""),
+        name: dirname(id)
+          .replace(root ?? "", "")
+          .replace(/^.+\/nextjs\/app\//, ""),
         sources: {},
         dependencies: {},
         devDependencies: {},
@@ -487,7 +504,27 @@ export function sourcePlugin(root?: string): Plugin {
         files: {},
       };
 
+      // Process the entry file first
       await processFile(this, source, realId);
+
+      // If this is a Next.js convention file, auto-include siblings and nested
+      // routes
+      const entryFilename = basename(realId);
+      if (isNextjsConventionFile(entryFilename)) {
+        const entryDir = dirname(realId);
+
+        // Find and process sibling convention files
+        const siblingFiles = await findSiblingConventionFiles(realId);
+        for (const siblingPath of siblingFiles) {
+          await processFile(this, source, siblingPath);
+        }
+
+        // Find and process nested route files
+        const nestedFiles = await findNestedRouteFiles(entryDir);
+        for (const nestedPath of nestedFiles) {
+          await processFile(this, source, nestedPath);
+        }
+      }
 
       // Determine utils to merge (only those actually imported / present)
       const utilsIds = Object.keys(source.sources).filter((abs) =>
@@ -512,7 +549,7 @@ export function sourcePlugin(root?: string): Plugin {
         });
       }
 
-      // Build files by normalizing paths and flattening to basenames
+      // Build files by normalizing paths
       const baseDir = dirname(realId);
       const files = await buildFlattenedFiles(baseDir, merged);
 
