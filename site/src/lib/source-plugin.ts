@@ -129,9 +129,9 @@ function normalizeFilename(filename: string, baseDir: string) {
 }
 
 /**
+/**
  * Remove framework-specific suffixes and replace ../ with ./
- * When preserveRelativePaths is true, keeps relative path structure instead of
- * flattening to basename (used for Next.js nested routes).
+ */
  */
 function normalizeImportPath(importPath: string) {
   const noFrameworkSuffix = removeFrameworkSuffix(importPath);
@@ -450,9 +450,10 @@ function computeSourceStylesFromSources(sources: Record<string, SourceFile>) {
 
 /**
  * Generate a flattened file (final files record entry) from a source file.
- * Uses a cache keyed by absolute id and preserve flag.
- * @param preserveRelativePaths - When true, keeps relative path structure
- *   instead of flattening to basename (used for Next.js nested routes)
+ /**
+  * Generate a flattened file (final files record entry) from a source file.
+  * Uses a cache keyed by absolute id.
+  */
  */
 async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
   const cacheKey = cacheKeyForFile(file.id, file.content);
