@@ -21,9 +21,9 @@ jobs:
           cache-npm: true
 
       - name: Build app
-        run: npm run build -w site
+        run: npm run build-site
 
-      - name: Deploy to Cloudflare
+      - name: Deploy app to Cloudflare
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
