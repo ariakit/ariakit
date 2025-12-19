@@ -8,9 +8,8 @@
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.classFunctions": ["clsx", "twMerge", "twJoin"],
   "tailwindCSS.experimental.configFile": {
-    "nextjs/app/globals.css": "nextjs/**/*",
-    "site/src/styles/global.css": "site/**/*",
-    "templates/react/src/style.css": "templates/react/**/*"
+    "site/src/styles/global.css": ["site/**", "nextjs/**"],
+    "templates/react/src/style.css": "templates/react/**"
   },
   "css.validate": false,
   "stylelint.enable": true,
