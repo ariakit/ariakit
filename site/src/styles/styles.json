@@ -2264,6 +2264,33 @@
             {
               "name": "--ak-tab-bg",
               "value": "var(--ak-layer)"
+            },
+            {
+              "name": "--ak-tabs-padding",
+              "value": "var(--ak-frame-padding)"
+            },
+            {
+              "name": "overflow",
+              "value": "clip"
+            },
+            {
+              "name": "background-color",
+              "value": "transparent !important"
+            },
+            {
+              "name": "--ak-tabs-lol",
+              "value": "0"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-tabs-lol": {
+          "name": "ak-tabs-lol",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-tabs-lol",
+              "value": "1"
             }
           ],
           "dependencies": []
@@ -2277,12 +2304,20 @@
               "value": {}
             },
             {
-              "name": "@apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) pb-0! relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain",
+              "name": "@apply -space-x-(--ak-tab-border-width) relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain",
               "value": {}
             },
             {
               "name": "scrollbar-width",
               "value": "none"
+            },
+            {
+              "name": "margin-block-end",
+              "value": "calc(\n    (var(--ak-tab-border-width) + var(--ak-frame-radius)) * -1\n  ) !important"
+            },
+            {
+              "name": "padding-block-end",
+              "value": "var(--ak-frame-radius) !important"
             },
             {
               "name": "&::after",
@@ -2318,6 +2353,11 @@
               "type": "utility",
               "name": "ak-layer-down",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "at-property",
+              "name": "--ak-tab-border-width",
+              "module": "tab"
             }
           ]
         },
@@ -2332,6 +2372,15 @@
             {
               "name": "@apply border-(--ak-tab-border-color)! relative",
               "value": {}
+            },
+            {
+              "name": "@container style(--ak-tabs-lol: 1)",
+              "value": [
+                {
+                  "name": "border-radius",
+                  "value": "var(--ak-frame-radius) !important"
+                }
+              ]
             }
           ],
           "dependencies": [
@@ -2575,6 +2624,56 @@
             {
               "name": "@apply z-2 border-(--ak-tab-border-color)! rounded-b-none!",
               "value": {}
+            },
+            {
+              "name": "&:first-child::before",
+              "value": [
+                {
+                  "name": "@container style(--ak-tabs-lol: 1)",
+                  "value": [
+                    {
+                      "name": "/* rotate: 90deg; */",
+                      "value": {}
+                    },
+                    {
+                      "name": "/* translate: 50%; */",
+                      "value": {}
+                    },
+                    {
+                      "name": "top",
+                      "value": "100%"
+                    },
+                    {
+                      "name": "inset-inline-start",
+                      "value": "calc(var(--ak-tab-border-width) * -1)"
+                    },
+                    {
+                      "name": "right",
+                      "value": "auto"
+                    },
+                    {
+                      "name": "bottom",
+                      "value": "auto"
+                    },
+                    {
+                      "name": "height",
+                      "value": "var(--ak-frame-radius)"
+                    },
+                    {
+                      "name": "width",
+                      "value": "var(--ak-frame-radius)"
+                    },
+                    {
+                      "name": "background",
+                      "value": "var(--ak-layer)"
+                    },
+                    {
+                      "name": "border-inline-start",
+                      "value": "var(--ak-tab-border-width) solid\n        var(--ak-tab-border-color)"
+                    }
+                  ]
+                }
+              ]
             },
             {
               "name": "&::after,\n  &::before",
@@ -10097,6 +10196,9 @@
         "module": "option"
       },
       "ak-tabs": {
+        "module": "tab"
+      },
+      "ak-tabs-lol": {
         "module": "tab"
       },
       "ak-tab-list": {
