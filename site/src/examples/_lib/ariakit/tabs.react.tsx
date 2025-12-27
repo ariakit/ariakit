@@ -36,7 +36,7 @@ export function Tabs({
     <div
       {...props}
       className={clsx(
-        "ak-tabs ak-layer ak-frame-container/0 ak-border ak-tabs-lol border-0! overflow-visible",
+        "ak-tabs ak-layer-2 ak-frame-container/0 ak-border overflow-visible",
         props.className,
       )}
     >

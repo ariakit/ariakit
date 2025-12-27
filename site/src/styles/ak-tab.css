@@ -117,8 +117,6 @@
 
   &:first-child::before {
     @container style(--ak-tabs-lol: 1) {
-      /* rotate: 90deg; */
-      /* translate: 50%; */
       top: 100%;
       inset-inline-start: calc(var(--ak-tab-border-width) * -1);
       right: auto;
