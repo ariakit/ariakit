@@ -22,8 +22,6 @@
   },
   "scripts": {
     "lint": "biome check .",
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js",
     "tsc": "tsc -b"
   },
   "keywords": [
@@ -35,24 +33,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./ariakit/disclosure.react": "./src/ariakit/disclosure.react.tsx",
-    "./ariakit/list.react": "./src/ariakit/list.react.tsx",
-    "./ariakit/nav.react": "./src/ariakit/nav.react.tsx",
-    "./ariakit/progress.react": "./src/ariakit/progress.react.tsx",
-    "./ariakit/select.react": "./src/ariakit/select.react.tsx",
-    "./ariakit/sidebar.react": "./src/ariakit/sidebar.react.tsx",
-    "./ariakit/table.react": "./src/ariakit/table.react.tsx",
-    "./data/orders": "./src/data/orders.ts",
-    "./html/kbd.react": "./src/html/kbd.react.tsx",
-    "./html/kbd.solid": "./src/html/kbd.solid.tsx",
-    "./react-aria/disclosure.react": "./src/react-aria/disclosure.react.tsx",
-    "./react-aria/list.react": "./src/react-aria/list.react.tsx",
-    "./react-aria/progress.react": "./src/react-aria/progress.react.tsx",
-    "./react-hooks/use-is-mobile": "./src/react-hooks/use-is-mobile.ts",
-    "./react-utils/create-render": "./src/react-utils/create-render.ts",
-    "./react-utils/is-iterable": "./src/react-utils/is-iterable.ts",
-    "./react-utils/merge-props": "./src/react-utils/merge-props.ts",
-    "./styles/kbd": "./src/styles/kbd.ts",
+    "./*": "./src/*",
     "./package.json": "./package.json"
   }
 }

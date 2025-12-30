@@ -54,7 +54,7 @@
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "tsc": "conc -r 'tsc' 'npm:tsc -w site' 'npm:tsc -w nextjs' 'npm:tsc -w templates' 'npm:tsc -w packages/ariakit-ui' 'tsc -p tsconfig.solid.json'",
     "tsc-clean": "tsc --build --clean",
-    "build": "lerna exec --scope @ariakit/* -- npm run build",
+    "build": "lerna exec --scope @ariakit/* -- npm run build --if-present",
     "build-website": "npm run build --prefix website",
     "build-website-lite": "cross-env DISABLE_SHIKI=true npm run build-website",
     "clean": "npm run clean -ws --if-present",
