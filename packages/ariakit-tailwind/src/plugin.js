@@ -238,9 +238,12 @@ const AriakitTailwind = plugin(
       /** @param {string} color */
       const shadow = (color) => `oklch(from ${color} 0 0 0 / ${shadowAlpha})`;
 
+      const layerParent = prop(vars.layerParent, "canvas");
+
       const result = css(getCurrentLayerCss(), {
         [vars.layer]: prop(vars._layerIdle),
-        [vars.shadow]: shadow(prop(vars.layer)),
+        // [vars.shadow]: shadow(prop(vars.layer)),
+        [vars.shadow]: shadow(layerParent),
 
         [vars._layerDown]: isDown ? "1" : "0",
         [vars._layerAppearance]: textColor(prop(vars.layer)),
@@ -269,10 +272,9 @@ const AriakitTailwind = plugin(
       Object.assign(
         result,
         withContext("layer-parent", false, ({ provide, inherit }) => {
-          const layerParent = prop(vars.layerParent, "canvas");
           const result = {
             [provide(vars._layerParent)]: prop(vars.layer),
-            [vars.shadow]: shadow(layerParent),
+            // [vars.shadow]: shadow(layerParent),
             [vars.layerParent]: inherit(vars._layerParent),
           };
           return Object.assign(

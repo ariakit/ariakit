@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": ".types",
+    "rootDir": ".",
+    "types": ["node"],
+    "noUncheckedIndexedAccess": true
+  },
+  // "include": ["../.astro/types.d.ts", "env.d.ts", "**/*.astro"],
+  "include": ["src/**/*.astro"],
+  "exclude": [],
+  "references": [
+    { "path": "tsconfig.react.json" },
+    { "path": "tsconfig.solid.json" }
+  ]
+}

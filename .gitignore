@@ -5,6 +5,7 @@
 dist
 test-results
 playwright-report
+.types
 
 # dependencies
 node_modules

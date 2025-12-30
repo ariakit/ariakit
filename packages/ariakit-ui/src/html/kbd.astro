@@ -1,0 +1,10 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { kbd } from "../styles/kbd.ts";
+
+interface Props extends HTMLAttributes<"kbd"> {}
+
+const props = Astro.props;
+---
+
+<kbd class={kbd(props)} {...props}><slot /></kbd>
