@@ -62,23 +62,46 @@ type SplitResult<
   ? [Pick<P, Extract<keyof P, VariantKeys<V, E>>>, Omit<P, VariantKeys<V, E>>]
   : [EmptyRecord, P];
 
+/**
+ * The return type of the `cv` function. A callable that computes class strings
+ * based on variant props, with utility methods for splitting props and
+ * accessing variant metadata.
+ */
 export interface CVReturn<
   V extends AnyVariants = AnyVariants,
   E extends AnyCVReturn[] = AnyCVReturn[],
 > {
+  /** Computes the final class string based on the provided variant props. */
   (props?: CVProps<V, E>): string;
+  /**
+   * Separates variant props (including `class` and `className`) from the rest
+   * of the props object.
+   */
   splitProps: <P extends CVProps<V, E>>(props: P) => SplitResult<P, V, E>;
+  /** The default values for each variant. */
   defaultVariants: DefaultVariants<V> &
     DefaultVariants<MergeExtendedVariants<E>>;
+  /** Array of all variant prop keys, including `class` and `className`. */
   variantProps: readonly VariantKeys<V, E>[];
 }
 
+/**
+ * Configuration object for creating a class variance utility with `cv`.
+ */
 export interface CVConfig<V extends Variants, E extends AnyCVReturn[]> {
+  /** Other `cv` instances to extend from, inheriting their base classes and
+   * variants. */
   extend?: E;
+  /** The base class that is always applied. */
   class: ClassValue;
+  /** A map of variant names to their possible values and corresponding
+   * classes. */
   variants?: V & Partial<MergeExtendedVariants<E>>;
+  /** Default values for variants when not explicitly provided in props. */
   defaultVariants?: DefaultVariants<V> &
     DefaultVariants<MergeExtendedVariants<E>>;
+  /** Classes to apply when multiple variant conditions are met
+   * simultaneously. */
   compoundVariants?: CompoundVariant<V & MergeExtendedVariants<E>>[];
 }
 
@@ -96,8 +119,15 @@ interface InternalConfig {
   extend?: AnyCVReturn[];
 }
 
-interface CreateCVConfig {
-  /** Transform the final class string (e.g., apply tailwind-merge) */
+/**
+ * Configuration object for `createCV` to customize the behavior of `cv` and
+ * `cx`.
+ */
+export interface CreateCVConfig {
+  /**
+   * A function to transform the final class string. Useful for applying
+   * utilities like `tailwind-merge` to deduplicate or merge Tailwind classes.
+   */
   transform?: (className: string) => string;
 }
 
