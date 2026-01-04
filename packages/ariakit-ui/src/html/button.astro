@@ -1,0 +1,34 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { button } from "../styles/button.ts";
+import type { VariantProps } from "../utils/cv.ts";
+
+interface Props
+  extends
+    HTMLAttributes<"button">,
+    VariantProps<typeof button>,
+    VariantProps<typeof button.text> {}
+
+const [variantProps, buttonRest] = button.splitProps(Astro.props);
+const [textProps, rest] = button.text.splitProps(buttonRest);
+---
+
+<button class={button(variantProps)} {...rest}>
+  {
+    Astro.slots.has("iconStart") && (
+      <span class={button.icon({ position: "start" })}>
+        <slot name="iconStart" />
+      </span>
+    )
+  }
+  <span class={button.text(textProps)}>
+    <slot />
+  </span>
+  {
+    Astro.slots.has("iconEnd") && (
+      <span class={button.icon({ position: "end" })}>
+        <slot name="iconEnd" />
+      </span>
+    )
+  }
+</button>

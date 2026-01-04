@@ -908,6 +908,23 @@ test("cv compound variants come before user class/className", () => {
   );
 });
 
+test("cv can set boolean default variants from extended variants", () => {
+  const parent = cv({
+    variants: {
+      disabled: {
+        true: "disabled",
+      },
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    defaultVariants: {
+      disabled: true,
+    },
+  });
+  expect(child({ disabled: true })).toBe("disabled");
+});
+
 test("type: variantProps has correct const type", () => {
   const style = cv({
     class: "base",
@@ -1065,6 +1082,25 @@ test("type: VariantProps extracts variant props from cv return type", () => {
     size: "sm",
     intent: "primary",
   };
+  expect(props).toBeDefined();
+});
+
+test("type: VariantProps includes boolean variants from extended variants", () => {
+  const parent = cv({
+    variants: {
+      disabled: {
+        true: "disabled",
+      },
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    aliasVariants: {
+      enabled: ["disabled"],
+    },
+  });
+  type Props = VariantProps<typeof child>;
+  const props: Props = { disabled: true };
   expect(props).toBeDefined();
 });
 

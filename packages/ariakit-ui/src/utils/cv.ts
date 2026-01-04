@@ -2,9 +2,9 @@ import clsx, { type ClassValue } from "clsx";
 
 export type { ClassValue };
 
-type Variants = Record<string, Record<string, ClassValue>>;
+type Variants = Record<string, Record<any, ClassValue>>;
 
-type AnyVariants = Record<string, Record<string, unknown>>;
+type AnyVariants = Record<string, Record<any, unknown>>;
 
 type StringToBoolean<T> = T extends "true" | "false" ? boolean : T;
 
@@ -244,7 +244,7 @@ export interface CVConfig<
   /**
    * The base class that is always applied.
    */
-  class: ClassValue;
+  class?: ClassValue;
   /**
    * A map of variant names to their possible values and corresponding classes.
    */

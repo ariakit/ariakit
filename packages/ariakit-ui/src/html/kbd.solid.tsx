@@ -4,8 +4,8 @@ import { kbd } from "../styles/kbd.ts";
 import type { VariantProps } from "../utils/cv.ts";
 
 export interface KbdProps
-  extends VariantProps<typeof kbd>,
-    ComponentProps<"kbd"> {}
+  extends ComponentProps<"kbd">,
+    VariantProps<typeof kbd> {}
 
 export function Kbd(props: KbdProps) {
   const [variantProps, rest] = splitProps(props, kbd.variantProps);

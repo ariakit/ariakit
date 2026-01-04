@@ -4,18 +4,20 @@ import { badge } from "../styles/badge.ts";
 import type { VariantProps } from "../utils/cv.ts";
 
 export interface BadgeProps
-  extends VariantProps<typeof badge>,
-    ComponentProps<"div"> {
+  extends ComponentProps<"div">,
+    VariantProps<typeof badge>,
+    VariantProps<typeof badge.text> {
   iconStart?: JSXElement;
   iconEnd?: JSXElement;
 }
 
 export function Badge(props: BadgeProps) {
-  const [variantProps, iconProps, rest] = splitProps(
+  const [variantProps, iconProps, badgeRest] = splitProps(
     props,
     badge.variantProps,
     ["iconStart", "iconEnd"],
   );
+  const [textProps, rest] = badge.text.splitProps(badgeRest);
   return (
     <div {...rest} class={badge(variantProps)}>
       <Show when={iconProps.iconStart}>
@@ -23,7 +25,7 @@ export function Badge(props: BadgeProps) {
           {iconProps.iconStart}
         </span>
       </Show>
-      <span class={badge.text()}>{props.children}</span>
+      <span class={badge.text(textProps)}>{props.children}</span>
       <Show when={iconProps.iconEnd}>
         <span class={badge.icon({ position: "end" })}>{iconProps.iconEnd}</span>
       </Show>

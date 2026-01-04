@@ -3,14 +3,16 @@ import { badge } from "../styles/badge.ts";
 import type { VariantProps } from "../utils/cv.ts";
 
 export interface BadgeProps
-  extends VariantProps<typeof badge>,
-    ComponentProps<"div"> {
+  extends ComponentProps<"div">,
+    VariantProps<typeof badge>,
+    VariantProps<typeof badge.text> {
   iconStart?: React.ReactNode;
   iconEnd?: React.ReactNode;
 }
 
 export function Badge(props: BadgeProps) {
-  const [variantProps, rest] = badge.splitProps(props);
+  const [variantProps, badgeRest] = badge.splitProps(props);
+  const [textProps, rest] = badge.text.splitProps(badgeRest);
   return (
     <div {...rest} className={badge(variantProps)}>
       {props.iconStart && (
@@ -18,7 +20,7 @@ export function Badge(props: BadgeProps) {
           {props.iconStart}
         </span>
       )}
-      <span className={badge.text()}>{props.children}</span>
+      <span className={badge.text(textProps)}>{props.children}</span>
       {props.iconEnd && (
         <span className={badge.icon({ position: "end" })}>{props.iconEnd}</span>
       )}

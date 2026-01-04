@@ -1,18 +1,20 @@
 import { cv } from "../utils/cv.ts";
+import { icon } from "./icon.ts";
+import { outline } from "./outline.ts";
 
 export const badge = Object.assign(
   cv({
+    extend: [outline],
     class: [
-      "flex items-center font-medium whitespace-nowrap",
-      "ak-frame-badge/[0.5em]",
-      "ak-layer-mix-(--badge-color)/15",
+      "[--px:calc(var(--ak-frame-padding)*1.5)]",
+      "[--py:calc(var(--ak-frame-padding)-(1lh-1em)/2)]",
+      "flex font-medium whitespace-nowrap px-(--px) py-(--py) gap-(--ak-frame-padding)",
+      "ak-frame-badge ak-layer-mix-(--badge-color)/15",
       "ak-dark:ak-edge-(--badge-color) ak-light:ak-edge-(--badge-color)/15",
-      "[--frame-px:calc(var(--ak-frame-padding)*1.75)]",
-      "px-(--frame-px)",
-      "gap-(--ak-frame-padding)",
     ],
     variants: {
       variant: {
+        default: "[--badge-color:var(--color-gray-500)]",
         primary: "[--badge-color:var(--color-primary)]",
         secondary: "[--badge-color:var(--color-secondary)]",
         success: "[--badge-color:var(--color-green-500)]",
@@ -20,28 +22,28 @@ export const badge = Object.assign(
         danger: "[--badge-color:var(--color-red-500)]",
       },
       size: {
-        sm: "text-xs/[100%]",
-        md: "text-sm/[100%]",
-        lg: "text-base/[100%]",
+        sm: "text-xs",
+        md: "text-sm",
+        lg: "text-base",
       },
     },
     defaultVariants: {
-      variant: "primary",
+      variant: "default",
       size: "sm",
     },
   }),
   {
     text: cv({
-      class: ["ak-text-(--badge-color)/70"],
-    }),
-    icon: cv({
-      class: "flex-none *:block ak-text-(--badge-color)/70",
+      class: "ak-text-(--badge-color)/70",
       variants: {
-        position: {
-          start: "ms-[calc(var(--ak-frame-padding)-var(--frame-px))]",
-          end: "me-[calc(var(--ak-frame-padding)-var(--frame-px))]",
+        truncate: {
+          true: "truncate",
         },
       },
+    }),
+    icon: cv({
+      extend: [icon],
+      class: "ak-text-(--badge-color)/70",
     }),
   },
 );

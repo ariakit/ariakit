@@ -3,9 +3,14 @@ import type { HTMLAttributes } from "astro/types";
 import { badge } from "../styles/badge.ts";
 import type { VariantProps } from "../utils/cv.ts";
 
-interface Props extends VariantProps<typeof badge>, HTMLAttributes<"div"> {}
+interface Props
+  extends
+    HTMLAttributes<"div">,
+    VariantProps<typeof badge>,
+    VariantProps<typeof badge.text> {}
 
-const [variantProps, rest] = badge.splitProps(Astro.props);
+const [variantProps, badgeRest] = badge.splitProps(Astro.props);
+const [textProps, rest] = badge.text.splitProps(badgeRest);
 ---
 
 <div class={badge(variantProps)} {...rest}>
@@ -16,7 +21,7 @@ const [variantProps, rest] = badge.splitProps(Astro.props);
       </span>
     )
   }
-  <span class={badge.text()}>
+  <span class={badge.text(textProps)}>
     <slot />
   </span>
   {

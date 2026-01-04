@@ -26,15 +26,32 @@
   }
 }
 
-@custom-variant disabled {
+@custom-variant ak-disabled {
   &:disabled,
   &[aria-disabled="true"] {
     @slot;
   }
 }
 
-@custom-variant active {
-  &:not(:disabled, [aria-disabled="true"], :has(button:active)):active {
+@custom-variant ak-active {
+  @variant active {
+    @variant not-ak-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ak-hover {
+  @variant hover {
+    @variant not-ak-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ak-focus-visible {
+  &:focus-visible,
+  &[data-focus-visible] {
     @slot;
   }
 }
