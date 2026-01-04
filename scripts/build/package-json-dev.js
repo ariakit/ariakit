@@ -6,6 +6,7 @@ import { writePackageJson } from "./utils.js";
 /** @param {string} path */
 function processDevPackage(path) {
   if (path.includes("ariakit-tailwind")) return;
+  if (path.includes("ariakit-ui")) return;
   const match = path.match(/packages\/(.*)\/src/);
   if (!match) return;
   const [, pkg] = match;

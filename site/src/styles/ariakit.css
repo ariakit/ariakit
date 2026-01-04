@@ -9,7 +9,7 @@
 @import "tailwindcss";
 @import "@ariakit/tailwind";
 
-@import "./ak-aurora.css";
+/* @import "./ak-aurora.css";
 @import "./ak-icon.css";
 @import "./ak-badge.css";
 @import "./ak-command.css";
@@ -34,7 +34,7 @@
 @import "./ak-segmented.css";
 @import "./ak-table.css";
 @import "./ak-sidebar.css";
-@import "./ak-prose.css";
+@import "./ak-prose.css"; */
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);

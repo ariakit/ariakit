@@ -8,7 +8,46 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Icon } from "#app/icons/icon.react.tsx";
+import BadgeAstro from "@ariakit/ui/html/badge.astro";
+import { Badge } from "@ariakit/ui/html/badge.react.tsx";
+import { Badge as BadgeSolid } from "@ariakit/ui/html/badge.solid.tsx";
+import { command } from "@ariakit/ui/styles/command.ts";
 import Layout from "./_layout.astro";
 ---
 
-<Layout>Soon</Layout>
+<Layout>
+  Soon
+
+  <div class="flex gap-2 items-center p-2">
+    <button class={command({ depth: "xl" })}>Command xs</button>
+    <button class={command({ depthY: "none" })}>Command none</button>
+    <BadgeAstro>
+      <Icon name="danger" slot="iconStart" />
+      Badge Astro
+    </BadgeAstro>
+    <BadgeSolid variant="danger" size="lg">
+      <!-- <Icon name="danger" slot="iconStart" /> -->
+      Badge Solid
+      <Icon name="danger" slot="iconEnd" />
+    </BadgeSolid>
+    <Badge>Badge</Badge>
+
+    <Badge variant="primary"> Badge </Badge>
+    <Badge>
+      <Icon name="danger" slot="iconStart" />
+      Badge
+    </Badge>
+    <Badge variant="secondary">
+      <Icon name="danger" slot="iconStart" />
+      Badge
+    </Badge>
+    <Badge variant="secondary" className="border-dashed">
+      <div class="size-[1em] bg-blue-500 rounded-full" slot="iconStart"></div>
+      Plus
+    </Badge>
+    <Badge variant="success">Badge</Badge>
+    <Badge variant="warning">Badge</Badge>
+    <Badge variant="danger">Badge</Badge>
+  </div>
+</Layout>

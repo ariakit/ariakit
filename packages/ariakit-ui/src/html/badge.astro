@@ -1,0 +1,29 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { badge } from "../styles/badge.ts";
+import type { VariantProps } from "../utils/cv.ts";
+
+interface Props extends VariantProps<typeof badge>, HTMLAttributes<"div"> {}
+
+const [variantProps, rest] = badge.splitProps(Astro.props);
+---
+
+<div class={badge(variantProps)} {...rest}>
+  {
+    Astro.slots.has("iconStart") && (
+      <span class={badge.icon({ position: "start" })}>
+        <slot name="iconStart" />
+      </span>
+    )
+  }
+  <span class={badge.text()}>
+    <slot />
+  </span>
+  {
+    Astro.slots.has("iconEnd") && (
+      <span class={badge.icon({ position: "end" })}>
+        <slot name="iconEnd" />
+      </span>
+    )
+  }
+</div>
