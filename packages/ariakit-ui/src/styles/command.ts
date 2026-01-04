@@ -7,8 +7,8 @@ export const command = cv({
     // Only apply cursor-pointer to submit buttons that are not disabled
     "[&:where([type='submit'],form_button:only-of-type,a_&)]:not-disabled:cursor-pointer",
     // When active, scale x and y based on depth
-    "[--command-scale-x:min(100%,98%+2%*calc(1-clamp(0,var(--command-depth-x)/10,1)))]",
-    "[--command-scale-y:min(100%,96%+4%*calc(1-clamp(0,var(--command-depth-y)/10,1)))]",
+    "active:[--command-scale-x:min(100%,98%+2%*calc(1-clamp(0,var(--command-depth-x)/10,1)))]",
+    "active:[--command-scale-y:min(100%,96%+4%*calc(1-clamp(0,var(--command-depth-y)/10,1)))]",
     "active:origin-bottom active:scale-x-(--command-scale-x) active:scale-y-(--command-scale-y)",
   ],
   variants: {
@@ -33,6 +33,6 @@ export const command = cv({
     depth: ["depthX", "depthY"],
   },
   defaultVariants: {
-    depth: "md",
+    depthX: "md",
   },
 });

@@ -87,8 +87,10 @@ type ValidAliasVariants<V extends AnyVariants, A> = {
   [K in keyof A]: A[K] extends readonly (string & keyof V)[]
     ? OptionsMatch<V, ArrayElementUnion<A[K]>> extends true
       ? A[K]
-      : never
-    : never;
+      : A[K] extends [infer First, ...any]
+        ? First[]
+        : never
+    : (keyof V)[];
 };
 
 // Extract valid variant keys from an alias targets array (as a union)
