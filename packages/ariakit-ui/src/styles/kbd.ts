@@ -1,7 +1,7 @@
-import { cva } from "cva";
+import { cv } from "../utils/cv.ts";
 
-export const kbd = cva({
-  base: [
+export const kbd = cv({
+  class: [
     "ak-layer-pop-1.5",
     "ak-edge-5/100 ak-dark:ak-edge/16",
     "font-sans p-[0.1em_0.25em]",
