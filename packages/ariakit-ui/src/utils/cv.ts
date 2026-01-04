@@ -148,8 +148,7 @@ type VariantKeys<
 > =
   | keyof V
   | keyof MergeExtendedVariants<E>
-  | (A extends EmptyRecord ? never : keyof AllAliasVariants<A, E>)
-  | "class";
+  | (A extends EmptyRecord ? never : keyof AllAliasVariants<A, E>);
 
 type SplitResult<
   P,

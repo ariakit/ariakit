@@ -2,29 +2,30 @@ import type { ComponentProps } from "react";
 import { button } from "../styles/button.ts";
 import type { VariantProps } from "../utils/cv.ts";
 
-export interface BadgeProps
+export interface ButtonProps
   extends ComponentProps<"button">,
     VariantProps<typeof button>,
     VariantProps<typeof button.text> {
+  icon?: React.ReactNode;
   iconStart?: React.ReactNode;
   iconEnd?: React.ReactNode;
 }
 
-export function Badge(props: BadgeProps) {
-  const [variantProps, buttonRest] = button.splitProps(props);
+export function Button({ icon, iconStart, iconEnd, ...props }: ButtonProps) {
+  const [variantProps, buttonRest] = button.splitProps({
+    square: !!icon,
+    ...props,
+  });
   const [textProps, rest] = button.text.splitProps(buttonRest);
   return (
     <button {...rest} className={button(variantProps)}>
-      {props.iconStart && (
-        <span className={button.icon({ position: "start" })}>
-          {props.iconStart}
-        </span>
+      {iconStart && (
+        <span className={button.icon({ position: "start" })}>{iconStart}</span>
       )}
+      {icon}
       <span className={button.text(textProps)}>{props.children}</span>
-      {props.iconEnd && (
-        <span className={button.icon({ position: "end" })}>
-          {props.iconEnd}
-        </span>
+      {iconEnd && (
+        <span className={button.icon({ position: "end" })}>{iconEnd}</span>
       )}
     </button>
   );

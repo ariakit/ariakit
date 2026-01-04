@@ -9,7 +9,10 @@ interface Props
     VariantProps<typeof button>,
     VariantProps<typeof button.text> {}
 
-const [variantProps, buttonRest] = button.splitProps(Astro.props);
+const [variantProps, buttonRest] = button.splitProps({
+  square: !!Astro.slots.has("icon"),
+  ...Astro.props,
+});
 const [textProps, rest] = button.text.splitProps(buttonRest);
 ---
 
@@ -21,6 +24,7 @@ const [textProps, rest] = button.text.splitProps(buttonRest);
       </span>
     )
   }
+  <slot name="icon" />
   <span class={button.text(textProps)}>
     <slot />
   </span>

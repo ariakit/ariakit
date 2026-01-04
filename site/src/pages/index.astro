@@ -12,12 +12,17 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import BadgeAstro from "@ariakit/ui/html/badge.astro";
 import { Badge } from "@ariakit/ui/html/badge.react.tsx";
 import { Badge as BadgeSolid } from "@ariakit/ui/html/badge.solid.tsx";
-import { Button } from "@ariakit/ui/html/button.solid.tsx";
+import Button from "@ariakit/ui/html/button.astro";
 import Layout from "./_layout.astro";
 ---
 
 <Layout>
   Soon
+
+  <Button>
+    Button
+    <Icon name="chevronDown" slot="icon" />
+  </Button>
 
   <div class="flex gap-2 items-center p-2">
     <Button>Button</Button>

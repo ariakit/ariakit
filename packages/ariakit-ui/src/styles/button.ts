@@ -7,11 +7,13 @@ export const button = Object.assign(
   cv({
     extend: [command, outline],
     class: [
+      "group/button",
       "[--px:calc(var(--ak-frame-padding)*1.25)]",
       "[--py:calc(var(--ak-frame-padding)-(1lh-1em)/2)]",
       "flex font-[calc(500+50*var(--contrast))] leading-[1.5em] px-(--px) py-(--py) gap-[calc(var(--ak-frame-padding)/2)]",
       "ak-frame-field ak-outline-primary",
       "ak-hover:ak-layer-hover",
+      "ak-focus-visible:outline-2",
       "ak-disabled:ak-text/50 ak-disabled:ak-layer-mix ak-disabled:border-transparent ak-disabled:inset-shadow-none ak-disabled:bg-none ak-disabled:shadow-none",
     ],
     variants: {
@@ -31,6 +33,9 @@ export const button = Object.assign(
         lg: "text-lg",
         xl: "text-xl",
       },
+      square: {
+        true: "square size-[2.5em] p-0! items-center justify-center",
+      },
     },
     defaultVariants: {
       variant: "default",
@@ -40,6 +45,7 @@ export const button = Object.assign(
   {
     icon,
     text: cv({
+      class: "group-[.square]/button:sr-only",
       variants: {
         truncate: {
           true: "truncate",

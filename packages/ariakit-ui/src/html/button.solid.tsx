@@ -1,34 +1,39 @@
 import type { ComponentProps, JSXElement } from "solid-js";
-import { Show, splitProps } from "solid-js";
+import { mergeProps, Show, splitProps } from "solid-js";
 import { button } from "../styles/button.ts";
 import type { VariantProps } from "../utils/cv.ts";
 
-export interface buttonProps
+export interface ButtonProps
   extends ComponentProps<"button">,
     VariantProps<typeof button>,
     VariantProps<typeof button.text> {
+  icon?: JSXElement;
   iconStart?: JSXElement;
   iconEnd?: JSXElement;
 }
 
-export function Button(props: buttonProps) {
-  const [variantProps, iconProps, buttonRest] = splitProps(
-    props,
+export function Button(props: ButtonProps) {
+  const [variantProps, customProps, buttonRest] = splitProps(
+    mergeProps({ ...button.defaultVariants, square: !!props.icon }, props),
     button.variantProps,
-    ["iconStart", "iconEnd"],
+    ["icon", "iconStart", "iconEnd"],
   );
-  const [textProps, rest] = button.text.splitProps(buttonRest);
+  const [textProps, rest] = splitProps(
+    mergeProps(button.text.defaultVariants, buttonRest),
+    button.text.variantProps,
+  );
   return (
     <button {...rest} class={button(variantProps)}>
-      <Show when={iconProps.iconStart}>
+      <Show when={customProps.iconStart}>
         <span class={button.icon({ position: "start" })}>
-          {iconProps.iconStart}
+          {customProps.iconStart}
         </span>
       </Show>
+      {customProps.icon}
       <span class={button.text(textProps)}>{props.children}</span>
-      <Show when={iconProps.iconEnd}>
+      <Show when={customProps.iconEnd}>
         <span class={button.icon({ position: "end" })}>
-          {iconProps.iconEnd}
+          {customProps.iconEnd}
         </span>
       </Show>
     </button>
