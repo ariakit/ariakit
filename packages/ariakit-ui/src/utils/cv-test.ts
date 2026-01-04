@@ -218,9 +218,9 @@ test("cv child can define same variant key as parent", () => {
       },
     },
   });
-  // Parent uses its own defaults, child applies prop to its own variants
+  // Both parent and child apply the variant prop
   expect(child()).toBe("parent bar-x child");
-  expect(child({ bar: "y" })).toBe("parent bar-x child child-bar-y");
+  expect(child({ bar: "y" })).toBe("parent bar-y child child-bar-y");
 });
 
 test("cv child can add new variants", () => {
@@ -329,6 +329,107 @@ test("cv extends inherit parent default variants", () => {
   });
   // Parent defaults should apply in extended call
   expect(child()).toBe("parent color-red child");
+});
+
+test("cv extended receives passed variant props", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "size-small",
+        large: "size-large",
+      },
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+  });
+  // Parent should apply the passed variant prop
+  expect(child({ size: "small" })).toBe("parent size-small child");
+  expect(child({ size: "large" })).toBe("parent size-large child");
+});
+
+test("cv extended with compound variants receives props", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      intent: {
+        primary: "bg-blue",
+        secondary: "bg-gray",
+      },
+      size: {
+        small: "text-sm",
+        medium: "text-base",
+      },
+    },
+    compoundVariants: [
+      {
+        intent: "primary",
+        size: "medium",
+        class: "parent-compound",
+      },
+    ],
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+  });
+  // Parent compound variant should apply when conditions match
+  expect(child({ intent: "primary", size: "medium" })).toBe(
+    "parent bg-blue text-base parent-compound child",
+  );
+  expect(child({ intent: "primary", size: "small" })).toBe(
+    "parent bg-blue text-sm child",
+  );
+});
+
+test("cv extended does not duplicate class/className", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "size-small",
+      },
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+  });
+  // User's class/className should only appear once at the end
+  expect(child({ size: "small", class: "user-class" })).toBe(
+    "parent size-small child user-class",
+  );
+  expect(child({ size: "small", className: "user-class" })).toBe(
+    "parent size-small child user-class",
+  );
+});
+
+test("cv child defaultVariants override parent defaultVariants", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "size-small",
+        large: "size-large",
+      },
+    },
+    defaultVariants: {
+      size: "small",
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    defaultVariants: {
+      size: "large",
+    },
+  });
+  // Child's default should override parent's default
+  expect(child()).toBe("parent size-large child");
+  // Explicit prop should still work
+  expect(child({ size: "small" })).toBe("parent size-small child");
 });
 
 test("type: rejects invalid defaultVariants keys", () => {
@@ -1050,4 +1151,316 @@ test("type: splitProps correctly types variant props when using an interface", (
 
   expect(variantProps).toEqual({ size: "sm", variant: "primary" });
   expect(rest).toEqual({ id: "my-id", onClick: expect.any(Function) });
+});
+
+test("cv extended variantProps includes parent variant keys", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "size-small",
+        large: "size-large",
+      },
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    variants: {
+      color: {
+        red: "color-red",
+        blue: "color-blue",
+      },
+    },
+  });
+  // variantProps should include both parent and child variant keys
+  expect(child.variantProps).toContain("size");
+  expect(child.variantProps).toContain("color");
+  expect(child.variantProps).toContain("class");
+  expect(child.variantProps).toContain("className");
+});
+
+test("cv extended variantProps includes multiple parent variant keys", () => {
+  const first = cv({
+    class: "first",
+    variants: {
+      intent: {
+        primary: "intent-primary",
+        secondary: "intent-secondary",
+      },
+    },
+  });
+  const second = cv({
+    class: "second",
+    variants: {
+      rounded: {
+        true: "rounded-true",
+        false: "rounded-false",
+      },
+    },
+  });
+  const child = cv({
+    extend: [first, second],
+    class: "child",
+    variants: {
+      size: {
+        small: "size-small",
+      },
+    },
+  });
+  expect(child.variantProps).toContain("intent");
+  expect(child.variantProps).toContain("rounded");
+  expect(child.variantProps).toContain("size");
+});
+
+test("cv extended defaultVariants includes parent default variants", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "size-small",
+        large: "size-large",
+      },
+    },
+    defaultVariants: {
+      size: "small",
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    variants: {
+      color: {
+        red: "color-red",
+        blue: "color-blue",
+      },
+    },
+    defaultVariants: {
+      color: "red",
+    },
+  });
+  // defaultVariants should include both parent and child defaults
+  expect(child.defaultVariants).toEqual({
+    size: "small",
+    color: "red",
+  });
+});
+
+test("cv extended defaultVariants merges multiple parents", () => {
+  const first = cv({
+    class: "first",
+    variants: {
+      intent: {
+        primary: "intent-primary",
+        secondary: "intent-secondary",
+      },
+    },
+    defaultVariants: {
+      intent: "primary",
+    },
+  });
+  const second = cv({
+    class: "second",
+    variants: {
+      rounded: {
+        true: "rounded-true",
+        false: "rounded-false",
+      },
+    },
+    defaultVariants: {
+      rounded: true,
+    },
+  });
+  const child = cv({
+    extend: [first, second],
+    class: "child",
+  });
+  expect(child.defaultVariants).toEqual({
+    intent: "primary",
+    rounded: true,
+  });
+});
+
+test("cv extended child defaultVariants override parent defaults in defaultVariants property", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "size-small",
+        large: "size-large",
+      },
+    },
+    defaultVariants: {
+      size: "small",
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    defaultVariants: {
+      size: "large",
+    },
+  });
+  // Child's default should override parent's default
+  expect(child.defaultVariants).toEqual({
+    size: "large",
+  });
+});
+
+test("cv extended splitProps correctly separates parent variant props", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "size-small",
+        large: "size-large",
+      },
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    variants: {
+      color: {
+        red: "color-red",
+        blue: "color-blue",
+      },
+    },
+  });
+  const [variantProps, rest] = child.splitProps({
+    size: "small",
+    color: "red",
+    id: "my-id",
+  });
+  expect(variantProps).toEqual({ size: "small", color: "red" });
+  expect(rest).toEqual({ id: "my-id" });
+});
+
+test("type: compoundVariants rejects unknown variant keys", () => {
+  cv({
+    class: "base",
+    variants: {
+      size: {
+        small: "text-sm",
+        large: "text-lg",
+      },
+    },
+    compoundVariants: [
+      {
+        size: "small",
+        // @ts-expect-error - "unknown" is not a defined variant key
+        unknown: "value",
+        class: "compound",
+      },
+    ],
+  });
+});
+
+test("type: compoundVariants rejects invalid variant values", () => {
+  cv({
+    class: "base",
+    variants: {
+      size: {
+        small: "text-sm",
+        large: "text-lg",
+      },
+    },
+    compoundVariants: [
+      {
+        // @ts-expect-error - "medium" is not a valid size option
+        size: "medium",
+        class: "compound",
+      },
+    ],
+  });
+});
+
+test("type: extended cv compoundVariants accepts parent variant keys", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "text-sm",
+        large: "text-lg",
+      },
+    },
+  });
+  // This should compile without error
+  cv({
+    extend: [parent],
+    class: "child",
+    variants: {
+      color: {
+        red: "text-red",
+        blue: "text-blue",
+      },
+    },
+    compoundVariants: [
+      {
+        size: "small",
+        color: "red",
+        class: "compound",
+      },
+    ],
+  });
+});
+
+test("type: extended variantProps has correct type", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "text-sm",
+        large: "text-lg",
+      },
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    variants: {
+      color: {
+        red: "text-red",
+        blue: "text-blue",
+      },
+    },
+  });
+  // Type assertion to verify variantProps includes both parent and child keys
+  const props: readonly ("size" | "color" | "class" | "className")[] =
+    child.variantProps;
+  expect(props).toContain("size");
+  expect(props).toContain("color");
+});
+
+test("type: extended defaultVariants has correct type", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      size: {
+        small: "text-sm",
+        large: "text-lg",
+      },
+    },
+    defaultVariants: {
+      size: "small",
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    variants: {
+      color: {
+        red: "text-red",
+        blue: "text-blue",
+      },
+    },
+    defaultVariants: {
+      color: "red",
+    },
+  });
+  // Verify type includes both parent and child default variants
+  child.defaultVariants.size;
+  child.defaultVariants.color;
+  // @ts-expect-error - "unknown" is not a defined variant
+  child.defaultVariants.unknown;
 });

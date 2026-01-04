@@ -154,13 +154,20 @@ export function createCV(config: CreateCVConfig = {}) {
   >(
     cvConfig: CVConfig<V, E>,
   ): CVReturn<V, E> => {
-    const callable = (props: Record<string, unknown> = {}) => {
+    const callable = (props: CVProps<V, E> = {}) => {
       const mergedProps = { ...cvConfig.defaultVariants, ...props };
       const classes: ClassValue[] = [];
 
       if (cvConfig.extend) {
+        // Pass merged props (child defaults + user props) to extended cv
+        // instances so child defaults override parent defaults. Exclude class
+        // and className to avoid duplicating user-provided classes.
+        const { class: _, className: __, ...extendedProps } = mergedProps;
         for (const extended of cvConfig.extend) {
-          classes.push(extended());
+          // Extended cv instances are typed as AnyCVReturn which accepts a
+          // generic props object. The variant keys are compatible at runtime.
+          type ExtendedCVProps = CVProps<AnyVariants, AnyCVReturn[]>;
+          classes.push(extended(extendedProps as ExtendedCVProps));
         }
       }
 
@@ -217,11 +224,23 @@ export function createCV(config: CreateCVConfig = {}) {
       return customCx(...classes);
     };
 
-    const variantPropKeys = new Set([
-      ...Object.keys(cvConfig.variants ?? {}),
-      "class",
-      "className",
-    ]);
+    // Collect variant keys from extended CVs, then child variants, then
+    // class/className at the end
+    const variantPropKeys = new Set<string>();
+    if (cvConfig.extend) {
+      for (const extended of cvConfig.extend) {
+        for (const key of extended.variantProps) {
+          if (key !== "class" && key !== "className") {
+            variantPropKeys.add(key);
+          }
+        }
+      }
+    }
+    for (const key of Object.keys(cvConfig.variants ?? {})) {
+      variantPropKeys.add(key);
+    }
+    variantPropKeys.add("class");
+    variantPropKeys.add("className");
 
     callable.splitProps = <P extends Record<string, unknown>>(props: P) => {
       const variantPropsResult: Record<string, unknown> = {};
@@ -236,7 +255,16 @@ export function createCV(config: CreateCVConfig = {}) {
       return [variantPropsResult, rest] as SplitResult<P, V, E>;
     };
 
-    callable.defaultVariants = cvConfig.defaultVariants ?? {};
+    // Merge defaultVariants from extended CVs with child's defaultVariants
+    const mergedDefaultVariants: Record<string, unknown> = {};
+    if (cvConfig.extend) {
+      for (const extended of cvConfig.extend) {
+        Object.assign(mergedDefaultVariants, extended.defaultVariants);
+      }
+    }
+    Object.assign(mergedDefaultVariants, cvConfig.defaultVariants);
+    callable.defaultVariants = mergedDefaultVariants;
+
     callable.variantProps = [...variantPropKeys] as VariantKeys<V, E>[];
 
     return callable as CVReturn<V, E>;
