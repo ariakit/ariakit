@@ -12,6 +12,7 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import BadgeAstro from "@ariakit/ui/html/badge.astro";
 import { Badge } from "@ariakit/ui/html/badge.react.tsx";
 import { Badge as BadgeSolid } from "@ariakit/ui/html/badge.solid.tsx";
+import { command } from "@ariakit/ui/styles/command.ts";
 import Layout from "./_layout.astro";
 ---
 
@@ -19,6 +20,10 @@ import Layout from "./_layout.astro";
   Soon
 
   <div class="flex gap-2 items-center p-2">
+    <button class={command({ depth: "xl" })}>Command xs</button>
+    <button class={command({ depthX: "none", depthY: "none" })}
+      >Command none</button
+    >
     <BadgeAstro>
       <Icon name="danger" slot="iconStart" />
       Badge Astro

@@ -12,10 +12,6 @@ type DefaultVariants<V extends AnyVariants> = {
   [K in keyof V]?: StringToBoolean<keyof V[K]>;
 };
 
-type CompoundVariant<V extends AnyVariants> = {
-  [K in keyof V]?: StringToBoolean<keyof V[K]> | StringToBoolean<keyof V[K]>[];
-} & ClassProps;
-
 type EmptyRecord = Record<never, never>;
 
 // Recursively merges variants from extended CVReturns using tuple inference
@@ -24,33 +20,145 @@ type MergeExtendedVariants<T> = T extends [infer First, ...infer Rest]
   : EmptyRecord;
 
 type ExtractVariants<T> =
-  T extends CVReturn<infer V, infer E>
+  T extends CVReturn<infer V, infer E, infer _A>
     ? V & MergeExtendedVariants<E>
     : EmptyRecord;
 
-type AnyCVReturn = CVReturn<AnyVariants, AnyCVReturn[]>;
+// Recursively merges aliasVariants from extended CVReturns
+type MergeExtendedAliasVariants<T> = T extends [infer First, ...infer Rest]
+  ? ExtractAliasVariants<First> & MergeExtendedAliasVariants<Rest>
+  : EmptyRecord;
+
+type ExtractAliasVariants<T> =
+  T extends CVReturn<infer _V, infer E, infer A>
+    ? A & MergeExtendedAliasVariants<E>
+    : EmptyRecord;
+
+// Internal type for any alias variants object at runtime
+type AnyAliasVariantsRuntime = Record<string, readonly string[]>;
+
+// Get all possible options across all variants for given keys (union)
+type AllOptions<V extends AnyVariants, K> = K extends keyof V
+  ? keyof V[K]
+  : never;
+
+// Check if option O exists in variant K. Distributes over K to check each one.
+type OptionExistsInVariant<V extends AnyVariants, K, O> = K extends keyof V
+  ? O extends keyof V[K]
+    ? true
+    : false
+  : false;
+
+// Check if option O exists in ALL variants. Returns true only if O exists in
+// every variant, false if missing from any.
+type OptionExistsInAll<
+  V extends AnyVariants,
+  K,
+  O,
+> = false extends OptionExistsInVariant<V, K, O> ? false : true;
+
+// Compute options common to ALL variants for the given keys (intersection).
+type CommonOptions<V extends AnyVariants, K> = AllOptions<V, K> extends infer O
+  ? O extends string
+    ? OptionExistsInAll<V, K, O> extends true
+      ? O
+      : never
+    : never
+  : never;
+
+// Extract array element type as a union (without distributing)
+type ArrayElementUnion<T> = T extends readonly (infer E)[] ? E : never;
+
+// Check if all target variants have exactly the same options. Returns true only
+// if the union of options equals the intersection (all variants identical).
+// Uses tuple wrapping to prevent distribution over the union.
+type OptionsMatch<V extends AnyVariants, K> = [AllOptions<V, K>] extends [
+  CommonOptions<V, K>,
+]
+  ? [CommonOptions<V, K>] extends [AllOptions<V, K>]
+    ? true
+    : false
+  : false;
+
+// Validates that alias variant targets are all valid variant keys AND have
+// matching options. Returns never for invalid targets or mismatched options
+// to cause a type error.
+type ValidAliasVariants<V extends AnyVariants, A> = {
+  [K in keyof A]: A[K] extends readonly (string & keyof V)[]
+    ? OptionsMatch<V, ArrayElementUnion<A[K]>> extends true
+      ? A[K]
+      : never
+    : never;
+};
+
+// Extract valid variant keys from an alias targets array (as a union)
+type ExtractValidTargets<
+  V extends AnyVariants,
+  Targets,
+> = Targets extends readonly (infer T)[]
+  ? T extends keyof V
+    ? T
+    : never
+  : never;
+
+// Props for alias variants. Only generates props for actual keys in A.
+// Filters out invalid targets before computing valid values.
+type AliasVariantProps<V extends AnyVariants, A> = keyof A extends never
+  ? EmptyRecord
+  : {
+      [K in keyof A]?: A[K] extends readonly string[]
+        ? ExtractValidTargets<V, A[K]> extends never
+          ? never
+          : StringToBoolean<CommonOptions<V, ExtractValidTargets<V, A[K]>>>
+        : never;
+    };
+
+type AnyCVReturn = CVReturn<AnyVariants, AnyCVReturn[], EmptyRecord>;
 
 interface ClassProps {
   class?: ClassValue;
   className?: ClassValue;
 }
 
+type AllVariants<V extends AnyVariants, E extends AnyCVReturn[]> = V &
+  MergeExtendedVariants<E>;
+
+// Merge alias variants from child and extended parents. Child aliases override
+// parent aliases with the same key. Uses Omit to remove overridden parent keys.
+type AllAliasVariants<A, E extends AnyCVReturn[]> = keyof A extends never
+  ? MergeExtendedAliasVariants<E>
+  : keyof MergeExtendedAliasVariants<E> extends never
+    ? A
+    : Omit<MergeExtendedAliasVariants<E>, keyof A> & A;
+
 type CVProps<
   V extends AnyVariants,
   E extends AnyCVReturn[],
-> = DefaultVariants<V> & DefaultVariants<MergeExtendedVariants<E>> & ClassProps;
+  A = EmptyRecord,
+> = DefaultVariants<AllVariants<V, E>> &
+  AliasVariantProps<AllVariants<V, E>, AllAliasVariants<A, E>> &
+  ClassProps;
 
-type VariantKeys<V extends AnyVariants, E extends AnyCVReturn[]> =
+type VariantKeys<
+  V extends AnyVariants,
+  E extends AnyCVReturn[],
+  A = EmptyRecord,
+> =
   | keyof V
   | keyof MergeExtendedVariants<E>
+  | (A extends EmptyRecord ? never : keyof AllAliasVariants<A, E>)
   | "class";
 
 type SplitResult<
   P,
   V extends AnyVariants,
   E extends AnyCVReturn[],
+  A = EmptyRecord,
 > = P extends object
-  ? [Pick<P, Extract<keyof P, VariantKeys<V, E>>>, Omit<P, VariantKeys<V, E>>]
+  ? [
+      Pick<P, Extract<keyof P, VariantKeys<V, E, A>>>,
+      Omit<P, VariantKeys<V, E, A>>,
+    ]
   : [EmptyRecord, P];
 
 /**
@@ -73,31 +181,59 @@ export type VariantProps<T extends CVReturn> = T["defaultVariants"];
 export interface CVReturn<
   V extends AnyVariants = AnyVariants,
   E extends AnyCVReturn[] = AnyCVReturn[],
+  A = EmptyRecord,
 > {
   /**
    * Computes the final class string based on the provided variant props.
    */
-  (props?: CVProps<V, E>): string;
+  (props?: CVProps<V, E, A>): string;
   /**
    * Separates variant props (including `class` and `className`) from the rest
    * of the props object.
    */
-  splitProps: <P extends CVProps<V, E>>(props: P) => SplitResult<P, V, E>;
+  splitProps: <P extends CVProps<V, E, A>>(props: P) => SplitResult<P, V, E, A>;
   /**
-   * The default values for each variant.
+   * The default values for each variant, including alias variants.
    */
-  defaultVariants: DefaultVariants<V> &
-    DefaultVariants<MergeExtendedVariants<E>>;
+  defaultVariants: DefaultVariants<AllVariants<V, E>> &
+    AliasVariantProps<AllVariants<V, E>, AllAliasVariants<A, E>>;
   /**
-   * Array of all variant prop keys, including `class` and `className`.
+   * Array of all variant prop keys, including alias variants, `class` and
+   * `className`.
    */
-  variantProps: readonly VariantKeys<V, E>[];
+  variantProps: readonly VariantKeys<V, E, A>[];
+  /**
+   * The alias variant mappings from alias name to target variant keys.
+   */
+  aliasVariants: AllAliasVariants<A, E>;
 }
+
+// Compound variant type that also supports alias variant keys
+type CompoundVariantWithAlias<V extends AnyVariants, A> = {
+  [K in keyof V]?: StringToBoolean<keyof V[K]> | StringToBoolean<keyof V[K]>[];
+} & (keyof A extends never
+  ? EmptyRecord
+  : {
+      [K in keyof A]?: A[K] extends readonly string[]
+        ? ExtractValidTargets<V, A[K]> extends never
+          ? never
+          :
+              | StringToBoolean<CommonOptions<V, ExtractValidTargets<V, A[K]>>>
+              | StringToBoolean<
+                  CommonOptions<V, ExtractValidTargets<V, A[K]>>
+                >[]
+        : never;
+    }) &
+  ClassProps;
 
 /**
  * Configuration object for creating a class variance utility with `cv`.
  */
-export interface CVConfig<V extends Variants, E extends AnyCVReturn[]> {
+export interface CVConfig<
+  V extends Variants,
+  E extends AnyCVReturn[],
+  A extends object = EmptyRecord,
+> {
   /**
    * Other `cv` instances to extend from, inheriting their base classes and
    * variants.
@@ -112,14 +248,23 @@ export interface CVConfig<V extends Variants, E extends AnyCVReturn[]> {
    */
   variants?: V & Partial<MergeExtendedVariants<E>>;
   /**
+   * A map of alias names to arrays of target variant keys. When an alias is
+   * provided, its value is passed to all target variants unless they are
+   * explicitly set.
+   */
+  aliasVariants?: ValidAliasVariants<AllVariants<V, E>, A>;
+  /**
    * Default values for variants when not explicitly provided in props.
    */
-  defaultVariants?: DefaultVariants<V> &
-    DefaultVariants<MergeExtendedVariants<E>>;
+  defaultVariants?: DefaultVariants<AllVariants<V, E>> &
+    AliasVariantProps<AllVariants<V, E>, AllAliasVariants<A, E>>;
   /**
    * Classes to apply when multiple variant conditions are met simultaneously.
    */
-  compoundVariants?: CompoundVariant<V & MergeExtendedVariants<E>>[];
+  compoundVariants?: CompoundVariantWithAlias<
+    AllVariants<V, E>,
+    AllAliasVariants<A, E>
+  >[];
 }
 
 /**
@@ -151,22 +296,63 @@ export function createCV(config: CreateCVConfig = {}) {
   const customCv = <
     V extends Variants = EmptyRecord,
     const E extends AnyCVReturn[] = [],
+    const A extends object = EmptyRecord,
   >(
-    cvConfig: CVConfig<V, E>,
-  ): CVReturn<V, E> => {
-    const callable = (props: CVProps<V, E> = {}) => {
-      const mergedProps = { ...cvConfig.defaultVariants, ...props };
+    cvConfig: CVConfig<V, E, A>,
+  ): CVReturn<V, E, A> => {
+    // Collect aliasVariants from extended parents, then merge child's aliases
+    const mergedAliasVariants: AnyAliasVariantsRuntime = {};
+    if (cvConfig.extend) {
+      for (const extended of cvConfig.extend) {
+        Object.assign(mergedAliasVariants, extended.aliasVariants);
+      }
+    }
+    Object.assign(mergedAliasVariants, cvConfig.aliasVariants ?? {});
+
+    const callable = (props: CVProps<V, E, A> = {}) => {
+      const mergedProps: Record<string, unknown> = {
+        ...cvConfig.defaultVariants,
+        ...props,
+      };
+
+      // Expand alias variants into their targets. Only set target if not
+      // explicitly provided in original props or defaults.
+      for (const [aliasName, targets] of Object.entries(mergedAliasVariants)) {
+        const aliasValue = mergedProps[aliasName];
+        if (aliasValue == null) continue;
+        for (const target of targets) {
+          // Explicit props take precedence over alias expansion
+          const propsRecord = props as Record<string, unknown>;
+          if (propsRecord[target] != null) continue;
+          // Don't override if already set by defaults
+          if (mergedProps[target] != null) continue;
+          mergedProps[target] = aliasValue;
+        }
+      }
+
       const classes: ClassValue[] = [];
 
       if (cvConfig.extend) {
-        // Pass merged props (child defaults + user props) to extended cv
-        // instances so child defaults override parent defaults. Exclude class
-        // and className to avoid duplicating user-provided classes.
-        const { class: _, className: __, ...extendedProps } = mergedProps;
+        // Pass merged props (child defaults + user props + expanded aliases)
+        // to extended cv instances. Exclude class/className to avoid
+        // duplicating user-provided classes. Also exclude alias variant keys
+        // so parents don't re-expand aliases with their own mappings.
+        const extendedProps: Record<string, unknown> = {};
+        for (const [key, value] of Object.entries(mergedProps)) {
+          if (key === "class") continue;
+          if (key === "className") continue;
+          // Skip alias variant keys - only pass target variant values
+          if (key in mergedAliasVariants) continue;
+          extendedProps[key] = value;
+        }
         for (const extended of cvConfig.extend) {
           // Extended cv instances are typed as AnyCVReturn which accepts a
           // generic props object. The variant keys are compatible at runtime.
-          type ExtendedCVProps = CVProps<AnyVariants, AnyCVReturn[]>;
+          type ExtendedCVProps = CVProps<
+            AnyVariants,
+            AnyCVReturn[],
+            EmptyRecord
+          >;
           classes.push(extended(extendedProps as ExtendedCVProps));
         }
       }
@@ -224,8 +410,8 @@ export function createCV(config: CreateCVConfig = {}) {
       return customCx(...classes);
     };
 
-    // Collect variant keys from extended CVs, then child variants, then
-    // class/className at the end
+    // Collect variant keys from extended CVs, then child variants, then alias
+    // variants, then class/className at the end
     const variantPropKeys = new Set<string>();
     if (cvConfig.extend) {
       for (const extended of cvConfig.extend) {
@@ -237,6 +423,10 @@ export function createCV(config: CreateCVConfig = {}) {
       }
     }
     for (const key of Object.keys(cvConfig.variants ?? {})) {
+      variantPropKeys.add(key);
+    }
+    // Include alias variant keys in variantProps
+    for (const key of Object.keys(mergedAliasVariants)) {
       variantPropKeys.add(key);
     }
     variantPropKeys.add("class");
@@ -252,7 +442,7 @@ export function createCV(config: CreateCVConfig = {}) {
           rest[key] = value;
         }
       }
-      return [variantPropsResult, rest] as SplitResult<P, V, E>;
+      return [variantPropsResult, rest] as SplitResult<P, V, E, A>;
     };
 
     // Merge defaultVariants from extended CVs with child's defaultVariants
@@ -265,9 +455,11 @@ export function createCV(config: CreateCVConfig = {}) {
     Object.assign(mergedDefaultVariants, cvConfig.defaultVariants);
     callable.defaultVariants = mergedDefaultVariants;
 
-    callable.variantProps = [...variantPropKeys] as VariantKeys<V, E>[];
+    callable.variantProps = [...variantPropKeys] as VariantKeys<V, E, A>[];
 
-    return callable as CVReturn<V, E>;
+    callable.aliasVariants = mergedAliasVariants as AllAliasVariants<A, E>;
+
+    return callable as CVReturn<V, E, A>;
   };
 
   return { cv: customCv, cx: customCx };

@@ -25,3 +25,16 @@
     --contrast: 3;
   }
 }
+
+@custom-variant disabled {
+  &:disabled,
+  &[aria-disabled="true"] {
+    @slot;
+  }
+}
+
+@custom-variant active {
+  &:not(:disabled, [aria-disabled="true"], :has(button:active)):active {
+    @slot;
+  }
+}

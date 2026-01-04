@@ -1464,3 +1464,515 @@ test("type: extended defaultVariants has correct type", () => {
   // @ts-expect-error - "unknown" is not a defined variant
   child.defaultVariants.unknown;
 });
+
+// aliasVariants tests
+
+test("cv aliasVariants passes value to target variants", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  expect(style({ size: "small" })).toBe("base w-4 h-4");
+  expect(style({ size: "large" })).toBe("base w-8 h-8");
+});
+
+test("cv aliasVariants explicit target overrides alias value", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  // sizeX explicit, sizeY from alias
+  expect(style({ size: "large", sizeX: "small" })).toBe("base w-4 h-8");
+  // sizeY explicit, sizeX from alias
+  expect(style({ size: "small", sizeY: "large" })).toBe("base w-4 h-8");
+  // Both explicit, alias ignored
+  expect(style({ size: "small", sizeX: "large", sizeY: "large" })).toBe(
+    "base w-8 h-8",
+  );
+});
+
+test("cv aliasVariants works with defaultVariants", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+    defaultVariants: {
+      size: "small",
+    },
+  });
+  expect(style()).toBe("base w-4 h-4");
+  expect(style({ size: "large" })).toBe("base w-8 h-8");
+});
+
+test("cv aliasVariants works with compoundVariants", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+    compoundVariants: [
+      {
+        size: "large",
+        class: "compound-large",
+      },
+    ],
+  });
+  expect(style({ size: "large" })).toBe("base w-8 h-8 compound-large");
+  expect(style({ size: "small" })).toBe("base w-4 h-4");
+});
+
+test("cv aliasVariants included in variantProps", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  expect(style.variantProps).toContain("size");
+  expect(style.variantProps).toContain("sizeX");
+  expect(style.variantProps).toContain("sizeY");
+});
+
+test("cv aliasVariants included in splitProps", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  const [variantProps, rest] = style.splitProps({
+    size: "small",
+    sizeX: "large",
+    id: "my-id",
+  });
+  expect(variantProps).toEqual({ size: "small", sizeX: "large" });
+  expect(rest).toEqual({ id: "my-id" });
+});
+
+test("cv aliasVariants exposes aliasVariants property", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  expect(style.aliasVariants).toEqual({ size: ["sizeX", "sizeY"] });
+});
+
+test("cv extended inherits parent aliasVariants", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+  });
+  // Child should inherit parent's aliasVariants
+  expect(child({ size: "small" })).toBe("parent w-4 h-4 child");
+  expect(child({ size: "large" })).toBe("parent w-8 h-8 child");
+});
+
+test("cv extended child aliasVariants override parent", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    // Override to only target sizeX
+    aliasVariants: {
+      size: ["sizeX"],
+    },
+  });
+  // size should only apply to sizeX in child
+  expect(child({ size: "large" })).toBe("parent w-8 child");
+  // sizeY needs to be provided explicitly
+  expect(child({ size: "large", sizeY: "small" })).toBe("parent w-8 h-4 child");
+});
+
+test("cv extended aliasVariants included in child variantProps", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+  });
+  expect(child.variantProps).toContain("size");
+  expect(child.variantProps).toContain("sizeX");
+  expect(child.variantProps).toContain("sizeY");
+});
+
+test("cv extended aliasVariants works with splitProps", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+  });
+  const [variantProps, rest] = child.splitProps({
+    size: "small",
+    id: "my-id",
+  });
+  expect(variantProps).toEqual({ size: "small" });
+  expect(rest).toEqual({ id: "my-id" });
+});
+
+test("cv extended defaultVariants can use parent aliasVariants", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    defaultVariants: {
+      size: "large",
+    },
+  });
+  expect(child()).toBe("parent w-8 h-8 child");
+});
+
+test("cv extended aliasVariants property includes parent aliases", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+    variants: {
+      colorX: {
+        red: "text-red",
+        blue: "text-blue",
+      },
+      colorY: {
+        red: "bg-red",
+        blue: "bg-blue",
+      },
+    },
+    aliasVariants: {
+      color: ["colorX", "colorY"],
+    },
+  });
+  // aliasVariants should include both parent and child aliases
+  expect(child.aliasVariants).toEqual({
+    size: ["sizeX", "sizeY"],
+    color: ["colorX", "colorY"],
+  });
+});
+
+test("type: aliasVariants rejects unknown target variant keys", () => {
+  cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+    },
+    aliasVariants: {
+      // @ts-expect-error - "sizeY" is not a defined variant
+      size: ["sizeX", "sizeY"],
+    },
+  });
+});
+
+test("type: aliasVariants props accept valid variant values", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  // Valid: size accepts values common to both sizeX and sizeY
+  style({ size: "small" });
+  style({ size: "large" });
+  // @ts-expect-error - "medium" is not a valid size option
+  style({ size: "medium" });
+});
+
+test("type: extended cv inherits parent alias variant types", () => {
+  const parent = cv({
+    class: "parent",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+  });
+  const child = cv({
+    extend: [parent],
+    class: "child",
+  });
+  // Valid: child should accept parent's alias variant
+  child({ size: "small" });
+  child({ size: "large" });
+  // @ts-expect-error - "medium" is not a valid size option
+  child({ size: "medium" });
+});
+
+test("type: aliasVariants in defaultVariants accepts valid values", () => {
+  const style = cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+    defaultVariants: {
+      size: "small",
+    },
+  });
+  expect(style.defaultVariants.size).toBe("small");
+});
+
+test("type: aliasVariants in compoundVariants accepts valid values", () => {
+  cv({
+    class: "base",
+    variants: {
+      sizeX: {
+        small: "w-4",
+        large: "w-8",
+      },
+      sizeY: {
+        small: "h-4",
+        large: "h-8",
+      },
+    },
+    aliasVariants: {
+      size: ["sizeX", "sizeY"],
+    },
+    compoundVariants: [
+      {
+        size: "large",
+        class: "compound",
+      },
+      {
+        // @ts-expect-error - "medium" is not a valid size option
+        size: "medium",
+        class: "invalid",
+      },
+    ],
+  });
+});
+
+test("type: aliasVariants rejects targets with mismatched options", () => {
+  cv({
+    class: "base",
+    variants: {
+      colorX: {
+        red: "text-red",
+        green: "text-green",
+        blue: "text-blue",
+      },
+      colorY: {
+        red: "bg-red",
+        blue: "bg-blue",
+        // Note: no "green" option - options don't match colorX
+      },
+    },
+    aliasVariants: {
+      // @ts-expect-error - colorX and colorY have different options
+      color: ["colorX", "colorY"],
+    },
+  });
+});
+
+test("type: aliasVariants rejects targets with completely different options", () => {
+  cv({
+    class: "base",
+    variants: {
+      themeA: {
+        light: "theme-light",
+        dark: "theme-dark",
+      },
+      themeB: {
+        warm: "theme-warm",
+        cool: "theme-cool",
+      },
+    },
+    aliasVariants: {
+      // @ts-expect-error - themeA and themeB have no common options
+      theme: ["themeA", "themeB"],
+    },
+  });
+});
