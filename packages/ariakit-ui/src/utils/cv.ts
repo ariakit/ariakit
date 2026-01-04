@@ -40,15 +40,6 @@ type CVProps<
   E extends AnyCVReturn[],
 > = DefaultVariants<V> & DefaultVariants<MergeExtendedVariants<E>> & ClassProps;
 
-/**
- * Extracts the variant props type from a cv return type.
- * @example
- * const button = cv({ class: "btn", variants: { size: { sm: "...", lg: "..." } } });
- * type ButtonProps = VariantProps<typeof button>;
- * // { size?: "sm" | "lg" }
- */
-export type VariantProps<T extends CVReturn> = T["defaultVariants"];
-
 type VariantKeys<V extends AnyVariants, E extends AnyCVReturn[]> =
   | keyof V
   | keyof MergeExtendedVariants<E>
@@ -63,6 +54,18 @@ type SplitResult<
   : [EmptyRecord, P];
 
 /**
+ * Extracts the variant props type from a cv return type.
+ * @example
+ * const button = cv({
+ *   class: "btn",
+ *   variants: { size: { sm: "...", lg: "..." } }
+ * });
+ * type ButtonProps = VariantProps<typeof button>;
+ * // { size?: "sm" | "lg" }
+ */
+export type VariantProps<T extends CVReturn> = T["defaultVariants"];
+
+/**
  * The return type of the `cv` function. A callable that computes class strings
  * based on variant props, with utility methods for splitting props and
  * accessing variant metadata.
@@ -71,17 +74,23 @@ export interface CVReturn<
   V extends AnyVariants = AnyVariants,
   E extends AnyCVReturn[] = AnyCVReturn[],
 > {
-  /** Computes the final class string based on the provided variant props. */
+  /**
+   * Computes the final class string based on the provided variant props.
+   */
   (props?: CVProps<V, E>): string;
   /**
    * Separates variant props (including `class` and `className`) from the rest
    * of the props object.
    */
   splitProps: <P extends CVProps<V, E>>(props: P) => SplitResult<P, V, E>;
-  /** The default values for each variant. */
+  /**
+   * The default values for each variant.
+   */
   defaultVariants: DefaultVariants<V> &
     DefaultVariants<MergeExtendedVariants<E>>;
-  /** Array of all variant prop keys, including `class` and `className`. */
+  /**
+   * Array of all variant prop keys, including `class` and `className`.
+   */
   variantProps: readonly VariantKeys<V, E>[];
 }
 
@@ -89,34 +98,28 @@ export interface CVReturn<
  * Configuration object for creating a class variance utility with `cv`.
  */
 export interface CVConfig<V extends Variants, E extends AnyCVReturn[]> {
-  /** Other `cv` instances to extend from, inheriting their base classes and
-   * variants. */
+  /**
+   * Other `cv` instances to extend from, inheriting their base classes and
+   * variants.
+   */
   extend?: E;
-  /** The base class that is always applied. */
+  /**
+   * The base class that is always applied.
+   */
   class: ClassValue;
-  /** A map of variant names to their possible values and corresponding
-   * classes. */
+  /**
+   * A map of variant names to their possible values and corresponding classes.
+   */
   variants?: V & Partial<MergeExtendedVariants<E>>;
-  /** Default values for variants when not explicitly provided in props. */
+  /**
+   * Default values for variants when not explicitly provided in props.
+   */
   defaultVariants?: DefaultVariants<V> &
     DefaultVariants<MergeExtendedVariants<E>>;
-  /** Classes to apply when multiple variant conditions are met
-   * simultaneously. */
+  /**
+   * Classes to apply when multiple variant conditions are met simultaneously.
+   */
   compoundVariants?: CompoundVariant<V & MergeExtendedVariants<E>>[];
-}
-
-interface AnyCompoundVariant {
-  class?: ClassValue;
-  className?: ClassValue;
-  [key: string]: unknown;
-}
-
-interface InternalConfig {
-  baseClass?: ClassValue;
-  variants?: AnyVariants;
-  defaultVariants?: Record<string, unknown>;
-  compoundVariants?: AnyCompoundVariant[];
-  extend?: AnyCVReturn[];
 }
 
 /**
@@ -142,75 +145,6 @@ export function createCV(config: CreateCVConfig = {}) {
   const customCx = (...values: ClassValue[]) => transform(clsx(...values));
 
   /**
-   * Computes the final class string by merging extended classes, the base
-   * class, and variant-specific classes based on the provided props.
-   */
-  const computeResult = (
-    internalConfig: InternalConfig,
-    props: Record<string, unknown>,
-  ): string => {
-    const classes: ClassValue[] = [];
-
-    if (internalConfig.extend) {
-      for (const extended of internalConfig.extend) {
-        classes.push(extended());
-      }
-    }
-
-    if (internalConfig.baseClass) {
-      classes.push(internalConfig.baseClass);
-    }
-
-    if (internalConfig.variants) {
-      for (const [variantName, variantOptions] of Object.entries(
-        internalConfig.variants,
-      )) {
-        const propValue = props[variantName];
-        if (propValue == null) continue;
-        const optionKey = String(propValue);
-        const optionValue = variantOptions[optionKey];
-        if (optionValue != null) {
-          classes.push(optionValue as ClassValue);
-        }
-      }
-    }
-
-    // Apply compound variants when all conditions match
-    if (internalConfig.compoundVariants) {
-      for (const compound of internalConfig.compoundVariants) {
-        const { class: cls, className, ...conditions } = compound;
-        const matches = Object.entries(conditions).every(([key, value]) => {
-          const propValue = props[key];
-          if (Array.isArray(value)) {
-            return value.includes(propValue);
-          }
-          return propValue === value;
-        });
-        if (matches) {
-          if (cls != null) {
-            classes.push(cls);
-          }
-          if (className != null) {
-            classes.push(className);
-          }
-        }
-      }
-    }
-
-    // Append user-provided class/className at the end
-    const userClass = props.class as ClassValue | undefined;
-    const userClassName = props.className as ClassValue | undefined;
-    if (userClass != null) {
-      classes.push(userClass);
-    }
-    if (userClassName != null) {
-      classes.push(userClassName);
-    }
-
-    return customCx(...classes);
-  };
-
-  /**
    * Creates a class variance utility that computes class strings based on
    * variants. Supports extending from other cv instances to compose styles.
    */
@@ -220,17 +154,67 @@ export function createCV(config: CreateCVConfig = {}) {
   >(
     cvConfig: CVConfig<V, E>,
   ): CVReturn<V, E> => {
-    const internalConfig: InternalConfig = {
-      baseClass: cvConfig.class,
-      variants: cvConfig.variants,
-      defaultVariants: cvConfig.defaultVariants,
-      compoundVariants: cvConfig.compoundVariants,
-      extend: cvConfig.extend,
-    };
-
     const callable = (props: Record<string, unknown> = {}) => {
-      const mergedProps = { ...internalConfig.defaultVariants, ...props };
-      return computeResult(internalConfig, mergedProps);
+      const mergedProps = { ...cvConfig.defaultVariants, ...props };
+      const classes: ClassValue[] = [];
+
+      if (cvConfig.extend) {
+        for (const extended of cvConfig.extend) {
+          classes.push(extended());
+        }
+      }
+
+      if (cvConfig.class) {
+        classes.push(cvConfig.class);
+      }
+
+      if (cvConfig.variants) {
+        for (const [variantName, variantOptions] of Object.entries(
+          cvConfig.variants,
+        )) {
+          const propValue = mergedProps[variantName];
+          if (propValue == null) continue;
+          const optionKey = String(propValue);
+          const optionValue = variantOptions[optionKey];
+          if (optionValue != null) {
+            classes.push(optionValue as ClassValue);
+          }
+        }
+      }
+
+      // Apply compound variants when all conditions match
+      if (cvConfig.compoundVariants) {
+        for (const compound of cvConfig.compoundVariants) {
+          const { class: cls, className, ...conditions } = compound;
+          const matches = Object.entries(conditions).every(([key, value]) => {
+            const propValue = mergedProps[key];
+            if (Array.isArray(value)) {
+              return value.includes(propValue);
+            }
+            return propValue === value;
+          });
+          if (matches) {
+            if (cls != null) {
+              classes.push(cls);
+            }
+            if (className != null) {
+              classes.push(className);
+            }
+          }
+        }
+      }
+
+      // Append user-provided class/className at the end
+      const userClass = mergedProps.class as ClassValue | undefined;
+      const userClassName = mergedProps.className as ClassValue | undefined;
+      if (userClass != null) {
+        classes.push(userClass);
+      }
+      if (userClassName != null) {
+        classes.push(userClassName);
+      }
+
+      return customCx(...classes);
     };
 
     const variantPropKeys = new Set([
@@ -252,7 +236,7 @@ export function createCV(config: CreateCVConfig = {}) {
       return [variantPropsResult, rest] as SplitResult<P, V, E>;
     };
 
-    callable.defaultVariants = internalConfig.defaultVariants ?? {};
+    callable.defaultVariants = cvConfig.defaultVariants ?? {};
     callable.variantProps = [...variantPropKeys] as VariantKeys<V, E>[];
 
     return callable as CVReturn<V, E>;
@@ -266,12 +250,23 @@ const { cv: defaultCv, cx: defaultCx } = createCV();
 
 /**
  * Creates a class variance utility that computes class strings based on
- * variants. Supports extending from other cv instances to compose styles.
+ * variants. Supports extending from other `cv` instances to compose styles.
+ * @example
+ * const button = cv({
+ *   class: "btn",
+ *   variants: { size: { sm: "btn-sm", lg: "btn-lg" } }
+ * });
+ * button({ size: "sm" }); // "btn btn-sm"
+ * button({ size: "lg" }); // "btn btn-lg"
  */
 export const cv = defaultCv;
 
 /**
  * Concatenates class names, filtering out falsy values. Supports strings,
  * objects, arrays, and nested combinations.
+ * @example
+ * cx("foo", "bar", "baz"); // "foo bar baz"
+ * cx({ foo: true, bar: false, baz: true }); // "foo baz"
+ * cx("foo", { bar: true, baz: false }, null, { "--foobar": "hello" }); // "foo --foobar"
  */
 export const cx = defaultCx;
