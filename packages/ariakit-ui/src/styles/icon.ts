@@ -5,8 +5,8 @@ export const icon = cv({
   variants: {
     position: {
       start:
-        "ms-[calc(var(--ak-frame-padding,0px)-var(--px,var(--ak-frame-padding,0px)))]",
-      end: "me-[calc(var(--ak-frame-padding,0px)-var(--px,var(--ak-frame-padding,0px)))]",
+        "ms-[calc(var(--ak-frame-padding,0)-var(--px,var(--ak-frame-padding,0)))]",
+      end: "me-[calc(var(--ak-frame-padding,0)-var(--px,var(--ak-frame-padding,0)))]",
     },
   },
 });
