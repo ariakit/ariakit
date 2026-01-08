@@ -200,3 +200,22 @@ test("hover on item", async () => {
   expect(q.combobox()).toHaveTextContent("Apple");
   expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
 });
+
+test("SelectItem with undefined id prop does not cause infinite loop", async () => {
+  // This test ensures the bug in issue #4593 doesn't regress
+  // Previously, passing id={undefined} to SelectItem would cause an infinite loop
+  await click(q.combobox());
+  expect(q.listbox()).toBeVisible();
+
+  expect(q.option("Apple")).toHaveAttribute("id");
+  expect(q.option("Banana")).toHaveAttribute("id");
+  expect(q.option("Orange")).toHaveAttribute("id");
+  expect(q.option("Grape")).toHaveAttribute("id");
+
+  expect(q.option("Apple")?.getAttribute("id")).toBeTruthy();
+  expect(q.option("Apple")?.getAttribute("id")).not.toBe("undefined");
+
+  await click(q.option("Banana"));
+  expect(q.combobox()).toHaveTextContent("Banana");
+  expect(q.listbox()).not.toBeInTheDocument();
+});
