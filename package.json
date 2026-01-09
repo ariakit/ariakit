@@ -125,7 +125,7 @@
     "@vitejs/plugin-react": "5.1.2",
     "@vitest/coverage-v8": "4.0.16",
     "@wordpress/components": "31.0.0",
-    "astro": "5.16.7",
+    "astro": "5.16.8",
     "autoprefixer": "10.4.23",
     "babel-loader": "10.0.0",
     "babel-plugin-transform-rewrite-imports": "1.5.4",
