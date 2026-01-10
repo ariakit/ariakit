@@ -1,32 +1,31 @@
+import type { VariantProps } from "clava";
+import { splitProps } from "clava";
 import type { ComponentProps } from "react";
-import { button } from "../styles/button.ts";
-import type { VariantProps } from "../utils/cv.ts";
+import { button, buttonIcon, buttonText } from "../styles/button.ts";
 
 export interface ButtonProps
   extends ComponentProps<"button">,
     VariantProps<typeof button>,
-    VariantProps<typeof button.text> {
+    VariantProps<typeof buttonText> {
   icon?: React.ReactNode;
   iconStart?: React.ReactNode;
   iconEnd?: React.ReactNode;
 }
 
 export function Button({ icon, iconStart, iconEnd, ...props }: ButtonProps) {
-  const [variantProps, buttonRest] = button.splitProps({
-    square: !!icon,
-    ...props,
-  });
-  const [textProps, rest] = button.text.splitProps(buttonRest);
+  const [variantProps, textProps, rest] = splitProps(
+    { $square: !!icon, ...props } satisfies ButtonProps,
+    button,
+    buttonText,
+  );
   return (
-    <button {...rest} className={button(variantProps)}>
+    <button {...button(variantProps)} {...rest}>
       {iconStart && (
-        <span className={button.icon({ position: "start" })}>{iconStart}</span>
+        <span {...buttonIcon({ $position: "start" })}>{iconStart}</span>
       )}
       {icon}
-      <span className={button.text(textProps)}>{props.children}</span>
-      {iconEnd && (
-        <span className={button.icon({ position: "end" })}>{iconEnd}</span>
-      )}
+      <span {...buttonText(textProps)}>{props.children}</span>
+      {iconEnd && <span {...buttonIcon({ $position: "end" })}>{iconEnd}</span>}
     </button>
   );
 }

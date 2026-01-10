@@ -1,4 +1,4 @@
-import { cv } from "../utils/cv.ts";
+import { cv } from "clava";
 
 export const command = cv({
   class: [
@@ -11,28 +11,22 @@ export const command = cv({
     "ak-active:[--command-scale-y:min(100%,94%+6%*calc(1-clamp(0,var(--command-depth-y)/10,1)))]",
     "ak-active:origin-bottom ak-active:scale-x-(--command-scale-x) ak-active:scale-y-(--command-scale-y)",
   ],
-  variants: {
-    depthX: {
-      none: "[--command-depth-x:0]",
-      xs: "[--command-depth-x:1]",
-      sm: "[--command-depth-x:3]",
-      md: "[--command-depth-x:5]",
-      lg: "[--command-depth-x:7]",
-      xl: "[--command-depth-x:10]",
-    },
-    depthY: {
-      none: "[--command-depth-y:0]",
-      xs: "[--command-depth-y:1]",
-      sm: "[--command-depth-y:3]",
-      md: "[--command-depth-y:5]",
-      lg: "[--command-depth-y:7]",
-      xl: "[--command-depth-y:10]",
-    },
-  },
-  aliasVariants: {
-    depth: ["depthX", "depthY"],
+  computedVariants: {
+    $depthX: (value: number) => ({
+      "--command-depth-x": `${value}`,
+    }),
+    $depthY: (value: number) => ({
+      "--command-depth-y": `${value}`,
+    }),
+    $depth: (_value: number) => {},
   },
   defaultVariants: {
-    depth: "md",
+    $depth: 5,
+  },
+  computed: (context) => {
+    context.setDefaultVariants({
+      $depthX: context.variants.$depth,
+      $depthY: context.variants.$depth,
+    });
   },
 });

@@ -1,28 +1,26 @@
+import type { VariantProps } from "clava";
+import { splitProps } from "clava";
 import type { ComponentProps } from "react";
-import { badge } from "../styles/badge.ts";
-import type { VariantProps } from "../utils/cv.ts";
+import { badge, badgeIcon, badgeText } from "../styles/badge.ts";
 
 export interface BadgeProps
   extends ComponentProps<"div">,
     VariantProps<typeof badge>,
-    VariantProps<typeof badge.text> {
+    VariantProps<typeof badgeText> {
   iconStart?: React.ReactNode;
   iconEnd?: React.ReactNode;
 }
 
 export function Badge(props: BadgeProps) {
-  const [variantProps, badgeRest] = badge.splitProps(props);
-  const [textProps, rest] = badge.text.splitProps(badgeRest);
+  const [variantProps, textProps, rest] = splitProps(props, badge, badgeText);
   return (
-    <div {...rest} className={badge(variantProps)}>
+    <div {...badge(variantProps)} {...rest}>
       {props.iconStart && (
-        <span className={badge.icon({ position: "start" })}>
-          {props.iconStart}
-        </span>
+        <span {...badgeIcon({ $position: "start" })}>{props.iconStart}</span>
       )}
-      <span className={badge.text(textProps)}>{props.children}</span>
+      <span {...badgeText(textProps)}>{props.children}</span>
       {props.iconEnd && (
-        <span className={badge.icon({ position: "end" })}>{props.iconEnd}</span>
+        <span {...badgeIcon({ $position: "end" })}>{props.iconEnd}</span>
       )}
     </div>
   );

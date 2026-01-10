@@ -1,4 +1,4 @@
-import { cv } from "../utils/cv.ts";
+import { cv } from "clava";
 
 export const kbd = cv({
   class: [

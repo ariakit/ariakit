@@ -1,4 +1,8 @@
 import { Group, GroupLabel } from "@ariakit/react";
+import {
+  checkboxCard,
+  checkboxCardGrid,
+} from "@ariakit/ui/styles/checkbox-card.ts";
 import { useState } from "react";
 import {
   CheckboxCard,
@@ -21,7 +25,7 @@ export default function Example() {
   const [values, setValues] = useState<(keyof typeof interests)[]>(["finance"]);
   return (
     <Group className="flex flex-col gap-4">
-      <GroupLabel className="text-xl font-medium text-center">
+      <GroupLabel className="text-xl font-medium  text-center">
         Select your interests
       </GroupLabel>
       <CheckboxCardGrid
@@ -36,6 +40,14 @@ export default function Example() {
           </CheckboxCard>
         ))}
       </CheckboxCardGrid>
+      <div {...checkboxCardGrid({})}>
+        {Object.entries(interests).map(([key, interest]) => (
+          <div key={key} {...checkboxCard()} aria-disabled={key === "culture"}>
+            <CheckboxCardLabel>{interest.label}</CheckboxCardLabel>
+            <CheckboxCardCheck />
+          </div>
+        ))}
+      </div>
     </Group>
   );
 }

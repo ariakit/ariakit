@@ -1,9 +1,9 @@
-import { cv } from "../utils/cv.ts";
+import { cv } from "clava";
 
 export const icon = cv({
-  class: "flex-none block h-lh [&>svg]:block [&>svg]:h-full",
+  class: "flex-none flex items-center h-lh [&>svg]:block [&>svg]:h-full",
   variants: {
-    position: {
+    $position: {
       start:
         "ms-[calc(var(--ak-frame-padding,0)-var(--px,var(--ak-frame-padding,0)))]",
       end: "me-[calc(var(--ak-frame-padding,0)-var(--px,var(--ak-frame-padding,0)))]",
