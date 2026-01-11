@@ -1,7 +1,9 @@
 import { Group, GroupLabel } from "@ariakit/react";
 import {
   checkboxCard,
+  checkboxCardCheck,
   checkboxCardGrid,
+  checkboxCardText,
 } from "@ariakit/ui/styles/checkbox-card.ts";
 import { useState } from "react";
 import {
@@ -42,10 +44,19 @@ export default function Example() {
       </CheckboxCardGrid>
       <div {...checkboxCardGrid({})}>
         {Object.entries(interests).map(([key, interest]) => (
-          <div key={key} {...checkboxCard()} aria-disabled={key === "culture"}>
-            <CheckboxCardLabel>{interest.label}</CheckboxCardLabel>
-            <CheckboxCardCheck />
-          </div>
+          <label
+            key={key}
+            {...checkboxCard()}
+            aria-disabled={key === "culture"}
+          >
+            <span {...checkboxCardCheck()} />
+            <input
+              type="checkbox"
+              className="sr-only"
+              defaultChecked={key === "culture"}
+            />
+            <span {...checkboxCardText()}>{interest.label}</span>
+          </label>
         ))}
       </div>
     </Group>

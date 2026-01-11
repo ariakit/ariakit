@@ -11,17 +11,15 @@ export interface BadgeProps
   iconEnd?: React.ReactNode;
 }
 
-export function Badge(props: BadgeProps) {
+export function Badge({ iconStart, iconEnd, ...props }: BadgeProps) {
   const [variantProps, textProps, rest] = splitProps(props, badge, badgeText);
   return (
     <div {...badge(variantProps)} {...rest}>
-      {props.iconStart && (
-        <span {...badgeIcon({ $position: "start" })}>{props.iconStart}</span>
+      {iconStart && (
+        <span {...badgeIcon({ $position: "start" })}>{iconStart}</span>
       )}
       <span {...badgeText(textProps)}>{props.children}</span>
-      {props.iconEnd && (
-        <span {...badgeIcon({ $position: "end" })}>{props.iconEnd}</span>
-      )}
+      {iconEnd && <span {...badgeIcon({ $position: "end" })}>{iconEnd}</span>}
     </div>
   );
 }

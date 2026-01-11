@@ -829,6 +829,75 @@ const AriakitTailwind = plugin(
 
     matchUtilities(
       {
+        "ak-frame-p": (value) => {
+          const padding = value;
+          const result = {
+            [vars.framePadding]: padding,
+            padding,
+            scrollPadding: padding,
+          };
+          Object.assign(
+            result,
+            withContext("frame", false, ({ provide }) => {
+              return {
+                [provide(vars._framePadding)]: padding,
+              };
+            }),
+          );
+          return result;
+        },
+      },
+      {
+        values: Object.keys(theme("spacing")).reduce(
+          (acc, key) => {
+            if (key === "__CSS_VALUES__") return acc;
+            if (key === "DEFAULT") return acc;
+            const isNumber = /^\d*\.?\d+$/u.test(key);
+            if (isNumber) {
+              acc[key] = `--spacing(${key})`;
+            } else {
+              acc[key] = t("spacing", key);
+            }
+            return acc;
+          },
+          /** @type {Record<string, string>} */ ({}),
+        ),
+      },
+    );
+
+    matchUtilities(
+      {
+        "ak-frame-rounded": (radiusKey) => {
+          const radius = tv("radius", radiusKey, radiusKey);
+          const result = {
+            [vars.frameRadius]: radius,
+            borderRadius: radius,
+          };
+          Object.assign(
+            result,
+            withContext("frame", false, ({ provide }) => {
+              return {
+                [provide(vars._frameRadius)]: radius,
+              };
+            }),
+          );
+          return result;
+        },
+      },
+      {
+        values: Object.keys(theme("radius")).reduce(
+          (acc, key) => {
+            if (key === "__CSS_VALUES__") return acc;
+            acc[key] = key;
+            return acc;
+          },
+          /** @type {Record<string, string>} */ ({}),
+        ),
+      },
+    );
+
+    matchUtilities(
+      {
         "ak-frame-border": (value) => {
           return css({
             [vars._frameBorder]: value,

@@ -30,10 +30,14 @@ import Layout from "./_layout.astro";
 
   <div class="flex gap-2 items-center p-2">
     <Button>Button</Button>
-    <Button $variant="primary">Button</Button>
-    <Button $variant="ghost" $border>Button</Button>
+    <Button $color="primary" $noEndGap>
+      <Icon name="copy" slot="iconStart" />
+      Button
+      <Icon name="chevronDown" slot="iconEnd" />
+    </Button>
+    <Button $color="ghost" $border>Button</Button>
     <Button>
-      <Icon name="danger" slot="iconStart" />
+      <Icon name="copy" slot="iconStart" />
       Button
     </Button>
     <Button disabled>
@@ -41,31 +45,31 @@ import Layout from "./_layout.astro";
       <Icon name="chevronDown" slot="iconEnd" />
     </Button>
     <BadgeAstro class="bg-red-500!">
-      <Icon name="danger" slot="iconStart" />
+      <Icon name="copy" slot="iconStart" />
       Badge Astro
     </BadgeAstro>
-    <BadgeSolid $variant="danger" $size="lg">
-      <!-- <Icon name="danger" slot="iconStart" /> -->
+    <BadgeSolid $color="danger" $size="lg">
+      <!-- <Icon name="copy" slot="iconStart" /> -->
       Badge Solid
-      <Icon name="danger" slot="iconEnd" />
+      <Icon name="copy" slot="iconEnd" />
     </BadgeSolid>
     <Badge>Badge</Badge>
 
-    <Badge $variant="primary" $border="bold"> Badge </Badge>
+    <Badge $color="primary" $border="bold"> Badge </Badge>
     <Badge>
-      <Icon name="danger" slot="iconStart" />
+      <Icon name="copy" slot="iconStart" />
       Badge<br />dsadsa
     </Badge>
-    <Badge $variant="secondary">
-      <Icon name="danger" slot="iconStart" />
+    <Badge $color="secondary">
+      <Icon name="copy" slot="iconStart" />
       Badge
     </Badge>
-    <Badge $variant="secondary" className="border-dashed">
-      <div class="size-[1em] bg-blue-500 rounded-full" slot="iconStart"></div>
+    <Badge $color="secondary" className="border-dashed">
+      <div class="size-full bg-blue-500 rounded-full" slot="iconStart"></div>
       Plus
     </Badge>
-    <Badge $variant="success">Badge</Badge>
-    <Badge $variant="warning">Badge</Badge>
-    <Badge $variant="danger">Badge</Badge>
+    <Badge $color="success">Badge</Badge>
+    <Badge $color="warning">Badge</Badge>
+    <Badge $color="danger">Badge</Badge>
   </div>
 </Layout>

@@ -13,8 +13,11 @@ export interface ButtonProps
 }
 
 export function Button(props: ButtonProps) {
+  const defaultVariants: ButtonProps = {
+    $square: !!props.icon,
+  };
   const [variantProps, textProps, iconProps, rest] = splitProps(
-    mergeProps({ $square: !!props.icon } satisfies ButtonProps, props),
+    mergeProps(defaultVariants, props),
     button.html.propKeys,
     buttonText.variantKeys,
     ["icon", "iconStart", "iconEnd"],

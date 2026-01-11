@@ -1,20 +1,19 @@
 import { cv } from "clava";
 import { border } from "./border.ts";
 import { command } from "./command.ts";
-import { icon } from "./icon.ts";
+import { field, fieldIcon, fieldText } from "./field.ts";
 
 export const button = cv({
-  extend: [command, border],
+  extend: [field, command, border],
   class: [
-    "group/button",
-    "flex font-[calc(500+50*var(--contrast))] leading-[1.5em] px-(--px) py-(--py) gap-[calc(var(--ak-frame-padding)/2)]",
+    "font-[calc(500+50*var(--contrast))]",
     "ak-outline-primary",
     "ak-hover:ak-layer-hover",
     "ak-focus-visible:outline-2",
     "ak-disabled:ak-text/0 ak-disabled:border-transparent ak-disabled:ak-layer-pop-0.5 ak-disabled:inset-shadow-none ak-disabled:bg-none ak-disabled:shadow-none",
   ],
   variants: {
-    $variant: {
+    $color: {
       pop: "",
       layer: "ak-layer",
       ghost: "ak-layer-0 ak-disabled:ak-layer-0!",
@@ -22,20 +21,6 @@ export const button = cv({
       secondary: "ak-layer-secondary outline-offset-1",
       danger: "ak-layer-red-600 ak-dark:ak-layer-mix-red-500 outline-offset-1",
     },
-    $size: {
-      xs: "text-xs",
-      sm: "text-sm",
-      md: "text-base",
-      lg: "text-lg",
-      xl: "text-xl",
-    },
-    $frame: {
-      field:
-        "ak-frame-field [--px:calc(var(--ak-frame-padding)*1.25)] [--py:calc(var(--ak-frame-padding)-(1lh-1em)/2)]",
-      card: "ak-frame-card [--px:var(--ak-frame-padding)] [--py:var(--ak-frame-padding)]",
-    },
-    $square:
-      "[--px:0]! [--py:0]! square size-[2.5em] items-center justify-center",
     $kind: {
       flat: "",
       classic: [
@@ -61,22 +46,20 @@ export const button = cv({
     },
   },
   defaultVariants: {
-    $variant: "pop",
-    $size: "md",
+    $color: "pop",
     $kind: "flat",
-    $frame: "field",
   },
   computed: (context) => {
-    if (context.variants.$variant !== "pop") return;
+    if (context.variants.$color !== "pop") return;
     return context.variants.$kind === "classic" ? "ak-layer" : "ak-layer-pop";
   },
 });
 
-export const buttonIcon = icon;
+export const buttonIcon = fieldIcon;
 
 export const buttonText = cv({
-  class: "group-[.square]/button:sr-only",
-  variants: {
-    truncate: "truncate",
+  extend: [fieldText],
+  defaultVariants: {
+    $truncate: true,
   },
 });
