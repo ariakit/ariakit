@@ -170,7 +170,7 @@ const css = `
 }
 
 @property ${vars._layerDown} {
-  syntax: "0 | 1";
+  syntax: "<number>";
   inherits: true;
   initial-value: 0;
 }
