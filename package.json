@@ -138,7 +138,7 @@
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
     "date-fns": "4.1.0",
-    "diff": "8.0.2",
+    "diff": "8.0.3",
     "dotenv": "17.2.3",
     "esbuild-plugin-solid": "0.6.0",
     "fast-fuzzy": "1.12.0",
