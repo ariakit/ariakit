@@ -1,5 +1,5 @@
-@reference "tailwindcss";
-
+@import "./properties.css";
+@import "./variants.css";
 @plugin "./plugin.js";
 
 @theme {
