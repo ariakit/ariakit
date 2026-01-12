@@ -1,3 +1,5 @@
+@import "./properties.css";
+@import "./variants.css";
 @plugin "./plugin.js";
 
 @theme {
@@ -23,58 +25,5 @@
 :root {
   @variant contrast-more {
     --contrast: 3;
-  }
-}
-
-@custom-variant ak-disabled {
-  &:disabled,
-  &[aria-disabled="true"] {
-    @slot;
-  }
-}
-
-@custom-variant ak-disabled-within {
-  &:disabled,
-  &[aria-disabled="true"],
-  &:has(*:disabled, [aria-disabled="true"]) {
-    @slot;
-  }
-}
-
-@custom-variant ak-active {
-  @variant active {
-    @variant not-ak-disabled {
-      @slot;
-    }
-  }
-}
-
-@custom-variant ak-hover {
-  @variant hover {
-    @variant not-ak-disabled {
-      @slot;
-    }
-  }
-}
-
-@custom-variant ak-focus-visible {
-  &:focus-visible,
-  &[data-focus-visible] {
-    @slot;
-  }
-}
-
-@custom-variant ak-checked {
-  &:checked,
-  &[aria-checked="true"] {
-    @slot;
-  }
-}
-
-@custom-variant ak-checked-within {
-  &:checked,
-  &[aria-checked="true"],
-  &:has(*:checked, [aria-checked="true"]) {
-    @slot;
   }
 }

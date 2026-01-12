@@ -1,0 +1,529 @@
+@property --ak-layer {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property --ak-layer-parent {
+  syntax: "*";
+  inherits: true;
+}
+
+@property --ak-text {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0 0 0);
+}
+
+@property --ak-shadow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0 0 0 / 15%);
+}
+
+@property --ak-ring {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --ak-border {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --ak-layer-ring {
+  syntax: "*";
+  inherits: true;
+}
+
+@property --ak-layer-border {
+  syntax: "*";
+  inherits: true;
+}
+
+@property --ak-bordering {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --ak-frame-radius {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --ak-frame-border {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --ak-frame-padding {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --ak-frame-margin {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --_ak-layer-down {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --_ak-layer-base {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-layer-idle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property --_ak-layer-appearance {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0 0 0);
+}
+
+@property --_ak-layer-l {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: lch(100 0 0);
+}
+
+@property --_ak-layer-okl {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property --_ak-frame-capped-padding {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --_ak-frame-border {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --_ak-text-contrast-okl {
+  syntax: "*";
+  inherits: false;
+  initial-value: calc((0.623 - l) * infinity);
+}
+
+@property --_ak-text-contrast-l {
+  syntax: "*";
+  inherits: false;
+  initial-value: calc((56.27 - l) * infinity);
+}
+
+@property --_ak-dark-okl {
+  syntax: "*";
+  inherits: false;
+  initial-value: clamp(0, calc((0.623 - l) * infinity), 1);
+}
+
+@property --_ak-light-okl {
+  syntax: "*";
+  inherits: false;
+  initial-value: clamp(0, 1 - calc((0.623 - l) * infinity), 1);
+}
+
+@property --_ak-dark-l {
+  syntax: "*";
+  inherits: false;
+  initial-value: clamp(0, calc((56.27 - l) * infinity), 1);
+}
+
+@property --_ak-light-l {
+  syntax: "*";
+  inherits: false;
+  initial-value: clamp(0, 1 - calc((56.27 - l) * infinity), 1);
+}
+
+@property --_ak-text-level {
+  syntax: "*";
+  inherits: false;
+}
+
+@supports (color: oklch(from black l c cos(h))) {
+  @property --_ak-safe-okl {
+    syntax: "*";
+    inherits: false;
+    initial-value: calc(
+      l *
+        (
+          1 -
+            clamp(
+              0,
+              (
+                  l -
+                    (
+                      0.561 + (c / 0.4) *
+                        (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                    )
+                ) *
+                (
+                  (0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180))))) -
+                    l
+                ) *
+                infinity,
+              1
+            )
+        ) +
+        (
+          (
+              0.561 + (c / 0.4) *
+                (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+            ) *
+            (
+              1 -
+                clamp(
+                  0,
+                  (
+                      l -
+                        (
+                          (
+                              0.561 + (c / 0.4) *
+                                (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                            ) +
+                            (
+                              0.72 + (c / 0.4) *
+                                (0.03 + (0.035 * cos((h * pi / 180))))
+                            )
+                        ) /
+                        2
+                    ) *
+                    infinity,
+                  1
+                )
+            ) +
+            (0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180))))) *
+            clamp(
+              0,
+              (
+                  l -
+                    (
+                      (
+                          0.561 + (c / 0.4) *
+                            (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                        ) +
+                        (
+                          0.72 + (c / 0.4) *
+                            (0.03 + (0.035 * cos((h * pi / 180))))
+                        )
+                    ) /
+                    2
+                ) *
+                infinity,
+              1
+            )
+        ) *
+        clamp(
+          0,
+          (
+              l -
+                (
+                  0.561 + (c / 0.4) *
+                    (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                )
+            ) *
+            ((0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180))))) - l) *
+            infinity,
+          1
+        )
+    );
+  }
+
+  @property --_ak-safe-okl-up {
+    syntax: "*";
+    inherits: false;
+    initial-value: calc(
+      l *
+        (
+          1 -
+            clamp(
+              0,
+              (
+                  l -
+                    (
+                      0.561 + (c / 0.4) *
+                        (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                    )
+                ) *
+                (
+                  (0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180))))) -
+                    l
+                ) *
+                infinity,
+              1
+            )
+        ) +
+        (0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180))))) *
+        clamp(
+          0,
+          (
+              l -
+                (
+                  0.561 + (c / 0.4) *
+                    (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                )
+            ) *
+            ((0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180))))) - l) *
+            infinity,
+          1
+        )
+    );
+  }
+
+  @property --_ak-safe-okl-down {
+    syntax: "*";
+    inherits: false;
+    initial-value: calc(
+      l *
+        (
+          1 -
+            clamp(
+              0,
+              (
+                  l -
+                    (
+                      0.561 + (c / 0.4) *
+                        (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                    )
+                ) *
+                (
+                  (0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180))))) -
+                    l
+                ) *
+                infinity,
+              1
+            )
+        ) +
+        (0.561 + (c / 0.4) * (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))) *
+        clamp(
+          0,
+          (
+              l -
+                (
+                  0.561 + (c / 0.4) *
+                    (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                )
+            ) *
+            ((0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180))))) - l) *
+            infinity,
+          1
+        )
+    );
+  }
+
+  @property --_ak-pop-okl {
+    syntax: "*";
+    inherits: false;
+    initial-value: calc(
+      (0.06 + c * 0.3) *
+        (
+          (
+              1 - 2 *
+                clamp(
+                  0,
+                  (
+                      l -
+                        (
+                          (
+                              0.561 + (c / 0.4) *
+                                (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                            ) -
+                            (0.06 + c * 0.3)
+                        )
+                    ) *
+                    1e6,
+                  1
+                )
+            ) *
+            clamp(
+              0,
+              (
+                  (
+                      0.561 + (c / 0.4) *
+                        (-0.005 + (0.055 * cos(((h + 45) * pi / 180))))
+                    ) -
+                    l
+                ) *
+                1e6 + 1,
+              1
+            ) +
+            (
+              1 - 2 *
+                clamp(
+                  0,
+                  (
+                      l -
+                        (
+                          (
+                              0.72 + (c / 0.4) *
+                                (0.03 + (0.035 * cos((h * pi / 180))))
+                            ) +
+                            (0.06 + c * 0.3)
+                        )
+                    ) *
+                    1e6,
+                  1
+                )
+            ) *
+            clamp(
+              0,
+              (
+                  l -
+                    (0.72 + (c / 0.4) * (0.03 + (0.035 * cos((h * pi / 180)))))
+                ) *
+                1e6 + 1,
+              1
+            )
+        )
+    );
+  }
+}
+
+@supports not (color: oklch(from black l c cos(h))) {
+  @property --_ak-safe-okl {
+    syntax: "*";
+    inherits: false;
+    initial-value: calc(
+      l *
+        (
+          1 -
+            clamp(
+              0,
+              (l - (0.561 + (c / 0.4) * -0.005)) *
+                ((0.72 + (c / 0.4) * 0.03) - l) * infinity,
+              1
+            )
+        ) +
+        (
+          (0.561 + (c / 0.4) * -0.005) *
+            (
+              1 -
+                clamp(
+                  0,
+                  (
+                      l -
+                        (
+                          (0.561 + (c / 0.4) * -0.005) +
+                            (0.72 + (c / 0.4) * 0.03)
+                        ) /
+                        2
+                    ) *
+                    infinity,
+                  1
+                )
+            ) +
+            (0.72 + (c / 0.4) * 0.03) *
+            clamp(
+              0,
+              (
+                  l -
+                    ((0.561 + (c / 0.4) * -0.005) + (0.72 + (c / 0.4) * 0.03)) /
+                    2
+                ) *
+                infinity,
+              1
+            )
+        ) *
+        clamp(
+          0,
+          (l - (0.561 + (c / 0.4) * -0.005)) * ((0.72 + (c / 0.4) * 0.03) - l) *
+            infinity,
+          1
+        )
+    );
+  }
+
+  @property --_ak-safe-okl-up {
+    syntax: "*";
+    inherits: false;
+    initial-value: calc(
+      l *
+        (
+          1 -
+            clamp(
+              0,
+              (l - (0.561 + (c / 0.4) * -0.005)) *
+                ((0.72 + (c / 0.4) * 0.03) - l) * infinity,
+              1
+            )
+        ) +
+        (0.72 + (c / 0.4) * 0.03) *
+        clamp(
+          0,
+          (l - (0.561 + (c / 0.4) * -0.005)) * ((0.72 + (c / 0.4) * 0.03) - l) *
+            infinity,
+          1
+        )
+    );
+  }
+
+  @property --_ak-safe-okl-down {
+    syntax: "*";
+    inherits: false;
+    initial-value: calc(
+      l *
+        (
+          1 -
+            clamp(
+              0,
+              (l - (0.561 + (c / 0.4) * -0.005)) *
+                ((0.72 + (c / 0.4) * 0.03) - l) * infinity,
+              1
+            )
+        ) +
+        (0.561 + (c / 0.4) * -0.005) *
+        clamp(
+          0,
+          (l - (0.561 + (c / 0.4) * -0.005)) * ((0.72 + (c / 0.4) * 0.03) - l) *
+            infinity,
+          1
+        )
+    );
+  }
+
+  @property --_ak-pop-okl {
+    syntax: "*";
+    inherits: false;
+    initial-value: calc(
+      (0.06 + c * 0.3) *
+        (
+          (
+              1 - 2 *
+                clamp(
+                  0,
+                  (l - ((0.561 + (c / 0.4) * -0.005) - (0.06 + c * 0.3))) * 1e6,
+                  1
+                )
+            ) *
+            clamp(0, ((0.561 + (c / 0.4) * -0.005) - l) * 1e6 + 1, 1) +
+            (
+              1 - 2 *
+                clamp(
+                  0,
+                  (l - ((0.72 + (c / 0.4) * 0.03) + (0.06 + c * 0.3))) * 1e6,
+                  1
+                )
+            ) *
+            clamp(0, (l - (0.72 + (c / 0.4) * 0.03)) * 1e6 + 1, 1)
+        )
+    );
+  }
+}

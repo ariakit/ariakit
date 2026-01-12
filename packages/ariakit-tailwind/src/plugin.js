@@ -12,22 +12,19 @@ import {
   MAX_NON_BARE_LEVELS,
   oklchLightDark,
   prop,
-  properties,
   SCHEME_THRESHOLD_L,
   SCHEME_THRESHOLD_OKL,
   TEXT_CONTRAST_L,
   textColor,
   toPercent,
-  vars,
   withParentL,
   withParentOkL,
 } from "./utils.js";
+import { vars } from "./vars.js";
 
 /** @type {ReturnType<typeof plugin>} */
 const AriakitTailwind = plugin(
   ({ addBase, addVariant, addUtilities, matchUtilities, theme }) => {
-    addBase(properties);
-
     addVariant("ak-dark", IN_DARK);
     addVariant("ak-light", IN_LIGHT);
 
@@ -443,11 +440,10 @@ const AriakitTailwind = plugin(
       const alphaCAdd = `(c * 50%)`;
       const contrastAdd = `(12% * ${contrast})`;
       const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${alphaCAdd} + ${contrastAdd})`;
-      const lVar = soft ? "--l-soft" : "--l";
-      const finalColor = `oklch(from ${color} var(${lVar}) ${c} h / ${alpha})`;
+      const lVar = soft ? vars._edgeLSoft : vars._edgeL;
+      const finalColor = `oklch(from ${color} ${prop(lVar)} ${c} h / ${alpha})`;
       return {
         "--tw-ring-color": prop(vars.ring, prop(vars.layerRing)),
-        // TODO: Rename this variable
         [lVar]: lLight,
         borderColor: prop(vars.border, prop(vars.layerBorder)),
         [soft ? vars.layerRing : vars.ring]: soft
@@ -499,17 +495,16 @@ const AriakitTailwind = plugin(
           // const alphaCAdd = `(c * 50%)`;
           const contrastAdd = `(12% * ${contrast})`;
           const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${contrastAdd})`;
-          const finalColor = `oklch(from ${color} var(--l) 0 0 / ${alpha})`;
+          const finalColor = `oklch(from ${color} ${prop(vars._edgeL)} 0 0 / ${alpha})`;
           return {
             "--tw-ring-color": prop(vars.ring, prop(vars.layerRing)),
-            // TODO: Rename this variable
-            "--l": lLight,
+            [vars._edgeL]: lLight,
             borderColor: prop(vars.border, prop(vars.layerBorder)),
             [vars.ring]: finalColor,
             [vars.border]: finalColor,
             ...withParentL((l) => {
               if (l !== 0) return;
-              return { "--l": lDark };
+              return { [vars._edgeL]: lDark };
             }),
           };
         },
@@ -637,7 +632,7 @@ const AriakitTailwind = plugin(
 
       const computedRadius = force
         ? radius
-        : `max(${minRadius}, max(var(--nested-radius), 0px))`;
+        : `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
 
       const result = {
         [vars.framePadding]: padding,
@@ -659,7 +654,7 @@ const AriakitTailwind = plugin(
             [provide(vars._framePadding)]: padding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
-            "--nested-radius": nestedRadius,
+            [vars._nestedRadius]: nestedRadius,
             [`@container style(${vars._frameCappedPadding}: ${cap})`]: {
               [provide(vars._frameRadius)]: radius,
               [vars.frameRadius]: radius,
