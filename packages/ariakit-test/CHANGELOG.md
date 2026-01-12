@@ -1,5 +1,10 @@
 # @ariakit/test
 
+## 0.4.13
+
+- Added `q.text()` query to `@ariakit/test/playwright`.
+- Updated dependencies: `@ariakit/core@0.4.18`
+
 ## 0.4.12
 
 - Updated packages to target ES2018 (previously ES2017).

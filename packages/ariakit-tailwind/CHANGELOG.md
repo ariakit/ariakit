@@ -1,5 +1,29 @@
 # @ariakit/tailwind
 
+## 0.1.10
+
+### New custom variants
+
+- `ak-disabled`
+- `ak-disabled-within`
+- `ak-active`
+- `ak-hover`
+- `ak-focus-visible`
+- `ak-checked`
+- `ak-checked-within`
+
+### Moved CSS custom properties outside the `base` layer
+
+This should resolve most bundler warnings about `Unknown at rule: @property`. Some custom properties are still defined inside a `@supports` block. Browsers handle this fine, but bundlers may still warn. This has no runtime impact.
+
+### New `ak-frame` utilities
+
+Added `ak-frame-rounded-*` and `ak-frame-p-*` utilities to set specific border radii and padding. Use them to override the border radius and padding defined by `ak-frame-*/*`.
+
+### Other updates
+
+- Improved runtime performance and reduced CSS output size.
+
 ## 0.1.9
 
 - Updated packages to target ES2018 (previously ES2017).
