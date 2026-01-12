@@ -236,7 +236,6 @@ const AriakitTailwind = plugin(
 
       const result = css(getCurrentLayerCss(), {
         [vars.layer]: prop(vars._layerIdle),
-        // [vars.shadow]: shadow(prop(vars.layer)),
         [vars.shadow]: shadow(layerParent),
 
         [vars._layerDown]: isDown ? "1" : "0",
@@ -272,7 +271,6 @@ const AriakitTailwind = plugin(
         withContext("layer-parent", false, ({ provide, inherit }) => {
           return {
             [provide(vars._layerParent)]: prop(vars.layer),
-            // [vars.shadow]: shadow(layerParent),
             [vars.layerParent]: inherit(vars._layerParent),
           };
         }),
