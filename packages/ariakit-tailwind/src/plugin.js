@@ -633,12 +633,19 @@ const AriakitTailwind = plugin(
       const { radius, padding } = getFrameArgs(radiusKey, modifier);
       const cap = `1rem`;
       const capPadding = `min(${padding}, ${cap})`;
+      const minRadius = `min(0.125rem, ${radius})`;
+
+      const computedRadius = force
+        ? radius
+        : `max(${minRadius}, max(var(--nested-radius), 0px))`;
 
       const result = {
         [vars.framePadding]: padding,
         padding,
         scrollPadding: padding,
-        borderRadius: radius,
+        [vars.frameRadius]: computedRadius,
+        borderRadius: computedRadius,
+        [vars._frameCappedPadding]: capPadding,
       };
       Object.assign(
         result,
@@ -646,21 +653,13 @@ const AriakitTailwind = plugin(
           const parentPadding = inherit(vars._framePadding, "0px");
           const parentRadius = inherit(vars._frameRadius, radius);
           const parentBorder = inherit(vars._frameBorder, "0px");
-          const minRadius = `min(0.125rem, ${radius})`;
           const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder}))`;
-
-          const computedRadius = force
-            ? radius
-            : `max(${minRadius}, max(${nestedRadius}, 0px))`;
 
           return {
             [provide(vars._framePadding)]: padding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
-            [vars.frameRadius]: computedRadius,
-            borderRadius: computedRadius,
-
-            [vars._frameCappedPadding]: capPadding,
+            "--nested-radius": nestedRadius,
             [`@container style(${vars._frameCappedPadding}: ${cap})`]: {
               [provide(vars._frameRadius)]: radius,
               [vars.frameRadius]: radius,
