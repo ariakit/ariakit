@@ -141,7 +141,7 @@ jobs:
         id: test-visual
         run: npx vizzly run "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests" --wait
         env:
-          VIZZLY_API_KEY: ${{ secrets.VIZZLY_TOKEN }}
+          VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
           VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
           VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
           VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
