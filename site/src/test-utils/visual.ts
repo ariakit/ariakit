@@ -278,7 +278,6 @@ export async function visual(page: Page, options: ScreenshotOptions = {}) {
               id,
               style: styleName,
               browser: testInfo.project.name,
-              viewport: `${viewport.width}x${viewport.height}`,
             },
           });
         });
