@@ -1,5 +1,9 @@
 # @ariakit/solid-core
 
+## 0.1.4
+
+- Updated dependencies: `@ariakit/core@0.4.18`
+
 ## 0.1.3
 
 - Updated packages to target ES2018 (previously ES2017).

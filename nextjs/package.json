@@ -1,6 +1,6 @@
 {
   "name": "nextjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,16 +15,16 @@
     "#app/*": "./*"
   },
   "dependencies": {
-    "@ariakit/react": "0.4.20",
+    "@ariakit/react": "0.4.21",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.14.7",
+    "@opennextjs/cloudflare": "1.14.8",
     "@tailwindcss/postcss": "4.1.18",
-    "@types/node": "25.0.3",
-    "@types/react": "19.2.7",
+    "@types/node": "25.0.6",
+    "@types/react": "19.2.8",
     "@types/react-dom": "19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
     "tailwindcss": "4.1.18"

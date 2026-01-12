@@ -12,25 +12,19 @@ import {
   MAX_NON_BARE_LEVELS,
   oklchLightDark,
   prop,
-  properties,
   SCHEME_THRESHOLD_L,
   SCHEME_THRESHOLD_OKL,
   TEXT_CONTRAST_L,
   textColor,
   toPercent,
-  vars,
   withParentL,
   withParentOkL,
 } from "./utils.js";
+import { vars } from "./vars.js";
 
 /** @type {ReturnType<typeof plugin>} */
 const AriakitTailwind = plugin(
   ({ addBase, addVariant, addUtilities, matchUtilities, theme }) => {
-    /** @type {Set<string>} */
-    const registeredContextProps = new Set();
-
-    addBase(properties);
-
     addVariant("ak-dark", IN_DARK);
     addVariant("ak-light", IN_LIGHT);
 
@@ -242,7 +236,6 @@ const AriakitTailwind = plugin(
 
       const result = css(getCurrentLayerCss(), {
         [vars.layer]: prop(vars._layerIdle),
-        // [vars.shadow]: shadow(prop(vars.layer)),
         [vars.shadow]: shadow(layerParent),
 
         [vars._layerDown]: isDown ? "1" : "0",
@@ -271,19 +264,15 @@ const AriakitTailwind = plugin(
 
       Object.assign(
         result,
+        getEdgeCss({
+          color: colorMix(prop(vars.layer), layerParent),
+          soft: true,
+        }),
         withContext("layer-parent", false, ({ provide, inherit }) => {
-          const result = {
+          return {
             [provide(vars._layerParent)]: prop(vars.layer),
-            // [vars.shadow]: shadow(layerParent),
             [vars.layerParent]: inherit(vars._layerParent),
           };
-          return Object.assign(
-            result,
-            getEdgeCss({
-              color: colorMix(prop(vars.layer), layerParent),
-              soft: true,
-            }),
-          );
         }),
       );
 
@@ -449,11 +438,10 @@ const AriakitTailwind = plugin(
       const alphaCAdd = `(c * 50%)`;
       const contrastAdd = `(12% * ${contrast})`;
       const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${alphaCAdd} + ${contrastAdd})`;
-      const lVar = soft ? "--l-soft" : "--l";
-      const finalColor = `oklch(from ${color} var(${lVar}) ${c} h / ${alpha})`;
+      const lVar = soft ? vars._edgeLSoft : vars._edgeL;
+      const finalColor = `oklch(from ${color} ${prop(lVar)} ${c} h / ${alpha})`;
       return {
         "--tw-ring-color": prop(vars.ring, prop(vars.layerRing)),
-        // TODO: Rename this variable
         [lVar]: lLight,
         borderColor: prop(vars.border, prop(vars.layerBorder)),
         [soft ? vars.layerRing : vars.ring]: soft
@@ -505,17 +493,16 @@ const AriakitTailwind = plugin(
           // const alphaCAdd = `(c * 50%)`;
           const contrastAdd = `(12% * ${contrast})`;
           const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${contrastAdd})`;
-          const finalColor = `oklch(from ${color} var(--l) 0 0 / ${alpha})`;
+          const finalColor = `oklch(from ${color} ${prop(vars._edgeL)} 0 0 / ${alpha})`;
           return {
             "--tw-ring-color": prop(vars.ring, prop(vars.layerRing)),
-            // TODO: Rename this variable
-            "--l": lLight,
+            [vars._edgeL]: lLight,
             borderColor: prop(vars.border, prop(vars.layerBorder)),
             [vars.ring]: finalColor,
             [vars.border]: finalColor,
             ...withParentL((l) => {
               if (l !== 0) return;
-              return { "--l": lDark };
+              return { [vars._edgeL]: lDark };
             }),
           };
         },
@@ -639,12 +626,19 @@ const AriakitTailwind = plugin(
       const { radius, padding } = getFrameArgs(radiusKey, modifier);
       const cap = `1rem`;
       const capPadding = `min(${padding}, ${cap})`;
+      const minRadius = `min(0.125rem, ${radius})`;
+
+      const computedRadius = force
+        ? radius
+        : `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
 
       const result = {
         [vars.framePadding]: padding,
         padding,
         scrollPadding: padding,
-        borderRadius: radius,
+        [vars.frameRadius]: computedRadius,
+        borderRadius: computedRadius,
+        [vars._frameCappedPadding]: capPadding,
       };
       Object.assign(
         result,
@@ -652,21 +646,13 @@ const AriakitTailwind = plugin(
           const parentPadding = inherit(vars._framePadding, "0px");
           const parentRadius = inherit(vars._frameRadius, radius);
           const parentBorder = inherit(vars._frameBorder, "0px");
-          const minRadius = `min(0.125rem, ${radius})`;
           const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder}))`;
-
-          const computedRadius = force
-            ? radius
-            : `max(${minRadius}, max(${nestedRadius}, 0px))`;
 
           return {
             [provide(vars._framePadding)]: padding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
-            [vars.frameRadius]: computedRadius,
-            borderRadius: computedRadius,
-
-            [vars._frameCappedPadding]: capPadding,
+            [vars._nestedRadius]: nestedRadius,
             [`@container style(${vars._frameCappedPadding}: ${cap})`]: {
               [provide(vars._frameRadius)]: radius,
               [vars.frameRadius]: radius,
@@ -1090,17 +1076,6 @@ const AriakitTailwind = plugin(
     function withContext(id, reset, fn) {
       const getParityKey = () => `--_ak-${id}-parity`;
 
-      if (!registeredContextProps.has(id)) {
-        addBase({
-          [`@property ${getParityKey()}`]: {
-            syntax: "'even | odd | none'",
-            inherits: "true",
-            initialValue: "none",
-          },
-        });
-        registeredContextProps.add(id);
-      }
-
       /** @param {Parity} parity */
       const getNextParity = (parity) =>
         // TODO: Check if this !reset is necessary (it is, hover:ak-layer-10)
@@ -1131,7 +1106,7 @@ const AriakitTailwind = plugin(
           getCss(parity);
       }
 
-      result[`@container style(${getParityKey()}: none)`] = getCss();
+      result[`@container not style(${getParityKey()})`] = getCss();
 
       return result;
     }
