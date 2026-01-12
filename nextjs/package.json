@@ -1,6 +1,6 @@
 {
   "name": "nextjs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
     "#app/*": "./*"
   },
   "dependencies": {
-    "@ariakit/react": "0.4.20",
+    "@ariakit/react": "0.4.21",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"

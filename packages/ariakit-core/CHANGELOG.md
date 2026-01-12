@@ -1,5 +1,9 @@
 # @ariakit/core
 
+## 0.4.18
+
+- Fixed an error when trying to reach focusable elements within iframes.
+
 ## 0.4.17
 
 - Updated packages to target ES2018 (previously ES2017).
