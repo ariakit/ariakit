@@ -13,27 +13,28 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version-file: .nvmrc
+        cache: "npm"
 
-    - name: Cache npm
-      if: inputs.cache-npm == 'true'
-      uses: actions/cache@v5
-      with:
-        key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-        restore-keys: npm-${{ runner.os }}-
-        path: ~/.npm
+    # - name: Cache npm
+    #   if: inputs.cache-npm == 'true'
+    #   uses: actions/cache@v5
+    #   with:
+    #     key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+    #     restore-keys: npm-${{ runner.os }}-
+    #     path: ~/.npm
 
-    - name: Cache node_modules
-      uses: actions/cache@v5
-      id: cache-node-modules
-      with:
-        key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-        restore-keys: node-modules-${{ runner.os }}-
-        path: |
-          node_modules
-          nextjs/node_modules
-          website/node_modules
-          site/node_modules
-          packages/*/node_modules
+    # - name: Cache node_modules
+    #   uses: actions/cache@v5
+    #   id: cache-node-modules
+    #   with:
+    #     key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+    #     restore-keys: node-modules-${{ runner.os }}-
+    #     path: |
+    #       node_modules
+    #       nextjs/node_modules
+    #       website/node_modules
+    #       site/node_modules
+    #       packages/*/node_modules
 
     - name: Install dependencies
       if: steps.cache-node-modules.outputs.cache-hit != 'true'

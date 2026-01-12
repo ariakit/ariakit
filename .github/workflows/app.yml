@@ -139,10 +139,12 @@ jobs:
 
       - name: Test visual
         id: test-visual
-        run: npx vizzly run "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests" --wait
+        run: |
+          npx vizzly run "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests" \
+          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}"
         env:
           VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
-          VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
           VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
           VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
           VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -154,3 +156,22 @@ jobs:
           name: ${{ matrix.project }}-test-results
           path: site/test-results
           retention-days: 7
+  finalize-build:
+    name: Finalize build
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
+
+      - name: Finalize build
+        run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
+        env:
+          VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
+          VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+          VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
+          VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
+          VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
