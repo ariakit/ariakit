@@ -156,9 +156,10 @@ jobs:
           name: ${{ matrix.project }}-test-results
           path: site/test-results
           retention-days: 7
-  test-upload:
-    name: Upload visual test results
+  test-finalize:
+    name: Finalize visual tests
     needs: test
+    if: always() && needs.test.result != 'cancelled'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -167,7 +168,7 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Upload visual test results
+      - name: Finalize visual tests
         run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
         env:
           VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
