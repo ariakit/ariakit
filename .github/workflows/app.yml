@@ -141,7 +141,7 @@ jobs:
         id: test-visual
         run: |
           npx vizzly run "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests" \
-          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}"
+          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" --wait
         env:
           VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
           VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
@@ -150,14 +150,14 @@ jobs:
           VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
 
       - name: Upload test results to GitHub
-        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure')
+        if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.project }}-test-results
           path: site/test-results
           retention-days: 7
-  finalize-build:
-    name: Finalize build
+  test-upload:
+    name: Upload visual test results
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -167,7 +167,7 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Finalize build
+      - name: Upload visual test results
         run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
         env:
           VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
