@@ -26,9 +26,6 @@ import {
 /** @type {ReturnType<typeof plugin>} */
 const AriakitTailwind = plugin(
   ({ addBase, addVariant, addUtilities, matchUtilities, theme }) => {
-    /** @type {Set<string>} */
-    const registeredContextProps = new Set();
-
     addBase(properties);
 
     addVariant("ak-dark", IN_DARK);
@@ -238,9 +235,12 @@ const AriakitTailwind = plugin(
       /** @param {string} color */
       const shadow = (color) => `oklch(from ${color} 0 0 0 / ${shadowAlpha})`;
 
+      const layerParent = prop(vars.layerParent, "canvas");
+
       const result = css(getCurrentLayerCss(), {
         [vars.layer]: prop(vars._layerIdle),
-        [vars.shadow]: shadow(prop(vars.layer)),
+        // [vars.shadow]: shadow(prop(vars.layer)),
+        [vars.shadow]: shadow(layerParent),
 
         [vars._layerDown]: isDown ? "1" : "0",
         [vars._layerAppearance]: textColor(prop(vars.layer)),
@@ -268,20 +268,16 @@ const AriakitTailwind = plugin(
 
       Object.assign(
         result,
+        getEdgeCss({
+          color: colorMix(prop(vars.layer), layerParent),
+          soft: true,
+        }),
         withContext("layer-parent", false, ({ provide, inherit }) => {
-          const layerParent = prop(vars.layerParent, "canvas");
-          const result = {
+          return {
             [provide(vars._layerParent)]: prop(vars.layer),
-            [vars.shadow]: shadow(layerParent),
+            // [vars.shadow]: shadow(layerParent),
             [vars.layerParent]: inherit(vars._layerParent),
           };
-          return Object.assign(
-            result,
-            getEdgeCss({
-              color: colorMix(prop(vars.layer), layerParent),
-              soft: true,
-            }),
-          );
         }),
       );
 
@@ -827,6 +823,75 @@ const AriakitTailwind = plugin(
 
     matchUtilities(
       {
+        "ak-frame-p": (value) => {
+          const padding = value;
+          const result = {
+            [vars.framePadding]: padding,
+            padding,
+            scrollPadding: padding,
+          };
+          Object.assign(
+            result,
+            withContext("frame", false, ({ provide }) => {
+              return {
+                [provide(vars._framePadding)]: padding,
+              };
+            }),
+          );
+          return result;
+        },
+      },
+      {
+        values: Object.keys(theme("spacing")).reduce(
+          (acc, key) => {
+            if (key === "__CSS_VALUES__") return acc;
+            if (key === "DEFAULT") return acc;
+            const isNumber = /^\d*\.?\d+$/u.test(key);
+            if (isNumber) {
+              acc[key] = `--spacing(${key})`;
+            } else {
+              acc[key] = t("spacing", key);
+            }
+            return acc;
+          },
+          /** @type {Record<string, string>} */ ({}),
+        ),
+      },
+    );
+
+    matchUtilities(
+      {
+        "ak-frame-rounded": (radiusKey) => {
+          const radius = tv("radius", radiusKey, radiusKey);
+          const result = {
+            [vars.frameRadius]: radius,
+            borderRadius: radius,
+          };
+          Object.assign(
+            result,
+            withContext("frame", false, ({ provide }) => {
+              return {
+                [provide(vars._frameRadius)]: radius,
+              };
+            }),
+          );
+          return result;
+        },
+      },
+      {
+        values: Object.keys(theme("radius")).reduce(
+          (acc, key) => {
+            if (key === "__CSS_VALUES__") return acc;
+            acc[key] = key;
+            return acc;
+          },
+          /** @type {Record<string, string>} */ ({}),
+        ),
+      },
+    );
+
+    matchUtilities(
+      {
         "ak-frame-border": (value) => {
           return css({
             [vars._frameBorder]: value,
@@ -1019,17 +1084,6 @@ const AriakitTailwind = plugin(
     function withContext(id, reset, fn) {
       const getParityKey = () => `--_ak-${id}-parity`;
 
-      if (!registeredContextProps.has(id)) {
-        addBase({
-          [`@property ${getParityKey()}`]: {
-            syntax: "'even | odd | none'",
-            inherits: "true",
-            initialValue: "none",
-          },
-        });
-        registeredContextProps.add(id);
-      }
-
       /** @param {Parity} parity */
       const getNextParity = (parity) =>
         // TODO: Check if this !reset is necessary (it is, hover:ak-layer-10)
@@ -1060,7 +1114,7 @@ const AriakitTailwind = plugin(
           getCss(parity);
       }
 
-      result[`@container style(${getParityKey()}: none)`] = getCss();
+      result[`@container not style(${getParityKey()})`] = getCss();
 
       return result;
     }
