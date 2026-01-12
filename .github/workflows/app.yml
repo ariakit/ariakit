@@ -91,13 +91,13 @@ jobs:
             name: Chrome
             engine: chromium
             project: chrome
-            test: xvfb-run npm run test-browser -w site --
+            test: xvfb-run npm run test -w site --
             visual: xvfb-run npm run test-visual -w site --
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
-            test: xvfb-run npm run test-browser -w site --
+            test: xvfb-run npm run test -w site --
             visual: xvfb-run npm run test-visual -w site --
           # - os: ubuntu-latest
           #   name: Android
@@ -108,7 +108,7 @@ jobs:
             name: Safari
             engine: webkit
             project: safari
-            test: npm run test-browser -w site --
+            test: npm run test -w site --
             visual: npm run test-visual -w site --
           # - os: macos-latest
           #   name: iOS
