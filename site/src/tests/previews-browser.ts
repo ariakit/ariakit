@@ -21,26 +21,18 @@ test("previews @visual", async ({ page, baseURL }) => {
   const paths = await getPreviewPaths(baseURL);
   test.setTimeout(paths.length * TIMEOUT_PER_STEP);
 
-  const context = page.context();
+  // Set prefers-reduced-motion to reduce flakiness from animations
+  await page.emulateMedia({ reducedMotion: "reduce" });
 
-  await Promise.all(
-    paths.map((path) =>
-      test.step(
-        path,
-        async () => {
-          const stepPage = await context.newPage();
-          try {
-            // Set prefers-reduced-motion to reduce flakiness from animations
-            await stepPage.emulateMedia({ reducedMotion: "reduce" });
-            await stepPage.goto(path);
-            const id = path.replace(/^\/+/, "");
-            await visual(stepPage, { id, viewports });
-          } finally {
-            await stepPage.close();
-          }
-        },
-        { timeout: TIMEOUT_PER_STEP },
-      ),
-    ),
-  );
+  for (const path of paths) {
+    await test.step(
+      path,
+      async () => {
+        await page.goto(path);
+        const id = path.replace(/^\/+/, "");
+        await visual(page, { id, viewports });
+      },
+      { timeout: TIMEOUT_PER_STEP },
+    );
+  }
 });
