@@ -141,7 +141,7 @@ jobs:
         id: test-visual
         run: |
           npx vizzly run "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests" \
-          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" --wait
+          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}"
         env:
           VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
           VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
