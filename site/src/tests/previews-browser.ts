@@ -29,12 +29,15 @@ test("previews @visual", async ({ page, baseURL }) => {
         path,
         async () => {
           const stepPage = await context.newPage();
-          // Set prefers-reduced-motion to reduce flakiness from animations
-          await stepPage.emulateMedia({ reducedMotion: "reduce" });
-          await stepPage.goto(path);
-          const id = path.replace(/^\/+/, "");
-          await visual(stepPage, { id, viewports });
-          await stepPage.close();
+          try {
+            // Set prefers-reduced-motion to reduce flakiness from animations
+            await stepPage.emulateMedia({ reducedMotion: "reduce" });
+            await stepPage.goto(path);
+            const id = path.replace(/^\/+/, "");
+            await visual(stepPage, { id, viewports });
+          } finally {
+            await stepPage.close();
+          }
         },
         { timeout: TIMEOUT_PER_STEP },
       ),
