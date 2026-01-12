@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   install-linux:
@@ -37,7 +38,6 @@ jobs:
     name: Build app
     needs: install-linux
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -60,7 +60,6 @@ jobs:
     name: Build Next.js app
     needs: install-linux
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -156,6 +155,7 @@ jobs:
           name: ${{ matrix.project }}-test-results
           path: site/test-results
           retention-days: 7
+
   test-finalize:
     name: Finalize visual tests
     needs: test
