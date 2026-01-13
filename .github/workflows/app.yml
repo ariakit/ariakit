@@ -10,6 +10,7 @@ permissions:
 
 env:
   # VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
+  VIZZLY_TOKEN: ""
   VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
   VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
   VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
@@ -147,8 +148,7 @@ jobs:
         run: |
           npx vizzly run \
           "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests" \
-          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
-          --allow-no-token
+          ${{ env.VIZZLY_TOKEN != '' && format('--parallel-id="{0}-{1}"', github.run_id, github.run_attempt) || '--allow-no-token --wait' }}
 
       - name: Upload test results to GitHub
         if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure')
@@ -165,10 +165,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
+        if: env.VIZZLY_TOKEN != ''
         uses: actions/checkout@v6
 
       - name: Install node modules
+        if: env.VIZZLY_TOKEN != ''
         uses: ./.github/workflows/install-node-modules
 
       - name: Finalize visual tests
-        run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}" --allow-no-token
+        if: env.VIZZLY_TOKEN != ''
+        run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
