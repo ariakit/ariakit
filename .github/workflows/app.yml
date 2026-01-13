@@ -8,6 +8,13 @@ on:
 permissions:
   contents: read
 
+env:
+  VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
+  VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+  VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
+  VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
+  VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
+
 jobs:
   install-linux:
     name: Install node modules (Linux)
@@ -37,7 +44,6 @@ jobs:
     name: Build app
     needs: install-linux
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -60,7 +66,6 @@ jobs:
     name: Build Next.js app
     needs: install-linux
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -91,12 +96,14 @@ jobs:
             name: Chrome
             engine: chromium
             project: chrome
-            run: xvfb-run npm run test-visual -w site --
+            test: xvfb-run npm run test -w site --
+            visual: xvfb-run npm run test-visual -w site --
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
-            run: xvfb-run npm run test-visual -w site --
+            test: xvfb-run npm run test -w site --
+            visual: xvfb-run npm run test-visual -w site --
           # - os: ubuntu-latest
           #   name: Android
           #   engine: chromium
@@ -106,7 +113,8 @@ jobs:
             name: Safari
             engine: webkit
             project: safari
-            run: npm run test-visual -w site --
+            test: npm run test -w site --
+            visual: npm run test-visual -w site --
           # - os: macos-latest
           #   name: iOS
           #   engine: webkit
@@ -132,35 +140,38 @@ jobs:
 
       - name: Test
         id: test
-        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep-invert @visual --pass-with-no-tests
+        run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual
 
       - name: Test visual
-        if: success() || steps.test.outcome == 'failure'
         id: test-visual
-        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
-
-      - name: Reset snapshots
-        if: failure() && steps.test-visual.outcome == 'failure'
-        run: rm -rf site/src/tests/visual/*-${{ matrix.project }}-*.png
-
-      - name: Update snapshots
-        id: update-snapshots
-        if: failure() && steps.test-visual.outcome == 'failure'
-        run: ${{ matrix.run }} --project ${{ matrix.project }} --grep @visual -u
-
-      - name: Upload snapshots
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: app-visual-${{ matrix.project }}
-          path: site/src/tests/visual/*-${{ matrix.project }}-*.png
-          if-no-files-found: ignore
-          retention-days: 1
+        run: |
+          npx vizzly run \
+          --allow-no-token \
+          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
+          "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests"
 
       - name: Upload test results to GitHub
-        if: failure() && steps.update-snapshots.outcome == 'failure'
+        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure')
         uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.project }}-test-results
           path: site/test-results
           retention-days: 7
+
+  test-finalize:
+    name: Finalize visual tests
+    needs: test
+    if: always() && needs.test.result != 'cancelled'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        if: env.VIZZLY_TOKEN != ''
+        uses: actions/checkout@v6
+
+      - name: Install node modules
+        if: env.VIZZLY_TOKEN != ''
+        uses: ./.github/workflows/install-node-modules
+
+      - name: Finalize visual tests
+        if: env.VIZZLY_TOKEN != ''
+        run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
