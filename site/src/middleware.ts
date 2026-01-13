@@ -15,15 +15,23 @@ import { unauthorized } from "./lib/response.ts";
 
 const clerk = clerkMiddleware();
 
+function isPublicRoute(url: URL) {
+  if (url.pathname.startsWith("/r/")) return true;
+  return false;
+}
+
 export async function onRequest(context: APIContext, next: MiddlewareNext) {
   const { action } = getActionContext(context);
-
   const isAdminAction = action?.name.startsWith("admin");
 
   if (!import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY) {
     if (isAdminAction) {
       return unauthorized();
     }
+    return next();
+  }
+
+  if (isPublicRoute(context.url)) {
     return next();
   }
 
