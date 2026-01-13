@@ -7,7 +7,13 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
+
+env:
+  VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
+  VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+  VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
+  VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
+  VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
   install-linux:
@@ -134,19 +140,16 @@ jobs:
 
       - name: Test
         id: test
-        run: ${{ matrix.test }} --project ${{ matrix.project }} --grep-invert @visual --pass-with-no-tests
+        run: |
+          ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests \
+          ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork) && '--grep-invert @visual' || '' }}
 
       - name: Test visual
         id: test-visual
+        if: github.event_name == 'push' || !github.event.pull_request.head.repo.fork
         run: |
           npx vizzly run "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests" \
           --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}"
-        env:
-          VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
-          VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
-          VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
-          VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
-          VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
 
       - name: Upload test results to GitHub
         if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure')
@@ -159,7 +162,7 @@ jobs:
   test-finalize:
     name: Finalize visual tests
     needs: test
-    if: always() && needs.test.result != 'cancelled'
+    if: always() && needs.test.result != 'cancelled' && (github.event_name == 'push' || !github.event.pull_request.head.repo.fork)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -170,9 +173,3 @@ jobs:
 
       - name: Finalize visual tests
         run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
-        env:
-          VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
-          VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
-          VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
-          VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
-          VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
