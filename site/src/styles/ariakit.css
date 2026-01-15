@@ -50,20 +50,15 @@
   --radius-dialog: var(--radius-2xl);
   --spacing-dialog: --spacing(4);
 
-  --radius-playground: calc(var(--radius) * 3.5);
-  --spacing-playground: --spacing(0);
-
-  --radius-field: var(--radius-lg);
-  --spacing-field: 0.75em;
-
-  --radius-round: var(--radius-full);
-  --spacing-round: 0.5em;
-
   --radius-card: var(--radius-xl);
   --spacing-card: --spacing(4);
 
+  --radius-field: var(--radius-lg);
+  --spacing-field: 0.5em;
+  --spacing-field-card: 0.875em;
+
   --radius-badge: var(--radius-full);
-  --spacing-badge: 0.5em;
+  --spacing-badge: 0.3334em;
 
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",

@@ -1,12 +1,11 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "outDir": ".types",
     "rootDir": ".",
     "types": ["node"],
     "noUncheckedIndexedAccess": true
   },
-  // "include": ["../.astro/types.d.ts", "env.d.ts", "**/*.astro"],
   "include": ["src/**/*.astro"],
   "exclude": [],
   "references": [

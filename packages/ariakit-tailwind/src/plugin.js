@@ -625,7 +625,7 @@ const AriakitTailwind = plugin(
     function getFrameCss({ radiusKey, modifier = null, force = false }) {
       const { radius, padding } = getFrameArgs(radiusKey, modifier);
       const cap = `1rem`;
-      const capPadding = `min(${padding}, ${cap})`;
+      const capPadding = `min(${prop(vars.framePadding)}, ${cap})`;
       const minRadius = `min(0.125rem, ${radius})`;
 
       const computedRadius = force

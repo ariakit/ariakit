@@ -36,6 +36,14 @@
   }
 }
 
+@custom-variant ak-focus-visible-within {
+  &:focus-visible,
+  &[data-focus-visible],
+  &:has(*:focus-visible, [data-focus-visible]) {
+    @slot;
+  }
+}
+
 @custom-variant ak-checked {
   &:checked,
   &[aria-checked="true"] {

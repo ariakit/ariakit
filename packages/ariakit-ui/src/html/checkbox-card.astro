@@ -1,0 +1,54 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { splitProps, type VariantProps } from "clava";
+import {
+  checkboxCard,
+  checkboxCardContent,
+  checkboxCardDescription,
+  checkboxCardIcon,
+  checkboxCardLabel,
+} from "../styles/checkbox-card.ts";
+import CheckboxCardCheck from "./checkbox-card-check.astro";
+
+interface Props
+  extends
+    HTMLAttributes<"input">,
+    VariantProps<typeof checkboxCard>,
+    VariantProps<typeof checkboxCardLabel> {}
+
+const [variantProps, textProps, ...inputProps] = splitProps(
+  Astro.props,
+  checkboxCard.html,
+  checkboxCardLabel.html
+);
+---
+
+<label {...checkboxCard.html(variantProps)}>
+  <slot name="checkStart">
+    {!Astro.slots.has("checkEnd") && <CheckboxCardCheck slot="checkStart" />}
+  </slot>
+  {
+    Astro.slots.has("iconStart") && (
+      <span {...checkboxCardIcon.html({ $position: "start" })}>
+        <slot name="iconStart" />
+      </span>
+    )
+  }
+  <input type="checkbox" {...inputProps} />
+  <span {...checkboxCardContent.html()}>
+    <span {...checkboxCardLabel.html(textProps)}>
+      <slot />
+    </span>
+    <span {...checkboxCardDescription.html()}>
+      <slot name="description" />
+    </span>
+  </span>
+  {
+    Astro.slots.has("iconEnd") && (
+      <span {...checkboxCardIcon.html({ $position: "end" })}>
+        <slot name="iconEnd" />
+      </span>
+    )
+  }
+  <slot name="checkEnd" />
+</label>

@@ -10,12 +10,12 @@ export const button = cv({
     "ak-outline-primary",
     "ak-hover:ak-layer-hover",
     "ak-focus-visible:outline-2",
-    "ak-disabled:ak-text/0 ak-disabled:border-transparent ak-disabled:ak-layer-pop-0.5 ak-disabled:inset-shadow-none ak-disabled:bg-none ak-disabled:shadow-none",
+    "ak-disabled:cursor-not-allowed ak-disabled:ak-text/0! ak-disabled:border-transparent! ak-disabled:ring-transparent! ak-disabled:ak-layer-pop-0.5! ak-disabled:inset-shadow-none! ak-disabled:bg-none! ak-disabled:shadow-none!",
   ],
   variants: {
     $color: {
-      pop: "",
-      layer: "ak-layer",
+      pop: "ak-layer-pop",
+      lighter: "ak-layer",
       ghost: "ak-layer-0 ak-disabled:ak-layer-0!",
       primary: "ak-layer-primary outline-offset-1",
       secondary: "ak-layer-secondary outline-offset-1",
@@ -46,12 +46,14 @@ export const button = cv({
     },
   },
   defaultVariants: {
-    $color: "pop",
     $kind: "flat",
   },
   computed: (context) => {
-    if (context.variants.$color !== "pop") return;
-    return context.variants.$kind === "classic" ? "ak-layer" : "ak-layer-pop";
+    if (!context.variants.$color) {
+      context.setDefaultVariants({
+        $color: context.variants.$kind === "classic" ? "lighter" : "pop",
+      });
+    }
   },
 });
 

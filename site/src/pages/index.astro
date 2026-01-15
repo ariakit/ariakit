@@ -8,11 +8,13 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Icon } from "#app/icons/icon.react.tsx";
 import BadgeAstro from "@ariakit/ui/html/badge.astro";
 import { Badge } from "@ariakit/ui/html/badge.react.tsx";
 import { Badge as BadgeSolid } from "@ariakit/ui/html/badge.solid.tsx";
 import { Button } from "@ariakit/ui/html/button.solid.tsx";
+import CheckboxCardCheck from "@ariakit/ui/html/checkbox-card-check.astro";
+import CheckboxCard from "@ariakit/ui/html/checkbox-card.astro";
+import { ChevronDownIcon, CircleCheckBigIcon, CopyIcon } from "@lucide/astro";
 import Layout from "./_layout.astro";
 ---
 
@@ -21,47 +23,75 @@ import Layout from "./_layout.astro";
 
   <div class="flex gap-2 items-center p-2">
     <button class="ak-button-classic">Button</button>
-    <Button $kind="classic">Button</Button>
+    <Button $kind="classic">
+      <CopyIcon slot="iconStart" />
+      Button
+    </Button>
     <Button>
       Button
-      <Icon name="chevronDown" slot="icon" />
+      <ChevronDownIcon slot="icon" />
     </Button>
   </div>
 
-  <div class="flex gap-2 items-center p-2">
+  <div class="flex flex-wrap gap-2 items-center p-2">
+    <CheckboxCard
+      $size="sm"
+      $frame="card"
+      $gap="md"
+      $color="ghost"
+      $border={false}
+      $depth={3}
+    >
+      <CheckboxCardCheck
+        slot="checkEnd"
+        $frame="auto"
+        $size="sm"
+        $color="pop"
+        $border="contrast"
+      />
+      Do this?
+      <span slot="description"
+        >A nice description to test this<br />dsadsad</span
+      >
+      <CopyIcon slot="iconStart" class="" />
+    </CheckboxCard>
     <Button>Button</Button>
     <Button $color="primary" $noEndGap>
-      <Icon name="copy" slot="iconStart" />
+      <CopyIcon slot="iconStart" />
       Button
-      <Icon name="chevronDown" slot="iconEnd" />
+      <ChevronDownIcon slot="iconEnd" />
     </Button>
     <Button $color="ghost" $border>Button</Button>
     <Button>
-      <Icon name="copy" slot="iconStart" />
+      <CopyIcon slot="iconStart" />
       Button
     </Button>
     <Button disabled>
       Button dhsajkdhk adsadsa
-      <Icon name="chevronDown" slot="iconEnd" />
+      <ChevronDownIcon slot="iconEnd" />
     </Button>
     <BadgeAstro class="bg-red-500!">
-      <Icon name="copy" slot="iconStart" />
+      <CopyIcon slot="iconStart" />
       Badge Astro
     </BadgeAstro>
     <BadgeSolid $color="danger" $size="lg">
-      <!-- <Icon name="copy" slot="iconStart" /> -->
+      <CopyIcon slot="iconStart" />
       Badge Solid
-      <Icon name="copy" slot="iconEnd" />
+    </BadgeSolid>
+    <BadgeSolid $color="danger" $size="lg">
+      <!-- <CopyIcon slot="iconStart" /> -->
+      Badge Solid
+      <CopyIcon slot="iconEnd" />
     </BadgeSolid>
     <Badge>Badge</Badge>
 
-    <Badge $color="primary" $border="bold"> Badge </Badge>
+    <Badge $color="primary" $border> Badge Border</Badge>
     <Badge>
-      <Icon name="copy" slot="iconStart" />
+      <CopyIcon slot="iconStart" />
       Badge<br />dsadsa
     </Badge>
     <Badge $color="secondary">
-      <Icon name="copy" slot="iconStart" />
+      <CopyIcon slot="iconStart" />
       Badge
     </Badge>
     <Badge $color="secondary" className="border-dashed">
@@ -71,5 +101,24 @@ import Layout from "./_layout.astro";
     <Badge $color="success">Badge</Badge>
     <Badge $color="warning">Badge</Badge>
     <Badge $color="danger">Badge</Badge>
+  </div>
+  <div
+    class="grid grid-cols-2 gap-14 w-max p-40 place-content-center place-items-center mt-20"
+  >
+    <Badge $color="success" className="bg-green-800">
+      <span class="text-white">Success</span>
+    </Badge>
+    <Badge $color="success">
+      <span class="text-white">Success</span>
+    </Badge>
+    <Badge $color="success" className="max-w-40" $truncate>
+      <CircleCheckBigIcon slot="iconStart" />
+      Success dhsakjdh ajks dsahk dsahk dhsakj
+    </Badge>
+    <Badge $color="success">Success</Badge>
+    <Badge $color="success">
+      <CircleCheckBigIcon slot="iconStart" />
+      Success
+    </Badge>
   </div>
 </Layout>

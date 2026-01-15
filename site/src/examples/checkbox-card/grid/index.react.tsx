@@ -3,8 +3,10 @@ import {
   checkboxCard,
   checkboxCardCheck,
   checkboxCardGrid,
-  checkboxCardText,
+  checkboxCardIcon,
+  checkboxCardLabel,
 } from "@ariakit/ui/styles/checkbox-card.ts";
+import { CheckIcon, CodeIcon, ComputerIcon } from "lucide-react";
 import { useState } from "react";
 import {
   CheckboxCard,
@@ -46,18 +48,99 @@ export default function Example() {
         {Object.entries(interests).map(([key, interest]) => (
           <label
             key={key}
-            {...checkboxCard()}
-            aria-disabled={key === "culture"}
+            {...checkboxCard({})}
+            aria-disabled={key === "culture" || key === "history"}
           >
-            <span {...checkboxCardCheck()} />
+            <span {...checkboxCardCheck()}>
+              <CheckIcon />
+            </span>
             <input
               type="checkbox"
               className="sr-only"
               defaultChecked={key === "culture"}
+              disabled={key === "culture" || key === "history"}
             />
-            <span {...checkboxCardText()}>{interest.label}</span>
+            <span {...checkboxCardLabel()}>{interest.label}</span>
           </label>
         ))}
+      </div>
+      <div {...checkboxCardGrid({})}>
+        {Object.entries(interests).map(([key, interest]) => (
+          <label
+            key={key}
+            {...checkboxCard()}
+            aria-disabled={key === "culture"}
+          >
+            <input
+              type="checkbox"
+              className="sr-only"
+              defaultChecked={key === "culture"}
+              disabled={key === "culture"}
+            />
+            <span {...checkboxCardLabel()}>{interest.label}</span>
+            <span {...checkboxCardCheck()}>
+              <CheckIcon />
+            </span>
+          </label>
+        ))}
+      </div>
+      <div className="p-20 flex gap-8">
+        <label
+          aria-disabled
+          {...checkboxCard({
+            className: "w-max",
+            // $padding: "field",
+          })}
+        >
+          <span
+            {...checkboxCardCheck({
+              // $size: "xs",
+              // $frame: "auto",
+            })}
+          >
+            <CheckIcon />
+          </span>
+          <input type="checkbox" defaultChecked disabled />
+          <span
+            {...checkboxCardLabel({
+              // $noStartGap: true,
+              // className: "-ms-0.5",
+            })}
+          >
+            Programming
+          </span>
+          {/* <span
+            {...checkboxCardIcon({
+              // $size: "xs",
+            })}
+          >
+            <ComputerIcon />
+          </span> */}
+        </label>
+        <label
+          {...checkboxCard({
+            className: "w-max",
+            // $padding: "field",
+          })}
+        >
+          <input type="checkbox" defaultChecked />
+          <span
+            {...checkboxCardLabel({
+              // $noStartGap: true,
+              // className: "-ms-0.5",
+            })}
+          >
+            Programming
+          </span>
+          <span
+            {...checkboxCardCheck({
+              // $size: "xs",
+              // $frame: "auto",
+            })}
+          >
+            <CheckIcon />
+          </span>
+        </label>
       </div>
     </Group>
   );

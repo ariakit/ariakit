@@ -1,0 +1,17 @@
+---
+import { CheckIcon } from "@lucide/astro";
+import type { HTMLAttributes } from "astro/types";
+import { splitProps, type VariantProps } from "clava";
+import { checkboxCardCheck } from "../styles/checkbox-card.ts";
+
+interface Props
+  extends HTMLAttributes<"span">, VariantProps<typeof checkboxCardCheck> {
+  slot: "checkStart" | "checkEnd";
+}
+
+const [variantProps, rest] = splitProps(Astro.props, checkboxCardCheck.html);
+---
+
+<span {...checkboxCardCheck.html(variantProps)} {...rest} slot="checkStart">
+  <CheckIcon />
+</span>

@@ -8,6 +8,7 @@ export const border = cv({
       true: "ak-edge",
       medium: "ak-edge/20",
       bold: "ak-edge/40",
+      contrast: "ak-edge-contrast",
     },
     $borderType: {
       none: "",

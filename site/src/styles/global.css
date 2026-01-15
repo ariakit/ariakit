@@ -19,6 +19,9 @@
   --container-overlap: 100.05rem;
 
   --leading-loose: 1.85;
+
+  --radius-playground: calc(var(--radius) * 3.5);
+  --spacing-playground: --spacing(0);
 }
 
 @theme inline {
@@ -70,4 +73,11 @@ body {
 
 body > * {
   @apply ak-dark:scheme-dark;
+}
+
+@layer base { 
+  .lucide {
+    width: 1em;
+    height: 1em;
+  }
 }

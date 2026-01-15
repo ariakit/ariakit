@@ -1,9 +1,8 @@
 import { cv } from "clava";
-import { border } from "./border.ts";
 import { field, fieldIcon, fieldText } from "./field.ts";
 
 export const badge = cv({
-  extend: [field, border],
+  extend: [field],
   class: [
     "font-medium whitespace-nowrap",
     "ak-layer-mix-(--badge-color)/15",
@@ -18,6 +17,9 @@ export const badge = cv({
       warning: "[--badge-color:theme(--color-yellow-500)]",
       danger: "[--badge-color:theme(--color-red-500)]",
     },
+  },
+  computedVariants: {
+    $border: (_: boolean) => {},
   },
   defaultVariants: {
     $color: "default",

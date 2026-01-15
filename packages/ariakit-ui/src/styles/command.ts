@@ -12,12 +12,27 @@ export const command = cv({
     "ak-active:origin-bottom ak-active:scale-x-(--command-scale-x) ak-active:scale-y-(--command-scale-y)",
   ],
   computedVariants: {
+    /**
+     * Horizontal scale factor applied to the element when pressed. Use a
+     * smaller value for larger elements.
+     * @default 5
+     **/
     $depthX: (value: number) => ({
       "--command-depth-x": `${value}`,
     }),
+    /**
+     * Vertical scale factor applied to the element when pressed. Use a smaller
+     * value for larger elements.
+     * @default 5
+     **/
     $depthY: (value: number) => ({
       "--command-depth-y": `${value}`,
     }),
+    /**
+     * Scale factor applied to the element when pressed. Use a smaller value for
+     * larger elements.
+     * @default 5
+     **/
     $depth: (_value: number) => {},
   },
   defaultVariants: {
