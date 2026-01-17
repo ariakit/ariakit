@@ -56,11 +56,14 @@
   --radius-field: var(--radius-lg);
   --spacing-field: 0.75em;
 
+  --radius-round: var(--radius-full);
+  --spacing-round: 0.5em;
+
   --radius-card: var(--radius-xl);
   --spacing-card: --spacing(4);
 
   --radius-badge: var(--radius-full);
-  --spacing-badge: --spacing(1.5);
+  --spacing-badge: 0.5em;
 
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",

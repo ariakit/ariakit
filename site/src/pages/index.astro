@@ -8,7 +8,68 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { Icon } from "#app/icons/icon.react.tsx";
+import BadgeAstro from "@ariakit/ui/html/badge.astro";
+import { Badge } from "@ariakit/ui/html/badge.react.tsx";
+import { Badge as BadgeSolid } from "@ariakit/ui/html/badge.solid.tsx";
+import { Button } from "@ariakit/ui/html/button.solid.tsx";
 import Layout from "./_layout.astro";
 ---
 
-<Layout>Soon</Layout>
+<Layout>
+  Soon
+
+  <div class="flex gap-2 items-center p-2">
+    <button class="ak-button-classic">Button</button>
+    <Button $kind="classic">Button</Button>
+    <Button>
+      Button
+      <Icon name="chevronDown" slot="icon" />
+    </Button>
+  </div>
+
+  <div class="flex gap-2 items-center p-2">
+    <Button>Button</Button>
+    <Button $color="primary" $noEndGap>
+      <Icon name="copy" slot="iconStart" />
+      Button
+      <Icon name="chevronDown" slot="iconEnd" />
+    </Button>
+    <Button $color="ghost" $border>Button</Button>
+    <Button>
+      <Icon name="copy" slot="iconStart" />
+      Button
+    </Button>
+    <Button disabled>
+      Button dhsajkdhk adsadsa
+      <Icon name="chevronDown" slot="iconEnd" />
+    </Button>
+    <BadgeAstro class="bg-red-500!">
+      <Icon name="copy" slot="iconStart" />
+      Badge Astro
+    </BadgeAstro>
+    <BadgeSolid $color="danger" $size="lg">
+      <!-- <Icon name="copy" slot="iconStart" /> -->
+      Badge Solid
+      <Icon name="copy" slot="iconEnd" />
+    </BadgeSolid>
+    <Badge>Badge</Badge>
+
+    <Badge $color="primary" $border="bold"> Badge </Badge>
+    <Badge>
+      <Icon name="copy" slot="iconStart" />
+      Badge<br />dsadsa
+    </Badge>
+    <Badge $color="secondary">
+      <Icon name="copy" slot="iconStart" />
+      Badge
+    </Badge>
+    <Badge $color="secondary" className="border-dashed">
+      <div class="size-full bg-blue-500 rounded-full" slot="iconStart"></div>
+      Plus
+    </Badge>
+    <Badge $color="success">Badge</Badge>
+    <Badge $color="warning">Badge</Badge>
+    <Badge $color="danger">Badge</Badge>
+  </div>
+</Layout>
