@@ -663,6 +663,26 @@ const AriakitTailwind = plugin(
     }
 
     /**
+     * Computes the nested radius based on parent frame context.
+     * @param {object} params
+     * @param {string} params.radius - The base radius value
+     * @param {boolean} [params.force] - Whether to force the radius
+     * @param {Inherit} params.inherit - The inherit function from withContext
+     */
+    function getNestedRadius({ radius, force = false, inherit }) {
+      if (force) {
+        return { computedRadius: radius, nestedRadius: undefined };
+      }
+      const parentPadding = inherit(vars._framePadding, "0px");
+      const parentRadius = inherit(vars._frameRadius, radius);
+      const parentBorder = inherit(vars._frameBorder, "0px");
+      const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder}))`;
+      const minRadius = `min(0.125rem, ${radius})`;
+      const computedRadius = `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
+      return { computedRadius, nestedRadius };
+    }
+
+    /**
      * @param {object} params
      * @param {string} params.radiusKey
      * @param {string | null} [params.modifier]
@@ -672,42 +692,40 @@ const AriakitTailwind = plugin(
       const { radius, padding } = getFrameArgs(radiusKey, modifier);
       const cap = `1rem`;
       const capPadding = `min(${prop(vars.framePadding)}, ${cap})`;
-      const minRadius = `min(0.125rem, ${radius})`;
-
-      const computedRadius = force
-        ? radius
-        : `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
-
-      const result = {
+      const result = css({
         [vars.framePadding]: padding,
         padding,
         scrollPadding: padding,
-        [vars.frameRadius]: computedRadius,
-        borderRadius: computedRadius,
         [vars._frameCappedPadding]: capPadding,
-      };
+      });
       Object.assign(
         result,
         withContext("frame", force, ({ provide, inherit }) => {
-          const parentPadding = inherit(vars._framePadding, "0px");
-          const parentRadius = inherit(vars._frameRadius, radius);
-          const parentBorder = inherit(vars._frameBorder, "0px");
-          const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder}))`;
-
-          return {
+          const { computedRadius, nestedRadius } = getNestedRadius({
+            radius,
+            force,
+            inherit,
+          });
+          const contextCss = css({
+            [vars.frameRadius]: computedRadius,
+            borderRadius: computedRadius,
             [provide(vars._framePadding)]: padding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
-            [vars._nestedRadius]: nestedRadius,
-            [`@container style(${vars._frameCappedPadding}: ${cap})`]: {
+          });
+          if (nestedRadius) {
+            contextCss[vars._nestedRadius] = nestedRadius;
+            contextCss[
+              `@container style(${vars._frameCappedPadding}: ${cap})`
+            ] = {
               [provide(vars._frameRadius)]: radius,
               [vars.frameRadius]: radius,
               borderRadius: radius,
-            },
-          };
+            };
+          }
+          return contextCss;
         }),
       );
-
       return result;
     }
 
@@ -897,24 +915,37 @@ const AriakitTailwind = plugin(
       },
     );
 
+    /**
+     * Creates frame-rounded CSS with optional force mode.
+     * @param {object} params
+     * @param {string} params.radiusKey
+     * @param {boolean} [params.force]
+     */
+    function getFrameRoundedCss({ radiusKey, force = false }) {
+      const radius = tv("radius", radiusKey, radiusKey);
+      return withContext("frame", force, ({ provide, inherit }) => {
+        const { computedRadius, nestedRadius } = getNestedRadius({
+          radius,
+          force,
+          inherit,
+        });
+        const contextCss = css({
+          [vars.frameRadius]: computedRadius,
+          borderRadius: computedRadius,
+          [provide(vars._frameRadius)]: computedRadius,
+        });
+        if (nestedRadius) {
+          contextCss[vars._nestedRadius] = nestedRadius;
+        }
+        return contextCss;
+      });
+    }
+
     matchUtilities(
       {
-        "ak-frame-rounded": (radiusKey) => {
-          const radius = tv("radius", radiusKey, radiusKey);
-          const result = {
-            [vars.frameRadius]: radius,
-            borderRadius: radius,
-          };
-          Object.assign(
-            result,
-            withContext("frame", false, ({ provide }) => {
-              return {
-                [provide(vars._frameRadius)]: radius,
-              };
-            }),
-          );
-          return result;
-        },
+        "ak-frame-rounded": (radiusKey) => getFrameRoundedCss({ radiusKey }),
+        "ak-frame-rounded-force": (radiusKey) =>
+          getFrameRoundedCss({ radiusKey, force: true }),
       },
       {
         values: Object.keys(theme("radius")).reduce(
