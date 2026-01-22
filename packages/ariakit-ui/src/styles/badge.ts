@@ -1,6 +1,6 @@
 import { cv } from "clava";
 import type { Variant } from "../index.ts";
-import { field, fieldIcon, fieldLabel } from "./field.ts";
+import { control, controlIcon, controlLabel } from "./control.ts";
 
 const badgeColors = {
   default: "",
@@ -9,10 +9,10 @@ const badgeColors = {
   success: "[--badge-color:theme(--color-success)]",
   warning: "[--badge-color:theme(--color-warning)]",
   danger: "[--badge-color:theme(--color-danger)]",
-} satisfies Variant<typeof field, "$borderColor">;
+} satisfies Variant<typeof control, "$borderColor">;
 
 export const badge = cv({
-  extend: [field],
+  extend: [control],
   class: "font-medium",
   variants: {
     $bg: badgeColors,
@@ -38,11 +38,11 @@ export const badge = cv({
 });
 
 export const badgeText = cv({
-  extend: [fieldLabel],
+  extend: [controlLabel],
   class: "ak-text-(--badge-color)/70",
 });
 
 export const badgeIcon = cv({
-  extend: [fieldIcon],
+  extend: [controlIcon],
   class: "ak-text-(--badge-color)/70",
 });

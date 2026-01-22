@@ -16,7 +16,10 @@ import {
   CheckboxCard,
   CheckboxCardCheck,
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
-import { fieldContent, fieldDescription } from "@ariakit/ui/styles/field.ts";
+import {
+  controlContent,
+  controlDescription,
+} from "@ariakit/ui/styles/control.ts";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -53,9 +56,9 @@ import Layout from "./_layout.astro";
       <ButtonReact.ButtonIcon $rowSpan={2} $size="xl">
         <span class="size-full bg-blue-500 rounded-full"></span>
       </ButtonReact.ButtonIcon>
-      <span {...fieldContent.html({ class: "flex-col" })}>
+      <span {...controlContent.html({ class: "flex-col" })}>
         <ButtonReact.ButtonLabel>Diego Haz</ButtonReact.ButtonLabel>
-        <span {...fieldDescription.html({ $lineClamp: 1 })}>
+        <span {...controlDescription.html({ $lineClamp: 1 })}>
           hazdiego@gmail.com
         </span>
       </span>

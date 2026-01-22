@@ -2,15 +2,15 @@ import { cv } from "clava";
 import { border } from "./border.ts";
 import { command } from "./command.ts";
 import {
-  field,
-  fieldContent,
-  fieldDescription,
-  fieldIcon,
-  fieldLabel,
-} from "./field.ts";
+  control,
+  controlContent,
+  controlDescription,
+  controlIcon,
+  controlLabel,
+} from "./control.ts";
 
 export const button = cv({
-  extend: [field, command, border],
+  extend: [control, command, border],
   class: [
     "font-[calc(500+50*var(--contrast))]",
     "[--background:var(--ak-layer-parent)]",
@@ -59,7 +59,7 @@ export const button = cv({
   },
 });
 
-export const buttonIcon = fieldIcon;
+export const buttonIcon = controlIcon;
 
 export const buttonBadge = cv({
   extend: [buttonIcon],
@@ -84,17 +84,17 @@ export const buttonBadge = cv({
   },
 });
 
-export const buttonContent = fieldContent;
+export const buttonContent = controlContent;
 
 export const buttonDescription = cv({
-  extend: [fieldDescription],
+  extend: [controlDescription],
   defaultVariants: {
     $truncate: true,
   },
 });
 
 export const buttonLabel = cv({
-  extend: [fieldLabel],
+  extend: [controlLabel],
   defaultVariants: {
     $truncate: true,
   },

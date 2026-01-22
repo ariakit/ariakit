@@ -2,10 +2,10 @@ import { cv } from "clava";
 import { background } from "./background.ts";
 import { border } from "./border.ts";
 
-export const field = cv({
+export const control = cv({
   extend: [background, border],
   class: [
-    "group/field flex px-(--px) py-(--py)",
+    "group/control flex px-(--px) py-(--py)",
     "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
     "[--py:var(--ak-frame-padding,0px)]",
     // font sidebearing
@@ -95,7 +95,8 @@ export const field = cv({
   },
 });
 
-export const fieldIcon = cv({
+export const controlIcon = cv({
+  extend: [background],
   class: [
     "flex flex-none items-center justify-center",
     "[--slot-mx:calc(var(--py)-var(--px)+var(--half-line-gap))]",
@@ -105,21 +106,9 @@ export const fieldIcon = cv({
   ],
   variants: {
     $bg: {
-      none: "",
-      pop: [
-        "ak-layer-pop",
-        // When field's bg is inverted, we need to make the pop effect more
-        // pronounced so it's still visible.
-        "group-[.background-invert]/field:ak-layer-pop-2.5",
-      ],
-      darker: "ak-layer-down",
-      lighter: "ak-layer",
-      invert: "ak-layer-pop-12",
-      primary: "ak-layer-primary",
-      secondary: "ak-layer-secondary",
-      success: "ak-layer-success",
-      warning: "ak-layer-warning",
-      danger: "ak-layer-danger",
+      // When field's bg is inverted, we need to make the pop effect more
+      // pronounced so it's still visible.
+      pop: "group-[.background-invert]/control:ak-layer-pop-2.5",
     },
     $size: {
       none: "",
@@ -176,14 +165,14 @@ export const fieldIcon = cv({
       const $px = variants.$px === "none" ? "auto" : variants.$px;
       setDefaultVariants({ $px, $size, $mx: $size });
       // Disabled field
-      return "group-[.disabled]/field:ak-layer-down group-[.disabled]/field:ak-text/0 [&>svg]:size-[1em]!";
+      return "group-[.disabled]/control:ak-layer-down group-[.disabled]/control:ak-text/0 [&>svg]:size-[1em]!";
     }
   },
 });
 
-export const fieldContent = cv({
+export const controlContent = cv({
   class:
-    "group/field-content flex flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
+    "group/control-content flex flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
   variants: {
     $orientation: {
       horizontal: "flex-wrap",
@@ -195,16 +184,16 @@ export const fieldContent = cv({
   },
 });
 
-export const fieldLabel = cv({
-  class: "group-[.flex-col]/field-content:flex-none grow",
+export const controlLabel = cv({
+  class: "group-[.flex-col]/control-content:flex-none grow",
   variants: {
     $truncate: "truncate",
   },
 });
 
-export const fieldDescription = cv({
+export const controlDescription = cv({
   class:
-    "ms-0! ak-text/70 basis-full font-normal text-[0.875em] group-[.disabled]/field:ak-text/0",
+    "ms-0! ak-text/70 basis-full font-normal text-[0.875em] group-[.disabled]/control:ak-text/0",
   variants: {
     $truncate: "truncate",
   },
