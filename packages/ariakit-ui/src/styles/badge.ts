@@ -1,35 +1,44 @@
 import { cv } from "clava";
-import { field, fieldIcon, fieldText } from "./field.ts";
+import type { Variant } from "../index.ts";
+import { field, fieldIcon, fieldLabel } from "./field.ts";
+
+const badgeColors = {
+  default: "",
+  primary: "[--badge-color:theme(--color-primary)]",
+  secondary: "[--badge-color:theme(--color-secondary)]",
+  success: "[--badge-color:theme(--color-success)]",
+  warning: "[--badge-color:theme(--color-warning)]",
+  danger: "[--badge-color:theme(--color-danger)]",
+} satisfies Variant<typeof field, "$borderColor">;
 
 export const badge = cv({
   extend: [field],
-  class: [
-    "font-medium whitespace-nowrap",
-    "ak-layer-mix-(--badge-color)/15",
-    "ak-dark:ak-edge-(--badge-color) ak-light:ak-edge-(--badge-color)/15",
-  ],
+  class: "font-medium",
   variants: {
-    $color: {
-      default: "[--badge-color:theme(--color-gray-500)]",
-      primary: "[--badge-color:theme(--color-primary)]",
-      secondary: "[--badge-color:theme(--color-secondary)]",
-      success: "[--badge-color:theme(--color-green-500)]",
-      warning: "[--badge-color:theme(--color-yellow-500)]",
-      danger: "[--badge-color:theme(--color-red-500)]",
-    },
-  },
-  computedVariants: {
-    $border: (_: boolean) => {},
+    $bg: badgeColors,
   },
   defaultVariants: {
-    $color: "default",
+    $bg: "pop",
     $size: "xs",
-    $frame: "badge",
+    $radius: "badge",
+    $border: "adaptive",
+    $borderType: "inset",
+    $px: "lg",
+    $mix: 15,
+  },
+  computed: (context) => {
+    if (!context.variants.$bg) return;
+    const badgeColorKeys = Object.keys(badgeColors);
+    if (badgeColorKeys.includes(context.variants.$bg)) {
+      context.setDefaultVariants({
+        $borderColor: context.variants.$bg as keyof typeof badgeColors,
+      });
+    }
   },
 });
 
 export const badgeText = cv({
-  extend: [fieldText],
+  extend: [fieldLabel],
   class: "ak-text-(--badge-color)/70",
 });
 

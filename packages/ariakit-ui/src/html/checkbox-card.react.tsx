@@ -1,25 +1,50 @@
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import type { ComponentProps } from "react";
-import { badge, badgeIcon, badgeText } from "../styles/badge.ts";
+import {
+  checkboxCard,
+  checkboxCardCheck,
+  checkboxCardIcon,
+  checkboxCardLabel,
+} from "../styles/checkbox-card.ts";
 
-export interface BadgeProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof badge>,
-    VariantProps<typeof badgeText> {
-  iconStart?: React.ReactNode;
-  iconEnd?: React.ReactNode;
+export interface CheckboxCardProps
+  extends ComponentProps<"input">,
+    VariantProps<typeof checkboxCard> {}
+
+export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCard);
+  return (
+    <label {...checkboxCard({ $disabled: rest.disabled, ...variantProps })}>
+      <input type="checkbox" {...rest} />
+      {children}
+    </label>
+  );
 }
 
-export function Badge({ iconStart, iconEnd, ...props }: BadgeProps) {
-  const [variantProps, textProps, rest] = splitProps(props, badge, badgeText);
-  return (
-    <div {...badge(variantProps)} {...rest}>
-      {iconStart && (
-        <span {...badgeIcon({ $position: "start" })}>{iconStart}</span>
-      )}
-      <span {...badgeText(textProps)}>{props.children}</span>
-      {iconEnd && <span {...badgeIcon({ $position: "end" })}>{iconEnd}</span>}
-    </div>
-  );
+export interface CheckboxCardLabelProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof checkboxCardLabel> {}
+
+export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCardLabel);
+  return <span {...checkboxCardLabel(variantProps)} {...rest} />;
+}
+
+export interface CheckboxCardIconProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof checkboxCardIcon> {}
+
+export function CheckboxCardIcon(props: CheckboxCardIconProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCardIcon);
+  return <span {...checkboxCardIcon(variantProps)} {...rest} />;
+}
+
+export interface CheckboxCardCheckProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof checkboxCardCheck> {}
+
+export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCardCheck);
+  return <span {...checkboxCardCheck(variantProps)} {...rest} />;
 }

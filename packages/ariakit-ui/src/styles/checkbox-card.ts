@@ -1,9 +1,15 @@
 import { cv } from "clava";
 import { border } from "./border.ts";
-import { button, buttonIcon, buttonText } from "./button.ts";
+import {
+  button,
+  buttonContent,
+  buttonDescription,
+  buttonIcon,
+  buttonLabel,
+} from "./button.ts";
 
 export const checkboxCard = cv({
-  extend: [button, border],
+  extend: [button],
   class: [
     "group/checkbox",
     "[--checkbox-card-edge:var(--ak-border)]",
@@ -13,11 +19,14 @@ export const checkboxCard = cv({
     "[&_input]:sr-only",
   ],
   defaultVariants: {
-    $color: "lighter",
-    $frame: "card",
+    $bg: "lighter",
+    $radius: "card",
     $border: true,
-    $gap: "md",
-    // $size: "sm",
+  },
+  computed: (context) => {
+    if (context.variants.$radius === "round") {
+      context.setDefaultVariants({ $padding: "card" });
+    }
   },
 });
 
@@ -36,15 +45,10 @@ export const checkboxCardGrid = cv({
   },
 });
 
-export const checkboxCardIcon = cv({
-  extend: [buttonIcon],
-});
-
 export const checkboxCardCheck = cv({
   extend: [buttonIcon, border],
-  // stroke-width increase
   class: [
-    "flex items-center justify-center *:hidden! [&>svg]:stroke-[2.5]",
+    "*:hidden! [&>svg]:stroke-[2.5]",
     "group-ak-disabled/checkbox:ak-text/0",
     "group-not-ak-disabled/checkbox:group-ak-checked-within/checkbox:ak-layer-(--checkbox-card-edge)",
     "group-not-ak-disabled/checkbox:group-ak-checked-within/checkbox:ring",
@@ -53,38 +57,27 @@ export const checkboxCardCheck = cv({
     "group-ak-checked-within/checkbox:*:block!",
   ],
   variants: {
-    $color: {
+    $bg: {
       darker: "group-not-ak-disabled/checkbox:ak-layer-down",
       pop: "group-not-ak-disabled/checkbox:ak-layer-pop",
     },
-    $frame: {
-      auto: "ak-frame-full/1",
-      round: "ak-frame-force-full/1",
+    $radius: {
+      round: "rounded-full",
     },
   },
   defaultVariants: {
-    $color: "darker",
+    $bg: "darker",
     $border: true,
     $borderType: "bordering",
-    // $padding: "none",
-    $frame: "round",
-    // $size: "sm",
+    $radius: "round",
+    $size: "lg",
   },
 });
 
-export const checkboxCardContent = cv({
-  class: "flex flex-1 flex-wrap content-start self-start",
-});
+export const checkboxCardIcon = buttonIcon;
 
-export const checkboxCardLabel = cv({
-  extend: [buttonText],
-  class: ["me-auto self-start"],
-});
+export const checkboxCardContent = buttonContent;
 
-export const checkboxCardDescription = cv({
-  extend: [buttonText],
-  class: "w-full ak-text/70 font-normal group-ak-disabled/checkbox:ak-text/0",
-  defaultVariants: {
-    $truncate: false,
-  },
-});
+export const checkboxCardLabel = buttonLabel;
+
+export const checkboxCardDescription = buttonDescription;

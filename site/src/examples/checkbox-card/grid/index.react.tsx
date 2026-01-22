@@ -1,12 +1,28 @@
 import { Group, GroupLabel } from "@ariakit/react";
 import {
+  Button,
+  ButtonBadge,
+  ButtonContent,
+  ButtonDescription,
+  ButtonIcon,
+  ButtonLabel,
+} from "@ariakit/ui/html/button.react.tsx";
+import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
+import { buttonIcon } from "@ariakit/ui/styles/button.ts";
+import {
   checkboxCard,
   checkboxCardCheck,
   checkboxCardGrid,
-  checkboxCardIcon,
   checkboxCardLabel,
 } from "@ariakit/ui/styles/checkbox-card.ts";
-import { CheckIcon, CodeIcon, ComputerIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  CheckIcon,
+  ComputerIcon,
+  EllipsisIcon,
+  PlusIcon,
+  VerifiedIcon,
+} from "lucide-react";
 import { useState } from "react";
 import {
   CheckboxCard,
@@ -92,6 +108,7 @@ export default function Example() {
             // $padding: "field",
           })}
         >
+          <input type="checkbox" defaultChecked disabled />
           <span
             {...checkboxCardCheck({
               // $size: "xs",
@@ -100,7 +117,6 @@ export default function Example() {
           >
             <CheckIcon />
           </span>
-          <input type="checkbox" defaultChecked disabled />
           <span
             {...checkboxCardLabel({
               // $noStartGap: true,
@@ -130,7 +146,7 @@ export default function Example() {
               // className: "-ms-0.5",
             })}
           >
-            Programming
+            Technology
           </span>
           <span
             {...checkboxCardCheck({
@@ -141,6 +157,87 @@ export default function Example() {
             <CheckIcon />
           </span>
         </label>
+        <label
+          {...checkboxCard({
+            className: "w-max",
+            // $padding: "field",
+          })}
+        >
+          <input type="checkbox" defaultChecked />
+          <span
+            {...checkboxCardCheck({
+              // $size: "xs",
+              // $frame: "auto",
+            })}
+          >
+            <CheckIcon />
+          </span>
+          <span
+            {...checkboxCardLabel({
+              // $noStartGap: true,
+              // className: "-ms-0.5",
+            })}
+          >
+            Programming
+          </span>
+        </label>
+      </div>
+      <div className="flex flex-wrap gap-4 justify-center w-120 items-center">
+        <Button>Button</Button>
+        <Button>
+          <ButtonIcon>
+            <PlusIcon />
+          </ButtonIcon>
+          <ButtonLabel className="sr-only">Add</ButtonLabel>
+        </Button>
+        <Button $radius="round" $px="xl">
+          <ButtonIcon>
+            <CheckIcon />
+          </ButtonIcon>
+          <ButtonLabel>Following</ButtonLabel>
+        </Button>
+        <Button $bg="invert" $radius="round" $px="xl">
+          <ButtonIcon>
+            <PlusIcon />
+          </ButtonIcon>
+          <ButtonLabel>Follow back</ButtonLabel>
+        </Button>
+        <Button $radius="round" $size="sm">
+          <ButtonIcon>
+            <ComputerIcon />
+          </ButtonIcon>
+          <ButtonLabel>Technology</ButtonLabel>
+          <ButtonBadge>New</ButtonBadge>
+        </Button>
+        <Button $radius="round" $bg="invert">
+          <ButtonLabel>Continue</ButtonLabel>
+          <ButtonIcon $size="2xl" $bg="invert" $square>
+            <ArrowRightIcon />
+          </ButtonIcon>
+        </Button>
+        <Button $radius="round" $gap="lg" className="min-w-50">
+          <ButtonIcon
+            $rowSpan={2}
+            $size="xl"
+            className="overflow-clip ak-dark:ak-border ak-layer-0"
+            $square
+          >
+            <img
+              src="https://pbs.twimg.com/profile_images/1964797260597772288/uQG557we_400x400.jpg"
+              alt=""
+            />
+          </ButtonIcon>
+          <ButtonContent $orientation="vertical">
+            <ButtonLabel className="flex items-center gap-1">
+              Haz{" "}
+              <VerifiedIcon className="size-4 ak-layer-contrast-primary-4 bg-transparent fill-(--ak-layer) [&_path:first-child]:stroke-0" />
+            </ButtonLabel>
+            <ButtonDescription>@hazdiego</ButtonDescription>
+          </ButtonContent>
+          <ButtonIcon $rowSpan={2} $square>
+            <EllipsisIcon />
+          </ButtonIcon>
+        </Button>
       </div>
     </Group>
   );

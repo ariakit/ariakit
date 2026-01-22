@@ -8,117 +8,188 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import BadgeAstro from "@ariakit/ui/html/badge.astro";
 import { Badge } from "@ariakit/ui/html/badge.react.tsx";
 import { Badge as BadgeSolid } from "@ariakit/ui/html/badge.solid.tsx";
-import { Button } from "@ariakit/ui/html/button.solid.tsx";
-import CheckboxCardCheck from "@ariakit/ui/html/checkbox-card-check.astro";
-import CheckboxCard from "@ariakit/ui/html/checkbox-card.astro";
-import { ChevronDownIcon, CircleCheckBigIcon, CopyIcon } from "@lucide/astro";
+import * as ButtonReact from "@ariakit/ui/html/button.react.tsx";
+import * as ButtonSolid from "@ariakit/ui/html/button.solid.tsx";
+import {
+  CheckboxCard,
+  CheckboxCardCheck,
+} from "@ariakit/ui/html/checkbox-card.react.tsx";
+import { fieldContent, fieldDescription } from "@ariakit/ui/styles/field.ts";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  CircleCheckBigIcon,
+  CopyIcon,
+} from "@lucide/astro";
 import Layout from "./_layout.astro";
 ---
 
 <Layout>
   Soon
 
-  <div class="flex gap-2 items-center p-2">
-    <button class="ak-button-classic">Button</button>
-    <Button $kind="classic">
-      <CopyIcon slot="iconStart" />
-      Button
-    </Button>
-    <Button>
-      Button
-      <ChevronDownIcon slot="icon" />
-    </Button>
-  </div>
-
   <div class="flex flex-wrap gap-2 items-center p-2">
-    <CheckboxCard
-      $size="sm"
-      $frame="card"
-      $gap="md"
-      $color="ghost"
-      $border={false}
+    <button class="ak-button-classic">Button</button>
+    <ButtonSolid.Button $kind="classic">
+      <ButtonSolid.ButtonIcon>
+        <CopyIcon />
+      </ButtonSolid.ButtonIcon>
+      Button
+    </ButtonSolid.Button>
+    <ButtonSolid.Button>
+      <ButtonSolid.ButtonLabel>Button</ButtonSolid.ButtonLabel>
+      <ButtonSolid.ButtonIcon $closeGap>
+        <ChevronDownIcon />
+      </ButtonSolid.ButtonIcon>
+    </ButtonSolid.Button>
+    <ButtonReact.Button
+      className="items-center"
+      $radius="card"
       $depth={3}
+      $gap="lg"
+      $gapY="none"
     >
-      <CheckboxCardCheck
-        slot="checkEnd"
-        $frame="auto"
-        $size="sm"
-        $color="pop"
-        $border="contrast"
-      />
-      Do this?
-      <span slot="description"
-        >A nice description to test this<br />dsadsad</span
-      >
-      <CopyIcon slot="iconStart" class="" />
-    </CheckboxCard>
-    <Button>Button</Button>
-    <Button $color="primary" $noEndGap>
-      <CopyIcon slot="iconStart" />
-      Button
-      <ChevronDownIcon slot="iconEnd" />
-    </Button>
-    <Button $color="ghost" $border>Button</Button>
-    <Button>
-      <CopyIcon slot="iconStart" />
-      Button
-    </Button>
-    <Button disabled>
-      Button dhsajkdhk adsadsa
-      <ChevronDownIcon slot="iconEnd" />
-    </Button>
-    <BadgeAstro class="bg-red-500!">
-      <CopyIcon slot="iconStart" />
-      Badge Astro
-    </BadgeAstro>
-    <BadgeSolid $color="danger" $size="lg">
-      <CopyIcon slot="iconStart" />
-      Badge Solid
-    </BadgeSolid>
-    <BadgeSolid $color="danger" $size="lg">
-      <!-- <CopyIcon slot="iconStart" /> -->
-      Badge Solid
-      <CopyIcon slot="iconEnd" />
-    </BadgeSolid>
-    <Badge>Badge</Badge>
+      <ButtonReact.ButtonIcon $rowSpan={2} $size="xl">
+        <span class="size-full bg-blue-500 rounded-full"></span>
+      </ButtonReact.ButtonIcon>
+      <span {...fieldContent.html({ class: "flex-col" })}>
+        <ButtonReact.ButtonLabel>Diego Haz</ButtonReact.ButtonLabel>
+        <span {...fieldDescription.html({ $lineClamp: 1 })}>
+          hazdiego@gmail.com
+        </span>
+      </span>
+      <ButtonReact.ButtonIcon $rowSpan={2} $size="md" $square={false}>
+        <ChevronDownIcon />
+      </ButtonReact.ButtonIcon>
+    </ButtonReact.Button>
+    <button>
+      <span aria-describedby="tooltip">
+        <span>Lol</span>
+        <span id="tooltip" aria-hidden="true">Description</span>
+      </span>
+    </button>
+    <ButtonReact.Button $kind="classic" disabled>
+      <ButtonReact.ButtonIcon><CopyIcon /></ButtonReact.ButtonIcon>
+      <ButtonReact.ButtonLabel className="max-md:sr-only">
+        Button React
+      </ButtonReact.ButtonLabel>
+      <ButtonReact.ButtonIcon $closeGap>
+        <ChevronDownIcon />
+      </ButtonReact.ButtonIcon>
+    </ButtonReact.Button>
+    <ButtonReact.Button $radius="badge" $size="sm" $px="lg">
+      <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon>
+      <ButtonReact.ButtonLabel
+        >Following
+        <span class="ak-text/60">⌘K</span>
+      </ButtonReact.ButtonLabel>
+      <!-- <ButtonReact.ButtonAccessory /> -->
+      <ButtonReact.Button $radius="badge" $bg="invert" $size="sm" $px="lg">
+        <!-- <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon> -->
+        <ButtonReact.ButtonLabel>Following</ButtonReact.ButtonLabel>
+        <ButtonReact.ButtonIcon $bg="pop">
+          <span class="text-[0.875em] ak-text/60">32</span>
+        </ButtonReact.ButtonIcon>
+      </ButtonReact.Button>
+      <ButtonReact.Button $radius="badge" $size="sm" $px="lg">
+        <!-- <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon> -->
+        <ButtonReact.ButtonLabel>Following</ButtonReact.ButtonLabel>
+        <ButtonReact.ButtonIcon $bg="pop">
+          <span class="text-[0.875em] ak-text/60">32</span>
+        </ButtonReact.ButtonIcon>
+      </ButtonReact.Button>
+    </ButtonReact.Button>
 
-    <Badge $color="primary" $border> Badge Border</Badge>
-    <Badge>
-      <CopyIcon slot="iconStart" />
-      Badge<br />dsadsa
-    </Badge>
-    <Badge $color="secondary">
-      <CopyIcon slot="iconStart" />
-      Badge
-    </Badge>
-    <Badge $color="secondary" className="border-dashed">
-      <div class="size-full bg-blue-500 rounded-full" slot="iconStart"></div>
-      Plus
-    </Badge>
-    <Badge $color="success">Badge</Badge>
-    <Badge $color="warning">Badge</Badge>
-    <Badge $color="danger">Badge</Badge>
-  </div>
-  <div
-    class="grid grid-cols-2 gap-14 w-max p-40 place-content-center place-items-center mt-20"
-  >
-    <Badge $color="success" className="bg-green-800">
-      <span class="text-white">Success</span>
-    </Badge>
-    <Badge $color="success">
-      <span class="text-white">Success</span>
-    </Badge>
-    <Badge $color="success" className="max-w-40" $truncate>
-      <CircleCheckBigIcon slot="iconStart" />
-      Success dhsakjdh ajks dsahk dsahk dhsakj
-    </Badge>
-    <Badge $color="success">Success</Badge>
-    <Badge $color="success">
-      <CircleCheckBigIcon slot="iconStart" />
-      Success
-    </Badge>
+    <div class="flex flex-wrap gap-2 items-center p-2">
+      <CheckboxCard
+        $size="sm"
+        $radius="card"
+        $bg="ghost"
+        $border={false}
+        $depth={3}
+      >
+        <CheckboxCardCheck
+          $radius="auto"
+          $size="sm"
+          $bg="pop"
+          $border="contrast"
+        />
+        Do this?
+        <span slot="description"
+          >A nice description to test this<br />dsadsad</span
+        >
+        <CopyIcon class="" />
+      </CheckboxCard>
+      <ButtonSolid.Button>Button</ButtonSolid.Button>
+      <ButtonSolid.Button $bg="primary">
+        <ButtonSolid.ButtonIcon>
+          <CopyIcon />
+        </ButtonSolid.ButtonIcon>
+        <ButtonSolid.ButtonLabel>Buttons</ButtonSolid.ButtonLabel>
+        <ButtonSolid.ButtonIcon $closeGap>
+          <ChevronDownIcon />
+        </ButtonSolid.ButtonIcon>
+      </ButtonSolid.Button>
+      <ButtonSolid.Button $bg="ghost" $border>Button</ButtonSolid.Button>
+      <ButtonSolid.Button>
+        <CopyIcon slot="iconStart" />
+        Button
+      </ButtonSolid.Button>
+      <ButtonSolid.Button disabled>
+        Button dhsajkdhk adsadsa
+        <ChevronDownIcon slot="iconEnd" />
+      </ButtonSolid.Button>
+      <Badge className="bg-red-500!">
+        <CopyIcon slot="iconStart" />
+        Badge Astro
+      </Badge>
+      <BadgeSolid $bg="danger" $size="lg">
+        <CopyIcon slot="iconStart" />
+        Badge Solid
+      </BadgeSolid>
+      <BadgeSolid $bg="danger" $size="lg">
+        <!-- <CopyIcon slot="iconStart" /> -->
+        Badge Solid
+        <CopyIcon slot="iconEnd" />
+      </BadgeSolid>
+      <Badge>Badge</Badge>
+
+      <Badge $bg="primary" $border> Badge Border</Badge>
+      <Badge>
+        <CopyIcon slot="iconStart" />
+        Badge<br />dsadsa
+      </Badge>
+      <Badge $bg="secondary">
+        <CopyIcon slot="iconStart" />
+        Badge
+      </Badge>
+      <Badge $bg="secondary" className="border-dashed">
+        <div class="size-full bg-blue-500 rounded-full" slot="iconStart"></div>
+        Plus
+      </Badge>
+      <Badge $bg="success">Badge</Badge>
+      <Badge $bg="warning">Badge</Badge>
+      <Badge $bg="danger">Badge</Badge>
+    </div>
+    <div
+      class="grid grid-cols-2 gap-14 w-max p-40 place-content-center place-items-center mt-20"
+    >
+      <Badge $bg="success" className="bg-green-800">
+        <span class="text-white">Success</span>
+      </Badge>
+      <Badge $bg="success">
+        <span class="text-white">Success</span>
+      </Badge>
+      <Badge $bg="success" className="max-w-40" $truncate>
+        <CircleCheckBigIcon slot="iconStart" />
+        Success dhsakjdh ajks dsahk dsahk dhsakj
+      </Badge>
+      <Badge $bg="success">Success</Badge>
+      <Badge $bg="success">
+        <CircleCheckBigIcon slot="iconStart" />
+        Success
+      </Badge>
+    </div>
   </div>
 </Layout>

@@ -74,10 +74,3 @@ body {
 body > * {
   @apply ak-dark:scheme-dark;
 }
-
-@layer base { 
-  .lucide {
-    width: 1em;
-    height: 1em;
-  }
-}

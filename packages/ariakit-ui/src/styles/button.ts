@@ -1,26 +1,24 @@
 import { cv } from "clava";
 import { border } from "./border.ts";
 import { command } from "./command.ts";
-import { field, fieldIcon, fieldText } from "./field.ts";
+import {
+  field,
+  fieldContent,
+  fieldDescription,
+  fieldIcon,
+  fieldLabel,
+} from "./field.ts";
 
 export const button = cv({
   extend: [field, command, border],
   class: [
     "font-[calc(500+50*var(--contrast))]",
+    "[--background:var(--ak-layer-parent)]",
     "ak-outline-primary",
     "ak-hover:ak-layer-hover",
-    "ak-focus-visible:outline-2",
-    "ak-disabled:cursor-not-allowed ak-disabled:ak-text/0! ak-disabled:border-transparent! ak-disabled:ring-transparent! ak-disabled:ak-layer-pop-0.5! ak-disabled:inset-shadow-none! ak-disabled:bg-none! ak-disabled:shadow-none!",
+    "outline-offset-1 ak-focus-visible:outline-2",
   ],
   variants: {
-    $color: {
-      pop: "ak-layer-pop",
-      lighter: "ak-layer",
-      ghost: "ak-layer-0 ak-disabled:ak-layer-0!",
-      primary: "ak-layer-primary outline-offset-1",
-      secondary: "ak-layer-secondary outline-offset-1",
-      danger: "ak-layer-red-600 ak-dark:ak-layer-mix-red-500 outline-offset-1",
-    },
     $kind: {
       flat: "",
       classic: [
@@ -47,11 +45,15 @@ export const button = cv({
   },
   defaultVariants: {
     $kind: "flat",
+    $gapY: "none",
+    $contrast: true,
   },
-  computed: (context) => {
-    if (!context.variants.$color) {
-      context.setDefaultVariants({
-        $color: context.variants.$kind === "classic" ? "lighter" : "pop",
+  computed: ({ variants, setVariants, setDefaultVariants }) => {
+    if (variants.$disabled) {
+      setVariants({ $bg: "disabled" });
+    } else if (!variants.$bg) {
+      setDefaultVariants({
+        $bg: variants.$kind === "classic" ? "lighter" : "pop",
       });
     }
   },
@@ -59,8 +61,40 @@ export const button = cv({
 
 export const buttonIcon = fieldIcon;
 
-export const buttonText = cv({
-  extend: [fieldText],
+export const buttonBadge = cv({
+  extend: [buttonIcon],
+  class: "font-normal [font-size-adjust:0.4] ak-layer-contrast",
+  variants: {
+    $position: {
+      static: "",
+      top: "absolute top-0 end-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] m-0! border border-(--background)",
+    },
+  },
+  defaultVariants: {
+    $position: "top",
+    $bg: "primary",
+    $px: "text",
+    $size: "xl",
+    $square: false,
+  },
+  computed: ({ variants, setDefaultVariants }) => {
+    if (variants.$position === "top") {
+      return setDefaultVariants({ $radius: "round" });
+    }
+  },
+});
+
+export const buttonContent = fieldContent;
+
+export const buttonDescription = cv({
+  extend: [fieldDescription],
+  defaultVariants: {
+    $truncate: true,
+  },
+});
+
+export const buttonLabel = cv({
+  extend: [fieldLabel],
   defaultVariants: {
     $truncate: true,
   },

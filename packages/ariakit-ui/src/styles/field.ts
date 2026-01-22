@@ -1,96 +1,217 @@
 import { cv } from "clava";
+import { background } from "./background.ts";
 import { border } from "./border.ts";
 
 export const field = cv({
-  extend: [border],
-  class: "group/field flex px-(--px) py-(--py)",
+  extend: [background, border],
+  class: [
+    "group/field flex px-(--px) py-(--py)",
+    "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
+    "[--py:var(--ak-frame-padding,0px)]",
+    // font sidebearing
+    "[--sb:0.2em]",
+  ],
   variants: {
+    /**
+     * Sets the element’s font size. This affects the entire element, including
+     * the gap, padding, and icon size. Use `auto` to inherit the parent’s font
+     * size.
+     */
+    $size: {
+      auto: "",
+      xs: "text-xs",
+      sm: "text-sm",
+      md: "text-base",
+      lg: "text-lg",
+      xl: "text-xl",
+    },
+    /**
+     * Sets the gap between the element's content and its siblings.
+     */
     $gap: {
       none: "",
-      sm: "[--gap:calc(min(var(--px),var(--py))-var(--icon-p))] gap-(--gap)",
-      md: "[--gap:min(var(--px),var(--py))] gap-(--gap)",
-      lg: "[--gap:calc(min(var(--px),var(--py))+var(--icon-p))] gap-(--gap)",
+      sm: "[--gap:var(--py)] gap-(--gap)",
+      md: "[--gap:calc(var(--px)-var(--sb))] gap-(--gap)",
+      lg: "[--gap:calc(var(--px))] gap-(--gap)",
+      xl: "[--gap:calc(var(--px)+var(--sb))] gap-(--gap)",
     },
-    $size: {
-      xs: "text-xs [--icon-p:0.15em]",
-      sm: "text-sm [--icon-p:0.2em]",
-      md: "text-base [--icon-p:0.25em]",
-      lg: "text-lg [--icon-p:0.3em]",
-      xl: "text-xl [--icon-p:0.35em]",
+    /**
+     * Sets the vertical gap between the element's label and description.
+     */
+    $gapY: {
+      none: "",
+      auto: "[--gap-y:calc(var(--gap)/4)] gap-y-(--gap-y)",
     },
-    $frame: {
+    /**
+     * Sets the element’s border radius.
+     */
+    $radius: {
       none: "",
       field: "ak-frame-rounded-field",
-      card: "ak-frame-rounded-card",
       badge: "ak-frame-rounded-badge",
       round: "ak-frame-rounded-full",
+      card: "ak-frame-rounded-card",
     },
+    /**
+     * Sets the element’s padding. By default, it’s based on the element’s
+     * radius.
+     */
     $padding: {
       none: "",
       field: "ak-frame-p-field",
-      card: "ak-frame-p-field-card",
-      round: "ak-frame-p-field",
       badge: "ak-frame-p-badge",
+      round: "ak-frame-p-field",
+      card: "ak-frame-p-field-card",
     },
-    $square: {
-      true: "square [--px:0] [--py:0] size-[2.5em] items-center justify-center",
-      false: [
-        "[--px:calc(var(--ak-frame-padding,0px)*2)]",
-        "[--py:var(--ak-frame-padding,0px)]",
-      ],
+    /**
+     * Sets the element’s horizontal padding. Rounded elements often look best
+     * with more padding.
+     */
+    $px: {
+      none: "",
+      sm: "[--px-scale:0]",
+      md: "[--px-scale:0.5]",
+      lg: "[--px-scale:0.75]",
+      xl: "[--px-scale:1.25]",
     },
+    /**
+     * Sets the element’s disabled state.
+     */
+    $disabled:
+      "disabled ak-layer-pop-0.5 cursor-not-allowed! ak-text/0! border-transparent! ring-transparent! inset-shadow-none! bg-none! shadow-none!",
   },
   defaultVariants: {
-    $gap: "sm",
-    $size: "md",
-    $frame: "field",
+    $size: "auto",
+    $radius: "field",
+    $gap: "md",
+    $gapY: "auto",
+    $px: "md",
   },
-  computed: (context) => {
-    context.setDefaultVariants({ $padding: context.variants.$frame });
+  computed: ({ variants, setDefaultVariants }) => {
+    setDefaultVariants({ $padding: variants.$radius });
+    if (variants.$padding === "none") {
+      return setDefaultVariants({ $px: "none" });
+    }
   },
 });
 
 export const fieldIcon = cv({
   class: [
-    "flex flex-none items-center [&>svg]:block [&>svg]:size-full",
-    "[--min-p:min(var(--px),var(--py))] [--max-p:max(var(--px),var(--py))]",
-    "[--icon-mx:calc(var(--min-p)-var(--max-p))]",
+    "flex flex-none items-center justify-center",
+    "[--slot-mx:calc(var(--py)-var(--px)+var(--half-line-gap))]",
+    "[--half-line-gap:calc((1lh-var(--size,1lh))/2)]",
+    "mx-(--slot-mx) my-[calc(var(--half-line-gap)*var(--row-span))] min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
+    "[&>svg]:block [&>svg]:size-(--size)",
   ],
   variants: {
-    $position: {
-      auto: "first:ms-(--icon-mx) last:me-(--icon-mx)",
-      start: "ms-(--icon-mx)",
-      end: "me-(--icon-mx)",
-    },
-    $padding: {
+    $bg: {
       none: "",
-      xs: "[--lh-cut:0.3] p-[--spacing(calc(1/var(--lh-cut)/10))]",
-      sm: "[--lh-cut:0.2] p-[--spacing(calc(1/var(--lh-cut)/10))]",
-      md: "p-(--icon-p)",
+      pop: [
+        "ak-layer-pop",
+        // When field's bg is inverted, we need to make the pop effect more
+        // pronounced so it's still visible.
+        "group-[.background-invert]/field:ak-layer-pop-2.5",
+      ],
+      darker: "ak-layer-down",
+      lighter: "ak-layer",
+      invert: "ak-layer-pop-12",
+      primary: "ak-layer-primary",
+      secondary: "ak-layer-secondary",
+      success: "ak-layer-success",
+      warning: "ak-layer-warning",
+      danger: "ak-layer-danger",
     },
     $size: {
       none: "",
-      xs: "[--lh:calc(var(--lh-cut,1)*1lh)] size-[calc(1lh-var(--lh))] mt-[calc(var(--lh)/2)] [--icon-mx:calc(var(--min-p)-var(--max-p)+var(--lh)/2)]",
-      sm: "[--lh:calc(var(--lh-cut,1)*1lh)] size-[calc(1lh-var(--lh))] mt-[calc(var(--lh)/2)] [--icon-mx:calc(var(--min-p)-var(--max-p)+var(--lh)/2)]",
-      md: "size-[1lh]",
+      xs: "[--size:1ex]",
+      sm: "[--size:1cap]",
+      md: "[--size:1em]",
+      lg: "[--size:0.875lh]",
+      xl: "[--size:1lh]",
+      "2xl": "[--size:calc(1lh+var(--py))]",
+      full: "[--size:calc(1lh+var(--py)*2)]",
     },
+    $mx: {
+      none: "",
+      xs: "[&+*]:-ms-(--sb) [*:has(+&)]:-me-(--sb)",
+      sm: "[&+*]:-ms-(--sb) [*:has(+&)]:-me-(--sb)",
+      md: "",
+      lg: "",
+      xl: "[&+*]:ms-(--sb) [*:has(+&)]:me-(--sb)",
+      "2xl": "[&+*]:ms-(--py) [*:has(+&)]:me-(--py)",
+      full: " [&+*]:ms-[1cap] [*:has(+&)]:me-[1cap]",
+    },
+    $px: {
+      none: "",
+      auto: "px-[calc(clamp(0.1em,var(--size)*0.1,0.2em))]",
+      text: "px-[calc(clamp(0.1em,var(--size)*0.25,0.3em))]",
+    },
+    $radius: {
+      none: "",
+      auto: "rounded-[max(var(--radius)/2,var(--ak-frame-radius)-var(--py)-var(--half-line-gap))]",
+      round: "rounded-full",
+    },
+    $square: "aspect-square",
+    $closeGap: "[&+*]:-ms-[0.25em] [*:has(+&)]:-me-[0.25em]",
+  },
+  computedVariants: {
+    $rowSpan: (value: number) => ({ "--row-span": `${value}` }),
   },
   defaultVariants: {
-    $position: "auto",
+    $bg: "none",
     $size: "md",
+    $radius: "auto",
+    $rowSpan: 1,
+    $px: "none",
+    $square: true,
   },
-  computed: (context) => {
-    context.setDefaultVariants({ $padding: context.variants.$size });
+  computed: ({ variants, setVariants, setDefaultVariants }) => {
+    setDefaultVariants({ $mx: variants.$size });
+    if (variants.$closeGap) {
+      return setVariants({ $mx: "none" });
+    }
+    if (variants.$bg !== "none") {
+      // When bg is set, give some room for the background to show
+      const $size = variants.$size === "none" ? "lg" : variants.$size;
+      const $px = variants.$px === "none" ? "auto" : variants.$px;
+      setDefaultVariants({ $px, $size, $mx: $size });
+      // Disabled field
+      return "group-[.disabled]/field:ak-layer-down group-[.disabled]/field:ak-text/0 [&>svg]:size-[1em]!";
+    }
   },
 });
 
-export const fieldText = cv({
-  class: "group-[.square]/field:sr-only",
+export const fieldContent = cv({
+  class:
+    "group/field-content flex flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
+  variants: {
+    $orientation: {
+      horizontal: "flex-wrap",
+      vertical: "flex-col",
+    },
+  },
+  defaultVariants: {
+    $orientation: "horizontal",
+  },
+});
+
+export const fieldLabel = cv({
+  class: "group-[.flex-col]/field-content:flex-none grow",
   variants: {
     $truncate: "truncate",
-    /** No gap between the text and the start icon. */
-    $noStartGap: "-ms-(--gap)",
-    /** No gap between the text and the end icon. */
-    $noEndGap: "-me-(--gap)",
+  },
+});
+
+export const fieldDescription = cv({
+  class:
+    "ms-0! ak-text/70 basis-full font-normal text-[0.875em] group-[.disabled]/field:ak-text/0",
+  variants: {
+    $truncate: "truncate",
+  },
+  computedVariants: {
+    $lineClamp: (value: number | false) => {
+      if (value === false) return;
+      return { "--line-clamp": `${value}`, class: "line-clamp-(--line-clamp)" };
+    },
   },
 });
