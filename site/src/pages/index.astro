@@ -16,10 +16,7 @@ import {
   CheckboxCard,
   CheckboxCardCheck,
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
-import {
-  controlContent,
-  controlDescription,
-} from "@ariakit/ui/styles/control.ts";
+import { frameContent, frameDescription } from "@ariakit/ui/styles/frame.ts";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -53,18 +50,18 @@ import Layout from "./_layout.astro";
       $gap="lg"
       $gapY="none"
     >
-      <ButtonReact.ButtonIcon $rowSpan={2} $size="xl">
+      <ButtonReact.ButtonAdornment $rowSpan={2} $size="xl">
         <span class="size-full bg-blue-500 rounded-full"></span>
-      </ButtonReact.ButtonIcon>
-      <span {...controlContent.html({ class: "flex-col" })}>
+      </ButtonReact.ButtonAdornment>
+      <span {...frameContent.html({ class: "flex-col" })}>
         <ButtonReact.ButtonLabel>Diego Haz</ButtonReact.ButtonLabel>
-        <span {...controlDescription.html({ $lineClamp: 1 })}>
+        <span {...frameDescription.html({ $lineClamp: 1 })}>
           hazdiego@gmail.com
         </span>
       </span>
-      <ButtonReact.ButtonIcon $rowSpan={2} $size="md" $square={false}>
+      <ButtonReact.ButtonAdornment $rowSpan={2} $size="md" $square={false}>
         <ChevronDownIcon />
-      </ButtonReact.ButtonIcon>
+      </ButtonReact.ButtonAdornment>
     </ButtonReact.Button>
     <button>
       <span aria-describedby="tooltip">
@@ -73,16 +70,16 @@ import Layout from "./_layout.astro";
       </span>
     </button>
     <ButtonReact.Button $kind="classic" disabled>
-      <ButtonReact.ButtonIcon><CopyIcon /></ButtonReact.ButtonIcon>
+      <ButtonReact.ButtonAdornment><CopyIcon /></ButtonReact.ButtonAdornment>
       <ButtonReact.ButtonLabel className="max-md:sr-only">
         Button React
       </ButtonReact.ButtonLabel>
-      <ButtonReact.ButtonIcon $closeGap>
+      <ButtonReact.ButtonAdornment $closeGap>
         <ChevronDownIcon />
-      </ButtonReact.ButtonIcon>
+      </ButtonReact.ButtonAdornment>
     </ButtonReact.Button>
     <ButtonReact.Button $radius="badge" $size="sm" $px="lg">
-      <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon>
+      <ButtonReact.ButtonAdornment><CheckIcon /></ButtonReact.ButtonAdornment>
       <ButtonReact.ButtonLabel
         >Following
         <span class="ak-text/60">⌘K</span>
@@ -91,16 +88,16 @@ import Layout from "./_layout.astro";
       <ButtonReact.Button $radius="badge" $bg="invert" $size="sm" $px="lg">
         <!-- <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon> -->
         <ButtonReact.ButtonLabel>Following</ButtonReact.ButtonLabel>
-        <ButtonReact.ButtonIcon $bg="pop">
+        <ButtonReact.ButtonAdornment $bg="pop">
           <span class="text-[0.875em] ak-text/60">32</span>
-        </ButtonReact.ButtonIcon>
+        </ButtonReact.ButtonAdornment>
       </ButtonReact.Button>
       <ButtonReact.Button $radius="badge" $size="sm" $px="lg">
         <!-- <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon> -->
         <ButtonReact.ButtonLabel>Following</ButtonReact.ButtonLabel>
-        <ButtonReact.ButtonIcon $bg="pop">
+        <ButtonReact.ButtonAdornment $bg="pop">
           <span class="text-[0.875em] ak-text/60">32</span>
-        </ButtonReact.ButtonIcon>
+        </ButtonReact.ButtonAdornment>
       </ButtonReact.Button>
     </ButtonReact.Button>
 

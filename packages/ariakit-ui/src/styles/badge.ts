@@ -1,9 +1,9 @@
 import { cv } from "clava";
 import { isBorderColor } from "./border.ts";
-import { control, controlIcon, controlLabel } from "./control.ts";
+import { frame, frameAdornment, frameLabel } from "./frame.ts";
 
 export const badge = cv({
-  extend: [control],
+  extend: [frame],
   class: "font-medium",
   defaultVariants: {
     $bg: "pop",
@@ -22,11 +22,11 @@ export const badge = cv({
 });
 
 export const badgeText = cv({
-  extend: [controlLabel],
+  extend: [frameLabel],
   class: "ak-text-(--background-color)/70",
 });
 
 export const badgeIcon = cv({
-  extend: [controlIcon],
+  extend: [frameAdornment],
   class: "ak-text-(--background-color)/70",
 });

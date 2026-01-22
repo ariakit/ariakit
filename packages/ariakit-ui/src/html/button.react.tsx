@@ -3,10 +3,9 @@ import { splitProps } from "clava";
 import type { ComponentProps } from "react";
 import {
   button,
-  buttonBadge,
+  buttonAdornment,
   buttonContent,
   buttonDescription,
-  buttonIcon,
   buttonLabel,
 } from "../styles/button.ts";
 
@@ -64,26 +63,14 @@ export function ButtonDescription(props: ButtonDescriptionProps) {
   return <span {...buttonDescription(variantProps)} {...rest} />;
 }
 
-export interface ButtonIconProps
+export interface ButtonAdornmentProps
   extends ComponentProps<"span">,
-    VariantProps<typeof buttonIcon> {}
+    VariantProps<typeof buttonAdornment> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
  */
-export function ButtonIcon(props: ButtonIconProps) {
-  const [variantProps, rest] = splitProps(props, buttonIcon);
-  return <span {...buttonIcon(variantProps)} {...rest} />;
-}
-
-export interface ButtonBadgeProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof buttonBadge> {}
-
-/**
- * @see https://ariakit.com/react/examples/button
- */
-export function ButtonBadge(props: ButtonBadgeProps) {
-  const [variantProps, rest] = splitProps(props, buttonBadge);
-  return <span {...buttonBadge(variantProps)} {...rest} />;
+export function ButtonAdornment(props: ButtonAdornmentProps) {
+  const [variantProps, rest] = splitProps(props, buttonAdornment);
+  return <span {...buttonAdornment(variantProps)} {...rest} />;
 }

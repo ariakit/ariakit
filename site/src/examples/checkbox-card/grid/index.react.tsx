@@ -1,9 +1,9 @@
 import { Group, GroupLabel } from "@ariakit/react";
 import {
   Button,
+  ButtonAdornment,
   ButtonContent,
   ButtonDescription,
-  ButtonIcon,
   ButtonLabel,
 } from "@ariakit/ui/html/button.react.tsx";
 import { badgeText } from "@ariakit/ui/styles/badge.ts";
@@ -183,56 +183,59 @@ export default function Example() {
       <div className="flex flex-wrap gap-4 justify-center w-120 items-center">
         <Button>Button</Button>
         <Button>
-          <ButtonIcon>
+          <ButtonAdornment>
             <PlusIcon />
-          </ButtonIcon>
+          </ButtonAdornment>
           <ButtonLabel className="sr-only">Add</ButtonLabel>
         </Button>
         <Button $radius="round" $px="xl">
-          <ButtonIcon>
+          <ButtonAdornment>
             <CheckIcon />
-          </ButtonIcon>
+          </ButtonAdornment>
           <ButtonLabel>Following</ButtonLabel>
         </Button>
         <Button $bg="invert" $radius="round" $px="xl">
-          <ButtonIcon>
+          <ButtonAdornment>
             <PlusIcon />
-          </ButtonIcon>
+          </ButtonAdornment>
           <ButtonLabel>Follow back</ButtonLabel>
         </Button>
         <Button $radius="round" $size="sm">
-          <ButtonIcon>
+          <ButtonAdornment>
             <ComputerIcon />
-          </ButtonIcon>
+          </ButtonAdornment>
           <ButtonLabel>Technology</ButtonLabel>
-          <ButtonIcon $badge="floating">New</ButtonIcon>
+          <ButtonAdornment $kind="badge" $floating>
+            New
+          </ButtonAdornment>
         </Button>
         <Button $radius="round" $bg="invert">
           <ButtonLabel>Continue</ButtonLabel>
-          <ButtonIcon $size="2xl" $bg="invert">
+          <ButtonAdornment $size="2xl" $bg="invert">
             <ArrowRightIcon />
-          </ButtonIcon>
+          </ButtonAdornment>
         </Button>
         <Button $radius="round" $bg="pop" $size="sm">
-          <ButtonIcon $badge $bg="warning" $mix={25} $border="medium">
+          <ButtonAdornment
+            $kind="badge"
+            $bg="warning"
+            $mix={25}
+            $border="medium"
+          >
             <span {...badgeText()}>New</span>
-          </ButtonIcon>
+          </ButtonAdornment>
           <ButtonLabel>We're lauching soon</ButtonLabel>
-          <ButtonIcon>
+          <ButtonAdornment>
             <ArrowRightIcon />
-          </ButtonIcon>
+          </ButtonAdornment>
         </Button>
         <Button $radius="round" $gap="lg" className="min-w-50">
-          <ButtonIcon
-            $rowSpan={2}
-            $size="xl"
-            className="overflow-clip ak-dark:ak-border ak-layer-0"
-          >
+          <ButtonAdornment $rowSpan={2} $kind="avatar">
             <img
               src="https://pbs.twimg.com/profile_images/1964797260597772288/uQG557we_400x400.jpg"
               alt=""
             />
-          </ButtonIcon>
+          </ButtonAdornment>
           <ButtonContent $orientation="vertical">
             <ButtonLabel className="flex items-center gap-1">
               Haz{" "}
@@ -240,9 +243,9 @@ export default function Example() {
             </ButtonLabel>
             <ButtonDescription>@hazdiego</ButtonDescription>
           </ButtonContent>
-          <ButtonIcon $rowSpan={2}>
+          <ButtonAdornment $rowSpan={2}>
             <EllipsisIcon />
-          </ButtonIcon>
+          </ButtonAdornment>
         </Button>
       </div>
     </Group>

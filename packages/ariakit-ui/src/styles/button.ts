@@ -2,15 +2,15 @@ import { cv } from "clava";
 import { border } from "./border.ts";
 import { command } from "./command.ts";
 import {
-  control,
-  controlContent,
-  controlDescription,
-  controlIcon,
-  controlLabel,
-} from "./control.ts";
+  frame,
+  frameAdornment,
+  frameContent,
+  frameDescription,
+  frameLabel,
+} from "./frame.ts";
 
 export const button = cv({
-  extend: [control, command, border],
+  extend: [frame, command, border],
   class: [
     "font-[calc(500+50*var(--contrast))]",
     "ak-outline-primary",
@@ -57,41 +57,19 @@ export const button = cv({
   },
 });
 
-export const buttonIcon = controlIcon;
+export const buttonAdornment = frameAdornment;
 
-export const buttonBadge = cv({
-  extend: [buttonIcon],
-  class: "font-normal [font-size-adjust:0.4] ak-layer-contrast",
-  variants: {
-    $position: {
-      static: "",
-      top: "absolute top-0 end-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] m-0! border border-(--background)",
-    },
-  },
-  defaultVariants: {
-    $position: "top",
-    $bg: "primary",
-    $px: "md",
-    $size: "xl",
-  },
-  computed: ({ variants, setDefaultVariants }) => {
-    if (variants.$position === "top") {
-      return setDefaultVariants({ $radius: "round" });
-    }
-  },
-});
-
-export const buttonContent = controlContent;
+export const buttonContent = frameContent;
 
 export const buttonDescription = cv({
-  extend: [controlDescription],
+  extend: [frameDescription],
   defaultVariants: {
     $truncate: true,
   },
 });
 
 export const buttonLabel = cv({
-  extend: [controlLabel],
+  extend: [frameLabel],
   defaultVariants: {
     $truncate: true,
   },

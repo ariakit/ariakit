@@ -2,9 +2,9 @@ import { cv } from "clava";
 import { border } from "./border.ts";
 import {
   button,
+  buttonAdornment,
   buttonContent,
   buttonDescription,
-  buttonIcon,
   buttonLabel,
 } from "./button.ts";
 
@@ -46,7 +46,7 @@ export const checkboxCardGrid = cv({
 });
 
 export const checkboxCardCheck = cv({
-  extend: [buttonIcon, border],
+  extend: [buttonAdornment, border],
   class: [
     "*:hidden! [&>svg]:stroke-[2.5]",
     "group-ak-disabled/checkbox:ak-text/0",
@@ -74,7 +74,7 @@ export const checkboxCardCheck = cv({
   },
 });
 
-export const checkboxCardIcon = buttonIcon;
+export const checkboxCardIcon = buttonAdornment;
 
 export const checkboxCardContent = buttonContent;
 

@@ -3,10 +3,10 @@ import type { ComponentProps } from "solid-js";
 import { mergeProps, splitProps } from "solid-js";
 import {
   button,
+  buttonAdornment,
   buttonBadge,
   buttonContent,
   buttonDescription,
-  buttonIcon,
   buttonLabel,
 } from "../styles/button.ts";
 
@@ -70,14 +70,14 @@ export function ButtonDescription(props: ButtonDescriptionProps) {
 
 export interface ButtonIconProps
   extends ComponentProps<"span">,
-    VariantProps<typeof buttonIcon> {}
+    VariantProps<typeof buttonAdornment> {}
 
 /**
  * @see https://ariakit.com/solid/examples/button
  */
 export function ButtonIcon(props: ButtonIconProps) {
-  const [variantProps, rest] = splitProps(props, buttonIcon.html.propKeys);
-  return <span {...buttonIcon.html(variantProps)} {...rest} />;
+  const [variantProps, rest] = splitProps(props, buttonAdornment.html.propKeys);
+  return <span {...buttonAdornment.html(variantProps)} {...rest} />;
 }
 
 export interface ButtonBadgeProps

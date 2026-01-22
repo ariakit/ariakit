@@ -2,10 +2,10 @@ import { cv } from "clava";
 import { background } from "./background.ts";
 import { border, isBorderColor } from "./border.ts";
 
-export const control = cv({
+export const frame = cv({
   extend: [background, border],
   class: [
-    "group/control flex px-(--px) py-(--py)",
+    "group/frame flex px-(--px) py-(--py)",
     "[--parent-background:var(--ak-layer-parent)]",
     "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
     "[--py:var(--ak-frame-padding,0px)]",
@@ -96,23 +96,23 @@ export const control = cv({
   },
 });
 
-export const controlIcon = cv({
+export const frameAdornment = cv({
   extend: [background, border],
   class: [
     "flex flex-none items-center justify-center",
-    "[--mx:calc(var(--py)-var(--px)+var(--half-line-gap))]",
+    "[--mx:calc((var(--py)-var(--px))*var(--size-scale,1)+var(--half-line-gap))]",
     "[--my:calc(var(--half-line-gap)*var(--row-span))]",
     "[--half-line-gap:calc((1lh-var(--size,1lh))/2)]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
-    "[&>svg]:block [&>svg]:size-(--size)",
+    "[&>svg]:block [&>svg]:size-(--size) mx-(--mx) my-(--my)",
     // debug
     // "relative after:absolute after:-inset-[calc(var(--half-line-gap)+var(--py))] after:bg-yellow-500/40",
   ],
   variants: {
     $bg: {
-      // When control's bg is inverted, we need to make the pop effect more
+      // When the frame's bg is inverted, we need to make the pop effect more
       // pronounced so it's still visible.
-      pop: "group-[.background-invert]/control:ak-layer-pop-2.5",
+      pop: "group-[.background-invert]/frame:ak-layer-pop-2.5",
     },
     $size: {
       none: "",
@@ -136,79 +136,86 @@ export const controlIcon = cv({
     },
     $px: {
       none: "",
-      sm: "px-[calc(clamp(0.1em,var(--size)*0.1,0.2em))]",
-      md: "px-[calc(clamp(0.1em,var(--size)*0.25,0.4em))]",
+      xs: "px-[0.1em]",
+      sm: "px-[0.15em]",
+      md: "px-[0.2em]",
+      lg: "px-[0.2em]",
+      xl: "px-[0.4em]",
+      "2xl": "px-[0.4em]",
+      full: "px-[0.4em]",
     },
     $radius: {
       none: "",
       auto: "rounded-[max(var(--radius)/2,var(--ak-frame-radius)-var(--py)-var(--half-line-gap))]",
       round: "rounded-full",
     },
-    $square: "aspect-square",
     $closeGap: "[&+*]:-ms-[0.25em] [*:has(+&)]:-me-[0.25em]",
-    $text: "text-[0.8125em]_ _leading-[1lh]",
-    $badge: {
-      false: "mx-(--mx) my-(--my)",
-      true: "text-[0.8125em] leading-[1lh] mx-[calc((var(--py)-var(--px))*0.8125+var(--half-line-gap))] my-[calc(var(--my)*1)]",
-      floating:
-        "text-[0.8125em] leading-[1lh] absolute top-0 end-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] border border-(--parent-background)",
+    $kind: {
+      icon: "aspect-square",
+      avatar: "aspect-square overflow-clip",
+      shortcut: "",
+      badge:
+        "[--size-scale:0.8125] text-[calc(1em*var(--size-scale))] leading-[1lh]",
     },
+    $floating:
+      "m-0! absolute top-0 end-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] border border-(--parent-background)",
   },
   computedVariants: {
     $rowSpan: (value: number) => ({ "--row-span": `${value}` }),
   },
   defaultVariants: {
+    $kind: "icon",
     $bg: "none",
     $size: "md",
     $radius: "auto",
     $rowSpan: 1,
     $px: "none",
-    $square: true,
   },
   computed: ({ variants, setVariants, setDefaultVariants }) => {
     setDefaultVariants({ $mx: variants.$size });
     const classes: string[] = [];
-
     if (variants.$closeGap) {
       return setVariants({ $mx: "none" });
     }
     const mdOrLess = [undefined, "none", "xs", "sm", "md"];
     if (variants.$bg !== "none") {
-      // When bg is set, give some room for the background to show
       const $size = mdOrLess.includes(variants.$size) ? "lg" : variants.$size;
-      const $px = variants.$px === "none" ? "sm" : variants.$px;
-      setVariants({ $size, $px });
-      setDefaultVariants({ $mx: $size });
+      setVariants({ $size });
+      setDefaultVariants({ $mx: $size, $px: $size });
+      // Disabled frame
+      classes.push(
+        "group-[.disabled]/frame:ak-layer-down group-[.disabled]/frame:ak-text/0",
+      );
     }
-    if (variants.$badge) {
+    if (variants.$kind === "badge") {
       const lgOrLess = [...mdOrLess, "lg"];
       const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
       const $bg = variants.$bg === "none" ? "primary" : variants.$bg;
-      const $px = variants.$px === "none" ? "md" : variants.$px;
       if (isBorderColor(variants.$bg)) {
         setDefaultVariants({ $borderColor: variants.$bg });
       }
-      setVariants({ $size, $bg, $px });
+      setVariants({ $size, $bg });
       setDefaultVariants({
+        $px: $size,
         $mx: $size,
-        $square: false,
         $contrast: true,
         $radius: "round",
       });
     }
-    if (variants.$bg !== "none") {
-      // Disabled control
-      classes.push(
-        "group-[.disabled]/control:ak-layer-down group-[.disabled]/control:ak-text/0",
-      );
+    if (variants.$kind === "avatar") {
+      const lgOrLess = [...mdOrLess, "lg"];
+      const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
+      const $bg = variants.$bg === "none" ? "pop" : variants.$bg;
+      setVariants({ $size, $bg });
+      setDefaultVariants({ $mx: $size, $radius: "round" });
     }
     return classes;
   },
 });
 
-export const controlContent = cv({
+export const frameContent = cv({
   class:
-    "group/control-content flex flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
+    "group/frame-content flex flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
   variants: {
     $orientation: {
       horizontal: "flex-wrap",
@@ -220,16 +227,16 @@ export const controlContent = cv({
   },
 });
 
-export const controlLabel = cv({
-  class: "group-[.flex-col]/control-content:flex-none grow",
+export const frameLabel = cv({
+  class: "group-[.flex-col]/frame-content:flex-none grow",
   variants: {
     $truncate: "truncate",
   },
 });
 
-export const controlDescription = cv({
+export const frameDescription = cv({
   class:
-    "ms-0! ak-text/70 basis-full font-normal text-[0.875em] group-[.disabled]/control:ak-text/0",
+    "ms-0! ak-text/70 basis-full font-normal text-[0.875em] group-[.disabled]/frame:ak-text/0",
   variants: {
     $truncate: "truncate",
   },

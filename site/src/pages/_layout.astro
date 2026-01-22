@@ -15,7 +15,7 @@ import { ClientRouter } from "astro:transitions";
 import Meta from "#app/components/meta.astro";
 import {
   Button,
-  ButtonIcon,
+  ButtonAdornment,
   ButtonLabel,
 } from "@ariakit/ui/html/button.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
@@ -62,9 +62,9 @@ const { title, headerBorder = false } = Astro.props;
                 className="font-normal ak-dark:ak-text/80 @max-3xl:hidden"
                 $bg="ghost"
               >
-                <ButtonIcon>
+                <ButtonAdornment>
                   <Icon name="react" />
-                </ButtonIcon>
+                </ButtonAdornment>
                 <ButtonLabel>React</ButtonLabel>
               </Button>
               <span
