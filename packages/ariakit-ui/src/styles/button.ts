@@ -13,7 +13,6 @@ export const button = cv({
   extend: [control, command, border],
   class: [
     "font-[calc(500+50*var(--contrast))]",
-    "[--background:var(--ak-layer-parent)]",
     "ak-outline-primary",
     "ak-hover:ak-layer-hover",
     "outline-offset-1 ak-focus-visible:outline-2",
@@ -46,7 +45,6 @@ export const button = cv({
   defaultVariants: {
     $kind: "flat",
     $gapY: "none",
-    $contrast: true,
   },
   computed: ({ variants, setVariants, setDefaultVariants }) => {
     if (variants.$disabled) {
@@ -73,9 +71,8 @@ export const buttonBadge = cv({
   defaultVariants: {
     $position: "top",
     $bg: "primary",
-    $px: "text",
+    $px: "md",
     $size: "xl",
-    $square: false,
   },
   computed: ({ variants, setDefaultVariants }) => {
     if (variants.$position === "top") {

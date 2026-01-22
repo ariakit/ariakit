@@ -1,14 +1,12 @@
 import { Group, GroupLabel } from "@ariakit/react";
 import {
   Button,
-  ButtonBadge,
   ButtonContent,
   ButtonDescription,
   ButtonIcon,
   ButtonLabel,
 } from "@ariakit/ui/html/button.react.tsx";
-import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
-import { buttonIcon } from "@ariakit/ui/styles/button.ts";
+import { badgeText } from "@ariakit/ui/styles/badge.ts";
 import {
   checkboxCard,
   checkboxCardCheck,
@@ -207,11 +205,20 @@ export default function Example() {
             <ComputerIcon />
           </ButtonIcon>
           <ButtonLabel>Technology</ButtonLabel>
-          <ButtonBadge>New</ButtonBadge>
+          <ButtonIcon $badge="floating">New</ButtonIcon>
         </Button>
         <Button $radius="round" $bg="invert">
           <ButtonLabel>Continue</ButtonLabel>
-          <ButtonIcon $size="2xl" $bg="invert" $square>
+          <ButtonIcon $size="2xl" $bg="invert">
+            <ArrowRightIcon />
+          </ButtonIcon>
+        </Button>
+        <Button $radius="round" $bg="pop" $size="sm">
+          <ButtonIcon $badge $bg="warning" $mix={25} $border="medium">
+            <span {...badgeText()}>New</span>
+          </ButtonIcon>
+          <ButtonLabel>We're lauching soon</ButtonLabel>
+          <ButtonIcon>
             <ArrowRightIcon />
           </ButtonIcon>
         </Button>
@@ -220,7 +227,6 @@ export default function Example() {
             $rowSpan={2}
             $size="xl"
             className="overflow-clip ak-dark:ak-border ak-layer-0"
-            $square
           >
             <img
               src="https://pbs.twimg.com/profile_images/1964797260597772288/uQG557we_400x400.jpg"
@@ -234,7 +240,7 @@ export default function Example() {
             </ButtonLabel>
             <ButtonDescription>@hazdiego</ButtonDescription>
           </ButtonContent>
-          <ButtonIcon $rowSpan={2} $square>
+          <ButtonIcon $rowSpan={2}>
             <EllipsisIcon />
           </ButtonIcon>
         </Button>
