@@ -63,7 +63,7 @@
     "stripe": "18.5.0",
     "tailwindcss": "4.1.18",
     "unified": "11.0.5",
-    "unist-util-visit": "5.0.0",
+    "unist-util-visit": "5.1.0",
     "vfile": "6.0.3"
   }
 }

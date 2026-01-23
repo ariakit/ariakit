@@ -203,7 +203,7 @@
     "tsup": "8.5.1",
     "typescript": "5.9.3",
     "unified": "10.1.2",
-    "unist-util-visit": "5.0.0",
+    "unist-util-visit": "5.1.0",
     "use-local-storage-state": "19.5.0",
     "vite-plugin-solid": "2.11.0",
     "vitest": "4.0.18",
