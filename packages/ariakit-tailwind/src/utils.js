@@ -52,22 +52,6 @@ export function isInlineThemeReference(value) {
 }
 
 /**
- * Return the absolute value in CSS.
- * @param {string} value
- */
-export function abs(value) {
-  return `max(${value}, ${value} * -1)`;
-}
-
-/**
- * Return the sign value in CSS.
- * @param {string} value
- */
-export function sign(value) {
-  return `clamp(-1, ${value} * infinity, 1)`;
-}
-
-/**
  * @param {string | number} [light]
  * @param {string | number} [dark]
  */
