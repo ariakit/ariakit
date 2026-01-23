@@ -126,7 +126,7 @@
     "@vitest/coverage-v8": "4.0.18",
     "@vizzly-testing/cli": "0.23.1",
     "@wordpress/components": "32.0.0",
-    "astro": "5.16.12",
+    "astro": "5.16.14",
     "autoprefixer": "10.4.23",
     "babel-loader": "10.0.0",
     "babel-plugin-transform-rewrite-imports": "1.5.4",
