@@ -81,15 +81,21 @@
   inherits: false;
 }
 
-@property --_ak-layer-idle-base {
+@property --_ak-layer-idle-1 {
   syntax: "<color>";
   inherits: false;
   initial-value: oklch(1 0 0);
 }
 
-@property --_ak-layer-idle {
+@property --_ak-layer-idle-2 {
   syntax: "<color>";
-  inherits: true;
+  inherits: false;
+  initial-value: oklch(1 0 0);
+}
+
+@property --_ak-layer-idle-3 {
+  syntax: "<color>";
+  inherits: false;
   initial-value: oklch(1 0 0);
 }
 

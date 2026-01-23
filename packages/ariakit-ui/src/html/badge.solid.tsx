@@ -1,36 +1,40 @@
 import type { VariantProps } from "clava";
-import type { ComponentProps, JSXElement } from "solid-js";
-import { Show, splitProps } from "solid-js";
-import { badge, badgeIcon, badgeText } from "../styles/badge.ts";
+import type { ComponentProps } from "solid-js";
+import { splitProps } from "solid-js";
+import { badge, badgeLabel, badgeSlot } from "../styles/badge.ts";
 
 export interface BadgeProps
   extends ComponentProps<"div">,
-    VariantProps<typeof badge>,
-    VariantProps<typeof badgeText> {
-  iconStart?: JSXElement;
-  iconEnd?: JSXElement;
+    VariantProps<typeof badge> {}
+
+/**
+ * @see https://ariakit.com/solid/examples/badge
+ */
+export function Badge(props: BadgeProps) {
+  const [variantProps, rest] = splitProps(props, badge.html.propKeys);
+  return <div {...badge.html(variantProps)} {...rest} />;
 }
 
-export function Badge(props: BadgeProps) {
-  const [variantProps, textProps, iconProps, rest] = splitProps(
-    props,
-    badge.html.propKeys,
-    badgeText.variantKeys,
-    ["iconStart", "iconEnd"],
-  );
-  return (
-    <div {...badge.html(variantProps)} {...rest}>
-      <Show when={iconProps.iconStart}>
-        <span {...badgeIcon.html({ $position: "start" })}>
-          {iconProps.iconStart}
-        </span>
-      </Show>
-      <span {...badgeText.html(textProps)}>{props.children}</span>
-      <Show when={iconProps.iconEnd}>
-        <span {...badgeIcon.html({ $position: "end" })}>
-          {iconProps.iconEnd}
-        </span>
-      </Show>
-    </div>
-  );
+export interface BadgeLabelProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof badgeLabel> {}
+
+/**
+ * @see https://ariakit.com/solid/examples/badge
+ */
+export function BadgeLabel(props: BadgeLabelProps) {
+  const [variantProps, rest] = splitProps(props, badgeLabel.html.propKeys);
+  return <span {...badgeLabel.html(variantProps)} {...rest} />;
+}
+
+export interface BadgeSlotProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof badgeSlot> {}
+
+/**
+ * @see https://ariakit.com/solid/examples/badge
+ */
+export function BadgeSlot(props: BadgeSlotProps) {
+  const [variantProps, rest] = splitProps(props, badgeSlot.html.propKeys);
+  return <span {...badgeSlot.html(variantProps)} {...rest} />;
 }

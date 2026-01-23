@@ -3,10 +3,10 @@ import { splitProps } from "clava";
 import type { ComponentProps } from "react";
 import {
   button,
-  buttonAdornment,
   buttonContent,
   buttonDescription,
   buttonLabel,
+  buttonSlot,
 } from "../styles/button.ts";
 
 export interface ButtonProps
@@ -63,14 +63,14 @@ export function ButtonDescription(props: ButtonDescriptionProps) {
   return <span {...buttonDescription(variantProps)} {...rest} />;
 }
 
-export interface ButtonAdornmentProps
+export interface ButtonSlotProps
   extends ComponentProps<"span">,
-    VariantProps<typeof buttonAdornment> {}
+    VariantProps<typeof buttonSlot> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
  */
-export function ButtonAdornment(props: ButtonAdornmentProps) {
-  const [variantProps, rest] = splitProps(props, buttonAdornment);
-  return <span {...buttonAdornment(variantProps)} {...rest} />;
+export function ButtonSlot(props: ButtonSlotProps) {
+  const [variantProps, rest] = splitProps(props, buttonSlot);
+  return <span {...buttonSlot(variantProps)} {...rest} />;
 }

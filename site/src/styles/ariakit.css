@@ -40,9 +40,9 @@
   --color-canvas: oklch(99.33% 0.0011 197.14);
   --color-primary: oklch(56.7% 0.154556 248.5156);
   --color-secondary: oklch(65.59% 0.2118 354.31);
-  --color-success: theme(--color-green-500);
-  --color-warning: theme(--color-yellow-500);
-  --color-danger: theme(--color-red-500);
+  --color-success: theme(--color-green-600);
+  --color-warning: theme(--color-yellow-600);
+  --color-danger: theme(--color-red-600);
 
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
@@ -73,6 +73,9 @@
     /* --color-canvas: oklch(16.52% 0.0062 285.7); */
     /* --color-canvas: theme(--color-slate-950); */
     --color-canvas: oklch(16.34% 0.0091 264.28);
+    --color-success: theme(--color-green-500);
+    --color-warning: theme(--color-yellow-500);
+    --color-danger: theme(--color-red-400);
   }
 }
 

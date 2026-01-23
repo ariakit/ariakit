@@ -1,12 +1,12 @@
 import type { VariantProps } from "clava";
 import type { ComponentProps, JSXElement } from "solid-js";
 import { Show, splitProps } from "solid-js";
-import { badge, badgeIcon, badgeText } from "../styles/badge.ts";
+import { badge, badgeLabel, badgeSlot } from "../styles/badge.ts";
 
 export interface BadgeProps
   extends ComponentProps<"div">,
     VariantProps<typeof badge>,
-    VariantProps<typeof badgeText> {
+    VariantProps<typeof badgeLabel> {
   iconStart?: JSXElement;
   iconEnd?: JSXElement;
 }
@@ -15,19 +15,19 @@ export function Badge(props: BadgeProps) {
   const [variantProps, textProps, iconProps, rest] = splitProps(
     props,
     badge.html.propKeys,
-    badgeText.variantKeys,
+    badgeLabel.variantKeys,
     ["iconStart", "iconEnd"],
   );
   return (
     <div {...badge.html(variantProps)} {...rest}>
       <Show when={iconProps.iconStart}>
-        <span {...badgeIcon.html({ $position: "start" })}>
+        <span {...badgeSlot.html({ $position: "start" })}>
           {iconProps.iconStart}
         </span>
       </Show>
-      <span {...badgeText.html(textProps)}>{props.children}</span>
+      <span {...badgeLabel.html(textProps)}>{props.children}</span>
       <Show when={iconProps.iconEnd}>
-        <span {...badgeIcon.html({ $position: "end" })}>
+        <span {...badgeSlot.html({ $position: "end" })}>
           {iconProps.iconEnd}
         </span>
       </Show>

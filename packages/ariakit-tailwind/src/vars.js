@@ -25,8 +25,9 @@ export const vars = /** @type {const} */ ({
   _layerOkL: "--_ak-layer-okl",
   _layerAppearance: "--_ak-layer-appearance",
   _layerParent: "--_ak-layer-parent",
-  _layerIdleBase: "--_ak-layer-idle-base",
-  _layerIdle: "--_ak-layer-idle",
+  _layerIdle1: "--_ak-layer-idle-1",
+  _layerIdle2: "--_ak-layer-idle-2",
+  _layerIdle3: "--_ak-layer-idle-3",
 
   // ===========================================================================
   // Private API - Frame

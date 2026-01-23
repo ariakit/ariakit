@@ -3,10 +3,10 @@ import { border } from "./border.ts";
 import { command } from "./command.ts";
 import {
   frame,
-  frameAdornment,
   frameContent,
   frameDescription,
   frameLabel,
+  frameSlot,
 } from "./frame.ts";
 
 export const button = cv({
@@ -57,7 +57,7 @@ export const button = cv({
   },
 });
 
-export const buttonAdornment = frameAdornment;
+export const buttonSlot = frameSlot;
 
 export const buttonContent = frameContent;
 

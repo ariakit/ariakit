@@ -1,25 +1,40 @@
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import type { ComponentProps } from "react";
-import { badge, badgeIcon, badgeText } from "../styles/badge.ts";
+import { badge, badgeLabel, badgeSlot } from "../styles/badge.ts";
 
 export interface BadgeProps
   extends ComponentProps<"div">,
-    VariantProps<typeof badge>,
-    VariantProps<typeof badgeText> {
-  iconStart?: React.ReactNode;
-  iconEnd?: React.ReactNode;
+    VariantProps<typeof badge> {}
+
+/**
+ * @see https://ariakit.com/react/examples/badge
+ */
+export function Badge(props: BadgeProps) {
+  const [variantProps, rest] = splitProps(props, badge);
+  return <div {...badge(variantProps)} {...rest} />;
 }
 
-export function Badge({ iconStart, iconEnd, ...props }: BadgeProps) {
-  const [variantProps, textProps, rest] = splitProps(props, badge, badgeText);
-  return (
-    <div {...badge(variantProps)} {...rest}>
-      {iconStart && (
-        <span {...badgeIcon({ $position: "start" })}>{iconStart}</span>
-      )}
-      <span {...badgeText(textProps)}>{props.children}</span>
-      {iconEnd && <span {...badgeIcon({ $position: "end" })}>{iconEnd}</span>}
-    </div>
-  );
+export interface BadgeLabelProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof badgeLabel> {}
+
+/**
+ * @see https://ariakit.com/react/examples/badge
+ */
+export function BadgeLabel(props: BadgeLabelProps) {
+  const [variantProps, rest] = splitProps(props, badgeLabel);
+  return <span {...badgeLabel(variantProps)} {...rest} />;
+}
+
+export interface BadgeSlotProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof badgeSlot> {}
+
+/**
+ * @see https://ariakit.com/react/examples/badge
+ */
+export function BadgeSlot(props: BadgeSlotProps) {
+  const [variantProps, rest] = splitProps(props, badgeSlot);
+  return <span {...badgeSlot(variantProps)} {...rest} />;
 }

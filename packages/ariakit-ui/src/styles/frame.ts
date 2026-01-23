@@ -96,11 +96,11 @@ export const frame = cv({
   },
 });
 
-export const frameAdornment = cv({
+export const frameSlot = cv({
   extend: [background, border],
   class: [
     "flex flex-none items-center justify-center",
-    "[--mx:calc((var(--py)-var(--px))*var(--size-scale,1)+var(--half-line-gap))]",
+    "[--mx:calc((var(--py)-var(--px))*var(--size-scale,1)+var(--half-line-gap)*var(--row-span))]",
     "[--my:calc(var(--half-line-gap)*var(--row-span))]",
     "[--half-line-gap:calc((1lh-var(--size,1lh))/2)]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
@@ -121,8 +121,8 @@ export const frameAdornment = cv({
       md: "[--size:1em]",
       lg: "[--size:0.875lh]",
       xl: "[--size:1lh]",
-      "2xl": "[--size:calc(1lh+var(--py))]",
-      full: "[--size:calc(1lh+var(--py)*2)]",
+      "2xl": "[--size:calc(1lh+var(--py)/var(--row-span))]",
+      full: "[--size:calc(1lh+var(--py)*2/var(--row-span))]",
     },
     $mx: {
       none: "",
@@ -136,23 +136,24 @@ export const frameAdornment = cv({
     },
     $px: {
       none: "",
-      xs: "px-[0.1em]",
-      sm: "px-[0.15em]",
-      md: "px-[0.2em]",
-      lg: "px-[0.2em]",
-      xl: "px-[0.4em]",
-      "2xl": "px-[0.4em]",
-      full: "px-[0.4em]",
+      xs: "px-[calc(var(--size)*0.05+0.4em*(1-var(--size-scale,1)))]",
+      sm: "px-[calc(var(--size)*0.1+0.4em*(1-var(--size-scale,1)))]",
+      md: "px-[calc(var(--size)*0.15+0.4em*(1-var(--size-scale,1)))]",
+      lg: "px-[calc(var(--size)*0.15+0.4em*(1-var(--size-scale,1)))]",
+      xl: "px-[calc(var(--size)*0.2+0.4em*(1-var(--size-scale,1)))]",
+      "2xl": "px-[calc(var(--size)*0.25+0.4em*(1-var(--size-scale,1)))]",
+      full: "px-[calc(var(--size)*0.25+0.4em*(1-var(--size-scale,1)))]",
     },
     $radius: {
       none: "",
-      auto: "rounded-[max(var(--radius)/2,var(--ak-frame-radius)-var(--py)-var(--half-line-gap))]",
+      auto: "rounded-[max(var(--radius)/2,var(--ak-frame-radius)-var(--ak-frame-border)-var(--py)-var(--half-line-gap)*var(--row-span))]",
       round: "rounded-full",
     },
     $closeGap: "[&+*]:-ms-[0.25em] [*:has(+&)]:-me-[0.25em]",
+    $square: "aspect-square",
     $kind: {
-      icon: "aspect-square",
-      avatar: "aspect-square overflow-clip",
+      icon: "",
+      avatar: "overflow-clip",
       shortcut: "",
       badge:
         "[--size-scale:0.8125] text-[calc(1em*var(--size-scale))] leading-[1lh]",
@@ -172,7 +173,10 @@ export const frameAdornment = cv({
     $px: "none",
   },
   computed: ({ variants, setVariants, setDefaultVariants }) => {
-    setDefaultVariants({ $mx: variants.$size });
+    setDefaultVariants({
+      $mx: variants.$size,
+      $square: variants.$kind === "icon" || variants.$kind === "avatar",
+    });
     const classes: string[] = [];
     if (variants.$closeGap) {
       return setVariants({ $mx: "none" });
@@ -191,15 +195,14 @@ export const frameAdornment = cv({
       const lgOrLess = [...mdOrLess, "lg"];
       const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
       const $bg = variants.$bg === "none" ? "primary" : variants.$bg;
-      if (isBorderColor(variants.$bg)) {
-        setDefaultVariants({ $borderColor: variants.$bg });
+      if (isBorderColor($bg)) {
+        setDefaultVariants({ $borderColor: $bg });
       }
       setVariants({ $size, $bg });
       setDefaultVariants({
         $px: $size,
         $mx: $size,
         $contrast: true,
-        $radius: "round",
       });
     }
     if (variants.$kind === "avatar") {
@@ -208,6 +211,9 @@ export const frameAdornment = cv({
       const $bg = variants.$bg === "none" ? "pop" : variants.$bg;
       setVariants({ $size, $bg });
       setDefaultVariants({ $mx: $size, $radius: "round" });
+    }
+    if (variants.$floating) {
+      setDefaultVariants({ $radius: "round" });
     }
     return classes;
   },
@@ -223,7 +229,7 @@ export const frameContent = cv({
     },
   },
   defaultVariants: {
-    $orientation: "horizontal",
+    $orientation: "vertical",
   },
 });
 

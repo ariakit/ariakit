@@ -1,6 +1,6 @@
 import { cv } from "clava";
 import { isBorderColor } from "./border.ts";
-import { frame, frameAdornment, frameLabel } from "./frame.ts";
+import { frame, frameLabel, frameSlot } from "./frame.ts";
 
 export const badge = cv({
   extend: [frame],
@@ -12,21 +12,24 @@ export const badge = cv({
     $border: "adaptive",
     $borderType: "inset",
     $px: "lg",
-    $mix: 15,
+    $mix: false,
   },
   computed: (context) => {
     if (!context.variants.$bg) return;
     if (!isBorderColor(context.variants.$bg)) return;
-    context.setDefaultVariants({ $borderColor: context.variants.$bg });
+    context.setDefaultVariants({
+      $mix: 15,
+      $borderColor: context.variants.$bg,
+    });
   },
 });
 
-export const badgeText = cv({
+export const badgeLabel = cv({
   extend: [frameLabel],
   class: "ak-text-(--background-color)/70",
 });
 
-export const badgeIcon = cv({
-  extend: [frameAdornment],
+export const badgeSlot = cv({
+  extend: [frameSlot],
   class: "ak-text-(--background-color)/70",
 });

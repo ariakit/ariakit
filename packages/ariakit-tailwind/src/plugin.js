@@ -8,6 +8,7 @@ import {
   IN_LIGHT,
   isInlineThemeReference,
   LIGHTNESS_LEVELS,
+  layerIdleProp,
   lchLightDark,
   MAX_NON_BARE_LEVELS,
   oklchLightDark,
@@ -236,7 +237,7 @@ const AriakitTailwind = plugin(
 
       const result = css(getCurrentLayerCss(), {
         [vars.shadow]: shadow(layerParent),
-        [vars.layer]: prop(vars._layerIdle),
+        [vars.layer]: layerIdleProp(3),
         [vars._layerDown]: isDown ? "1" : "0",
         [vars._layerAppearance]: textColor(prop(vars.layer)),
         [vars._layerL]: `lch(from ${prop(vars.layer)} round(l, ${100 / LIGHTNESS_LEVELS}) 0 0 / 100%)`,
@@ -258,8 +259,9 @@ const AriakitTailwind = plugin(
         Object.assign(
           result,
           {
-            [vars._layerIdle]: computedColor,
-            [vars._layerIdleBase]: computedColor,
+            [vars._layerIdle1]: computedColor,
+            [vars._layerIdle2]: layerIdleProp(1),
+            [vars._layerIdle3]: layerIdleProp(2),
             [vars.text]: textColor(prop(vars.layer)),
           },
           withContext("layer-parent", false, ({ provide, inherit }) => {
@@ -296,8 +298,7 @@ const AriakitTailwind = plugin(
       {
         "ak-layer-contrast": (value) => {
           const { token, level } = parseColorLevel(value);
-          // Use _layerIdle when no token (like ak-layer-mix does)
-          const baseColor = tv("color", token, prop(vars._layerIdleBase));
+          const baseColor = tv("color", token, layerIdleProp(1));
           const { l, c, h } = getLayerOkLCH(level);
 
           /**
@@ -333,9 +334,8 @@ const AriakitTailwind = plugin(
               getLayerCss({ token, level }),
               withParentOkL((parentL) =>
                 css(
-                  getContrastCss(parentL, vars._layerIdle),
-                  getContrastCss(parentL, vars._layerIdleBase),
                   getContrastCss(parentL, vars._layerBase),
+                  getContrastCss(parentL, vars._layerIdle1),
                 ),
               ),
             );
@@ -345,7 +345,7 @@ const AriakitTailwind = plugin(
           return Object.assign(
             getLayerCss({ soft: true }),
             withParentOkL((parentL) =>
-              getContrastCss(parentL, vars._layerIdle),
+              getContrastCss(parentL, vars._layerIdle2),
             ),
           );
         },
@@ -361,7 +361,7 @@ const AriakitTailwind = plugin(
       {
         "ak-layer-mix": (value, { modifier }) => {
           const { token, level } = parseColorLevel(value);
-          const baseColor = tv("color", token, prop(vars._layerIdle));
+          const baseColor = tv("color", token, layerIdleProp(2));
           const { l, c, h } = getLayerOkLCH(level);
           const color = `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
           const percentage = toPercent(modifier, "50%");
@@ -369,13 +369,13 @@ const AriakitTailwind = plugin(
           if (token) {
             return {
               ...getLayerCss({ token }),
-              [vars._layerIdleBase]: mixColor,
-              [vars._layerIdle]: mixColor,
+              [vars._layerIdle1]: mixColor,
               [vars._layerBase]: mixColor,
             };
           }
           return {
             ...getLayerCss({ token, level, soft: true }),
+            [vars._layerIdle3]: mixColor,
             [vars.layer]: mixColor,
           };
         },
@@ -399,13 +399,13 @@ const AriakitTailwind = plugin(
             ...(token
               ? getLayerCss({ token })
               : getLayerCss({ token, level, soft: true })),
-            [vars.layer]: `oklch(from ${prop(vars._layerIdle)} ${getLayerPopOkL(level)} c h)`,
+            [vars.layer]: `oklch(from ${layerIdleProp(3)} ${getLayerPopOkL(level)} c h)`,
           };
         },
         "ak-layer-hover-vivid": (value) => {
           const { token, level } = parseColorLevel(value);
           const c = `clamp(0, c + 0.1 * ${level}, 0.4)`;
-          const colorBase = `oklch(from ${prop(vars._layerIdle)} l ${c} h)`;
+          const colorBase = `oklch(from ${layerIdleProp(3)} l ${c} h)`;
           const colorWithSafeL = `oklch(from ${colorBase} ${prop(vars._safeOkL)} c h)`;
           return {
             ...(token
@@ -440,8 +440,7 @@ const AriakitTailwind = plugin(
       const popColor = `oklch(from ${prop(vars._layerBase)} ${getLayerPopOkL(level)} c h)`;
       return {
         ...getLayerCss({ token: color }),
-        [vars._layerIdle]: popColor,
-        [vars._layerIdleBase]: popColor,
+        [vars._layerIdle1]: popColor,
       };
     };
 

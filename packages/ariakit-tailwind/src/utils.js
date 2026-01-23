@@ -26,6 +26,22 @@ export function prop(name, defaultValue) {
 }
 
 /**
+ * @param {1 | 2 | 3} [defaultLevel]
+ */
+export function layerIdleProp(defaultLevel = 3) {
+  if (defaultLevel === 3) {
+    return prop(
+      vars._layerIdle3,
+      prop(vars._layerIdle2, prop(vars._layerIdle1)),
+    );
+  } else if (defaultLevel === 2) {
+    return prop(vars._layerIdle2, prop(vars._layerIdle1));
+  } else {
+    return prop(vars._layerIdle1);
+  }
+}
+
+/**
  * @param {number} [value]
  */
 export function isInlineThemeReference(value) {
