@@ -170,7 +170,7 @@
     "postcss-prettify": "0.3.4",
     "prettier": "3.8.1",
     "prettier-plugin-tailwindcss": "0.7.2",
-    "purgecss": "7.0.2",
+    "purgecss": "8.0.0",
     "react": "18.3.1",
     "react-aria-components": "1.14.0",
     "react-dom": "18.3.1",
