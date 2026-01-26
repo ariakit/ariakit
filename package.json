@@ -124,7 +124,7 @@
     "@types/use-sync-external-store": "0.0.6",
     "@vitejs/plugin-react": "5.1.2",
     "@vitest/coverage-v8": "4.0.18",
-    "@vizzly-testing/cli": "0.23.1",
+    "@vizzly-testing/cli": "0.23.2",
     "@wordpress/components": "32.0.0",
     "astro": "5.16.15",
     "autoprefixer": "10.4.23",
