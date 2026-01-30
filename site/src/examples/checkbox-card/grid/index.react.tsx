@@ -2,22 +2,32 @@ import { Group, GroupLabel } from "@ariakit/react";
 import { BadgeLabel } from "@ariakit/ui/html/badge.react.tsx";
 import {
   Button,
+  ButtonActiveIndicator,
   ButtonContent,
   ButtonDescription,
+  ButtonGroup,
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/html/button.react.tsx";
+import { activeIndicatorSeparator } from "@ariakit/ui/styles/active-indicator.ts";
 import {
   checkboxCard,
   checkboxCardCheck,
   checkboxCardGrid,
   checkboxCardLabel,
 } from "@ariakit/ui/styles/checkbox-card.ts";
+import { controlGroup, controlSeparator } from "@ariakit/ui/styles/control.ts";
 import {
+  ActivityIcon,
   ArrowRightIcon,
   CheckIcon,
+  ChevronRight,
   ComputerIcon,
   EllipsisIcon,
+  FilesIcon,
+  LayoutDashboardIcon,
+  ListIcon,
+  MessageSquareIcon,
   PlusIcon,
   VerifiedIcon,
 } from "lucide-react";
@@ -180,9 +190,90 @@ export default function Example() {
           </span>
         </label>
       </div>
-      <div className="flex flex-wrap gap-8 justify-center w-120 items-center">
-        <Button $px="xl" $bg="invert" $radius="round">
-          <ButtonSlot $kind="avatar" $rowSpan={2} $size="xl" $radius="auto">
+      <div className="flex flex-wrap gap-8 justify-center w-160 items-center">
+        <div {...controlGroup({})}>
+          <Button $bg="pop" $color="danger">
+            <ButtonSlot>
+              <LayoutDashboardIcon />
+            </ButtonSlot>
+            <ButtonLabel>Overview</ButtonLabel>
+          </Button>
+          <div {...controlSeparator({})}></div>
+          <Button $bg="ghost">
+            <ButtonSlot>
+              <ListIcon />
+            </ButtonSlot>
+            <ButtonLabel>Details</ButtonLabel>
+          </Button>
+          <div {...controlSeparator({})}></div>
+          <Button $bg="ghost">
+            <ButtonSlot>
+              <ActivityIcon />
+            </ButtonSlot>
+            <ButtonLabel>Activity</ButtonLabel>
+          </Button>
+          <div {...controlSeparator({})}></div>
+          <Button $bg="ghost">
+            <ButtonSlot>
+              <FilesIcon />
+            </ButtonSlot>
+            <ButtonLabel>Files</ButtonLabel>
+          </Button>
+          <div {...controlSeparator({})}></div>
+          <Button $bg="ghost">
+            <ButtonSlot>
+              <MessageSquareIcon />
+            </ButtonSlot>
+            <ButtonLabel>Comments</ButtonLabel>
+          </Button>
+        </div>
+        <ButtonGroup className="[--var:--button-active]">
+          <Button
+            $bg="pop"
+            className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]"
+          >
+            <ButtonSlot>
+              <LayoutDashboardIcon />
+            </ButtonSlot>
+            <ButtonLabel>Overview</ButtonLabel>
+          </Button>
+          <div {...activeIndicatorSeparator({})}></div>
+          <Button className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]">
+            <ButtonSlot>
+              <ListIcon />
+            </ButtonSlot>
+            <ButtonLabel>Details</ButtonLabel>
+          </Button>
+          <div {...activeIndicatorSeparator({})}></div>
+          <Button className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]">
+            <ButtonSlot>
+              <ActivityIcon />
+            </ButtonSlot>
+            <ButtonLabel>Activity</ButtonLabel>
+          </Button>
+          <div {...activeIndicatorSeparator({})}></div>
+          <Button className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]">
+            <ButtonSlot>
+              <FilesIcon />
+            </ButtonSlot>
+            <ButtonLabel>Files</ButtonLabel>
+          </Button>
+          <Button className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]">
+            <ButtonSlot>
+              <MessageSquareIcon />
+            </ButtonSlot>
+            <ButtonLabel>Comments</ButtonLabel>
+          </Button>
+          <ButtonActiveIndicator $hover />
+          <ButtonActiveIndicator
+            $bg="primary"
+            $anchor="var(--var)"
+            // className="shadow"
+            $kind="bevel"
+          />
+        </ButtonGroup>
+        <Button $px="xl" $bg="invert" $rounded="full">
+          <ButtonSlot $kind="avatar" $rowSpan={2} $size="xl" $rounded="auto">
             <img
               src="https://pbs.twimg.com/profile_images/1964797260597772288/uQG557we_400x400.jpg"
               alt=""
@@ -202,19 +293,19 @@ export default function Example() {
           </ButtonSlot>
           <ButtonLabel className="sr-only">Add</ButtonLabel>
         </Button>
-        <Button $radius="round" $px="xl">
+        <Button $rounded="full" $px="xl">
           <ButtonSlot>
             <CheckIcon />
           </ButtonSlot>
           <ButtonLabel>Following</ButtonLabel>
         </Button>
-        <Button $bg="warning" $kind="classic" $radius="field" $px="xl">
+        <Button $bg="warning" $kind="bevel" $rounded="md" $px="xl">
           <ButtonSlot>
             <PlusIcon />
           </ButtonSlot>
           <ButtonLabel>Follow back</ButtonLabel>
         </Button>
-        <Button $radius="round" $size="sm" $px="lg">
+        <Button $rounded="full" $size="sm" $px="lg">
           <ButtonSlot>
             <ComputerIcon />
           </ButtonSlot>
@@ -223,13 +314,13 @@ export default function Example() {
             New
           </ButtonSlot>
         </Button>
-        <Button $radius="round" $bg="invert">
+        <Button $rounded="full" $bg="invert">
           <ButtonLabel>Continue</ButtonLabel>
           <ButtonSlot $size="2xl" $bg="invert">
             <ArrowRightIcon />
           </ButtonSlot>
         </Button>
-        <Button $radius="round" $padding="badge" $bg="ghost" $border $size="sm">
+        <Button $rounded="full" $p="sm" $bg="ghost" $border $size="sm">
           <ButtonSlot
             $kind="badge"
             $bg="primary"
@@ -244,7 +335,7 @@ export default function Example() {
             <ArrowRightIcon />
           </ButtonSlot>
         </Button>
-        <Button $radius="round" $gap="lg" className="min-w-50">
+        <Button $rounded="full" $gap="lg" className="min-w-50">
           <ButtonSlot $rowSpan={2} $kind="avatar">
             <img
               src="https://pbs.twimg.com/profile_images/1964797260597772288/uQG557we_400x400.jpg"

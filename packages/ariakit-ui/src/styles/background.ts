@@ -7,19 +7,24 @@ export const background = cv({
      */
     $bg: {
       none: "",
-      pop: "[--background-color:var(--ak-layer)] ak-layer-pop",
-      lighter: "[--background-color:var(--ak-layer)] ak-layer",
-      darker: "[--background-color:var(--ak-layer)] ak-layer-down",
-      invert:
-        "[--background-color:var(--ak-layer)] background-invert ak-layer-invert",
-      ghost: "[--background-color:var(--ak-layer)] ak-layer-0 bg-transparent",
-      disabled: "[--background-color:var(--ak-layer)] ak-layer-pop-0.5",
-      primary: "[--background-color:theme(--color-primary)] ak-layer-primary",
-      secondary:
-        "[--background-color:theme(--color-secondary)] ak-layer-secondary",
-      success: "[--background-color:theme(--color-success)] ak-layer-success",
-      warning: "[--background-color:theme(--color-warning)] ak-layer-warning",
-      danger: "[--background-color:theme(--color-danger)] ak-layer-danger",
+      pop: "ak-layer-pop",
+      pop2: "ak-layer-pop-2",
+      pop3: "ak-layer-pop-3",
+      light: "ak-layer",
+      light2: "ak-layer-2",
+      light3: "ak-layer-3",
+      dark: "ak-layer-down",
+      down2: "ak-layer-down-2",
+      down3: "ak-layer-down-3",
+      parent: "ak-layer-(--ak-layer-parent)",
+      invert: "background-invert ak-layer-invert",
+      ghost: "ak-layer-0 bg-transparent",
+      disabled: "ak-layer-pop-0.5",
+      primary: "ak-layer-primary",
+      secondary: "ak-layer-secondary",
+      success: "ak-layer-success",
+      warning: "ak-layer-warning",
+      danger: "ak-layer-danger",
     },
     /**
      * Whether to force the background color to have enough contrast with the

@@ -34,6 +34,6 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "clava": "0.1.13"
+    "clava": "0.1.14"
   }
 }

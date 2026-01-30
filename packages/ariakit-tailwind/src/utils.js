@@ -31,13 +31,13 @@ export function prop(name, defaultValue) {
 export function layerIdleProp(defaultLevel = 3) {
   if (defaultLevel === 3) {
     return prop(
-      vars._layerIdle3,
-      prop(vars._layerIdle2, prop(vars._layerIdle1)),
+      vars.layerModifier,
+      prop(vars.layerState, prop(vars.layerIdle)),
     );
   } else if (defaultLevel === 2) {
-    return prop(vars._layerIdle2, prop(vars._layerIdle1));
+    return prop(vars.layerState, prop(vars.layerIdle));
   } else {
-    return prop(vars._layerIdle1);
+    return prop(vars.layerIdle);
   }
 }
 

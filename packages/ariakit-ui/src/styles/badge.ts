@@ -1,35 +1,30 @@
 import { cv } from "clava";
 import { isBorderColor } from "./border.ts";
-import { frame, frameLabel, frameSlot } from "./frame.ts";
+import { control, controlLabel, controlSlot } from "./control.ts";
 
 export const badge = cv({
-  extend: [frame],
+  extend: [control],
   class: "font-medium",
   defaultVariants: {
     $bg: "pop",
+    $color: "tonal",
     $size: "xs",
-    $radius: "badge",
-    $border: "adaptive",
-    $borderType: "inset",
+    $rounded: "full",
+    $p: "sm",
+    $gap: "lg",
     $px: "lg",
     $mix: false,
+    $border: "adaptive",
+    $borderType: "inset",
   },
-  computed: (context) => {
-    if (!context.variants.$bg) return;
-    if (!isBorderColor(context.variants.$bg)) return;
-    context.setDefaultVariants({
-      $mix: 15,
-      $borderColor: context.variants.$bg,
-    });
+  computed: ({ variants, setDefaultVariants }) => {
+    if (!variants.$bg) return;
+    if (!isBorderColor(variants.$bg)) return;
+    const $borderColor = variants.$borderColor ?? variants.$bg;
+    setDefaultVariants({ $mix: 15, $borderColor });
   },
 });
 
-export const badgeLabel = cv({
-  extend: [frameLabel],
-  class: "ak-text-(--background-color)/70",
-});
+export const badgeLabel = controlLabel;
 
-export const badgeSlot = cv({
-  extend: [frameSlot],
-  class: "ak-text-(--background-color)/70",
-});
+export const badgeSlot = controlSlot;

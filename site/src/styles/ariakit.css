@@ -9,7 +9,7 @@
 @import "tailwindcss";
 @import "@ariakit/tailwind";
 
-@import "./ak-aurora.css";
+/* @import "./ak-aurora.css";
 @import "./ak-icon.css";
 @import "./ak-badge.css";
 @import "./ak-command.css";
@@ -34,7 +34,7 @@
 @import "./ak-segmented.css";
 @import "./ak-table.css";
 @import "./ak-sidebar.css";
-@import "./ak-prose.css";
+@import "./ak-prose.css"; */
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
@@ -66,6 +66,24 @@
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --spacing: 0.25em;
+  --spacing-px: 1px;
+  --radius: 0.25em;
+}
+
+
+@theme inline {
+  --radius-none: 0;
+  --radius-xs: calc(var(--radius) * 0.5);
+  --radius-sm: calc(var(--radius) * 1);
+  --radius-md: calc(var(--radius) * 1.5);
+  --radius-lg: calc(var(--radius) * 2);
+  --radius-xl: calc(var(--radius) * 3);
+  --radius-2xl: calc(var(--radius) * 4);
+  --radius-3xl: calc(var(--radius) * 6);
+  --radius-4xl: calc(var(--radius) * 8);
+  --radius-full: calc(var(--radius) * infinity);
 }
 
 :root {
@@ -79,6 +97,110 @@
   }
 }
 
+
 body {
   @apply ak-layer-canvas;
+}
+
+@custom-variant ui-disabled {
+  &:disabled,
+  &[aria-disabled="true"] {
+    @slot;
+  }
+}
+
+@custom-variant ui-disabled-within {
+  &:disabled,
+  &[aria-disabled="true"],
+  &:has(*:disabled, [aria-disabled="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-active {
+  @variant active {
+    @variant not-ui-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ui-hover {
+  @variant hover {
+    @variant not-ui-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ui-focus {
+  &:focus {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible {
+  &:focus-visible,
+  &[data-focus-visible] {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked {
+  &:checked,
+  &[aria-checked="true"] {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked-within {
+  &:checked,
+  &[aria-checked="true"],
+  &:has(*:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected {
+  &:checked,
+  &[aria-checked="true"],
+  &[aria-selected="true"],
+  &[aria-current]:not([aria-current="false"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected-within {
+  &:checked,
+  &[aria-checked="true"],
+  &[aria-selected="true"],
+  &[aria-current]:not([aria-current="false"]),
+  &:has(:checked, [aria-checked="true"]),
+  &:has(:selected, [aria-selected="true"]),
+  &:has([aria-current]:not([aria-current="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-hover {
+  :hover:not(:disabled, [aria-disabled="true"]) + &,
+  &:has(+ :hover:not(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-selected {
+  :checked + &,
+  [aria-checked="true"] + &,
+  [aria-selected="true"] + &,
+  [aria-current]:not([aria-current="false"]) + &,
+  &:has(+ :checked, [aria-checked="true"], [aria-selected="true"], [aria-current]:not([aria-current="false"])) {
+    @slot;
+  }
+}
+
+@custom-variant supports-anchor {
+  @supports (anchor-name: --a) {
+    @slot;
+  }
 }

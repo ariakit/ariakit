@@ -15,6 +15,9 @@ export const vars = /** @type {const} */ ({
   frameBorder: "--ak-frame-border",
   framePadding: "--ak-frame-padding",
   frameMargin: "--ak-frame-margin",
+  layerIdle: "--ak-layer-idle",
+  layerState: "--ak-layer-state",
+  layerModifier: "--ak-layer-modifier",
 
   // ===========================================================================
   // Private API - Layer
@@ -25,9 +28,6 @@ export const vars = /** @type {const} */ ({
   _layerOkL: "--_ak-layer-okl",
   _layerAppearance: "--_ak-layer-appearance",
   _layerParent: "--_ak-layer-parent",
-  _layerIdle1: "--_ak-layer-idle-1",
-  _layerIdle2: "--_ak-layer-idle-2",
-  _layerIdle3: "--_ak-layer-idle-3",
 
   // ===========================================================================
   // Private API - Frame

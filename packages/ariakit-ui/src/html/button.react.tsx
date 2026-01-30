@@ -3,8 +3,10 @@ import { splitProps } from "clava";
 import type { ComponentProps } from "react";
 import {
   button,
+  buttonActiveIndicator,
   buttonContent,
   buttonDescription,
+  buttonGroup,
   buttonLabel,
   buttonSlot,
 } from "../styles/button.ts";
@@ -27,9 +29,33 @@ export function Button(props: ButtonProps) {
   );
 }
 
+export interface ButtonGroupProps
+  extends ComponentProps<"div">,
+    VariantProps<typeof buttonGroup> {}
+
+/**
+ * @see https://ariakit.com/react/examples/button
+ */
+export function ButtonGroup(props: ButtonGroupProps) {
+  const [variantProps, rest] = splitProps(props, buttonGroup);
+  return <div {...buttonGroup(variantProps)} {...rest} />;
+}
+
 export interface ButtonContentProps
   extends ComponentProps<"span">,
     VariantProps<typeof buttonContent> {}
+
+export interface ButtonActiveIndicatorProps
+  extends ComponentProps<"div">,
+    VariantProps<typeof buttonActiveIndicator> {}
+
+/**
+ * @see https://ariakit.com/react/examples/button
+ */
+export function ButtonActiveIndicator(props: ButtonActiveIndicatorProps) {
+  const [variantProps, rest] = splitProps(props, buttonActiveIndicator);
+  return <div {...buttonActiveIndicator(variantProps)} {...rest} />;
+}
 
 /**
  * @see https://ariakit.com/react/examples/button

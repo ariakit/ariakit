@@ -4,6 +4,24 @@
   initial-value: oklch(1 0 0);
 }
 
+@property --ak-layer-idle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property --ak-layer-state {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property --ak-layer-modifier {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
 @property --ak-layer-parent {
   syntax: "*";
   inherits: true;
@@ -79,24 +97,6 @@
 @property --_ak-layer-base {
   syntax: "*";
   inherits: false;
-}
-
-@property --_ak-layer-idle-1 {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: oklch(1 0 0);
-}
-
-@property --_ak-layer-idle-2 {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: oklch(1 0 0);
-}
-
-@property --_ak-layer-idle-3 {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: oklch(1 0 0);
 }
 
 @property --_ak-layer-appearance {

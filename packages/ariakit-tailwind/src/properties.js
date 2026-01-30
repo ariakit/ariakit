@@ -103,6 +103,24 @@ const css = `
   initial-value: oklch(1 0 0);
 }
 
+@property ${vars.layerIdle} {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property ${vars.layerState} {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property ${vars.layerModifier} {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
 @property ${vars.layerParent} {
   syntax: "*";
   inherits: true;
@@ -178,24 +196,6 @@ const css = `
 @property ${vars._layerBase} {
   syntax: "*";
   inherits: false;
-}
-
-@property ${vars._layerIdle1} {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: oklch(1 0 0);
-}
-
-@property ${vars._layerIdle2} {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: oklch(1 0 0);
-}
-
-@property ${vars._layerIdle3} {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: oklch(1 0 0);
 }
 
 @property ${vars._layerAppearance} {

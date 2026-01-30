@@ -13,19 +13,20 @@ export const checkboxCard = cv({
   class: [
     "group/checkbox",
     "[--checkbox-card-edge:var(--ak-border)]",
-    "not-ak-disabled:ak-checked-within:ak-edge-contrast-primary",
-    "ak-focus-visible-within:outline-2 outline-offset-2",
-    "ak-checked-within:ak-layer-mix-primary/20",
+    "not-ui-disabled:ui-checked-within:ak-edge-contrast-primary",
+    "ui-focus-visible-within:outline-2 outline-offset-2",
+    "ui-checked-within:ak-layer-mix-primary/20",
     "[&_input]:sr-only",
   ],
   defaultVariants: {
-    $bg: "lighter",
-    $radius: "card",
+    $bg: "light",
+    $rounded: "xl",
+    $p: "lg",
     $border: true,
   },
   computed: (context) => {
-    if (context.variants.$radius === "round") {
-      context.setDefaultVariants({ $padding: "card" });
+    if (context.variants.$rounded === "full") {
+      context.setDefaultVariants({ $p: "lg" });
     }
   },
 });
@@ -49,27 +50,24 @@ export const checkboxCardCheck = cv({
   extend: [buttonSlot, border],
   class: [
     "*:hidden! [&>svg]:stroke-[2.5]",
-    "group-ak-disabled/checkbox:ak-text/0",
-    "group-not-ak-disabled/checkbox:group-ak-checked-within/checkbox:ak-layer-(--checkbox-card-edge)",
-    "group-not-ak-disabled/checkbox:group-ak-checked-within/checkbox:ring",
-    "group-not-ak-disabled/checkbox:group-ak-checked-within/checkbox:ring-(--ak-layer)",
-    "group-not-ak-disabled/checkbox:group-ak-checked-within/checkbox:border-0",
-    "group-ak-checked-within/checkbox:*:block!",
+    "group-ui-disabled/checkbox:ak-text/0",
+    "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:ak-layer-(--checkbox-card-edge)",
+    "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:ring",
+    "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:ring-(--ak-layer)",
+    "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:border-0",
+    "group-ui-checked-within/checkbox:*:block!",
   ],
   variants: {
     $bg: {
-      darker: "group-not-ak-disabled/checkbox:ak-layer-down",
-      pop: "group-not-ak-disabled/checkbox:ak-layer-pop",
-    },
-    $radius: {
-      round: "rounded-full",
+      dark: "group-not-ui-disabled/checkbox:ak-layer-down",
+      pop: "group-not-ui-disabled/checkbox:ak-layer-pop",
     },
   },
   defaultVariants: {
-    $bg: "darker",
+    $bg: "dark",
     $border: true,
     $borderType: "bordering",
-    $radius: "round",
+    $rounded: "round",
     $size: "lg",
   },
 });
@@ -78,6 +76,9 @@ export const checkboxCardIcon = buttonSlot;
 
 export const checkboxCardContent = buttonContent;
 
-export const checkboxCardLabel = buttonLabel;
+export const checkboxCardLabel = cv({
+  extend: [buttonLabel],
+  class: "grow",
+});
 
 export const checkboxCardDescription = buttonDescription;

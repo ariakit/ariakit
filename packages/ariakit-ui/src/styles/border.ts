@@ -2,11 +2,11 @@ import { cv } from "clava";
 
 const borderColors = {
   default: "[--border-color:var(--ak-layer)]",
-  primary: "[--border-color:theme(--color-primary)]",
-  secondary: "[--border-color:theme(--color-secondary)]",
-  success: "[--border-color:theme(--color-green-500)]",
-  warning: "[--border-color:theme(--color-yellow-500)]",
-  danger: "[--border-color:theme(--color-red-500)]",
+  primary: "[--border-color:var(--color-primary)]",
+  secondary: "[--border-color:var(--color-secondary)]",
+  success: "[--border-color:var(--color-success)]",
+  warning: "[--border-color:var(--color-warning)]",
+  danger: "[--border-color:var(--color-danger)]",
 };
 
 export function isBorderColor(
@@ -48,7 +48,6 @@ export const border = cv({
     },
   },
   defaultVariants: {
-    $border: false,
     $borderType: "border",
     $borderColor: "default",
   },

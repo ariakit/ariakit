@@ -5,11 +5,11 @@ export const command = cv({
     "not-[a]:cursor-default relative block",
     "[&:not(button)]:select-none",
     // Only apply cursor-pointer to submit buttons that are not disabled
-    "[&:where([type='submit'],form_button:only-of-type,a_&)]:not-ak-disabled:cursor-pointer",
+    "[&:where([type='submit'],form_button:only-of-type,a_&)]:not-ui-disabled:cursor-pointer",
     // When active, scale x and y based on depth
-    "ak-active:[--command-scale-x:min(100%,96%+4%*calc(1-clamp(0,var(--command-depth-x)/10,1)))]",
-    "ak-active:[--command-scale-y:min(100%,94%+6%*calc(1-clamp(0,var(--command-depth-y)/10,1)))]",
-    "ak-active:origin-bottom ak-active:scale-x-(--command-scale-x) ak-active:scale-y-(--command-scale-y)",
+    "ui-active:[--command-scale-x:min(100%,96%+4%*calc(1-clamp(0,var(--command-depth-x)/10,1)))]",
+    "ui-active:[--command-scale-y:min(100%,94%+6%*calc(1-clamp(0,var(--command-depth-y)/10,1)))]",
+    "ui-active:origin-bottom ui-active:scale-x-(--command-scale-x) ui-active:scale-y-(--command-scale-y)",
   ],
   computedVariants: {
     /**

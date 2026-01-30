@@ -30,7 +30,7 @@ import Layout from "./_layout.astro";
 
   <div class="flex flex-wrap gap-2 items-center p-2">
     <button class="ak-button-classic">Button</button>
-    <ButtonSolid.Button $kind="classic">
+    <ButtonSolid.Button $kind="bevel">
       <ButtonSolid.ButtonSlot>
         <CopyIcon />
       </ButtonSolid.ButtonSlot>
@@ -44,7 +44,7 @@ import Layout from "./_layout.astro";
     </ButtonSolid.Button>
     <ButtonReact.Button
       className="items-center"
-      $radius="card"
+      $rounded="xl"
       $depth={3}
       $gap="lg"
       $gapY="none"
@@ -68,7 +68,7 @@ import Layout from "./_layout.astro";
         <span id="tooltip" aria-hidden="true">Description</span>
       </span>
     </button>
-    <ButtonReact.Button $kind="classic" disabled>
+    <ButtonReact.Button $kind="bevel" disabled>
       <ButtonReact.ButtonSlot><CopyIcon /></ButtonReact.ButtonSlot>
       <ButtonReact.ButtonLabel className="max-md:sr-only">
         Button React
@@ -77,21 +77,21 @@ import Layout from "./_layout.astro";
         <ChevronDownIcon />
       </ButtonReact.ButtonSlot>
     </ButtonReact.Button>
-    <ButtonReact.Button $radius="badge" $size="sm" $px="lg">
+    <ButtonReact.Button $rounded="full" $size="sm" $px="lg">
       <ButtonReact.ButtonSlot><CheckIcon /></ButtonReact.ButtonSlot>
       <ButtonReact.ButtonLabel
         >Following
         <span class="ak-text/60">⌘K</span>
       </ButtonReact.ButtonLabel>
       <!-- <ButtonReact.ButtonAccessory /> -->
-      <ButtonReact.Button $radius="badge" $bg="invert" $size="sm" $px="lg">
+      <ButtonReact.Button $rounded="full" $bg="invert" $size="sm" $px="lg">
         <!-- <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon> -->
         <ButtonReact.ButtonLabel>Following</ButtonReact.ButtonLabel>
         <ButtonReact.ButtonSlot $bg="pop">
           <span class="text-[0.875em] ak-text/60">32</span>
         </ButtonReact.ButtonSlot>
       </ButtonReact.Button>
-      <ButtonReact.Button $radius="badge" $size="sm" $px="lg">
+      <ButtonReact.Button $rounded="full" $size="sm" $px="lg">
         <!-- <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon> -->
         <ButtonReact.ButtonLabel>Following</ButtonReact.ButtonLabel>
         <ButtonReact.ButtonSlot $bg="pop">
@@ -103,13 +103,13 @@ import Layout from "./_layout.astro";
     <div class="flex flex-wrap gap-2 items-center p-2">
       <CheckboxCard
         $size="sm"
-        $radius="card"
+        $rounded="xl"
         $bg="ghost"
         $border={false}
         $depth={3}
       >
         <CheckboxCardCheck
-          $radius="auto"
+          $rounded="auto"
           $size="sm"
           $bg="pop"
           $border="contrast"

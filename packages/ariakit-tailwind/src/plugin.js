@@ -259,9 +259,9 @@ const AriakitTailwind = plugin(
         Object.assign(
           result,
           {
-            [vars._layerIdle1]: computedColor,
-            [vars._layerIdle2]: layerIdleProp(1),
-            [vars._layerIdle3]: layerIdleProp(2),
+            [vars.layerIdle]: computedColor,
+            [vars.layerState]: layerIdleProp(1),
+            [vars.layerModifier]: layerIdleProp(2),
             [vars.text]: textColor(prop(vars.layer)),
           },
           withContext("layer-parent", false, ({ provide, inherit }) => {
@@ -335,7 +335,7 @@ const AriakitTailwind = plugin(
               withParentOkL((parentL) =>
                 css(
                   getContrastCss(parentL, vars._layerBase),
-                  getContrastCss(parentL, vars._layerIdle1),
+                  getContrastCss(parentL, vars.layerIdle),
                 ),
               ),
             );
@@ -345,7 +345,7 @@ const AriakitTailwind = plugin(
           return Object.assign(
             getLayerCss({ soft: true }),
             withParentOkL((parentL) =>
-              getContrastCss(parentL, vars._layerIdle2),
+              getContrastCss(parentL, vars.layerState),
             ),
           );
         },
@@ -369,13 +369,13 @@ const AriakitTailwind = plugin(
           if (token) {
             return {
               ...getLayerCss({ token }),
-              [vars._layerIdle1]: mixColor,
+              [vars.layerIdle]: mixColor,
               [vars._layerBase]: mixColor,
             };
           }
           return {
             ...getLayerCss({ token, level, soft: true }),
-            [vars._layerIdle3]: mixColor,
+            [vars.layerModifier]: mixColor,
             [vars.layer]: mixColor,
           };
         },
@@ -440,7 +440,7 @@ const AriakitTailwind = plugin(
       const popColor = `oklch(from ${prop(vars._layerBase)} ${getLayerPopOkL(level)} c h)`;
       return {
         ...getLayerCss({ token: color }),
-        [vars._layerIdle1]: popColor,
+        [vars.layerIdle]: popColor,
       };
     };
 
@@ -675,7 +675,8 @@ const AriakitTailwind = plugin(
       const parentPadding = inherit(vars._framePadding, "0px");
       const parentRadius = inherit(vars._frameRadius, radius);
       const parentBorder = inherit(vars._frameBorder, "0px");
-      const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder}))`;
+      const selfMargin = prop(vars.frameMargin, "0px");
+      const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder} + ${selfMargin}))`;
       const minRadius = `min(0.125rem, ${radius})`;
       const computedRadius = `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
       return { computedRadius, nestedRadius };
@@ -887,13 +888,42 @@ const AriakitTailwind = plugin(
           };
           Object.assign(
             result,
-            withContext("frame", false, ({ provide }) => {
+            withContext("frame", false, ({ provide, inherit }) => {
               return {
                 [provide(vars._framePadding)]: padding,
+                [provide(vars._frameRadius)]: inherit(vars._frameRadius, "0px"),
+                [provide(vars._frameBorder)]: prop(vars._frameBorder),
               };
             }),
           );
           return result;
+        },
+      },
+      {
+        values: Object.keys(theme("spacing")).reduce(
+          (acc, key) => {
+            if (key === "__CSS_VALUES__") return acc;
+            if (key === "DEFAULT") return acc;
+            const isNumber = /^\d*\.?\d+$/u.test(key);
+            if (isNumber) {
+              acc[key] = `--spacing(${key})`;
+            } else {
+              acc[key] = t("spacing", key);
+            }
+            return acc;
+          },
+          /** @type {Record<string, string>} */ ({}),
+        ),
+      },
+    );
+
+    matchUtilities(
+      {
+        "ak-frame-m": (value) => {
+          return {
+            [vars.frameMargin]: value,
+            margin: value,
+          };
         },
       },
       {
@@ -932,6 +962,7 @@ const AriakitTailwind = plugin(
           [vars.frameRadius]: computedRadius,
           borderRadius: computedRadius,
           [provide(vars._frameRadius)]: computedRadius,
+          [provide(vars._frameBorder)]: prop(vars._frameBorder),
         });
         if (nestedRadius) {
           contextCss[vars._nestedRadius] = nestedRadius;
