@@ -25,6 +25,7 @@ export const vars = /** @type {const} */ ({
   _layerOkL: "--_ak-layer-okl",
   _layerAppearance: "--_ak-layer-appearance",
   _layerParent: "--_ak-layer-parent",
+  _layerIdleBase: "--_ak-layer-idle-base",
   _layerIdle: "--_ak-layer-idle",
 
   // ===========================================================================

@@ -40,6 +40,9 @@
   --color-canvas: oklch(99.33% 0.0011 197.14);
   --color-primary: oklch(56.7% 0.154556 248.5156);
   --color-secondary: oklch(65.59% 0.2118 354.31);
+  --color-success: theme(--color-green-500);
+  --color-warning: theme(--color-yellow-500);
+  --color-danger: theme(--color-red-500);
 
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
@@ -50,17 +53,15 @@
   --radius-dialog: var(--radius-2xl);
   --spacing-dialog: --spacing(4);
 
-  --radius-playground: calc(var(--radius) * 3.5);
-  --spacing-playground: --spacing(0);
-
-  --radius-field: var(--radius-lg);
-  --spacing-field: 0.75em;
-
   --radius-card: var(--radius-xl);
   --spacing-card: --spacing(4);
 
+  --radius-field: var(--radius-lg);
+  --spacing-field: 0.5em;
+  --spacing-field-card: 0.875em;
+
   --radius-badge: var(--radius-full);
-  --spacing-badge: --spacing(1.5);
+  --spacing-badge: 0.3334em;
 
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",

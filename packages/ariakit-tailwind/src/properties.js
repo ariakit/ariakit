@@ -180,6 +180,12 @@ const css = `
   inherits: false;
 }
 
+@property ${vars._layerIdleBase} {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: oklch(1 0 0);
+}
+
 @property ${vars._layerIdle} {
   syntax: "<color>";
   inherits: true;
@@ -310,6 +316,6 @@ const css = `
 }
 `;
 
-writeFileSync(new URL("./properties.css", import.meta.url), css.trim() + "\n");
+writeFileSync(new URL("./properties.css", import.meta.url), `${css.trim()}\n`);
 
 console.log("Generated properties.css");

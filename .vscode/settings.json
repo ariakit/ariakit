@@ -6,9 +6,13 @@
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
-  "tailwindCSS.classFunctions": ["clsx", "twMerge", "twJoin"],
+  "tailwindCSS.classFunctions": ["clsx", "cx", "cv"],
   "tailwindCSS.experimental.configFile": {
-    "site/src/styles/global.css": ["site/**", "nextjs/**"],
+    "site/src/styles/global.css": [
+      "site/**",
+      "nextjs/**",
+      "packages/ariakit-ui/src/**"
+    ],
     "templates/react/src/style.css": "templates/react/**"
   },
   "css.validate": false,
