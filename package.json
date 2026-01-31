@@ -194,7 +194,7 @@
     "stripe": "17.7.0",
     "stylelint": "17.1.0",
     "stylelint-config-standard": "36.0.1",
-    "tailwind-merge": "2.6.0",
+    "tailwind-merge": "2.6.1",
     "tailwindcss": "3.4.19",
     "tailwindcss-animate": "1.0.7",
     "textarea-caret": "3.1.0",
