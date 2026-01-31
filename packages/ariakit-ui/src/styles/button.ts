@@ -1,9 +1,4 @@
 import { cv } from "clava";
-import {
-  activeIndicator,
-  activeIndicatorGroup,
-  activeIndicatorItem,
-} from "./active-indicator.ts";
 import { bevel } from "./bevel.ts";
 import { command } from "./command.ts";
 import {
@@ -13,14 +8,15 @@ import {
   controlLabel,
   controlSlot,
 } from "./control.ts";
+import { glider, gliderAnchor, gliderGroup } from "./glider.ts";
 
 export const button = cv({
-  extend: [control, command, bevel, activeIndicatorItem],
+  extend: [control, command, bevel, gliderAnchor],
   class: [
     "font-[calc(500+50*var(--contrast))]",
     "ak-outline-primary transition-[color]",
     "ui-hover:ak-layer-hover ui-hover:[anchor-name:--button-hover]",
-    "outline-offset-[calc(1px-var(--inset-gap,0px))] ui-focus-visible:outline-2",
+    "outline-offset-1 ui-focus-visible:outline-2",
   ],
   variants: {
     $kind: {
@@ -35,14 +31,11 @@ export const button = cv({
 });
 
 export const buttonActiveIndicator = cv({
-  extend: [activeIndicator],
-  defaultVariants: {
-    $anchor: "--button-hover",
-  },
+  extend: [glider],
 });
 
 export const buttonGroup = cv({
-  extend: [activeIndicatorGroup],
+  extend: [gliderGroup],
 });
 
 export const buttonSlot = controlSlot;

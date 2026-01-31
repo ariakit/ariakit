@@ -90,8 +90,8 @@ export const control = cv({
     return [
       "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
       "[--py:calc(var(--ak-frame-padding,0px))]",
-      "px-[calc(var(--px)+var(--inset-gap,0px))]",
-      "py-[calc(var(--py)+var(--inset-gap,0px))]",
+      "px-[calc(var(--px)+var(--inset-padding,0px))]",
+      "py-[calc(var(--py)+var(--inset-padding,0px))]",
     ];
   },
 });
@@ -270,10 +270,11 @@ export const controlDescription = cv({
 
 export const controlSeparator = cv({
   class: [
-    "ak-layer-0 bg-transparent flex items-center justify-center [&>svg]:stroke-(length:--width) [&>svg]:h-full [&>svg]:ak-text/0",
-    "transition-[border-color] duration-200 ease-out h-(--size)",
-    "[--border-width:calc(var(--width)*1px)] ",
-    "border-e-(length:--border-width) -mx-[calc((var(--ak-frame-padding)+var(--border-width))/2)]",
+    "[.vertical>&]:hidden",
+    "ak-layer-0 bg-transparent flex items-center justify-center pointer-events-none",
+    "transition-[border-color] duration-200 ease-out",
+    "[--border-width:calc(var(--width)*1px)]",
+    "h-(--size) border-e-(length:--border-width) -mx-[calc((var(--ak-frame-padding)+var(--border-width))/2)]",
   ],
   variants: {
     $kind: {
@@ -281,7 +282,7 @@ export const controlSeparator = cv({
       slash: "rounded-full -skew-15",
       chevron: [
         "chevron rounded-se-xs [--border-width:calc(var(--width)*2px)]! border-t-(length:--border-width)",
-        "aspect-square scale-50 rotate-45 -translate-x-1/6",
+        "aspect-square scale-50 rotate-45 -translate-x-1/10",
       ],
     },
     $size: {
@@ -292,8 +293,10 @@ export const controlSeparator = cv({
       full: "self-stretch ak-edge -my-(--ak-frame-padding) mx-0",
     },
     $shy: [
+      "in-[.control-group:hover:not(:has(:hover))]:delay-150",
       "ui-adjacent-hover:border-transparent",
       "ui-adjacent-selected:border-transparent",
+      "ui-adjacent-focus-visible:border-transparent",
     ],
     $width: {
       1: "[--width:1]",
@@ -314,14 +317,14 @@ export const controlSeparator = cv({
       setVariants({ $size: "md" });
     }
     if (variants.$kind !== "chevron" && variants.$size !== "full") {
-      setDefaultVariants({ $shy: true });
+      setDefaultVariants({ $shy: variants.$shy ?? true });
     }
   },
 });
 
 export const controlGroup = cv({
   extend: [background, frame],
-  class: ["control-group relative"],
+  class: ["control-group"],
   variants: {
     $size: {
       auto: "",
@@ -333,35 +336,32 @@ export const controlGroup = cv({
     },
     $layout: {
       none: "",
+      wrap: "flex flex-wrap",
       stretch:
         "flex w-full [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow",
-      wrap: "flex flex-wrap",
       horizontal: "flex",
-      vertical: "grid",
+      vertical: "vertical flex flex-col [&>.control]:justify-start",
     },
     $gap: {
       none: "",
       auto: "[--gap:var(--ak-frame-padding)] gap-(--gap)",
+      xs: "[--gap:--spacing(0.5)] gap-(--gap)",
+      sm: "[--gap:--spacing(1)] gap-(--gap)",
+      md: "[--gap:--spacing(2)] gap-(--gap)",
+      lg: "[--gap:--spacing(3)] gap-(--gap)",
+      xl: "[--gap:--spacing(4)] gap-(--gap)",
     },
     $p: {
       none: [
         "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-none",
         "[&>.control:not(:nth-last-child(1_of_.control))]:rounded-e-none",
       ],
-      sm: [
-        "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-[min(var(--ak-frame-radius),var(--radius-md))]",
-        "[&>.control:not(:nth-last-child(1_of_.control))]:rounded-e-[min(var(--ak-frame-radius),var(--radius-md))]",
-      ],
     },
   },
   defaultVariants: {
-    $bg: "pop",
-    $size: "sm",
-    $rounded: "3xl",
-    // $layout: "stretch",
-    $layout: "horizontal",
+    $rounded: "xl",
+    $layout: "vertical",
     $p: "sm",
     $gap: "auto",
-    $border: true,
   },
 });

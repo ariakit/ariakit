@@ -9,7 +9,6 @@ import {
   ButtonLabel,
   ButtonSlot,
 } from "@ariakit/ui/html/button.react.tsx";
-import { activeIndicatorSeparator } from "@ariakit/ui/styles/active-indicator.ts";
 import {
   checkboxCard,
   checkboxCardCheck,
@@ -17,11 +16,11 @@ import {
   checkboxCardLabel,
 } from "@ariakit/ui/styles/checkbox-card.ts";
 import { controlGroup, controlSeparator } from "@ariakit/ui/styles/control.ts";
+import { gliderSeparator } from "@ariakit/ui/styles/glider.ts";
 import {
   ActivityIcon,
   ArrowRightIcon,
   CheckIcon,
-  ChevronRight,
   ComputerIcon,
   EllipsisIcon,
   FilesIcon,
@@ -190,6 +189,187 @@ export default function Example() {
           </span>
         </label>
       </div>
+      {/* <div className="grid place-items-center p-80 gap-110">
+        <ButtonGroup
+          $p="md"
+          $rounded="2xl"
+          $gap="sm"
+          className="border-e ak-layer-0 rounded-e-none"
+        >
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <LayoutDashboardIcon />
+            </ButtonSlot>
+            <ButtonLabel>Overview</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({})}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ListIcon />
+            </ButtonSlot>
+            <ButtonLabel>Details</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({})}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ActivityIcon />
+            </ButtonSlot>
+            <ButtonLabel>Activity</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({})}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <FilesIcon />
+            </ButtonSlot>
+            <ButtonLabel>Files</ButtonLabel>
+          </Button>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <MessageSquareIcon />
+            </ButtonSlot>
+            <ButtonLabel>Comments</ButtonLabel>
+          </Button>
+          <ButtonActiveIndicator $state="hover" />
+          <ButtonActiveIndicator $state="selected" />
+          <ButtonActiveIndicator $state="selected" $kind="bar" />
+          <ButtonActiveIndicator $state="focus" />
+        </ButtonGroup>
+        <ButtonGroup
+          $layout="horizontal"
+          $p="md"
+          $rounded="2xl"
+          className="border-b ak-layer-0 rounded-b-none"
+        >
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <LayoutDashboardIcon />
+            </ButtonSlot>
+            <ButtonLabel>Overview</ButtonLabel>
+          </Button>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ListIcon />
+            </ButtonSlot>
+            <ButtonLabel>Details</ButtonLabel>
+          </Button>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ActivityIcon />
+            </ButtonSlot>
+            <ButtonLabel>Activity</ButtonLabel>
+          </Button>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <FilesIcon />
+            </ButtonSlot>
+            <ButtonLabel>Files</ButtonLabel>
+          </Button>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <MessageSquareIcon />
+            </ButtonSlot>
+            <ButtonLabel>Comments</ButtonLabel>
+          </Button>
+          <ButtonActiveIndicator $state="hover" />
+          <ButtonActiveIndicator $state="selected" $kind="bar" />
+          <ButtonActiveIndicator $state="focus" />
+        </ButtonGroup>
+        <ButtonGroup
+          $layout="stretch"
+          $p="sm"
+          $size="sm"
+          $bg="pop"
+          $rounded="full"
+          $border
+          className="w-120!"
+        >
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <LayoutDashboardIcon />
+            </ButtonSlot>
+            <ButtonLabel>Overview</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({})}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ListIcon />
+            </ButtonSlot>
+            <ButtonLabel>Details</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({})}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ActivityIcon />
+            </ButtonSlot>
+            <ButtonLabel>Activity</ButtonLabel>
+          </Button>
+          <ButtonActiveIndicator $state="hover" />
+          <ButtonActiveIndicator $state="selected" $bg="light2" $kind="bevel" />
+          <ButtonActiveIndicator $state="focus" />
+        </ButtonGroup>
+        <ButtonGroup
+          $layout="horizontal"
+          $p="md"
+          $size="sm"
+          // $bg="pop"
+          $rounded="2xl"
+          $border
+        >
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <LayoutDashboardIcon />
+            </ButtonSlot>
+            <ButtonLabel>Overview</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({ $kind: "slash" })}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ListIcon />
+            </ButtonSlot>
+            <ButtonLabel>Details</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({ $kind: "slash" })}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ActivityIcon />
+            </ButtonSlot>
+            <ButtonLabel>Activity</ButtonLabel>
+          </Button>
+          <ButtonActiveIndicator $state="hover" />
+          <ButtonActiveIndicator $state="focus" />
+        </ButtonGroup>
+        <ButtonGroup
+          $layout="horizontal"
+          $p="md"
+          $size="sm"
+          // $bg="pop"
+          $rounded="2xl"
+          $border
+        >
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <LayoutDashboardIcon />
+            </ButtonSlot>
+            <ButtonLabel>Overview</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({ $kind: "slash" })}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ListIcon />
+            </ButtonSlot>
+            <ButtonLabel>Details</ButtonLabel>
+          </Button>
+          <div {...gliderSeparator({ $kind: "slash" })}></div>
+          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
+            <ButtonSlot>
+              <ActivityIcon />
+            </ButtonSlot>
+            <ButtonLabel>Activity</ButtonLabel>
+          </Button>
+          <ButtonActiveIndicator $state="hover" $animated={false} />
+          <ButtonActiveIndicator $state="focus" $animated={false} />
+        </ButtonGroup>
+      </div> */}
       <div className="flex flex-wrap gap-8 justify-center w-160 items-center">
         <div {...controlGroup({})}>
           <Button $bg="pop" $color="danger">
@@ -227,51 +407,7 @@ export default function Example() {
             <ButtonLabel>Comments</ButtonLabel>
           </Button>
         </div>
-        <ButtonGroup className="[--var:--button-active]">
-          <Button
-            $bg="pop"
-            className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]"
-          >
-            <ButtonSlot>
-              <LayoutDashboardIcon />
-            </ButtonSlot>
-            <ButtonLabel>Overview</ButtonLabel>
-          </Button>
-          <div {...activeIndicatorSeparator({})}></div>
-          <Button className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]">
-            <ButtonSlot>
-              <ListIcon />
-            </ButtonSlot>
-            <ButtonLabel>Details</ButtonLabel>
-          </Button>
-          <div {...activeIndicatorSeparator({})}></div>
-          <Button className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]">
-            <ButtonSlot>
-              <ActivityIcon />
-            </ButtonSlot>
-            <ButtonLabel>Activity</ButtonLabel>
-          </Button>
-          <div {...activeIndicatorSeparator({})}></div>
-          <Button className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]">
-            <ButtonSlot>
-              <FilesIcon />
-            </ButtonSlot>
-            <ButtonLabel>Files</ButtonLabel>
-          </Button>
-          <Button className="focus:[anchor-name:var(--var)] not-focus:ak-text/70 ui-hover:focus:[anchor-name:var(--var),--button-hover]">
-            <ButtonSlot>
-              <MessageSquareIcon />
-            </ButtonSlot>
-            <ButtonLabel>Comments</ButtonLabel>
-          </Button>
-          <ButtonActiveIndicator $hover />
-          <ButtonActiveIndicator
-            $bg="primary"
-            $anchor="var(--var)"
-            // className="shadow"
-            $kind="bevel"
-          />
-        </ButtonGroup>
+
         <Button $px="xl" $bg="invert" $rounded="full">
           <ButtonSlot $kind="avatar" $rowSpan={2} $size="xl" $rounded="auto">
             <img
