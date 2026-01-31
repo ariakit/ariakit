@@ -34,8 +34,8 @@ export const glider = cv({
       hover: [
         "[position-anchor:--glider-hover] ease-linear",
         "[.control:has(~&)]:ui-hover:[--glider-hover:--glider-hover]",
-        "in-[.ai-group:hover:not(:has(:hover))]:delay-250",
-        "in-[.ai-group:not(:hover)]:hidden",
+        "in-[.glider-group:hover:not(:has(:hover))]:delay-250",
+        "in-[.glider-group:not(:hover)]:hidden",
         "supports-anchor:[.control:has(~&)]:ui-hover:bg-transparent",
       ],
       focus: [
@@ -81,9 +81,6 @@ export const glider = cv({
     if (variants.$kind === "bar") {
       setDefaultVariants({ $rounded: false, $contrast: true, $border: false });
     }
-    // if (variants.$kind === "bevel") {
-    //   setDefaultVariants({ $contrast: true });
-    // }
   },
 });
 
@@ -104,22 +101,13 @@ export const gliderSeparator = cv({
 export const gliderGroup = cv({
   extend: [controlGroup],
   class: [
-    "ai-group z-1 [anchor-scope:--glider-group,--glider-hover,--glider-focus,--glider-selected]",
+    "glider-group z-1 [anchor-scope:--glider-group,--glider-hover,--glider-focus,--glider-selected]",
     "[--glider-group-radius:var(--ak-frame-radius)]",
     "not-[.vertical]:[&>.control:not(:nth-last-child(1_of_.control)):not(:has(+.separator))]:-me-[calc(var(--inset-padding)*2)]",
     "[.vertical]:[&>.control:not(:nth-last-child(1_of_.control))]:-mb-[calc(var(--inset-padding)*2)]",
   ],
   style: {
     anchorName: "--glider-group",
-  },
-  defaultVariants: {
-    // $bg: "pop",
-    // $border: false,
-    $size: "md",
-    $rounded: "xl",
-    $layout: "vertical",
-    $p: "md",
-    $gap: "auto",
   },
   computed: ({ variants }) => {
     const classes: string[] = [];

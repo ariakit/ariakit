@@ -360,7 +360,7 @@ export const controlGroup = cv({
   },
   defaultVariants: {
     $rounded: "xl",
-    $layout: "vertical",
+    $layout: "horizontal",
     $p: "sm",
     $gap: "auto",
   },

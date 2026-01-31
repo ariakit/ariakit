@@ -208,8 +208,21 @@ body {
   }
 }
 
+@custom-variant befter {
+  &::before,
+  &::after {
+    @slot;
+  }
+}
+
 @custom-variant supports-anchor {
   @supports (anchor-name: --a) {
+    @slot;
+  }
+}
+
+@custom-variant supports-corner-shape {
+  @supports (corner-shape: squircle) {
     @slot;
   }
 }

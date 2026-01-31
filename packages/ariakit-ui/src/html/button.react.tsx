@@ -3,9 +3,9 @@ import { splitProps } from "clava";
 import type { ComponentProps } from "react";
 import {
   button,
-  buttonActiveIndicator,
   buttonContent,
   buttonDescription,
+  buttonGlider,
   buttonGroup,
   buttonLabel,
   buttonSlot,
@@ -47,14 +47,14 @@ export interface ButtonContentProps
 
 export interface ButtonActiveIndicatorProps
   extends ComponentProps<"div">,
-    VariantProps<typeof buttonActiveIndicator> {}
+    VariantProps<typeof buttonGlider> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
  */
 export function ButtonActiveIndicator(props: ButtonActiveIndicatorProps) {
-  const [variantProps, rest] = splitProps(props, buttonActiveIndicator);
-  return <div {...buttonActiveIndicator(variantProps)} {...rest} />;
+  const [variantProps, rest] = splitProps(props, buttonGlider);
+  return <div {...buttonGlider(variantProps)} {...rest} />;
 }
 
 /**

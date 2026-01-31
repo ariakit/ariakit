@@ -16,6 +16,7 @@ import {
   checkboxCardLabel,
 } from "@ariakit/ui/styles/checkbox-card.ts";
 import { controlGroup, controlSeparator } from "@ariakit/ui/styles/control.ts";
+import { folder } from "@ariakit/ui/styles/folder.ts";
 import { gliderSeparator } from "@ariakit/ui/styles/glider.ts";
 import {
   ActivityIcon,
@@ -371,6 +372,7 @@ export default function Example() {
         </ButtonGroup>
       </div> */}
       <div className="flex flex-wrap gap-8 justify-center w-160 items-center">
+        <div {...folder({})}>Tab</div>
         <div {...controlGroup({})}>
           <Button $bg="pop" $color="danger">
             <ButtonSlot>

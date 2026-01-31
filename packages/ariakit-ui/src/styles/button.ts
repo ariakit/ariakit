@@ -30,7 +30,7 @@ export const button = cv({
   },
 });
 
-export const buttonActiveIndicator = cv({
+export const buttonGlider = cv({
   extend: [glider],
 });
 
