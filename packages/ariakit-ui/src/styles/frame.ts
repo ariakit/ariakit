@@ -8,7 +8,8 @@ export const frame = cv({
      * Sets the element’s border radius.
      */
     $rounded: {
-      false: "",
+      unset: "",
+      false: "[--rounded:0px]",
       xs: "[--rounded:var(--radius-xs)]",
       sm: "[--rounded:var(--radius-sm)]",
       md: "[--rounded:var(--radius-md)]",
@@ -23,15 +24,20 @@ export const frame = cv({
      * Forces the element's radius to be the same as the one set by the
      * `$rounded` variant.
      */
-    $forceRounded: {
-      false: "ak-frame-rounded-(--rounded)",
-      true: "ak-frame-rounded-force-(--rounded)",
+    $roundedType: {
+      unset: "",
+      auto: "ak-frame-rounded-(--rounded)",
+      force: "ak-frame-rounded-force-(--rounded)",
+      cover: "ak-frame-cover-(--rounded)",
+      overflow: "ak-frame-overflow-(--rounded)",
     },
     /**
      * Sets the element’s padding.
      */
     $p: {
-      none: "",
+      unset: "",
+      none: "ak-frame-p-0",
+      px: "ak-frame-p-px",
       xs: "ak-frame-p-0.5",
       sm: "ak-frame-p-1",
       md: "ak-frame-p-2",
@@ -42,8 +48,7 @@ export const frame = cv({
       "4xl": "ak-frame-p-10",
     },
   },
-  computed: ({ variants, setVariants }) => {
-    if (variants.$rounded) return;
-    setVariants({ $forceRounded: undefined });
+  defaultVariants: {
+    $roundedType: "auto",
   },
 });
