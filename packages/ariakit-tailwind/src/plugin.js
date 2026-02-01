@@ -712,6 +712,7 @@ const AriakitTailwind = plugin(
             [provide(vars._framePadding)]: padding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
+            [provide(vars._frameRing)]: prop(vars._frameRing),
           });
           if (nestedRadius) {
             contextCss[vars._nestedRadius] = nestedRadius;
@@ -797,9 +798,12 @@ const AriakitTailwind = plugin(
           const parentPadding = inherit(vars._framePadding, "0px");
           const parentRadius = inherit(vars._frameRadius, radius);
           const parentBorder = inherit(vars._frameBorder, "0px");
+          const parentRing = inherit(vars._frameRing, "0px");
+          const selfRing = prop(vars._frameRing, "0px");
+          // For overflow, include parent ring minus self ring in margin (clamped to 0)
           const borderForMargin = useSelfBorder
             ? prop(vars.frameBorder)
-            : parentBorder;
+            : `calc(${parentBorder} + max(0px, ${parentRing} - ${selfRing}))`;
           const margin = `calc((${parentPadding} + ${borderForMargin}) * -1)`;
           const computedPadding = extra.modifier
             ? padding
@@ -813,6 +817,7 @@ const AriakitTailwind = plugin(
             [provide(vars._framePadding)]: computedPadding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
+            [provide(vars._frameRing)]: prop(vars._frameRing),
             [vars.frameMargin]: margin,
             [vars.framePadding]: computedPadding,
             [vars.frameRadius]: computedRadius,
@@ -891,8 +896,12 @@ const AriakitTailwind = plugin(
             withContext("frame", false, ({ provide, inherit }) => {
               return {
                 [provide(vars._framePadding)]: padding,
-                [provide(vars._frameRadius)]: inherit(vars._frameRadius, "0px"),
+                [provide(vars._frameRadius)]: inherit(
+                  vars._frameRadius,
+                  prop(vars.frameRadius),
+                ),
                 [provide(vars._frameBorder)]: prop(vars._frameBorder),
+                [provide(vars._frameRing)]: prop(vars._frameRing),
               };
             }),
           );
@@ -963,6 +972,7 @@ const AriakitTailwind = plugin(
           borderRadius: computedRadius,
           [provide(vars._frameRadius)]: computedRadius,
           [provide(vars._frameBorder)]: prop(vars._frameBorder),
+          [provide(vars._frameRing)]: prop(vars._frameRing),
         });
         if (nestedRadius) {
           contextCss[vars._nestedRadius] = nestedRadius;
@@ -1005,6 +1015,14 @@ const AriakitTailwind = plugin(
             borderWidth: prop(vars.frameBorder),
           });
         },
+        "ak-ring": (value) => {
+          const formatted = value.replaceAll(" ", "_");
+          return css({
+            [vars._frameRing]: value,
+            [vars.frameRing]: value,
+            [`@apply ring-[${formatted}]`]: {},
+          });
+        },
         "ak-bordering": (value) => {
           const down = prop(vars._layerDown);
           const valueDown = `calc(${value} * ${down})`;
@@ -1014,12 +1032,16 @@ const AriakitTailwind = plugin(
             [IN_DARK]: {
               [vars._frameBorder]: valueUp,
               [vars.frameBorder]: valueUp,
+              [vars._frameRing]: valueDown,
+              [vars.frameRing]: valueDown,
               borderWidth: prop(vars.frameBorder),
               [`@apply ring-[${valueDown.replaceAll(" ", "_")}]`]: {},
             },
             [IN_LIGHT]: {
               [vars._frameBorder]: valueDown,
               [vars.frameBorder]: valueDown,
+              [vars._frameRing]: valueUp,
+              [vars.frameRing]: valueUp,
               borderWidth: prop(vars.frameBorder),
               [`@apply ring-[${valueUp.replaceAll(" ", "_")}]`]: {},
             },
