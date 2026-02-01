@@ -13,6 +13,7 @@ export const vars = /** @type {const} */ ({
   bordering: "--ak-bordering",
   frameRadius: "--ak-frame-radius",
   frameBorder: "--ak-frame-border",
+  frameRing: "--ak-frame-ring",
   framePadding: "--ak-frame-padding",
   frameMargin: "--ak-frame-margin",
   layerIdle: "--ak-layer-idle",
@@ -34,6 +35,7 @@ export const vars = /** @type {const} */ ({
   // ===========================================================================
   _frameRadius: "--_ak-frame-radius",
   _frameBorder: "--_ak-frame-border",
+  _frameRing: "--_ak-frame-ring",
   _framePadding: "--_ak-frame-padding",
   _frameCappedPadding: "--_ak-frame-capped-padding",
   _nestedRadius: "--_ak-nested-radius",
