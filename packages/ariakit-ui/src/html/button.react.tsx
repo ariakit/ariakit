@@ -8,6 +8,7 @@ import {
   buttonGlider,
   buttonGroup,
   buttonLabel,
+  buttonSeparator,
   buttonSlot,
 } from "../styles/button.ts";
 
@@ -41,21 +42,33 @@ export function ButtonGroup(props: ButtonGroupProps) {
   return <div {...buttonGroup(variantProps)} {...rest} />;
 }
 
-export interface ButtonContentProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof buttonContent> {}
-
-export interface ButtonActiveIndicatorProps
+export interface ButtonGliderProps
   extends ComponentProps<"div">,
     VariantProps<typeof buttonGlider> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
  */
-export function ButtonActiveIndicator(props: ButtonActiveIndicatorProps) {
+export function ButtonGlider(props: ButtonGliderProps) {
   const [variantProps, rest] = splitProps(props, buttonGlider);
   return <div {...buttonGlider(variantProps)} {...rest} />;
 }
+
+export interface ButtonSeparatorProps
+  extends ComponentProps<"div">,
+    VariantProps<typeof buttonSeparator> {}
+
+/**
+ * @see https://ariakit.com/react/examples/button
+ */
+export function ButtonSeparator(props: ButtonSeparatorProps) {
+  const [variantProps, rest] = splitProps(props, buttonSeparator);
+  return <div {...buttonSeparator(variantProps)} {...rest} />;
+}
+
+export interface ButtonContentProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof buttonContent> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
