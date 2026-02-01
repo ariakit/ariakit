@@ -274,7 +274,7 @@ export const controlSeparator = cv({
     "ak-layer-0 bg-transparent flex items-center justify-center pointer-events-none",
     "transition-[border-color] duration-200 ease-out",
     "[--border-width:calc(var(--width)*1px)]",
-    "h-(--size) border-e-(length:--border-width) -mx-[calc((var(--ak-frame-padding)+var(--border-width))/2)]",
+    "h-(--size) border-e-(length:--border-width) -mx-[calc((var(--ak-frame-padding,0px)+var(--border-width))/2)]",
   ],
   variants: {
     $kind: {
@@ -290,7 +290,7 @@ export const controlSeparator = cv({
       sm: "[--size:1em] self-center ak-edge/[calc(24-var(--width)*6)] [.chevron]:ak-edge/[calc(64-var(--width)*12)]",
       md: "[--size:1lh] self-center ak-edge/[calc(24-var(--width)*6)] [.chevron]:ak-edge/[calc(64-var(--width)*12)]",
       lg: "self-stretch ak-edge",
-      full: "self-stretch ak-edge -my-(--ak-frame-padding) mx-0",
+      full: "self-stretch ak-edge -my-(--ak-frame-padding,0px) mx-0",
     },
     $shy: [
       "in-[.control-group:hover:not(:has(:hover))]:delay-150",
@@ -344,7 +344,7 @@ export const controlGroup = cv({
     },
     $gap: {
       none: "",
-      auto: "[--gap:var(--ak-frame-padding)] gap-(--gap)",
+      auto: "[--gap:var(--ak-frame-padding,0px)] gap-(--gap)",
       xs: "[--gap:--spacing(0.5)] gap-(--gap)",
       sm: "[--gap:--spacing(1)] gap-(--gap)",
       md: "[--gap:--spacing(2)] gap-(--gap)",
