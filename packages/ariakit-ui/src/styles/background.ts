@@ -7,6 +7,8 @@ export const background = cv({
      */
     $bg: {
       none: "",
+      popLightDark: "ak-layer-pop-0.5 ak-dark:ak-layer-pop",
+      pop05: "ak-layer-pop-0.5",
       pop: "ak-layer-pop",
       pop2: "ak-layer-pop-2",
       pop3: "ak-layer-pop-3",
@@ -14,8 +16,8 @@ export const background = cv({
       light2: "ak-layer-2",
       light3: "ak-layer-3",
       dark: "ak-layer-down",
-      down2: "ak-layer-down-2",
-      down3: "ak-layer-down-3",
+      dark2: "ak-layer-down-2",
+      dark3: "ak-layer-down-3",
       parent: "ak-layer-(--ak-layer-parent)",
       invert: "background-invert ak-layer-invert",
       ghost: "ak-layer-0 bg-transparent",
