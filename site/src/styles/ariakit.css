@@ -163,7 +163,6 @@ body {
 
 @custom-variant ui-selected {
   &:checked,
-  &:focus,
   &[aria-checked="true"],
   &[aria-selected="true"],
   &[aria-current]:not([aria-current="false"]) {
@@ -192,7 +191,6 @@ body {
 
 @custom-variant ui-adjacent-selected {
   :checked + &,
-  :focus + &,
   [aria-checked="true"] + &,
   [aria-selected="true"] + &,
   [aria-current]:not([aria-current="false"]) + &,
