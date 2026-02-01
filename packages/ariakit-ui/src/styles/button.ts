@@ -8,7 +8,12 @@ import {
   controlLabel,
   controlSlot,
 } from "./control.ts";
-import { glider, gliderAnchor, gliderGroup } from "./glider.ts";
+import {
+  glider,
+  gliderAnchor,
+  gliderGroup,
+  gliderSeparator,
+} from "./glider.ts";
 
 export const button = cv({
   extend: [control, command, bevel, gliderAnchor],
@@ -36,6 +41,10 @@ export const buttonGlider = cv({
 
 export const buttonGroup = cv({
   extend: [gliderGroup],
+});
+
+export const buttonSeparator = cv({
+  extend: [gliderSeparator],
 });
 
 export const buttonSlot = controlSlot;
