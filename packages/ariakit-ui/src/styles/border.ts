@@ -41,7 +41,7 @@ export const border = cv({
       none: "",
       border: "ak-border",
       bordering: "ak-bordering",
-      ring: "ring",
+      ring: "ak-ring",
       inset: "ring ring-inset",
       dashed: "ak-border border-dashed",
       dotted: "ak-border border-dotted",
