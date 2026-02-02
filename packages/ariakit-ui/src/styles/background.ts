@@ -36,7 +36,9 @@ export const background = cv({
   },
   computedVariants: {
     /**
-     * Sets the mix of the background color with the parent layer.
+     * Sets how much the background color blends with the parent layer. The
+     * value is the percentage of the background color mixed into the parent
+     * layer.
      */
     $mix: (value: number | boolean) => {
       if (value === false) return;
