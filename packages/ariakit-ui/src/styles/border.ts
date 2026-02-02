@@ -34,11 +34,12 @@ export const border = cv({
       contrast: "ak-edge-contrast-(--border-color)",
     },
     /**
-     * Sets the border type of the element. `bordering` uses `border` on dark
-     * mode and `ring` on light mode.
+     * Sets the element’s border style. `bordering` uses `border` in dark mode
+     * and `ring` in light mode, which is usually preferred for elements with a
+     * box shadow.
      */
     $borderType: {
-      none: "",
+      unset: "",
       border: "ak-border",
       bordering: "ak-bordering",
       ring: "ak-ring",
@@ -53,7 +54,7 @@ export const border = cv({
   },
   computed: (context) => {
     if (!context.variants.$border) {
-      context.setVariants({ $borderType: "none" });
+      context.setVariants({ $borderType: "unset" });
     }
   },
 });
