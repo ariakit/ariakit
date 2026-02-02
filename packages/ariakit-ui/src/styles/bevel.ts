@@ -19,6 +19,10 @@ export const bevel = cv({
         "inset-shadow-(--inset-shadow) from-(--bg-dark) to-(--bg-light) bg-linear-to-b from-50% bg-clip-padding outline-offset-1",
       ],
     },
+    /**
+     * Whether the bevel style is applied to a button and therefore should
+     * account for hover and active states.
+     */
     $button: [
       "ui-hover:[--min-l:0.35] ak-dark:ui-hover:[--min-l:0.25]",
       "ui-hover:[--max-l:1] ak-dark:ui-hover:[--max-l:1]",
@@ -32,6 +36,7 @@ export const bevel = cv({
   computed: ({ variants, setVariants, setDefaultVariants }) => {
     const $bg = variants.$kind === "bevel" ? "light2" : (variants.$bg ?? "pop");
     setDefaultVariants({ $bg });
+    // Apply button states only when using the bevel kind.
     const $button = variants.$kind !== "bevel" ? false : variants.$button;
     setVariants({ $button });
   },
