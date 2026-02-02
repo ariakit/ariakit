@@ -52,7 +52,7 @@ export const background = cv({
   computed: ({ variants, setVariants }) => {
     // Ghost background doesn't support contrast
     if (variants.$contrast && variants.$bg === "ghost") {
-      return setVariants({ $contrast: false });
+      setVariants({ $contrast: false });
     }
   },
 });

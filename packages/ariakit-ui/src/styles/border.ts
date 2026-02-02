@@ -53,8 +53,7 @@ export const border = cv({
     $borderColor: "default",
   },
   computed: (context) => {
-    if (!context.variants.$border) {
-      context.setVariants({ $borderType: "unset" });
-    }
+    if (context.variants.$border) return;
+    context.setVariants({ $borderType: "unset" });
   },
 });
