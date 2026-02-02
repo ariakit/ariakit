@@ -5,7 +5,10 @@ import {
   button,
   buttonContent,
   buttonDescription,
+  buttonGlider,
+  buttonGroup,
   buttonLabel,
+  buttonSeparator,
   buttonSlot,
 } from "../styles/button.ts";
 
@@ -26,6 +29,42 @@ export function Button(props: ButtonProps) {
     button.html.propKeys,
   );
   return <button {...button.html(variantProps)} {...rest} />;
+}
+
+export interface ButtonGroupProps
+  extends ComponentProps<"div">,
+    VariantProps<typeof buttonGroup> {}
+
+/**
+ * @see https://ariakit.com/solid/examples/button
+ */
+export function ButtonGroup(props: ButtonGroupProps) {
+  const [variantProps, rest] = splitProps(props, buttonGroup.html.propKeys);
+  return <div {...buttonGroup.html(variantProps)} {...rest} />;
+}
+
+export interface ButtonGliderProps
+  extends ComponentProps<"div">,
+    VariantProps<typeof buttonGlider> {}
+
+/**
+ * @see https://ariakit.com/solid/examples/button
+ */
+export function ButtonGlider(props: ButtonGliderProps) {
+  const [variantProps, rest] = splitProps(props, buttonGlider.html.propKeys);
+  return <div {...buttonGlider.html(variantProps)} {...rest} />;
+}
+
+export interface ButtonSeparatorProps
+  extends ComponentProps<"div">,
+    VariantProps<typeof buttonSeparator> {}
+
+/**
+ * @see https://ariakit.com/solid/examples/button
+ */
+export function ButtonSeparator(props: ButtonSeparatorProps) {
+  const [variantProps, rest] = splitProps(props, buttonSeparator.html.propKeys);
+  return <div {...buttonSeparator.html(variantProps)} {...rest} />;
 }
 
 export interface ButtonContentProps
@@ -76,5 +115,14 @@ export interface ButtonSlotProps
  */
 export function ButtonSlot(props: ButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, buttonSlot.html.propKeys);
-  return <span {...buttonSlot.html(variantProps)} {...rest} />;
+  const variants = buttonSlot.getVariants(variantProps);
+  return (
+    <span {...buttonSlot.html(variantProps)} {...rest}>
+      {variants.$kind === "badge" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </span>
+  );
 }

@@ -111,5 +111,14 @@ export interface ButtonSlotProps
  */
 export function ButtonSlot(props: ButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, buttonSlot);
-  return <span {...buttonSlot(variantProps)} {...rest} />;
+  const variants = buttonSlot.getVariants(variantProps);
+  return (
+    <span {...buttonSlot(variantProps)} {...rest}>
+      {variants.$kind === "badge" ? (
+        <span>{rest.children}</span>
+      ) : (
+        rest.children
+      )}
+    </span>
+  );
 }
