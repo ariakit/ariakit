@@ -20,6 +20,8 @@ export const badge = cv({
   computed: ({ variants, setDefaultVariants }) => {
     if (!variants.$bg) return;
     if (!isBorderColor(variants.$bg)) return;
+    // If the background is set to a color that’s also available for the border,
+    // we use it for the border and blend the background with the parent layer.
     const $borderColor = variants.$borderColor ?? variants.$bg;
     setDefaultVariants({ $mix: 15, $borderColor });
   },
