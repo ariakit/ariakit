@@ -23,7 +23,7 @@ export const bevel = cv({
      * Whether the bevel style is applied to a button and therefore should
      * account for hover and active states.
      */
-    $button: [
+    $bevelButton: [
       "ui-hover:[--min-l:0.35] ak-dark:ui-hover:[--min-l:0.25]",
       "ui-hover:[--max-l:1] ak-dark:ui-hover:[--max-l:1]",
       "ui-active:[--bg-dark-active:oklch(from_var(--ak-layer)_calc(l-0.02)_c_h)] ak-dark:ui-active:[--bg-dark-active:oklch(from_var(--ak-layer)_calc(l-0.02)_c_h)]",
@@ -37,7 +37,8 @@ export const bevel = cv({
     const $bg = variants.$kind === "bevel" ? "light2" : (variants.$bg ?? "pop");
     setDefaultVariants({ $bg });
     // Apply button states only when using the bevel kind.
-    const $button = variants.$kind !== "bevel" ? false : variants.$button;
-    setVariants({ $button });
+    const $bevelButton =
+      variants.$kind !== "bevel" ? false : variants.$bevelButton;
+    setVariants({ $bevelButton });
   },
 });
