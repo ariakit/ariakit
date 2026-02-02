@@ -6,7 +6,7 @@ export const background = cv({
      * Sets the element's background color.
      */
     $bg: {
-      none: "",
+      unset: "",
       popLightDark: "ak-layer-pop-0.5 ak-dark:ak-layer-pop",
       pop05: "ak-layer-pop-0.5",
       pop: "ak-layer-pop",
