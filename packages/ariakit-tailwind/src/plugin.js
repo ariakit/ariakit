@@ -661,6 +661,38 @@ const AriakitTailwind = plugin(
       return { radius, padding };
     }
 
+    // Threshold above which nested radius uses the provided value instead of
+    // computed. This prevents overly small inner radii with large padding.
+    const FRAME_PADDING_CAP = "1rem";
+
+    /**
+     * Returns CSS for tracking capped padding value.
+     * @param {string} padding - The padding value to cap
+     */
+    function getFrameCappedPaddingCss(padding) {
+      return {
+        [vars._frameCappedPadding]: `min(${padding}, ${FRAME_PADDING_CAP})`,
+      };
+    }
+
+    /**
+     * Returns container query CSS that overrides nested radius when padding
+     * exceeds cap threshold.
+     * @param {object} params
+     * @param {string} params.radius - The base radius to use when cap is hit
+     * @param {Provide} params.provide - The provide function from withContext
+     */
+    function getFrameCapRadiusCss({ radius, provide }) {
+      return {
+        [`@container style(${vars._frameCappedPadding}: ${FRAME_PADDING_CAP})`]:
+          {
+            [provide(vars._frameRadius)]: radius,
+            [vars.frameRadius]: radius,
+            borderRadius: radius,
+          },
+      };
+    }
+
     /**
      * Computes the nested radius based on parent frame context.
      * @param {object} params
@@ -690,14 +722,14 @@ const AriakitTailwind = plugin(
      */
     function getFrameCss({ radiusKey, modifier = null, force = false }) {
       const { radius, padding } = getFrameArgs(radiusKey, modifier);
-      const cap = `1rem`;
-      const capPadding = `min(${prop(vars.framePadding)}, ${cap})`;
-      const result = css({
-        [vars.framePadding]: padding,
-        padding,
-        scrollPadding: padding,
-        [vars._frameCappedPadding]: capPadding,
-      });
+      const result = css(
+        {
+          [vars.framePadding]: padding,
+          padding,
+          scrollPadding: padding,
+        },
+        getFrameCappedPaddingCss(prop(vars.framePadding)),
+      );
       Object.assign(
         result,
         withContext("frame", force, ({ provide, inherit }) => {
@@ -716,13 +748,10 @@ const AriakitTailwind = plugin(
           });
           if (nestedRadius) {
             contextCss[vars._nestedRadius] = nestedRadius;
-            contextCss[
-              `@container style(${vars._frameCappedPadding}: ${cap})`
-            ] = {
-              [provide(vars._frameRadius)]: radius,
-              [vars.frameRadius]: radius,
-              borderRadius: radius,
-            };
+            Object.assign(
+              contextCss,
+              getFrameCapRadiusCss({ radius, provide }),
+            );
           }
           return contextCss;
         }),
@@ -886,11 +915,14 @@ const AriakitTailwind = plugin(
       {
         "ak-frame-p": (value) => {
           const padding = value;
-          const result = {
-            [vars.framePadding]: padding,
-            padding,
-            scrollPadding: padding,
-          };
+          const result = css(
+            {
+              [vars.framePadding]: padding,
+              padding,
+              scrollPadding: padding,
+            },
+            getFrameCappedPaddingCss(padding),
+          );
           Object.assign(
             result,
             withContext("frame", false, ({ provide, inherit }) => {
@@ -976,6 +1008,7 @@ const AriakitTailwind = plugin(
         });
         if (nestedRadius) {
           contextCss[vars._nestedRadius] = nestedRadius;
+          Object.assign(contextCss, getFrameCapRadiusCss({ radius, provide }));
         }
         return contextCss;
       });
