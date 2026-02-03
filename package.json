@@ -95,7 +95,7 @@
     "@babel/preset-react": "7.28.5",
     "@babel/preset-typescript": "7.28.5",
     "@babel/types": "7.29.0",
-    "@biomejs/biome": "2.3.13",
+    "@biomejs/biome": "2.3.14",
     "@changesets/cli": "2.29.8",
     "@fontsource-variable/inter": "5.2.8",
     "@playwright/test": "1.56.1",
