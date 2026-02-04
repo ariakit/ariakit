@@ -1,12 +1,5 @@
 import { cv } from "clava";
 
-export const activeVars = {
-  depthX: "--active-depth-x",
-  depthY: "--active-depth-y",
-  scaleX: "--active-scale-x",
-  scaleY: "--active-scale-y",
-} as const;
-
 export const active = cv({
   variants: {
     /**
@@ -25,13 +18,13 @@ export const active = cv({
      * smaller value for larger elements.
      * @default 5
      **/
-    $depthX: (value: number) => ({ [activeVars.depthX]: `${value}` }),
+    $depthX: (value: number) => ({ "--active-depth-x": `${value}` }),
     /**
      * Vertical scale factor applied to the element when pressed. Use a smaller
      * value for larger elements.
      * @default 5
      **/
-    $depthY: (value: number) => ({ [activeVars.depthY]: `${value}` }),
+    $depthY: (value: number) => ({ "--active-depth-y": `${value}` }),
     /**
      * Scale factor applied to the element when pressed. Use a smaller value for
      * larger elements.
