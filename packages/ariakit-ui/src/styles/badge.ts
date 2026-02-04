@@ -16,6 +16,7 @@ export const badge = cv({
     $mix: false,
     $border: "adaptive",
     $borderType: "inset",
+    $textOpacity: 70,
   },
   computed: ({ variants, setDefaultVariants }) => {
     if (!variants.$bg) return;
