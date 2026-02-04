@@ -3,7 +3,7 @@ import { cv } from "clava";
 export const hover = cv({
   variants: {
     /**
-     * Sets the element's background color.
+     * Sets the element's background color when hovered.
      */
     $hover: {
       // hover
