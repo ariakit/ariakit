@@ -40,17 +40,25 @@ export const border = cv({
      */
     $borderType: {
       unset: "",
-      border: "ak-border",
-      bordering: "ak-bordering",
-      ring: "ak-ring",
-      inset: "ring ring-inset",
-      dashed: "ak-border border-dashed",
-      dotted: "ak-border border-dotted",
+      border: "ak-border-(--border-width)",
+      bordering: "ak-bordering-(--border-width)",
+      ring: "ak-ring-(--border-width)",
+      inset: "ring-(--border-width) ring-inset",
+      dashed: "ak-border-(--border-width) border-dashed",
+      dotted: "ak-border-(--border-width) border-dotted",
     },
+  },
+  computedVariants: {
+    /**
+     * Sets the size of the border.
+     * @default 1
+     */
+    $borderWidth: (value: number) => ({ "--border-width": `${value}px` }),
   },
   defaultVariants: {
     $borderType: "border",
     $borderColor: "default",
+    $borderWidth: 1,
   },
   computed: (context) => {
     if (context.variants.$border) return;
