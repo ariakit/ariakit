@@ -3,7 +3,8 @@ import { cv } from "clava";
 export const text = cv({
   variants: {
     /**
-     * Sets the element's text color.
+     * Sets the element's text color. Use `auto` to inherit the parent’s text
+     * color.
      */
     $color: {
       auto: "",
@@ -35,6 +36,6 @@ export const text = cv({
   },
   defaultVariants: {
     $color: "auto",
-    $textOpacity: 100,
+    $textOpacity: "unset",
   },
 });
