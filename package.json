@@ -118,7 +118,7 @@
     "@types/marked": "5.0.2",
     "@types/node": "24.10.10",
     "@types/postcss-import": "14.0.3",
-    "@types/react": "18.3.27",
+    "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
     "@types/textarea-caret": "3.0.4",
     "@types/use-sync-external-store": "0.0.6",
