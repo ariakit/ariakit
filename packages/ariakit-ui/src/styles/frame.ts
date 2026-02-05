@@ -9,16 +9,16 @@ export const frame = cv({
      */
     $rounded: {
       unset: "",
-      false: "[--rounded:0px]",
-      xs: "[--rounded:var(--radius-xs)]",
-      sm: "[--rounded:var(--radius-sm)]",
-      md: "[--rounded:var(--radius-md)]",
-      lg: "[--rounded:var(--radius-lg)]",
-      xl: "[--rounded:var(--radius-xl)]",
-      "2xl": "[--rounded:var(--radius-2xl)]",
-      "3xl": "[--rounded:var(--radius-3xl)]",
-      "4xl": "[--rounded:var(--radius-4xl)]",
-      full: "[--rounded:var(--radius-full)]",
+      false: "[--frame-radius:0px]",
+      xs: "[--frame-radius:var(--radius-xs)]",
+      sm: "[--frame-radius:var(--radius-sm)]",
+      md: "[--frame-radius:var(--radius-md)]",
+      lg: "[--frame-radius:var(--radius-lg)]",
+      xl: "[--frame-radius:var(--radius-xl)]",
+      "2xl": "[--frame-radius:var(--radius-2xl)]",
+      "3xl": "[--frame-radius:var(--radius-3xl)]",
+      "4xl": "[--frame-radius:var(--radius-4xl)]",
+      full: "[--frame-radius:var(--radius-full)]",
     },
     /**
      * Forces the element's radius to be the same as the one set by the
@@ -26,10 +26,10 @@ export const frame = cv({
      */
     $roundedType: {
       unset: "",
-      auto: "ak-frame-rounded-(--rounded)",
-      force: "ak-frame-rounded-force-(--rounded)",
-      cover: "ak-frame-cover-(--rounded)",
-      overflow: "ak-frame-overflow-(--rounded)",
+      auto: "ak-frame-rounded-(--frame-radius)",
+      force: "ak-frame-rounded-force-(--frame-radius)",
+      cover: "ak-frame-cover-(--frame-radius)",
+      overflow: "ak-frame-overflow-(--frame-radius)",
     },
     /**
      * Sets the element’s padding.
