@@ -1053,7 +1053,7 @@ const AriakitTailwind = plugin(
           return css({
             [vars._frameRing]: value,
             [vars.frameRing]: value,
-            [`@apply ring-[${formatted}]`]: {},
+            [`@apply ring-[length:${formatted}]`]: {},
           });
         },
         "ak-bordering": (value) => {
@@ -1068,7 +1068,7 @@ const AriakitTailwind = plugin(
               [vars._frameRing]: valueDown,
               [vars.frameRing]: valueDown,
               borderWidth: prop(vars.frameBorder),
-              [`@apply ring-[${valueDown.replaceAll(" ", "_")}]`]: {},
+              [`@apply ring-[length:${valueDown.replaceAll(" ", "_")}]`]: {},
             },
             [IN_LIGHT]: {
               [vars._frameBorder]: valueDown,
@@ -1076,7 +1076,7 @@ const AriakitTailwind = plugin(
               [vars._frameRing]: valueUp,
               [vars.frameRing]: valueUp,
               borderWidth: prop(vars.frameBorder),
-              [`@apply ring-[${valueUp.replaceAll(" ", "_")}]`]: {},
+              [`@apply ring-[length:${valueUp.replaceAll(" ", "_")}]`]: {},
             },
           });
         },
