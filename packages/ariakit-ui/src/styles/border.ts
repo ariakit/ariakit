@@ -43,7 +43,7 @@ export const border = cv({
       border: "ak-border-(--border-width)",
       bordering: "ak-bordering-(--border-width)",
       ring: "ak-ring-(--border-width)",
-      inset: "ring-(--border-width) ring-inset",
+      inset: "ring-(length:--border-width) ring-inset",
       dashed: "ak-border-(--border-width) border-dashed",
       dotted: "ak-border-(--border-width) border-dotted",
     },
