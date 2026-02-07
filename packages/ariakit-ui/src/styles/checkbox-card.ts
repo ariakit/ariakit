@@ -1,5 +1,4 @@
 import { cv } from "clava";
-import { border } from "./border.ts";
 import {
   button,
   buttonContent,
@@ -47,7 +46,7 @@ export const checkboxCardGrid = cv({
 });
 
 export const checkboxCardCheck = cv({
-  extend: [buttonSlot, border],
+  extend: [buttonSlot],
   class: [
     "*:hidden! [&>svg]:stroke-[2.5]",
     "group-ui-disabled/checkbox:ak-text/0",
@@ -67,12 +66,12 @@ export const checkboxCardCheck = cv({
     $bg: "dark",
     $border: true,
     $borderType: "bordering",
-    $rounded: "round",
+    $rounded: "full",
     $size: "lg",
   },
 });
 
-export const checkboxCardIcon = buttonSlot;
+export const checkboxCardSlot = buttonSlot;
 
 export const checkboxCardContent = buttonContent;
 
