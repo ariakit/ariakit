@@ -70,8 +70,28 @@
   --radius: 0.25em;
   --spacing: 0.25em;
   --spacing-px: 1px;
-}
 
+  --duration-tab-corner: 100ms;
+  --ease-tab-corner: cubic-bezier(0.2, 0.1, 0.7, 1);
+
+  --duration-overshoot: 500ms;
+  --ease-overshoot: linear(
+    0,
+    0.402 7.4%,
+    0.711 15.3%,
+    0.929 23.7%,
+    1.008 28.2%,
+    1.067 33%,
+    1.099 36.9%,
+    1.12 41%,
+    1.13 45.4%,
+    1.13 50.1%,
+    1.111 58.5%,
+    1.019 83.2%,
+    1.004 91.3%,
+    1
+  );
+}
 
 @theme inline {
   --radius-none: 0;
@@ -97,28 +117,25 @@
   }
 }
 
-
 body {
   @apply ak-layer-canvas;
 }
 
 @custom-variant ui-disabled {
-  &:disabled,
-  &[aria-disabled="true"] {
+  &:is(:disabled, [aria-disabled="true"]) {
     @slot;
   }
 }
 
 @custom-variant ui-disabled-within {
-  &:disabled,
-  &[aria-disabled="true"],
-  &:has(*:disabled, [aria-disabled="true"]) {
+  &:is(:disabled, [aria-disabled="true"]),
+  &:has(:is(:disabled, [aria-disabled="true"])) {
     @slot;
   }
 }
 
 @custom-variant ui-active {
-  @variant active {
+  &:is(:active) {
     @variant not-ui-disabled {
       @slot;
     }
@@ -140,44 +157,48 @@ body {
 }
 
 @custom-variant ui-focus-visible {
-  &:focus-visible,
-  &[data-focus-visible] {
+  &:is(:focus-visible, [data-focus-visible]) {
     @slot;
   }
 }
 
 @custom-variant ui-checked {
-  &:checked,
-  &[aria-checked="true"] {
+  &:is(:checked, [aria-checked="true"]) {
     @slot;
   }
 }
 
 @custom-variant ui-checked-within {
-  &:checked,
-  &[aria-checked="true"],
-  &:has(*:checked, [aria-checked="true"]) {
+  &:is(:checked, [aria-checked="true"]),
+  &:has(:checked, [aria-checked="true"]) {
     @slot;
   }
 }
 
 @custom-variant ui-selected {
-  &:checked,
-  &[aria-checked="true"],
-  &[aria-selected="true"],
-  &[aria-current]:not([aria-current="false"]) {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
     @slot;
   }
 }
 
 @custom-variant ui-selected-within {
-  &:checked,
-  &[aria-checked="true"],
-  &[aria-selected="true"],
-  &[aria-current]:not([aria-current="false"]),
-  &:has(:checked, [aria-checked="true"]),
-  &:has(:selected, [aria-selected="true"]),
-  &:has([aria-current]:not([aria-current="false"])) {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ),
+  &:has(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
     @slot;
   }
 }
@@ -190,11 +211,21 @@ body {
 }
 
 @custom-variant ui-adjacent-selected {
-  :checked + &,
-  [aria-checked="true"] + &,
-  [aria-selected="true"] + &,
-  [aria-current]:not([aria-current="false"]) + &,
-  &:has(+ :is(:checked, :focus, [aria-checked="true"], [aria-selected="true"], [aria-current]:not([aria-current="false"]))) {
+  :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+    + &,
+  &:has(
+    + :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+  ) {
     @slot;
   }
 }
