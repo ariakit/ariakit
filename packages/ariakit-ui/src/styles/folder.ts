@@ -2,11 +2,6 @@ import { cv } from "clava";
 import { background } from "./background.ts";
 import { border } from "./border.ts";
 
-export const folderVars = {
-  ease: "--folder-ease",
-  duration: "--folder-duration",
-} as const;
-
 export const folder = cv({
   extend: [background, border],
   variants: {
@@ -22,7 +17,7 @@ export const folder = cv({
         "befter:-bottom-[calc(var(--folder-edge))] befter:h-(--ak-frame-radius) befter:w-[calc(var(--ak-frame-radius)+var(--folder-edge))]",
         "befter:outline-(length:--folder-ring) befter:outline-(--ak-layer-border) befter:-outline-offset-(--folder-ring)",
         "befter:border-(length:--folder-edge) befter:[border-style:inherit]",
-        "befter:transition-[--ak-frame-radius] befter:duration-(--folder-duration,inherit) befter:ease-(--folder-ease,inherit)",
+        "befter:transition-[--ak-frame-radius] befter:duration-(--duration-tab-corner) befter:ease-tab-corner",
         // before
         "before:-start-[calc(var(--ak-frame-radius)+var(--folder-edge))]",
         "before:rounded-ss-(--ak-frame-radius)",
