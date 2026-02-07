@@ -1,11 +1,14 @@
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { CheckIcon } from "lucide-react";
 import type { ComponentProps } from "react";
 import {
   checkboxCard,
   checkboxCardCheck,
-  checkboxCardIcon,
+  checkboxCardContent,
+  checkboxCardDescription,
   checkboxCardLabel,
+  checkboxCardSlot,
 } from "../styles/checkbox-card.ts";
 
 export interface CheckboxCardProps
@@ -31,13 +34,13 @@ export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
   return <span {...checkboxCardLabel(variantProps)} {...rest} />;
 }
 
-export interface CheckboxCardIconProps
+export interface CheckboxCardSlotProps
   extends ComponentProps<"span">,
-    VariantProps<typeof checkboxCardIcon> {}
+    VariantProps<typeof checkboxCardSlot> {}
 
-export function CheckboxCardIcon(props: CheckboxCardIconProps) {
-  const [variantProps, rest] = splitProps(props, checkboxCardIcon);
-  return <span {...checkboxCardIcon(variantProps)} {...rest} />;
+export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCardSlot);
+  return <span {...checkboxCardSlot(variantProps)} {...rest} />;
 }
 
 export interface CheckboxCardCheckProps
@@ -46,5 +49,27 @@ export interface CheckboxCardCheckProps
 
 export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardCheck);
-  return <span {...checkboxCardCheck(variantProps)} {...rest} />;
+  return (
+    <span {...checkboxCardCheck(variantProps)} {...rest}>
+      {rest.children || <CheckIcon />}
+    </span>
+  );
+}
+
+export interface CheckboxCardContentProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof checkboxCardContent> {}
+
+export function CheckboxCardContent(props: CheckboxCardContentProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCardContent);
+  return <span {...checkboxCardContent(variantProps)} {...rest} />;
+}
+
+export interface CheckboxCardDescriptionProps
+  extends ComponentProps<"span">,
+    VariantProps<typeof checkboxCardDescription> {}
+
+export function CheckboxCardDescription(props: CheckboxCardDescriptionProps) {
+  const [variantProps, rest] = splitProps(props, checkboxCardDescription);
+  return <span {...checkboxCardDescription(variantProps)} {...rest} />;
 }
