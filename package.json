@@ -145,7 +145,7 @@
     "fast-fuzzy": "1.12.0",
     "framer-motion": "11.18.2",
     "fs-extra": "11.3.3",
-    "glob": "13.0.1",
+    "glob": "13.0.2",
     "gray-matter": "4.0.3",
     "hast-util-to-string": "2.0.0",
     "hastscript": "7.2.0",
