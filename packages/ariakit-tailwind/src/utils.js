@@ -26,6 +26,22 @@ export function prop(name, defaultValue) {
 }
 
 /**
+ * @param {1 | 2 | 3} [defaultLevel]
+ */
+export function layerIdleProp(defaultLevel = 3) {
+  if (defaultLevel === 3) {
+    return prop(
+      vars.layerModifier,
+      prop(vars.layerState, prop(vars.layerIdle)),
+    );
+  } else if (defaultLevel === 2) {
+    return prop(vars.layerState, prop(vars.layerIdle));
+  } else {
+    return prop(vars.layerIdle);
+  }
+}
+
+/**
  * @param {number} [value]
  */
 export function isInlineThemeReference(value) {
@@ -33,22 +49,6 @@ export function isInlineThemeReference(value) {
   if (value & (1 << 0)) return true;
   if (value & (1 << 1)) return true;
   return false;
-}
-
-/**
- * Return the absolute value in CSS.
- * @param {string} value
- */
-export function abs(value) {
-  return `max(${value}, ${value} * -1)`;
-}
-
-/**
- * Return the sign value in CSS.
- * @param {string} value
- */
-export function sign(value) {
-  return `clamp(-1, ${value} * infinity, 1)`;
 }
 
 /**

@@ -8,6 +8,7 @@ import {
   IN_LIGHT,
   isInlineThemeReference,
   LIGHTNESS_LEVELS,
+  layerIdleProp,
   lchLightDark,
   MAX_NON_BARE_LEVELS,
   oklchLightDark,
@@ -75,7 +76,7 @@ const AriakitTailwind = plugin(
         const keys = [...themeKeys, ...additionalKeys];
 
         for (const key of keys) {
-          values[key] = key;
+          if (!levels) values[key] = key;
           if (/-\d+$/.test(key)) continue;
           for (let i = 1; i <= MAX_NON_BARE_LEVELS; i++) {
             values[`${key}-${i}`] = `${key}-${i}`;
@@ -235,9 +236,8 @@ const AriakitTailwind = plugin(
       const layerParent = prop(vars.layerParent, "canvas");
 
       const result = css(getCurrentLayerCss(), {
-        [vars.layer]: prop(vars._layerIdle),
         [vars.shadow]: shadow(layerParent),
-
+        [vars.layer]: layerIdleProp(3),
         [vars._layerDown]: isDown ? "1" : "0",
         [vars._layerAppearance]: textColor(prop(vars.layer)),
         [vars._layerL]: `lch(from ${prop(vars.layer)} round(l, ${100 / LIGHTNESS_LEVELS}) 0 0 / 100%)`,
@@ -256,10 +256,21 @@ const AriakitTailwind = plugin(
       }
 
       if (!soft) {
-        Object.assign(result, {
-          [vars._layerIdle]: computedColor,
-          [vars.text]: textColor(prop(vars.layer)),
-        });
+        Object.assign(
+          result,
+          {
+            [vars.layerIdle]: computedColor,
+            [vars.layerState]: layerIdleProp(1),
+            [vars.layerModifier]: layerIdleProp(2),
+            [vars.text]: textColor(prop(vars.layer)),
+          },
+          withContext("layer-parent", false, ({ provide, inherit }) => {
+            return {
+              [provide(vars._layerParent)]: prop(vars.layer),
+              [vars.layerParent]: inherit(vars._layerParent),
+            };
+          }),
+        );
       }
 
       Object.assign(
@@ -267,12 +278,6 @@ const AriakitTailwind = plugin(
         getEdgeCss({
           color: colorMix(prop(vars.layer), layerParent),
           soft: true,
-        }),
-        withContext("layer-parent", false, ({ provide, inherit }) => {
-          return {
-            [provide(vars._layerParent)]: prop(vars.layer),
-            [vars.layerParent]: inherit(vars._layerParent),
-          };
         }),
       );
 
@@ -293,35 +298,55 @@ const AriakitTailwind = plugin(
       {
         "ak-layer-contrast": (value) => {
           const { token, level } = parseColorLevel(value);
-          const baseColor = tv("color", token, prop(vars.layerParent));
+          const baseColor = tv("color", token, layerIdleProp(1));
           const { l, c, h } = getLayerOkLCH(level);
 
+          /**
+           * Computes the contrast-adjusted color for a given parent lightness.
+           * @param {number} parentL
+           * @param {string} outputVar - The CSS variable to set the result on
+           */
+          const getContrastCss = (parentL, outputVar) => {
+            const isDark = parentL < SCHEME_THRESHOLD_OKL;
+            const t = isDark ? 1 : -1;
+            const contrastL = `(${Math.max(parentL, 0.15)} + ${t * 0.25})`;
+            const contrastLString = isDark
+              ? `max(l, ${contrastL})`
+              : `min(l, ${contrastL})`;
+            const colorWithLevel =
+              level === "0"
+                ? baseColor
+                : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
+            const colorWithContrastL = `oklch(from ${colorWithLevel} ${contrastLString} c h / 100%)`;
+            const colorWithContrast = getLayerContrastColor({
+              color: colorWithContrastL,
+              isDown: false,
+              scheme: isDark ? "light" : "dark",
+              contrast: `calc(${getContrast()} * 2)`,
+            });
+            const colorWithSafeL = `oklch(from ${colorWithContrast} ${prop(isDark ? vars._safeOkLUp : vars._safeOkLDown)} c h)`;
+            return { [outputVar]: colorWithSafeL };
+          };
+
+          if (token) {
+            // With token: create a new contrast layer (existing behavior)
+            return Object.assign(
+              getLayerCss({ token, level }),
+              withParentOkL((parentL) =>
+                css(
+                  getContrastCss(parentL, vars._layerBase),
+                  getContrastCss(parentL, vars.layerIdle),
+                ),
+              ),
+            );
+          }
+
+          // Without token: apply contrast to current layer (soft mode)
           return Object.assign(
-            getLayerCss({ token, level }),
-            withParentOkL((parentL) => {
-              const isDark = parentL < SCHEME_THRESHOLD_OKL;
-              const t = isDark ? 1 : -1;
-              const contrastL = `(${Math.max(parentL, 0.15)} + ${t * 0.25})`;
-              const contrastLString = isDark
-                ? `max(l, ${contrastL})`
-                : `min(l, ${contrastL})`;
-              const colorWithLevel =
-                level === "0"
-                  ? baseColor
-                  : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
-              const colorWithContrastL = `oklch(from ${colorWithLevel} ${contrastLString} c h / 100%)`;
-              const colorWithContrast = getLayerContrastColor({
-                color: colorWithContrastL,
-                isDown: false,
-                scheme: isDark ? "light" : "dark",
-                contrast: `calc(${getContrast()} * 2)`,
-              });
-              const colorWithSafeL = `oklch(from ${colorWithContrast} ${prop(isDark ? vars._safeOkLUp : vars._safeOkLDown)} c h)`;
-              return {
-                [vars._layerIdle]: colorWithSafeL,
-                [vars._layerBase]: colorWithSafeL,
-              };
-            }),
+            getLayerCss({ soft: true }),
+            withParentOkL((parentL) =>
+              getContrastCss(parentL, vars.layerState),
+            ),
           );
         },
       },
@@ -336,7 +361,7 @@ const AriakitTailwind = plugin(
       {
         "ak-layer-mix": (value, { modifier }) => {
           const { token, level } = parseColorLevel(value);
-          const baseColor = tv("color", token, prop(vars._layerIdle));
+          const baseColor = tv("color", token, layerIdleProp(2));
           const { l, c, h } = getLayerOkLCH(level);
           const color = `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
           const percentage = toPercent(modifier, "50%");
@@ -344,12 +369,13 @@ const AriakitTailwind = plugin(
           if (token) {
             return {
               ...getLayerCss({ token }),
-              [vars._layerIdle]: mixColor,
+              [vars.layerIdle]: mixColor,
               [vars._layerBase]: mixColor,
             };
           }
           return {
             ...getLayerCss({ token, level, soft: true }),
+            [vars.layerModifier]: mixColor,
             [vars.layer]: mixColor,
           };
         },
@@ -373,13 +399,13 @@ const AriakitTailwind = plugin(
             ...(token
               ? getLayerCss({ token })
               : getLayerCss({ token, level, soft: true })),
-            [vars.layer]: `oklch(from ${prop(vars._layerIdle)} ${getLayerPopOkL(level)} c h)`,
+            [vars.layer]: `oklch(from ${layerIdleProp(3)} ${getLayerPopOkL(level)} c h)`,
           };
         },
         "ak-layer-hover-vivid": (value) => {
           const { token, level } = parseColorLevel(value);
           const c = `clamp(0, c + 0.1 * ${level}, 0.4)`;
-          const colorBase = `oklch(from ${prop(vars._layerIdle)} l ${c} h)`;
+          const colorBase = `oklch(from ${layerIdleProp(3)} l ${c} h)`;
           const colorWithSafeL = `oklch(from ${colorBase} ${prop(vars._safeOkL)} c h)`;
           return {
             ...(token
@@ -405,18 +431,37 @@ const AriakitTailwind = plugin(
       { values: getLayerValues({ downLevels: false }) },
     );
 
+    /**
+     * @param {string | undefined} token
+     * @param {string} level
+     */
+    const getLayerPop = (token, level) => {
+      const color = tv("color", token, prop(vars.layerParent));
+      const popColor = `oklch(from ${prop(vars._layerBase)} ${getLayerPopOkL(level)} c h)`;
+      return {
+        ...getLayerCss({ token: color }),
+        [vars.layerIdle]: popColor,
+      };
+    };
+
     matchUtilities(
       {
         "ak-layer-pop": (value) => {
           const { token, level } = parseColorLevel(value);
-          const color = tv("color", token, prop(vars.layerParent));
-          return {
-            ...getLayerCss({ token: color }),
-            [vars._layerIdle]: `oklch(from ${prop(vars._layerBase)} ${getLayerPopOkL(level)} c h)`,
-          };
+          return getLayerPop(token, level);
         },
       },
       { values: getLayerValues({ downLevels: false }) },
+    );
+
+    matchUtilities(
+      {
+        "ak-layer-invert": (value) => {
+          const { token, level } = parseColorLevel(value);
+          return getLayerPop(token, level);
+        },
+      },
+      { values: getLayerValues({ DEFAULT: "12", levels: false }) },
     );
 
     /**
@@ -435,9 +480,9 @@ const AriakitTailwind = plugin(
       const c = `c`;
       const alphaBase = `(${alphaModifier} * ${oklchLightDark("1.2%", "1%")})`;
       const alphaLAdd = oklchLightDark("(1 - l) * 0.1%", "l * 0.1%");
-      const alphaCAdd = `(c * 50%)`;
+      // const alphaCAdd = `(c * 50%)`;
       const contrastAdd = `(12% * ${contrast})`;
-      const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${alphaCAdd} + ${contrastAdd})`;
+      const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${contrastAdd})`;
       const lVar = soft ? vars._edgeLSoft : vars._edgeL;
       const finalColor = `oklch(from ${color} ${prop(lVar)} ${c} h / ${alpha})`;
       return {
@@ -616,6 +661,59 @@ const AriakitTailwind = plugin(
       return { radius, padding };
     }
 
+    // Threshold above which nested radius uses the provided value instead of
+    // computed. This prevents overly small inner radii with large padding.
+    const FRAME_PADDING_CAP = "1rem";
+
+    /**
+     * Returns CSS for tracking capped padding value.
+     * @param {string} padding - The padding value to cap
+     */
+    function getFrameCappedPaddingCss(padding) {
+      return {
+        [vars._frameCappedPadding]: `min(${padding}, ${FRAME_PADDING_CAP})`,
+      };
+    }
+
+    /**
+     * Returns container query CSS that overrides nested radius when padding
+     * exceeds cap threshold.
+     * @param {object} params
+     * @param {string} params.radius - The base radius to use when cap is hit
+     * @param {Provide} params.provide - The provide function from withContext
+     */
+    function getFrameCapRadiusCss({ radius, provide }) {
+      return {
+        [`@container style(${vars._frameCappedPadding}: ${FRAME_PADDING_CAP})`]:
+          {
+            [provide(vars._frameRadius)]: radius,
+            [vars.frameRadius]: radius,
+            borderRadius: radius,
+          },
+      };
+    }
+
+    /**
+     * Computes the nested radius based on parent frame context.
+     * @param {object} params
+     * @param {string} params.radius - The base radius value
+     * @param {boolean} [params.force] - Whether to force the radius
+     * @param {Inherit} params.inherit - The inherit function from withContext
+     */
+    function getNestedRadius({ radius, force = false, inherit }) {
+      if (force) {
+        return { computedRadius: radius, nestedRadius: undefined };
+      }
+      const parentPadding = inherit(vars._framePadding, "0px");
+      const parentRadius = inherit(vars._frameRadius, radius);
+      const parentBorder = inherit(vars._frameBorder, "0px");
+      const selfMargin = prop(vars.frameMargin, "0px");
+      const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder} + ${selfMargin}))`;
+      const minRadius = `min(0.125rem, ${radius})`;
+      const computedRadius = `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
+      return { computedRadius, nestedRadius };
+    }
+
     /**
      * @param {object} params
      * @param {string} params.radiusKey
@@ -624,44 +722,40 @@ const AriakitTailwind = plugin(
      */
     function getFrameCss({ radiusKey, modifier = null, force = false }) {
       const { radius, padding } = getFrameArgs(radiusKey, modifier);
-      const cap = `1rem`;
-      const capPadding = `min(${padding}, ${cap})`;
-      const minRadius = `min(0.125rem, ${radius})`;
-
-      const computedRadius = force
-        ? radius
-        : `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
-
-      const result = {
-        [vars.framePadding]: padding,
-        padding,
-        scrollPadding: padding,
-        [vars.frameRadius]: computedRadius,
-        borderRadius: computedRadius,
-        [vars._frameCappedPadding]: capPadding,
-      };
+      const result = css(
+        {
+          [vars.framePadding]: padding,
+          padding,
+          scrollPadding: padding,
+        },
+        getFrameCappedPaddingCss(prop(vars.framePadding)),
+      );
       Object.assign(
         result,
         withContext("frame", force, ({ provide, inherit }) => {
-          const parentPadding = inherit(vars._framePadding, "0px");
-          const parentRadius = inherit(vars._frameRadius, radius);
-          const parentBorder = inherit(vars._frameBorder, "0px");
-          const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder}))`;
-
-          return {
+          const { computedRadius, nestedRadius } = getNestedRadius({
+            radius,
+            force,
+            inherit,
+          });
+          const contextCss = css({
+            [vars.frameRadius]: computedRadius,
+            borderRadius: computedRadius,
             [provide(vars._framePadding)]: padding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
-            [vars._nestedRadius]: nestedRadius,
-            [`@container style(${vars._frameCappedPadding}: ${cap})`]: {
-              [provide(vars._frameRadius)]: radius,
-              [vars.frameRadius]: radius,
-              borderRadius: radius,
-            },
-          };
+            [provide(vars._frameRing)]: prop(vars._frameRing),
+          });
+          if (nestedRadius) {
+            contextCss[vars._nestedRadius] = nestedRadius;
+            Object.assign(
+              contextCss,
+              getFrameCapRadiusCss({ radius, provide }),
+            );
+          }
+          return contextCss;
         }),
       );
-
       return result;
     }
 
@@ -733,9 +827,12 @@ const AriakitTailwind = plugin(
           const parentPadding = inherit(vars._framePadding, "0px");
           const parentRadius = inherit(vars._frameRadius, radius);
           const parentBorder = inherit(vars._frameBorder, "0px");
+          const parentRing = inherit(vars._frameRing, "0px");
+          const selfRing = prop(vars._frameRing, "0px");
+          // For overflow, include parent ring minus self ring in margin (clamped to 0)
           const borderForMargin = useSelfBorder
             ? prop(vars.frameBorder)
-            : parentBorder;
+            : `calc(${parentBorder} + max(0px, ${parentRing} - ${selfRing}))`;
           const margin = `calc((${parentPadding} + ${borderForMargin}) * -1)`;
           const computedPadding = extra.modifier
             ? padding
@@ -749,6 +846,7 @@ const AriakitTailwind = plugin(
             [provide(vars._framePadding)]: computedPadding,
             [provide(vars._frameRadius)]: computedRadius,
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
+            [provide(vars._frameRing)]: prop(vars._frameRing),
             [vars.frameMargin]: margin,
             [vars.framePadding]: computedPadding,
             [vars.frameRadius]: computedRadius,
@@ -817,16 +915,25 @@ const AriakitTailwind = plugin(
       {
         "ak-frame-p": (value) => {
           const padding = value;
-          const result = {
-            [vars.framePadding]: padding,
-            padding,
-            scrollPadding: padding,
-          };
+          const result = css(
+            {
+              [vars.framePadding]: padding,
+              padding,
+              scrollPadding: padding,
+            },
+            getFrameCappedPaddingCss(padding),
+          );
           Object.assign(
             result,
-            withContext("frame", false, ({ provide }) => {
+            withContext("frame", false, ({ provide, inherit }) => {
               return {
                 [provide(vars._framePadding)]: padding,
+                [provide(vars._frameRadius)]: inherit(
+                  vars._frameRadius,
+                  prop(vars.frameRadius),
+                ),
+                [provide(vars._frameBorder)]: prop(vars._frameBorder),
+                [provide(vars._frameRing)]: prop(vars._frameRing),
               };
             }),
           );
@@ -853,22 +960,65 @@ const AriakitTailwind = plugin(
 
     matchUtilities(
       {
-        "ak-frame-rounded": (radiusKey) => {
-          const radius = tv("radius", radiusKey, radiusKey);
-          const result = {
-            [vars.frameRadius]: radius,
-            borderRadius: radius,
+        "ak-frame-m": (value) => {
+          return {
+            [vars.frameMargin]: value,
+            margin: value,
           };
-          Object.assign(
-            result,
-            withContext("frame", false, ({ provide }) => {
-              return {
-                [provide(vars._frameRadius)]: radius,
-              };
-            }),
-          );
-          return result;
         },
+      },
+      {
+        values: Object.keys(theme("spacing")).reduce(
+          (acc, key) => {
+            if (key === "__CSS_VALUES__") return acc;
+            if (key === "DEFAULT") return acc;
+            const isNumber = /^\d*\.?\d+$/u.test(key);
+            if (isNumber) {
+              acc[key] = `--spacing(${key})`;
+            } else {
+              acc[key] = t("spacing", key);
+            }
+            return acc;
+          },
+          /** @type {Record<string, string>} */ ({}),
+        ),
+      },
+    );
+
+    /**
+     * Creates frame-rounded CSS with optional force mode.
+     * @param {object} params
+     * @param {string} params.radiusKey
+     * @param {boolean} [params.force]
+     */
+    function getFrameRoundedCss({ radiusKey, force = false }) {
+      const radius = tv("radius", radiusKey, radiusKey);
+      return withContext("frame", force, ({ provide, inherit }) => {
+        const { computedRadius, nestedRadius } = getNestedRadius({
+          radius,
+          force,
+          inherit,
+        });
+        const contextCss = css({
+          [vars.frameRadius]: computedRadius,
+          borderRadius: computedRadius,
+          [provide(vars._frameRadius)]: computedRadius,
+          [provide(vars._frameBorder)]: prop(vars._frameBorder),
+          [provide(vars._frameRing)]: prop(vars._frameRing),
+        });
+        if (nestedRadius) {
+          contextCss[vars._nestedRadius] = nestedRadius;
+          Object.assign(contextCss, getFrameCapRadiusCss({ radius, provide }));
+        }
+        return contextCss;
+      });
+    }
+
+    matchUtilities(
+      {
+        "ak-frame-rounded": (radiusKey) => getFrameRoundedCss({ radiusKey }),
+        "ak-frame-rounded-force": (radiusKey) =>
+          getFrameRoundedCss({ radiusKey, force: true }),
       },
       {
         values: Object.keys(theme("radius")).reduce(
@@ -898,6 +1048,14 @@ const AriakitTailwind = plugin(
             borderWidth: prop(vars.frameBorder),
           });
         },
+        "ak-ring": (value) => {
+          const formatted = value.replaceAll(" ", "_");
+          return css({
+            [vars._frameRing]: value,
+            [vars.frameRing]: value,
+            [`@apply ring-[length:${formatted}]`]: {},
+          });
+        },
         "ak-bordering": (value) => {
           const down = prop(vars._layerDown);
           const valueDown = `calc(${value} * ${down})`;
@@ -907,14 +1065,18 @@ const AriakitTailwind = plugin(
             [IN_DARK]: {
               [vars._frameBorder]: valueUp,
               [vars.frameBorder]: valueUp,
+              [vars._frameRing]: valueDown,
+              [vars.frameRing]: valueDown,
               borderWidth: prop(vars.frameBorder),
-              [`@apply ring-[${valueDown.replaceAll(" ", "_")}]`]: {},
+              [`@apply ring-[length:${valueDown.replaceAll(" ", "_")}]`]: {},
             },
             [IN_LIGHT]: {
               [vars._frameBorder]: valueDown,
               [vars.frameBorder]: valueDown,
+              [vars._frameRing]: valueUp,
+              [vars.frameRing]: valueUp,
               borderWidth: prop(vars.frameBorder),
-              [`@apply ring-[${valueUp.replaceAll(" ", "_")}]`]: {},
+              [`@apply ring-[length:${valueUp.replaceAll(" ", "_")}]`]: {},
             },
           });
         },
