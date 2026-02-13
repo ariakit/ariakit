@@ -155,7 +155,7 @@
     "lerna": "9.0.4",
     "lint-staged": "16.2.7",
     "lodash-es": "4.17.23",
-    "lucide-react": "0.563.0",
+    "lucide-react": "0.564.0",
     "marked": "4.3.0",
     "match-sorter": "8.2.0",
     "null-loader": "4.0.1",
