@@ -119,6 +119,9 @@
 
 body {
   @apply ak-layer-canvas;
+  > * {
+    @apply ak-dark:scheme-dark;
+  }
 }
 
 @custom-variant ui-disabled {
