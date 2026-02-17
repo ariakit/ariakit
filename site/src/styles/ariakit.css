@@ -71,8 +71,8 @@
   --spacing: 0.25em;
   --spacing-px: 1px;
 
-  --duration-tab-corner: 100ms;
-  --ease-tab-corner: cubic-bezier(0.2, 0.1, 0.7, 1);
+  --duration-tabs: 100ms;
+  --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
 
   --duration-overshoot: 500ms;
   --ease-overshoot: linear(
