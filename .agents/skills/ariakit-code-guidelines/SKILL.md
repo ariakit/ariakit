@@ -1,5 +1,5 @@
 ---
-name: ariakit-style
+name: ariakit-code-guidelines
 description: Apply Ariakit code style rules when editing this repository, including braces for loops and conditionals, early-return structure, comment conventions, function declaration style, TypeScript safety practices, and readability guidance.
 ---
 
