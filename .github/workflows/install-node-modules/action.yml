@@ -45,6 +45,5 @@ runs:
           packages/*/node_modules
 
     - name: Install dependencies
-      if: steps.cache-node-modules.outputs.cache-hit != 'true'
       shell: bash
       run: pnpm install --frozen-lockfile

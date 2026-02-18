@@ -84,13 +84,8 @@
     ],
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write"
   },
-  "pnpm": {
-    "overrides": {
-      "@ariakit/react-core": "workspace:*",
-      "@wordpress/components>@ariakit/react": "workspace:*"
-    }
-  },
   "dependencies": {
+    "@ariakit/tailwind": "workspace:*",
     "@ariakit/test": "workspace:*",
     "@astrojs/mdx": "4.3.13",
     "@babel/core": "7.29.0",
