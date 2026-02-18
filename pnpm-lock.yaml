@@ -4,13 +4,17 @@ settings:
   autoInstallPeers: false
   excludeLinksFromLockfile: false
 
+overrides:
+  '@ariakit/react-core': workspace:*
+  '@wordpress/components>@ariakit/react': workspace:*
+
 importers:
 
   .:
     dependencies:
       '@ariakit/react':
         specifier: file:packages/ariakit-react
-        version: link:packages/ariakit-react
+        version: file:packages/ariakit-react(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ariakit/test':
         specifier: workspace:*
         version: link:packages/ariakit-test
@@ -427,8 +431,8 @@ importers:
   packages/ariakit-react:
     dependencies:
       '@ariakit/react-core':
-        specifier: 0.4.21
-        version: 0.4.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: workspace:*
+        version: link:../ariakit-react-core
 
   packages/ariakit-react-core:
     dependencies:
@@ -551,8 +555,8 @@ importers:
         specifier: 0.4.21
         version: 0.4.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@ariakit/react-core':
-        specifier: 0.4.21
-        version: 0.4.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: workspace:*
+        version: link:../../packages/ariakit-react-core
       '@ariakit/tailwind':
         specifier: 0.1.10
         version: 0.1.10(tailwindcss@4.1.18)
@@ -626,14 +630,14 @@ packages:
   '@ariakit/core@0.4.18':
     resolution: {integrity: sha512-9urEa+GbZTSyredq3B/3thQjTcSZSUC68XctwCkJNH/xNfKN5O+VThiem2rcJxpsGw8sRUQenhagZi0yB4foyg==}
 
-  '@ariakit/react-core@0.4.21':
-    resolution: {integrity: sha512-rUI9uB/gT3mROFja/ka7/JukkdljIZR3eq3BGiQqX4Ni/KBMDvPK8FvVLnC0TGzWcqNY2bbfve8QllvHzuw4fQ==}
+  '@ariakit/react@0.4.21':
+    resolution: {integrity: sha512-UjP99Y7cWxA5seRECEE0RPZFImkLGFIWPflp65t0BVZwlMw4wp9OJZRHMrnkEkKl5KBE2NR/gbbzwHc6VNGzsA==}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  '@ariakit/react@0.4.21':
-    resolution: {integrity: sha512-UjP99Y7cWxA5seRECEE0RPZFImkLGFIWPflp65t0BVZwlMw4wp9OJZRHMrnkEkKl5KBE2NR/gbbzwHc6VNGzsA==}
+  '@ariakit/react@file:packages/ariakit-react':
+    resolution: {directory: packages/ariakit-react, type: directory}
     peerDependencies:
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -11370,33 +11374,23 @@ snapshots:
 
   '@ariakit/core@0.4.18': {}
 
-  '@ariakit/react-core@0.4.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@ariakit/core': 0.4.18
-      '@floating-ui/dom': 1.7.4
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      use-sync-external-store: 1.6.0(react@18.3.1)
-
-  '@ariakit/react-core@0.4.21(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
-    dependencies:
-      '@ariakit/core': 0.4.18
-      '@floating-ui/dom': 1.7.4
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      use-sync-external-store: 1.6.0(react@19.2.4)
-
   '@ariakit/react@0.4.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@ariakit/react-core': 0.4.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@ariakit/react-core': link:packages/ariakit-react-core
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
   '@ariakit/react@0.4.21(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@ariakit/react-core': 0.4.21(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@ariakit/react-core': link:packages/ariakit-react-core
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
+
+  '@ariakit/react@file:packages/ariakit-react(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@ariakit/react-core': link:packages/ariakit-react-core
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   '@ariakit/solid-core@0.1.4(solid-js@1.9.11)':
     dependencies:
@@ -17324,7 +17318,7 @@ snapshots:
 
   '@wordpress/components@32.1.0(@emotion/is-prop-valid@1.2.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@ariakit/react': 0.4.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@ariakit/react': link:packages/ariakit-react
       '@date-fns/utc': 2.1.1
       '@emotion/cache': 11.11.0
       '@emotion/css': 11.11.2
@@ -24298,10 +24292,6 @@ snapshots:
   use-sync-external-store@1.6.0(react@18.3.1):
     dependencies:
       react: 18.3.1
-
-  use-sync-external-store@1.6.0(react@19.2.4):
-    dependencies:
-      react: 19.2.4
 
   util-deprecate@1.0.2: {}
 

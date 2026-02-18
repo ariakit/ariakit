@@ -19,13 +19,17 @@ runs:
       with:
         run_install: false
 
+    - name: Get pnpm store directory
+      shell: bash
+      run: echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
     - name: Cache pnpm
       if: inputs.cache-pnpm == 'true'
       uses: actions/cache@v5
       with:
         key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
         restore-keys: pnpm-${{ runner.os }}-
-        path: ~/.pnpm-store
+        path: ${{ env.PNPM_STORE_PATH }}
 
     - name: Cache node_modules
       uses: actions/cache@v5

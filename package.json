@@ -4,12 +4,12 @@
   "type": "module",
   "packageManager": "pnpm@10.17.1",
   "scripts": {
-    "start": "npm start -w website",
-    "react17": "npm i --no-save react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
-    "reactnext": "npm i --no-save react@next react-dom@next",
+    "start": "pnpm --filter website start",
+    "react17": "pnpm add --no-save react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
+    "reactnext": "pnpm add --no-save react@next react-dom@next",
     "dev-package-json": "node scripts/build/package-json-dev.js",
-    "dev": "conc -r 'npm:dev-package-json' 'npm:dev -w website'",
-    "dev-lite": "cross-env DISABLE_SHIKI=true npm run dev",
+    "dev": "conc -r 'pnpm run dev-package-json' 'pnpm --filter website run dev'",
+    "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
     "dev-site": "conc -r 'npm:dev -w site' 'npm:dev -w nextjs'",
     "dev-site-lite": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true npm run dev-site",
     "build-site": "npm run build-worker -w nextjs && npm run build -w site",
@@ -53,15 +53,15 @@
     "lint": "biome check",
     "lint-fix": "biome check --write",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
-    "tsc": "conc -r 'tsc' 'npm:tsc -w site' 'npm:tsc -w nextjs' 'npm:tsc -w templates' 'tsc -p tsconfig.solid.json'",
+    "tsc": "conc -r 'tsc' 'pnpm --filter site run tsc' 'pnpm --filter nextjs run tsc' 'pnpm --filter template-react run tsc' 'tsc -p tsconfig.solid.json'",
     "tsc-clean": "tsc --build --clean",
-    "build": "lerna exec --scope @ariakit/* -- npm run build",
-    "build-website": "npm run build --prefix website",
-    "build-website-lite": "cross-env DISABLE_SHIKI=true npm run build-website",
-    "clean": "npm run clean -ws --if-present",
+    "build": "lerna exec --scope @ariakit/* -- pnpm run --if-present build",
+    "build-website": "pnpm --filter website build",
+    "build-website-lite": "cross-env DISABLE_SHIKI=true pnpm run build-website",
+    "clean": "pnpm -r run clean --if-present",
     "changeset": "changeset",
     "version": "changeset version && pnpm install --lockfile-only --ignore-scripts",
-    "publish": "npm run build && changeset publish",
+    "publish": "pnpm run build && changeset publish",
     "prepare": "husky",
     "postinstall": "patch-package"
   },
@@ -79,7 +79,7 @@
   },
   "lint-staged": {
     "package.json": [
-      "npm run clean -ws --if-present",
+      "pnpm -r run clean --if-present",
       "biome check --no-errors-on-unmatched --write"
     ],
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write"
@@ -88,6 +88,12 @@
     "@ariakit/react-core": "file:packages/ariakit-react-core",
     "@wordpress/components": {
       "@ariakit/react": "file:packages/ariakit-react"
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "@ariakit/react-core": "workspace:*",
+      "@wordpress/components>@ariakit/react": "workspace:*"
     }
   },
   "dependencies": {
