@@ -3,6 +3,11 @@
   "semanticCommits": "disabled",
   "packageRules": [
     {
+      "matchPackageNames": ["tailwindcss"],
+      "matchCurrentVersion": "/^3\\./",
+      "enabled": false
+    },
+    {
       "groupName": "unified",
       "matchPackageNames": [
         "/hast/",
