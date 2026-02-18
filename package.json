@@ -125,7 +125,7 @@
     "@vitejs/plugin-react": "5.1.4",
     "@vitest/coverage-v8": "4.0.18",
     "@vizzly-testing/cli": "0.29.6",
-    "@wordpress/components": "32.1.0",
+    "@wordpress/components": "32.2.0",
     "astro": "5.17.2",
     "autoprefixer": "10.4.24",
     "babel-loader": "10.0.0",
