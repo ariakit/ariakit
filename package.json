@@ -84,7 +84,13 @@
     ],
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
   "dependencies": {
+    "@ariakit/solid": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "@ariakit/test": "workspace:*",
     "@astrojs/mdx": "4.3.13",

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ariakit/solid':
+        specifier: workspace:*
+        version: link:packages/ariakit-solid
       '@ariakit/tailwind':
         specifier: workspace:*
         version: link:packages/ariakit-tailwind
