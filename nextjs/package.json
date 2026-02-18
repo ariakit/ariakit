@@ -22,11 +22,11 @@
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "1.16.5",
-    "@tailwindcss/postcss": "4.1.18",
+    "@tailwindcss/postcss": "4.2.0",
     "@types/node": "25.2.3",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
-    "tailwindcss": "4.1.18"
+    "tailwindcss": "4.2.0"
   }
 }
