@@ -5,8 +5,8 @@
   "packageManager": "pnpm@10.17.1",
   "scripts": {
     "start": "pnpm --filter website start",
-    "react17": "pnpm add --no-save react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
-    "reactnext": "pnpm add --no-save react@next react-dom@next",
+    "react17": "npm i --no-save react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
+    "reactnext": "npm i --no-save react@next react-dom@next",
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm run dev-package-json' 'pnpm --filter website run dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
@@ -55,7 +55,7 @@
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "tsc": "conc -r 'tsc' 'pnpm --filter site run tsc' 'pnpm --filter nextjs run tsc' 'pnpm --filter template-react run tsc' 'tsc -p tsconfig.solid.json'",
     "tsc-clean": "tsc --build --clean",
-    "build": "lerna exec --scope @ariakit/* -- pnpm run --if-present build",
+    "build": "pnpm -r --filter @ariakit/* run --if-present build",
     "build-website": "pnpm --filter website build",
     "build-website-lite": "cross-env DISABLE_SHIKI=true pnpm run build-website",
     "clean": "pnpm -r run clean --if-present",
@@ -84,12 +84,6 @@
     ],
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write"
   },
-  "overrides": {
-    "@ariakit/react-core": "file:packages/ariakit-react-core",
-    "@wordpress/components": {
-      "@ariakit/react": "file:packages/ariakit-react"
-    }
-  },
   "pnpm": {
     "overrides": {
       "@ariakit/react-core": "workspace:*",
@@ -97,7 +91,6 @@
     }
   },
   "dependencies": {
-    "@ariakit/react": "file:packages/ariakit-react",
     "@ariakit/test": "workspace:*",
     "@astrojs/mdx": "4.3.13",
     "@babel/core": "7.29.0",
