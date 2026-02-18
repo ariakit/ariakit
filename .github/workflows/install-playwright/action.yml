@@ -15,7 +15,7 @@ runs:
       with:
         path: |
           ${{ runner.os == 'macOS' && '~/Library/Caches/ms-playwright' || runner.os == 'Windows' && '~\\AppData\\Local\\ms-playwright' || '~/.cache/ms-playwright' }}
-        key: playwright-${{ runner.os }}-${{ inputs.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+        key: playwright-${{ runner.os }}-${{ inputs.engine }}-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
         restore-keys: |
           playwright-${{ runner.os }}-${{ inputs.engine }}-
           playwright-${{ runner.os }}-

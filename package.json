@@ -2,6 +2,7 @@
   "name": "root",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "start": "npm start -w website",
     "react17": "npm i --no-save react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
@@ -59,7 +60,7 @@
     "build-website-lite": "cross-env DISABLE_SHIKI=true npm run build-website",
     "clean": "npm run clean -ws --if-present",
     "changeset": "changeset",
-    "version": "changeset version && npm i --package-lock-only --ignore-scripts",
+    "version": "changeset version && pnpm install --lockfile-only --ignore-scripts",
     "publish": "npm run build && changeset publish",
     "prepare": "husky",
     "postinstall": "patch-package"
@@ -84,11 +85,14 @@
     "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write"
   },
   "overrides": {
+    "@ariakit/react-core": "file:packages/ariakit-react-core",
     "@wordpress/components": {
       "@ariakit/react": "file:packages/ariakit-react"
     }
   },
   "dependencies": {
+    "@ariakit/react": "file:packages/ariakit-react",
+    "@ariakit/test": "workspace:*",
     "@astrojs/mdx": "4.3.13",
     "@babel/core": "7.29.0",
     "@babel/preset-env": "7.29.0",

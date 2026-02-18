@@ -2,8 +2,8 @@ name: install-node-modules
 description: Install node modules
 
 inputs:
-  cache-npm:
-    description: Cache npm
+  cache-pnpm:
+    description: Cache pnpm
     default: "false"
 
 runs:
@@ -14,19 +14,24 @@ runs:
       with:
         node-version-file: .nvmrc
 
-    - name: Cache npm
-      if: inputs.cache-npm == 'true'
+    - name: Set up pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        run_install: false
+
+    - name: Cache pnpm
+      if: inputs.cache-pnpm == 'true'
       uses: actions/cache@v5
       with:
-        key: npm-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
-        restore-keys: npm-${{ runner.os }}-
-        path: ~/.npm
+        key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
+        restore-keys: pnpm-${{ runner.os }}-
+        path: ~/.pnpm-store
 
     - name: Cache node_modules
       uses: actions/cache@v5
       id: cache-node-modules
       with:
-        key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+        key: node-modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
         restore-keys: node-modules-${{ runner.os }}-
         path: |
           node_modules
@@ -38,4 +43,4 @@ runs:
     - name: Install dependencies
       if: steps.cache-node-modules.outputs.cache-hit != 'true'
       shell: bash
-      run: npm ci --no-audit
+      run: pnpm install --frozen-lockfile

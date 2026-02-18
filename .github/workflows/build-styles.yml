@@ -28,7 +28,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Build styles
-        run: npm run build-styles -w site
+        run: pnpm --filter site run build-styles
 
       - name: Generate patch or commit
         uses: ./.github/workflows/patch-or-commit

@@ -38,7 +38,7 @@ const sourcePluginInstance = sourcePlugin(
 
 const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
   // @ts-expect-error I believe this error will go away when we regenerate
-  // package-lock.json
+  // pnpm-lock.yaml
   react: [reactPlugin(), sourcePluginInstance],
   solid: [solidPlugin(), sourcePluginInstance],
 };

@@ -27,7 +27,7 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
         with:
-          cache-npm: true
+          cache-pnpm: true
 
       - name: Install playwright
         uses: ./.github/workflows/install-playwright
@@ -42,11 +42,11 @@ jobs:
           restore-keys: nextjs-
 
       - name: Build website
-        run: npm run build-website-lite
+        run: pnpm run build-website-lite
 
       - name: Test
         id: test
-        run: xvfb-run npm run test-plus-headed
+        run: xvfb-run pnpm run test-plus-headed
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'

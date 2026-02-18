@@ -26,7 +26,7 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
         with:
-          cache-npm: true
+          cache-pnpm: true
 
   # install-macos:
   #   name: Install node modules (macOS)
@@ -38,7 +38,7 @@ jobs:
   #     - name: Install node modules
   #       uses: ./.github/workflows/install-node-modules
   #       with:
-  #         cache-npm: true
+  #         cache-pnpm: true
 
   build:
     name: Build app
@@ -52,7 +52,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build app
-        run: npm run build-lite -w site
+        run: pnpm --filter site run build-lite
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v6
@@ -74,7 +74,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build Next.js app
-        run: npm run build-worker -w nextjs
+        run: pnpm --filter nextjs run build-worker
 
       - name: Upload Next.js artifact
         uses: actions/upload-artifact@v6
@@ -96,30 +96,30 @@ jobs:
             name: Chrome
             engine: chromium
             project: chrome
-            test: xvfb-run npm run test -w site --
-            visual: xvfb-run npm run test-visual -w site --
+            test: xvfb-run pnpm --filter site run test --
+            visual: xvfb-run pnpm --filter site run test-visual --
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
-            test: xvfb-run npm run test -w site --
-            visual: xvfb-run npm run test-visual -w site --
+            test: xvfb-run pnpm --filter site run test --
+            visual: xvfb-run pnpm --filter site run test-visual --
           # - os: ubuntu-latest
           #   name: Android
           #   engine: chromium
           #   project: android
-          #   run: xvfb-run npm run test-visual -w site --
+          #   run: xvfb-run pnpm --filter site run test-visual --
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari
-            test: npm run test -w site --
-            visual: npm run test-visual -w site --
+            test: pnpm --filter site run test --
+            visual: pnpm --filter site run test-visual --
           # - os: macos-latest
           #   name: iOS
           #   engine: webkit
           #   project: ios
-          #   run: npm run test-visual -w site --
+          #   run: pnpm --filter site run test-visual --
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

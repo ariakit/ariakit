@@ -23,7 +23,7 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
         with:
-          cache-npm: true
+          cache-pnpm: true
 
   react-next:
     name: Test React Next (${{ matrix.shard }})
@@ -42,10 +42,10 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Print version of react@next
-        run: npm view react@next && npm view react-dom@next
+        run: pnpm view react@next && pnpm view react-dom@next
 
       - name: Install React@next
-        run: npm run reactnext
+        run: pnpm run reactnext
 
       - name: Test
-        run: npm test -- --shard ${{ matrix.shard }}
+        run: pnpm test -- --shard ${{ matrix.shard }}

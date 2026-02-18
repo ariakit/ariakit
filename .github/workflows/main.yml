@@ -19,7 +19,7 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
         with:
-          cache-npm: true
+          cache-pnpm: true
 
   lint:
     name: Lint
@@ -34,10 +34,10 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Lint CSS
-        run: npm run lint-css
+        run: pnpm run lint-css
 
   typescript:
     name: Type check
@@ -52,7 +52,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Type check
-        run: npm run tsc
+        run: pnpm run tsc
 
   build:
     name: Build packages
@@ -67,7 +67,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
   test:
     name: Test (${{ matrix.shard }})
@@ -86,7 +86,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Test
-        run: npm test -- --shard ${{ matrix.shard }}
+        run: pnpm test -- --shard ${{ matrix.shard }}
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -105,10 +105,10 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Install React 17
-        run: npm run react17
+        run: pnpm run react17
 
       - name: Test
-        run: npm test -- --shard ${{ matrix.shard }}
+        run: pnpm test -- --shard ${{ matrix.shard }}
 
   website:
     name: Build website
@@ -123,7 +123,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build website
-        run: npm run build-website-lite
+        run: pnpm run build-website-lite
 
       - name: Upload website artifact
         uses: actions/upload-artifact@v6
@@ -172,7 +172,7 @@ jobs:
 
       - name: Test
         id: test
-        run: xvfb-run npm run playwright -- --project ${{ matrix.project }}
+        run: xvfb-run pnpm run playwright -- --project ${{ matrix.project }}
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
@@ -214,7 +214,7 @@ jobs:
 
       - name: Test
         id: test
-        run: npm run playwright -- --project safari --project ios
+        run: pnpm run playwright -- --project safari --project ios
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
