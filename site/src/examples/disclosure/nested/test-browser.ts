@@ -14,9 +14,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeVisible();
     await q.button("Ensuring Accessibility and Semantics").click();
     const content = await getContent(q.button("Thoughts"));
-    await content.evaluate((element) => {
-      element.scrollTop = element.scrollHeight;
-    });
+    await test.expect
+      .poll(() =>
+        content.evaluate((element) => {
+          element.scrollTop = element.scrollHeight;
+          return Math.abs(
+            element.scrollHeight - element.clientHeight - element.scrollTop,
+          );
+        }),
+      )
+      .toBeLessThan(2);
     await visual();
   });
 });
