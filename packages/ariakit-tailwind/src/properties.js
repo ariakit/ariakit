@@ -187,6 +187,11 @@ const css = `
   initial-value: 0px;
 }
 
+@property ${vars._layerLevel} {
+  syntax: "*";
+  inherits: false;
+}
+
 @property ${vars._layerDown} {
   syntax: "<number>";
   inherits: true;

@@ -23,6 +23,7 @@ export const vars = /** @type {const} */ ({
   // ===========================================================================
   // Private API - Layer
   // ===========================================================================
+  _layerLevel: "--_ak-layer-level",
   _layerDown: "--_ak-layer-down",
   _layerBase: "--_ak-layer-base",
   _layerL: "--_ak-layer-l",

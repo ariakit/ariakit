@@ -88,6 +88,11 @@
   initial-value: 0px;
 }
 
+@property --_ak-layer-level {
+  syntax: "*";
+  inherits: false;
+}
+
 @property --_ak-layer-down {
   syntax: "<number>";
   inherits: true;

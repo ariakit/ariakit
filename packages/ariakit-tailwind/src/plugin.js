@@ -111,19 +111,19 @@ const AriakitTailwind = plugin(
      */
     function parseColorLevel(value) {
       if (!value) {
-        return { token: undefined, level: "1" };
+        return { token: undefined, level: prop(vars._layerLevel, "1") };
       }
       const matches = value.match(/(down-)?([.\d]+)$/);
       if (!matches) {
-        return { token: value, level: "0" };
+        return { token: value, level: prop(vars._layerLevel, "0") };
       }
       const [, down, level = down ? "-1" : undefined] = matches;
       if (!level || theme("colors")[value] || colorString.get(value)) {
-        return { token: value, level: "0" };
+        return { token: value, level: prop(vars._layerLevel, "0") };
       }
       return {
         token: value.slice(0, -((down?.length || 0) + level.length) - 1),
-        level: down ? `-${level}` : level,
+        level: down ? `calc(${level} * -1)` : level,
       };
     }
 
@@ -292,6 +292,21 @@ const AriakitTailwind = plugin(
         },
       },
       { values: getLayerValues() },
+    );
+
+    matchUtilities(
+      {
+        "ak-layer-level": (value) => {
+          return { [vars._layerLevel]: value };
+        },
+      },
+      {
+        values: getLayerValues({
+          levels: true,
+          colors: false,
+          downLevels: false,
+        }),
+      },
     );
 
     matchUtilities(
@@ -571,7 +586,9 @@ const AriakitTailwind = plugin(
             token,
             prop(vars.layerParent, prop(vars.layer)),
           );
-          const { l, c, h } = getLayerOkLCH(oklchLightDark(`-${level}`, level));
+          const { l, c, h } = getLayerOkLCH(
+            oklchLightDark(`calc(${level} * -1)`, level),
+          );
 
           return Object.assign(
             {
@@ -1136,7 +1153,7 @@ const AriakitTailwind = plugin(
               const c = isDark ? `c` : `min(c, 92)`;
               return {
                 [vars.text]: `lch(from ${baseColor} clamp(0, ${lString}, 100) ${c} h / 100%)`,
-                [vars._textLevel]: isDark ? level : `-${level}`,
+                [vars._textLevel]: isDark ? level : `calc(${level} * -1)`,
               };
             }),
           );
