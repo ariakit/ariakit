@@ -8,7 +8,7 @@ import {
   tabGlider,
   tabLabel,
   tabList,
-  tabPanel,
+  tabPanels,
   tabSeparator,
   tabSlot,
   tabs,
@@ -123,9 +123,19 @@ export function TabSlot(props: TabSlotProps) {
   return <span {...tabSlot(variantProps)} {...rest} />;
 }
 
-export interface TabPanelProps
-  extends ak.TabPanelProps,
-    VariantProps<typeof tabPanel> {
+export interface TabPanelsProps
+  extends ComponentProps<"div">,
+    VariantProps<typeof tabPanels> {}
+
+/**
+ * @see https://ariakit.com/react/examples/tabs/ariakit-react/
+ */
+export function TabPanels(props: TabPanelsProps) {
+  const [variantProps, rest] = splitProps(props, tabPanels);
+  return <div {...tabPanels(variantProps)} {...rest} />;
+}
+
+export interface TabPanelProps extends ak.TabPanelProps {
   single?: boolean;
 }
 
@@ -133,16 +143,9 @@ export interface TabPanelProps
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
  */
 export function TabPanel({ single, ...props }: TabPanelProps) {
-  const [variantProps, rest] = splitProps(props, tabPanel);
   const context = ak.useTabContext();
   const tabId = ak.useStoreState(context, "selectedId");
-  return (
-    <ak.TabPanel
-      {...tabPanel(variantProps)}
-      tabId={single ? tabId : undefined}
-      {...rest}
-    />
-  );
+  return <ak.TabPanel tabId={single ? tabId : undefined} {...props} />;
 }
 
 export interface TabGliderProps
