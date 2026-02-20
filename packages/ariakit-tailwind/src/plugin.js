@@ -574,6 +574,10 @@ const AriakitTailwind = plugin(
           const { l, c, h } = getLayerOkLCH(oklchLightDark(`-${level}`, level));
 
           return Object.assign(
+            {
+              "--tw-ring-color": prop(vars.ring),
+              borderColor: prop(vars.border),
+            },
             withParentOkL((parentL) => {
               const isDark = parentL < SCHEME_THRESHOLD_OKL;
               const t = isDark ? 1 : -1.2;
@@ -592,8 +596,6 @@ const AriakitTailwind = plugin(
                 scheme: isDark ? "light" : "dark",
               });
               return {
-                "--tw-ring-color": prop(vars.ring),
-                borderColor: prop(vars.border),
                 [vars.ring]: colorWithContrast,
                 [vars.border]: colorWithContrast,
               };
@@ -688,9 +690,22 @@ const AriakitTailwind = plugin(
           {
             [provide(vars._frameRadius)]: radius,
             [vars.frameRadius]: radius,
-            borderRadius: radius,
           },
       };
+    }
+
+    /**
+     * Returns the computed radius for a given radius value.
+     * @param {object} params
+     * @param {string} params.radius - The base radius value
+     * @param {boolean} [params.force] - Whether to force the radius
+     */
+    function getComputedRadius({ radius, force = false }) {
+      if (force) {
+        return radius;
+      }
+      const minRadius = `min(0.125rem, ${radius})`;
+      return `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
     }
 
     /**
@@ -701,17 +716,12 @@ const AriakitTailwind = plugin(
      * @param {Inherit} params.inherit - The inherit function from withContext
      */
     function getNestedRadius({ radius, force = false, inherit }) {
-      if (force) {
-        return { computedRadius: radius, nestedRadius: undefined };
-      }
+      if (force) return;
       const parentPadding = inherit(vars._framePadding, "0px");
       const parentRadius = inherit(vars._frameRadius, radius);
       const parentBorder = inherit(vars._frameBorder, "0px");
       const selfMargin = prop(vars.frameMargin, "0px");
-      const nestedRadius = `(${parentRadius} - calc(${parentPadding} + ${parentBorder} + ${selfMargin}))`;
-      const minRadius = `min(0.125rem, ${radius})`;
-      const computedRadius = `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
-      return { computedRadius, nestedRadius };
+      return `calc(${parentRadius} - (${parentPadding} + ${parentBorder} + ${selfMargin}))`;
     }
 
     /**
@@ -722,27 +732,25 @@ const AriakitTailwind = plugin(
      */
     function getFrameCss({ radiusKey, modifier = null, force = false }) {
       const { radius, padding } = getFrameArgs(radiusKey, modifier);
-      const result = css(
+      const computedRadius = getComputedRadius({ radius, force });
+      return css(
         {
           [vars.framePadding]: padding,
-          padding,
-          scrollPadding: padding,
+          [vars.frameRadius]: computedRadius,
+          padding: prop(vars.framePadding),
+          scrollPadding: prop(vars.framePadding),
+          borderRadius: prop(vars.frameRadius),
         },
         getFrameCappedPaddingCss(prop(vars.framePadding)),
-      );
-      Object.assign(
-        result,
         withContext("frame", force, ({ provide, inherit }) => {
-          const { computedRadius, nestedRadius } = getNestedRadius({
+          const nestedRadius = getNestedRadius({
             radius,
             force,
             inherit,
           });
           const contextCss = css({
-            [vars.frameRadius]: computedRadius,
-            borderRadius: computedRadius,
-            [provide(vars._framePadding)]: padding,
-            [provide(vars._frameRadius)]: computedRadius,
+            [provide(vars._framePadding)]: prop(vars.framePadding),
+            [provide(vars._frameRadius)]: prop(vars.frameRadius),
             [provide(vars._frameBorder)]: prop(vars._frameBorder),
             [provide(vars._frameRing)]: prop(vars._frameRing),
           });
@@ -756,7 +764,6 @@ const AriakitTailwind = plugin(
           return contextCss;
         }),
       );
-      return result;
     }
 
     /**
@@ -811,17 +818,16 @@ const AriakitTailwind = plugin(
       const { radius, padding } = getFrameArgs(radiusKey, extra.modifier);
       const cap = `1rem`;
       const capPadding = `min(${padding}, ${cap})`;
-
       const result = {
+        [vars._frameCappedPadding]: capPadding,
         [vars.framePadding]: padding,
         padding,
         scrollPadding: padding,
-        borderRadius: radius,
+        borderRadius: "0",
         [IN_DARK]: { colorScheme: "dark" },
         [IN_LIGHT]: { colorScheme: "light" },
       };
-
-      return Object.assign(
+      return css(
         result,
         withContext("frame", false, ({ provide, inherit }) => {
           const parentPadding = inherit(vars._framePadding, "0px");
@@ -840,29 +846,26 @@ const AriakitTailwind = plugin(
           const computedRadius = useSelfBorder
             ? `calc(${parentRadius} - ${parentBorder})`
             : parentRadius;
-
           return css({
-            [vars._frameCappedPadding]: capPadding,
-            [provide(vars._framePadding)]: computedPadding,
-            [provide(vars._frameRadius)]: computedRadius,
-            [provide(vars._frameBorder)]: prop(vars._frameBorder),
-            [provide(vars._frameRing)]: prop(vars._frameRing),
             [vars.frameMargin]: margin,
             [vars.framePadding]: computedPadding,
             [vars.frameRadius]: computedRadius,
-            marginInline: margin,
-            padding: computedPadding,
-            scrollPadding: computedPadding,
-            borderRadius: "0",
+            [provide(vars._framePadding)]: prop(vars.framePadding),
+            [provide(vars._frameRadius)]: prop(vars.frameRadius),
+            [provide(vars._frameBorder)]: prop(vars._frameBorder),
+            [provide(vars._frameRing)]: prop(vars._frameRing),
+            padding: prop(vars.framePadding),
+            scrollPadding: prop(vars.framePadding),
+            marginInline: prop(vars.frameMargin),
             "&:first-child": createFrameEdgeStyles({
               position: "start",
               margin,
-              radius: computedRadius,
+              radius: prop(vars.frameRadius),
             }),
             "&:not(:has(~ *:not([hidden],template)))": createFrameEdgeStyles({
               position: "end",
               margin,
-              radius: computedRadius,
+              radius: prop(vars.frameRadius),
             }),
           });
         }),
@@ -993,25 +996,29 @@ const AriakitTailwind = plugin(
      */
     function getFrameRoundedCss({ radiusKey, force = false }) {
       const radius = tv("radius", radiusKey, radiusKey);
-      return withContext("frame", force, ({ provide, inherit }) => {
-        const { computedRadius, nestedRadius } = getNestedRadius({
-          radius,
-          force,
-          inherit,
-        });
-        const contextCss = css({
+      const computedRadius = getComputedRadius({ radius, force });
+      return Object.assign(
+        {
           [vars.frameRadius]: computedRadius,
-          borderRadius: computedRadius,
-          [provide(vars._frameRadius)]: computedRadius,
-          [provide(vars._frameBorder)]: prop(vars._frameBorder),
-          [provide(vars._frameRing)]: prop(vars._frameRing),
-        });
-        if (nestedRadius) {
-          contextCss[vars._nestedRadius] = nestedRadius;
-          Object.assign(contextCss, getFrameCapRadiusCss({ radius, provide }));
-        }
-        return contextCss;
-      });
+          borderRadius: prop(vars.frameRadius),
+        },
+        withContext("frame", force, ({ provide, inherit }) => {
+          const nestedRadius = getNestedRadius({ radius, force, inherit });
+          const contextCss = css({
+            [provide(vars._frameRadius)]: computedRadius,
+            [provide(vars._frameBorder)]: prop(vars._frameBorder),
+            [provide(vars._frameRing)]: prop(vars._frameRing),
+          });
+          if (nestedRadius) {
+            contextCss[vars._nestedRadius] = nestedRadius;
+            Object.assign(
+              contextCss,
+              getFrameCapRadiusCss({ radius, provide }),
+            );
+          }
+          return contextCss;
+        }),
+      );
     }
 
     matchUtilities(
