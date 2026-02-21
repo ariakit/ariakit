@@ -3,6 +3,7 @@ export const vars = /** @type {const} */ ({
   // Public API
   // ===========================================================================
   layer: "--ak-layer",
+  layerLevel: "--ak-layer-level",
   layerParent: "--ak-layer-parent",
   text: "--ak-text",
   ring: "--ak-ring",
@@ -13,25 +14,29 @@ export const vars = /** @type {const} */ ({
   bordering: "--ak-bordering",
   frameRadius: "--ak-frame-radius",
   frameBorder: "--ak-frame-border",
+  frameRing: "--ak-frame-ring",
   framePadding: "--ak-frame-padding",
   frameMargin: "--ak-frame-margin",
+  layerIdle: "--ak-layer-idle",
+  layerState: "--ak-layer-state",
+  layerModifier: "--ak-layer-modifier",
 
   // ===========================================================================
   // Private API - Layer
   // ===========================================================================
-  _layerDown: "--_ak-layer-down",
+  _layerLevel: "--_ak-layer-level",
   _layerBase: "--_ak-layer-base",
   _layerL: "--_ak-layer-l",
   _layerOkL: "--_ak-layer-okl",
   _layerAppearance: "--_ak-layer-appearance",
   _layerParent: "--_ak-layer-parent",
-  _layerIdle: "--_ak-layer-idle",
 
   // ===========================================================================
   // Private API - Frame
   // ===========================================================================
   _frameRadius: "--_ak-frame-radius",
   _frameBorder: "--_ak-frame-border",
+  _frameRing: "--_ak-frame-ring",
   _framePadding: "--_ak-frame-padding",
   _frameCappedPadding: "--_ak-frame-capped-padding",
   _nestedRadius: "--_ak-nested-radius",
