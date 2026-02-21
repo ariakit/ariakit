@@ -1,12 +1,22 @@
 import { Group, GroupLabel } from "@ariakit/react";
+import {
+  Tab,
+  TabGlider,
+  TabList,
+  TabPanel,
+  TabPanels,
+  TabSeparator,
+  Tabs,
+} from "@ariakit/ui/ariakit/tabs.react.tsx";
 import { BadgeLabel } from "@ariakit/ui/html/badge.react.tsx";
 import {
   Button,
-  ButtonActiveIndicator,
   ButtonContent,
   ButtonDescription,
+  ButtonGlider,
   ButtonGroup,
   ButtonLabel,
+  ButtonSeparator,
   ButtonSlot,
 } from "@ariakit/ui/html/button.react.tsx";
 import {
@@ -16,8 +26,6 @@ import {
   checkboxCardLabel,
 } from "@ariakit/ui/styles/checkbox-card.ts";
 import { controlGroup, controlSeparator } from "@ariakit/ui/styles/control.ts";
-import { folder } from "@ariakit/ui/styles/folder.ts";
-import { gliderSeparator } from "@ariakit/ui/styles/glider.ts";
 import {
   ActivityIcon,
   ArrowRightIcon,
@@ -29,6 +37,8 @@ import {
   ListIcon,
   MessageSquareIcon,
   PlusIcon,
+  SettingsIcon,
+  UserIcon,
   VerifiedIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -190,189 +200,151 @@ export default function Example() {
           </span>
         </label>
       </div>
-      {/* <div className="grid place-items-center p-80 gap-110">
-        <ButtonGroup
-          $p="md"
-          $rounded="2xl"
-          $gap="sm"
-          className="border-e ak-layer-0 rounded-e-none"
-        >
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <LayoutDashboardIcon />
-            </ButtonSlot>
-            <ButtonLabel>Overview</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({})}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ListIcon />
-            </ButtonSlot>
-            <ButtonLabel>Details</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({})}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ActivityIcon />
-            </ButtonSlot>
-            <ButtonLabel>Activity</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({})}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <FilesIcon />
-            </ButtonSlot>
-            <ButtonLabel>Files</ButtonLabel>
-          </Button>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <MessageSquareIcon />
-            </ButtonSlot>
-            <ButtonLabel>Comments</ButtonLabel>
-          </Button>
-          <ButtonActiveIndicator $state="hover" />
-          <ButtonActiveIndicator $state="selected" />
-          <ButtonActiveIndicator $state="selected" $kind="bar" />
-          <ButtonActiveIndicator $state="focus" />
-        </ButtonGroup>
-        <ButtonGroup
-          $layout="horizontal"
-          $p="md"
-          $rounded="2xl"
-          className="border-b ak-layer-0 rounded-b-none"
-        >
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <LayoutDashboardIcon />
-            </ButtonSlot>
-            <ButtonLabel>Overview</ButtonLabel>
-          </Button>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ListIcon />
-            </ButtonSlot>
-            <ButtonLabel>Details</ButtonLabel>
-          </Button>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ActivityIcon />
-            </ButtonSlot>
-            <ButtonLabel>Activity</ButtonLabel>
-          </Button>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <FilesIcon />
-            </ButtonSlot>
-            <ButtonLabel>Files</ButtonLabel>
-          </Button>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <MessageSquareIcon />
-            </ButtonSlot>
-            <ButtonLabel>Comments</ButtonLabel>
-          </Button>
-          <ButtonActiveIndicator $state="hover" />
-          <ButtonActiveIndicator $state="selected" $kind="bar" />
-          <ButtonActiveIndicator $state="focus" />
-        </ButtonGroup>
-        <ButtonGroup
-          $layout="stretch"
-          $p="sm"
-          $size="sm"
-          $bg="pop"
-          $rounded="full"
-          $border
-          className="w-120!"
-        >
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <LayoutDashboardIcon />
-            </ButtonSlot>
-            <ButtonLabel>Overview</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({})}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ListIcon />
-            </ButtonSlot>
-            <ButtonLabel>Details</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({})}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ActivityIcon />
-            </ButtonSlot>
-            <ButtonLabel>Activity</ButtonLabel>
-          </Button>
-          <ButtonActiveIndicator $state="hover" />
-          <ButtonActiveIndicator $state="selected" $bg="light2" $kind="bevel" />
-          <ButtonActiveIndicator $state="focus" />
-        </ButtonGroup>
-        <ButtonGroup
-          $layout="horizontal"
-          $p="md"
-          $size="sm"
-          // $bg="pop"
-          $rounded="2xl"
-          $border
-        >
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <LayoutDashboardIcon />
-            </ButtonSlot>
-            <ButtonLabel>Overview</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({ $kind: "slash" })}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ListIcon />
-            </ButtonSlot>
-            <ButtonLabel>Details</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({ $kind: "slash" })}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ActivityIcon />
-            </ButtonSlot>
-            <ButtonLabel>Activity</ButtonLabel>
-          </Button>
-          <ButtonActiveIndicator $state="hover" />
-          <ButtonActiveIndicator $state="focus" />
-        </ButtonGroup>
-        <ButtonGroup
-          $layout="horizontal"
-          $p="md"
-          $size="sm"
-          // $bg="pop"
-          $rounded="2xl"
-          $border
-        >
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <LayoutDashboardIcon />
-            </ButtonSlot>
-            <ButtonLabel>Overview</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({ $kind: "slash" })}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ListIcon />
-            </ButtonSlot>
-            <ButtonLabel>Details</ButtonLabel>
-          </Button>
-          <div {...gliderSeparator({ $kind: "slash" })}></div>
-          <Button $bg="ghost" className="not-ui-focus:ak-text/70">
-            <ButtonSlot>
-              <ActivityIcon />
-            </ButtonSlot>
-            <ButtonLabel>Activity</ButtonLabel>
-          </Button>
-          <ButtonActiveIndicator $state="hover" $animated={false} />
-          <ButtonActiveIndicator $state="focus" $animated={false} />
-        </ButtonGroup>
-      </div> */}
+
       <div className="flex flex-wrap gap-8 justify-center w-160 items-center">
-        <div {...folder({})}>Tab</div>
+        <ButtonGroup
+          $bg="popLightDark"
+          $rounded="full"
+          $size="sm"
+          $layout="stretch"
+          className="overflow-hidden relative ak-dark:ring w-100!"
+        >
+          <Button $bg="ghost" $px="lg">
+            <ButtonSlot>
+              <UserIcon />
+            </ButtonSlot>
+            <ButtonLabel>Profile</ButtonLabel>
+          </Button>
+          <ButtonSeparator />
+          <Button $bg="ghost" $px="lg">
+            <ButtonSlot>
+              <SettingsIcon />
+            </ButtonSlot>
+            <ButtonLabel>Settings</ButtonLabel>
+          </Button>
+          <ButtonSeparator />
+          <Button $bg="ghost" $px="lg">
+            <ButtonSlot>
+              <SettingsIcon />
+            </ButtonSlot>
+            <ButtonLabel>Settings</ButtonLabel>
+          </Button>
+          <ButtonGlider $state="hover" />
+          <ButtonGlider $state="focus" />
+          <ButtonGlider
+            $state="selected"
+            // $bg="light2"
+            // $border="adaptive"
+            // $borderType="inset"
+            $kind="bevel"
+            className="shadow-[0_0_12px_--alpha(black/0.05),0_8px_16px_--alpha(black/0.05)]"
+          />
+        </ButtonGroup>
+        <Tabs $rounded="2xl" $border $borderWidth={4} $p="none">
+          <TabList>
+            <Tab>Profile</Tab>
+            <TabSeparator />
+            <Tab>Settings</Tab>
+            <TabSeparator />
+            <Tab>Activity</Tab>
+            <Tab>Files</Tab>
+            <Tab>Comments</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>Panel 1</TabPanel>
+            <TabPanel>Panel 2</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+          </TabPanels>
+        </Tabs>
+        <Tabs $rounded="3xl" $border $borderWidth={4} $p="lg">
+          <TabList>
+            <Tab>Profile</Tab>
+            <TabSeparator />
+            <Tab>Settings</Tab>
+            <TabSeparator />
+            <Tab>Activity</Tab>
+            <Tab>Files</Tab>
+            <Tab>Comments</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>Panel 1</TabPanel>
+            <TabPanel>Panel 2</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+          </TabPanels>
+        </Tabs>
+        <div className="ak-frame-xl/10 ak-bordering shadow-lg ak-layer-pop-0.5 overflow-clip">
+          <Tabs
+            $p="sm"
+            $rounded="2xl"
+            $borderWidth={1}
+            $borderColor="primary"
+            $borderWeight="contrast"
+          >
+            <TabList>
+              <Tab>Profile</Tab>
+              <TabSeparator />
+              <Tab>Settings</Tab>
+              <TabSeparator />
+              <Tab>Activity</Tab>
+              <TabSeparator />
+              <Tab>Files</Tab>
+              <TabSeparator />
+              <Tab>Comments</Tab>
+              <TabGlider $state="hover" />
+              <TabGlider $state="selected" $kind="folder" />
+              <TabGlider $state="focus" $bg="primary" />
+            </TabList>
+            <TabPanels>
+              <TabPanel single className="grid">
+                <ButtonGroup
+                  $layout="vertical"
+                  $roundedType="overflow"
+                  className="invisible"
+                >
+                  <Button $bg="ghost">Panel 1</Button>
+                  <Button $bg="ghost">Panel 1</Button>
+                  <Button $bg="ghost">Panel 1</Button>
+                  <ButtonGlider $state="hover" />
+                </ButtonGroup>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </div>
+        <div className="ak-frame-xl ak-bordering shadow-lg ak-layer-pop-0.5 overflow-clip">
+          <Tabs
+            $p="none"
+            $rounded="xl"
+            $border={true}
+            $borderType="bordering"
+            $roundedType="overflow"
+          >
+            <TabList>
+              <Tab $border={false}>Tab 1</Tab>
+              <TabSeparator />
+              <Tab $border={false}>Tab 2</Tab>
+              <TabSeparator />
+              <Tab $border={false}>Tab 3</Tab>
+              <TabGlider $state="hover" />
+              <TabGlider $state="selected" $kind="folder" $bg="light" $border />
+              <TabGlider
+                $state="focus"
+                className="rounded-b-none -z-2 [clip-path:inset(-0.25em_-0.25em_0.25em_-0.25em)]"
+              />
+            </TabList>
+            <TabPanel single className="grid">
+              <ButtonGroup $layout="vertical" $roundedType="overflow">
+                <Button $bg="ghost">Panel 1</Button>
+                <Button $bg="ghost">Panel 1</Button>
+                <Button $bg="ghost">Panel 1</Button>
+                <ButtonGlider $state="hover" />
+              </ButtonGroup>
+            </TabPanel>
+          </Tabs>
+        </div>
         <div {...controlGroup({})}>
           <Button $bg="pop" $color="danger">
             <ButtonSlot>
@@ -449,7 +421,7 @@ export default function Example() {
           </ButtonSlot>
           <ButtonLabel>Technology</ButtonLabel>
           <ButtonSlot $kind="badge" $floating>
-            New
+            <BadgeLabel>New</BadgeLabel>
           </ButtonSlot>
         </Button>
         <Button $rounded="full" $bg="invert">
@@ -458,13 +430,14 @@ export default function Example() {
             <ArrowRightIcon />
           </ButtonSlot>
         </Button>
-        <Button $rounded="full" $p="sm" $bg="ghost" $border $size="sm">
+        <Button $rounded="xl" $p="sm" $bg="ghost" $border $size="sm">
           <ButtonSlot
             $kind="badge"
             $bg="primary"
             $mix={15}
-            $border="medium"
-            // $size="full"
+            // $border="medium"
+            $size="xl"
+            $mx="2xl"
           >
             <BadgeLabel>New</BadgeLabel>
           </ButtonSlot>

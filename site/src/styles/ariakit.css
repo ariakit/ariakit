@@ -44,25 +44,6 @@
   --color-warning: theme(--color-yellow-600);
   --color-danger: theme(--color-red-600);
 
-  --radius-container: var(--radius-xl);
-  --spacing-container: --spacing(1);
-
-  --radius-tooltip: var(--radius-lg);
-  --spacing-tooltip: --spacing(1);
-
-  --radius-dialog: var(--radius-2xl);
-  --spacing-dialog: --spacing(4);
-
-  --radius-card: var(--radius-xl);
-  --spacing-card: --spacing(4);
-
-  --radius-field: var(--radius-lg);
-  --spacing-field: 0.5em;
-  --spacing-field-card: 0.875em;
-
-  --radius-badge: var(--radius-full);
-  --spacing-badge: 0.3334em;
-
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -181,6 +162,7 @@ body {
 @custom-variant ui-selected {
   &:is(
     :checked,
+    .selected,
     [aria-checked="true"],
     [aria-selected="true"],
     [aria-current]:not([aria-current="false"])

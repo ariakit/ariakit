@@ -5,16 +5,20 @@ import { frame } from "./frame.ts";
 
 export const glider = cv({
   extend: [frame, bevel],
-  class: "absolute -z-1 pointer-events-none not-supports-anchor:hidden",
+  class: "glider absolute! -z-1 pointer-events-none not-supports-anchor:hidden",
   variants: {
     $kind: {
       bevel: [
         "m-(--inset-padding)",
-        "start-[anchor(start)] top-[anchor(top)] w-[calc(anchor-size()-var(--inset-padding)*2)] h-[calc(anchor-size()-var(--inset-padding)*2)]",
+        "start-[anchor(start)] bottom-[anchor(bottom)]",
+        "w-[calc(anchor-size()-var(--inset-padding)*2)]",
+        "h-[calc(anchor-size()-var(--inset-padding)*2)]",
       ],
       flat: [
         "m-(--inset-padding)",
-        "start-[anchor(start)] top-[anchor(top)] w-[calc(anchor-size()-var(--inset-padding)*2)] h-[calc(anchor-size()-var(--inset-padding)*2)]",
+        "start-[anchor(start)] bottom-[anchor(bottom)]",
+        "w-[calc(anchor-size()-var(--inset-padding)*2)]",
+        "h-[calc(anchor-size()-var(--inset-padding)*2)]",
       ],
       bar: [
         "z-10",
@@ -24,7 +28,7 @@ export const glider = cv({
         "not-[.vertical>&]:h-[calc(--spacing(0.5)+--spacing(0.1)*var(--contrast))]",
         // vertical orientation
         "[.vertical>&]:end-[anchor(--glider-group_end)]",
-        "[.vertical>&]:top-[calc(anchor(top)+var(--inset-padding))]",
+        "[.vertical>&]:bottom-[calc(anchor(bottom)+var(--inset-padding))]",
         "[.vertical>&]:w-[calc(--spacing(0.5)+--spacing(0.1)*var(--contrast))]",
         "[.vertical>&]:h-[calc(anchor-size()-var(--inset-padding)*2)]",
       ],
@@ -37,6 +41,8 @@ export const glider = cv({
         "in-[.glider-group:hover:not(:has(:hover))]:delay-250",
         "in-[.glider-group:not(:hover)]:hidden",
         "supports-anchor:[.control:has(~&)]:ui-hover:bg-transparent",
+        "supports-anchor:[.control:has(~&)]:ui-hover:border-transparent",
+        "supports-anchor:[.control:has(~&)]:ui-hover:befter:hidden",
       ],
       focus: [
         "[position-anchor:--glider-focus]",
@@ -46,13 +52,19 @@ export const glider = cv({
         "outline-2 outline-offset-1 outline-primary",
       ],
       selected: [
-        "[position-anchor:--glider-selected]",
+        "[position-anchor:--glider-selected] selected",
         "[.control:has(~&)]:ui-selected:[--glider-selected:--glider-selected]",
         "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
+        "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
+        "supports-anchor:[.control:has(~&)]:ui-selected:befter:hidden",
       ],
     },
-    $animated:
-      "transition-[inset-inline,border-color,height,width,outline] [.vertical>&]:transition-[inset-block,border-color,height,width,outline] duration-100 transition-discrete",
+    $animated: [
+      "transition-[inset-inline,border-color,height,width,outline]",
+      "[.vertical>&]:transition-[inset-block,border-color,height,width,outline]",
+      "duration-100 transition-discrete",
+      "[.vertical>&]:duration-50",
+    ],
   },
   defaultVariants: {
     $kind: "flat",
@@ -64,10 +76,15 @@ export const glider = cv({
   },
   computed: ({ variants, setDefaultVariants }) => {
     const bg = {
-      none: "none",
+      none: "unset",
       hover: "pop",
       focus: "ghost",
-      selected: variants.$kind === "bar" ? "invert" : "pop2",
+      selected:
+        variants.$kind === "bar"
+          ? "invert"
+          : variants.$kind === "bevel"
+            ? "light2"
+            : "pop2",
     } satisfies Record<
       NonNullable<typeof variants.$state>,
       typeof variants.$bg
@@ -76,7 +93,9 @@ export const glider = cv({
       $bg: variants.$bg ?? bg[variants.$state ?? "none"],
     });
     if (variants.$state === "selected") {
-      setDefaultVariants({ $border: variants.$border ?? "adaptive" });
+      setDefaultVariants({
+        $borderWeight: variants.$borderWeight ?? "adaptive",
+      });
     }
     if (variants.$kind === "bar") {
       setDefaultVariants({ $rounded: false, $contrast: true, $border: false });
@@ -95,29 +114,35 @@ export const gliderAnchor = cv({
 export const gliderSeparator = cv({
   extend: [controlSeparator],
   class:
-    "separator supports-anchor:-mx-[calc(var(--inset-padding)*1.5+var(--border-width)/2)]",
+    "separator -mx-[calc(var(--inset-padding,0px)*1.5+var(--border-width,0px)/2)]",
 });
 
 export const gliderGroup = cv({
   extend: [controlGroup],
   class: [
-    "glider-group z-1 [anchor-scope:--glider-group,--glider-hover,--glider-focus,--glider-selected]",
-    "[--glider-group-radius:var(--ak-frame-radius)]",
-    "not-[.vertical]:[&>.control:not(:nth-last-child(1_of_.control)):not(:has(+.separator))]:-me-[calc(var(--inset-padding)*2)]",
-    "[.vertical]:[&>.control:not(:nth-last-child(1_of_.control))]:-mb-[calc(var(--inset-padding)*2)]",
+    "glider-group relative z-1",
+    "[--glider-group-radius:var(--ak-frame-radius,0px)]",
+    "not-[.vertical]:has-[>.glider]:[&>.control:not(:nth-last-child(1_of_.control)):not(:has(+.separator))]:-me-[calc(var(--inset-padding)*2)]",
+    "[.vertical]:has-[>.glider]:[&>.control:not(:nth-last-child(1_of_.control))]:-mb-[calc(var(--inset-padding)*2)]",
+    "supports-anchor:has-[>.glider]:[--inset-padding:calc(var(--ak-frame-padding,0px)+0px)]",
   ],
   style: {
     anchorName: "--glider-group",
+    anchorScope:
+      "--glider-group, --glider-hover, --glider-focus, --glider-selected",
   },
   computed: ({ variants }) => {
     const classes: string[] = [];
     if (variants.$gap !== "none") {
       classes.push(
-        "supports-anchor:p-0 supports-anchor:[--inset-gap:var(--gap)]",
+        "supports-anchor:has-[>.glider]:p-0",
+        // "supports-anchor:has-[>.glider]:[--inset-gap:var(--gap)]",
       );
     }
     if (variants.$p !== "none") {
-      classes.push("supports-anchor:[--inset-padding:var(--ak-frame-padding)]");
+      // classes.push(
+      //   "supports-anchor:has-[>.glider]:[--inset-padding:calc(var(--ak-frame-padding,0px)+0px)]",
+      // );
     }
     return classes;
   },

@@ -7,7 +7,7 @@ import { text } from "./text.ts";
 export const control = cv({
   extend: [layer, frame, text],
   class: [
-    "control group/control flex justify-center",
+    "control group/control relative flex justify-center",
     "[--parent-background:var(--ak-layer-parent)]",
     // font sidebearing
     "[--sb:0.15em]",
@@ -25,18 +25,6 @@ export const control = cv({
       md: "text-base",
       lg: "text-lg",
       xl: "text-xl",
-    },
-    /**
-     * Sets the element's text color.
-     */
-    $color: {
-      default: "",
-      tonal: "*:ak-text-(--ak-layer-idle)/60",
-      primary: "*:ak-text-primary/60",
-      secondary: "*:ak-text-secondary/60",
-      success: "*:ak-text-success/60",
-      warning: "*:ak-text-warning/60",
-      danger: "*:ak-text-danger/60",
     },
     /**
      * Sets the gap between the element's content and its siblings.
@@ -69,31 +57,34 @@ export const control = cv({
     /**
      * Sets the element’s disabled state.
      */
-    $disabled:
-      "disabled ak-layer-pop-0.5 cursor-not-allowed! ak-text/0! *:ak-text/0! border-transparent! ring-transparent! inset-shadow-none! bg-none! shadow-none!",
+    $disabled: [
+      "disabled cursor-not-allowed!",
+      "border-transparent! ring-transparent! inset-shadow-none! shadow-none!",
+      "bg-none! ak-text/0! *:ak-text/0!",
+    ],
   },
   defaultVariants: {
     $size: "auto",
-    $color: "default",
     $rounded: "md",
     $p: "md",
+    $px: "md",
     $gap: "md",
     $gapY: "auto",
-    $px: "md",
   },
-  computed: ({ variants, setDefaultVariants }) => {
+  computed: ({ variants, setDefaultVariants, addClass }) => {
     if (variants.$disabled) {
       setDefaultVariants({ $bg: "disabled" });
     }
     if (variants.$p === "none") {
-      return setDefaultVariants({ $px: "none" });
+      setDefaultVariants({ $px: "none" });
+    } else {
+      addClass([
+        "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
+        "[--py:calc(var(--ak-frame-padding,0px))]",
+        "px-[calc(var(--px)+var(--inset-padding,0px))]",
+        "py-[calc(var(--py)+var(--inset-padding,0px))]",
+      ]);
     }
-    return [
-      "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
-      "[--py:calc(var(--ak-frame-padding,0px))]",
-      "px-[calc(var(--px)+var(--inset-padding,0px))]",
-      "py-[calc(var(--py)+var(--inset-padding,0px))]",
-    ];
   },
 });
 
@@ -101,22 +92,22 @@ export const controlSlot = cv({
   extend: [layer, border, text],
   class: [
     "flex flex-none items-center justify-center",
-    "[--mx:calc((var(--py)-var(--px))*var(--size-scale,1)+var(--half-line-gap)*var(--row-span))]",
-    "[--my:calc(var(--half-line-gap)*var(--row-span))]",
-    "[--half-line-gap:calc((1lh-var(--size,1lh))/2)]",
+    "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span))]",
+    "[--mx:calc((var(--py)-var(--px))+var(--my))]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
     "[&>svg]:block [&>svg]:size-(--size) mx-(--mx) my-(--my)",
-    // debug
-    // "relative after:absolute after:-inset-[calc(var(--half-line-gap)+var(--py))] after:bg-yellow-500/40",
   ],
   variants: {
     $bg: {
       // When the frame's bg is inverted, we need to make the pop effect more
       // pronounced so it's still visible.
-      pop: "group-[.background-invert]/control:ak-layer-pop-2.5",
+      pop: "group-[.layer-invert]/control:ak-layer-pop-2.5",
     },
+    /**
+     * Sets the slot size.
+     */
     $size: {
-      none: "",
+      unset: "",
       xs: "[--size:1ex]",
       sm: "[--size:1cap]",
       md: "[--size:1em]",
@@ -126,19 +117,13 @@ export const controlSlot = cv({
       full: "[--size:calc(1lh+var(--py)*2/var(--row-span))]",
     },
     /**
-     * Sets the element's text color. TODO: Abstract this to a separate utility.
+     * Controls the slot's horizontal margin. By default, it's set based on the
+     * slot size. The larger the slot, the larger the margin. Set to `closeGap`
+     * to move the slot closer to the control's text.
      */
-    $color: {
-      default: "",
-      tonal: "*:ak-text-(--ak-layer-idle)/60",
-      primary: "*:ak-text-primary/60",
-      secondary: "*:ak-text-secondary/60",
-      success: "*:ak-text-success/60",
-      warning: "*:ak-text-warning/60",
-      danger: "*:ak-text-danger/60",
-    },
     $mx: {
-      none: "",
+      unset: "",
+      closeGap: "[&+*]:-ms-1 [*:has(+&)]:-me-1",
       xs: "[&+*]:-ms-(--sb) [*:has(+&)]:-me-(--sb)",
       sm: "[&+*]:-ms-(--sb) [*:has(+&)]:-me-(--sb)",
       md: "",
@@ -147,99 +132,126 @@ export const controlSlot = cv({
       "2xl": "[&+*]:ms-(--py) [*:has(+&)]:me-(--py)",
       full: " [&+*]:ms-[1cap] [*:has(+&)]:me-[1cap]",
     },
-    $px: {
-      none: "",
-      xs: "px-[calc(var(--size)*0.05+0.4em*(1-var(--size-scale,1)))]",
-      sm: "px-[calc(var(--size)*0.1+0.4em*(1-var(--size-scale,1)))]",
-      md: "px-[calc(var(--size)*0.15+0.4em*(1-var(--size-scale,1)))]",
-      lg: "px-[calc(var(--size)*0.15+0.4em*(1-var(--size-scale,1)))]",
-      xl: "px-[calc(var(--size)*0.2+0.4em*(1-var(--size-scale,1)))]",
-      "2xl": "px-[calc(var(--size)*0.25+0.4em*(1-var(--size-scale,1)))]",
-      full: "px-[calc(var(--size)*0.25+0.4em*(1-var(--size-scale,1)))]",
+    /**
+     * Sets the slot padding.
+     */
+    $p: {
+      unset: "",
+      xs: "px-[calc(var(--size)*0.05)]",
+      sm: "px-[calc(var(--size)*0.1)]",
+      md: "px-[calc(var(--size)*0.15)]",
+      lg: "px-[calc(var(--size)*0.15)]",
+      xl: "px-[calc(var(--size)*0.2)]",
+      "2xl": "px-[calc(var(--size)*0.25)]",
+      full: "px-[calc(var(--size)*0.25)]",
     },
+    /**
+     * Sets the element’s border radius. Use `auto` for a concentric border
+     * radius.
+     */
     $rounded: {
       none: "",
-      auto: "rounded-[max(var(--radius)/2,var(--ak-frame-radius)-var(--ak-frame-border)-var(--py)-var(--half-line-gap)*var(--row-span))]",
-      round: "rounded-full",
+      auto: "ak-frame ak-frame-m-(--my)",
+      full: "rounded-full",
     },
-    $closeGap: "[&+*]:-ms-1 [*:has(+&)]:-me-1",
-    $square: "aspect-square",
+    /**
+     * Sets the element’s kind. When you use the `badge` kind, wrap the text in
+     * a `<span>` element so it’s styled correctly.
+     */
     $kind: {
       icon: "",
-      avatar: "overflow-clip",
       shortcut: "",
-      badge:
-        "[--size-scale:0.8125] text-[calc(1em*var(--size-scale))] leading-[1lh]",
+      avatar: "overflow-clip",
+      badge: "*:text-[0.8125em]",
     },
+    /**
+     * Sets the slot to be a square.
+     */
+    $square: "aspect-square",
+    /**
+     * Renders the slot as a floating element in the top-right corner.
+     */
     $floating:
       "m-0! absolute top-0 end-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] border border-(--parent-background)",
   },
   computedVariants: {
+    /**
+     * Increases the element’s size by a specified number of rows. This is
+     * useful when a control spans multiple rows of content, such as a
+     * description, and you want the slot to expand to match the content. Leave
+     * it as `1` if you want the slot to match the first row’s size and align
+     * with it.
+     */
     $rowSpan: (value: number) => ({ "--row-span": `${value}` }),
   },
   defaultVariants: {
     $kind: "icon",
-    $bg: "none",
+    $bg: "unset",
     $size: "md",
     $rounded: "auto",
+    $p: "unset",
     $rowSpan: 1,
-    $px: "none",
   },
-  computed: ({ variants, setVariants, setDefaultVariants }) => {
-    setDefaultVariants({
-      $mx: variants.$size,
-      $square: variants.$kind === "icon" || variants.$kind === "avatar",
-    });
-    const classes: string[] = [];
-    if (variants.$closeGap) {
-      return setVariants({ $mx: "none" });
-    }
+  computed: ({ variants, setVariants, setDefaultVariants, addClass }) => {
+    setDefaultVariants({ $mx: variants.$size });
+
     const mdOrLess = [undefined, "none", "xs", "sm", "md"];
-    if (variants.$bg !== "none") {
+    const lgOrLess = [...mdOrLess, "lg"];
+
+    // When a background is set, we adjust the slot’s size and padding to give
+    // it room to breathe.
+    if (variants.$bg !== "unset") {
       const $size = mdOrLess.includes(variants.$size) ? "lg" : variants.$size;
       setVariants({ $size });
-      setDefaultVariants({ $mx: $size, $px: $size });
+      setDefaultVariants({ $mx: $size, $p: $size });
       // Disabled frame
-      classes.push(
-        "group-[.disabled]/control:ak-layer-down group-[.disabled]/control:ak-text/0",
-      );
+      addClass([
+        "group-[.disabled]/control:ak-layer-down",
+        "group-[.disabled]/control:ak-text/0",
+      ]);
     }
+
     if (variants.$kind === "badge") {
-      const lgOrLess = [...mdOrLess, "lg"];
       const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
-      const $bg = variants.$bg === "none" ? "primary" : variants.$bg;
+      const $bg = variants.$bg === "unset" ? "primary" : variants.$bg;
       if (isBorderColor($bg)) {
         setDefaultVariants({ $borderColor: $bg });
       }
       setVariants({ $size, $bg });
       setDefaultVariants({
-        $px: $size,
+        $p: $size,
         $mx: $size,
-        $contrast: true,
         $color: "tonal",
+        $contrast: true,
+        $textOpacity: 60,
       });
     }
+
     if (variants.$kind === "avatar") {
-      const lgOrLess = [...mdOrLess, "lg"];
       const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
-      const $bg = variants.$bg === "none" ? "pop" : variants.$bg;
+      const $bg = variants.$bg === "unset" ? "pop" : variants.$bg;
       setVariants({ $size, $bg });
-      setDefaultVariants({ $mx: $size, $rounded: "round" });
+      setDefaultVariants({ $mx: $size, $rounded: "full" });
     }
+
     if (variants.$floating) {
-      setDefaultVariants({ $rounded: "round" });
+      setDefaultVariants({ $rounded: "full", $color: "auto" });
     }
-    return classes;
+
+    if (variants.$kind && ["icon", "avatar"].includes(variants.$kind)) {
+      setDefaultVariants({ $square: true });
+    }
   },
 });
 
 export const controlContent = cv({
   class:
-    "group/control-content flex flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
+    "group/control-content flex-1 min-w-0 content-start text-start gap-x-(--gap) gap-y-(--gap-y)",
   variants: {
     $orientation: {
-      horizontal: "flex-wrap",
-      vertical: "flex-col",
+      unset: "",
+      horizontal: "flex flex-wrap",
+      vertical: "flex flex-col",
     },
   },
   defaultVariants: {
@@ -340,17 +352,21 @@ export const controlGroup = cv({
       wrap: "flex flex-wrap",
       stretch:
         "flex w-full [&>.control]:basis-0 [&>.control]:min-w-0 [&>.control]:grow",
-      horizontal: "flex",
+      horizontal: [
+        "flex",
+        "[&>.control:not(:nth-child(1_of_.control))]:-ms-[calc(var(--ak-frame-border)/2)]",
+        "[&>.control:not(:nth-last-child(1_of_.control))]:-me-[calc(var(--ak-frame-border)/2)]",
+      ],
       vertical: "vertical flex flex-col [&>.control]:justify-start",
     },
     $gap: {
       none: "",
-      auto: "[--gap:var(--ak-frame-padding,0px)] gap-(--gap)",
-      xs: "[--gap:--spacing(0.5)] gap-(--gap)",
-      sm: "[--gap:--spacing(1)] gap-(--gap)",
-      md: "[--gap:--spacing(2)] gap-(--gap)",
-      lg: "[--gap:--spacing(3)] gap-(--gap)",
-      xl: "[--gap:--spacing(4)] gap-(--gap)",
+      auto: "[--group-gap:var(--ak-frame-padding,0px)] gap-(--group-gap)",
+      xs: "[--group-gap:--spacing(0.5)] gap-(--group-gap)",
+      sm: "[--group-gap:--spacing(1)] gap-(--group-gap)",
+      md: "[--group-gap:--spacing(2)] gap-(--group-gap)",
+      lg: "[--group-gap:--spacing(3)] gap-(--group-gap)",
+      xl: "[--group-gap:--spacing(4)] gap-(--group-gap)",
     },
     $p: {
       none: [
