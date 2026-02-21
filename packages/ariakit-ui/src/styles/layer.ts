@@ -1,29 +1,29 @@
 import { cv } from "clava";
 
-export const background = cv({
+export const layer = cv({
   variants: {
     /**
      * Sets the element's background color.
      */
     $bg: {
       unset: "",
-      popLightDark: "ak-layer-pop-0.5 ak-dark:ak-layer-pop",
-      pop05: "ak-layer-pop-0.5",
+      popLightDark: "ak-light:ak-layer-level-0.5 ak-layer-pop",
+      pop05: "ak-layer-level-0.5 ak-layer-pop",
       pop: "ak-layer-pop",
-      pop2: "ak-layer-pop-2",
+      pop2: "ak-layer-level-2 ak-layer-pop",
       light: "ak-layer",
-      light2: "ak-layer-2",
+      light2: "ak-layer-level-2 ak-layer",
       dark: "ak-layer-down",
-      dark2: "ak-layer-down-2",
-      parent: "ak-layer-(--ak-layer-parent)",
-      invert: "background-invert ak-layer-invert",
-      ghost: "ak-layer-0 bg-transparent",
-      disabled: "ak-layer-pop-0.5",
-      primary: "ak-layer-primary",
-      secondary: "ak-layer-secondary",
-      success: "ak-layer-success",
-      warning: "ak-layer-warning",
-      danger: "ak-layer-danger",
+      dark2: "ak-layer-level-2 ak-layer-down",
+      parent: "[--layer:var(--ak-layer-parent)] ak-layer-(--layer)",
+      invert: "layer-invert ak-layer-invert",
+      ghost: "ak-layer-level-0 ak-layer bg-transparent",
+      disabled: "ak-layer-level-0.5 ak-layer-pop",
+      primary: "[--layer:theme(--color-primary)] ak-layer-(--layer)",
+      secondary: "[--layer:theme(--color-secondary)] ak-layer-(--layer)",
+      success: "[--layer:theme(--color-success)] ak-layer-(--layer)",
+      warning: "[--layer:theme(--color-warning)] ak-layer-(--layer)",
+      danger: "[--layer:theme(--color-danger)] ak-layer-(--layer)",
     },
     /**
      * Whether to force the background color to have enough contrast with the

@@ -1,8 +1,8 @@
 import { cv } from "clava";
-import { background } from "./background.ts";
+import { layer } from "./layer.ts";
 
 export const bevel = cv({
-  extend: [background],
+  extend: [layer],
   variants: {
     $kind: {
       bevel: [

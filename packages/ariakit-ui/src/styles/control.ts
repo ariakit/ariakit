@@ -1,10 +1,11 @@
 import { cv } from "clava";
-import { background } from "./background.ts";
 import { border, isBorderColor } from "./border.ts";
 import { frame } from "./frame.ts";
+import { layer } from "./layer.ts";
+import { text } from "./text.ts";
 
 export const control = cv({
-  extend: [background, frame],
+  extend: [layer, frame, text],
   class: [
     "control group/control flex justify-center",
     "[--parent-background:var(--ak-layer-parent)]",
@@ -97,7 +98,7 @@ export const control = cv({
 });
 
 export const controlSlot = cv({
-  extend: [background, border],
+  extend: [layer, border, text],
   class: [
     "flex flex-none items-center justify-center",
     "[--mx:calc((var(--py)-var(--px))*var(--size-scale,1)+var(--half-line-gap)*var(--row-span))]",
@@ -323,7 +324,7 @@ export const controlSeparator = cv({
 });
 
 export const controlGroup = cv({
-  extend: [background, frame],
+  extend: [layer, frame],
   class: ["control-group"],
   variants: {
     $size: {
