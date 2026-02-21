@@ -16,17 +16,17 @@
   },
   "dependencies": {
     "@ariakit/react": "0.4.21",
-    "next": "16.1.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "next": "16.1.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.14.8",
-    "@tailwindcss/postcss": "4.1.18",
-    "@types/node": "25.0.7",
-    "@types/react": "19.2.8",
+    "@opennextjs/cloudflare": "1.16.5",
+    "@tailwindcss/postcss": "4.2.0",
+    "@types/node": "25.3.0",
+    "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
-    "tailwindcss": "4.1.18"
+    "tailwindcss": "4.2.0"
   }
 }
