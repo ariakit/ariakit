@@ -60,6 +60,38 @@ export function oklchLightDark(light, dark) {
 }
 
 /**
+ * @param {string | number} [level]
+ * @param {string | number} [value]
+ */
+export function down(level, value) {
+  return `(${value} * ${negative(`min(sign(${level}), 0)`)})`;
+}
+
+/**
+ * @param {string | number} [level]
+ * @param {string | number} [value]
+ */
+export function up(level, value) {
+  return `(${value} * (1 - ${negative(`min(sign(${level}), 0)`)}))`;
+}
+
+/**
+ * @param {string | number} [level]
+ * @param {string | number} [downValue]
+ * @param {string | number} [upValue]
+ */
+export function downUp(level, downValue, upValue) {
+  return `(${down(level, downValue)} + ${up(level, upValue)})`;
+}
+
+/**
+ * @param {string | number} [value]
+ */
+export function negative(value) {
+  return `((${value}) * -1)`;
+}
+
+/**
  * @param {string | number} [light]
  * @param {string | number} [dark]
  */

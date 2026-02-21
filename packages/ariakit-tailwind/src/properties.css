@@ -4,6 +4,12 @@
   initial-value: oklch(1 0 0);
 }
 
+@property --ak-layer-level {
+  syntax: "<number>";
+  inherits: true;
+  default: 1;
+}
+
 @property --ak-layer-idle {
   syntax: "<color>";
   inherits: true;
@@ -91,12 +97,6 @@
 @property --_ak-layer-level {
   syntax: "*";
   inherits: false;
-}
-
-@property --_ak-layer-down {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
 }
 
 @property --_ak-layer-base {

@@ -3,6 +3,7 @@ export const vars = /** @type {const} */ ({
   // Public API
   // ===========================================================================
   layer: "--ak-layer",
+  layerLevel: "--ak-layer-level",
   layerParent: "--ak-layer-parent",
   text: "--ak-text",
   ring: "--ak-ring",
@@ -24,7 +25,6 @@ export const vars = /** @type {const} */ ({
   // Private API - Layer
   // ===========================================================================
   _layerLevel: "--_ak-layer-level",
-  _layerDown: "--_ak-layer-down",
   _layerBase: "--_ak-layer-base",
   _layerL: "--_ak-layer-l",
   _layerOkL: "--_ak-layer-okl",

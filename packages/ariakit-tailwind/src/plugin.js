@@ -4,6 +4,8 @@ import {
   bareValue,
   colorMix,
   css,
+  down,
+  downUp,
   IN_DARK,
   IN_LIGHT,
   isInlineThemeReference,
@@ -11,6 +13,7 @@ import {
   layerIdleProp,
   lchLightDark,
   MAX_NON_BARE_LEVELS,
+  negative,
   oklchLightDark,
   prop,
   SCHEME_THRESHOLD_L,
@@ -18,6 +21,7 @@ import {
   TEXT_CONTRAST_L,
   textColor,
   toPercent,
+  up,
   withParentL,
   withParentOkL,
 } from "./utils.js";
@@ -59,7 +63,7 @@ const AriakitTailwind = plugin(
       // Precompute numeric level values
       if (levels) {
         if (downLevels) {
-          values.down = "down-1";
+          values.down = "down";
         }
         for (let i = 0; i <= MAX_NON_BARE_LEVELS; i++) {
           values[i] = `${i}`;
@@ -81,7 +85,7 @@ const AriakitTailwind = plugin(
           for (let i = 1; i <= MAX_NON_BARE_LEVELS; i++) {
             values[`${key}-${i}`] = `${key}-${i}`;
             if (downLevels) {
-              values[`${key}-down`] = `${key}-down-1`;
+              values[`${key}-down`] = `${key}-down`;
               values[`${key}-down-${i}`] = `${key}-down-${i}`;
             }
           }
@@ -113,17 +117,25 @@ const AriakitTailwind = plugin(
       if (!value) {
         return { token: undefined, level: prop(vars._layerLevel, "1") };
       }
-      const matches = value.match(/(down-)?([.\d]+)$/);
+      if (theme("colors")[value] || colorString.get(value)) {
+        return { token: value, level: prop(vars._layerLevel, "0") };
+      }
+      const matches = value.match(/(down-?)?([.\d]+)?$/);
       if (!matches) {
         return { token: value, level: prop(vars._layerLevel, "0") };
       }
-      const [, down, level = down ? "-1" : undefined] = matches;
-      if (!level || theme("colors")[value] || colorString.get(value)) {
-        return { token: value, level: prop(vars._layerLevel, "0") };
+      const [, down, level] = matches;
+      if (!level) {
+        return {
+          token: down ? value.slice(0, -down.length) : value,
+          level: down
+            ? negative(prop(vars._layerLevel, "1"))
+            : prop(vars._layerLevel, "0"),
+        };
       }
       return {
         token: value.slice(0, -((down?.length || 0) + level.length) - 1),
-        level: down ? `calc(${level} * -1)` : level,
+        level: down ? negative(level) : level,
       };
     }
 
@@ -146,10 +158,9 @@ const AriakitTailwind = plugin(
       const h = "h";
 
       if (`${contrast}` !== "0") {
-        const isDown = level.startsWith("-");
         const layerContrast = `min(1, calc(-1 * ${contrast}))`;
         const negativeContrast = `min(0, ${layerContrast})`;
-        l = `calc(${l} + ${lMultiplier} * ${negativeContrast} * ${oklchLightDark(isDown ? "-1" : "-5", isDown ? "-0.5" : "1")})`;
+        l = `calc(${l} + ${lMultiplier} * ${negativeContrast} * ${oklchLightDark(downUp(level, "-1", "-5"), downUp(level, "-0.5", "1"))})`;
       }
       return { l, c, h };
     }
@@ -160,20 +171,20 @@ const AriakitTailwind = plugin(
      * current layer is a down layer.
      * @param {object} params
      * @param {string} params.color
-     * @param {boolean} params.isDown
+     * @param {string} params.level
      * @param {"light" | "dark"} [params.scheme]
      * @param {string} [params.contrast]
      */
     function getLayerContrastColor({
       color,
-      isDown,
       scheme,
+      level,
       contrast = getContrast(),
     }) {
       if (contrast === "0") return color;
       const lMultiplier = `(0.07 + c / 3)`;
-      const light = isDown ? "-0.3" : "-1";
-      const dark = isDown ? "0" : "1";
+      const light = downUp(level, "-0.3", "-1");
+      const dark = downUp(level, "0", "1");
       const contrastMultiplier =
         scheme === "light"
           ? light
@@ -207,17 +218,16 @@ const AriakitTailwind = plugin(
      * @param {object} params
      * @param {string} params.baseColor
      * @param {string} params.level
-     * @param {boolean} params.isDown
      * @returns {string}
      */
-    function getLayerColor({ baseColor, level, isDown }) {
+    function getLayerColor({ baseColor, level }) {
       const { l, c, h } = getLayerOkLCH(level);
       const colorWithLevel =
         level === "0"
           ? baseColor
           : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
       const color = `oklch(from ${colorWithLevel} ${prop(vars._safeOkL)} c h / 100%)`;
-      return getLayerContrastColor({ color, isDown, contrast: getContrast() });
+      return getLayerContrastColor({ color, level, contrast: getContrast() });
     }
 
     /**
@@ -228,7 +238,6 @@ const AriakitTailwind = plugin(
      */
     function getLayerCss({ token, level = "0", soft = false }) {
       const shadowAlpha = `calc(10% + (1 - l) * 2 * 25%)`;
-      const isDown = level.startsWith("-") && !token;
 
       /** @param {string} color */
       const shadow = (color) => `oklch(from ${color} 0 0 0 / ${shadowAlpha})`;
@@ -238,7 +247,7 @@ const AriakitTailwind = plugin(
       const result = css(getCurrentLayerCss(), {
         [vars.shadow]: shadow(layerParent),
         [vars.layer]: layerIdleProp(3),
-        [vars._layerDown]: isDown ? "1" : "0",
+        [vars.layerLevel]: level,
         [vars._layerAppearance]: textColor(prop(vars.layer)),
         [vars._layerL]: `lch(from ${prop(vars.layer)} round(l, ${100 / LIGHTNESS_LEVELS}) 0 0 / 100%)`,
         [vars._layerOkL]: `oklch(from ${prop(vars.layer)} round(l, ${1 / LIGHTNESS_LEVELS}) 0 0 / 100%)`,
@@ -247,7 +256,7 @@ const AriakitTailwind = plugin(
       const baseColor = token
         ? tv("color", token)
         : prop(vars._layerBase, prop(vars.layerParent));
-      const computedColor = getLayerColor({ baseColor, level, isDown });
+      const computedColor = getLayerColor({ baseColor, level });
 
       if (token) {
         Object.assign(result, {
@@ -335,7 +344,7 @@ const AriakitTailwind = plugin(
             const colorWithContrastL = `oklch(from ${colorWithLevel} ${contrastLString} c h / 100%)`;
             const colorWithContrast = getLayerContrastColor({
               color: colorWithContrastL,
-              isDown: false,
+              level,
               scheme: isDark ? "light" : "dark",
               contrast: `calc(${getContrast()} * 2)`,
             });
@@ -608,8 +617,8 @@ const AriakitTailwind = plugin(
                   : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
               const colorWithContrastL = `oklch(from ${colorWithLevel} ${contrastLString} c h / 100%)`;
               const colorWithContrast = getLayerContrastColor({
+                level,
                 color: colorWithContrastL,
-                isDown: false,
                 scheme: isDark ? "light" : "dark",
               });
               return {
@@ -648,8 +657,8 @@ const AriakitTailwind = plugin(
                   : `oklch(from ${baseColor} ${l} ${c} ${h} / 100%)`;
               const colorWithContrastL = `oklch(from ${colorWithLevel} ${contrastLString} c h / 100%)`;
               const colorWithContrast = getLayerContrastColor({
+                level,
                 color: colorWithContrastL,
-                isDown: false,
                 scheme: isDark ? "light" : "dark",
               });
               const colorWithSafeL = `oklch(from ${colorWithContrast} ${prop(isDark ? vars._safeOkLUp : vars._safeOkLDown)} c h)`;
@@ -1081,9 +1090,8 @@ const AriakitTailwind = plugin(
           });
         },
         "ak-bordering": (value) => {
-          const down = prop(vars._layerDown);
-          const valueDown = `calc(${value} * ${down})`;
-          const valueUp = `calc(${value} * (1 - ${down}))`;
+          const valueDown = `calc(${down(prop(vars.layerLevel), value)})`;
+          const valueUp = `calc(${up(prop(vars.layerLevel), value)})`;
           return css({
             [vars.bordering]: value,
             [IN_DARK]: {

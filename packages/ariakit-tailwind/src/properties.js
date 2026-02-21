@@ -103,6 +103,12 @@ const css = `
   initial-value: oklch(1 0 0);
 }
 
+@property ${vars.layerLevel} {
+  syntax: "<number>";
+  inherits: true;
+  default: 1;
+}
+
 @property ${vars.layerIdle} {
   syntax: "<color>";
   inherits: true;
@@ -190,12 +196,6 @@ const css = `
 @property ${vars._layerLevel} {
   syntax: "*";
   inherits: false;
-}
-
-@property ${vars._layerDown} {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
 }
 
 @property ${vars._layerBase} {
