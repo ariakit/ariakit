@@ -265,21 +265,12 @@ const AriakitTailwind = plugin(
       }
 
       if (!soft) {
-        Object.assign(
-          result,
-          {
-            [vars.layerIdle]: computedColor,
-            [vars.layerState]: layerIdleProp(1),
-            [vars.layerModifier]: layerIdleProp(2),
-            [vars.text]: textColor(prop(vars.layer)),
-          },
-          withContext("layer-parent", false, ({ provide, inherit }) => {
-            return {
-              [provide(vars._layerParent)]: prop(vars.layer),
-              [vars.layerParent]: inherit(vars._layerParent),
-            };
-          }),
-        );
+        Object.assign(result, {
+          [vars.layerIdle]: computedColor,
+          [vars.layerState]: layerIdleProp(1),
+          [vars.layerModifier]: layerIdleProp(2),
+          [vars.text]: textColor(prop(vars.layer)),
+        });
       }
 
       Object.assign(
@@ -287,6 +278,12 @@ const AriakitTailwind = plugin(
         getEdgeCss({
           color: colorMix(prop(vars.layer), layerParent),
           soft: true,
+        }),
+        withContext("layer-parent", false, ({ provide, inherit }) => {
+          return {
+            [provide(vars._layerParent)]: prop(vars.layer),
+            [vars.layerParent]: inherit(vars._layerParent),
+          };
         }),
       );
 
