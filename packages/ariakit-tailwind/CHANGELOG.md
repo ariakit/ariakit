@@ -1,5 +1,11 @@
 # @ariakit/tailwind
 
+## 0.1.11
+
+- Adjusted edge color rendering in `@ariakit/tailwind` to preserve chroma-aware alpha blending for edge utilities so border and ring output remains consistent with intended contrast and saturation behavior, including when using `ak-edge`, `ak-edge-shadow`, and mixed layer color scenarios.
+- Added frame-related utility aliases and controls in `@ariakit/tailwind`, including `ak-border`, `ak-ring`, `ak-bordering`, `ak-frame-p-*`, `ak-frame-m-*`, `ak-frame-rounded-*`, and `ak-frame-rounded-force-*`, and refined frame context propagation so nested radius, border, ring, and spacing calculations stay synchronized in cover/overflow layouts.
+- Added new layer utilities and state behavior in `@ariakit/tailwind`, including `ak-layer-level-*`, `ak-layer-current`, and `ak-layer-invert`, and updated layer composition so `ak-layer`, `ak-layer-contrast`, `ak-layer-mix`, and hover/pop utilities can target idle/state/modifier layer channels more predictably across nested contexts.
+
 ## 0.1.10
 
 ### New custom variants
