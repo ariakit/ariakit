@@ -5,9 +5,8 @@
 }
 
 @property --ak-layer-level {
-  syntax: "<number>";
+  syntax: "*";
   inherits: true;
-  initial-value: 1;
 }
 
 @property --ak-layer-idle {
