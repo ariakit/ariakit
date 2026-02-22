@@ -124,6 +124,8 @@ Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors.
 | `ak-layer-contrast-<color>`               | Automatically adapts specific color for parent layer contrast.         |
 | `ak-layer-contrast-<color>-<number>`      | Adjusts contrast color lightness.                                      |
 | `ak-layer-contrast-<color>-down-<number>` | Controls contrast color darkness.                                      |
+| `ak-layer-current`                        | Applies the current layer visual styles using existing layer variables. |
+| `ak-layer-level-<number>`                 | Overrides the default layer level used by bare layer utilities.        |
 | `ak-layer-mix-<color>`                    | Blends color with parent layer.                                        |
 | `ak-layer-mix-<color>/<number>`           | Blends color with parent layer at a specific ratio (default `50`).     |
 | `ak-layer-mix-<color>-<number>`           | Adjusts mix color lightness (can be combined with mix ratios).         |
@@ -140,6 +142,8 @@ Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors.
 | `ak-layer-feature-<number>`               | Adjusts feature intensity.                                             |
 | `ak-layer-feature-<color>`                | Provides color-specific feature effects.                               |
 | `ak-layer-feature-<color>-<number>`       | Customizes feature color intensity.                                    |
+| `ak-layer-invert`                         | Alias for `ak-layer-pop` with a stronger default intensity (`12`).     |
+| `ak-layer-invert-<color>`                 | Applies the invert alias to a specific color token.                    |
 
 ## `ak-text`
 
@@ -196,6 +200,10 @@ With `ak-text` utilities, text colors and opacity automatically adjust for reada
 | `ak-edge-shadow`                    | Applies dark edge color even if parent layer is dark (but not black). |
 | `ak-edge-shadow/<number>`           | Adjusts dark edge color base opacity (default `10`).                  |
 | `ak-edge-shadow-<number>`           | Adjusts dark edge color lightness.                                    |
+| `ak-outline`                        | Sets an outline color that adapts to parent layer contrast.           |
+| `ak-outline-<number>`               | Adjusts outline lightness (default `0`).                              |
+| `ak-outline-<color>`                | Applies an adaptive outline color token.                              |
+| `ak-outline-<color>-<number>`       | Adjusts adaptive outline color lightness.                             |
 
 ## `ak-frame`
 
@@ -252,6 +260,9 @@ If you define custom `--radius-*` and `--spacing-*` variables, you can use them 
 | `ak-frame-<length>`                   | Sets specific border radius when no parent frame is present.               |
 | `ak-frame-<length>/<length>`          | Applies specific border radius (without parent frame) and padding.         |
 | `ak-frame-border`                     | Applies border width that influences nested element radius calculations.   |
+| `ak-border`                           | Alias for `ak-frame-border`.                                                |
+| `ak-ring`                             | Sets frame ring width and syncs it with frame context.                      |
+| `ak-bordering`                        | Splits a border width between border/ring based on layer lightness.         |
 | `ak-frame-cover`                      | Covers parent frame padding with a negative margin.                        |
 | `ak-frame-cover-<length>`             | Covers parent padding and sets specific radius (no parent).                |
 | `ak-frame-cover-<length>/<length>`    | Covers parent padding and applies specific radius (no parent) and padding. |
@@ -262,6 +273,10 @@ If you define custom `--radius-*` and `--spacing-*` variables, you can use them 
 | `ak-frame-overflow-<length>/<length>` | Clips content and applies specific radius (no parent) and padding.         |
 | `ak-frame-force-<length>`             | Forces specific border radius, overriding parent frame settings.           |
 | `ak-frame-force-<length>/<length>`    | Forces specific radius and padding, ignoring parent frame.                 |
+| `ak-frame-p-<length>`                 | Updates frame padding while preserving frame context inheritance.            |
+| `ak-frame-m-<length>`                 | Sets frame margin and the internal frame margin variable.                   |
+| `ak-frame-rounded-<length>`           | Applies only frame radius (no padding changes), relative to parent frame.   |
+| `ak-frame-rounded-force-<length>`     | Forces only frame radius, ignoring parent frame context.                    |
 
 ## `ak-light` and `ak-dark`
 
