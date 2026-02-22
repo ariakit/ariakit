@@ -104,9 +104,8 @@ const css = `
 }
 
 @property ${vars.layerLevel} {
-  syntax: "<number>";
+  syntax: "*";
   inherits: true;
-  default: 1;
 }
 
 @property ${vars.layerIdle} {

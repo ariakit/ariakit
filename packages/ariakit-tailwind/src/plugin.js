@@ -127,7 +127,7 @@ const AriakitTailwind = plugin(
       const [, down, level] = matches;
       if (!level) {
         return {
-          token: down ? value.slice(0, -down.length) : value,
+          token: down ? value.slice(0, -(down.length + 1)) || undefined : value,
           level: down
             ? negative(prop(vars._layerLevel, "1"))
             : prop(vars._layerLevel, "0"),
@@ -265,21 +265,12 @@ const AriakitTailwind = plugin(
       }
 
       if (!soft) {
-        Object.assign(
-          result,
-          {
-            [vars.layerIdle]: computedColor,
-            [vars.layerState]: layerIdleProp(1),
-            [vars.layerModifier]: layerIdleProp(2),
-            [vars.text]: textColor(prop(vars.layer)),
-          },
-          withContext("layer-parent", false, ({ provide, inherit }) => {
-            return {
-              [provide(vars._layerParent)]: prop(vars.layer),
-              [vars.layerParent]: inherit(vars._layerParent),
-            };
-          }),
-        );
+        Object.assign(result, {
+          [vars.layerIdle]: computedColor,
+          [vars.layerState]: layerIdleProp(1),
+          [vars.layerModifier]: layerIdleProp(2),
+          [vars.text]: textColor(prop(vars.layer)),
+        });
       }
 
       Object.assign(
@@ -731,7 +722,7 @@ const AriakitTailwind = plugin(
         return radius;
       }
       const minRadius = `min(0.125rem, ${radius})`;
-      return `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
+      return `max(${minRadius}, max(${prop(vars._nestedRadius, "0px")}, 0px))`;
     }
 
     /**
