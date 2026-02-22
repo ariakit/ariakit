@@ -26,6 +26,22 @@ export function prop(name, defaultValue) {
 }
 
 /**
+ * @param {1 | 2 | 3} [defaultLevel]
+ */
+export function layerIdleProp(defaultLevel = 3) {
+  if (defaultLevel === 3) {
+    return prop(
+      vars.layerModifier,
+      prop(vars.layerState, prop(vars.layerIdle)),
+    );
+  } else if (defaultLevel === 2) {
+    return prop(vars.layerState, prop(vars.layerIdle));
+  } else {
+    return prop(vars.layerIdle);
+  }
+}
+
+/**
  * @param {number} [value]
  */
 export function isInlineThemeReference(value) {
@@ -36,27 +52,43 @@ export function isInlineThemeReference(value) {
 }
 
 /**
- * Return the absolute value in CSS.
- * @param {string} value
- */
-export function abs(value) {
-  return `max(${value}, ${value} * -1)`;
-}
-
-/**
- * Return the sign value in CSS.
- * @param {string} value
- */
-export function sign(value) {
-  return `clamp(-1, ${value} * infinity, 1)`;
-}
-
-/**
  * @param {string | number} [light]
  * @param {string | number} [dark]
  */
 export function oklchLightDark(light, dark) {
   return `((${light} * ${prop(vars._lightOkL)}) + (${dark} * ${prop(vars._darkOkL)}))`;
+}
+
+/**
+ * @param {string | number} [level]
+ * @param {string | number} [value]
+ */
+export function down(level, value) {
+  return `(${value} * ${negative(`min(sign(${level}), 0)`)})`;
+}
+
+/**
+ * @param {string | number} [level]
+ * @param {string | number} [value]
+ */
+export function up(level, value) {
+  return `(${value} * (1 - ${negative(`min(sign(${level}), 0)`)}))`;
+}
+
+/**
+ * @param {string | number} [level]
+ * @param {string | number} [downValue]
+ * @param {string | number} [upValue]
+ */
+export function downUp(level, downValue, upValue) {
+  return `(${down(level, downValue)} + ${up(level, upValue)})`;
+}
+
+/**
+ * @param {string | number} [value]
+ */
+export function negative(value) {
+  return `((${value}) * -1)`;
 }
 
 /**

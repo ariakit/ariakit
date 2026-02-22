@@ -103,6 +103,29 @@ const css = `
   initial-value: oklch(1 0 0);
 }
 
+@property ${vars.layerLevel} {
+  syntax: "*";
+  inherits: true;
+}
+
+@property ${vars.layerIdle} {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property ${vars.layerState} {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property ${vars.layerModifier} {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
 @property ${vars.layerParent} {
   syntax: "*";
   inherits: true;
@@ -169,21 +192,14 @@ const css = `
   initial-value: 0px;
 }
 
-@property ${vars._layerDown} {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
+@property ${vars._layerLevel} {
+  syntax: "*";
+  inherits: false;
 }
 
 @property ${vars._layerBase} {
   syntax: "*";
   inherits: false;
-}
-
-@property ${vars._layerIdle} {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: oklch(1 0 0);
 }
 
 @property ${vars._layerAppearance} {
@@ -310,6 +326,6 @@ const css = `
 }
 `;
 
-writeFileSync(new URL("./properties.css", import.meta.url), css.trim() + "\n");
+writeFileSync(new URL("./properties.css", import.meta.url), `${css.trim()}\n`);
 
 console.log("Generated properties.css");

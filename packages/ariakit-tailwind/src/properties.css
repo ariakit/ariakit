@@ -4,6 +4,29 @@
   initial-value: oklch(1 0 0);
 }
 
+@property --ak-layer-level {
+  syntax: "*";
+  inherits: true;
+}
+
+@property --ak-layer-idle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property --ak-layer-state {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
+@property --ak-layer-modifier {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
 @property --ak-layer-parent {
   syntax: "*";
   inherits: true;
@@ -70,21 +93,14 @@
   initial-value: 0px;
 }
 
-@property --_ak-layer-down {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
+@property --_ak-layer-level {
+  syntax: "*";
+  inherits: false;
 }
 
 @property --_ak-layer-base {
   syntax: "*";
   inherits: false;
-}
-
-@property --_ak-layer-idle {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: oklch(1 0 0);
 }
 
 @property --_ak-layer-appearance {

@@ -37,6 +37,10 @@
 @import "./ak-prose.css";
 
 @theme {
+  --spacing: 0.25rem;
+  --spacing-px: 1px;
+  --radius: 0.25rem;
+
   --color-canvas: oklch(99.33% 0.0011 197.14);
   --color-primary: oklch(56.7% 0.154556 248.5156);
   --color-secondary: oklch(65.59% 0.2118 354.31);
@@ -65,6 +69,19 @@
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+@theme inline {
+  --radius-none: 0;
+  --radius-xs: calc(var(--radius) * 0.5);
+  --radius-sm: calc(var(--radius) * 1);
+  --radius-md: calc(var(--radius) * 1.5);
+  --radius-lg: calc(var(--radius) * 2);
+  --radius-xl: calc(var(--radius) * 3);
+  --radius-2xl: calc(var(--radius) * 4);
+  --radius-3xl: calc(var(--radius) * 6);
+  --radius-4xl: calc(var(--radius) * 8);
+  --radius-full: calc(var(--radius) * infinity);
 }
 
 :root {
