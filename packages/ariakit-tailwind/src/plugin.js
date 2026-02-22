@@ -279,6 +279,12 @@ const AriakitTailwind = plugin(
           color: colorMix(prop(vars.layer), layerParent),
           soft: true,
         }),
+        withContext("layer-parent", false, ({ provide, inherit }) => {
+          return {
+            [provide(vars._layerParent)]: prop(vars.layer),
+            [vars.layerParent]: inherit(vars._layerParent),
+          };
+        }),
       );
 
       return result;
@@ -495,9 +501,9 @@ const AriakitTailwind = plugin(
       const c = `c`;
       const alphaBase = `(${alphaModifier} * ${oklchLightDark("1.2%", "1%")})`;
       const alphaLAdd = oklchLightDark("(1 - l) * 0.1%", "l * 0.1%");
-      // const alphaCAdd = `(c * 50%)`;
+      const alphaCAdd = `(c * 50%)`;
       const contrastAdd = `(12% * ${contrast})`;
-      const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${contrastAdd})`;
+      const alpha = `calc(${alphaBase} + ${alphaLAdd} + ${alphaCAdd} + ${contrastAdd})`;
       const lVar = soft ? vars._edgeLSoft : vars._edgeL;
       const finalColor = `oklch(from ${color} ${prop(lVar)} ${c} h / ${alpha})`;
       return {
