@@ -127,7 +127,7 @@ const AriakitTailwind = plugin(
       const [, down, level] = matches;
       if (!level) {
         return {
-          token: down ? value.slice(0, -down.length) : value,
+          token: down ? value.slice(0, -(down.length + 1)) || undefined : value,
           level: down
             ? negative(prop(vars._layerLevel, "1"))
             : prop(vars._layerLevel, "0"),
@@ -728,7 +728,7 @@ const AriakitTailwind = plugin(
         return radius;
       }
       const minRadius = `min(0.125rem, ${radius})`;
-      return `max(${minRadius}, max(${prop(vars._nestedRadius)}, 0px))`;
+      return `max(${minRadius}, max(${prop(vars._nestedRadius, "0px")}, 0px))`;
     }
 
     /**

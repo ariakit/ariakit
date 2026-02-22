@@ -106,7 +106,7 @@ const css = `
 @property ${vars.layerLevel} {
   syntax: "<number>";
   inherits: true;
-  default: 1;
+  initial-value: 1;
 }
 
 @property ${vars.layerIdle} {
