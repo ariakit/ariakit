@@ -61,7 +61,7 @@
     "rehype-parse": "9.0.1",
     "shiki": "3.22.0",
     "stripe": "18.5.0",
-    "tailwindcss": "4.2.0",
+    "tailwindcss": "4.2.1",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
     "vfile": "6.0.3"
