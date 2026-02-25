@@ -1,0 +1,38 @@
+---
+import {
+  getNextjsPreviewId,
+  getNextjsUrlFromRequest,
+} from "#app/lib/nextjs.ts";
+import { notFound } from "#app/lib/response.ts";
+import { getEntry } from "astro:content";
+
+export const prerender = false;
+
+const url = Astro.url;
+
+const nextjsExampleId = getNextjsPreviewId(url.pathname);
+if (nextjsExampleId) {
+  const nextjsUrl = getNextjsUrlFromRequest(url.href, `/${nextjsExampleId}`);
+  return Astro.redirect(nextjsUrl, 307);
+}
+
+if (import.meta.env.PROD) return notFound();
+
+// In development, the static preview pages aren't built yet, so we need to
+// render the page manually.
+const id = url.pathname
+  .replace(/^\/|\/$/g, "")
+  .split("/")
+  .pop();
+
+if (!id) return notFound();
+
+const entry = await getEntry("previews", id);
+
+if (!entry) return notFound();
+
+const { default: StaticPreview } =
+  await import("#app/pages/[...preview].astro");
+---
+
+<StaticPreview framework="react" entry={entry} />

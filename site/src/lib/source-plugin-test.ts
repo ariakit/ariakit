@@ -8,12 +8,18 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { join } from "node:path";
+import nextjs from "nextjs/app/tab-nextjs/layout.tsx?source";
 import disclosure from "#app/examples/disclosure/index.react.tsx?source";
 
 const EXAMPLES_DIR = join(import.meta.dirname, "../examples/");
+const NEXTJS_APP_DIR = join(import.meta.dirname, "../../../nextjs/app/");
+const NEXTJS_DIR = join(import.meta.dirname, "../../../nextjs/");
 
 function normalizeSourcePath(path: string) {
-  return path.replace(EXAMPLES_DIR, "");
+  return path
+    .replace(EXAMPLES_DIR, "")
+    .replace(NEXTJS_APP_DIR, "")
+    .replace(NEXTJS_DIR, "");
 }
 
 test("disclosure name", () => {
@@ -59,6 +65,60 @@ test("disclosure source names", () => {
       "_lib/react-utils/create-render.ts",
       "_lib/react-utils/is-iterable.ts",
       "_lib/react-utils/merge-props.ts",
+    ]
+  `);
+});
+
+test("nextjs name", () => {
+  expect(nextjs.name).toBe("tab-nextjs");
+});
+
+test("nextjs dependencies", () => {
+  expect(Object.keys(nextjs.dependencies)).toMatchInlineSnapshot(`
+    [
+      "next",
+      "@ariakit/react",
+      "react",
+      "react-dom",
+      "clsx",
+    ]
+  `);
+});
+
+test("nextjs dev dependencies", () => {
+  expect(Object.keys(nextjs.devDependencies)).toMatchInlineSnapshot(`
+    [
+      "@types/react",
+      "@types/react-dom",
+    ]
+  `);
+});
+
+test("nextjs file names", () => {
+  expect(Object.keys(nextjs.files)).toMatchInlineSnapshot(`
+    [
+      "layout.tsx",
+      "router-tabs.tsx",
+      "tabs.tsx",
+      "@tabs/new/page.tsx",
+      "@tabs/page.tsx",
+      "utils.ts",
+    ]
+  `);
+});
+
+test("nextjs source names", () => {
+  const sourceKeys = Object.keys(nextjs.sources).map(normalizeSourcePath);
+  expect(sourceKeys).toMatchInlineSnapshot(`
+    [
+      "tab-nextjs/layout.tsx",
+      "components/router-tabs.tsx",
+      "_lib/ariakit/tabs.react.tsx",
+      "_lib/react-utils/create-render.ts",
+      "_lib/react-utils/is-iterable.ts",
+      "_lib/react-utils/merge-props.ts",
+      "tab-nextjs/@tabs/new/page.tsx",
+      "tab-nextjs/@tabs/page.tsx",
     ]
   `);
 });
@@ -254,6 +314,236 @@ test("disclosure sources", () => {
           "@types/react",
         ],
         "id": "_lib/react-utils/merge-props.ts",
+        "styles": [],
+      },
+    ]
+  `);
+});
+
+test("nextjs sources", () => {
+  const sources = Object.values(nextjs.sources).map((source) => ({
+    id: normalizeSourcePath(source.id),
+    dependencies: Object.keys(source.dependencies ?? {}),
+    devDependencies: Object.keys(source.devDependencies ?? {}),
+    styles: source.styles?.map((style) => style.name),
+  }));
+  expect(sources).toMatchInlineSnapshot(`
+    [
+      {
+        "dependencies": [
+          "next",
+        ],
+        "devDependencies": [],
+        "id": "tab-nextjs/layout.tsx",
+        "styles": [
+          "ak-prose",
+          "ak-prose-text",
+          "ak-prose-text-base/relaxed",
+          "ak-prose-elements",
+          "ak-prose-content",
+          "ak-dark",
+          "ak-text/75",
+          "ak-light",
+          "ak-text/90",
+          "ak-heading",
+          "ak-list",
+          "ak-list-leading-(--ak-prose-leading)",
+          "ak-list-gap-(--ak-prose-gap)",
+          "ak-list-item",
+          "ak-strong",
+          "ak-code",
+          "ak-link",
+          "ak-kbd",
+          "ak-separator",
+          "ak-text",
+          "ak-link_idle",
+          "ak-heading-1",
+          "ak-heading-2",
+          "ak-heading-3",
+          "ak-heading-4",
+          "ak-heading-5",
+          "ak-list-gap-4",
+          "ak-list-leading-normal",
+          "ak-list-counter-reset",
+          "ak-list-item-padding-1",
+          "ak-list-ul",
+          "ak-list-ol",
+          "ak-list-gap-2",
+          "ak-list-blocks",
+          "ak-list-sections",
+          "ak-list-blocks",
+          "ak-list-sections",
+          "ak-list-item_base",
+          "ak-list-item-blocks",
+          "ak-disclosure",
+          "ak-list-disclosure",
+          "ak-list-disclosure-button",
+          "ak-list-disclosure-content-body",
+          "ak-list-item-blocks",
+          "ak-layer-pop",
+          "ak-edge/15",
+          "ak-link_hover",
+          "ak-link_focus",
+          "ak-layer-pop-1.5",
+          "ak-edge-5/100",
+          "ak-edge/16",
+          "ak-dark",
+          "ak-layer-current",
+          "ak-edge/20",
+          "ak-text-primary",
+          "ak-outline-primary",
+          "ak-list-item-padding-2",
+          "ak-list-item-border-1",
+          "ak-list-item-border-0",
+          "ak-frame-card/(--ak-list-item-padding)",
+          "ak-list-item-ul",
+          "ak-list-item-ol",
+          "ak-list-ul",
+          "ak-list-ol",
+          "ak-disclosure_idle",
+          "ak-disclosure_open",
+          "ak-disclosure-hover",
+          "ak-disclosure_hover",
+          "ak-disclosure-button",
+          "ak-disclosure-chevron-down",
+          "ak-list-item-ol-marker",
+          "ak-list-item-ul-marker",
+          "ak-disclosure-content-body",
+          "ak-list-counter-increment",
+          "ak-list-item-ol-border",
+          "ak-frame-cover",
+          "ak-disclosure-content-base_idle",
+          "ak-disclosure-group",
+          "ak-disclosure-content-base_open",
+          "ak-layer-hover",
+          "ak-disclosure-button_idle",
+          "ak-disclosure-open",
+          "ak-disclosure-button_open",
+          "ak-command-hover",
+          "ak-disclosure-button_hover",
+          "ak-command-focus",
+          "ak-disclosure-button_focus",
+          "ak-command-active",
+          "ak-disclosure-button_active",
+          "ak-command-disabled",
+          "ak-disclosure-button_disabled",
+          "ak-disclosure-chevron-down_idle",
+          "ak-disclosure-chevron-down_open",
+          "ak-list-counter",
+          "ak-edge/40",
+          "ak-layer-pop-2",
+          "ak-command-depth-x-3",
+          "ak-button_idle",
+          "ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)",
+          "ak-button_focus",
+          "ak-button_active",
+          "ak-button_disabled",
+          "ak-disclosure-chevron-right_idle",
+          "ak-list-counter-content",
+          "ak-command_idle",
+          "ak-frame-field",
+          "ak-command_focus",
+          "ak-command_active",
+          "ak-text/50",
+          "ak-layer-mix/20",
+          "ak-icon-chevron",
+          "--ak-command-depth-x",
+          "--ak-command-depth-y",
+          "ak-icon",
+        ],
+      },
+      {
+        "dependencies": [
+          "next",
+          "@ariakit/react",
+          "react",
+        ],
+        "devDependencies": [
+          "@types/react",
+        ],
+        "id": "components/router-tabs.tsx",
+        "styles": [],
+      },
+      {
+        "dependencies": [
+          "react",
+          "react-dom",
+          "@ariakit/react",
+          "clsx",
+        ],
+        "devDependencies": [
+          "@types/react",
+          "@types/react-dom",
+        ],
+        "id": "_lib/ariakit/tabs.react.tsx",
+        "styles": [
+          "ak-tabs",
+          "ak-tabs-lol",
+          "ak-tab-list",
+          "ak-tab-folder",
+          "ak-tab-folder_focus",
+          "ak-tab-panel",
+          "ak-frame-overflow",
+          "ak-layer-down",
+          "--ak-tab-border-width",
+          "ak-tab-folder_idle",
+          "ak-tab-folder_hover",
+          "ak-tab-folder_selected",
+          "ak-tab-folder_active",
+          "ak-tab_idle",
+          "ak-frame-container",
+          "ak-frame-border-(--ak-tab-border-width)",
+          "ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]",
+          "ak-layer-hover",
+          "ak-command_focus",
+          "ak-layer-contrast-primary",
+          "ak-layer-(--ak-tab-bg)",
+          "ak-text",
+          "ak-command_active",
+          "ak-command_idle",
+          "ak-text/70",
+          "--ak-command-depth-x",
+          "--ak-command-depth-y",
+          "ak-command-disabled",
+          "ak-frame-cover",
+        ],
+      },
+      {
+        "dependencies": [
+          "react",
+        ],
+        "devDependencies": [
+          "@types/react",
+        ],
+        "id": "_lib/react-utils/create-render.ts",
+        "styles": [],
+      },
+      {
+        "dependencies": [],
+        "devDependencies": [],
+        "id": "_lib/react-utils/is-iterable.ts",
+        "styles": [],
+      },
+      {
+        "dependencies": [
+          "react",
+        ],
+        "devDependencies": [
+          "@types/react",
+        ],
+        "id": "_lib/react-utils/merge-props.ts",
+        "styles": [],
+      },
+      {
+        "dependencies": [],
+        "devDependencies": [],
+        "id": "tab-nextjs/@tabs/new/page.tsx",
+        "styles": [],
+      },
+      {
+        "dependencies": [],
+        "devDependencies": [],
+        "id": "tab-nextjs/@tabs/page.tsx",
         "styles": [],
       },
     ]

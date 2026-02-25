@@ -1,0 +1,32 @@
+---
+title: Tab Next.js
+frameworks:
+  - react
+components:
+  - tab
+tags:
+  - nextjs
+  - ariakit-react
+---
+
+import ContentCodeBlock from "#app/components/content-code-block.astro";
+import ContentFullWidth from "#app/components/content-full-width.astro";
+
+## Overview
+
+This example demonstrates how to use Ariakit Tab components in a Next.js App Router application. The tabs use folder-style styling with the `ak-tab-folder` class.
+
+## Features
+
+- **Client Components**: The example uses the `"use client"` directive since Tab components require client-side interactivity.
+- **Accessible**: Tab components are fully accessible with keyboard navigation and ARIA attributes.
+- **Styled**: Uses Ariakit's built-in styling classes for a folder-tab appearance.
+
+## Key Points
+
+When using Ariakit in Next.js:
+
+1. Add the `"use client"` directive to components that use Ariakit's interactive components.
+2. Use `useId()` from React to generate stable IDs for default selected tabs.
+3. Ariakit components work seamlessly with Next.js App Router.
+
