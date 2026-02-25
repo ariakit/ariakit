@@ -127,7 +127,7 @@
     "@vizzly-testing/cli": "0.29.6",
     "@wordpress/components": "32.2.0",
     "astro": "5.17.3",
-    "autoprefixer": "10.4.24",
+    "autoprefixer": "10.4.27",
     "babel-loader": "10.0.0",
     "babel-plugin-transform-rewrite-imports": "1.5.4",
     "babel-preset-solid": "1.9.10",
