@@ -6,7 +6,12 @@
     "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"],
     "noUncheckedIndexedAccess": true
   },
-  "include": ["../.astro/types.d.ts", "env.d.ts", "**/*.astro"],
+  "include": [
+    "../.astro/types.d.ts",
+    "env.d.ts",
+    "**/*.astro",
+    "../../packages/ariakit-ui/src/**/*.astro"
+  ],
   "exclude": [],
   "references": [
     { "path": "tsconfig.react.json" },

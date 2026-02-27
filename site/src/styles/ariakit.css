@@ -9,66 +9,69 @@
 @import "tailwindcss";
 @import "@ariakit/tailwind";
 
-@import "./ak-aurora.css";
-@import "./ak-icon.css";
-@import "./ak-badge.css";
-@import "./ak-command.css";
-@import "./ak-button.css";
-@import "./ak-checkbox.css";
-@import "./ak-radio.css";
-@import "./ak-option.css";
-@import "./ak-tab.css";
-@import "./ak-popover.css";
-@import "./ak-dialog.css";
-@import "./ak-disclosure.css";
-@import "./ak-nav.css";
-@import "./ak-tooltip.css";
-@import "./ak-select.css";
-@import "./ak-container.css";
-@import "./ak-input.css";
-@import "./ak-kbd.css";
-@import "./ak-link.css";
-@import "./ak-progress.css";
-@import "./ak-list.css";
-@import "./ak-heading.css";
-@import "./ak-segmented.css";
-@import "./ak-table.css";
-@import "./ak-sidebar.css";
-@import "./ak-prose.css";
+/* @import "./ak-aurora.css";
+ @import "./ak-icon.css";
+ @import "./ak-badge.css";
+ @import "./ak-command.css";
+ @import "./ak-button.css";
+ @import "./ak-checkbox.css";
+ @import "./ak-radio.css";
+ @import "./ak-option.css";
+ @import "./ak-tab.css";
+ @import "./ak-popover.css";
+ @import "./ak-dialog.css";
+ @import "./ak-disclosure.css";
+ @import "./ak-nav.css";
+ @import "./ak-tooltip.css";
+ @import "./ak-select.css";
+ @import "./ak-container.css";
+ @import "./ak-input.css";
+ @import "./ak-kbd.css";
+ @import "./ak-link.css";
+ @import "./ak-progress.css";
+ @import "./ak-list.css";
+ @import "./ak-heading.css";
+ @import "./ak-segmented.css";
+ @import "./ak-table.css";
+ @import "./ak-sidebar.css";
+ @import "./ak-prose.css"; */
 
 @theme {
-  --spacing: 0.25rem;
-  --spacing-px: 1px;
-  --radius: 0.25rem;
-
   --color-canvas: oklch(99.33% 0.0011 197.14);
   --color-primary: oklch(56.7% 0.154556 248.5156);
   --color-secondary: oklch(65.59% 0.2118 354.31);
-
-  --radius-container: var(--radius-xl);
-  --spacing-container: --spacing(1);
-
-  --radius-tooltip: var(--radius-lg);
-  --spacing-tooltip: --spacing(1);
-
-  --radius-dialog: var(--radius-2xl);
-  --spacing-dialog: --spacing(4);
-
-  --radius-playground: calc(var(--radius) * 3.5);
-  --spacing-playground: --spacing(0);
-
-  --radius-field: var(--radius-lg);
-  --spacing-field: 0.75em;
-
-  --radius-card: var(--radius-xl);
-  --spacing-card: --spacing(4);
-
-  --radius-badge: var(--radius-full);
-  --spacing-badge: --spacing(1.5);
+  --color-success: theme(--color-green-600);
+  --color-warning: theme(--color-yellow-600);
+  --color-danger: theme(--color-red-600);
 
   --font-sans:
     "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --radius: 0.25em;
+  --spacing: 0.25em;
+  --spacing-px: 1px;
+
+  --duration-tabs: 100ms;
+  --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
+
+  --duration-overshoot: 500ms;
+  --ease-overshoot: linear(
+    0,
+    0.402 7.4%,
+    0.711 15.3%,
+    0.929 23.7%,
+    1.008 28.2%,
+    1.067 33%,
+    1.099 36.9%,
+    1.12 41%,
+    1.13 45.4%,
+    1.13 50.1%,
+    1.111 58.5%,
+    1.019 83.2%,
+    1.004 91.3%,
+    1
+  );
 }
 
 @theme inline {
@@ -89,9 +92,151 @@
     /* --color-canvas: oklch(16.52% 0.0062 285.7); */
     /* --color-canvas: theme(--color-slate-950); */
     --color-canvas: oklch(16.34% 0.0091 264.28);
+    --color-success: theme(--color-green-500);
+    --color-warning: theme(--color-yellow-500);
+    --color-danger: theme(--color-red-400);
   }
 }
 
 body {
   @apply ak-layer-canvas;
+  > * {
+    @apply ak-dark:scheme-dark;
+  }
+}
+
+@custom-variant ui-disabled {
+  &:is(:disabled, [aria-disabled="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disabled-within {
+  &:is(:disabled, [aria-disabled="true"]),
+  &:has(:is(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-active {
+  &:is(:active) {
+    @variant not-ui-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ui-hover {
+  @variant hover {
+    @variant not-ui-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ui-focus {
+  &:focus {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible {
+  &:is(:focus-visible, [data-focus-visible]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked {
+  &:is(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked-within {
+  &:is(:checked, [aria-checked="true"]),
+  &:has(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected {
+  &:is(
+    :checked,
+    .selected,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected-within {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ),
+  &:has(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-hover {
+  :hover:not(:disabled, [aria-disabled="true"]) + &,
+  &:has(+ :hover:not(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-selected {
+  :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+    + &,
+  &:has(
+    + :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-focus-visible {
+  :focus-visible + &,
+  &:has(+ :focus-visible) {
+    @slot;
+  }
+}
+
+@custom-variant befter {
+  &::before,
+  &::after {
+    @slot;
+  }
+}
+
+@custom-variant supports-anchor {
+  @supports (anchor-name: --a) {
+    @slot;
+  }
+}
+
+@custom-variant supports-corner-shape {
+  @supports (corner-shape: squircle) {
+    @slot;
+  }
 }
