@@ -4,7 +4,7 @@
   "packageRules": [
     {
       "matchPackageNames": ["shiki"],
-      "matchFileNames": ["/^package\\.json$/"],
+      "matchCurrentVersion": "/^1\\./",
       "allowedVersions": "/^1\\./"
     },
     {
