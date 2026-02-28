@@ -419,7 +419,7 @@ export interface PortalOptions<_T extends ElementType = TagName>
    * - [Menubar](https://ariakit.org/components/menubar)
    * - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
    * - [Animated Select](https://ariakit.org/examples/select-animated)
-   * @default true
+   * @default false
    */
   portal?: boolean;
   /**
