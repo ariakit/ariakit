@@ -444,19 +444,24 @@ function round(
   return `round(${join([strategyOrValue, valueOrInterval, interval])})`;
 }
 
+function cleanCalc(value: string) {
+  return value.replaceAll("calc(", "(");
+}
+
 export const fn = {
   exp,
   oklch,
   round,
 
-  calc: (...args: Parameters<typeof exp>) => `calc(${fn.exp(...args)})`,
+  calc: (...args: Parameters<typeof exp>) =>
+    `calc(${cleanCalc(fn.exp(...args))})`,
   add: (...args: Value[]) => fn.calc(join(args, " + ")),
   sub: (...args: Value[]) => fn.calc(join(args, " - ")),
   mul: (...args: Value[]) => fn.calc(join(args, " * ")),
   div: (...args: Value[]) => fn.calc(join(args, " / ")),
-  min: (a: Value, b: Value) => fn.exp`min(${a}, ${b})`,
-  max: (a: Value, b: Value) => fn.exp`max(${a}, ${b})`,
-  mod: (a: Value, b: Value) => fn.exp`mod(${a}, ${b})`,
+  min: (a: Value, b: Value) => cleanCalc(fn.exp`min(${a}, ${b})`),
+  max: (a: Value, b: Value) => cleanCalc(fn.exp`max(${a}, ${b})`),
+  mod: (a: Value, b: Value) => cleanCalc(fn.exp`mod(${a}, ${b})`),
   neg: (x: Value) => fn.mul(x, "-1"),
   abs: (x: Value) => fn.max(x, fn.neg(x)),
   sign: (x: Value) => fn.clamp(-1, fn.toInfinity(x), 1),
@@ -466,7 +471,7 @@ export const fn = {
   relu: (...args: Parameters<typeof exp>) => fn.max(0, fn.exp(...args)),
 
   clamp: (min: Value, x: Value, max: Value) =>
-    fn.exp`clamp(${min}, ${x}, ${max})`,
+    cleanCalc(fn.exp`clamp(${min}, ${x}, ${max})`),
 
   clamp01: (x: Value) => fn.clamp(0, x, 1),
 
