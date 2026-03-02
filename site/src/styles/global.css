@@ -67,5 +67,5 @@ body {
 }
 
 body > * {
-  @apply ak-dark:scheme-dark;
+  /* @apply ak-dark:scheme-dark; */
 }
