@@ -6,7 +6,7 @@ import "./ak.css";
 <html lang="en" transition:animate="none">
   <head> </head>
   <body class="p-4 ak-layer ak-layer-canvas">
-    <div class="flex gap-2 m- *:p-4">
+    <div class="flex flex-wrap gap-2 m- *:p-4">
       <div class="ak-layer ak-layer-black hover:ak-state-10 ak-layer-min-20">
         black
       </div>
@@ -15,6 +15,16 @@ import "./ak.css";
       </div>
       <div class="ak-layer ak-layer-10 ak-layer-canvas hover:ak-state-10">
         toggle
+      </div>
+      <div
+        class="ak-layer ak-layer-contrast-31 ak-layer-canvas hover:ak-state-contrast-10"
+      >
+        layer contrast
+      </div>
+      <div
+        class="ak-layer ak-layer-10 ak-layer-canvas hover:ak-state-contrast-35"
+      >
+        state contrast
       </div>
       <div
         class="ak-layer ak-layer-blue-500 ak-layer-max-c-muted hover:ak-state-10"
@@ -40,6 +50,11 @@ import "./ak.css";
       </div>
       <div class="ak-layer ak-layer-blue ak-layer-blue-500 hover:ak-state-10">
         blue
+      </div>
+      <div
+        class="ak-layer ak-layer-contrast-30 ak-layer-canvas hover:ak-state-10"
+      >
+        canvas contrast
       </div>
       <div
         class="ak-layer ak-layer-magenta ak-layer-blue-500 hover:ak-state-10"

@@ -256,6 +256,38 @@ function getAutoL(scale: Value) {
   );
 }
 
+function getContrastL(scale: Value) {
+  const direction = vars.autoDirection;
+  const la = vars.forbiddenLa;
+  const lb = vars.forbiddenLb;
+  const nextL = fn.add(l, fn.mul(scale, direction));
+  const directionToLight = fn.clamp01(direction);
+  const directionToDark = fn.clamp01(fn.neg(direction));
+  const reachedFromDarkSide = fn.clamp01(
+    fn.add(fn.mul(fn.sub(nextL, la), 1e6), 1),
+  );
+  const reachedFromLightSide = fn.clamp01(
+    fn.add(fn.mul(fn.sub(lb, nextL), 1e6), 1),
+  );
+  const scaleEnabled = fn.clamp01(fn.mul(scale, 1e6));
+  const reachedForbiddenRange = fn.mul(
+    scaleEnabled,
+    fn.add(
+      fn.mul(directionToLight, reachedFromDarkSide),
+      fn.mul(directionToDark, reachedFromLightSide),
+    ),
+  );
+  const directionalBoundary = fn.add(
+    fn.mul(la, fn.sub(1, directionToLight)),
+    fn.mul(lb, directionToLight),
+  );
+  const targetL = fn.add(
+    fn.mul(nextL, fn.sub(1, reachedForbiddenRange)),
+    fn.mul(directionalBoundary, reachedForbiddenRange),
+  );
+  return targetL;
+}
+
 // function up(value: InterpolatedValue) {
 //   return fn.exp`(${value} * (1 - ${fn.min(fn.sign(vars.layerLevel), 0)}))`;
 // }
@@ -349,7 +381,12 @@ const layerIdleUnsafe = fn.oklch(vars.layerIdleMixed, {
   ),
 });
 
-const layerIdle = fn.oklch(layerIdleUnsafe, { l: vars.safeOkL });
+const layerIdle = fn.oklch(
+  fn.oklch(layerIdleUnsafe, {
+    l: getContrastL(inputs.layerContrastL),
+  }),
+  { l: vars.safeOkL },
+);
 
 const stateBase = fn.oklch(fn.oklch(vars.layerIdle, state), {
   l: vars.safeOkL,
@@ -361,7 +398,7 @@ const layer = fn.oklch(
       l: getLayerL(getAutoL(inputs.stateAutoL)),
     }),
     {
-      l: getLayerL(inputs.stateContrastL),
+      l: getContrastL(inputs.stateContrastL),
     },
   ),
   { l: vars.safeOkL, c: fn.clamp(inputs.layerCMin, "c", inputs.layerCMax) },
@@ -442,12 +479,12 @@ utility(
 
 utility(
   "layer-contrast-*",
-  set(inputs.layerRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.layerContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
 );
 
 utility(
   "state-contrast-*",
-  set(inputs.stateRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.stateContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
 );
 
 utility(
