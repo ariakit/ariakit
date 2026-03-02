@@ -21,10 +21,10 @@ const DARK_THRESHOLD_OKL = 0.645;
 const CONTRAST_HIGH = 100;
 const CONTRAST_HIGH_LEGACY = 3;
 const LA_BASE = 0.55;
-const LB_BASE = 0.72;
+const LB_BASE = 0.725;
 const L_SPREAD_RATIO = 0.15;
-const FORBIDDEN_RANGE_LA_MIN = 0.25;
-const FORBIDDEN_RANGE_LB_MAX = 0.88;
+const FORBIDDEN_RANGE_LA_MIN = 0.3;
+const FORBIDDEN_RANGE_LB_MAX = 0.85;
 
 const contrast = createVar("--contrast", 0);
 const contrastInput = fn.max(contrast, 0);
