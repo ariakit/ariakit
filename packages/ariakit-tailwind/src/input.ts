@@ -139,13 +139,6 @@ const forbiddenLaVar = _ak.prop("forbidden-la");
 const forbiddenLbVar = _ak.prop("forbidden-lb");
 const autoDirectionVar = _ak.prop("auto-direction");
 const safeOkL = getSafeLightness(l, forbiddenLa, forbiddenLb);
-const scale = 0.1;
-const autoL = getAutoLightness(
-  scale,
-  fn.sub(darkOkL, lightOkL),
-  forbiddenLa,
-  forbiddenLb,
-);
 
 const vars = {
   textContrastOkL: _ak.prop("text-contrast-okl", {
@@ -160,7 +153,6 @@ const vars = {
   lightOkL: _ak.prop("light-okl", { initialValue: lightOkL }),
   darkL: _ak.prop("dark-l", { initialValue: darkL }),
   lightL: _ak.prop("light-l", { initialValue: lightL }),
-  toggleOkL: _ak.prop("toggle-okl", { initialValue: autoL }),
   contrast,
   layerBase: ak.prop.white("layer-base"),
   layerIdleMixed: _ak.prop.white("layer-idle-mixed"),
