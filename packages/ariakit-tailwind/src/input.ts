@@ -50,20 +50,6 @@ const lbSpreadContrastMultiplier =
 const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 const forbiddenLaBase = fn.sub(LA_BASE, fn.mul(chromaT, laSpread));
 const forbiddenLbBase = fn.add(LB_BASE, fn.mul(chromaT, lbSpread));
-const forbiddenLa = fn.max(
-  FORBIDDEN_RANGE_LA_MIN,
-  fn.sub(
-    forbiddenLaBase,
-    fn.mul(contrastT, laSpread, laSpreadContrastMultiplier),
-  ),
-);
-const forbiddenLb = fn.min(
-  FORBIDDEN_RANGE_LB_MAX,
-  fn.add(
-    forbiddenLbBase,
-    fn.mul(contrastT, lbSpread, lbSpreadContrastMultiplier),
-  ),
-);
 
 function getForbiddenRange(lightness: Value, la: Value, lb: Value) {
   return fn.clamp01(
@@ -135,20 +121,43 @@ const hue = createNamespace("hue");
 const color = createNamespace("color");
 const chroma = createNamespace("chroma");
 
+const forbiddenLaBaseVar = _ak.prop("forbidden-la-base", {
+  initialValue: forbiddenLaBase,
+});
+const forbiddenLbBaseVar = _ak.prop("forbidden-lb-base", {
+  initialValue: forbiddenLbBase,
+});
 const forbiddenLaVar = _ak.prop("forbidden-la");
 const forbiddenLbVar = _ak.prop("forbidden-lb");
-const autoDirectionVar = _ak.prop("auto-direction");
-const safeOkL = getSafeLightness(l, forbiddenLa, forbiddenLb);
+const autoDirectionVar = _ak.prop("auto-direction", {
+  initialValue: fn.sub(darkOkL, lightOkL),
+});
+const forbiddenLa = fn.max(
+  FORBIDDEN_RANGE_LA_MIN,
+  fn.sub(
+    fn.var(forbiddenLaBaseVar),
+    fn.mul(contrastT, laSpread, laSpreadContrastMultiplier),
+  ),
+);
+const forbiddenLb = fn.min(
+  FORBIDDEN_RANGE_LB_MAX,
+  fn.add(
+    fn.var(forbiddenLbBaseVar),
+    fn.mul(contrastT, lbSpread, lbSpreadContrastMultiplier),
+  ),
+);
 
 const vars = {
   textContrastOkL: _ak.prop("text-contrast-okl", {
     initialValue: textContrastOkL,
   }),
   textContrastL: _ak.prop("text-contrast-l", { initialValue: textContrastL }),
+  forbiddenLaBase: forbiddenLaBaseVar,
+  forbiddenLbBase: forbiddenLbBaseVar,
   forbiddenLa: forbiddenLaVar,
   forbiddenLb: forbiddenLbVar,
   autoDirection: autoDirectionVar,
-  safeOkL: _ak.prop("safe-okl", { initialValue: safeOkL }),
+  safeOkL: _ak.prop("safe-okl"),
   darkOkL: _ak.prop("dark-okl", { initialValue: darkOkL }),
   lightOkL: _ak.prop("light-okl", { initialValue: lightOkL }),
   darkL: _ak.prop("dark-l", { initialValue: darkL }),
@@ -365,11 +374,7 @@ utility(
   set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
-  set(
-    vars.safeOkL,
-    getSafeLightness(l, fn.var(vars.forbiddenLa), fn.var(vars.forbiddenLb)),
-  ),
-  set(vars.autoDirection, fn.sub(darkOkL, lightOkL)),
+  set(vars.safeOkL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
   set(vars.edgeL, edgeL.light),
   set(vars.layerBase, fn.oklch(inputs.layerColor, idle)),
   set(vars.layerIdleMixed, vars.layerBase),
@@ -391,20 +396,12 @@ utility(
   set(
     inputs.layerAutoL,
     fn.div(fn.value("number", "[number]", numbers()), 100),
-    // fn.mul(
-    //   fn.div(fn.value("number", "[number]", numbers()), 10),
-    //   vars.toggleOkL,
-    // ),
   ),
 );
 
 utility(
   "state-*",
-  set(
-    inputs.stateAutoL,
-    fn.div(fn.value("number", "[*]", numbers()), 100),
-    // fn.mul(fn.div(fn.value("number", "[*]", numbers()), 10), vars.toggleOkL),
-  ),
+  set(inputs.stateAutoL, fn.div(fn.value("number", "[*]", numbers()), 100)),
 );
 
 const layerLighten = utility(

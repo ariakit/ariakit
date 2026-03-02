@@ -54,10 +54,9 @@
   @apply ring-[color:var(--ak-edge)];
   --ak-shadow: oklch(0 0 0 / 15%);
   --ak-text: lch(from var(--ak-layer) calc(calc(58.82 - l) * infinity) 0 0);
-  --_ak-forbidden-la: max(0.3, calc(calc(0.55 - calc(calc(min(c, 0.368) / 0.368) * 0.0825)) - calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.0825 * 3.0303030303030307)));
-  --_ak-forbidden-lb: min(0.85, calc(calc(0.725 + calc(calc(min(c, 0.368) / 0.368) * 0.04125)) + calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.04125 * 3.0303030303030303)));
+  --_ak-forbidden-la: max(0.3, calc(var(--_ak-forbidden-la-base) - calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.0825 * 3.0303030303030307)));
+  --_ak-forbidden-lb: min(0.85, calc(var(--_ak-forbidden-lb-base) + calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.04125 * 3.0303030303030303)));
   --_ak-safe-okl: calc(calc(l * calc(1 - clamp(0, calc(calc(calc(l - var(--_ak-forbidden-la)) * calc(var(--_ak-forbidden-lb) - l)) * infinity), 1))) + calc(calc(calc(var(--_ak-forbidden-la) * calc(1 - clamp(0, calc(calc(l - calc(calc(var(--_ak-forbidden-la) + var(--_ak-forbidden-lb)) / 2)) * infinity), 1))) + calc(var(--_ak-forbidden-lb) * clamp(0, calc(calc(l - calc(calc(var(--_ak-forbidden-la) + var(--_ak-forbidden-lb)) / 2)) * infinity), 1))) * clamp(0, calc(calc(calc(l - var(--_ak-forbidden-la)) * calc(var(--_ak-forbidden-lb) - l)) * infinity), 1)));
-  --_ak-auto-direction: calc(clamp(0, calc(calc(0.645 - l) * infinity), 1) - clamp(0, calc(1 - calc(calc(0.645 - l) * infinity)), 1));
   --_ak-edge-l: min(l, calc(var(--_ak-edge-l, calc(var(--_ak-edge-l) * 0.15)) - calc(calc(max(var(--contrast, 0), 0) * 0.03) * 0.15)));
   --ak-layer-base: oklch(from var(--_ak-layer-color) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-relative-lightness, 0))) + var(--_ak-layer-relative-lightness, 0))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-relative-chroma, 0))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-relative-hue, 0))));
   --_ak-layer-idle-mixed: var(--ak-layer-base);
@@ -196,6 +195,18 @@
   initial-value: calc(calc(58.82 - l) * infinity);
 }
 
+@property --_ak-forbidden-la-base {
+  syntax: "*";
+  inherits: false;
+  initial-value: calc(0.55 - calc(calc(min(c, 0.368) / 0.368) * 0.0825));
+}
+
+@property --_ak-forbidden-lb-base {
+  syntax: "*";
+  inherits: false;
+  initial-value: calc(0.725 + calc(calc(min(c, 0.368) / 0.368) * 0.04125));
+}
+
 @property --_ak-forbidden-la {
   syntax: "*";
   inherits: false;
@@ -209,12 +220,12 @@
 @property --_ak-auto-direction {
   syntax: "*";
   inherits: false;
+  initial-value: calc(clamp(0, calc(calc(0.645 - l) * infinity), 1) - clamp(0, calc(1 - calc(calc(0.645 - l) * infinity)), 1));
 }
 
 @property --_ak-safe-okl {
   syntax: "*";
   inherits: false;
-  initial-value: calc(calc(l * calc(1 - clamp(0, calc(calc(calc(l - max(0.3, calc(calc(0.55 - calc(calc(min(c, 0.368) / 0.368) * 0.0825)) - calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.0825 * 3.0303030303030307)))) * calc(min(0.85, calc(calc(0.725 + calc(calc(min(c, 0.368) / 0.368) * 0.04125)) + calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.04125 * 3.0303030303030303))) - l)) * infinity), 1))) + calc(calc(calc(max(0.3, calc(calc(0.55 - calc(calc(min(c, 0.368) / 0.368) * 0.0825)) - calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.0825 * 3.0303030303030307))) * calc(1 - clamp(0, calc(calc(l - calc(calc(max(0.3, calc(calc(0.55 - calc(calc(min(c, 0.368) / 0.368) * 0.0825)) - calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.0825 * 3.0303030303030307))) + min(0.85, calc(calc(0.725 + calc(calc(min(c, 0.368) / 0.368) * 0.04125)) + calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.04125 * 3.0303030303030303)))) / 2)) * infinity), 1))) + calc(min(0.85, calc(calc(0.725 + calc(calc(min(c, 0.368) / 0.368) * 0.04125)) + calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.04125 * 3.0303030303030303))) * clamp(0, calc(calc(l - calc(calc(max(0.3, calc(calc(0.55 - calc(calc(min(c, 0.368) / 0.368) * 0.0825)) - calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.0825 * 3.0303030303030307))) + min(0.85, calc(calc(0.725 + calc(calc(min(c, 0.368) / 0.368) * 0.04125)) + calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.04125 * 3.0303030303030303)))) / 2)) * infinity), 1))) * clamp(0, calc(calc(calc(l - max(0.3, calc(calc(0.55 - calc(calc(min(c, 0.368) / 0.368) * 0.0825)) - calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.0825 * 3.0303030303030307)))) * calc(min(0.85, calc(calc(0.725 + calc(calc(min(c, 0.368) / 0.368) * 0.04125)) + calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.04125 * 3.0303030303030303))) - l)) * infinity), 1)));
 }
 
 @property --_ak-dark-okl {
@@ -239,12 +250,6 @@
   syntax: "*";
   inherits: false;
   initial-value: clamp(0, calc(1 - calc(calc(58.82 - l) * infinity)), 1);
-}
-
-@property --_ak-toggle-okl {
-  syntax: "*";
-  inherits: false;
-  initial-value: calc(0.1 * calc(calc(clamp(0, calc(calc(0.645 - l) * infinity), 1) - clamp(0, calc(1 - calc(calc(0.645 - l) * infinity)), 1)) * calc(1 - calc(2 * clamp(0, calc(calc(calc(calc(l + calc(0.1 * calc(clamp(0, calc(calc(0.645 - l) * infinity), 1) - clamp(0, calc(1 - calc(calc(0.645 - l) * infinity)), 1)))) - max(0.3, calc(calc(0.55 - calc(calc(min(c, 0.368) / 0.368) * 0.0825)) - calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.0825 * 3.0303030303030307)))) * calc(min(0.85, calc(calc(0.725 + calc(calc(min(c, 0.368) / 0.368) * 0.04125)) + calc(clamp(0, calc(max(var(--contrast, 0), 0) / 100), 1) * 0.04125 * 3.0303030303030303))) - calc(l + calc(0.1 * calc(clamp(0, calc(calc(0.645 - l) * infinity), 1) - clamp(0, calc(1 - calc(calc(0.645 - l) * infinity)), 1)))))) * infinity), 1)))));
 }
 
 @property --ak-layer-base {
