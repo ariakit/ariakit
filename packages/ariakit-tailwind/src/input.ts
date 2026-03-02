@@ -34,8 +34,8 @@ const contrastLegacy = fn.mul(
 );
 const contrastT = fn.clamp01(fn.div(contrastInput, CONTRAST_HIGH));
 
-const textContrastOkL = fn.toInfinity(fn.sub(DARK_THRESHOLD_OKL, "l"));
-const textContrastL = fn.toInfinity(fn.sub(DARK_THRESHOLD_L, "l"));
+const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
+const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
 const darkOkL = fn.clamp01(textContrastOkL);
 const lightOkL = fn.clamp01(fn.sub(1, textContrastOkL));
 const darkL = fn.clamp01(textContrastL);
@@ -53,14 +53,12 @@ const forbiddenLbBase = fn.add(LB_BASE, fn.mul(chromaT, lbSpread));
 
 function getForbiddenRange(lightness: Value, la: Value, lb: Value) {
   return fn.clamp01(
-    fn.toInfinity(fn.mul(fn.sub(lightness, la), fn.sub(lb, lightness))),
+    fn.inflate(fn.mul(fn.sub(lightness, la), fn.sub(lb, lightness))),
   );
 }
 
 function getForbiddenDirection(lightness: Value, la: Value, lb: Value) {
-  return fn.clamp01(
-    fn.toInfinity(fn.sub(lightness, fn.div(fn.add(la, lb), 2))),
-  );
+  return fn.clamp01(fn.inflate(fn.sub(lightness, fn.div(fn.add(la, lb), 2))));
 }
 
 function getSafeLightness(lightness: Value, la: Value, lb: Value) {
@@ -264,12 +262,13 @@ function getContrastL(scale: Value) {
   const directionToLight = fn.clamp01(direction);
   const directionToDark = fn.clamp01(fn.neg(direction));
   const reachedFromDarkSide = fn.clamp01(
-    fn.add(fn.mul(fn.sub(nextL, la), 1e6), 1),
+    fn.add(fn.inflate(fn.sub(nextL, la)), 1),
   );
   const reachedFromLightSide = fn.clamp01(
-    fn.add(fn.mul(fn.sub(lb, nextL), 1e6), 1),
+    fn.add(fn.inflate(fn.sub(lb, nextL)), 1),
   );
-  const scaleEnabled = fn.clamp01(fn.mul(scale, 1e6));
+  const scaleEnabled = fn.clamp01(fn.inflate(scale));
+  // const scaleEnabled = fn.inflate(scale);
   const reachedForbiddenRange = fn.mul(
     scaleEnabled,
     fn.add(
@@ -397,9 +396,7 @@ const layer = fn.oklch(
     fn.oklch(vars.layerMixed, {
       l: getLayerL(getAutoL(inputs.stateAutoL)),
     }),
-    {
-      l: getContrastL(inputs.stateContrastL),
-    },
+    { l: getContrastL(inputs.stateContrastL) },
   ),
   { l: vars.safeOkL, c: fn.clamp(inputs.layerCMin, "c", inputs.layerCMax) },
 );
