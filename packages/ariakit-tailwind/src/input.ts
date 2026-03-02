@@ -135,14 +135,14 @@ const autoDirectionVar = _ak.prop("auto-direction", {
 const forbiddenLa = fn.max(
   FORBIDDEN_RANGE_LA_MIN,
   fn.sub(
-    fn.var(forbiddenLaBaseVar),
+    forbiddenLaBaseVar,
     fn.mul(contrastT, laSpread, laSpreadContrastMultiplier),
   ),
 );
 const forbiddenLb = fn.min(
   FORBIDDEN_RANGE_LB_MAX,
   fn.add(
-    fn.var(forbiddenLbBaseVar),
+    forbiddenLbBaseVar,
     fn.mul(contrastT, lbSpread, lbSpreadContrastMultiplier),
   ),
 );
@@ -250,9 +250,9 @@ function oklchLightDark(light: Value, dark: Value) {
 function getAutoL(scale: Value) {
   return getAutoLightness(
     scale,
-    fn.var(vars.autoDirection),
-    fn.var(vars.forbiddenLa),
-    fn.var(vars.forbiddenLb),
+    vars.autoDirection,
+    vars.forbiddenLa,
+    vars.forbiddenLb,
   );
 }
 
