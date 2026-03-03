@@ -496,7 +496,6 @@ const layerColorDeclarations = [
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerBase),
   set(vars.layerAuto, layerAuto),
-  set(vars.layer, layer),
   set(vars.edgeL, edgeL.light),
 ];
 
@@ -508,6 +507,7 @@ utility(
   set.borderColor(vars.edge),
   set.backgroundColor(vars.layer),
   at.apply`ring-[color:${vars.edge}]`,
+  set(vars.layer, layer),
   set(vars.shadow, "oklch(0 0 0 / 15%)"),
   set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
   layerMathDeclarations,
