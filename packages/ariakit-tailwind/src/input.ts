@@ -19,19 +19,14 @@ const CHROMA_MAX = CHROMA_MAX_P3;
 const DARK_THRESHOLD_L = 58.82;
 const DARK_THRESHOLD_OKL = 0.645;
 const CONTRAST_HIGH = 100;
-const CONTRAST_HIGH_LEGACY = 3;
 const LA_BASE = 0.55;
 const LB_BASE = 0.725;
 const L_SPREAD_RATIO = 0.15;
-const FORBIDDEN_RANGE_LA_MIN = 0.3;
-const FORBIDDEN_RANGE_LB_MAX = 0.85;
+const FORBIDDEN_RANGE_LA_MIN = 0.35;
+const FORBIDDEN_RANGE_LB_MAX = 0.825;
 
 const contrast = createVar("--contrast", 0);
 const contrastInput = fn.max(contrast, 0);
-const contrastLegacy = fn.mul(
-  contrastInput,
-  CONTRAST_HIGH_LEGACY / CONTRAST_HIGH,
-);
 const contrastT = fn.clamp01(fn.div(contrastInput, CONTRAST_HIGH));
 
 const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
@@ -327,19 +322,19 @@ const edgeL = {
     "l",
     fn.sub(
       fn.var(inputs.edgeL, fn.mul(inputs.edgeL, 0.15)),
-      fn.mul(contrastLegacy, 0.15),
+      fn.mul(contrastT, 0.45),
     ),
   ),
   dark: fn.max(
     fn.max("l", 0.13),
     fn.add(
       fn.var(inputs.edgeL, fn.sub(1, fn.mul(inputs.edgeL, 0.1))),
-      fn.mul(contrastLegacy, 0.1),
+      fn.mul(contrastT, 0.3),
     ),
   ),
 };
-const contrastNegative = fn.min(0, fn.min(1, fn.neg(contrastLegacy)));
-const lContrast = fn.mul(0.1, contrastNegative, oklchLightDark(-1, 1));
+const contrastNegative = fn.min(0, fn.min(1, fn.neg(contrastT)));
+const lContrast = fn.mul(0.3, contrastNegative, oklchLightDark(-1, 1));
 
 function getLayerL(relativeL: Value, absoluteL?: VarProperty) {
   const lMin = fn.max("l", fn.min(0.13, relativeL));
