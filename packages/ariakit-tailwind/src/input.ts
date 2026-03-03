@@ -22,8 +22,8 @@ const CONTRAST_HIGH = 100;
 const LA_BASE = 0.55;
 const LB_BASE = 0.725;
 const L_SPREAD_RATIO = 0.15;
-const FORBIDDEN_RANGE_LA_MIN = 0.3;
-const FORBIDDEN_RANGE_LB_MAX = 0.85;
+const FORBIDDEN_RANGE_LA_MIN = 0.25;
+const FORBIDDEN_RANGE_LB_MAX = 0.875;
 
 const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
 const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
@@ -242,10 +242,11 @@ function getAutoL(scale: Value) {
 }
 
 function getContrastL(scale: Value) {
+  const contrastScale = fn.add(scale, fn.mul(scale, contrastT, 2));
   const direction = vars.autoLDirection;
   const la = vars.forbiddenLa;
   const lb = vars.forbiddenLb;
-  const nextL = fn.add(l, fn.mul(scale, direction));
+  const nextL = fn.add(l, fn.mul(contrastScale, direction));
   const directionToLight = fn.clamp01(direction);
   const directionToDark = fn.clamp01(fn.neg(direction));
   const reachedFromDarkSide = fn.clamp01(
@@ -254,7 +255,7 @@ function getContrastL(scale: Value) {
   const reachedFromLightSide = fn.clamp01(
     fn.add(fn.inflate(fn.sub(lb, nextL)), 1),
   );
-  const scaleEnabled = fn.clamp01(fn.inflate(scale));
+  const scaleEnabled = fn.clamp01(fn.inflate(contrastScale));
   const reachedForbiddenRange = fn.mul(
     scaleEnabled,
     fn.add(
@@ -370,7 +371,9 @@ const layerIdle = fn.oklch(
   fn.oklch(layerIdleUnsafe, {
     l: getContrastL(inputs.layerContrastL),
   }),
-  { l: vars.safeOkL },
+  {
+    // l: vars.safeOkL,
+  },
 );
 
 const stateBase = fn.oklch(fn.oklch(vars.layerIdle, state), {
