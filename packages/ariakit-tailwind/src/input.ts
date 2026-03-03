@@ -25,7 +25,6 @@ const L_SPREAD_RATIO = 0.15;
 const FORBIDDEN_RANGE_LA_MIN = 0.2;
 const FORBIDDEN_RANGE_LB_MAX = 0.9;
 
-// Inflate turns threshold deltas into near-binary weights after clamp01.
 const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
 const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
 const darkOkL = fn.clamp01(textContrastOkL);
