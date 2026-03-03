@@ -70,7 +70,6 @@
   --_ak-lad: calc(var(--_ak-layer-auto-lightness, 0) * (var(--_ak-ald) * (1 - (clamp(0, ((((l + (var(--_ak-layer-auto-lightness, 0) * var(--_ak-ald))) - var(--_ak-fla)) * (var(--_ak-flb) - (l + (var(--_ak-layer-auto-lightness, 0) * var(--_ak-ald))))) * 1000000), 1) * 2))));
   --_ak-licv: calc(var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * var(--_ak-ct) * 3.334));
   --_ak-lcv: calc(var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * var(--_ak-ct) * 3.334));
-  --_ak-edge-l: min(l, (var(--_ak-edge-l, (var(--_ak-edge-l) * 0.15)) - (var(--_ak-ct) * 0.45)));
   --_ak-lib: oklch(from var(--_ak-layer-color, var(--ak-layer-parent)) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-idle-relative-lightness, 0))) + var(--_ak-layer-idle-relative-lightness, 0))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma, 0))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue, 0))));
   --_ak-lim: var(--_ak-lib);
   --_ak-lia: oklch(from var(--_ak-lim) calc(clamp(var(--_ak-layer-lightness-min, 0), (max(l, min(0.13, var(--_ak-liad))) + var(--_ak-liad)), var(--_ak-layer-lightness-max, 1)) + var(--_ak-lc)) c h);
@@ -78,6 +77,7 @@
   --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness, 0))) + var(--_ak-layer-relative-lightness, 0)) calc(c + var(--_ak-layer-relative-chroma, 0)) calc(h + var(--_ak-layer-relative-hue, 0))) var(--_ak-sokl) c h);
   --_ak-la: oklch(from var(--_ak-lb) calc(max(l, min(0.13, var(--_ak-lad))) + var(--_ak-lad)) c h);
   --ak-layer: oklch(from oklch(from var(--_ak-la) calc(((l + (var(--_ak-lcv) * var(--_ak-ald))) * (1 - (clamp(0, (var(--_ak-lcv) * 1000000), 1) * ((var(--_ak-adtl) * clamp(0, (((l + (var(--_ak-lcv) * var(--_ak-ald))) - var(--_ak-fla)) * 1000000), 1)) + (var(--_ak-adtd) * clamp(0, ((var(--_ak-flb) - (l + (var(--_ak-lcv) * var(--_ak-ald)))) * 1000000), 1)))))) + (var(--_ak-dbl) * (clamp(0, (var(--_ak-lcv) * 1000000), 1) * ((var(--_ak-adtl) * clamp(0, (((l + (var(--_ak-lcv) * var(--_ak-ald))) - var(--_ak-fla)) * 1000000), 1)) + (var(--_ak-adtd) * clamp(0, ((var(--_ak-flb) - (l + (var(--_ak-lcv) * var(--_ak-ald)))) * 1000000), 1)))))) c h) var(--_ak-sokl) clamp(var(--_ak-layer-chroma-min, 0), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
+  --_ak-edge-l: min(l, (var(--_ak-edge-l, (var(--_ak-edge-l) * 0.15)) - (var(--_ak-ct) * 0.45)));
   @variant ak-dark {
     --_ak-edge-l: max(max(l, 0.13), (var(--_ak-edge-l, (1 - (var(--_ak-edge-l) * 0.1))) + (var(--_ak-ct) * 0.3)));
   }

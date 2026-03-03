@@ -490,7 +490,6 @@ const layerMathDeclarations = [
 
 // Build the layered color stages from idle -> base -> auto -> final.
 const layerColorDeclarations = [
-  set(vars.edgeL, edgeL.light),
   set(vars.layerIdleBase, layerIdleBase),
   set(vars.layerIdleMixed, layerIdleMixed),
   set(vars.layerIdleAuto, layerIdleAuto),
@@ -498,6 +497,7 @@ const layerColorDeclarations = [
   set(vars.layerBase, layerBase),
   set(vars.layerAuto, layerAuto),
   set(vars.layer, layer),
+  set(vars.edgeL, edgeL.light),
 ];
 
 const layerContext = createContext();
