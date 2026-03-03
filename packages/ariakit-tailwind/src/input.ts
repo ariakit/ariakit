@@ -44,6 +44,17 @@ const lbSpreadContrastMultiplier = roundToDecimals(
   4,
 );
 
+const utilities = new Set<ReturnType<typeof ak.utility>>();
+
+/**
+ * Registers an `ak` utility and stores it for the exported input list.
+ */
+function utility(...args: Parameters<typeof ak.utility>) {
+  const utility = ak.utility(...args);
+  utilities.add(utility);
+  return utility;
+}
+
 /**
  * Builds quoted numeric tokens for `--value()` utility ranges.
  */
@@ -269,17 +280,6 @@ const root = rule(
   ":root",
   at.variant("contrast-more", set(vars.contrast, CONTRAST_HIGH)),
 );
-
-const utilities = new Set<ReturnType<typeof ak.utility>>();
-
-/**
- * Registers an `ak` utility and stores it for the exported input list.
- */
-function utility(...args: Parameters<typeof ak.utility>) {
-  const utility = ak.utility(...args);
-  utilities.add(utility);
-  return utility;
-}
 
 // Keep edge contrast directional: darker in light mode, lighter in dark mode.
 const edgeL = {
