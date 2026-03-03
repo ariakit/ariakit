@@ -350,9 +350,9 @@ const idle = {
 };
 
 const state = {
-  l: getLayerL(inputs.stateRelativeL, inputs.layerL),
-  c: getLayerC(inputs.stateRelativeC, inputs.layerC),
-  h: getLayerH(inputs.stateRelativeH, inputs.layerH),
+  l: getLayerL(inputs.stateRelativeL),
+  c: getLayerC(inputs.stateRelativeC),
+  h: getLayerH(inputs.stateRelativeH),
 };
 
 const layerIdleUnsafe = fn.oklch(vars.layerIdleMixed, {
