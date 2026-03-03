@@ -7,6 +7,7 @@ import {
   fn,
   rule,
   set,
+  withContext,
 } from "./utils2.ts";
 
 const l = "l";
@@ -216,15 +217,16 @@ const themeTokenVars = {
 
 // Color pipeline stages and exported visual tokens.
 const layerColorVars = {
-  layerIdleBase: _ak.prop.white("layer-idle-base"),
-  layerIdleMixed: _ak.prop.white("layer-idle-mixed"),
-  layerIdleAuto: _ak.prop.white("layer-idle-auto"),
-  layerIdle: _ak.prop.white("layer-idle"),
+  layerIdleBase: _ak.prop.canvas("layer-idle-base"),
+  layerIdleMixed: _ak.prop.canvas("layer-idle-mixed"),
+  layerIdleAuto: _ak.prop.canvas("layer-idle-auto"),
+  layerIdle: _ak.prop.canvas("layer-idle"),
   layerAppearance: _ak.prop.black("layer-appearance", { inherits: true }),
-  layerBase: _ak.prop.white("layer-base"),
-  layerAuto: _ak.prop.white("layer-auto"),
-  layer: ak.prop.white("layer", { inherits: true }),
-  layerParent: ak.prop.white("layer-parent", { inherits: true }),
+  layerBase: _ak.prop.canvas("layer-base"),
+  layerAuto: _ak.prop.canvas("layer-auto"),
+  layer: ak.prop.canvas("layer", { inherits: true }),
+  layerParentContext: _ak.var("layer-parent"),
+  layerParent: ak.prop.canvas("layer-parent", { inherits: true }),
   edge: ak.prop.black("edge"),
   edgeL: _ak.prop("edge-l"),
   text: ak.prop.black("text", { inherits: true }),
@@ -430,7 +432,8 @@ const forbiddenLb = fn.min(
   ),
 );
 
-const layerIdleBase = fn.oklch(inputs.layerColor, idle);
+const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
+const layerIdleBase = fn.oklch(layerBaseColor, idle);
 const layerIdleMixed = vars.layerIdleBase;
 const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
   l: fn.add(
@@ -505,9 +508,13 @@ utility(
   at.apply`ring-[color:${vars.edge}]`,
   set(vars.shadow, "oklch(0 0 0 / 15%)"),
   set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
-  ...layerMathDeclarations,
-  ...layerColorDeclarations,
+  layerMathDeclarations,
+  layerColorDeclarations,
   at.variant(dark, set(vars.edgeL, edgeL.dark)),
+  withContext("layer-parent", false, ({ provide, inherit }) => [
+    set(provide(vars.layerParentContext), vars.layer),
+    set(vars.layerParent, inherit(vars.layerParentContext)),
+  ]),
 );
 
 utility(

@@ -71,7 +71,7 @@
   --_ak-layer-idle-contrast-value: calc(var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * var(--_ak-contrast-t) * 3.334));
   --_ak-layer-contrast-value: calc(var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * var(--_ak-contrast-t) * 3.334));
   --_ak-edge-l: min(l, (var(--_ak-edge-l, (var(--_ak-edge-l) * 0.15)) - (var(--_ak-contrast-t) * 0.45)));
-  --_ak-layer-idle-base: oklch(from var(--_ak-layer-color) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-idle-relative-lightness, 0))) + var(--_ak-layer-idle-relative-lightness, 0))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma, 0))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue, 0))));
+  --_ak-layer-idle-base: oklch(from var(--_ak-layer-color, var(--ak-layer-parent)) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-idle-relative-lightness, 0))) + var(--_ak-layer-idle-relative-lightness, 0))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma, 0))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue, 0))));
   --_ak-layer-idle-mixed: var(--_ak-layer-idle-base);
   --_ak-layer-idle-auto: oklch(from var(--_ak-layer-idle-mixed) calc(clamp(var(--_ak-layer-lightness-min, 0), (max(l, min(0.13, var(--_ak-layer-idle-auto-delta))) + var(--_ak-layer-idle-auto-delta)), var(--_ak-layer-lightness-max, 1)) + var(--_ak-l-contrast)) c h);
   --_ak-layer-idle: oklch(from var(--_ak-layer-idle-auto) calc(((l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction))) * (1 - (clamp(0, (var(--_ak-layer-idle-contrast-value) * 1000000), 1) * ((var(--_ak-auto-direction-to-light) * clamp(0, (((l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (var(--_ak-auto-direction-to-dark) * clamp(0, ((var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) + (var(--_ak-directional-boundary-l) * (clamp(0, (var(--_ak-layer-idle-contrast-value) * 1000000), 1) * ((var(--_ak-auto-direction-to-light) * clamp(0, (((l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (var(--_ak-auto-direction-to-dark) * clamp(0, ((var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) c h);
@@ -80,6 +80,21 @@
   --ak-layer: oklch(from oklch(from var(--_ak-layer-auto) calc(((l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction))) * (1 - (clamp(0, (var(--_ak-layer-contrast-value) * 1000000), 1) * ((var(--_ak-auto-direction-to-light) * clamp(0, (((l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (var(--_ak-auto-direction-to-dark) * clamp(0, ((var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) + (var(--_ak-directional-boundary-l) * (clamp(0, (var(--_ak-layer-contrast-value) * 1000000), 1) * ((var(--_ak-auto-direction-to-light) * clamp(0, (((l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (var(--_ak-auto-direction-to-dark) * clamp(0, ((var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) c h) var(--_ak-safe-okl) clamp(var(--_ak-layer-chroma-min, 0), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
   @variant ak-dark {
     --_ak-edge-l: max(max(l, 0.13), (var(--_ak-edge-l, (1 - (var(--_ak-edge-l) * 0.1))) + (var(--_ak-contrast-t) * 0.3)));
+  }
+  @container style(--_ak-layer-parent-parity: even) {
+    --_ak-layer-parent-parity: odd;
+    --_ak-layer-parent-odd: var(--ak-layer);
+    --ak-layer-parent: var(--_ak-layer-parent-even);
+  }
+  @container style(--_ak-layer-parent-parity: odd) {
+    --_ak-layer-parent-parity: even;
+    --_ak-layer-parent-even: var(--ak-layer);
+    --ak-layer-parent: var(--_ak-layer-parent-odd);
+  }
+  @container not style(--_ak-layer-parent-parity) {
+    --_ak-layer-parent-parity: odd;
+    --_ak-layer-parent-odd: var(--ak-layer);
+    --ak-layer-parent: var(--_ak-layer-parent-even);
   }
 }
 
@@ -364,7 +379,7 @@
 @property --ak-layer-parent {
   syntax: "<color>";
   inherits: true;
-  initial-value: oklch(1 0 0);
+  initial-value: canvas;
 }
 
 @property --ak-edge {

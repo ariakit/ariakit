@@ -68,18 +68,6 @@ interface IdentObject<T extends string = string> {
 
 interface DashedIdentObject extends IdentObject<DashedIdent> {}
 
-export interface Namespace
-  extends TypeObject<Type["Namespace"]>,
-    DashedIdentObject {
-  name: string;
-  utility: typeof utility;
-  prop: ReturnType<typeof createPropertyObj>;
-  var: (
-    name: string | VarProperty,
-    ...args: StripLeadingParameters<typeof createVar>
-  ) => VarProperty;
-}
-
 export interface Var extends TypeObject<Type["Var"]>, DashedIdentObject {
   defaultValue: VarDefaultValue;
 }
@@ -242,11 +230,90 @@ function createPropertyObj(ns?: DashedIdentObject | DashedIdent) {
     color: createPropertyFn({ ns, syntax: "<color>" }),
     black: createPropertyFn({ ns, syntax: "<color>", initialValue: black }),
     white: createPropertyFn({ ns, syntax: "<color>", initialValue: white }),
+    canvas: createPropertyFn({ ns, syntax: "<color>", initialValue: "canvas" }),
     angle: createPropertyFn({ ns, syntax: "<angle>" }),
     len: createPropertyFn({ ns, syntax: "<length>" }),
     number: createPropertyFn({ ns, syntax: "<number>" }),
     zero: createPropertyFn({ ns, syntax: "<number>", initialValue: "0" }),
   });
+}
+
+type ContextParity = "even" | "odd";
+
+interface WithContextParams {
+  opposite: (property: VarProperty) => VarProperty;
+  provide: (property: VarProperty) => VarProperty;
+  inherit: typeof fn.var;
+}
+
+function createContext(id: string) {
+  return `--${id}-parity`;
+}
+
+/**
+ * Emulates an `inherit()` function by routing parent values through alternating
+ * context vars selected by style container queries.
+ */
+export function withContext(
+  id: string,
+  reset: boolean,
+  getContextChildren: (
+    params: WithContextParams,
+  ) => Array<AtRuleChild | undefined>,
+) {
+  const parityVar = createVar(`--_ak-${id}-parity`);
+
+  const getNextParity = (parity: ContextParity): ContextParity => {
+    if (parity === "even" && !reset) {
+      return "odd";
+    }
+    return "even";
+  };
+
+  const getParityVar = (
+    property: VarProperty | DashedIdent,
+    parity: ContextParity,
+  ) => {
+    const propertyIdent = isVarProperty(property) ? property.ident : property;
+    return createVar(`${propertyIdent}-${parity}`);
+  };
+
+  const getChildren = (parity: ContextParity = "even"): AtRuleChild[] => {
+    const nextParity = getNextParity(parity);
+    const contextChildren = getContextChildren({
+      opposite: (property) =>
+        getParityVar(property, parity === "even" ? "odd" : "even"),
+      provide: (property) => getParityVar(property, nextParity),
+      inherit: (property, ...fallbacks) => {
+        const inheritedVar = getParityVar(property, parity);
+        return fn.var(inheritedVar, ...fallbacks);
+      },
+    }).filter((child): child is AtRuleChild => child != null);
+    return [set(parityVar, nextParity), ...contextChildren];
+  };
+
+  if (reset) {
+    return getChildren();
+  }
+
+  return [
+    at.container(fn.style(parityVar, "even"), ...getChildren("even")),
+    at.container(fn.style(parityVar, "odd"), ...getChildren("odd")),
+    at.container(`not ${fn.style(parityVar)}`, ...getChildren()),
+  ];
+}
+
+export interface Namespace
+  extends TypeObject<Type["Namespace"]>,
+    DashedIdentObject {
+  name: string;
+  ns: typeof createNamespace;
+  utility: typeof utility;
+  prop: ReturnType<typeof createPropertyObj>;
+  var: (
+    name: string | VarProperty,
+    ...args: StripLeadingParameters<typeof createVar>
+  ) => VarProperty;
 }
 
 export function createNamespace(nsName: string): Namespace {
@@ -256,6 +323,7 @@ export function createNamespace(nsName: string): Namespace {
     name: nsName,
     ident,
     prop: createPropertyObj(ident),
+    ns: (nestedNsName) => createNamespace(`${nsName}-${nestedNsName}`),
     var: (name, ...args) =>
       createVar(`${ident}-${getIdent(name, ident)}`, ...args),
     utility: (name, ...args) => {
@@ -355,8 +423,11 @@ const supports = Object.assign(supportsFn, {
     supportsFn(`not ${query}`, ...children),
 });
 
-function utility(name: string, ...children: AtRuleChild[]): AtRule {
-  return atRule(AtRuleName.Utility, name, ...children);
+function utility(
+  name: string,
+  ...children: (AtRuleChild | AtRuleChild[])[]
+): AtRule {
+  return atRule(AtRuleName.Utility, name, ...children.flat());
 }
 
 function apply(...args: Parameters<typeof exp>): AtRule {
@@ -503,7 +574,7 @@ export const fn = {
 
   /** Builds a var() reference with optional nested fallbacks. */
   var: (
-    varObject: VarProperty | string,
+    varObject: VarProperty | DashedIdent,
     ...fallbacks: VarFallbacks
   ): string => {
     const varName = getIdent(varObject);
