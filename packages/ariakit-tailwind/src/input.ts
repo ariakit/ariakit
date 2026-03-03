@@ -109,7 +109,7 @@ const color = createNamespace("color");
 const chroma = createNamespace("chroma");
 
 const contrast = createVar("--contrast", 0);
-const contrastT = fn.clamp01(fn.div(fn.relu(contrast), CONTRAST_HIGH));
+const contrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
 
 const vars = {
   contrast,
