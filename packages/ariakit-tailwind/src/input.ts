@@ -1,13 +1,13 @@
 import type { Value, VarProperty } from "./utils2.ts";
 import {
   at,
+  createContext,
   createNamespace,
   createVar,
   createVariant,
   fn,
   rule,
   set,
-  withContext,
 } from "./utils2.ts";
 
 const l = "l";
@@ -169,41 +169,41 @@ const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 // Constants registered once as @property initial values. They only depend on
 // color channels or fixed numeric constants.
 const constantMathVars = {
-  textContrastL: _ak.prop("text-contrast-l", { initialValue: textContrastL }),
-  textContrastOkL: _ak.prop("text-contrast-okl", {
+  textContrastL: _ak.prop("tcl", { initialValue: textContrastL }),
+  textContrastOkL: _ak.prop("tcokl", {
     initialValue: textContrastOkL,
   }),
-  forbiddenLaBase: _ak.prop("forbidden-la-base", {
+  forbiddenLaBase: _ak.prop("flab", {
     initialValue: fn.sub(LA_BASE, fn.mul(chromaT, laSpread)),
   }),
-  forbiddenLbBase: _ak.prop("forbidden-lb-base", {
+  forbiddenLbBase: _ak.prop("flbb", {
     initialValue: fn.add(LB_BASE, fn.mul(chromaT, lbSpread)),
   }),
-  autoLDirection: _ak.prop("auto-l-direction", {
+  autoLDirection: _ak.prop("ald", {
     initialValue: fn.sub(darkOkL, lightOkL),
   }),
-  darkOkL: _ak.prop("dark-okl", { initialValue: darkOkL }),
-  lightOkL: _ak.prop("light-okl", { initialValue: lightOkL }),
-  darkL: _ak.prop("dark-l", { initialValue: darkL }),
-  lightL: _ak.prop("light-l", { initialValue: lightL }),
+  darkOkL: _ak.prop("dokl", { initialValue: darkOkL }),
+  lightOkL: _ak.prop("lokl", { initialValue: lightOkL }),
+  darkL: _ak.prop("dl", { initialValue: darkL }),
+  lightL: _ak.prop("ll", { initialValue: lightL }),
 };
 
 // Utility-assigned math values. These depend on other vars and are resolved in
 // @utility ak-layer.
 const layerMathVars = {
-  contrastT: _ak.prop("contrast-t"),
-  contrastNegative: _ak.prop("contrast-negative"),
-  lContrast: _ak.prop("l-contrast"),
-  forbiddenLa: _ak.prop("forbidden-la"),
-  forbiddenLb: _ak.prop("forbidden-lb"),
-  safeOkL: _ak.prop("safe-okl"),
-  autoDirectionToLight: _ak.prop("auto-direction-to-light"),
-  autoDirectionToDark: _ak.prop("auto-direction-to-dark"),
-  directionalBoundaryL: _ak.prop("directional-boundary-l"),
-  layerIdleAutoDelta: _ak.prop("layer-idle-auto-delta"),
-  layerAutoDelta: _ak.prop("layer-auto-delta"),
-  layerIdleContrastValue: _ak.prop("layer-idle-contrast-value"),
-  layerContrastValue: _ak.prop("layer-contrast-value"),
+  contrastT: _ak.prop("ct"),
+  contrastNegative: _ak.prop("cn"),
+  lContrast: _ak.prop("lc"),
+  forbiddenLa: _ak.prop("fla"),
+  forbiddenLb: _ak.prop("flb"),
+  safeOkL: _ak.prop("sokl"),
+  autoDirectionToLight: _ak.prop("adtl"),
+  autoDirectionToDark: _ak.prop("adtd"),
+  directionalBoundaryL: _ak.prop("dbl"),
+  layerIdleAutoDelta: _ak.prop("liad"),
+  layerAutoDelta: _ak.prop("lad"),
+  layerIdleContrastValue: _ak.prop("licv"),
+  layerContrastValue: _ak.prop("lcv"),
 };
 
 // Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
@@ -217,15 +217,15 @@ const themeTokenVars = {
 
 // Color pipeline stages and exported visual tokens.
 const layerColorVars = {
-  layerIdleBase: _ak.prop.canvas("layer-idle-base"),
-  layerIdleMixed: _ak.prop.canvas("layer-idle-mixed"),
-  layerIdleAuto: _ak.prop.canvas("layer-idle-auto"),
-  layerIdle: _ak.prop.canvas("layer-idle"),
-  layerAppearance: _ak.prop.black("layer-appearance", { inherits: true }),
-  layerBase: _ak.prop.canvas("layer-base"),
-  layerAuto: _ak.prop.canvas("layer-auto"),
+  layerIdleBase: _ak.prop.canvas("lib"),
+  layerIdleMixed: _ak.prop.canvas("lim"),
+  layerIdleAuto: _ak.prop.canvas("lia"),
+  layerIdle: _ak.prop.canvas("li"),
+  layerAppearance: _ak.prop.black("lapp", { inherits: true }),
+  layerBase: _ak.prop.canvas("lb"),
+  layerAuto: _ak.prop.canvas("la"),
   layer: ak.prop.canvas("layer", { inherits: true }),
-  layerParentContext: _ak.var("layer-parent"),
+  layerParentContext: _ak.var("lpc"),
   layerParent: ak.prop.canvas("layer-parent", { inherits: true }),
   edge: ak.prop.black("edge"),
   edgeL: _ak.prop("edge-l"),
@@ -500,6 +500,8 @@ const layerColorDeclarations = [
   set(vars.layer, layer),
 ];
 
+const layerContext = createContext();
+
 utility(
   "layer",
   set.color(vars.text),
@@ -511,7 +513,7 @@ utility(
   layerMathDeclarations,
   layerColorDeclarations,
   at.variant(dark, set(vars.edgeL, edgeL.dark)),
-  withContext("layer-parent", false, ({ provide, inherit }) => [
+  layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
   ]),

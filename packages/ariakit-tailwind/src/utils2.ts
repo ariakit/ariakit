@@ -1,5 +1,7 @@
 import type * as CSS from "csstype";
 
+let contextCounter = 0;
+
 /**
  * Drops the first N elements from a tuple T and returns the remaining elements.
  */
@@ -246,27 +248,15 @@ interface WithContextParams {
   inherit: typeof fn.var;
 }
 
-function createContext(id: string) {
-  return `--${id}-parity`;
-}
-
 /**
  * Emulates an `inherit()` function by routing parent values through alternating
  * context vars selected by style container queries.
  */
-export function withContext(
-  id: string,
-  reset: boolean,
-  getContextChildren: (
-    params: WithContextParams,
-  ) => Array<AtRuleChild | undefined>,
-) {
-  const parityVar = createVar(`--_ak-${id}-parity`);
+export function createContext(reset?: boolean) {
+  const id = `--_context-${contextCounter++}`;
 
   const getNextParity = (parity: ContextParity): ContextParity => {
-    if (parity === "even" && !reset) {
-      return "odd";
-    }
+    if (parity === "even" && !reset) return "odd";
     return "even";
   };
 
@@ -274,33 +264,38 @@ export function withContext(
     property: VarProperty | DashedIdent,
     parity: ContextParity,
   ) => {
-    const propertyIdent = isVarProperty(property) ? property.ident : property;
-    return createVar(`${propertyIdent}-${parity}`);
+    return createVar(`${getIdent(property)}-${parity}`);
   };
 
-  const getChildren = (parity: ContextParity = "even"): AtRuleChild[] => {
-    const nextParity = getNextParity(parity);
-    const contextChildren = getContextChildren({
-      opposite: (property) =>
-        getParityVar(property, parity === "even" ? "odd" : "even"),
-      provide: (property) => getParityVar(property, nextParity),
-      inherit: (property, ...fallbacks) => {
-        const inheritedVar = getParityVar(property, parity);
-        return fn.var(inheritedVar, ...fallbacks);
-      },
-    }).filter((child): child is AtRuleChild => child != null);
-    return [set(parityVar, nextParity), ...contextChildren];
+  const context = (
+    getContextChildren: (
+      params: WithContextParams,
+    ) => Array<AtRuleChild | undefined>,
+  ) => {
+    const getChildren = (parity: ContextParity = "even"): AtRuleChild[] => {
+      const nextParity = getNextParity(parity);
+      const contextChildren = getContextChildren({
+        opposite: (property) =>
+          getParityVar(property, parity === "even" ? "odd" : "even"),
+        provide: (property) => getParityVar(property, nextParity),
+        inherit: (property, ...fallbacks) => {
+          const inheritedVar = getParityVar(property, parity);
+          return fn.var(inheritedVar, ...fallbacks);
+        },
+      }).filter((child) => child != null);
+      return [set(id, nextParity), ...contextChildren];
+    };
+    if (reset) {
+      return getChildren();
+    }
+    return [
+      at.container(fn.style(id, "even"), ...getChildren("even")),
+      at.container(fn.style(id, "odd"), ...getChildren("odd")),
+      at.container(`not ${fn.style(id)}`, ...getChildren()),
+    ];
   };
 
-  if (reset) {
-    return getChildren();
-  }
-
-  return [
-    at.container(fn.style(parityVar, "even"), ...getChildren("even")),
-    at.container(fn.style(parityVar, "odd"), ...getChildren("odd")),
-    at.container(`not ${fn.style(parityVar)}`, ...getChildren()),
-  ];
+  return context;
 }
 
 export interface Namespace
