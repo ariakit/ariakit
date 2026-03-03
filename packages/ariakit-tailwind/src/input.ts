@@ -22,61 +22,29 @@ const CONTRAST_HIGH = 100;
 const LA_BASE = 0.55;
 const LB_BASE = 0.725;
 const L_SPREAD_RATIO = 0.15;
-const FORBIDDEN_RANGE_LA_MIN = 0.25;
-const FORBIDDEN_RANGE_LB_MAX = 0.875;
+const FORBIDDEN_RANGE_LA_MIN = 0.2;
+const FORBIDDEN_RANGE_LB_MAX = 0.9;
 
+// Inflate turns threshold deltas into near-binary weights after clamp01.
 const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
 const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
 const darkOkL = fn.clamp01(textContrastOkL);
-const lightOkL = fn.clamp01(fn.sub(1, textContrastOkL));
+const lightOkL = fn.clamp01(fn.invert(textContrastOkL));
 const darkL = fn.clamp01(textContrastL);
-const lightL = fn.clamp01(fn.sub(1, textContrastL));
+const lightL = fn.clamp01(fn.invert(textContrastL));
 
 const laSpread = L_SPREAD_RATIO * LA_BASE;
 const lbSpread = L_SPREAD_RATIO * (1 - LB_BASE);
+// Calibrate contrast so `contrastT=1` reaches the configured hard bounds.
 const laSpreadContrastMultiplier =
   (LA_BASE - FORBIDDEN_RANGE_LA_MIN) / laSpread;
 const lbSpreadContrastMultiplier =
   (FORBIDDEN_RANGE_LB_MAX - LB_BASE) / lbSpread;
 const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 
-function getForbiddenRange(lightness: Value, la: Value, lb: Value) {
-  return fn.clamp01(
-    fn.inflate(fn.mul(fn.sub(lightness, la), fn.sub(lb, lightness))),
-  );
-}
-
-function getForbiddenDirection(lightness: Value, la: Value, lb: Value) {
-  return fn.clamp01(fn.inflate(fn.sub(lightness, fn.div(fn.add(la, lb), 2))));
-}
-
-function getSafeLightness(lightness: Value, la: Value, lb: Value) {
-  const direction = getForbiddenDirection(lightness, la, lb);
-  const inForbiddenRange = getForbiddenRange(lightness, la, lb);
-  return fn.add(
-    fn.mul(lightness, fn.sub(1, inForbiddenRange)),
-    fn.mul(
-      fn.add(fn.mul(la, fn.sub(1, direction)), fn.mul(lb, direction)),
-      inForbiddenRange,
-    ),
-  );
-}
-
-function getAutoLightness(
-  scale: Value,
-  direction: Value,
-  la: Value,
-  lb: Value,
-) {
-  const nextL = fn.add(l, fn.mul(scale, direction));
-  const nextLInForbiddenRange = getForbiddenRange(nextL, la, lb);
-  const shiftedDirection = fn.mul(
-    direction,
-    fn.sub(1, fn.mul(2, nextLInForbiddenRange)),
-  );
-  return fn.mul(scale, shiftedDirection);
-}
-
+/**
+ * Builds quoted numeric tokens for `--value()` utility ranges.
+ */
 function numbers({
   min = 0,
   max = 100,
@@ -92,6 +60,10 @@ function numbers({
   ).join(", ");
 }
 
+/**
+ * Returns declaration children with their values negated. Used to derive
+ * inverse utilities from the positive definitions.
+ */
 function negChildren(rule: ReturnType<typeof utility>) {
   return rule.children
     .filter((child) => child.type === "declaration")
@@ -100,6 +72,66 @@ function negChildren(rule: ReturnType<typeof utility>) {
       return set(child.property, fn.neg(child.value));
     })
     .filter((child) => child != null);
+}
+
+/**
+ * Returns whether `l` is inside the forbidden lightness interval. The value is
+ * 0 outside `[la, lb]` and approaches 1 inside it.
+ */
+function getInForbiddenRange(l: Value, la: Value, lb: Value) {
+  return fn.binary(fn.mul(fn.sub(l, la), fn.sub(lb, l)));
+}
+
+/**
+ * Returns which forbidden boundary should be used for `l`. The result is 0 on
+ * the lower side and 1 on the upper side.
+ */
+function getForbiddenDirection(l: Value, la: Value, lb: Value) {
+  return fn.binary(fn.sub(l, fn.half(fn.add(la, lb))));
+}
+
+/**
+ * Keeps lightness outside the forbidden interval. When `l` enters it, the value
+ * is blended toward `la` or `lb`.
+ */
+function getSafeLightness(l: Value, la: Value, lb: Value) {
+  const direction = getForbiddenDirection(l, la, lb);
+  const inForbiddenRange = getInForbiddenRange(l, la, lb);
+  return fn.add(
+    fn.mul(l, fn.invert(inForbiddenRange)),
+    fn.mul(
+      fn.add(fn.mul(la, fn.invert(direction)), fn.mul(lb, direction)),
+      inForbiddenRange,
+    ),
+  );
+}
+
+/**
+ * Computes an automatic lightness delta that avoids forbidden lightness. If the
+ * next lightness enters the forbidden interval, direction is reduced and can
+ * flip.
+ */
+function getAutoLightness(
+  value: Value,
+  direction: Value,
+  la: Value,
+  lb: Value,
+) {
+  const nextL = fn.add(l, fn.mul(value, direction));
+  const nextLInForbiddenRange = getInForbiddenRange(nextL, la, lb);
+  // Maps mask {0,1} to {+1,-1}: keep direction outside, flip inside.
+  const shiftedDirection = fn.mul(
+    direction,
+    fn.invert(fn.double(nextLInForbiddenRange)),
+  );
+  return fn.mul(value, shiftedDirection);
+}
+
+/**
+ * Blends separate light and dark values by the active appearance weights.
+ */
+function oklchLightDark(light: Value, dark: Value) {
+  return fn.add(fn.mul(lightOkL, light), fn.mul(darkOkL, dark));
 }
 
 const ak = createNamespace("ak");
@@ -228,64 +260,6 @@ const forbiddenLb = fn.min(
   ),
 );
 
-function oklchLightDark(light: Value, dark: Value) {
-  return fn.add(fn.mul(lightOkL, light), fn.mul(darkOkL, dark));
-}
-
-function getAutoL(scale: Value) {
-  return getAutoLightness(
-    scale,
-    vars.autoLDirection,
-    vars.forbiddenLa,
-    vars.forbiddenLb,
-  );
-}
-
-function getContrastL(scale: Value) {
-  const contrastScale = fn.add(scale, fn.mul(scale, contrastT, 2));
-  const direction = vars.autoLDirection;
-  const la = vars.forbiddenLa;
-  const lb = vars.forbiddenLb;
-  const nextL = fn.add(l, fn.mul(contrastScale, direction));
-  const directionToLight = fn.clamp01(direction);
-  const directionToDark = fn.clamp01(fn.neg(direction));
-  const reachedFromDarkSide = fn.clamp01(
-    fn.add(fn.inflate(fn.sub(nextL, la)), 1),
-  );
-  const reachedFromLightSide = fn.clamp01(
-    fn.add(fn.inflate(fn.sub(lb, nextL)), 1),
-  );
-  const scaleEnabled = fn.clamp01(fn.inflate(contrastScale));
-  const reachedForbiddenRange = fn.mul(
-    scaleEnabled,
-    fn.add(
-      fn.mul(directionToLight, reachedFromDarkSide),
-      fn.mul(directionToDark, reachedFromLightSide),
-    ),
-  );
-  const directionalBoundary = fn.add(
-    fn.mul(la, fn.sub(1, directionToLight)),
-    fn.mul(lb, directionToLight),
-  );
-  const targetL = fn.add(
-    fn.mul(nextL, fn.sub(1, reachedForbiddenRange)),
-    fn.mul(directionalBoundary, reachedForbiddenRange),
-  );
-  return targetL;
-}
-
-// function up(value: InterpolatedValue) {
-//   return fn.exp`(${value} * (1 - ${fn.min(fn.sign(vars.layerLevel), 0)}))`;
-// }
-
-// function down(value: InterpolatedValue) {
-//   return fn.exp`(${value} * ${fn.min(fn.sign(vars.layerLevel), 0)})`;
-// }
-
-// function upDown(upValue: InterpolatedValue, downValue: InterpolatedValue) {
-//   return fn.exp`(${up(upValue)} + ${down(downValue)})`;
-// }
-
 const dark = createVariant(
   "ak-dark",
   at.container(fn.style(vars.layerAppearance, "oklch(1 0 0)"), set("@slot")),
@@ -303,12 +277,16 @@ const root = rule(
 
 const utilities = new Set<ReturnType<typeof ak.utility>>();
 
+/**
+ * Registers an `ak` utility and stores it for the exported input list.
+ */
 function utility(...args: Parameters<typeof ak.utility>) {
   const utility = ak.utility(...args);
   utilities.add(utility);
   return utility;
 }
 
+// Keep edge contrast directional: darker in light mode, lighter in dark mode.
 const edgeL = {
   light: fn.min(
     "l",
@@ -320,25 +298,89 @@ const edgeL = {
   dark: fn.max(
     fn.max("l", 0.13),
     fn.add(
-      fn.var(inputs.edgeL, fn.sub(1, fn.mul(inputs.edgeL, 0.1))),
+      fn.var(inputs.edgeL, fn.invert(fn.mul(inputs.edgeL, 0.1))),
       fn.mul(contrastT, 0.3),
     ),
   ),
 };
-const contrastNegative = fn.min(0, fn.min(1, fn.neg(contrastT)));
-const lContrast = fn.mul(contrastNegative, oklchLightDark(-0.35, 0.35));
 
+// Push schemes away from the middle: lighten light mode, darken dark mode.
+const contrastNegative = fn.min(0, fn.min(1, fn.neg(contrastT)));
+const lContrast = fn.mul(contrastNegative, oklchLightDark(-0.3334, 0.3334));
+
+/**
+ * Computes auto lightness using the current forbidden range variables.
+ */
+function getAutoL(value: Value) {
+  return getAutoLightness(
+    value,
+    vars.autoLDirection,
+    vars.forbiddenLa,
+    vars.forbiddenLb,
+  );
+}
+
+/**
+ * Applies contrast lightness while stopping at forbidden boundaries.
+ * This keeps contrast adjustments from crossing the unsafe lightness band.
+ */
+function getContrastL(value: Value) {
+  // Scale local contrast utility by global contrast preference.
+  const contrastValue = fn.add(value, fn.mul(value, contrastT, 3.334));
+  const direction = vars.autoLDirection;
+  const la = vars.forbiddenLa;
+  const lb = vars.forbiddenLb;
+  const nextL = fn.add(l, fn.mul(contrastValue, direction));
+  const directionToLight = fn.clamp01(direction);
+  const directionToDark = fn.clamp01(fn.neg(direction));
+  // `inflate(x) + 1` makes boundary checks inclusive at la/lb (>=, <=).
+  const reachedFromDarkSide = fn.clamp01(
+    fn.add1(fn.inflate(fn.sub(nextL, la))),
+  );
+  const reachedFromLightSide = fn.clamp01(
+    fn.add1(fn.inflate(fn.sub(lb, nextL))),
+  );
+  const valueEnabled = fn.binary(contrastValue);
+  // Only evaluate the boundary that matches current travel direction.
+  const reachedForbiddenRange = fn.mul(
+    valueEnabled,
+    fn.add(
+      fn.mul(directionToLight, reachedFromDarkSide),
+      fn.mul(directionToDark, reachedFromLightSide),
+    ),
+  );
+  const directionalBoundary = fn.add(
+    fn.mul(la, fn.invert(directionToLight)),
+    fn.mul(lb, directionToLight),
+  );
+  // Once boundary is reached, snap to the directional side of the band.
+  const targetL = fn.add(
+    fn.mul(nextL, fn.invert(reachedForbiddenRange)),
+    fn.mul(directionalBoundary, reachedForbiddenRange),
+  );
+  return targetL;
+}
+
+/**
+ * Resolves layer lightness from relative offset and optional absolute input.
+ */
 function getLayerL(relativeL: Value, absoluteL?: VarProperty) {
   const lMin = fn.max("l", fn.min(0.13, relativeL));
   const lDefault = fn.add(lMin, relativeL);
   return absoluteL ? fn.var(absoluteL, lDefault) : lDefault;
 }
 
+/**
+ * Resolves layer chroma from relative offset and optional absolute input.
+ */
 function getLayerC(relativeC: Value, absoluteC?: VarProperty) {
   const cDefault = fn.add("c", relativeC);
   return absoluteC ? fn.var(absoluteC, cDefault) : cDefault;
 }
 
+/**
+ * Resolves layer hue from relative offset and optional absolute input.
+ */
 function getLayerH(relativeH: Value, absoluteH?: VarProperty) {
   const hDefault = fn.add("h", relativeH);
   return absoluteH ? fn.var(absoluteH, hDefault) : hDefault;
@@ -356,24 +398,18 @@ const state = {
   h: getLayerH(inputs.stateRelativeH),
 };
 
-const layerIdleUnsafe = fn.oklch(vars.layerIdleMixed, {
-  l: fn.add(
-    fn.clamp(
-      inputs.layerLMin,
-      getLayerL(getAutoL(inputs.layerAutoL)),
-      inputs.layerLMax,
-    ),
-    lContrast,
-  ),
-});
-
 const layerIdle = fn.oklch(
-  fn.oklch(layerIdleUnsafe, {
-    l: getContrastL(inputs.layerContrastL),
+  fn.oklch(vars.layerIdleMixed, {
+    l: fn.add(
+      fn.clamp(
+        inputs.layerLMin,
+        getLayerL(getAutoL(inputs.layerAutoL)),
+        inputs.layerLMax,
+      ),
+      lContrast,
+    ),
   }),
-  {
-    // l: vars.safeOkL,
-  },
+  { l: getContrastL(inputs.layerContrastL) },
 );
 
 const stateBase = fn.oklch(fn.oklch(vars.layerIdle, state), {
@@ -441,7 +477,11 @@ const stateLighten = utility(
 
 utility("state-darken-*", ...negChildren(stateLighten));
 
+/**
+ * Moves a hue toward a target by percentage on the shortest circular path.
+ */
 function getHueToward(current: Value, target: Value, amount: Value) {
+  // Normalize to [-180, 180] so interpolation follows the shortest arc.
   const delta = fn.sub(fn.mod(fn.add(fn.sub(target, current), 540), 360), 180);
   const percent = fn.clamp01(fn.div(amount, 100));
   return fn.add(current, fn.mul(delta, percent));
@@ -509,12 +549,13 @@ utility(
 
 utility(
   "layer-max-c-auto",
+  // Keep chroma near zero at lightness extremes and peak at threshold.
   set(
     inputs.layerCMax,
     fn.mul(
       CHROMA_MAX,
       fn.div(l, DARK_THRESHOLD_OKL),
-      fn.div(fn.sub(1, l), fn.sub(1, DARK_THRESHOLD_OKL)),
+      fn.div(fn.invert(l), fn.invert(DARK_THRESHOLD_OKL)),
     ),
   ),
 );

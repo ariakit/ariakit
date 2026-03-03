@@ -449,6 +449,7 @@ function cleanCalc(value: string) {
 }
 
 export const fn = {
+  /** Interpolates values into a CSS expression string. */
   exp,
   oklch,
   round,
@@ -462,28 +463,45 @@ export const fn = {
   min: (a: Value, b: Value) => cleanCalc(fn.exp`min(${a}, ${b})`),
   max: (a: Value, b: Value) => cleanCalc(fn.exp`max(${a}, ${b})`),
   mod: (a: Value, b: Value) => cleanCalc(fn.exp`mod(${a}, ${b})`),
-  neg: (x: Value) => fn.mul(x, "-1"),
   abs: (x: Value) => fn.max(x, fn.neg(x)),
+  neg: (x: Value) => fn.mul(x, "-1"),
   sign: (x: Value) => fn.clamp(-1, fn.inflate(x), 1),
-  inflate: (x: Value) => fn.mul(x, "1e6"),
+  add1: (x: Value) => fn.add(x, 1),
+  sub1: (x: Value) => fn.sub(x, 1),
+  half: (x: Value) => fn.div(x, 2),
+  double: (x: Value) => fn.mul(x, 2),
   toPercent: (x: Value) => fn.mul(x, "1%"),
+
+  /** Inverts a normalized value using 1 - x. */
+  invert: (x: Value) => fn.sub(1, x),
+  /** Scales a value for binary-like thresholding. */
+  inflate: (x: Value) => fn.mul(x, 1e6),
+  /** Converts a value to 0 or 1. */
+  binary: (x: Value) => fn.clamp01(fn.inflate(x)),
+  /** Builds a --value() expression. */
   value: (...args: Value[]) => `--value(${join(args)})`,
+  /** Clamps an expression to a minimum of 0. */
   relu: (...args: Parameters<typeof exp>) => fn.max(0, fn.exp(...args)),
 
+  /** Clamps x between min and max. */
   clamp: (min: Value, x: Value, max: Value) =>
     cleanCalc(fn.exp`clamp(${min}, ${x}, ${max})`),
 
+  /** Clamps a value to the [0, 1] range. */
   clamp01: (x: Value) => fn.clamp(0, x, 1),
 
+  /** Builds a query condition for a property and optional value. */
   query: (property: Property | VarProperty, value?: Value) => {
     const propertyName = getIdent(property);
     const propertyValue = isVarProperty(value) ? fn.var(value) : value;
     return `(${propertyName}${propertyValue != null ? `: ${propertyValue}` : ""})`;
   },
 
+  /** Builds a style() query condition. */
   style: (property: Property | VarProperty, value?: Value) =>
     `style${fn.query(property, value)}`,
 
+  /** Builds a var() reference with optional nested fallbacks. */
   var: (
     varObject: VarProperty | string,
     ...fallbacks: VarFallbacks
