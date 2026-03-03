@@ -25,10 +25,6 @@ const L_SPREAD_RATIO = 0.15;
 const FORBIDDEN_RANGE_LA_MIN = 0.35;
 const FORBIDDEN_RANGE_LB_MAX = 0.825;
 
-const contrast = createVar("--contrast", 0);
-const contrastInput = fn.max(contrast, 0);
-const contrastT = fn.clamp01(fn.div(contrastInput, CONTRAST_HIGH));
-
 const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
 const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
 const darkOkL = fn.clamp01(textContrastOkL);
@@ -43,8 +39,6 @@ const laSpreadContrastMultiplier =
 const lbSpreadContrastMultiplier =
   (FORBIDDEN_RANGE_LB_MAX - LB_BASE) / lbSpread;
 const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
-const forbiddenLaBase = fn.sub(LA_BASE, fn.mul(chromaT, laSpread));
-const forbiddenLbBase = fn.add(LB_BASE, fn.mul(chromaT, lbSpread));
 
 function getForbiddenRange(lightness: Value, la: Value, lb: Value) {
   return fn.clamp01(
@@ -114,48 +108,31 @@ const hue = createNamespace("hue");
 const color = createNamespace("color");
 const chroma = createNamespace("chroma");
 
-const forbiddenLaBaseVar = _ak.prop("forbidden-la-base", {
-  initialValue: forbiddenLaBase,
-});
-const forbiddenLbBaseVar = _ak.prop("forbidden-lb-base", {
-  initialValue: forbiddenLbBase,
-});
-const forbiddenLaVar = _ak.prop("forbidden-la");
-const forbiddenLbVar = _ak.prop("forbidden-lb");
-const autoDirectionVar = _ak.prop("auto-direction", {
-  initialValue: fn.sub(darkOkL, lightOkL),
-});
-const forbiddenLa = fn.max(
-  FORBIDDEN_RANGE_LA_MIN,
-  fn.sub(
-    forbiddenLaBaseVar,
-    fn.mul(contrastT, laSpread, laSpreadContrastMultiplier),
-  ),
-);
-const forbiddenLb = fn.min(
-  FORBIDDEN_RANGE_LB_MAX,
-  fn.add(
-    forbiddenLbBaseVar,
-    fn.mul(contrastT, lbSpread, lbSpreadContrastMultiplier),
-  ),
-);
+const contrast = createVar("--contrast", 0);
+const contrastT = fn.clamp01(fn.div(fn.relu(contrast), CONTRAST_HIGH));
 
 const vars = {
+  contrast,
+  textContrastL: _ak.prop("text-contrast-l", { initialValue: textContrastL }),
   textContrastOkL: _ak.prop("text-contrast-okl", {
     initialValue: textContrastOkL,
   }),
-  textContrastL: _ak.prop("text-contrast-l", { initialValue: textContrastL }),
-  forbiddenLaBase: forbiddenLaBaseVar,
-  forbiddenLbBase: forbiddenLbBaseVar,
-  forbiddenLa: forbiddenLaVar,
-  forbiddenLb: forbiddenLbVar,
-  autoDirection: autoDirectionVar,
+  forbiddenLaBase: _ak.prop("forbidden-la-base", {
+    initialValue: fn.sub(LA_BASE, fn.mul(chromaT, laSpread)),
+  }),
+  forbiddenLbBase: _ak.prop("forbidden-lb-base", {
+    initialValue: fn.add(LB_BASE, fn.mul(chromaT, lbSpread)),
+  }),
+  autoLDirection: _ak.prop("auto-l-direction", {
+    initialValue: fn.sub(darkOkL, lightOkL),
+  }),
+  forbiddenLa: _ak.prop("forbidden-la"),
+  forbiddenLb: _ak.prop("forbidden-lb"),
   safeOkL: _ak.prop("safe-okl"),
   darkOkL: _ak.prop("dark-okl", { initialValue: darkOkL }),
   lightOkL: _ak.prop("light-okl", { initialValue: lightOkL }),
   darkL: _ak.prop("dark-l", { initialValue: darkL }),
   lightL: _ak.prop("light-l", { initialValue: lightL }),
-  contrast,
   layerBase: ak.prop.white("layer-base"),
   layerIdleMixed: _ak.prop.white("layer-idle-mixed"),
   layerIdleToggled: _ak.prop.white("layer-idle-toggled"),
@@ -236,6 +213,21 @@ const theme = at.theme(
   set(hue.var("square3", fn.add(h, 270))),
 );
 
+const forbiddenLa = fn.max(
+  FORBIDDEN_RANGE_LA_MIN,
+  fn.sub(
+    vars.forbiddenLaBase,
+    fn.mul(contrastT, laSpread, laSpreadContrastMultiplier),
+  ),
+);
+const forbiddenLb = fn.min(
+  FORBIDDEN_RANGE_LB_MAX,
+  fn.add(
+    vars.forbiddenLbBase,
+    fn.mul(contrastT, lbSpread, lbSpreadContrastMultiplier),
+  ),
+);
+
 function oklchLightDark(light: Value, dark: Value) {
   return fn.add(fn.mul(lightOkL, light), fn.mul(darkOkL, dark));
 }
@@ -243,14 +235,14 @@ function oklchLightDark(light: Value, dark: Value) {
 function getAutoL(scale: Value) {
   return getAutoLightness(
     scale,
-    vars.autoDirection,
+    vars.autoLDirection,
     vars.forbiddenLa,
     vars.forbiddenLb,
   );
 }
 
 function getContrastL(scale: Value) {
-  const direction = vars.autoDirection;
+  const direction = vars.autoLDirection;
   const la = vars.forbiddenLa;
   const lb = vars.forbiddenLb;
   const nextL = fn.add(l, fn.mul(scale, direction));
@@ -263,7 +255,6 @@ function getContrastL(scale: Value) {
     fn.add(fn.inflate(fn.sub(lb, nextL)), 1),
   );
   const scaleEnabled = fn.clamp01(fn.inflate(scale));
-  // const scaleEnabled = fn.inflate(scale);
   const reachedForbiddenRange = fn.mul(
     scaleEnabled,
     fn.add(
