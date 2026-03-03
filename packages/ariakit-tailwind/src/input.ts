@@ -43,7 +43,6 @@ const lbSpreadContrastMultiplier = roundToDecimals(
   (FORBIDDEN_RANGE_LB_MAX - LB_BASE) / lbSpread,
   4,
 );
-const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 
 /**
  * Builds quoted numeric tokens for `--value()` utility ranges.
@@ -153,6 +152,7 @@ const chroma = createNamespace("chroma");
 
 const contrast = createVar("--contrast", 0);
 const contrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
+const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 
 const vars = {
   contrast,
@@ -176,6 +176,11 @@ const vars = {
   lightOkL: _ak.prop("light-okl", { initialValue: lightOkL }),
   darkL: _ak.prop("dark-l", { initialValue: darkL }),
   lightL: _ak.prop("light-l", { initialValue: lightL }),
+  chromaSrgbMax: chroma.var("srgb-max", CHROMA_MAX_SRGB),
+  chromaP3Max: chroma.var("p3-max", CHROMA_MAX_P3),
+  chromaRec2020Max: chroma.var("rec2020-max", CHROMA_MAX_REC2020),
+  hueWarm: hue.var("warm", 90),
+  hueCool: hue.var("cool", 220),
   layerIdleBase: _ak.prop.white("layer-idle-base"),
   layerIdleMixed: _ak.prop.white("layer-idle-mixed"),
   layerIdleAuto: _ak.prop.white("layer-idle-auto"),
@@ -188,11 +193,6 @@ const vars = {
   edge: ak.prop.black("edge"),
   edgeL: _ak.prop("edge-l"),
   text: ak.prop.black("text", { inherits: true }),
-  chromaSrgbMax: chroma.var("srgb-max", CHROMA_MAX_SRGB),
-  chromaP3Max: chroma.var("p3-max", CHROMA_MAX_P3),
-  chromaRec2020Max: chroma.var("rec2020-max", CHROMA_MAX_REC2020),
-  hueWarm: hue.var("warm", 90),
-  hueCool: hue.var("cool", 220),
   shadow: ak.prop.color("shadow", {
     inherits: true,
     initialValue: fn.oklch({ a: "15%" }),
