@@ -162,11 +162,12 @@ const color = createNamespace("color");
 const chroma = createNamespace("chroma");
 
 const contrast = createVar("--contrast", 0);
-const contrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
+const contrastTValue = fn.div(fn.relu(contrast), CONTRAST_HIGH);
 const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 
-const vars = {
-  contrast,
+// Constants registered once as @property initial values. They only depend on
+// color channels or fixed numeric constants.
+const constantMathVars = {
   textContrastL: _ak.prop("text-contrast-l", { initialValue: textContrastL }),
   textContrastOkL: _ak.prop("text-contrast-okl", {
     initialValue: textContrastOkL,
@@ -180,18 +181,41 @@ const vars = {
   autoLDirection: _ak.prop("auto-l-direction", {
     initialValue: fn.sub(darkOkL, lightOkL),
   }),
-  forbiddenLa: _ak.prop("forbidden-la"),
-  forbiddenLb: _ak.prop("forbidden-lb"),
-  safeOkL: _ak.prop("safe-okl"),
   darkOkL: _ak.prop("dark-okl", { initialValue: darkOkL }),
   lightOkL: _ak.prop("light-okl", { initialValue: lightOkL }),
   darkL: _ak.prop("dark-l", { initialValue: darkL }),
   lightL: _ak.prop("light-l", { initialValue: lightL }),
+};
+
+// Utility-assigned math values. These depend on other vars and are resolved in
+// @utility ak-layer.
+const layerMathVars = {
+  contrastT: _ak.prop("contrast-t"),
+  contrastNegative: _ak.prop("contrast-negative"),
+  lContrast: _ak.prop("l-contrast"),
+  forbiddenLa: _ak.prop("forbidden-la"),
+  forbiddenLb: _ak.prop("forbidden-lb"),
+  safeOkL: _ak.prop("safe-okl"),
+  autoDirectionToLight: _ak.prop("auto-direction-to-light"),
+  autoDirectionToDark: _ak.prop("auto-direction-to-dark"),
+  directionalBoundaryL: _ak.prop("directional-boundary-l"),
+  layerIdleAutoDelta: _ak.prop("layer-idle-auto-delta"),
+  layerAutoDelta: _ak.prop("layer-auto-delta"),
+  layerIdleContrastValue: _ak.prop("layer-idle-contrast-value"),
+  layerContrastValue: _ak.prop("layer-contrast-value"),
+};
+
+// Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
+const themeTokenVars = {
   chromaSrgbMax: chroma.var("srgb-max", CHROMA_MAX_SRGB),
   chromaP3Max: chroma.var("p3-max", CHROMA_MAX_P3),
   chromaRec2020Max: chroma.var("rec2020-max", CHROMA_MAX_REC2020),
   hueWarm: hue.var("warm", 90),
   hueCool: hue.var("cool", 220),
+};
+
+// Color pipeline stages and exported visual tokens.
+const layerColorVars = {
   layerIdleBase: _ak.prop.white("layer-idle-base"),
   layerIdleMixed: _ak.prop.white("layer-idle-mixed"),
   layerIdleAuto: _ak.prop.white("layer-idle-auto"),
@@ -208,6 +232,14 @@ const vars = {
     inherits: true,
     initialValue: fn.oklch({ a: "15%" }),
   }),
+};
+
+const vars = {
+  contrast,
+  ...constantMathVars,
+  ...layerMathVars,
+  ...themeTokenVars,
+  ...layerColorVars,
 };
 
 const inputs = {
@@ -287,21 +319,24 @@ const edgeL = {
     "l",
     fn.sub(
       fn.var(inputs.edgeL, fn.mul(inputs.edgeL, 0.15)),
-      fn.mul(contrastT, 0.45),
+      fn.mul(vars.contrastT, 0.45),
     ),
   ),
   dark: fn.max(
     fn.max("l", 0.13),
     fn.add(
       fn.var(inputs.edgeL, fn.invert(fn.mul(inputs.edgeL, 0.1))),
-      fn.mul(contrastT, 0.3),
+      fn.mul(vars.contrastT, 0.3),
     ),
   ),
 };
 
-// Push schemes away from the middle: lighten light mode, darken dark mode.
-const contrastNegative = fn.min(0, fn.min(1, fn.neg(contrastT)));
-const lContrast = fn.mul(contrastNegative, oklchLightDark(-0.3334, 0.3334));
+/**
+ * Scales local contrast controls by the global contrast preference.
+ */
+function getContrastValue(value: Value) {
+  return fn.add(value, fn.mul(value, vars.contrastT, 3.334));
+}
 
 /**
  * Computes auto lightness using the current forbidden range variables.
@@ -319,15 +354,11 @@ function getAutoL(value: Value) {
  * Applies contrast lightness while stopping at forbidden boundaries.
  * This keeps contrast adjustments from crossing the unsafe lightness band.
  */
-function getContrastL(value: Value) {
-  // Scale local contrast utility by global contrast preference.
-  const contrastValue = fn.add(value, fn.mul(value, contrastT, 3.334));
+function getContrastL(contrastValue: Value) {
   const direction = vars.autoLDirection;
   const la = vars.forbiddenLa;
   const lb = vars.forbiddenLb;
   const nextL = fn.add(l, fn.mul(contrastValue, direction));
-  const directionToLight = fn.clamp01(direction);
-  const directionToDark = fn.clamp01(fn.neg(direction));
   const reachedFromDarkSide = fn.binary(fn.sub(nextL, la));
   const reachedFromLightSide = fn.binary(fn.sub(lb, nextL));
   const valueEnabled = fn.binary(contrastValue);
@@ -335,18 +366,14 @@ function getContrastL(value: Value) {
   const reachedForbiddenRange = fn.mul(
     valueEnabled,
     fn.add(
-      fn.mul(directionToLight, reachedFromDarkSide),
-      fn.mul(directionToDark, reachedFromLightSide),
+      fn.mul(vars.autoDirectionToLight, reachedFromDarkSide),
+      fn.mul(vars.autoDirectionToDark, reachedFromLightSide),
     ),
-  );
-  const directionalBoundary = fn.add(
-    fn.mul(la, fn.invert(directionToLight)),
-    fn.mul(lb, directionToLight),
   );
   // Once boundary is reached, snap to the directional side of the band.
   const targetL = fn.add(
     fn.mul(nextL, fn.invert(reachedForbiddenRange)),
-    fn.mul(directionalBoundary, reachedForbiddenRange),
+    fn.mul(vars.directionalBoundaryL, reachedForbiddenRange),
   );
   return targetL;
 }
@@ -392,14 +419,14 @@ const forbiddenLa = fn.max(
   FORBIDDEN_RANGE_LA_MIN,
   fn.sub(
     vars.forbiddenLaBase,
-    fn.mul(contrastT, laSpread, laSpreadContrastMultiplier),
+    fn.mul(vars.contrastT, laSpread, laSpreadContrastMultiplier),
   ),
 );
 const forbiddenLb = fn.min(
   FORBIDDEN_RANGE_LB_MAX,
   fn.add(
     vars.forbiddenLbBase,
-    fn.mul(contrastT, lbSpread, lbSpreadContrastMultiplier),
+    fn.mul(vars.contrastT, lbSpread, lbSpreadContrastMultiplier),
   ),
 );
 
@@ -409,14 +436,14 @@ const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
   l: fn.add(
     fn.clamp(
       inputs.layerLMin,
-      getLayerL(getAutoL(inputs.layerIdleAutoL)),
+      getLayerL(vars.layerIdleAutoDelta),
       inputs.layerLMax,
     ),
-    lContrast,
+    vars.lContrast,
   ),
 });
 const layerIdle = fn.oklch(vars.layerIdleAuto, {
-  l: getContrastL(inputs.layerIdleContrastL),
+  l: getContrastL(vars.layerIdleContrastValue),
 });
 
 const layerBase = fn.oklch(fn.oklch(vars.layerIdle, state), {
@@ -424,22 +451,42 @@ const layerBase = fn.oklch(fn.oklch(vars.layerIdle, state), {
 });
 
 const layerAuto = fn.oklch(vars.layerBase, {
-  l: getLayerL(getAutoL(inputs.layerAutoL)),
+  l: getLayerL(vars.layerAutoDelta),
 });
 
 const layer = fn.oklch(
-  fn.oklch(vars.layerAuto, { l: getContrastL(inputs.layerContrastL) }),
+  fn.oklch(vars.layerAuto, { l: getContrastL(vars.layerContrastValue) }),
   { l: vars.safeOkL, c: fn.clamp(inputs.layerCMin, "c", inputs.layerCMax) },
 );
 
-utility(
-  "layer",
-  at.apply`ring-[color:${vars.edge}]`,
-  set(vars.shadow, "oklch(0 0 0 / 15%)"),
-  set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
+// Assign derived math first so later color stages can reference short vars.
+const layerMathDeclarations = [
+  set(vars.contrastT, contrastTValue),
+  set(vars.contrastNegative, fn.min(0, fn.min(1, fn.neg(vars.contrastT)))),
+  set(
+    vars.lContrast,
+    fn.mul(vars.contrastNegative, oklchLightDark(-0.3334, 0.3334)),
+  ),
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
+  set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
+  set(vars.autoDirectionToDark, fn.clamp01(fn.neg(vars.autoLDirection))),
+  set(
+    vars.directionalBoundaryL,
+    fn.add(
+      fn.mul(vars.forbiddenLa, fn.invert(vars.autoDirectionToLight)),
+      fn.mul(vars.forbiddenLb, vars.autoDirectionToLight),
+    ),
+  ),
   set(vars.safeOkL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
+  set(vars.layerIdleAutoDelta, getAutoL(inputs.layerIdleAutoL)),
+  set(vars.layerAutoDelta, getAutoL(inputs.layerAutoL)),
+  set(vars.layerIdleContrastValue, getContrastValue(inputs.layerIdleContrastL)),
+  set(vars.layerContrastValue, getContrastValue(inputs.layerContrastL)),
+];
+
+// Build the layered color stages from idle -> base -> auto -> final.
+const layerColorDeclarations = [
   set(vars.edgeL, edgeL.light),
   set(vars.layerIdleBase, layerIdleBase),
   set(vars.layerIdleMixed, layerIdleMixed),
@@ -448,9 +495,18 @@ utility(
   set(vars.layerBase, layerBase),
   set(vars.layerAuto, layerAuto),
   set(vars.layer, layer),
+];
+
+utility(
+  "layer",
   set.color(vars.text),
   set.borderColor(vars.edge),
   set.backgroundColor(vars.layer),
+  at.apply`ring-[color:${vars.edge}]`,
+  set(vars.shadow, "oklch(0 0 0 / 15%)"),
+  set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
+  ...layerMathDeclarations,
+  ...layerColorDeclarations,
   at.variant(dark, set(vars.edgeL, edgeL.dark)),
 );
 

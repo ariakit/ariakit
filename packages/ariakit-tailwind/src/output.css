@@ -51,25 +51,35 @@
 }
 
 @utility ak-layer {
-  @apply ring-[color:var(--ak-edge)];
-  --ak-shadow: oklch(0 0 0 / 15%);
-  --ak-text: lch(from var(--ak-layer) calc((58.82 - l) * 1000000) 0 0);
-  --_ak-forbidden-la: max(0.2, (var(--_ak-forbidden-la-base) - ((max(0, var(--contrast, 0)) / 100) * 0.0825 * 4.2424)));
-  --_ak-forbidden-lb: min(0.9, (var(--_ak-forbidden-lb-base) + ((max(0, var(--contrast, 0)) / 100) * 0.04125 * 4.2424)));
-  --_ak-safe-okl: calc((l * (1 - clamp(0, (((l - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - l)) * 1000000), 1))) + (((var(--_ak-forbidden-la) * (1 - clamp(0, ((l - ((var(--_ak-forbidden-la) + var(--_ak-forbidden-lb)) / 2)) * 1000000), 1))) + (var(--_ak-forbidden-lb) * clamp(0, ((l - ((var(--_ak-forbidden-la) + var(--_ak-forbidden-lb)) / 2)) * 1000000), 1))) * clamp(0, (((l - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - l)) * 1000000), 1)));
-  --_ak-edge-l: min(l, (var(--_ak-edge-l, (var(--_ak-edge-l) * 0.15)) - ((max(0, var(--contrast, 0)) / 100) * 0.45)));
-  --_ak-layer-idle-base: oklch(from var(--_ak-layer-color) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-idle-relative-lightness, 0))) + var(--_ak-layer-idle-relative-lightness, 0))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma, 0))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue, 0))));
-  --_ak-layer-idle-mixed: var(--_ak-layer-idle-base);
-  --_ak-layer-idle-auto: oklch(from var(--_ak-layer-idle-mixed) calc(clamp(var(--_ak-layer-lightness-min, 0), (max(l, min(0.13, (var(--_ak-layer-idle-auto-lightness, 0) * (var(--_ak-auto-l-direction) * (1 - (clamp(0, ((((l + (var(--_ak-layer-idle-auto-lightness, 0) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-idle-auto-lightness, 0) * var(--_ak-auto-l-direction))))) * 1000000), 1) * 2)))))) + (var(--_ak-layer-idle-auto-lightness, 0) * (var(--_ak-auto-l-direction) * (1 - (clamp(0, ((((l + (var(--_ak-layer-idle-auto-lightness, 0) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-idle-auto-lightness, 0) * var(--_ak-auto-l-direction))))) * 1000000), 1) * 2))))), var(--_ak-layer-lightness-max, 1)) + (min(0, min(1, ((max(0, var(--contrast, 0)) / 100) * -1))) * ((var(--_ak-light-okl) * -0.3334) + (var(--_ak-dark-okl) * 0.3334)))) c h);
-  --_ak-layer-idle: oklch(from var(--_ak-layer-idle-auto) calc(((l + ((var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction))) * (1 - (clamp(0, ((var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * 1000000), 1) * ((clamp(0, var(--_ak-auto-l-direction), 1) * clamp(0, (((l + ((var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (clamp(0, (var(--_ak-auto-l-direction) * -1), 1) * clamp(0, ((var(--_ak-forbidden-lb) - (l + ((var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) + (((var(--_ak-forbidden-la) * (1 - clamp(0, var(--_ak-auto-l-direction), 1))) + (var(--_ak-forbidden-lb) * clamp(0, var(--_ak-auto-l-direction), 1))) * (clamp(0, ((var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * 1000000), 1) * ((clamp(0, var(--_ak-auto-l-direction), 1) * clamp(0, (((l + ((var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (clamp(0, (var(--_ak-auto-l-direction) * -1), 1) * clamp(0, ((var(--_ak-forbidden-lb) - (l + ((var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) c h);
-  --_ak-layer-base: oklch(from oklch(from var(--_ak-layer-idle) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness, 0))) + var(--_ak-layer-relative-lightness, 0)) calc(c + var(--_ak-layer-relative-chroma, 0)) calc(h + var(--_ak-layer-relative-hue, 0))) var(--_ak-safe-okl) c h);
-  --_ak-layer-auto: oklch(from var(--_ak-layer-base) calc(max(l, min(0.13, (var(--_ak-layer-auto-lightness, 0) * (var(--_ak-auto-l-direction) * (1 - (clamp(0, ((((l + (var(--_ak-layer-auto-lightness, 0) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-auto-lightness, 0) * var(--_ak-auto-l-direction))))) * 1000000), 1) * 2)))))) + (var(--_ak-layer-auto-lightness, 0) * (var(--_ak-auto-l-direction) * (1 - (clamp(0, ((((l + (var(--_ak-layer-auto-lightness, 0) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-auto-lightness, 0) * var(--_ak-auto-l-direction))))) * 1000000), 1) * 2))))) c h);
-  --ak-layer: oklch(from oklch(from var(--_ak-layer-auto) calc(((l + ((var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction))) * (1 - (clamp(0, ((var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * 1000000), 1) * ((clamp(0, var(--_ak-auto-l-direction), 1) * clamp(0, (((l + ((var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (clamp(0, (var(--_ak-auto-l-direction) * -1), 1) * clamp(0, ((var(--_ak-forbidden-lb) - (l + ((var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) + (((var(--_ak-forbidden-la) * (1 - clamp(0, var(--_ak-auto-l-direction), 1))) + (var(--_ak-forbidden-lb) * clamp(0, var(--_ak-auto-l-direction), 1))) * (clamp(0, ((var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * 1000000), 1) * ((clamp(0, var(--_ak-auto-l-direction), 1) * clamp(0, (((l + ((var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (clamp(0, (var(--_ak-auto-l-direction) * -1), 1) * clamp(0, ((var(--_ak-forbidden-lb) - (l + ((var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * (max(0, var(--contrast, 0)) / 100) * 3.334)) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) c h) var(--_ak-safe-okl) clamp(var(--_ak-layer-chroma-min, 0), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
   color: var(--ak-text);
   border-color: var(--ak-edge);
   background-color: var(--ak-layer);
+  @apply ring-[color:var(--ak-edge)];
+  --ak-shadow: oklch(0 0 0 / 15%);
+  --ak-text: lch(from var(--ak-layer) calc((58.82 - l) * 1000000) 0 0);
+  --_ak-contrast-t: calc(max(0, var(--contrast, 0)) / 100);
+  --_ak-contrast-negative: min(0, min(1, (var(--_ak-contrast-t) * -1)));
+  --_ak-l-contrast: calc(var(--_ak-contrast-negative) * ((var(--_ak-light-okl) * -0.3334) + (var(--_ak-dark-okl) * 0.3334)));
+  --_ak-forbidden-la: max(0.2, (var(--_ak-forbidden-la-base) - (var(--_ak-contrast-t) * 0.0825 * 4.2424)));
+  --_ak-forbidden-lb: min(0.9, (var(--_ak-forbidden-lb-base) + (var(--_ak-contrast-t) * 0.04125 * 4.2424)));
+  --_ak-auto-direction-to-light: clamp(0, var(--_ak-auto-l-direction), 1);
+  --_ak-auto-direction-to-dark: clamp(0, (var(--_ak-auto-l-direction) * -1), 1);
+  --_ak-directional-boundary-l: calc((var(--_ak-forbidden-la) * (1 - var(--_ak-auto-direction-to-light))) + (var(--_ak-forbidden-lb) * var(--_ak-auto-direction-to-light)));
+  --_ak-safe-okl: calc((l * (1 - clamp(0, (((l - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - l)) * 1000000), 1))) + (((var(--_ak-forbidden-la) * (1 - clamp(0, ((l - ((var(--_ak-forbidden-la) + var(--_ak-forbidden-lb)) / 2)) * 1000000), 1))) + (var(--_ak-forbidden-lb) * clamp(0, ((l - ((var(--_ak-forbidden-la) + var(--_ak-forbidden-lb)) / 2)) * 1000000), 1))) * clamp(0, (((l - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - l)) * 1000000), 1)));
+  --_ak-layer-idle-auto-delta: calc(var(--_ak-layer-idle-auto-lightness, 0) * (var(--_ak-auto-l-direction) * (1 - (clamp(0, ((((l + (var(--_ak-layer-idle-auto-lightness, 0) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-idle-auto-lightness, 0) * var(--_ak-auto-l-direction))))) * 1000000), 1) * 2))));
+  --_ak-layer-auto-delta: calc(var(--_ak-layer-auto-lightness, 0) * (var(--_ak-auto-l-direction) * (1 - (clamp(0, ((((l + (var(--_ak-layer-auto-lightness, 0) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * (var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-auto-lightness, 0) * var(--_ak-auto-l-direction))))) * 1000000), 1) * 2))));
+  --_ak-layer-idle-contrast-value: calc(var(--_ak-layer-idle-contrast-lightness, 0) + (var(--_ak-layer-idle-contrast-lightness, 0) * var(--_ak-contrast-t) * 3.334));
+  --_ak-layer-contrast-value: calc(var(--_ak-layer-contrast-lightness, 0) + (var(--_ak-layer-contrast-lightness, 0) * var(--_ak-contrast-t) * 3.334));
+  --_ak-edge-l: min(l, (var(--_ak-edge-l, (var(--_ak-edge-l) * 0.15)) - (var(--_ak-contrast-t) * 0.45)));
+  --_ak-layer-idle-base: oklch(from var(--_ak-layer-color) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-idle-relative-lightness, 0))) + var(--_ak-layer-idle-relative-lightness, 0))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma, 0))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue, 0))));
+  --_ak-layer-idle-mixed: var(--_ak-layer-idle-base);
+  --_ak-layer-idle-auto: oklch(from var(--_ak-layer-idle-mixed) calc(clamp(var(--_ak-layer-lightness-min, 0), (max(l, min(0.13, var(--_ak-layer-idle-auto-delta))) + var(--_ak-layer-idle-auto-delta)), var(--_ak-layer-lightness-max, 1)) + var(--_ak-l-contrast)) c h);
+  --_ak-layer-idle: oklch(from var(--_ak-layer-idle-auto) calc(((l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction))) * (1 - (clamp(0, (var(--_ak-layer-idle-contrast-value) * 1000000), 1) * ((var(--_ak-auto-direction-to-light) * clamp(0, (((l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (var(--_ak-auto-direction-to-dark) * clamp(0, ((var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) + (var(--_ak-directional-boundary-l) * (clamp(0, (var(--_ak-layer-idle-contrast-value) * 1000000), 1) * ((var(--_ak-auto-direction-to-light) * clamp(0, (((l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (var(--_ak-auto-direction-to-dark) * clamp(0, ((var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-idle-contrast-value) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) c h);
+  --_ak-layer-base: oklch(from oklch(from var(--_ak-layer-idle) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness, 0))) + var(--_ak-layer-relative-lightness, 0)) calc(c + var(--_ak-layer-relative-chroma, 0)) calc(h + var(--_ak-layer-relative-hue, 0))) var(--_ak-safe-okl) c h);
+  --_ak-layer-auto: oklch(from var(--_ak-layer-base) calc(max(l, min(0.13, var(--_ak-layer-auto-delta))) + var(--_ak-layer-auto-delta)) c h);
+  --ak-layer: oklch(from oklch(from var(--_ak-layer-auto) calc(((l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction))) * (1 - (clamp(0, (var(--_ak-layer-contrast-value) * 1000000), 1) * ((var(--_ak-auto-direction-to-light) * clamp(0, (((l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (var(--_ak-auto-direction-to-dark) * clamp(0, ((var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) + (var(--_ak-directional-boundary-l) * (clamp(0, (var(--_ak-layer-contrast-value) * 1000000), 1) * ((var(--_ak-auto-direction-to-light) * clamp(0, (((l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction))) - var(--_ak-forbidden-la)) * 1000000), 1)) + (var(--_ak-auto-direction-to-dark) * clamp(0, ((var(--_ak-forbidden-lb) - (l + (var(--_ak-layer-contrast-value) * var(--_ak-auto-l-direction)))) * 1000000), 1)))))) c h) var(--_ak-safe-okl) clamp(var(--_ak-layer-chroma-min, 0), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
   @variant ak-dark {
-    --_ak-edge-l: max(max(l, 0.13), (var(--_ak-edge-l, (1 - (var(--_ak-edge-l) * 0.1))) + ((max(0, var(--contrast, 0)) / 100) * 0.3)));
+    --_ak-edge-l: max(max(l, 0.13), (var(--_ak-edge-l, (1 - (var(--_ak-edge-l) * 0.1))) + (var(--_ak-contrast-t) * 0.3)));
   }
 }
 
@@ -214,21 +224,6 @@
   initial-value: calc(clamp(0, ((0.645 - l) * 1000000), 1) - clamp(0, (1 - ((0.645 - l) * 1000000)), 1));
 }
 
-@property --_ak-forbidden-la {
-  syntax: "*";
-  inherits: false;
-}
-
-@property --_ak-forbidden-lb {
-  syntax: "*";
-  inherits: false;
-}
-
-@property --_ak-safe-okl {
-  syntax: "*";
-  inherits: false;
-}
-
 @property --_ak-dark-okl {
   syntax: "*";
   inherits: false;
@@ -251,6 +246,71 @@
   syntax: "*";
   inherits: false;
   initial-value: clamp(0, (1 - ((58.82 - l) * 1000000)), 1);
+}
+
+@property --_ak-contrast-t {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-contrast-negative {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-l-contrast {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-forbidden-la {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-forbidden-lb {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-safe-okl {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-auto-direction-to-light {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-auto-direction-to-dark {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-directional-boundary-l {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-layer-idle-auto-delta {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-layer-auto-delta {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-layer-idle-contrast-value {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-layer-contrast-value {
+  syntax: "*";
+  inherits: false;
 }
 
 @property --_ak-layer-idle-base {
