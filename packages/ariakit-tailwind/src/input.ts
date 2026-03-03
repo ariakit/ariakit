@@ -224,11 +224,12 @@ const layerColorVars = {
   layerAppearance: _ak.prop.black("lapp", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerAuto: _ak.prop.canvas("la"),
+  layerContrast: _ak.prop.canvas("lct"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerParent: ak.prop.canvas("layer-parent", { inherits: true }),
   edge: ak.prop.black("edge"),
-  edgeL: _ak.prop("edge-l"),
+  edgeL: _ak.prop("el"),
   text: ak.prop.black("text", { inherits: true }),
   shadow: ak.prop.color("shadow", {
     inherits: true,
@@ -457,10 +458,14 @@ const layerAuto = fn.oklch(vars.layerBase, {
   l: getLayerL(vars.layerAutoDelta),
 });
 
-const layer = fn.oklch(
-  fn.oklch(vars.layerAuto, { l: getContrastL(vars.layerContrastValue) }),
-  { l: vars.safeOkL, c: fn.clamp(inputs.layerCMin, "c", inputs.layerCMax) },
-);
+const layerContrast = fn.oklch(vars.layerAuto, {
+  l: getContrastL(vars.layerContrastValue),
+});
+
+const layer = fn.oklch(vars.layerContrast, {
+  l: vars.safeOkL,
+  c: fn.clamp(inputs.layerCMin, "c", inputs.layerCMax),
+});
 
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
@@ -496,6 +501,7 @@ const layerColorDeclarations = [
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerBase),
   set(vars.layerAuto, layerAuto),
+  set(vars.layerContrast, layerContrast),
   set(vars.edgeL, edgeL.light),
 ];
 

@@ -12,6 +12,7 @@ import { Type } from "./utils2.ts";
 type BlockChild = AtRule["children"][number];
 type DeclarationNode = Extract<BlockChild, { type: Type["Declaration"] }>;
 type OutputNode = CustomProperty | CustomVariant | BlockChild | Var;
+type IdentifierType = Type["Var"] | Type["CustomProperty"];
 
 const INDENT = "  ";
 
@@ -153,7 +154,100 @@ function assertNever(value: never): never {
   throw new Error(`Unsupported node type: ${JSON.stringify(value)}`);
 }
 
+function collectIdentifierTypes(nodes: OutputNode[]) {
+  const identifierTypes = new Map<string, IdentifierType[]>();
+
+  const addIdentifierType = (ident: string, type: IdentifierType) => {
+    const existingTypes = identifierTypes.get(ident);
+    if (existingTypes) {
+      existingTypes.push(type);
+      return;
+    }
+    identifierTypes.set(ident, [type]);
+  };
+
+  const visitBlockChild = (child: BlockChild) => {
+    switch (child.type) {
+      case Type.CustomProperty:
+        addIdentifierType(child.ident, child.type);
+        return;
+      case Type.Rule:
+      case Type.AtRule:
+        for (const nestedChild of child.children) {
+          visitBlockChild(nestedChild);
+        }
+        return;
+      case Type.Declaration:
+        return;
+      default:
+        return assertNever(child);
+    }
+  };
+
+  const visitNode = (node: OutputNode) => {
+    switch (node.type) {
+      case Type.Var:
+      case Type.CustomProperty:
+        addIdentifierType(node.ident, node.type);
+        return;
+      case Type.CustomVariant:
+        for (const child of node.children) {
+          visitBlockChild(child);
+        }
+        return;
+      case Type.Declaration:
+      case Type.Rule:
+      case Type.AtRule:
+        visitBlockChild(node);
+        return;
+      default:
+        return assertNever(node);
+    }
+  };
+
+  for (const node of nodes) {
+    visitNode(node);
+  }
+
+  return identifierTypes;
+}
+
+function assertUniqueIdentifiers(nodes: OutputNode[]) {
+  const identifierTypes = collectIdentifierTypes(nodes);
+  const duplicates: string[] = [];
+
+  for (const [ident, types] of identifierTypes) {
+    if (types.length < 2) continue;
+
+    const typeCounts = new Map<IdentifierType, number>();
+    for (const type of types) {
+      const count = typeCounts.get(type) ?? 0;
+      typeCounts.set(type, count + 1);
+    }
+
+    const summary = Array.from(typeCounts.entries())
+      .map(([type, count]) => `${type}: ${count}`)
+      .join(", ");
+    duplicates.push(`${ident} (${summary})`);
+  }
+
+  if (!duplicates.length) {
+    return;
+  }
+
+  const formattedDuplicates = duplicates.sort().map((duplicate) => {
+    return `- ${duplicate}`;
+  });
+  throw new Error(
+    [
+      "Duplicate identifiers found across props and vars:",
+      ...formattedDuplicates,
+    ].join("\n"),
+  );
+}
+
 export function output(nodes: OutputNode[] = input) {
+  assertUniqueIdentifiers(nodes);
   const css = nodes
     .map((node) => renderNode(node, 0))
     .filter((value) => value.length > 0)
