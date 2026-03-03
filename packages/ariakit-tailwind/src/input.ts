@@ -130,7 +130,7 @@ function getAutoLightness(
  * Blends separate light and dark values by the active appearance weights.
  */
 function oklchLightDark(light: Value, dark: Value) {
-  return fn.add(fn.mul(lightOkL, light), fn.mul(darkOkL, dark));
+  return fn.add(fn.mul(vars.lightOkL, light), fn.mul(vars.darkOkL, dark));
 }
 
 const ak = createNamespace("ak");
@@ -332,13 +332,8 @@ function getContrastL(value: Value) {
   const nextL = fn.add(l, fn.mul(contrastValue, direction));
   const directionToLight = fn.clamp01(direction);
   const directionToDark = fn.clamp01(fn.neg(direction));
-  // `inflate(x) + 1` makes boundary checks inclusive at la/lb (>=, <=).
-  const reachedFromDarkSide = fn.clamp01(
-    fn.add1(fn.inflate(fn.sub(nextL, la))),
-  );
-  const reachedFromLightSide = fn.clamp01(
-    fn.add1(fn.inflate(fn.sub(lb, nextL))),
-  );
+  const reachedFromDarkSide = fn.binary(fn.sub(nextL, la));
+  const reachedFromLightSide = fn.binary(fn.sub(lb, nextL));
   const valueEnabled = fn.binary(contrastValue);
   // Only evaluate the boundary that matches current travel direction.
   const reachedForbiddenRange = fn.mul(
