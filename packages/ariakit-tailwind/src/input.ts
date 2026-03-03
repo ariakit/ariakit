@@ -35,10 +35,14 @@ const lightL = fn.clamp01(fn.invert(textContrastL));
 const laSpread = L_SPREAD_RATIO * LA_BASE;
 const lbSpread = L_SPREAD_RATIO * (1 - LB_BASE);
 // Calibrate contrast so `contrastT=1` reaches the configured hard bounds.
-const laSpreadContrastMultiplier =
-  (LA_BASE - FORBIDDEN_RANGE_LA_MIN) / laSpread;
-const lbSpreadContrastMultiplier =
-  (FORBIDDEN_RANGE_LB_MAX - LB_BASE) / lbSpread;
+const laSpreadContrastMultiplier = roundToDecimals(
+  (LA_BASE - FORBIDDEN_RANGE_LA_MIN) / laSpread,
+  4,
+);
+const lbSpreadContrastMultiplier = roundToDecimals(
+  (FORBIDDEN_RANGE_LB_MAX - LB_BASE) / lbSpread,
+  4,
+);
 const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 
 /**
@@ -71,6 +75,14 @@ function negChildren(rule: ReturnType<typeof utility>) {
       return set(child.property, fn.neg(child.value));
     })
     .filter((child) => child != null);
+}
+
+/**
+ * Rounds a number to a specified number of decimal places.
+ */
+function roundToDecimals(n: number, decimals: number) {
+  const factor = 10 ** decimals;
+  return Math.round(n * factor) / factor;
 }
 
 /**
@@ -164,14 +176,13 @@ const vars = {
   lightOkL: _ak.prop("light-okl", { initialValue: lightOkL }),
   darkL: _ak.prop("dark-l", { initialValue: darkL }),
   lightL: _ak.prop("light-l", { initialValue: lightL }),
-  layerBase: ak.prop.white("layer-base"),
+  layerIdleBase: _ak.prop.white("layer-idle-base"),
   layerIdleMixed: _ak.prop.white("layer-idle-mixed"),
-  layerIdleToggled: _ak.prop.white("layer-idle-toggled"),
+  layerIdleAuto: _ak.prop.white("layer-idle-auto"),
   layerIdle: _ak.prop.white("layer-idle"),
   layerAppearance: _ak.prop.black("layer-appearance", { inherits: true }),
-  stateBase: ak.prop.white("state-base"),
-  layerMixed: ak.prop.white("layer-mixed"),
-  layerToggled: ak.prop.white("layer-toggled"),
+  layerBase: _ak.prop.white("layer-base"),
+  layerAuto: _ak.prop.white("layer-auto"),
   layer: ak.prop.white("layer", { inherits: true }),
   layerParent: ak.prop.white("layer-parent", { inherits: true }),
   edge: ak.prop.black("edge"),
@@ -190,11 +201,11 @@ const vars = {
 
 const inputs = {
   layerColor: _ak.prop("layer-color"),
-  layerAutoL: _ak.prop("layer-auto-lightness", 0),
-  layerRelativeL: _ak.prop("layer-relative-lightness", 0),
-  layerRelativeC: _ak.prop("layer-relative-chroma", 0),
-  layerRelativeH: _ak.prop("layer-relative-hue", 0),
-  layerContrastL: _ak.prop("layer-contrast-lightness", 0),
+  layerIdleAutoL: _ak.prop("layer-idle-auto-lightness", 0),
+  layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", 0),
+  layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", 0),
+  layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", 0),
+  layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", 0),
   layerL: _ak.prop("layer-lightness"),
   layerC: _ak.prop("layer-chroma"),
   layerH: _ak.prop("layer-hue"),
@@ -202,11 +213,11 @@ const inputs = {
   layerLMax: _ak.prop("layer-lightness-max", 1),
   layerCMin: _ak.prop("layer-chroma-min", 0),
   layerCMax: _ak.prop("layer-chroma-max", vars.chromaP3Max),
-  stateAutoL: _ak.prop("state-auto-lightness", 0),
-  stateRelativeL: _ak.prop("state-relative-lightness", 0),
-  stateRelativeC: _ak.prop("state-relative-chroma", 0),
-  stateRelativeH: _ak.prop("state-relative-hue", 0),
-  stateContrastL: _ak.prop("state-contrast-lightness", 0),
+  layerAutoL: _ak.prop("layer-auto-lightness", 0),
+  layerRelativeL: _ak.prop("layer-relative-lightness", 0),
+  layerRelativeC: _ak.prop("layer-relative-chroma", 0),
+  layerRelativeH: _ak.prop("layer-relative-hue", 0),
+  layerContrastL: _ak.prop("layer-contrast-lightness", 0),
   edgeL: _ak.prop("edge-l"),
 };
 
@@ -242,21 +253,6 @@ const theme = at.theme(
   set(hue.var("square1", fn.add(h, 90))),
   set(hue.var("square2", fn.add(h, 180))),
   set(hue.var("square3", fn.add(h, 270))),
-);
-
-const forbiddenLa = fn.max(
-  FORBIDDEN_RANGE_LA_MIN,
-  fn.sub(
-    vars.forbiddenLaBase,
-    fn.mul(contrastT, laSpread, laSpreadContrastMultiplier),
-  ),
-);
-const forbiddenLb = fn.min(
-  FORBIDDEN_RANGE_LB_MAX,
-  fn.add(
-    vars.forbiddenLbBase,
-    fn.mul(contrastT, lbSpread, lbSpreadContrastMultiplier),
-  ),
 );
 
 const dark = createVariant(
@@ -381,42 +377,58 @@ function getLayerH(relativeH: Value, absoluteH?: VarProperty) {
 }
 
 const idle = {
-  l: getLayerL(inputs.layerRelativeL, inputs.layerL),
-  c: getLayerC(inputs.layerRelativeC, inputs.layerC),
-  h: getLayerH(inputs.layerRelativeH, inputs.layerH),
+  l: getLayerL(inputs.layerIdleRelativeL, inputs.layerL),
+  c: getLayerC(inputs.layerIdleRelativeC, inputs.layerC),
+  h: getLayerH(inputs.layerIdleRelativeH, inputs.layerH),
 };
 
 const state = {
-  l: getLayerL(inputs.stateRelativeL),
-  c: getLayerC(inputs.stateRelativeC),
-  h: getLayerH(inputs.stateRelativeH),
+  l: getLayerL(inputs.layerRelativeL),
+  c: getLayerC(inputs.layerRelativeC),
+  h: getLayerH(inputs.layerRelativeH),
 };
 
-const layerIdle = fn.oklch(
-  fn.oklch(vars.layerIdleMixed, {
-    l: fn.add(
-      fn.clamp(
-        inputs.layerLMin,
-        getLayerL(getAutoL(inputs.layerAutoL)),
-        inputs.layerLMax,
-      ),
-      lContrast,
-    ),
-  }),
-  { l: getContrastL(inputs.layerContrastL) },
+const forbiddenLa = fn.max(
+  FORBIDDEN_RANGE_LA_MIN,
+  fn.sub(
+    vars.forbiddenLaBase,
+    fn.mul(contrastT, laSpread, laSpreadContrastMultiplier),
+  ),
+);
+const forbiddenLb = fn.min(
+  FORBIDDEN_RANGE_LB_MAX,
+  fn.add(
+    vars.forbiddenLbBase,
+    fn.mul(contrastT, lbSpread, lbSpreadContrastMultiplier),
+  ),
 );
 
-const stateBase = fn.oklch(fn.oklch(vars.layerIdle, state), {
+const layerIdleBase = fn.oklch(inputs.layerColor, idle);
+const layerIdleMixed = vars.layerIdleBase;
+const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
+  l: fn.add(
+    fn.clamp(
+      inputs.layerLMin,
+      getLayerL(getAutoL(inputs.layerIdleAutoL)),
+      inputs.layerLMax,
+    ),
+    lContrast,
+  ),
+});
+const layerIdle = fn.oklch(vars.layerIdleAuto, {
+  l: getContrastL(inputs.layerIdleContrastL),
+});
+
+const layerBase = fn.oklch(fn.oklch(vars.layerIdle, state), {
   l: vars.safeOkL,
 });
 
+const layerAuto = fn.oklch(vars.layerBase, {
+  l: getLayerL(getAutoL(inputs.layerAutoL)),
+});
+
 const layer = fn.oklch(
-  fn.oklch(
-    fn.oklch(vars.layerMixed, {
-      l: getLayerL(getAutoL(inputs.stateAutoL)),
-    }),
-    { l: getContrastL(inputs.stateContrastL) },
-  ),
+  fn.oklch(vars.layerAuto, { l: getContrastL(inputs.layerContrastL) }),
   { l: vars.safeOkL, c: fn.clamp(inputs.layerCMin, "c", inputs.layerCMax) },
 );
 
@@ -429,11 +441,12 @@ utility(
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.safeOkL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
   set(vars.edgeL, edgeL.light),
-  set(vars.layerBase, fn.oklch(inputs.layerColor, idle)),
-  set(vars.layerIdleMixed, vars.layerBase),
+  set(vars.layerIdleBase, layerIdleBase),
+  set(vars.layerIdleMixed, layerIdleMixed),
+  set(vars.layerIdleAuto, layerIdleAuto),
   set(vars.layerIdle, layerIdle),
-  set(vars.stateBase, stateBase),
-  set(vars.layerMixed, vars.stateBase),
+  set(vars.layerBase, layerBase),
+  set(vars.layerAuto, layerAuto),
   set(vars.layer, layer),
   set.color(vars.text),
   set.borderColor(vars.edge),
@@ -447,26 +460,29 @@ utility(
   set(inputs.layerH, fn.value(hue)),
   set(inputs.layerColor, fn.value(color, "[color]")),
   set(
-    inputs.layerAutoL,
+    inputs.layerIdleAutoL,
     fn.div(fn.value("number", "[number]", numbers()), 100),
   ),
 );
 
 utility(
   "state-*",
-  set(inputs.stateAutoL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.layerAutoL, fn.div(fn.value("number", "[*]", numbers()), 100)),
 );
 
 const layerLighten = utility(
   "layer-lighten-*",
-  set(inputs.layerRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(
+    inputs.layerIdleRelativeL,
+    fn.div(fn.value("number", "[*]", numbers()), 100),
+  ),
 );
 
 utility("layer-darken-*", ...negChildren(layerLighten));
 
 const stateLighten = utility(
   "state-lighten-*",
-  set(inputs.stateRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.layerRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
 );
 
 utility("state-darken-*", ...negChildren(stateLighten));
@@ -499,12 +515,15 @@ utility(
 
 utility(
   "layer-contrast-*",
-  set(inputs.layerContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(
+    inputs.layerIdleContrastL,
+    fn.div(fn.value("number", "[*]", numbers()), 100),
+  ),
 );
 
 utility(
   "state-contrast-*",
-  set(inputs.stateContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.layerContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
 );
 
 utility(
@@ -557,7 +576,7 @@ utility(
 const layerSaturate = utility(
   "layer-saturate-*",
   set(
-    inputs.layerRelativeC,
+    inputs.layerIdleRelativeC,
     fn.div(fn.value("number", "[*]", numbers({ max: 40 })), 100),
   ),
 );
@@ -566,7 +585,7 @@ utility("layer-desaturate-*", ...negChildren(layerSaturate));
 const stateSaturate = utility(
   "state-saturate-*",
   set(
-    inputs.stateRelativeC,
+    inputs.layerRelativeC,
     fn.div(fn.value("number", "[*]", numbers({ max: 40 })), 100),
   ),
 );
@@ -575,7 +594,7 @@ utility("state-desaturate-*", ...negChildren(stateSaturate));
 utility(
   "layer-h-rotate-*",
   set(
-    inputs.layerRelativeH,
+    inputs.layerIdleRelativeH,
     fn.value("number", "[*]", numbers({ max: 360, step: 15 })),
   ),
 );
@@ -583,7 +602,7 @@ utility(
 utility(
   "state-h-rotate-*",
   set(
-    inputs.stateRelativeH,
+    inputs.layerRelativeH,
     fn.value("number", "[*]", numbers({ max: 360, step: 15 })),
   ),
 );
