@@ -22,8 +22,8 @@ const CONTRAST_HIGH = 100;
 const LA_BASE = 0.55;
 const LB_BASE = 0.725;
 const L_SPREAD_RATIO = 0.15;
-const FORBIDDEN_RANGE_LA_MIN = 0.35;
-const FORBIDDEN_RANGE_LB_MAX = 0.825;
+const FORBIDDEN_RANGE_LA_MIN = 0.3;
+const FORBIDDEN_RANGE_LB_MAX = 0.85;
 
 const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
 const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
@@ -325,7 +325,7 @@ const edgeL = {
   ),
 };
 const contrastNegative = fn.min(0, fn.min(1, fn.neg(contrastT)));
-const lContrast = fn.mul(0.3, contrastNegative, oklchLightDark(-1, 1));
+const lContrast = fn.mul(contrastNegative, oklchLightDark(-0.35, 0.35));
 
 function getLayerL(relativeL: Value, absoluteL?: VarProperty) {
   const lMin = fn.max("l", fn.min(0.13, relativeL));
