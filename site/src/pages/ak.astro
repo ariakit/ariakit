@@ -8,17 +8,19 @@ import "./ak.css";
   <head>
     <Meta />
   </head>
-  <body class="p-4 ak-layer ak-layer-canvas">
+  <body class="p-4 ak-layer ak-layer-canvas [--contrast:90]_">
     <div class="flex flex-wrap gap-2 m- *:p-4">
       <div class="ak-layer ak-layer-black hover:ak-state-10 ak-layer-min-20">
         black
       </div>
       <div
-        class="ak-layer ak-layer-10 ak-layer-complementary ak-layer-c-balanced hover:ak-state-10"
+        class="ak-layer ak-edge-20_ border ak-layer-10 ak-layer-complementary ak-layer-c-balanced hover:ak-state-10"
       >
         auto
       </div>
-      <div class="ak-layer ak-layer-10 hover:ak-state-10">toggle</div>
+      <div class="ak-layer ak-edge-20_ border ak-layer-10 hover:ak-state-10">
+        toggle
+      </div>
       <div class="ak-layer ak-layer-contrast-40 hover:ak-state-contrast-10">
         layer contrast
       </div>

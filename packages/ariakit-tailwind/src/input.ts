@@ -229,7 +229,6 @@ const layerColorVars = {
   layerParentContext: _ak.var("lpc"),
   layerParent: ak.prop.canvas("layer-parent", { inherits: true }),
   edge: ak.prop.black("edge"),
-  edgeL: _ak.prop("el"),
   text: ak.prop.black("text", { inherits: true }),
   shadow: ak.prop.color("shadow", {
     inherits: true,
@@ -264,7 +263,19 @@ const inputs = {
   layerRelativeC: _ak.prop("layer-relative-chroma", 0),
   layerRelativeH: _ak.prop("layer-relative-hue", 0),
   layerContrastL: _ak.prop("layer-contrast-lightness", 0),
-  edgeL: _ak.prop("edge-l"),
+  edgeColor: _ak.prop("edge-color"),
+  edgeRelativeL: _ak.prop("edge-relative-lightness", 0),
+  edgeRelativeC: _ak.prop("edge-relative-chroma", 0),
+  edgeRelativeH: _ak.prop("edge-relative-hue", 0),
+  edgeContrastL: _ak.prop("edge-contrast-lightness", 1),
+  edgeLMin: _ak.prop("edge-lightness-min", 0),
+  edgeLMax: _ak.prop("edge-lightness-max", 1),
+  edgeCMin: _ak.prop("edge-chroma-min", 0),
+  edgeCMax: _ak.prop("edge-chroma-max", vars.chromaP3Max),
+  edgeL: _ak.prop("edge-lightness"),
+  edgeC: _ak.prop("edge-chroma"),
+  edgeH: _ak.prop("edge-h"),
+  edgeA: _ak.prop("edge-alpha", 0.1),
 };
 
 const theme = at.theme(
@@ -315,24 +326,6 @@ const root = rule(
   ":root",
   at.variant("contrast-more", set(vars.contrast, CONTRAST_HIGH)),
 );
-
-// Keep edge contrast directional: darker in light mode, lighter in dark mode.
-const edgeL = {
-  light: fn.min(
-    "l",
-    fn.sub(
-      fn.var(inputs.edgeL, fn.mul(inputs.edgeL, 0.15)),
-      fn.mul(vars.contrastT, 0.45),
-    ),
-  ),
-  dark: fn.max(
-    fn.max("l", 0.13),
-    fn.add(
-      fn.var(inputs.edgeL, fn.invert(fn.mul(inputs.edgeL, 0.1))),
-      fn.mul(vars.contrastT, 0.3),
-    ),
-  ),
-};
 
 /**
  * Scales local contrast controls by the global contrast preference.
@@ -502,8 +495,34 @@ const layerColorDeclarations = [
   set(vars.layerBase, layerBase),
   set(vars.layerAuto, layerAuto),
   set(vars.layerContrast, layerContrast),
-  set(vars.edgeL, edgeL.light),
 ];
+
+const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
+const edgeContrastT = fn.var(vars.contrastT, contrastTValue);
+const edgeDirectionalDelta = fn.add(
+  fn.var(inputs.edgeContrastL),
+  fn.mul(edgeContrastT, 0.12),
+);
+const edgeDirectional = fn.oklch(edgeBaseColor, {
+  l: fn.clamp01(
+    fn.add(
+      l,
+      oklchLightDark(fn.neg(edgeDirectionalDelta), edgeDirectionalDelta),
+    ),
+  ),
+});
+const edgeRelative = fn.oklch(edgeDirectional, {
+  l: getLayerL(inputs.edgeRelativeL, inputs.edgeL),
+  c: getLayerC(inputs.edgeRelativeC, inputs.edgeC),
+  h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
+});
+const edgeConstrained = fn.oklch(edgeRelative, {
+  l: fn.clamp(inputs.edgeLMin, l, inputs.edgeLMax),
+  c: fn.clamp(inputs.edgeCMin, c, inputs.edgeCMax),
+});
+const edge = fn.oklch(edgeConstrained, {
+  a: fn.clamp01(fn.add(fn.var(inputs.edgeA), fn.mul(edgeContrastT, 0.5))),
+});
 
 const layerContext = createContext();
 
@@ -516,9 +535,9 @@ utility(
   set(vars.layer, layer),
   set(vars.shadow, "oklch(0 0 0 / 15%)"),
   set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
+  set(vars.edge, edge),
   layerMathDeclarations,
   layerColorDeclarations,
-  at.variant(dark, set(vars.edgeL, edgeL.dark)),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
@@ -699,6 +718,130 @@ utility(
   set(inputs.layerH, fn.value(hue, "[*]")),
   set(
     inputs.layerH,
+    fn.value("number", "[number]", numbers({ max: 360, step: 15 })),
+  ),
+);
+
+utility(
+  "edge-*",
+  set(inputs.edgeC, fn.value(chroma)),
+  set(inputs.edgeH, fn.value(hue)),
+  set(inputs.edgeColor, fn.value(color, "[color]")),
+  set(inputs.edgeA, fn.div(fn.value("number", "[number]", numbers()), 100)),
+);
+
+const edgeLighten = utility(
+  "edge-lighten-*",
+  set(inputs.edgeRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+);
+utility("edge-darken-*", ...negChildren(edgeLighten));
+
+utility(
+  "edge-cool-*",
+  set(
+    inputs.edgeH,
+    getHueToward("h", vars.hueCool, fn.value("number", "[*]", numbers())),
+  ),
+);
+
+utility(
+  "edge-warm-*",
+  set(
+    inputs.edgeH,
+    getHueToward("h", vars.hueWarm, fn.value("number", "[*]", numbers())),
+  ),
+);
+
+utility(
+  "edge-contrast-*",
+  set(inputs.edgeContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+);
+
+utility(
+  "edge-max-*",
+  set(inputs.edgeCMax, fn.value(chroma)),
+  set(inputs.edgeLMax, fn.value("[*]")),
+  set(inputs.edgeLMax, fn.div(fn.value("number", "[number]", numbers()), 100)),
+);
+
+utility(
+  "edge-min-*",
+  set(inputs.edgeCMin, fn.value(chroma)),
+  set(inputs.edgeLMin, fn.value("[*]")),
+  set(inputs.edgeLMin, fn.div(fn.value("number", "[number]", numbers()), 100)),
+);
+
+utility(
+  "edge-max-c-*",
+  set(inputs.edgeCMax, fn.value("[*]")),
+  set(inputs.edgeCMax, fn.value(chroma)),
+  set(
+    inputs.edgeCMax,
+    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
+  ),
+);
+
+utility(
+  "edge-min-c-*",
+  set(inputs.edgeCMin, fn.value("[*]")),
+  set(inputs.edgeCMin, fn.value(chroma)),
+  set(
+    inputs.edgeCMin,
+    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
+  ),
+);
+
+utility(
+  "edge-max-c-auto",
+  // Keep chroma near zero at lightness extremes and peak at threshold.
+  set(
+    inputs.edgeCMax,
+    fn.mul(
+      CHROMA_MAX,
+      fn.div(l, DARK_THRESHOLD_OKL),
+      fn.div(fn.invert(l), fn.invert(DARK_THRESHOLD_OKL)),
+    ),
+  ),
+);
+
+const edgeSaturate = utility(
+  "edge-saturate-*",
+  set(
+    inputs.edgeRelativeC,
+    fn.div(fn.value("number", "[*]", numbers({ max: 40 })), 100),
+  ),
+);
+utility("edge-desaturate-*", ...negChildren(edgeSaturate));
+
+utility(
+  "edge-h-rotate-*",
+  set(
+    inputs.edgeRelativeH,
+    fn.value("number", "[*]", numbers({ max: 360, step: 15 })),
+  ),
+);
+
+utility(
+  "edge-l-*",
+  set(inputs.edgeL, fn.value("[*]")),
+  set(inputs.edgeL, fn.div(fn.value("number", "[number]", numbers()), 100)),
+);
+
+utility(
+  "edge-c-*",
+  set(inputs.edgeC, fn.value("[*]")),
+  set(inputs.edgeC, fn.value(chroma)),
+  set(
+    inputs.edgeC,
+    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
+  ),
+);
+
+utility(
+  "edge-h-*",
+  set(inputs.edgeH, fn.value(hue, "[*]")),
+  set(
+    inputs.edgeH,
     fn.value("number", "[number]", numbers({ max: 360, step: 15 })),
   ),
 );
