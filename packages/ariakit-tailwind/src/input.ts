@@ -25,6 +25,7 @@ const LB_BASE = 0.725;
 const L_SPREAD_RATIO = 0.15;
 const FORBIDDEN_RANGE_LA_MIN = 0.2;
 const FORBIDDEN_RANGE_LB_MAX = 0.9;
+const EDGE_SHADE_MIN_OKL = 0.25;
 
 const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
 const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
@@ -205,6 +206,7 @@ const layerMathVars = {
   layerIdleContrastValue: _ak.prop("licv"),
   layerContrastValue: _ak.prop("lcv"),
   edgeContrastDirection: _ak.prop("ecd", -1),
+  edgeShadeEnabled: _ak.prop("ese", 0),
 };
 
 // Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
@@ -223,6 +225,7 @@ const layerColorVars = {
   layerIdleAuto: _ak.prop.canvas("lia"),
   layerIdle: _ak.prop.canvas("li"),
   layerAppearance: _ak.prop.black("lapp", { inherits: true }),
+  layerShadeAppearance: _ak.prop.black("lsapp", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerAuto: _ak.prop.canvas("la"),
   layerContrast: _ak.prop.canvas("lct"),
@@ -273,6 +276,8 @@ const inputs = {
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", 0.1),
+  edgeShadeA: _ak.prop("edge-shade-alpha"),
+  edgeShadeRequested: _ak.prop("edge-shade-requested", 0),
 };
 
 const theme = at.theme(
@@ -317,6 +322,14 @@ const dark = createVariant(
 const light = createVariant(
   "ak-light",
   at.container(fn.style(vars.layerAppearance, "oklch(0 0 0)"), set("@slot")),
+);
+
+const darkShade = createVariant(
+  "ak-dark-shade",
+  at.container(
+    fn.style(vars.layerShadeAppearance, "oklch(1 0 0)"),
+    set("@slot"),
+  ),
 );
 
 const root = rule(
@@ -500,20 +513,31 @@ const edgeDirectionalDelta = fn.add(
   fn.var(inputs.edgeContrastL),
   fn.mul(edgeContrastT, 0.12),
 );
+const edgeShadeActive = fn.clamp01(
+  fn.mul(fn.var(inputs.edgeShadeRequested), fn.var(vars.edgeShadeEnabled)),
+);
 const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
   fn.var(vars.edgeContrastDirection, -1),
 );
 const edgeDirectional = fn.oklch(edgeBaseColor, {
-  l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
+  l: fn.mul(
+    fn.clamp01(fn.add(l, edgeDirectionalShift)),
+    fn.invert(edgeShadeActive),
+  ),
 });
 const edgeRelative = fn.oklch(edgeDirectional, {
   l: getLayerL(inputs.edgeRelativeL, inputs.edgeL),
   c: getLayerC(inputs.edgeRelativeC, inputs.edgeC),
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
 });
+const edgeShadeA = fn.var(inputs.edgeShadeA, inputs.edgeA);
+const edgeA = fn.add(
+  fn.mul(fn.var(inputs.edgeA), fn.invert(edgeShadeActive)),
+  fn.mul(edgeShadeA, edgeShadeActive),
+);
 const edge = fn.oklch(edgeRelative, {
-  a: fn.clamp01(fn.add(fn.var(inputs.edgeA), fn.mul(edgeContrastT, 0.5))),
+  a: fn.clamp01(fn.add(edgeA, fn.mul(edgeContrastT, 0.5))),
 });
 
 const layerContext = createContext();
@@ -536,9 +560,18 @@ utility(
       h: 0,
     }),
   ),
+  set(
+    vars.layerShadeAppearance,
+    fn.oklch(vars.layer, {
+      l: fn.mul(textContrastOkL, fn.binary(fn.sub(l, EDGE_SHADE_MIN_OKL))),
+      c: 0,
+      h: 0,
+    }),
+  ),
   set(vars.edge, edge),
   at.variant(light, set(vars.edgeContrastDirection, -1)),
   at.variant(dark, set(vars.edgeContrastDirection, 1)),
+  at.variant(darkShade, set(vars.edgeShadeEnabled, 1)),
   layerMathDeclarations,
   layerColorDeclarations,
   layerContext(({ provide, inherit }) => [
@@ -760,6 +793,12 @@ utility(
   set(inputs.edgeContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
 );
 
+utility(
+  "edge-shade-*",
+  set(inputs.edgeShadeRequested, 1),
+  set(inputs.edgeShadeA, fn.div(fn.value("number", "[*]", numbers()), 100)),
+);
+
 const edgeSaturate = utility(
   "edge-saturate-*",
   set(
@@ -807,6 +846,7 @@ export const input = [
   root,
   dark,
   light,
+  darkShade,
   ...utilities,
   ...Object.values(vars),
   ...Object.values(inputs),
