@@ -1,7 +1,5 @@
 import type * as CSS from "csstype";
 
-let contextCounter = 0;
-
 /**
  * Drops the first N elements from a tuple T and returns the remaining elements.
  */
@@ -247,6 +245,8 @@ interface WithContextParams {
   provide: (property: VarProperty) => VarProperty;
   inherit: typeof fn.var;
 }
+
+let contextCounter = 0;
 
 /**
  * Emulates an `inherit()` function by routing parent values through alternating
