@@ -2,6 +2,5 @@
 "@ariakit/react-core": patch
 ---
 
-Fixed `MenuItemRadio` controlled state syncing by updating `getValue` to clear
-the store value when a controlled radio item becomes unchecked and it currently
-matches that item.
+Fixed `MenuItemRadio` so controlled reset states are reflected correctly by the
+menu item and checkmark.
