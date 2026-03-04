@@ -496,7 +496,7 @@ const layerColorDeclarations = [
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
 const edgeContrastT = fn.var(vars.contrastT, contrastTValue);
 const edgeDirectionalDelta = fn.add(
-  fn.var(inputs.edgeContrastL),
+  inputs.edgeContrastL,
   fn.mul(edgeContrastT, 0.12),
 );
 const edgeDirectional = fn.oklch(edgeBaseColor, {
@@ -513,7 +513,7 @@ const edgeRelative = fn.oklch(edgeDirectional, {
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
 });
 const edge = fn.oklch(edgeRelative, {
-  a: fn.clamp01(fn.add(fn.var(inputs.edgeA), fn.mul(edgeContrastT, 0.5))),
+  a: fn.clamp01(fn.add(inputs.edgeA, fn.mul(edgeContrastT, 0.5))),
 });
 
 const layerContext = createContext();
