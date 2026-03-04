@@ -29,6 +29,8 @@ type TagName = typeof TagName;
 function getValue<T>(prevValue: T, value: T, checked?: boolean): T | false {
   if (checked === undefined) return prevValue;
   if (checked) return value;
+  // When a controlled radio is unchecked, we only clear the store value if it
+  // currently points to this radio item.
   return prevValue === value ? false : prevValue;
 }
 
@@ -75,7 +77,8 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
       });
     }, [store, name, value, defaultChecked]);
 
-    // Sets checked in store
+    // Syncs the controlled checked value in the same layout phase so
+    // menuitemradio and MenuItemCheck don't render stale checked state.
     useSafeLayoutEffect(() => {
       if (checked === undefined) return;
       store?.setValue(name, (prevValue) => {
