@@ -3,7 +3,11 @@ import type { ElementType } from "react";
 import { useEffect } from "react";
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
-import { useInitialValue, useWrapElement } from "../utils/hooks.ts";
+import {
+  useInitialValue,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
@@ -22,10 +26,10 @@ import type { MenuStore } from "./menu-store.ts";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
-function getValue<T>(prevValue: T, value: T, checked?: boolean) {
+function getValue<T>(prevValue: T, value: T, checked?: boolean): T | false {
   if (checked === undefined) return prevValue;
   if (checked) return value;
-  return prevValue;
+  return prevValue === value ? false : prevValue;
 }
 
 /**
@@ -72,14 +76,17 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
     }, [store, name, value, defaultChecked]);
 
     // Sets checked in store
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (checked === undefined) return;
       store?.setValue(name, (prevValue) => {
         return getValue(prevValue, value, checked);
       });
     }, [store, name, value, checked]);
 
-    const isChecked = store.useState((state) => state.values[name] === value);
+    const valueChecked = store.useState(
+      (state) => state.values[name] === value,
+    );
+    const isChecked = checked ?? valueChecked;
 
     props = useWrapElement(
       props,
