@@ -268,10 +268,6 @@ const inputs = {
   edgeRelativeC: _ak.prop("edge-relative-chroma", 0),
   edgeRelativeH: _ak.prop("edge-relative-hue", 0),
   edgeContrastL: _ak.prop("edge-contrast-lightness", 1),
-  edgeLMin: _ak.prop("edge-lightness-min", 0),
-  edgeLMax: _ak.prop("edge-lightness-max", 1),
-  edgeCMin: _ak.prop("edge-chroma-min", 0),
-  edgeCMax: _ak.prop("edge-chroma-max", vars.chromaP3Max),
   edgeL: _ak.prop("edge-lightness"),
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
@@ -516,11 +512,7 @@ const edgeRelative = fn.oklch(edgeDirectional, {
   c: getLayerC(inputs.edgeRelativeC, inputs.edgeC),
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
 });
-const edgeConstrained = fn.oklch(edgeRelative, {
-  l: fn.clamp(inputs.edgeLMin, l, inputs.edgeLMax),
-  c: fn.clamp(inputs.edgeCMin, c, inputs.edgeCMax),
-});
-const edge = fn.oklch(edgeConstrained, {
+const edge = fn.oklch(edgeRelative, {
   a: fn.clamp01(fn.add(fn.var(inputs.edgeA), fn.mul(edgeContrastT, 0.5))),
 });
 
@@ -755,53 +747,6 @@ utility(
 utility(
   "edge-contrast-*",
   set(inputs.edgeContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
-);
-
-utility(
-  "edge-max-*",
-  set(inputs.edgeCMax, fn.value(chroma)),
-  set(inputs.edgeLMax, fn.value("[*]")),
-  set(inputs.edgeLMax, fn.div(fn.value("number", "[number]", numbers()), 100)),
-);
-
-utility(
-  "edge-min-*",
-  set(inputs.edgeCMin, fn.value(chroma)),
-  set(inputs.edgeLMin, fn.value("[*]")),
-  set(inputs.edgeLMin, fn.div(fn.value("number", "[number]", numbers()), 100)),
-);
-
-utility(
-  "edge-max-c-*",
-  set(inputs.edgeCMax, fn.value("[*]")),
-  set(inputs.edgeCMax, fn.value(chroma)),
-  set(
-    inputs.edgeCMax,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
-);
-
-utility(
-  "edge-min-c-*",
-  set(inputs.edgeCMin, fn.value("[*]")),
-  set(inputs.edgeCMin, fn.value(chroma)),
-  set(
-    inputs.edgeCMin,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
-);
-
-utility(
-  "edge-max-c-auto",
-  // Keep chroma near zero at lightness extremes and peak at threshold.
-  set(
-    inputs.edgeCMax,
-    fn.mul(
-      CHROMA_MAX,
-      fn.div(l, DARK_THRESHOLD_OKL),
-      fn.div(fn.invert(l), fn.invert(DARK_THRESHOLD_OKL)),
-    ),
-  ),
 );
 
 const edgeSaturate = utility(

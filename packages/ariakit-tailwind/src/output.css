@@ -58,7 +58,7 @@
   --ak-layer: oklch(from var(--_ak-lct) var(--_ak-sokl) clamp(var(--_ak-layer-chroma-min, 0), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
   --ak-shadow: oklch(0 0 0 / 15%);
   --ak-text: lch(from var(--ak-layer) calc((58.82 - l) * 1000000) 0 0);
-  --ak-edge: oklch(from oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-lokl) * ((var(--_ak-edge-contrast-lightness, 1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12)) * -1)) + (var(--_ak-dokl) * (var(--_ak-edge-contrast-lightness, 1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12))))), 1) c h) var(--_ak-edge-lightness, calc(max(l, min(0.13, var(--_ak-edge-relative-lightness, 0))) + var(--_ak-edge-relative-lightness, 0))) var(--_ak-edge-chroma, calc(c + var(--_ak-edge-relative-chroma, 0))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue, 0)))) clamp(var(--_ak-edge-lightness-min, 0), l, var(--_ak-edge-lightness-max, 1)) clamp(var(--_ak-edge-chroma-min, 0), c, var(--_ak-edge-chroma-max, var(--chroma-p3-max, 0.368))) h) l c h / clamp(0, (var(--_ak-edge-alpha, 0.1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.5)), 1));
+  --ak-edge: oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-lokl) * ((var(--_ak-edge-contrast-lightness, 1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12)) * -1)) + (var(--_ak-dokl) * (var(--_ak-edge-contrast-lightness, 1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12))))), 1) c h) var(--_ak-edge-lightness, calc(max(l, min(0.13, var(--_ak-edge-relative-lightness, 0))) + var(--_ak-edge-relative-lightness, 0))) var(--_ak-edge-chroma, calc(c + var(--_ak-edge-relative-chroma, 0))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue, 0)))) l c h / clamp(0, (var(--_ak-edge-alpha, 0.1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.5)), 1));
   --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
   --_ak-cn: min(0, min(1, (var(--_ak-ct) * -1)));
   --_ak-lc: calc(var(--_ak-cn) * ((var(--_ak-lokl) * -0.3334) + (var(--_ak-dokl) * 0.3334)));
@@ -208,10 +208,10 @@
 }
 
 @utility ak-edge-* {
-  --_ak-edge-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
-  --_ak-edge-color: --value(--color-*, [color]);
   --_ak-edge-chroma: --value(--chroma-*);
   --_ak-edge-h: --value(--hue-*);
+  --_ak-edge-color: --value(--color-*, [color]);
+  --_ak-edge-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
 @utility ak-edge-lighten-* {
@@ -232,34 +232,6 @@
 
 @utility ak-edge-contrast-* {
   --_ak-edge-contrast-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
-}
-
-@utility ak-edge-max-* {
-  --_ak-edge-chroma-max: --value(--chroma-*);
-  --_ak-edge-lightness-max: --value([*]);
-  --_ak-edge-lightness-max: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
-}
-
-@utility ak-edge-min-* {
-  --_ak-edge-chroma-min: --value(--chroma-*);
-  --_ak-edge-lightness-min: --value([*]);
-  --_ak-edge-lightness-min: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
-}
-
-@utility ak-edge-max-c-* {
-  --_ak-edge-chroma-max: --value([*]);
-  --_ak-edge-chroma-max: --value(--chroma-*);
-  --_ak-edge-chroma-max: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
-}
-
-@utility ak-edge-min-c-* {
-  --_ak-edge-chroma-min: --value([*]);
-  --_ak-edge-chroma-min: --value(--chroma-*);
-  --_ak-edge-chroma-min: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
-}
-
-@utility ak-edge-max-c-auto {
-  --_ak-edge-chroma-max: calc(0.368 * (l / 0.645) * ((1 - l) / (1 - 0.645)));
 }
 
 @utility ak-edge-saturate-* {
@@ -598,26 +570,6 @@
 }
 
 @property --_ak-edge-contrast-lightness {
-  syntax: "*";
-  inherits: false;
-}
-
-@property --_ak-edge-lightness-min {
-  syntax: "*";
-  inherits: false;
-}
-
-@property --_ak-edge-lightness-max {
-  syntax: "*";
-  inherits: false;
-}
-
-@property --_ak-edge-chroma-min {
-  syntax: "*";
-  inherits: false;
-}
-
-@property --_ak-edge-chroma-max {
   syntax: "*";
   inherits: false;
 }
