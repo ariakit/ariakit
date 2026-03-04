@@ -3,11 +3,7 @@ import type { ElementType } from "react";
 import { useEffect } from "react";
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
-import {
-  useInitialValue,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "../utils/hooks.ts";
+import { useInitialValue, useWrapElement } from "../utils/hooks.ts";
 import {
   createElement,
   createHook,
@@ -29,8 +25,6 @@ type TagName = typeof TagName;
 function getValue<T>(prevValue: T, value: T, checked?: boolean): T | false {
   if (checked === undefined) return prevValue;
   if (checked) return value;
-  // When a controlled radio is unchecked, we only clear the store value if it
-  // currently points to this radio item.
   return prevValue === value ? false : prevValue;
 }
 
@@ -77,19 +71,15 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
       });
     }, [store, name, value, defaultChecked]);
 
-    // Syncs the controlled checked value in the same layout phase so
-    // menuitemradio and MenuItemCheck don't render stale checked state.
-    useSafeLayoutEffect(() => {
+    // Sets checked in store
+    useEffect(() => {
       if (checked === undefined) return;
       store?.setValue(name, (prevValue) => {
         return getValue(prevValue, value, checked);
       });
     }, [store, name, value, checked]);
 
-    const valueChecked = store.useState(
-      (state) => state.values[name] === value,
-    );
-    const isChecked = checked ?? valueChecked;
+    const isChecked = store.useState((state) => state.values[name] === value);
 
     props = useWrapElement(
       props,
