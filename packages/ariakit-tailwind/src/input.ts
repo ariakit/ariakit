@@ -204,6 +204,7 @@ const layerMathVars = {
   layerAutoDelta: _ak.prop("lad"),
   layerIdleContrastValue: _ak.prop("licv"),
   layerContrastValue: _ak.prop("lcv"),
+  edgeContrastDirection: _ak.prop("ecd", -1),
 };
 
 // Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
@@ -496,16 +497,15 @@ const layerColorDeclarations = [
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
 const edgeContrastT = fn.var(vars.contrastT, contrastTValue);
 const edgeDirectionalDelta = fn.add(
-  inputs.edgeContrastL,
+  fn.var(inputs.edgeContrastL),
   fn.mul(edgeContrastT, 0.12),
 );
+const edgeDirectionalShift = fn.mul(
+  edgeDirectionalDelta,
+  fn.var(vars.edgeContrastDirection, -1),
+);
 const edgeDirectional = fn.oklch(edgeBaseColor, {
-  l: fn.clamp01(
-    fn.add(
-      l,
-      oklchLightDark(fn.neg(edgeDirectionalDelta), edgeDirectionalDelta),
-    ),
-  ),
+  l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
 });
 const edgeRelative = fn.oklch(edgeDirectional, {
   l: getLayerL(inputs.edgeRelativeL, inputs.edgeL),
@@ -513,7 +513,7 @@ const edgeRelative = fn.oklch(edgeDirectional, {
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
 });
 const edge = fn.oklch(edgeRelative, {
-  a: fn.clamp01(fn.add(inputs.edgeA, fn.mul(edgeContrastT, 0.5))),
+  a: fn.clamp01(fn.add(fn.var(inputs.edgeA), fn.mul(edgeContrastT, 0.5))),
 });
 
 const layerContext = createContext();
@@ -527,7 +527,18 @@ utility(
   set(vars.layer, layer),
   set(vars.shadow, "oklch(0 0 0 / 15%)"),
   set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
+  // Mirror plugin.js behavior: expose a binary OkL appearance signal.
+  set(
+    vars.layerAppearance,
+    fn.oklch(vars.layer, {
+      l: textContrastOkL,
+      c: 0,
+      h: 0,
+    }),
+  ),
   set(vars.edge, edge),
+  at.variant(light, set(vars.edgeContrastDirection, -1)),
+  at.variant(dark, set(vars.edgeContrastDirection, 1)),
   layerMathDeclarations,
   layerColorDeclarations,
   layerContext(({ provide, inherit }) => [
