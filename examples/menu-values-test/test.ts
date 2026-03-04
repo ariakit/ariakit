@@ -192,10 +192,7 @@ test("navigate with keyboard ignoring disabled items", async () => {
 
 test("reset radioControlled externally", async () => {
   await click(q.button("Menu"));
-  const orange = q.menuitemradio("Orange (radioControlled)");
-  if (!orange) {
-    throw new Error("Expected Orange controlled radio item to be rendered");
-  }
+  const orange = q.menuitemradio("Orange (radioControlled)")!;
   expect(orange).toHaveAttribute("aria-checked", "false");
   expect(orange.querySelector("svg")).toBeNull();
   await click(orange);
@@ -206,10 +203,7 @@ test("reset radioControlled externally", async () => {
     document.querySelector("[data-radio-controlled-value]")?.textContent,
   ).toBe("");
   await click(q.button("Menu"));
-  const resetOrange = q.menuitemradio("Orange (radioControlled)");
-  if (!resetOrange) {
-    throw new Error("Expected Orange controlled radio item after reset");
-  }
+  const resetOrange = q.menuitemradio("Orange (radioControlled)")!;
   expect(resetOrange).toHaveAttribute("aria-checked", "false");
   expect(resetOrange.querySelector("svg")).toBeNull();
 });
