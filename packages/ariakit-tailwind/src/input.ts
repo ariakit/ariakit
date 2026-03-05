@@ -1,4 +1,4 @@
-import type { Value, VarProperty } from "./utils2.ts";
+import type { Value, VarProperty } from "./lib.ts";
 import {
   at,
   createContext,
@@ -8,7 +8,7 @@ import {
   fn,
   rule,
   set,
-} from "./utils2.ts";
+} from "./lib.ts";
 
 const l = "l";
 const c = "c";

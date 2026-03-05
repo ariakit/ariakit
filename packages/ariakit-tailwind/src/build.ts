@@ -6,8 +6,8 @@ import type {
   CustomVariant,
   Rule,
   Var,
-} from "./utils2.ts";
-import { Type } from "./utils2.ts";
+} from "./lib.ts";
+import { Type } from "./lib.ts";
 
 type BlockChild = AtRule["children"][number];
 type DeclarationNode = Extract<BlockChild, { type: Type["Declaration"] }>;
