@@ -1,9 +1,9 @@
 ---
-name: ariakit-changesets-instructions
+name: ariakit-changesets
 description: Changeset authoring instructions for this repository. Use when creating or editing .changeset files.
 ---
 
-# Ariakit Changesets Instructions
+# Ariakit Changesets
 
 - Use a `kebab-case.md` filename that clearly relates to the change.
 - While the package is in `v0`, mark minor and patch-level changes as `patch`, and mark major changes as `minor`. This only affects the change type in the frontmatter. The description should still accurately explain what changed (do not disguise features as bug fixes). For breaking changes, be sure to call them out and include before-and-after examples.
