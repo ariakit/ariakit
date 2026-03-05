@@ -369,6 +369,16 @@
     --_ak-tpl: 37.5;
     --_ak-tcc: 150;
   }
+  @container style(--_ak-llchl: lch(50 0 0)) {
+    --_ak-tcd: 1;
+    --_ak-tpl: 50;
+    --_ak-tcc: 150;
+  }
+  @container style(--_ak-llchl: lch(62.5 0 0)) {
+    --_ak-tcd: -1;
+    --_ak-tpl: 62.5;
+    --_ak-tcc: 92;
+  }
   @container style(--_ak-llchl: lch(75 0 0)) {
     --_ak-tcd: -1;
     --_ak-tpl: 75;

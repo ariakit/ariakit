@@ -507,18 +507,16 @@ function getLayerH(relativeH: Value, absoluteH?: VarProperty) {
   return absoluteH ? fn.var(absoluteH, hDefault) : hDefault;
 }
 
-/**
- * Converts OKLCH lightness (0-1) to CIE LCH lightness (0-100) for achromatic
- * colors. Derived from L* = 116 × Y^(1/3) − 16 where Y ≈ L_ok³.
- */
-function oklchLToLchL(oklL: number) {
-  return roundToDecimals(116 * oklL - 16, 2);
-}
+// /**
+//  * Converts OKLCH lightness (0-1) to CIE LCH lightness (0-100) for achromatic
+//  * colors. Derived from L* = 116 × Y^(1/3) − 16 where Y ≈ L_ok³.
+//  */
+// function oklchLToLchL(oklL: number) {
+//   return roundToDecimals(116 * oklL - 16, 2);
+// }
 
 const LCH_LIGHTNESS_LEVELS = 8;
 const LCH_LIGHTNESS_STEP = 100 / LCH_LIGHTNESS_LEVELS;
-const LCH_FORBIDDEN_MIN = oklchLToLchL(LA_BASE);
-const LCH_FORBIDDEN_MAX = oklchLToLchL(LB_BASE);
 
 function withLayerL(
   callback: (
@@ -529,7 +527,6 @@ function withLayerL(
   return Array.from({ length: LCH_LIGHTNESS_LEVELS + 1 }, (_, i) =>
     roundToDecimals((i / LCH_LIGHTNESS_LEVELS) * 100, 2),
   ).flatMap((parentL) => {
-    if (parentL > LCH_FORBIDDEN_MIN && parentL < LCH_FORBIDDEN_MAX) return [];
     const isDark = parentL < DARK_THRESHOLD_L;
     const children = callback(parentL, isDark).filter((c) => c != null);
     if (children.length === 0) return [];
