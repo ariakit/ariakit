@@ -851,6 +851,12 @@ utility(
 );
 
 utility(
+  "layer-invert",
+  set(inputs.layerLMin, 0.25),
+  set(inputs.layerL, fn.invert(l)),
+);
+
+utility(
   "edge-*",
   set(inputs.edgeC, fn.value(chroma)),
   set(inputs.edgeH, fn.value(hue)),

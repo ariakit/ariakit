@@ -280,6 +280,11 @@
   --_ak-layer-hue: --value(number, [number], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
 }
 
+@utility ak-layer-invert {
+  --_ak-layer-lightness-min: 0.25;
+  --_ak-layer-lightness: calc(1 - l);
+}
+
 @utility ak-edge-* {
   --_ak-edge-chroma: --value(--chroma-*);
   --_ak-edge-h: --value(--hue-*);
