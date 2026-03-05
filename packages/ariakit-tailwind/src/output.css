@@ -344,9 +344,11 @@
 @utility ak-text {
   background-color: transparent !important;
   color: var(--ak-text);
-  --ak-text: lch(from lch(from var(--_ak-text-color, var(--ak-layer)) clamp(0, ((max(l, (var(--_ak-tpl) + ((var(--_ak-text-contrast-lightness) + (var(--_ak-ct) * 35)) * var(--_ak-tcd)))) * clamp(0, var(--_ak-tcd), 1)) + (min(l, (var(--_ak-tpl) + ((var(--_ak-text-contrast-lightness) + (var(--_ak-ct) * 35)) * var(--_ak-tcd)))) * (1 - clamp(0, var(--_ak-tcd), 1)))), 100) min(c, var(--_ak-tcc)) h) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue))) / max((((var(--_ak-ll) * ((53.6 + ((100 - l) * 0.85)) / 100)) + (var(--_ak-dl) * ((45.7 + (l * 1.08)) / 100))) + (c * 0.00036) + (var(--_ak-ct) * 0.35)), var(--_ak-text-alpha)));
-  --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
-  --_ak-llchl: lch(from var(--ak-layer) round(l, 12.5) 0 0 / 100%);
+  @container style(--_ak-llchl) {
+    --ak-text: lch(from lch(from var(--_ak-text-color, var(--ak-layer)) clamp(0, ((max(l, (var(--_ak-tpl) + ((var(--_ak-text-contrast-lightness) + (var(--_ak-ct) * 35)) * var(--_ak-tcd)))) * clamp(0, var(--_ak-tcd), 1)) + (min(l, (var(--_ak-tpl) + ((var(--_ak-text-contrast-lightness) + (var(--_ak-ct) * 35)) * var(--_ak-tcd)))) * (1 - clamp(0, var(--_ak-tcd), 1)))), 100) min(c, var(--_ak-tcc)) h) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue))) / max((((var(--_ak-ll) * ((53.6 + ((100 - l) * 0.85)) / 100)) + (var(--_ak-dl) * ((45.7 + (l * 1.08)) / 100))) + (c * 0.00036) + (var(--_ak-ct) * 0.35)), var(--_ak-text-alpha)));
+    --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
+    --_ak-llchl: lch(from var(--ak-layer) round(l, 12.5) 0 0 / 100%);
+  }
   @container style(--_ak-llchl: lch(0 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0;

@@ -1073,8 +1073,11 @@ utility(
   "text",
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
-  set(vars.text, textColored),
-  getBaseDeclarations(vars.layer),
+  at.container(
+    fn.style(vars.layerLchL),
+    set(vars.text, textColored),
+    ...getBaseDeclarations(vars.layer),
+  ),
   ...withLayerL((parentL, isDark) => [
     set(vars.textContrastDirection, isDark ? 1 : -1),
     set(vars.textParentL, parentL),
