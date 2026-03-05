@@ -22,10 +22,20 @@ const DARK_THRESHOLD_OKL = 0.645;
 const CONTRAST_HIGH = 100;
 const LA_BASE = 0.55;
 const LB_BASE = 0.725;
+const DARK_HIGH_MAX_L = roundToDecimals(LA_BASE / 2, 4);
+const LIGHT_LOW_SPLIT_REFERENCE_MAX_L = 0.99;
+const LIGHT_LOW_MAX_L = roundToDecimals(
+  (LB_BASE + LIGHT_LOW_SPLIT_REFERENCE_MAX_L) / 2,
+  4,
+);
+const BAND_LEVEL_DARK_HIGH = 0;
+const BAND_LEVEL_DARK_LOW = 0.25;
+const BAND_LEVEL_MID = 0.5;
+const BAND_LEVEL_LIGHT_LOW = 0.75;
+const BAND_LEVEL_LIGHT_HIGH = 1;
 const L_SPREAD_RATIO = 0.15;
 const FORBIDDEN_RANGE_LA_MIN = 0.2;
 const FORBIDDEN_RANGE_LB_MAX = 0.9;
-const EDGE_SHADE_MIN_OKL = 0.25;
 
 const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
 const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
@@ -95,6 +105,16 @@ function negChildren(rule: ReturnType<typeof utility>) {
 function roundToDecimals(n: number, decimals: number) {
   const factor = 10 ** decimals;
   return Math.round(n * factor) / factor;
+}
+
+/**
+ * Returns whether `value` is within `[min, max]`
+ */
+function getInRange(value: Value, min: number, max: number) {
+  return fn.mul(
+    fn.binary(fn.sub(value, min - 1e-6)),
+    fn.binary(fn.sub(max, value)),
+  );
 }
 
 /**
@@ -206,7 +226,6 @@ const layerMathVars = {
   layerIdleContrastValue: _ak.prop("licv"),
   layerContrastValue: _ak.prop("lcv"),
   edgeContrastDirection: _ak.prop("ecd", -1),
-  edgeShadeEnabled: _ak.prop("ese", 0),
 };
 
 // Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
@@ -224,8 +243,8 @@ const layerColorVars = {
   layerIdleMixed: _ak.prop.canvas("lim"),
   layerIdleAuto: _ak.prop.canvas("lia"),
   layerIdle: _ak.prop.canvas("li"),
-  layerAppearance: _ak.prop.black("lapp", { inherits: true }),
-  layerShadeAppearance: _ak.prop.black("lsapp", { inherits: true }),
+  layerScheme: _ak.prop.black("lsch", { inherits: true }),
+  layerBand: _ak.prop.black("lbnd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerAuto: _ak.prop.canvas("la"),
   layerContrast: _ak.prop.canvas("lct"),
@@ -234,10 +253,6 @@ const layerColorVars = {
   layerParent: ak.prop.canvas("layer-parent", { inherits: true }),
   edge: ak.prop.black("edge"),
   text: ak.prop.black("text", { inherits: true }),
-  shadow: ak.prop.color("shadow", {
-    inherits: true,
-    initialValue: fn.oklch({ a: "15%" }),
-  }),
 };
 
 const vars = {
@@ -276,8 +291,6 @@ const inputs = {
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", 0.1),
-  edgeShadeA: _ak.prop("edge-shade-alpha"),
-  edgeShadeRequested: _ak.prop("edge-shade-requested", 0),
 };
 
 const theme = at.theme(
@@ -316,18 +329,42 @@ const theme = at.theme(
 
 const dark = createVariant(
   "ak-dark",
-  at.container(fn.style(vars.layerAppearance, "oklch(1 0 0)"), set("@slot")),
+  at.container(fn.style(vars.layerScheme, "oklch(1 0 0)"), set("@slot")),
 );
 
 const light = createVariant(
   "ak-light",
-  at.container(fn.style(vars.layerAppearance, "oklch(0 0 0)"), set("@slot")),
+  at.container(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
 );
 
-const darkShade = createVariant(
-  "ak-dark-shade",
+const darkHigh = createVariant(
+  "ak-dark-high",
   at.container(
-    fn.style(vars.layerShadeAppearance, "oklch(1 0 0)"),
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH })),
+    set("@slot"),
+  ),
+);
+
+const darkLow = createVariant(
+  "ak-dark-low",
+  at.container(
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_LOW })),
+    set("@slot"),
+  ),
+);
+
+const lightLow = createVariant(
+  "ak-light-low",
+  at.container(
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_LOW })),
+    set("@slot"),
+  ),
+);
+
+const lightHigh = createVariant(
+  "ak-light-high",
+  at.container(
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH })),
     set("@slot"),
   ),
 );
@@ -513,32 +550,35 @@ const edgeDirectionalDelta = fn.add(
   fn.var(inputs.edgeContrastL),
   fn.mul(edgeContrastT, 0.12),
 );
-const edgeShadeActive = fn.clamp01(
-  fn.mul(fn.var(inputs.edgeShadeRequested), fn.var(vars.edgeShadeEnabled)),
-);
 const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
   fn.var(vars.edgeContrastDirection, -1),
 );
 const edgeDirectional = fn.oklch(edgeBaseColor, {
-  l: fn.mul(
-    fn.clamp01(fn.add(l, edgeDirectionalShift)),
-    fn.invert(edgeShadeActive),
-  ),
+  l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
 });
 const edgeRelative = fn.oklch(edgeDirectional, {
   l: getLayerL(inputs.edgeRelativeL, inputs.edgeL),
   c: getLayerC(inputs.edgeRelativeC, inputs.edgeC),
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
 });
-const edgeShadeA = fn.var(inputs.edgeShadeA, inputs.edgeA);
-const edgeA = fn.add(
-  fn.mul(fn.var(inputs.edgeA), fn.invert(edgeShadeActive)),
-  fn.mul(edgeShadeA, edgeShadeActive),
-);
 const edge = fn.oklch(edgeRelative, {
-  a: fn.clamp01(fn.add(edgeA, fn.mul(edgeContrastT, 0.5))),
+  a: fn.clamp01(fn.add(fn.var(inputs.edgeA), fn.mul(edgeContrastT, 0.5))),
 });
+
+const layerDarkHighBand = getInRange(l, 0, DARK_HIGH_MAX_L);
+const layerDarkLowBand = getInRange(l, DARK_HIGH_MAX_L, LA_BASE);
+const layerLightLowBand = getInRange(l, LB_BASE, LIGHT_LOW_MAX_L);
+const layerLightHighBand = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
+const layerBandL = fn.add(
+  BAND_LEVEL_MID,
+  fn.mul(layerDarkHighBand, BAND_LEVEL_DARK_HIGH - BAND_LEVEL_MID),
+  fn.mul(layerDarkLowBand, BAND_LEVEL_DARK_LOW - BAND_LEVEL_MID),
+  fn.mul(layerLightLowBand, BAND_LEVEL_LIGHT_LOW - BAND_LEVEL_MID),
+  fn.mul(layerLightHighBand, BAND_LEVEL_LIGHT_HIGH - BAND_LEVEL_MID),
+);
+const layerBand = fn.oklch(vars.layer, { l: layerBandL, c: 0, h: 0 });
+const layerScheme = fn.oklch(vars.layer, { l: textContrastOkL, c: 0, h: 0 });
 
 const layerContext = createContext();
 
@@ -549,31 +589,14 @@ utility(
   set.backgroundColor(vars.layer),
   at.apply`ring-[color:${vars.edge}]`,
   set(vars.layer, layer),
-  set(vars.shadow, "oklch(0 0 0 / 15%)"),
   set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
-  // Mirror plugin.js behavior: expose a binary OkL appearance signal.
-  set(
-    vars.layerAppearance,
-    fn.oklch(vars.layer, {
-      l: textContrastOkL,
-      c: 0,
-      h: 0,
-    }),
-  ),
-  set(
-    vars.layerShadeAppearance,
-    fn.oklch(vars.layer, {
-      l: fn.mul(textContrastOkL, fn.binary(fn.sub(l, EDGE_SHADE_MIN_OKL))),
-      c: 0,
-      h: 0,
-    }),
-  ),
   set(vars.edge, edge),
-  at.variant(light, set(vars.edgeContrastDirection, -1)),
-  at.variant(dark, set(vars.edgeContrastDirection, 1)),
-  at.variant(darkShade, set(vars.edgeShadeEnabled, 1)),
+  set(vars.layerBand, layerBand),
+  set(vars.layerScheme, layerScheme),
   layerMathDeclarations,
   layerColorDeclarations,
+  at.variant(light, set(vars.edgeContrastDirection, -1)),
+  at.variant(dark, set(vars.edgeContrastDirection, 1)),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
@@ -793,12 +816,6 @@ utility(
   set(inputs.edgeContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
 );
 
-utility(
-  "edge-shade-*",
-  set(inputs.edgeShadeRequested, 1),
-  set(inputs.edgeShadeA, fn.div(fn.value("number", "[*]", numbers()), 100)),
-);
-
 const edgeSaturate = utility(
   "edge-saturate-*",
   set(
@@ -846,7 +863,10 @@ export const input = [
   root,
   dark,
   light,
-  darkShade,
+  darkHigh,
+  darkLow,
+  lightLow,
+  lightHigh,
   ...utilities,
   ...Object.values(vars),
   ...Object.values(inputs),

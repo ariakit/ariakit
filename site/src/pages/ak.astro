@@ -8,13 +8,22 @@ import "./ak.css";
   <head>
     <Meta />
   </head>
-  <body class="p-4 ak-layer ak-layer-[#444] [--contrast:90]_">
+  <body class="p-4 ak-layer ak-layer-canvas ak-layer-20_ [--contrast:90]_">
     <div class="flex flex-wrap gap-2 m- *:p-4">
       <div class="ak-layer ak-layer-black hover:ak-state-10 ak-layer-min-20">
         black
       </div>
       <div
-        class="ak-layer border ak-edge-shade-100 ak-edge-primary ak-edge-20 hover:ak-state-10"
+        class="ak-layer relative ak-light-high:ring shadow-2xl ak-layer-lighten-15"
+      >
+        <div
+          class="ak-layer absolute bg-transparent inset-0 pointer-events-none ak-dark-high:border"
+        >
+        </div>
+        Feature
+      </div>
+      <div
+        class="ak-layer border ak-dark-low:ak-edge-l-0 ak-dark-low:ak-edge-100 ak-edge-primary ak-edge-20 hover:ak-state-10"
       >
         black
       </div>

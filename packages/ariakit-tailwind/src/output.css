@@ -39,19 +39,37 @@
 }
 
 @custom-variant ak-dark {
-  @container style(--_ak-lapp: oklch(1 0 0)) {
+  @container style(--_ak-lsch: oklch(1 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-light {
-  @container style(--_ak-lapp: oklch(0 0 0)) {
+  @container style(--_ak-lsch: oklch(0 0 0)) {
     @slot;
   }
 }
 
-@custom-variant ak-dark-shade {
-  @container style(--_ak-lsapp: oklch(1 0 0)) {
+@custom-variant ak-dark-high {
+  @container style(--_ak-lbnd: oklch(0 0 0)) {
+    @slot;
+  }
+}
+
+@custom-variant ak-dark-low {
+  @container style(--_ak-lbnd: oklch(0.25 0 0)) {
+    @slot;
+  }
+}
+
+@custom-variant ak-light-low {
+  @container style(--_ak-lbnd: oklch(0.75 0 0)) {
+    @slot;
+  }
+}
+
+@custom-variant ak-light-high {
+  @container style(--_ak-lbnd: oklch(1 0 0)) {
     @slot;
   }
 }
@@ -62,20 +80,10 @@
   background-color: var(--ak-layer);
   @apply ring-[color:var(--ak-edge)];
   --ak-layer: oklch(from var(--_ak-lct) var(--_ak-sokl) clamp(var(--_ak-layer-chroma-min, 0), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
-  --ak-shadow: oklch(0 0 0 / 15%);
   --ak-text: lch(from var(--ak-layer) calc((58.82 - l) * 1000000) 0 0);
-  --_ak-lapp: oklch(from var(--ak-layer) calc((0.645 - l) * 1000000) 0 0);
-  --_ak-lsapp: oklch(from var(--ak-layer) calc(((0.645 - l) * 1000000) * clamp(0, ((l - 0.25) * 1000000), 1)) 0 0);
-  --ak-edge: oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) calc(clamp(0, (l + ((var(--_ak-edge-contrast-lightness, 1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12)) * var(--_ak-ecd, -1))), 1) * (1 - clamp(0, (var(--_ak-edge-shade-requested, 0) * var(--_ak-ese, 0)), 1))) c h) var(--_ak-edge-lightness, calc(max(l, min(0.13, var(--_ak-edge-relative-lightness, 0))) + var(--_ak-edge-relative-lightness, 0))) var(--_ak-edge-chroma, calc(c + var(--_ak-edge-relative-chroma, 0))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue, 0)))) l c h / clamp(0, (((var(--_ak-edge-alpha, 0.1) * (1 - clamp(0, (var(--_ak-edge-shade-requested, 0) * var(--_ak-ese, 0)), 1))) + (var(--_ak-edge-shade-alpha, var(--_ak-edge-alpha, 0.1)) * clamp(0, (var(--_ak-edge-shade-requested, 0) * var(--_ak-ese, 0)), 1))) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.5)), 1));
-  @variant ak-light {
-    --_ak-ecd: -1;
-  }
-  @variant ak-dark {
-    --_ak-ecd: 1;
-  }
-  @variant ak-dark-shade {
-    --_ak-ese: 1;
-  }
+  --ak-edge: oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-edge-contrast-lightness, 1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12)) * var(--_ak-ecd, -1))), 1) c h) var(--_ak-edge-lightness, calc(max(l, min(0.13, var(--_ak-edge-relative-lightness, 0))) + var(--_ak-edge-relative-lightness, 0))) var(--_ak-edge-chroma, calc(c + var(--_ak-edge-relative-chroma, 0))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue, 0)))) l c h / clamp(0, (var(--_ak-edge-alpha, 0.1) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.5)), 1));
+  --_ak-lbnd: oklch(from var(--ak-layer) calc(0.5 + ((clamp(0, ((l - -0.000001) * 1000000), 1) * clamp(0, ((0.275 - l) * 1000000), 1)) * -0.5) + ((clamp(0, ((l - 0.27499900000000005) * 1000000), 1) * clamp(0, ((0.55 - l) * 1000000), 1)) * -0.25) + ((clamp(0, ((l - 0.724999) * 1000000), 1) * clamp(0, ((0.8575 - l) * 1000000), 1)) * 0.25) + (clamp(0, ((l - 0.8575) * 1000000), 1) * 0.5)) 0 0);
+  --_ak-lsch: oklch(from var(--ak-layer) calc((0.645 - l) * 1000000) 0 0);
   --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
   --_ak-cn: min(0, min(1, (var(--_ak-ct) * -1)));
   --_ak-lc: calc(var(--_ak-cn) * ((var(--_ak-lokl) * -0.3334) + (var(--_ak-dokl) * 0.3334)));
@@ -96,6 +104,12 @@
   --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness, 0))) + var(--_ak-layer-relative-lightness, 0)) calc(c + var(--_ak-layer-relative-chroma, 0)) calc(h + var(--_ak-layer-relative-hue, 0))) var(--_ak-sokl) c h);
   --_ak-la: oklch(from var(--_ak-lb) calc(max(l, min(0.13, var(--_ak-lad))) + var(--_ak-lad)) c h);
   --_ak-lct: oklch(from var(--_ak-la) calc(((l + (var(--_ak-lcv) * var(--_ak-ald))) * (1 - (clamp(0, (var(--_ak-lcv) * 1000000), 1) * ((var(--_ak-adtl) * clamp(0, (((l + (var(--_ak-lcv) * var(--_ak-ald))) - var(--_ak-fla)) * 1000000), 1)) + (var(--_ak-adtd) * clamp(0, ((var(--_ak-flb) - (l + (var(--_ak-lcv) * var(--_ak-ald)))) * 1000000), 1)))))) + (var(--_ak-dbl) * (clamp(0, (var(--_ak-lcv) * 1000000), 1) * ((var(--_ak-adtl) * clamp(0, (((l + (var(--_ak-lcv) * var(--_ak-ald))) - var(--_ak-fla)) * 1000000), 1)) + (var(--_ak-adtd) * clamp(0, ((var(--_ak-flb) - (l + (var(--_ak-lcv) * var(--_ak-ald)))) * 1000000), 1)))))) c h);
+  @variant ak-light {
+    --_ak-ecd: -1;
+  }
+  @variant ak-dark {
+    --_ak-ecd: 1;
+  }
   @container style(--_context-0: even) {
     --_context-0: odd;
     --_ak-lpc-odd: var(--ak-layer);
@@ -251,11 +265,6 @@
   --_ak-edge-contrast-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
-@utility ak-edge-shade-* {
-  --_ak-edge-shade-requested: 1;
-  --_ak-edge-shade-alpha: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
-}
-
 @utility ak-edge-saturate-* {
   --_ak-edge-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
 }
@@ -408,11 +417,6 @@
   inherits: false;
 }
 
-@property --_ak-ese {
-  syntax: "*";
-  inherits: false;
-}
-
 @property --_ak-lib {
   syntax: "<color>";
   inherits: false;
@@ -437,13 +441,13 @@
   initial-value: canvas;
 }
 
-@property --_ak-lapp {
+@property --_ak-lsch {
   syntax: "<color>";
   inherits: true;
   initial-value: oklch(0 0 0);
 }
 
-@property --_ak-lsapp {
+@property --_ak-lbnd {
   syntax: "<color>";
   inherits: true;
   initial-value: oklch(0 0 0);
@@ -489,12 +493,6 @@
   syntax: "<color>";
   inherits: true;
   initial-value: oklch(0 0 0);
-}
-
-@property --ak-shadow {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: oklch(0 0 0 / 15%);
 }
 
 @property --_ak-layer-color {
@@ -628,16 +626,6 @@
 }
 
 @property --_ak-edge-alpha {
-  syntax: "*";
-  inherits: false;
-}
-
-@property --_ak-edge-shade-alpha {
-  syntax: "*";
-  inherits: false;
-}
-
-@property --_ak-edge-shade-requested {
   syntax: "*";
   inherits: false;
 }
