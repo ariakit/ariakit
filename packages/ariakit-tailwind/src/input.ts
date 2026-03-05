@@ -178,6 +178,13 @@ function oklchLightDark(light: Value, dark: Value) {
 }
 
 /**
+ * Blends separate light and dark values by the active appearance weights.
+ */
+function lchLightDark(light: Value, dark: Value) {
+  return fn.add(fn.mul(vars.lightL, light), fn.mul(vars.darkL, dark));
+}
+
+/**
  * Returns all CSS color interpolation methods for `color-mix()`.
  */
 function colorMixMethods() {
@@ -327,6 +334,7 @@ const inputs = {
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
+  textA: _ak.prop("text-alpha", { initial: 1 }),
 };
 
 const theme = at.theme(
@@ -617,6 +625,17 @@ const layerScheme = fn.oklch(vars.layer, {
   h: 0,
 });
 
+// Min alpha adapts to layer lightness — higher for mid-lightness backgrounds
+const textMinALight = fn.div(fn.add(53.6, fn.mul(fn.sub(100, "l"), 0.85)), 100);
+const textMinADark = fn.div(fn.add(45.7, fn.mul("l", 1.08)), 100);
+const textMinA = fn.add(
+  lchLightDark(textMinALight, textMinADark),
+  fn.mul("c", 0.00036),
+  fn.mul(vars.contrastT, 0.2),
+);
+const textAlpha = fn.max(textMinA, inputs.textA);
+const text = fn.exp`lch(from ${vars.layer} ${vars.textContrastL} 0 0 / ${textAlpha})`;
+
 const layerContext = createContext();
 
 utility(
@@ -626,7 +645,7 @@ utility(
   set.backgroundColor(vars.layer),
   at.apply`ring-[color:${vars.edge}]`,
   set(vars.layer, layer),
-  set(vars.text, fn.exp`lch(from ${vars.layer} ${vars.textContrastL} 0 0)`),
+  set(vars.text, text),
   set(vars.edge, edge),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),
@@ -931,6 +950,11 @@ utility(
     inputs.edgeH,
     fn.value("number", "[number]", numbers({ max: 360, step: 15 })),
   ),
+);
+
+utility(
+  "text-*",
+  set(inputs.textA, fn.div(fn.value("number", "[number]", numbers()), 100)),
 );
 
 export const input = [

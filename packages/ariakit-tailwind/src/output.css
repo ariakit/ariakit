@@ -111,7 +111,7 @@
   background-color: var(--ak-layer);
   @apply ring-[color:var(--ak-edge)];
   --ak-layer: oklch(from var(--_ak-lct) var(--_ak-sokl) clamp(var(--_ak-layer-chroma-min), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
-  --ak-text: lch(from var(--ak-layer) var(--_ak-tcl) 0 0);
+  --ak-text: lch(from var(--ak-layer) var(--_ak-tcl) 0 0 / max((((var(--_ak-ll) * ((53.6 + ((100 - l) * 0.85)) / 100)) + (var(--_ak-dl) * ((45.7 + (l * 1.08)) / 100))) + (c * 0.00036) + (var(--_ak-ct) * 0.2)), var(--_ak-text-alpha)));
   --ak-edge: oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-edge-contrast-lightness) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12)) * var(--_ak-ecd))), 1) c h) var(--_ak-edge-lightness, calc(max(l, min(0.13, var(--_ak-edge-relative-lightness))) + var(--_ak-edge-relative-lightness))) var(--_ak-edge-chroma, calc(c + var(--_ak-edge-relative-chroma))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue)))) l c h / clamp(0, (var(--_ak-edge-alpha) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.5)), 1));
   --_ak-lbnd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
   --_ak-lsch: oklch(from var(--ak-layer) var(--_ak-tcokl) 0 0);
@@ -338,6 +338,10 @@
 @utility ak-edge-h-* {
   --_ak-edge-h: --value(--hue-*, [*]);
   --_ak-edge-h: --value(number, [number], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
+}
+
+@utility ak-text-* {
+  --_ak-text-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
 @property --_ak-tcl {
@@ -738,4 +742,10 @@
   syntax: "*";
   inherits: false;
   initial-value: 0.1;
+}
+
+@property --_ak-text-alpha {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
 }
