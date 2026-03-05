@@ -43,3 +43,37 @@ layerAutoL: _ak.prop("layer-auto-lightness", { initial: 0 }),
 ```
 
 > **Note:** Do not use `{ initial: someVar }` — `initial-value` cannot contain `var()` references. Only use this pattern for hard-coded numeric or token values.
+
+## Passing `VarProperty` directly vs. `fn.var()`
+
+Most `fn.*` helpers (`fn.add`, `fn.mul`, `fn.clamp`, `fn.oklch`, etc.) accept `VarProperty` as a `Value` argument and resolve it to `var(--name)` automatically. Passing the var directly is preferred over wrapping it in `fn.var()`.
+
+**Only use `fn.var(someVar, fallback)` when you need a fallback that differs from the property's built-in default.** There are two ways a property already carries its own fallback:
+
+1. **`initial` option** — the `@property` has an `initial-value`; the browser always resolves to it when the property is unset.
+2. **`defaultValue` (second argument as a plain value/var)** — passed through to `var(--name, defaultValue)` automatically whenever the property appears in an expression.
+
+In both cases, passing the var directly is sufficient:
+
+```ts
+// ✅ correct — needs a non-default fallback (layerColor has no default at all)
+const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
+
+// ✅ correct — contrastT has no default; fallback re-computes it from --contrast
+const edgeContrastT = fn.var(vars.contrastT, contrastTValue);
+
+// ✅ correct — absoluteL is optional; lDefault is a context-specific fallback
+return absoluteL ? fn.var(absoluteL, lDefault) : lDefault;
+
+// ❌ avoid — edgeContrastL has { initial: 1 }, no explicit fallback needed
+fn.add(fn.var(inputs.edgeContrastL), fn.mul(edgeContrastT, 0.12))
+
+// ✅ preferred — initial-value handles the default
+fn.add(inputs.edgeContrastL, fn.mul(edgeContrastT, 0.12))
+
+// ❌ avoid — chromaP3Max was defined with defaultValue 0.368, already included
+fn.add(fn.var(vars.chromaP3Max), someOtherValue)
+
+// ✅ preferred — var(--chroma-p3-max, 0.368) is emitted automatically
+fn.add(vars.chromaP3Max, someOtherValue)
+```
