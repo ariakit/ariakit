@@ -85,8 +85,8 @@ function renderCustomProperty(property: CustomProperty, depth: number) {
     `${nextIndentation}syntax: ${quotePropertySyntax(property.syntax)};`,
     `${nextIndentation}inherits: ${property.inherits};`,
   ];
-  if (property.initialValue != null) {
-    lines.push(`${nextIndentation}initial-value: ${property.initialValue};`);
+  if (property.initial != null) {
+    lines.push(`${nextIndentation}initial-value: ${property.initial};`);
   }
   lines.push(`${indentation}}`);
   return lines.join("\n");

@@ -187,26 +187,32 @@ const contrast = createVar("--contrast", 0);
 const contrastTValue = fn.div(fn.relu(contrast), CONTRAST_HIGH);
 const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 
+// Band membership expressions — depend only on `l` and fixed constants.
+const bandDarkHigh = getInRange(l, 0, DARK_HIGH_MAX_L);
+const bandDarkLow = getInRange(l, DARK_HIGH_MAX_L, LA_BASE);
+const bandLightLow = getInRange(l, LB_BASE, LIGHT_LOW_MAX_L);
+const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
+
 // Constants registered once as @property initial values. They only depend on
 // color channels or fixed numeric constants.
 const constantMathVars = {
-  textContrastL: _ak.prop("tcl", { initialValue: textContrastL }),
-  textContrastOkL: _ak.prop("tcokl", {
-    initialValue: textContrastOkL,
-  }),
+  textContrastL: _ak.prop("tcl", { initial: textContrastL }),
+  textContrastOkL: _ak.prop("tcokl", { initial: textContrastOkL }),
   forbiddenLaBase: _ak.prop("flab", {
-    initialValue: fn.sub(LA_BASE, fn.mul(chromaT, laSpread)),
+    initial: fn.sub(LA_BASE, fn.mul(chromaT, laSpread)),
   }),
   forbiddenLbBase: _ak.prop("flbb", {
-    initialValue: fn.add(LB_BASE, fn.mul(chromaT, lbSpread)),
+    initial: fn.add(LB_BASE, fn.mul(chromaT, lbSpread)),
   }),
-  autoLDirection: _ak.prop("ald", {
-    initialValue: fn.sub(darkOkL, lightOkL),
-  }),
-  darkOkL: _ak.prop("dokl", { initialValue: darkOkL }),
-  lightOkL: _ak.prop("lokl", { initialValue: lightOkL }),
-  darkL: _ak.prop("dl", { initialValue: darkL }),
-  lightL: _ak.prop("ll", { initialValue: lightL }),
+  autoLDirection: _ak.prop("ald", { initial: fn.sub(darkOkL, lightOkL) }),
+  darkOkL: _ak.prop("dokl", { initial: darkOkL }),
+  lightOkL: _ak.prop("lokl", { initial: lightOkL }),
+  darkL: _ak.prop("dl", { initial: darkL }),
+  lightL: _ak.prop("ll", { initial: lightL }),
+  bandDarkHigh: _ak.prop("bdh", { initial: bandDarkHigh }),
+  bandDarkLow: _ak.prop("bdl", { initial: bandDarkLow }),
+  bandLightLow: _ak.prop("bll", { initial: bandLightLow }),
+  bandLightHigh: _ak.prop("blh", { initial: bandLightHigh }),
 };
 
 // Utility-assigned math values. These depend on other vars and are resolved in
@@ -225,7 +231,7 @@ const layerMathVars = {
   layerAutoDelta: _ak.prop("lad"),
   layerIdleContrastValue: _ak.prop("licv"),
   layerContrastValue: _ak.prop("lcv"),
-  edgeContrastDirection: _ak.prop("ecd", -1),
+  edgeContrastDirection: _ak.prop("ecd", { initial: -1 }),
 };
 
 // Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
@@ -265,32 +271,32 @@ const vars = {
 
 const inputs = {
   layerColor: _ak.prop("layer-color"),
-  layerIdleAutoL: _ak.prop("layer-idle-auto-lightness", 0),
-  layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", 0),
-  layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", 0),
-  layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", 0),
-  layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", 0),
+  layerIdleAutoL: _ak.prop("layer-idle-auto-lightness", { initial: 0 }),
+  layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", { initial: 0 }),
+  layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", { initial: 0 }),
+  layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", { initial: 0 }),
+  layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", { initial: 0 }),
   layerL: _ak.prop("layer-lightness"),
   layerC: _ak.prop("layer-chroma"),
   layerH: _ak.prop("layer-hue"),
-  layerLMin: _ak.prop("layer-lightness-min", 0),
-  layerLMax: _ak.prop("layer-lightness-max", 1),
-  layerCMin: _ak.prop("layer-chroma-min", 0),
+  layerLMin: _ak.prop("layer-lightness-min", { initial: 0 }),
+  layerLMax: _ak.prop("layer-lightness-max", { initial: 1 }),
+  layerCMin: _ak.prop("layer-chroma-min", { initial: 0 }),
   layerCMax: _ak.prop("layer-chroma-max", vars.chromaP3Max),
-  layerAutoL: _ak.prop("layer-auto-lightness", 0),
-  layerRelativeL: _ak.prop("layer-relative-lightness", 0),
-  layerRelativeC: _ak.prop("layer-relative-chroma", 0),
-  layerRelativeH: _ak.prop("layer-relative-hue", 0),
-  layerContrastL: _ak.prop("layer-contrast-lightness", 0),
+  layerAutoL: _ak.prop("layer-auto-lightness", { initial: 0 }),
+  layerRelativeL: _ak.prop("layer-relative-lightness", { initial: 0 }),
+  layerRelativeC: _ak.prop("layer-relative-chroma", { initial: 0 }),
+  layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
+  layerContrastL: _ak.prop("layer-contrast-lightness", { initial: 0 }),
   edgeColor: _ak.prop("edge-color"),
-  edgeRelativeL: _ak.prop("edge-relative-lightness", 0),
-  edgeRelativeC: _ak.prop("edge-relative-chroma", 0),
-  edgeRelativeH: _ak.prop("edge-relative-hue", 0),
-  edgeContrastL: _ak.prop("edge-contrast-lightness", 1),
+  edgeRelativeL: _ak.prop("edge-relative-lightness", { initial: 0 }),
+  edgeRelativeC: _ak.prop("edge-relative-chroma", { initial: 0 }),
+  edgeRelativeH: _ak.prop("edge-relative-hue", { initial: 0 }),
+  edgeContrastL: _ak.prop("edge-contrast-lightness", { initial: 1 }),
   edgeL: _ak.prop("edge-lightness"),
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
-  edgeA: _ak.prop("edge-alpha", 0.1),
+  edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
 };
 
 const theme = at.theme(
@@ -552,7 +558,7 @@ const edgeDirectionalDelta = fn.add(
 );
 const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
-  fn.var(vars.edgeContrastDirection, -1),
+  fn.var(vars.edgeContrastDirection),
 );
 const edgeDirectional = fn.oklch(edgeBaseColor, {
   l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
@@ -566,19 +572,19 @@ const edge = fn.oklch(edgeRelative, {
   a: fn.clamp01(fn.add(fn.var(inputs.edgeA), fn.mul(edgeContrastT, 0.5))),
 });
 
-const layerDarkHighBand = getInRange(l, 0, DARK_HIGH_MAX_L);
-const layerDarkLowBand = getInRange(l, DARK_HIGH_MAX_L, LA_BASE);
-const layerLightLowBand = getInRange(l, LB_BASE, LIGHT_LOW_MAX_L);
-const layerLightHighBand = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
 const layerBandL = fn.add(
   BAND_LEVEL_MID,
-  fn.mul(layerDarkHighBand, BAND_LEVEL_DARK_HIGH - BAND_LEVEL_MID),
-  fn.mul(layerDarkLowBand, BAND_LEVEL_DARK_LOW - BAND_LEVEL_MID),
-  fn.mul(layerLightLowBand, BAND_LEVEL_LIGHT_LOW - BAND_LEVEL_MID),
-  fn.mul(layerLightHighBand, BAND_LEVEL_LIGHT_HIGH - BAND_LEVEL_MID),
+  fn.mul(vars.bandDarkHigh, BAND_LEVEL_DARK_HIGH - BAND_LEVEL_MID),
+  fn.mul(vars.bandDarkLow, BAND_LEVEL_DARK_LOW - BAND_LEVEL_MID),
+  fn.mul(vars.bandLightLow, BAND_LEVEL_LIGHT_LOW - BAND_LEVEL_MID),
+  fn.mul(vars.bandLightHigh, BAND_LEVEL_LIGHT_HIGH - BAND_LEVEL_MID),
 );
 const layerBand = fn.oklch(vars.layer, { l: layerBandL, c: 0, h: 0 });
-const layerScheme = fn.oklch(vars.layer, { l: textContrastOkL, c: 0, h: 0 });
+const layerScheme = fn.oklch(vars.layer, {
+  l: vars.textContrastOkL,
+  c: 0,
+  h: 0,
+});
 
 const layerContext = createContext();
 
@@ -589,7 +595,7 @@ utility(
   set.backgroundColor(vars.layer),
   at.apply`ring-[color:${vars.edge}]`,
   set(vars.layer, layer),
-  set(vars.text, fn.exp`lch(from ${vars.layer} ${textContrastL} 0 0)`),
+  set(vars.text, fn.exp`lch(from ${vars.layer} ${vars.textContrastL} 0 0)`),
   set(vars.edge, edge),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),

@@ -75,7 +75,7 @@ export interface Var extends TypeObject<Type["Var"]>, DashedIdentObject {
 interface CustomPropertyOptions {
   syntax: string;
   inherits: boolean;
-  initialValue?: PropertyValue;
+  initial?: PropertyValue;
   defaultValue?: VarDefaultValue;
 }
 
@@ -185,13 +185,13 @@ function createPropertyFn(
 function createPropertyFn({
   syntax = "*",
   inherits = false,
-  initialValue,
+  initial,
   ns,
 }: CreatePropertyFnOptions = {}) {
   const nsIdent = ns ? getIdent(ns) : undefined;
   const defaultSyntax = syntax;
   const defaultInherits = inherits;
-  const defaultInitialValue = initialValue;
+  const defaultInitialValue = initial;
   const createProperty = (
     ident: VarProperty | DashedIdent,
     options: Partial<CustomPropertyOptions> | VarDefaultValue = {},
@@ -199,7 +199,7 @@ function createPropertyFn({
     const {
       syntax = defaultSyntax,
       inherits = defaultInherits,
-      initialValue = defaultInitialValue,
+      initial = defaultInitialValue,
       ...rest
     } = isPropertyValue(options) || isVarProperty(options)
       ? { defaultValue: options }
@@ -210,7 +210,7 @@ function createPropertyFn({
       ident: identValue,
       syntax,
       inherits,
-      initialValue,
+      initial,
       ...rest,
     };
   };
@@ -228,13 +228,13 @@ function createPropertyObj(ns?: DashedIdentObject | DashedIdent) {
   const white = "oklch(1 0 0)";
   return Object.assign(createPropertyFn({ ns }), {
     color: createPropertyFn({ ns, syntax: "<color>" }),
-    black: createPropertyFn({ ns, syntax: "<color>", initialValue: black }),
-    white: createPropertyFn({ ns, syntax: "<color>", initialValue: white }),
-    canvas: createPropertyFn({ ns, syntax: "<color>", initialValue: "canvas" }),
+    black: createPropertyFn({ ns, syntax: "<color>", initial: black }),
+    white: createPropertyFn({ ns, syntax: "<color>", initial: white }),
+    canvas: createPropertyFn({ ns, syntax: "<color>", initial: "canvas" }),
     angle: createPropertyFn({ ns, syntax: "<angle>" }),
     len: createPropertyFn({ ns, syntax: "<length>" }),
     number: createPropertyFn({ ns, syntax: "<number>" }),
-    zero: createPropertyFn({ ns, syntax: "<number>", initialValue: "0" }),
+    zero: createPropertyFn({ ns, syntax: "<number>", initial: "0" }),
   });
 }
 
