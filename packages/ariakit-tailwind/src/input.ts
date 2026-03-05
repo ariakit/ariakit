@@ -182,6 +182,7 @@ const _ak = createNamespace("_ak");
 const hue = createNamespace("hue");
 const color = createNamespace("color");
 const chroma = createNamespace("chroma");
+const mix = createNamespace("mix");
 
 const contrast = createVar("--contrast", 0);
 const contrastTValue = fn.div(fn.relu(contrast), CONTRAST_HIGH);
@@ -288,6 +289,10 @@ const inputs = {
   layerRelativeC: _ak.prop("layer-relative-chroma", { initial: 0 }),
   layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
   layerContrastL: _ak.prop("layer-contrast-lightness", { initial: 0 }),
+  layerMix: _ak.prop("layer-mix"),
+  layerMixMethod: _ak.prop("layer-mix-method", "oklab"),
+  layerMixAmount: _ak.prop("layer-mix-amount", "50%"),
+  layerMixColor: _ak.prop("layer-mix-color", vars.layerParent),
   edgeColor: _ak.prop("edge-color"),
   edgeRelativeL: _ak.prop("edge-relative-lightness", { initial: 0 }),
   edgeRelativeC: _ak.prop("edge-relative-chroma", { initial: 0 }),
@@ -331,6 +336,25 @@ const theme = at.theme(
   set(hue.var("square1", fn.add(h, 90))),
   set(hue.var("square2", fn.add(h, 180))),
   set(hue.var("square3", fn.add(h, 270))),
+  ...[
+    "srgb",
+    "srgb-linear",
+    "display-p3",
+    "a98-rgb",
+    "prophoto-rgb",
+    "rec2020",
+    "lab",
+    "oklab",
+    "xyz",
+    "xyz-d50",
+    "xyz-d65",
+  ].map((s) => set(mix.var(s, s))),
+  ...(["hsl", "hwb", "lch", "oklch"] as const).flatMap((s) => [
+    set(mix.var(s, s)),
+    ...(["shorter", "longer", "increasing", "decreasing"] as const).map((m) =>
+      set(mix.var(`${s}-${m}-hue`, `${s} ${m} hue`)),
+    ),
+  ]),
 );
 
 const dark = createVariant(
@@ -481,7 +505,7 @@ const forbiddenLb = fn.min(
 
 const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idle);
-const layerIdleMixed = vars.layerIdleBase;
+const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
 const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
   l: fn.add(
     fn.clamp(
@@ -617,6 +641,38 @@ utility(
   set(
     inputs.layerIdleAutoL,
     fn.div(fn.value("number", "[number]", numbers()), 100),
+  ),
+);
+
+utility(
+  "layer-mix",
+  set(
+    inputs.layerMix,
+    fn.colorMix(
+      inputs.layerMixMethod,
+      inputs.layerMixColor,
+      vars.layerIdleBase,
+      inputs.layerMixAmount,
+    ),
+  ),
+);
+
+utility(
+  "layer-mix-*",
+  set(
+    inputs.layerMixAmount,
+    fn.toPercent(fn.value("number", "[number]", numbers())),
+  ),
+  set(inputs.layerMixColor, fn.value(color, "[color]")),
+  set(inputs.layerMixMethod, fn.value(mix)),
+  set(
+    inputs.layerMix,
+    fn.colorMix(
+      inputs.layerMixMethod,
+      inputs.layerMixColor,
+      vars.layerIdleBase,
+      inputs.layerMixAmount,
+    ),
   ),
 );
 

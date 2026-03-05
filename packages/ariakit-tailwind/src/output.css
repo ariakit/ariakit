@@ -30,6 +30,37 @@
   --hue-square1: calc(h + 90);
   --hue-square2: calc(h + 180);
   --hue-square3: calc(h + 270);
+  --mix-srgb: srgb;
+  --mix-srgb-linear: srgb-linear;
+  --mix-display-p3: display-p3;
+  --mix-a98-rgb: a98-rgb;
+  --mix-prophoto-rgb: prophoto-rgb;
+  --mix-rec2020: rec2020;
+  --mix-lab: lab;
+  --mix-oklab: oklab;
+  --mix-xyz: xyz;
+  --mix-xyz-d50: xyz-d50;
+  --mix-xyz-d65: xyz-d65;
+  --mix-hsl: hsl;
+  --mix-hsl-shorter-hue: hsl shorter hue;
+  --mix-hsl-longer-hue: hsl longer hue;
+  --mix-hsl-increasing-hue: hsl increasing hue;
+  --mix-hsl-decreasing-hue: hsl decreasing hue;
+  --mix-hwb: hwb;
+  --mix-hwb-shorter-hue: hwb shorter hue;
+  --mix-hwb-longer-hue: hwb longer hue;
+  --mix-hwb-increasing-hue: hwb increasing hue;
+  --mix-hwb-decreasing-hue: hwb decreasing hue;
+  --mix-lch: lch;
+  --mix-lch-shorter-hue: lch shorter hue;
+  --mix-lch-longer-hue: lch longer hue;
+  --mix-lch-increasing-hue: lch increasing hue;
+  --mix-lch-decreasing-hue: lch decreasing hue;
+  --mix-oklch: oklch;
+  --mix-oklch-shorter-hue: oklch shorter hue;
+  --mix-oklch-longer-hue: oklch longer hue;
+  --mix-oklch-increasing-hue: oklch increasing hue;
+  --mix-oklch-decreasing-hue: oklch decreasing hue;
 }
 
 :root {
@@ -98,7 +129,7 @@
   --_ak-licv: calc(var(--_ak-layer-idle-contrast-lightness) + (var(--_ak-layer-idle-contrast-lightness) * var(--_ak-ct) * 3.334));
   --_ak-lcv: calc(var(--_ak-layer-contrast-lightness) + (var(--_ak-layer-contrast-lightness) * var(--_ak-ct) * 3.334));
   --_ak-lib: oklch(from var(--_ak-layer-color, var(--ak-layer-parent)) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-idle-relative-lightness))) + var(--_ak-layer-idle-relative-lightness))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue))));
-  --_ak-lim: var(--_ak-lib);
+  --_ak-lim: var(--_ak-layer-mix, var(--_ak-lib));
   --_ak-lia: oklch(from var(--_ak-lim) calc(clamp(var(--_ak-layer-lightness-min), (max(l, min(0.13, var(--_ak-liad))) + var(--_ak-liad)), var(--_ak-layer-lightness-max)) + var(--_ak-lc)) c h);
   --_ak-li: oklch(from var(--_ak-lia) calc(((l + (var(--_ak-licv) * var(--_ak-ald))) * (1 - (clamp(0, (var(--_ak-licv) * 1000000), 1) * ((var(--_ak-adtl) * clamp(0, (((l + (var(--_ak-licv) * var(--_ak-ald))) - var(--_ak-fla)) * 1000000), 1)) + (var(--_ak-adtd) * clamp(0, ((var(--_ak-flb) - (l + (var(--_ak-licv) * var(--_ak-ald)))) * 1000000), 1)))))) + (var(--_ak-dbl) * (clamp(0, (var(--_ak-licv) * 1000000), 1) * ((var(--_ak-adtl) * clamp(0, (((l + (var(--_ak-licv) * var(--_ak-ald))) - var(--_ak-fla)) * 1000000), 1)) + (var(--_ak-adtd) * clamp(0, ((var(--_ak-flb) - (l + (var(--_ak-licv) * var(--_ak-ald)))) * 1000000), 1)))))) c h);
   --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness))) + var(--_ak-layer-relative-lightness)) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) var(--_ak-sokl) c h);
@@ -132,6 +163,17 @@
   --_ak-layer-hue: --value(--hue-*);
   --_ak-layer-color: --value(--color-*, [color]);
   --_ak-layer-idle-auto-lightness: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+}
+
+@utility ak-layer-mix {
+  --_ak-layer-mix: color-mix(in var(--_ak-layer-mix-method, oklab), var(--_ak-layer-mix-color, var(--ak-layer-parent)), var(--_ak-lib) var(--_ak-layer-mix-amount, 50%));
+}
+
+@utility ak-layer-mix-* {
+  --_ak-layer-mix-amount: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") * 1%);
+  --_ak-layer-mix-color: --value(--color-*, [color]);
+  --_ak-layer-mix-method: --value(--mix-*);
+  --_ak-layer-mix: color-mix(in var(--_ak-layer-mix-method, oklab), var(--_ak-layer-mix-color, var(--ak-layer-parent)), var(--_ak-lib) var(--_ak-layer-mix-amount, 50%));
 }
 
 @utility ak-state-* {
@@ -621,6 +663,26 @@
   syntax: "*";
   inherits: false;
   initial-value: 0;
+}
+
+@property --_ak-layer-mix {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-layer-mix-method {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-layer-mix-amount {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-layer-mix-color {
+  syntax: "*";
+  inherits: false;
 }
 
 @property --_ak-edge-color {

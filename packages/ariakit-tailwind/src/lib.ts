@@ -518,6 +518,17 @@ export const fn = {
   /** Interpolates values into a CSS expression string. */
   exp,
   oklch,
+  colorMix: (
+    method: Value,
+    colorA: Value,
+    colorB: Value,
+    amount?: Value,
+  ): string => {
+    if (amount != null) {
+      return exp`color-mix(in ${method}, ${colorA}, ${colorB} ${amount})`;
+    }
+    return exp`color-mix(in ${method}, ${colorA}, ${colorB})`;
+  },
   round,
 
   calc: (...args: Parameters<typeof exp>) =>
