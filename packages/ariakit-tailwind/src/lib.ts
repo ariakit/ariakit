@@ -469,34 +469,40 @@ function join(values: (Value | undefined)[], separator = ", ") {
     .join(separator);
 }
 
-interface OklchOptions {
+interface ColorOptions {
   l?: Value;
   c?: Value;
   h?: Value;
   a?: Value;
 }
 
-function oklch(from: string | VarProperty, options: OklchOptions): string;
-function oklch(options: OklchOptions): string;
-function oklch(
-  fromOrOptions: string | VarProperty | OklchOptions,
-  options?: OklchOptions,
-) {
-  const hasFrom =
-    typeof fromOrOptions === "string" || isVarProperty(fromOrOptions);
-  const from = hasFrom ? fromOrOptions : undefined;
-  const resolvedOptions = hasFrom ? options : fromOrOptions;
-  const {
-    l = from ? "l" : 0,
-    c = from ? "c" : 0,
-    h = from ? "h" : 0,
-    a,
-  } = resolvedOptions ?? {};
-  if (from != null) {
-    return fn.exp`oklch(from ${from} ${l} ${c} ${h}${a != null ? ` / ${a}` : ""})`;
+function colorFn(name: string) {
+  function color(from: string | VarProperty, options: ColorOptions): string;
+  function color(options: ColorOptions): string;
+  function color(
+    fromOrOptions: string | VarProperty | ColorOptions,
+    options?: ColorOptions,
+  ) {
+    const hasFrom =
+      typeof fromOrOptions === "string" || isVarProperty(fromOrOptions);
+    const from = hasFrom ? fromOrOptions : undefined;
+    const resolvedOptions = hasFrom ? options : fromOrOptions;
+    const {
+      l = from ? "l" : 0,
+      c = from ? "c" : 0,
+      h = from ? "h" : 0,
+      a,
+    } = resolvedOptions ?? {};
+    if (from != null) {
+      return fn.exp`${name}(from ${from} ${l} ${c} ${h}${a != null ? ` / ${a}` : ""})`;
+    }
+    return fn.exp`${name}(${l} ${c} ${h}${a != null ? ` / ${a}` : ""})`;
   }
-  return fn.exp`oklch(${l} ${c} ${h}${a != null ? ` / ${a}` : ""})`;
+  return color;
 }
+
+const oklch = colorFn("oklch");
+const lch = colorFn("lch");
 
 type RoundStrategy = "up" | "down" | "to-zero";
 
@@ -518,17 +524,7 @@ export const fn = {
   /** Interpolates values into a CSS expression string. */
   exp,
   oklch,
-  colorMix: (
-    method: Value,
-    colorA: Value,
-    colorB: Value,
-    amount?: Value,
-  ): string => {
-    if (amount != null) {
-      return exp`color-mix(in ${method}, ${colorA}, ${colorB} ${amount})`;
-    }
-    return exp`color-mix(in ${method}, ${colorA}, ${colorB})`;
-  },
+  lch,
   round,
 
   calc: (...args: Parameters<typeof exp>) =>
@@ -577,6 +573,22 @@ export const fn = {
   /** Builds a style() query condition. */
   style: (property: Property | VarProperty, value?: Value) =>
     `style${fn.query(property, value)}`,
+
+  /** Wraps a value with `!important`. */
+  important: (value: Value) => `${exp(value)} !important`,
+
+  /** Builds a color-mix() expression. */
+  colorMix: (
+    method: Value,
+    colorA: Value,
+    colorB: Value,
+    amount?: Value,
+  ): string => {
+    if (amount != null) {
+      return exp`color-mix(in ${method}, ${colorA}, ${colorB} ${amount})`;
+    }
+    return exp`color-mix(in ${method}, ${colorA}, ${colorB})`;
+  },
 
   /** Builds a var() reference with optional nested fallbacks. */
   var: (

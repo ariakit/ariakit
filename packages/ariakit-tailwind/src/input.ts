@@ -37,8 +37,8 @@ const L_SPREAD_RATIO = 0.15;
 const FORBIDDEN_RANGE_LA_MIN = 0.2;
 const FORBIDDEN_RANGE_LB_MAX = 0.9;
 
-const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, "l"));
-const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, "l"));
+const textContrastOkL = fn.inflate(fn.sub(DARK_THRESHOLD_OKL, l));
+const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
 const darkOkL = fn.clamp01(textContrastOkL);
 const lightOkL = fn.clamp01(fn.invert(textContrastOkL));
 const darkL = fn.clamp01(textContrastL);
@@ -282,6 +282,7 @@ const layerColorVars = {
   layerIdleMixed: _ak.prop.canvas("lim"),
   layerIdleAuto: _ak.prop.canvas("lia"),
   layerIdle: _ak.prop.canvas("li"),
+  layerLchL: _ak.prop.white("llchl", { inherits: true }),
   layerScheme: _ak.prop.black("lsch", { inherits: true }),
   layerBand: _ak.prop.black("lbnd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
@@ -294,12 +295,19 @@ const layerColorVars = {
   text: ak.prop.black("text", { inherits: true }),
 };
 
+const textMathVars = {
+  textContrastDirection: _ak.prop("tcd", { initial: 1 }),
+  textParentL: _ak.prop("tpl", { initial: 0 }),
+  textChromaCap: _ak.prop("tcc", { initial: 150 }),
+};
+
 const vars = {
   contrast,
   ...constantMathVars,
   ...layerMathVars,
   ...themeTokenVars,
   ...layerColorVars,
+  ...textMathVars,
 };
 
 const inputs = {
@@ -335,6 +343,14 @@ const inputs = {
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
   textA: _ak.prop("text-alpha", { initial: 1 }),
+  textColor: _ak.prop("text-color"),
+  textRelativeL: _ak.prop("text-relative-lightness", { initial: 0 }),
+  textRelativeC: _ak.prop("text-relative-chroma", { initial: 0 }),
+  textRelativeH: _ak.prop("text-relative-hue", { initial: 0 }),
+  textContrastL: _ak.prop("text-contrast-lightness", { initial: 75 }),
+  textL: _ak.prop("text-lightness"),
+  textC: _ak.prop("text-chroma"),
+  textH: _ak.prop("text-hue"),
 };
 
 const theme = at.theme(
@@ -470,7 +486,7 @@ function getContrastL(contrastValue: Value) {
  * Resolves layer lightness from relative offset and optional absolute input.
  */
 function getLayerL(relativeL: Value, absoluteL?: VarProperty) {
-  const lMin = fn.max("l", fn.min(0.13, relativeL));
+  const lMin = fn.max(l, fn.min(0.13, relativeL));
   const lDefault = fn.add(lMin, relativeL);
   return absoluteL ? fn.var(absoluteL, lDefault) : lDefault;
 }
@@ -479,7 +495,7 @@ function getLayerL(relativeL: Value, absoluteL?: VarProperty) {
  * Resolves layer chroma from relative offset and optional absolute input.
  */
 function getLayerC(relativeC: Value, absoluteC?: VarProperty) {
-  const cDefault = fn.add("c", relativeC);
+  const cDefault = fn.add(c, relativeC);
   return absoluteC ? fn.var(absoluteC, cDefault) : cDefault;
 }
 
@@ -487,8 +503,41 @@ function getLayerC(relativeC: Value, absoluteC?: VarProperty) {
  * Resolves layer hue from relative offset and optional absolute input.
  */
 function getLayerH(relativeH: Value, absoluteH?: VarProperty) {
-  const hDefault = fn.add("h", relativeH);
+  const hDefault = fn.add(h, relativeH);
   return absoluteH ? fn.var(absoluteH, hDefault) : hDefault;
+}
+
+/**
+ * Converts OKLCH lightness (0-1) to CIE LCH lightness (0-100) for achromatic
+ * colors. Derived from L* = 116 × Y^(1/3) − 16 where Y ≈ L_ok³.
+ */
+function oklchLToLchL(oklL: number) {
+  return roundToDecimals(116 * oklL - 16, 2);
+}
+
+const LCH_LIGHTNESS_LEVELS = 8;
+const LCH_LIGHTNESS_STEP = 100 / LCH_LIGHTNESS_LEVELS;
+const LCH_FORBIDDEN_MIN = oklchLToLchL(LA_BASE);
+const LCH_FORBIDDEN_MAX = oklchLToLchL(LB_BASE);
+
+function withLayerL(
+  callback: (
+    parentL: number,
+    isDark: boolean,
+  ) => (ReturnType<typeof set> | undefined)[],
+) {
+  return Array.from({ length: LCH_LIGHTNESS_LEVELS + 1 }, (_, i) =>
+    roundToDecimals((i / LCH_LIGHTNESS_LEVELS) * 100, 2),
+  ).flatMap((parentL) => {
+    if (parentL > LCH_FORBIDDEN_MIN && parentL < LCH_FORBIDDEN_MAX) return [];
+    const isDark = parentL < DARK_THRESHOLD_L;
+    const children = callback(parentL, isDark).filter((c) => c != null);
+    if (children.length === 0) return [];
+    return at.container(
+      fn.style(vars.layerLchL, fn.lch({ l: parentL })),
+      ...children,
+    );
+  });
 }
 
 const idle = {
@@ -549,12 +598,30 @@ const layerContrast = fn.oklch(vars.layerAuto, {
 
 const layer = fn.oklch(vars.layerContrast, {
   l: vars.safeOkL,
-  c: fn.clamp(inputs.layerCMin, "c", inputs.layerCMax),
+  c: fn.clamp(inputs.layerCMin, c, inputs.layerCMax),
 });
+
+/**
+ * Shared declarations needed by both ak-layer and ak-text. Sets contrastT
+ * and layerLchL so that container queries and contrast math work.
+ */
+function getBaseDeclarations(sourceColor: string | VarProperty) {
+  return [
+    set(vars.contrastT, contrastTValue),
+    set(
+      vars.layerLchL,
+      fn.lch(sourceColor, {
+        l: fn.round(l, LCH_LIGHTNESS_STEP),
+        c: 0,
+        h: 0,
+        a: "100%",
+      }),
+    ),
+  ];
+}
 
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
-  set(vars.contrastT, contrastTValue),
   set(vars.contrastNegative, fn.min(0, fn.min(1, fn.neg(vars.contrastT)))),
   set(
     vars.lContrast,
@@ -626,15 +693,64 @@ const layerScheme = fn.oklch(vars.layer, {
 });
 
 // Min alpha adapts to layer lightness — higher for mid-lightness backgrounds
-const textMinALight = fn.div(fn.add(53.6, fn.mul(fn.sub(100, "l"), 0.85)), 100);
-const textMinADark = fn.div(fn.add(45.7, fn.mul("l", 1.08)), 100);
+const textMinALight = fn.div(fn.add(53.6, fn.mul(fn.sub(100, l), 0.85)), 100);
+const textMinADark = fn.div(fn.add(45.7, fn.mul(l, 1.08)), 100);
 const textMinA = fn.add(
   lchLightDark(textMinALight, textMinADark),
-  fn.mul("c", 0.00036),
-  fn.mul(vars.contrastT, 0.2),
+  fn.mul(c, 0.00036),
+  fn.mul(vars.contrastT, 0.35),
 );
 const textAlpha = fn.max(textMinA, inputs.textA);
-const text = fn.exp`lch(from ${vars.layer} ${vars.textContrastL} 0 0 / ${textAlpha})`;
+const text = fn.lch(vars.layer, {
+  l: vars.textContrastL,
+  c: 0,
+  h: 0,
+  a: textAlpha,
+});
+
+const textBaseColor = fn.var(inputs.textColor, vars.layer);
+
+// Lightness: parentL + (contrastL + contrast*35) * direction
+const textContrastShift = fn.mul(
+  fn.add(inputs.textContrastL, fn.mul(vars.contrastT, 35)),
+  vars.textContrastDirection,
+);
+const textComputedL = fn.add(vars.textParentL, textContrastShift);
+
+// Direction-dependent clamping: dark→max(l, computed), light→min(l, computed)
+const textIsDark = fn.clamp01(vars.textContrastDirection);
+const textClampedL = fn.clamp(
+  0,
+  fn.add(
+    fn.mul(fn.max(l, textComputedL), textIsDark),
+    fn.mul(fn.min(l, textComputedL), fn.invert(textIsDark)),
+  ),
+  100,
+);
+
+// Apply directional color with chroma cap
+const textDirectional = fn.lch(textBaseColor, {
+  l: textClampedL,
+  c: fn.min(c, vars.textChromaCap),
+});
+
+// Apply relative/absolute L/C/H adjustments (inputs are raw LCH values)
+const textAdjL = inputs.textL
+  ? fn.var(inputs.textL, fn.add(l, inputs.textRelativeL))
+  : fn.add(l, inputs.textRelativeL);
+const textAdjC = inputs.textC
+  ? fn.var(inputs.textC, fn.add(c, inputs.textRelativeC))
+  : fn.add(c, inputs.textRelativeC);
+const textAdjH = inputs.textH
+  ? fn.var(inputs.textH, fn.add(h, inputs.textRelativeH))
+  : fn.add(h, inputs.textRelativeH);
+
+const textColored = fn.lch(textDirectional, {
+  l: textAdjL,
+  c: textAdjC,
+  h: textAdjH,
+  a: textAlpha,
+});
 
 const layerContext = createContext();
 
@@ -649,6 +765,7 @@ utility(
   set(vars.edge, edge),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),
+  getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
   at.variant(light, set(vars.edgeContrastDirection, -1)),
@@ -738,7 +855,7 @@ utility(
   "layer-cool-*",
   set(
     inputs.layerH,
-    getHueToward("h", vars.hueCool, fn.value("number", "[*]", numbers())),
+    getHueToward(h, vars.hueCool, fn.value("number", "[*]", numbers())),
   ),
 );
 
@@ -746,7 +863,7 @@ utility(
   "layer-warm-*",
   set(
     inputs.layerH,
-    getHueToward("h", vars.hueWarm, fn.value("number", "[*]", numbers())),
+    getHueToward(h, vars.hueWarm, fn.value("number", "[*]", numbers())),
   ),
 );
 
@@ -893,7 +1010,7 @@ utility(
   "edge-cool-*",
   set(
     inputs.edgeH,
-    getHueToward("h", vars.hueCool, fn.value("number", "[*]", numbers())),
+    getHueToward(h, vars.hueCool, fn.value("number", "[*]", numbers())),
   ),
 );
 
@@ -901,7 +1018,7 @@ utility(
   "edge-warm-*",
   set(
     inputs.edgeH,
-    getHueToward("h", vars.hueWarm, fn.value("number", "[*]", numbers())),
+    getHueToward(h, vars.hueWarm, fn.value("number", "[*]", numbers())),
   ),
 );
 
@@ -953,8 +1070,76 @@ utility(
 );
 
 utility(
+  "text",
+  set.backgroundColor(fn.important("transparent")),
+  set.color(vars.text),
+  set(vars.text, textColored),
+  getBaseDeclarations(vars.layer),
+  ...withLayerL((parentL, isDark) => [
+    set(vars.textContrastDirection, isDark ? 1 : -1),
+    set(vars.textParentL, parentL),
+    set(vars.textChromaCap, isDark ? 150 : 92),
+  ]),
+);
+
+utility(
   "text-*",
+  set(inputs.textC, fn.value(chroma)),
+  set(inputs.textH, fn.value(hue)),
+  set(inputs.textColor, fn.value(color, "[color]")),
   set(inputs.textA, fn.div(fn.value("number", "[number]", numbers()), 100)),
+);
+
+utility("text-layer", set(inputs.textColor, vars.layer));
+
+const textLighten = utility(
+  "text-lighten-*",
+  set(inputs.textRelativeL, fn.value("number", "[*]", numbers())),
+);
+utility("text-darken-*", ...negChildren(textLighten));
+
+utility(
+  "text-cool-*",
+  set(
+    inputs.textH,
+    getHueToward(h, vars.hueCool, fn.value("number", "[*]", numbers())),
+  ),
+);
+
+utility(
+  "text-warm-*",
+  set(
+    inputs.textH,
+    getHueToward(h, vars.hueWarm, fn.value("number", "[*]", numbers())),
+  ),
+);
+
+const textSaturate = utility(
+  "text-saturate-*",
+  set(inputs.textRelativeC, fn.value("number", "[*]", numbers({ max: 150 }))),
+);
+utility("text-desaturate-*", ...negChildren(textSaturate));
+
+utility(
+  "text-l-*",
+  set(inputs.textL, fn.value("[*]")),
+  set(inputs.textL, fn.value("number", "[number]", numbers())),
+);
+
+utility(
+  "text-c-*",
+  set(inputs.textC, fn.value("[*]")),
+  set(inputs.textC, fn.value(chroma)),
+  set(inputs.textC, fn.value("number", "[number]", numbers({ max: 150 }))),
+);
+
+utility(
+  "text-h-*",
+  set(inputs.textH, fn.value(hue, "[*]")),
+  set(
+    inputs.textH,
+    fn.value("number", "[number]", numbers({ max: 360, step: 15 })),
+  ),
 );
 
 export const input = [

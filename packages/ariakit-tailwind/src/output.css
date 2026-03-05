@@ -111,11 +111,12 @@
   background-color: var(--ak-layer);
   @apply ring-[color:var(--ak-edge)];
   --ak-layer: oklch(from var(--_ak-lct) var(--_ak-sokl) clamp(var(--_ak-layer-chroma-min), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
-  --ak-text: lch(from var(--ak-layer) var(--_ak-tcl) 0 0 / max((((var(--_ak-ll) * ((53.6 + ((100 - l) * 0.85)) / 100)) + (var(--_ak-dl) * ((45.7 + (l * 1.08)) / 100))) + (c * 0.00036) + (var(--_ak-ct) * 0.2)), var(--_ak-text-alpha)));
+  --ak-text: lch(from var(--ak-layer) var(--_ak-tcl) 0 0 / max((((var(--_ak-ll) * ((53.6 + ((100 - l) * 0.85)) / 100)) + (var(--_ak-dl) * ((45.7 + (l * 1.08)) / 100))) + (c * 0.00036) + (var(--_ak-ct) * 0.35)), var(--_ak-text-alpha)));
   --ak-edge: oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-edge-contrast-lightness) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12)) * var(--_ak-ecd))), 1) c h) var(--_ak-edge-lightness, calc(max(l, min(0.13, var(--_ak-edge-relative-lightness))) + var(--_ak-edge-relative-lightness))) var(--_ak-edge-chroma, calc(c + var(--_ak-edge-relative-chroma))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue)))) l c h / clamp(0, (var(--_ak-edge-alpha) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.5)), 1));
   --_ak-lbnd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
   --_ak-lsch: oklch(from var(--ak-layer) var(--_ak-tcokl) 0 0);
   --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
+  --_ak-llchl: lch(from var(--ak-layer) round(l, 12.5) 0 0 / 100%);
   --_ak-cn: min(0, min(1, (var(--_ak-ct) * -1)));
   --_ak-lc: calc(var(--_ak-cn) * ((var(--_ak-lokl) * -0.3334) + (var(--_ak-dokl) * 0.3334)));
   --_ak-fla: max(0.2, (var(--_ak-flab) - (var(--_ak-ct) * 0.0825 * 4.2424)));
@@ -340,8 +341,98 @@
   --_ak-edge-h: --value(number, [number], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
 }
 
+@utility ak-text {
+  background-color: transparent !important;
+  color: var(--ak-text);
+  --ak-text: lch(from lch(from var(--_ak-text-color, var(--ak-layer)) clamp(0, ((max(l, (var(--_ak-tpl) + ((var(--_ak-text-contrast-lightness) + (var(--_ak-ct) * 35)) * var(--_ak-tcd)))) * clamp(0, var(--_ak-tcd), 1)) + (min(l, (var(--_ak-tpl) + ((var(--_ak-text-contrast-lightness) + (var(--_ak-ct) * 35)) * var(--_ak-tcd)))) * (1 - clamp(0, var(--_ak-tcd), 1)))), 100) min(c, var(--_ak-tcc)) h) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue))) / max((((var(--_ak-ll) * ((53.6 + ((100 - l) * 0.85)) / 100)) + (var(--_ak-dl) * ((45.7 + (l * 1.08)) / 100))) + (c * 0.00036) + (var(--_ak-ct) * 0.35)), var(--_ak-text-alpha)));
+  --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
+  --_ak-llchl: lch(from var(--ak-layer) round(l, 12.5) 0 0 / 100%);
+  @container style(--_ak-llchl: lch(0 0 0)) {
+    --_ak-tcd: 1;
+    --_ak-tpl: 0;
+    --_ak-tcc: 150;
+  }
+  @container style(--_ak-llchl: lch(12.5 0 0)) {
+    --_ak-tcd: 1;
+    --_ak-tpl: 12.5;
+    --_ak-tcc: 150;
+  }
+  @container style(--_ak-llchl: lch(25 0 0)) {
+    --_ak-tcd: 1;
+    --_ak-tpl: 25;
+    --_ak-tcc: 150;
+  }
+  @container style(--_ak-llchl: lch(37.5 0 0)) {
+    --_ak-tcd: 1;
+    --_ak-tpl: 37.5;
+    --_ak-tcc: 150;
+  }
+  @container style(--_ak-llchl: lch(75 0 0)) {
+    --_ak-tcd: -1;
+    --_ak-tpl: 75;
+    --_ak-tcc: 92;
+  }
+  @container style(--_ak-llchl: lch(87.5 0 0)) {
+    --_ak-tcd: -1;
+    --_ak-tpl: 87.5;
+    --_ak-tcc: 92;
+  }
+  @container style(--_ak-llchl: lch(100 0 0)) {
+    --_ak-tcd: -1;
+    --_ak-tpl: 100;
+    --_ak-tcc: 92;
+  }
+}
+
 @utility ak-text-* {
+  --_ak-text-chroma: --value(--chroma-*);
+  --_ak-text-hue: --value(--hue-*);
+  --_ak-text-color: --value(--color-*, [color]);
   --_ak-text-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+}
+
+@utility ak-text-layer {
+  --_ak-text-color: var(--ak-layer);
+}
+
+@utility ak-text-lighten-* {
+  --_ak-text-relative-lightness: --value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100");
+}
+
+@utility ak-text-darken-* {
+  --_ak-text-relative-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") * -1);
+}
+
+@utility ak-text-cool-* {
+  --_ak-text-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+}
+
+@utility ak-text-warm-* {
+  --_ak-text-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+}
+
+@utility ak-text-saturate-* {
+  --_ak-text-relative-chroma: --value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100", "105", "110", "115", "120", "125", "130", "135", "140", "145", "150");
+}
+
+@utility ak-text-desaturate-* {
+  --_ak-text-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100", "105", "110", "115", "120", "125", "130", "135", "140", "145", "150") * -1);
+}
+
+@utility ak-text-l-* {
+  --_ak-text-lightness: --value([*]);
+  --_ak-text-lightness: --value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100");
+}
+
+@utility ak-text-c-* {
+  --_ak-text-chroma: --value([*]);
+  --_ak-text-chroma: --value(--chroma-*);
+  --_ak-text-chroma: --value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100", "105", "110", "115", "120", "125", "130", "135", "140", "145", "150");
+}
+
+@utility ak-text-h-* {
+  --_ak-text-hue: --value(--hue-*, [*]);
+  --_ak-text-hue: --value(number, [number], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
 }
 
 @property --_ak-tcl {
@@ -517,6 +608,12 @@
   initial-value: canvas;
 }
 
+@property --_ak-llchl {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(1 0 0);
+}
+
 @property --_ak-lsch {
   syntax: "<color>";
   inherits: true;
@@ -569,6 +666,24 @@
   syntax: "<color>";
   inherits: true;
   initial-value: oklch(0 0 0);
+}
+
+@property --_ak-tcd {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --_ak-tpl {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-tcc {
+  syntax: "*";
+  inherits: false;
+  initial-value: 150;
 }
 
 @property --_ak-layer-color {
@@ -748,4 +863,48 @@
   syntax: "*";
   inherits: false;
   initial-value: 1;
+}
+
+@property --_ak-text-color {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-text-relative-lightness {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-text-relative-chroma {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-text-relative-hue {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-text-contrast-lightness {
+  syntax: "*";
+  inherits: false;
+  initial-value: 75;
+}
+
+@property --_ak-text-lightness {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-text-chroma {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_ak-text-hue {
+  syntax: "*";
+  inherits: false;
 }
