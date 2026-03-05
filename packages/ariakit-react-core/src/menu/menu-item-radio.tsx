@@ -22,10 +22,10 @@ import type { MenuStore } from "./menu-store.ts";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
-function getValue<T>(prevValue: T, value: T, checked?: boolean) {
+function getValue<T>(prevValue: T, value: T, checked?: boolean): T | false {
   if (checked === undefined) return prevValue;
   if (checked) return value;
-  return prevValue;
+  return prevValue === value ? false : prevValue;
 }
 
 /**

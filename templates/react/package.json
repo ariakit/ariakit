@@ -11,18 +11,18 @@
   },
   "dependencies": {
     "@ariakit/core": "0.4.18",
-    "@ariakit/react": "0.4.21",
-    "@ariakit/react-core": "0.4.21",
+    "@ariakit/react": "0.4.22",
+    "@ariakit/react-core": "0.4.22",
     "@ariakit/tailwind": "0.1.11",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "4.2.0",
+    "@tailwindcss/vite": "4.2.1",
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "5.1.4",
-    "tailwindcss": "4.2.0",
+    "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "vite": "7.3.1"
   }

@@ -3,6 +3,11 @@
   "semanticCommits": "disabled",
   "packageRules": [
     {
+      "matchPackageNames": ["shiki"],
+      "matchCurrentVersion": "/^1\\./",
+      "allowedVersions": "/^1\\./"
+    },
+    {
       "matchPackageNames": ["tailwindcss"],
       "matchCurrentVersion": "/^3\\./",
       "enabled": false
