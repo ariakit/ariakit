@@ -177,6 +177,31 @@ function oklchLightDark(light: Value, dark: Value) {
   return fn.add(fn.mul(vars.lightOkL, light), fn.mul(vars.darkOkL, dark));
 }
 
+/**
+ * Returns all CSS color interpolation methods for `color-mix()`.
+ */
+function colorMixMethods() {
+  const rectangular = [
+    "srgb",
+    "srgb-linear",
+    "display-p3",
+    "a98-rgb",
+    "prophoto-rgb",
+    "rec2020",
+    "lab",
+    "oklab",
+    "xyz",
+    "xyz-d50",
+    "xyz-d65",
+  ];
+  const polar = ["hsl", "hwb", "lch", "oklch"];
+  const hueStrategies = ["shorter", "longer", "increasing", "decreasing"];
+  return [
+    ...rectangular,
+    ...polar.flatMap((s) => [s, ...hueStrategies.map((h) => `${s} ${h} hue`)]),
+  ];
+}
+
 const ak = createNamespace("ak");
 const _ak = createNamespace("_ak");
 const hue = createNamespace("hue");
@@ -336,25 +361,7 @@ const theme = at.theme(
   set(hue.var("square1", fn.add(h, 90))),
   set(hue.var("square2", fn.add(h, 180))),
   set(hue.var("square3", fn.add(h, 270))),
-  ...[
-    "srgb",
-    "srgb-linear",
-    "display-p3",
-    "a98-rgb",
-    "prophoto-rgb",
-    "rec2020",
-    "lab",
-    "oklab",
-    "xyz",
-    "xyz-d50",
-    "xyz-d65",
-  ].map((s) => set(mix.var(s, s))),
-  ...(["hsl", "hwb", "lch", "oklch"] as const).flatMap((s) => [
-    set(mix.var(s, s)),
-    ...(["shorter", "longer", "increasing", "decreasing"] as const).map((m) =>
-      set(mix.var(`${s}-${m}-hue`, `${s} ${m} hue`)),
-    ),
-  ]),
+  ...colorMixMethods().map((m) => set(mix.var(m.replaceAll(" ", "-"), m))),
 );
 
 const dark = createVariant(
