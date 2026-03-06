@@ -224,12 +224,10 @@ function createPropertyFn({
 }
 
 function createPropertyObj(ns?: DashedIdentObject | DashedIdent) {
-  const black = "oklch(0 0 0)";
-  const white = "oklch(1 0 0)";
   return Object.assign(createPropertyFn({ ns }), {
     color: createPropertyFn({ ns, syntax: "<color>" }),
-    black: createPropertyFn({ ns, syntax: "<color>", initial: black }),
-    white: createPropertyFn({ ns, syntax: "<color>", initial: white }),
+    black: createPropertyFn({ ns, syntax: "<color>", initial: "black" }),
+    white: createPropertyFn({ ns, syntax: "<color>", initial: "white" }),
     canvas: createPropertyFn({ ns, syntax: "<color>", initial: "canvas" }),
     angle: createPropertyFn({ ns, syntax: "<angle>" }),
     len: createPropertyFn({ ns, syntax: "<length>" }),

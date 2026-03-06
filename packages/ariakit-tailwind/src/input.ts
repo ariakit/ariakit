@@ -37,6 +37,9 @@ const BAND_LEVEL_MID = 0.5;
 const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
 
+const TEXT_MIN_CONTRAST = 0.5;
+const OUTLINE_MIN_CONTRAST = 0.4;
+
 const CONTRAST_SCALE = 0.3334;
 const TEXT_CONTRAST_L = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
 const DARK_L = fn.clamp01(TEXT_CONTRAST_L);
@@ -328,7 +331,7 @@ const layerColorVars = {
   layerIdleMixed: _ak.prop.canvas("lim"),
   layerIdleAuto: _ak.prop.canvas("lia"),
   layerIdle: _ak.prop.canvas("li"),
-  layerL: _ak.prop.white("ll", { inherits: true }),
+  layerL: _ak.prop.canvas("ll", { inherits: true }),
   layerScheme: _ak.prop.black("ls", { inherits: true }),
   layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
@@ -338,16 +341,22 @@ const layerColorVars = {
   layerParentContext: _ak.var("lpc"),
   layerParent: ak.prop.color("layer-parent", {
     inherits: true,
-    defaultValue: "Canvas",
+    defaultValue: "canvas",
   }),
   edge: ak.prop.black("edge"),
   text: ak.prop.black("text", { inherits: true }),
+  outline: ak.prop.color("outline", "canvastext"),
 };
 
 const textMathVars = {
   textContrastDirection: _ak.prop("tcd", { initial: 1 }),
   textParentL: _ak.prop("tpl", { initial: 0 }),
   textChromaCap: _ak.prop("tcc", { initial: 0.4 }),
+};
+
+const outlineMathVars = {
+  outlineContrastDirection: _ak.prop("ocd", { initial: 1 }),
+  outlineParentL: _ak.prop("opl", { initial: 0 }),
 };
 
 const vars = {
@@ -357,6 +366,7 @@ const vars = {
   ...themeTokenVars,
   ...layerColorVars,
   ...textMathVars,
+  ...outlineMathVars,
 };
 
 const inputs = {
@@ -404,6 +414,18 @@ const inputs = {
   textCMin: _ak.prop("text-chroma-min", { initial: 0 }),
   textCMax: _ak.prop("text-chroma-max", vars.chromaP3Max),
   textH: _ak.prop("text-hue"),
+  outlineContrastL: _ak.prop("outline-contrast-lightness", { initial: 0 }),
+  outlineColor: _ak.prop("outline-color"),
+  outlineRelativeL: _ak.prop("outline-relative-lightness", { initial: 0 }),
+  outlineRelativeC: _ak.prop("outline-relative-chroma", { initial: 0 }),
+  outlineRelativeH: _ak.prop("outline-relative-hue", { initial: 0 }),
+  outlineL: _ak.prop("outline-lightness"),
+  outlineLMin: _ak.prop("outline-lightness-min", { initial: 0 }),
+  outlineLMax: _ak.prop("outline-lightness-max", { initial: 1 }),
+  outlineC: _ak.prop("outline-chroma"),
+  outlineCMin: _ak.prop("outline-chroma-min", { initial: 0 }),
+  outlineCMax: _ak.prop("outline-chroma-max", vars.chromaP3Max),
+  outlineH: _ak.prop("outline-hue"),
 };
 
 const theme = at.theme(
@@ -1063,7 +1085,7 @@ const textColorAdjusted = fn.oklch(textBaseColor, {
 // `ak-text` still separates from the parent layer in both schemes.
 const textContrastShift = fn.mul(
   fn.add(
-    fn.max(0.5, inputs.textContrastL),
+    fn.max(TEXT_MIN_CONTRAST, inputs.textContrastL),
     fn.mul(vars.contrastT, CONTRAST_SCALE),
   ),
   vars.textContrastDirection,
@@ -1087,14 +1109,11 @@ const textDirectional = fn.oklch(textColorAdjusted, {
 
 utility(
   "text",
+  getBaseDeclarations(vars.layer),
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
-  at.container(
-    fn.style(vars.layerL),
-    set(vars.text, textDirectional),
-    ...getBaseDeclarations(vars.layer),
-  ),
-  ...mapLayerLightnessSteps((parentL, isDark) => [
+  at.container(fn.style(vars.layerL), set(vars.text, textDirectional)),
+  mapLayerLightnessSteps((parentL, isDark) => [
     set(vars.textContrastDirection, isDark ? 1 : -1),
     set(vars.textParentL, parentL),
     set(vars.textChromaCap, isDark ? 0.25 : 0.4),
@@ -1179,6 +1198,160 @@ utility(
   set(inputs.textCMin, fn.value("[*]")),
   set(inputs.textCMin, fn.value(chroma)),
   set(inputs.textCMin, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+);
+
+const outlineBaseColor = fn.var(inputs.outlineColor, vars.layer);
+
+const outlineAdjustedLightness = fn.var(
+  inputs.outlineL,
+  fn.add(l, inputs.outlineRelativeL),
+);
+const outlineAdjustedChroma = fn.var(
+  inputs.outlineC,
+  fn.add(c, inputs.outlineRelativeC),
+);
+const outlineAdjustedHue = fn.var(
+  inputs.outlineH,
+  fn.add(h, inputs.outlineRelativeH),
+);
+
+const outlineColorAdjusted = fn.oklch(outlineBaseColor, {
+  l: outlineAdjustedLightness,
+  c: outlineAdjustedChroma,
+  h: outlineAdjustedHue,
+});
+
+const outlineContrastShift = fn.mul(
+  fn.add(
+    fn.max(OUTLINE_MIN_CONTRAST, inputs.outlineContrastL),
+    fn.mul(vars.contrastT, CONTRAST_SCALE),
+  ),
+  vars.outlineContrastDirection,
+);
+const outlineComputedL = fn.add(vars.outlineParentL, outlineContrastShift);
+
+const outlineDarkDirectionMask = fn.clamp01(vars.outlineContrastDirection);
+const outlineDirectedLightness = fn.add(
+  fn.mul(fn.max(l, outlineComputedL), outlineDarkDirectionMask),
+  fn.mul(fn.min(l, outlineComputedL), fn.invert(outlineDarkDirectionMask)),
+);
+
+const outlineDirectional = fn.oklch(outlineColorAdjusted, {
+  l: fn.clamp(inputs.outlineLMin, outlineDirectedLightness, inputs.outlineLMax),
+  c: fn.clamp(inputs.outlineCMin, c, inputs.outlineCMax),
+});
+
+utility(
+  "outline",
+  getBaseDeclarations(vars.layer),
+  set.outlineColor(vars.outline),
+  at.container(fn.style(vars.layerL), set(vars.outline, outlineDirectional)),
+  mapLayerLightnessSteps((parentL, isDark) => [
+    set(vars.outlineContrastDirection, isDark ? 1 : -1),
+    set(vars.outlineParentL, parentL),
+  ]),
+);
+
+utility(
+  "outline-*",
+  set(inputs.outlineC, fn.value(chroma)),
+  set(inputs.outlineH, fn.value(hue)),
+  set(inputs.outlineColor, fn.value(color, "[color]")),
+  set(inputs.outlineContrastL, getPercentTokenValue("[number]")),
+);
+
+const outlineLighten = utility(
+  "outline-lighten-*",
+  set(inputs.outlineRelativeL, getPercentTokenValue("[*]")),
+);
+utility("outline-darken-*", ...getNegatedDeclarations(outlineLighten));
+
+utility(
+  "outline-cool-*",
+  set(
+    inputs.outlineH,
+    getHueToward(h, vars.hueCool, getNumericTokenValue("[*]")),
+  ),
+);
+
+utility(
+  "outline-warm-*",
+  set(
+    inputs.outlineH,
+    getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]")),
+  ),
+);
+
+utility(
+  "outline-contrast-*",
+  set(inputs.outlineContrastL, getPercentTokenValue("[*]")),
+);
+
+const outlineSaturate = utility(
+  "outline-saturate-*",
+  set(
+    inputs.outlineRelativeC,
+    getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS),
+  ),
+);
+utility("outline-desaturate-*", ...getNegatedDeclarations(outlineSaturate));
+
+utility(
+  "outline-h-rotate-*",
+  set(inputs.outlineRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
+);
+
+utility(
+  "outline-l-*",
+  set(inputs.outlineL, fn.value("[*]")),
+  set(inputs.outlineL, getPercentTokenValue("[number]")),
+);
+
+utility(
+  "outline-c-*",
+  set(inputs.outlineC, fn.value("[*]")),
+  set(inputs.outlineC, fn.value(chroma)),
+  set(inputs.outlineC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+);
+
+utility(
+  "outline-h-*",
+  set(inputs.outlineH, fn.value(hue, "[*]")),
+  set(inputs.outlineH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
+);
+
+utility(
+  "outline-max-*",
+  set(inputs.outlineCMax, fn.value(chroma)),
+  set(inputs.outlineLMax, fn.value("[*]")),
+  set(inputs.outlineLMax, getPercentTokenValue("[number]")),
+);
+
+utility(
+  "outline-min-*",
+  set(inputs.outlineCMin, fn.value(chroma)),
+  set(inputs.outlineLMin, fn.value("[*]")),
+  set(inputs.outlineLMin, getPercentTokenValue("[number]")),
+);
+
+utility(
+  "outline-max-c-*",
+  set(inputs.outlineCMax, fn.value("[*]")),
+  set(inputs.outlineCMax, fn.value(chroma)),
+  set(
+    inputs.outlineCMax,
+    getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS),
+  ),
+);
+
+utility(
+  "outline-min-c-*",
+  set(inputs.outlineCMin, fn.value("[*]")),
+  set(inputs.outlineCMin, fn.value(chroma)),
+  set(
+    inputs.outlineCMin,
+    getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS),
+  ),
 );
 
 export const input = [
