@@ -298,8 +298,8 @@ const constantMathVars = {
 // @utility ak-layer.
 const layerMathVars = {
   contrastT: _ak.prop("ct"),
-  negativeContrastT: _ak.prop("cn"),
-  layerContrastBias: _ak.prop("lc"),
+  negativeContrastT: _ak.prop("nct"),
+  layerContrastBias: _ak.prop("lcb"),
   forbiddenLa: _ak.prop("fla"),
   forbiddenLb: _ak.prop("flb"),
   safeL: _ak.prop("sl"),
@@ -329,11 +329,11 @@ const layerColorVars = {
   layerIdleAuto: _ak.prop.canvas("lia"),
   layerIdle: _ak.prop.canvas("li"),
   layerL: _ak.prop.white("ll", { inherits: true }),
-  layerScheme: _ak.prop.black("lsch", { inherits: true }),
-  layerBand: _ak.prop.black("lbnd", { inherits: true }),
+  layerScheme: _ak.prop.black("ls", { inherits: true }),
+  layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerAuto: _ak.prop.canvas("la"),
-  layerContrast: _ak.prop.canvas("lct"),
+  layerContrast: _ak.prop.canvas("lc"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerParent: ak.prop.color("layer-parent", {
