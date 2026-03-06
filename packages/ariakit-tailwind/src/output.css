@@ -112,7 +112,7 @@
   background-color: var(--ak-layer);
   @apply ring-[color:var(--ak-edge)];
   --ak-layer: oklch(from var(--_ak-lct) var(--_ak-sl) clamp(var(--_ak-layer-chroma-min), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
-  --ak-text: oklch(from var(--ak-layer) var(--_ak-tcl) 0 0 / max((((var(--_ak-lil) * ((53.6 + ((1 - l) * 85)) / 100)) + (var(--_ak-dal) * ((45.7 + (l * 108)) / 100))) + (c * 0.135) + (var(--_ak-ct) * 0.35)), var(--_ak-text-alpha)));
+  --ak-text: oklch(from var(--ak-layer) var(--_ak-tcl) 0 0 / max((((var(--_ak-lil) * ((53.6 + ((1 - l) * 85)) / 100)) + (var(--_ak-dal) * ((45.7 + (l * 108)) / 100))) + (c * 0.135) + (var(--_ak-ct) * 0.3334)), var(--_ak-text-alpha)));
   --ak-edge: oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-edge-contrast-lightness) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.12)) * var(--_ak-ecd))), 1) c h) var(--_ak-edge-lightness, calc(max(l, min(0.13, var(--_ak-edge-relative-lightness))) + var(--_ak-edge-relative-lightness))) var(--_ak-edge-chroma, calc(c + var(--_ak-edge-relative-chroma))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue)))) l c h / clamp(0, (var(--_ak-edge-alpha) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.5)), 1));
   --_ak-lbnd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
   --_ak-lsch: oklch(from var(--ak-layer) var(--_ak-tcl) 0 0);
@@ -346,7 +346,7 @@
   background-color: transparent !important;
   color: var(--ak-text);
   @container style(--_ak-ll) {
-    --ak-text: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) clamp(0, ((max(l, (var(--_ak-tpl) + ((0.5 + (var(--_ak-ct) * 0.3)) * var(--_ak-tcd)))) * clamp(0, var(--_ak-tcd), 1)) + (min(l, (var(--_ak-tpl) + ((0.5 + (var(--_ak-ct) * 0.3)) * var(--_ak-tcd)))) * (1 - clamp(0, var(--_ak-tcd), 1)))), 1) min(c, var(--_ak-tcc)) h) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue))) / max((((var(--_ak-lil) * ((53.6 + ((1 - l) * 85)) / 100)) + (var(--_ak-dal) * ((45.7 + (l * 108)) / 100))) + (c * 0.135) + (var(--_ak-ct) * 0.35)), var(--_ak-text-alpha)));
+    --ak-text: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue))) / max((((var(--_ak-lil) * ((53.6 + ((1 - l) * 85)) / 100)) + (var(--_ak-dal) * ((45.7 + (l * 108)) / 100))) + (c * 0.135) + (var(--_ak-ct) * 0.3334)), var(--_ak-text-alpha))) calc((max(l, (var(--_ak-tpl) + ((max(0.5, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-tcd)))) * clamp(0, var(--_ak-tcd), 1)) + (min(l, (var(--_ak-tpl) + ((max(0.5, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-tcd)))) * (1 - clamp(0, var(--_ak-tcd), 1)))) min(c, var(--_ak-tcc)) h);
     --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
     --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 none);
   }
@@ -383,17 +383,17 @@
   @container style(--_ak-ll: oklch(0.75 0 none)) {
     --_ak-tcd: -1;
     --_ak-tpl: 0.75;
-    --_ak-tcc: 0.25;
+    --_ak-tcc: 0.4;
   }
   @container style(--_ak-ll: oklch(0.875 0 none)) {
     --_ak-tcd: -1;
     --_ak-tpl: 0.875;
-    --_ak-tcc: 0.25;
+    --_ak-tcc: 0.4;
   }
   @container style(--_ak-ll: oklch(1 0 none)) {
     --_ak-tcd: -1;
     --_ak-tpl: 1;
-    --_ak-tcc: 0.25;
+    --_ak-tcc: 0.4;
   }
 }
 
@@ -401,6 +401,7 @@
   --_ak-text-chroma: --value(--chroma-*);
   --_ak-text-hue: --value(--hue-*);
   --_ak-text-color: --value(--color-*, [color]);
+  --_ak-text-contrast-lightness: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-text-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
@@ -851,6 +852,12 @@
   syntax: "*";
   inherits: false;
   initial-value: 0.1;
+}
+
+@property --_ak-text-contrast-lightness {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
 }
 
 @property --_ak-text-alpha {

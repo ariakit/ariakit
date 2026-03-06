@@ -36,6 +36,7 @@ const BAND_LEVEL_MID = 0.5;
 const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
 
+const CONTRAST_SCALE = 0.3334;
 const TEXT_CONTRAST_L = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
 const DARK_L = fn.clamp01(TEXT_CONTRAST_L);
 const LIGHT_L = fn.clamp01(fn.invert(TEXT_CONTRAST_L));
@@ -329,6 +330,7 @@ const inputs = {
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
+  textContrastL: _ak.prop("text-contrast-lightness", { initial: 0 }),
   textA: _ak.prop("text-alpha", { initial: 1 }),
   textColor: _ak.prop("text-color"),
   textRelativeL: _ak.prop("text-relative-lightness", { initial: 0 }),
@@ -600,7 +602,7 @@ const layerMathDeclarations = [
   set(vars.contrastNegative, fn.min(0, fn.min(1, fn.neg(vars.contrastT)))),
   set(
     vars.lContrast,
-    fn.mul(vars.contrastNegative, lightDark(-0.3334, 0.3334)),
+    fn.mul(vars.contrastNegative, lightDark(-CONTRAST_SCALE, CONTRAST_SCALE)),
   ),
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
@@ -673,57 +675,13 @@ const textMinADark = fn.div(fn.add(45.7, fn.mul(l, 108)), 100);
 const textMinA = fn.add(
   lightDark(textMinALight, textMinADark),
   fn.mul(c, 0.135),
-  fn.mul(vars.contrastT, 0.35),
+  fn.mul(vars.contrastT, CONTRAST_SCALE),
 );
 const textAlpha = fn.max(textMinA, inputs.textA);
 const text = fn.oklch(vars.layer, {
   l: vars.textContrastL,
   c: 0,
   h: 0,
-  a: textAlpha,
-});
-
-const textBaseColor = fn.var(inputs.textColor, vars.layer);
-
-// Lightness: parentL + (contrastL + contrast*0.30) * direction
-const textContrastShift = fn.mul(
-  fn.add(0.5, fn.mul(vars.contrastT, 0.3)),
-  vars.textContrastDirection,
-);
-const textComputedL = fn.add(vars.textParentL, textContrastShift);
-
-// Direction-dependent clamping: dark→max(l, computed), light→min(l, computed)
-const textIsDark = fn.clamp01(vars.textContrastDirection);
-const textClampedL = fn.clamp(
-  0,
-  fn.add(
-    fn.mul(fn.max(l, textComputedL), textIsDark),
-    fn.mul(fn.min(l, textComputedL), fn.invert(textIsDark)),
-  ),
-  1,
-);
-
-// Apply directional color with chroma cap
-const textDirectional = fn.oklch(textBaseColor, {
-  l: textClampedL,
-  c: fn.min(c, vars.textChromaCap),
-});
-
-// Apply relative/absolute L/C/H adjustments (inputs are raw LCH values)
-const textAdjL = inputs.textL
-  ? fn.var(inputs.textL, fn.add(l, inputs.textRelativeL))
-  : fn.add(l, inputs.textRelativeL);
-const textAdjC = inputs.textC
-  ? fn.var(inputs.textC, fn.add(c, inputs.textRelativeC))
-  : fn.add(c, inputs.textRelativeC);
-const textAdjH = inputs.textH
-  ? fn.var(inputs.textH, fn.add(h, inputs.textRelativeH))
-  : fn.add(h, inputs.textRelativeH);
-
-const textColored = fn.oklch(textDirectional, {
-  l: textAdjL,
-  c: textAdjC,
-  h: textAdjH,
   a: textAlpha,
 });
 
@@ -1044,19 +1002,62 @@ utility(
   ),
 );
 
+const textBaseColor = fn.var(inputs.textColor, vars.layer);
+
+// Apply relative/absolute L/C/H adjustments (inputs are raw LCH values)
+const textAdjL = inputs.textL
+  ? fn.var(inputs.textL, fn.add(l, inputs.textRelativeL))
+  : fn.add(l, inputs.textRelativeL);
+const textAdjC = inputs.textC
+  ? fn.var(inputs.textC, fn.add(c, inputs.textRelativeC))
+  : fn.add(c, inputs.textRelativeC);
+const textAdjH = inputs.textH
+  ? fn.var(inputs.textH, fn.add(h, inputs.textRelativeH))
+  : fn.add(h, inputs.textRelativeH);
+
+const textColored = fn.oklch(textBaseColor, {
+  l: textAdjL,
+  c: textAdjC,
+  h: textAdjH,
+  a: textAlpha,
+});
+
+// Lightness: parentL + (contrastL + contrast*CONTRAST_SCALE) * direction
+const textContrastShift = fn.mul(
+  fn.add(
+    fn.max(0.5, inputs.textContrastL),
+    fn.mul(vars.contrastT, CONTRAST_SCALE),
+  ),
+  vars.textContrastDirection,
+);
+const textComputedL = fn.add(vars.textParentL, textContrastShift);
+
+// Direction-dependent clamping: dark→max(l, computed), light→min(l, computed)
+const textIsDark = fn.clamp01(vars.textContrastDirection);
+const textClampedL = fn.add(
+  fn.mul(fn.max(l, textComputedL), textIsDark),
+  fn.mul(fn.min(l, textComputedL), fn.invert(textIsDark)),
+);
+
+// Apply directional color with chroma cap
+const textDirectional = fn.oklch(textColored, {
+  l: textClampedL,
+  c: fn.min(c, vars.textChromaCap),
+});
+
 utility(
   "text",
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
   at.container(
     fn.style(vars.layerL),
-    set(vars.text, textColored),
+    set(vars.text, textDirectional),
     ...getBaseDeclarations(vars.layer),
   ),
   ...withLayerL((parentL, isDark) => [
     set(vars.textContrastDirection, isDark ? 1 : -1),
     set(vars.textParentL, parentL),
-    set(vars.textChromaCap, isDark ? 0.4 : 0.25),
+    set(vars.textChromaCap, 0.4),
   ]),
 );
 
@@ -1065,6 +1066,10 @@ utility(
   set(inputs.textC, fn.value(chroma)),
   set(inputs.textH, fn.value(hue)),
   set(inputs.textColor, fn.value(color, "[color]")),
+  set(
+    inputs.textContrastL,
+    fn.div(fn.value("number", "[number]", numbers()), 100),
+  ),
   set(inputs.textA, fn.div(fn.value("number", "[number]", numbers()), 100)),
 );
 
