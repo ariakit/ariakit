@@ -337,7 +337,11 @@ const inputs = {
   textRelativeC: _ak.prop("text-relative-chroma", { initial: 0 }),
   textRelativeH: _ak.prop("text-relative-hue", { initial: 0 }),
   textL: _ak.prop("text-lightness"),
+  textLMin: _ak.prop("text-lightness-min", { initial: 0 }),
+  textLMax: _ak.prop("text-lightness-max", { initial: 1 }),
   textC: _ak.prop("text-chroma"),
+  textCMin: _ak.prop("text-chroma-min", { initial: 0 }),
+  textCMax: _ak.prop("text-chroma-max", vars.chromaP3Max),
   textH: _ak.prop("text-hue"),
 };
 
@@ -1016,8 +1020,8 @@ const textAdjH = inputs.textH
   : fn.add(h, inputs.textRelativeH);
 
 const textColored = fn.oklch(textBaseColor, {
-  l: textAdjL,
-  c: textAdjC,
+  l: fn.clamp(inputs.textLMin, textAdjL, inputs.textLMax),
+  c: fn.clamp(inputs.textCMin, textAdjC, inputs.textCMax),
   h: textAdjH,
   a: textAlpha,
 });
@@ -1128,6 +1132,40 @@ utility(
   set(
     inputs.textH,
     fn.value("number", "[number]", numbers({ max: 360, step: 15 })),
+  ),
+);
+
+utility(
+  "text-max-*",
+  set(inputs.textCMax, fn.value(chroma)),
+  set(inputs.textLMax, fn.value("[*]")),
+  set(inputs.textLMax, fn.div(fn.value("number", "[number]", numbers()), 100)),
+);
+
+utility(
+  "text-min-*",
+  set(inputs.textCMin, fn.value(chroma)),
+  set(inputs.textLMin, fn.value("[*]")),
+  set(inputs.textLMin, fn.div(fn.value("number", "[number]", numbers()), 100)),
+);
+
+utility(
+  "text-max-c-*",
+  set(inputs.textCMax, fn.value("[*]")),
+  set(inputs.textCMax, fn.value(chroma)),
+  set(
+    inputs.textCMax,
+    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
+  ),
+);
+
+utility(
+  "text-min-c-*",
+  set(inputs.textCMin, fn.value("[*]")),
+  set(inputs.textCMin, fn.value(chroma)),
+  set(
+    inputs.textCMin,
+    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
   ),
 );
 
