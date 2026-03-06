@@ -13,42 +13,42 @@ import {
 const l = "l";
 const c = "c";
 const h = "h";
+
 const CHROMA_MAX_SRGB = 0.32;
 const CHROMA_MAX_P3 = 0.368;
 const CHROMA_MAX_REC2020 = 0.467;
 const CHROMA_MAX = CHROMA_MAX_P3;
+
 const DARK_THRESHOLD_L = 0.645;
 const CONTRAST_HIGH = 100;
+
 const LA_BASE = 0.55;
 const LB_BASE = 0.725;
+const L_SPREAD_RATIO = 0.15;
+const FORBIDDEN_RANGE_LA_MIN = 0.2;
+const FORBIDDEN_RANGE_LB_MAX = 0.9;
+
 const DARK_HIGH_MAX_L = roundToDecimals(LA_BASE / 2, 4);
-const LIGHT_LOW_SPLIT_REFERENCE_MAX_L = 0.99;
-const LIGHT_LOW_MAX_L = roundToDecimals(
-  (LB_BASE + LIGHT_LOW_SPLIT_REFERENCE_MAX_L) / 2,
-  4,
-);
+const LIGHT_LOW_MAX_L = roundToDecimals((LB_BASE + 0.99) / 2, 4);
 const BAND_LEVEL_DARK_HIGH = 0;
 const BAND_LEVEL_DARK_LOW = 0.25;
 const BAND_LEVEL_MID = 0.5;
 const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
-const L_SPREAD_RATIO = 0.15;
-const FORBIDDEN_RANGE_LA_MIN = 0.2;
-const FORBIDDEN_RANGE_LB_MAX = 0.9;
 
-const textContrastL = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
-const darkL = fn.clamp01(textContrastL);
-const lightL = fn.clamp01(fn.invert(textContrastL));
+const TEXT_CONTRAST_L = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
+const DARK_L = fn.clamp01(TEXT_CONTRAST_L);
+const LIGHT_L = fn.clamp01(fn.invert(TEXT_CONTRAST_L));
 
-const laSpread = L_SPREAD_RATIO * LA_BASE;
-const lbSpread = L_SPREAD_RATIO * (1 - LB_BASE);
+const LA_SPREAD = L_SPREAD_RATIO * LA_BASE;
+const LB_SPREAD = L_SPREAD_RATIO * (1 - LB_BASE);
 // Calibrate contrast so `contrastT=1` reaches the configured hard bounds.
-const laSpreadContrastMultiplier = roundToDecimals(
-  (LA_BASE - FORBIDDEN_RANGE_LA_MIN) / laSpread,
+const LA_SPREAD_CONTRAST_SCALE = roundToDecimals(
+  (LA_BASE - FORBIDDEN_RANGE_LA_MIN) / LA_SPREAD,
   4,
 );
-const lbSpreadContrastMultiplier = roundToDecimals(
-  (FORBIDDEN_RANGE_LB_MAX - LB_BASE) / lbSpread,
+const LB_SPREAD_CONTRAST_SCALE = roundToDecimals(
+  (FORBIDDEN_RANGE_LB_MAX - LB_BASE) / LB_SPREAD,
   4,
 );
 
@@ -63,18 +63,16 @@ function utility(...args: Parameters<typeof ak.utility>) {
   return utility;
 }
 
-/**
- * Builds quoted numeric tokens for `--value()` utility ranges.
- */
-function numbers({
-  min = 0,
-  max = 100,
-  step = 5,
-}: {
+interface NumbersOptions {
   min?: number;
   max?: number;
   step?: number;
-} = {}) {
+}
+
+/**
+ * Builds quoted numeric tokens for `--value()` utility ranges.
+ */
+function numbers({ min = 0, max = 100, step = 5 }: NumbersOptions = {}) {
   return Array.from(
     { length: Math.floor((max - min) / step) + 1 },
     (_, i) => `"${min + i * step}"`,
@@ -218,16 +216,16 @@ const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
 // Constants registered once as @property initial values. They only depend on
 // color channels or fixed numeric constants.
 const constantMathVars = {
-  textContrastL: _ak.prop("tcl", { initial: textContrastL }),
+  textContrastL: _ak.prop("tcl", { initial: TEXT_CONTRAST_L }),
   forbiddenLaBase: _ak.prop("flab", {
-    initial: fn.sub(LA_BASE, fn.mul(chromaT, laSpread)),
+    initial: fn.sub(LA_BASE, fn.mul(chromaT, LA_SPREAD)),
   }),
   forbiddenLbBase: _ak.prop("flbb", {
-    initial: fn.add(LB_BASE, fn.mul(chromaT, lbSpread)),
+    initial: fn.add(LB_BASE, fn.mul(chromaT, LB_SPREAD)),
   }),
-  autoLDirection: _ak.prop("ald", { initial: fn.sub(darkL, lightL) }),
-  darkL: _ak.prop("dal", { initial: darkL }),
-  lightL: _ak.prop("lil", { initial: lightL }),
+  autoLDirection: _ak.prop("ald", { initial: fn.sub(DARK_L, LIGHT_L) }),
+  darkL: _ak.prop("dal", { initial: DARK_L }),
+  lightL: _ak.prop("lil", { initial: LIGHT_L }),
   bandDarkHigh: _ak.prop("bdh", { initial: bandDarkHigh }),
   bandDarkLow: _ak.prop("bdl", { initial: bandDarkLow }),
   bandLightLow: _ak.prop("bll", { initial: bandLightLow }),
@@ -534,14 +532,14 @@ const forbiddenLa = fn.max(
   FORBIDDEN_RANGE_LA_MIN,
   fn.sub(
     vars.forbiddenLaBase,
-    fn.mul(vars.contrastT, laSpread, laSpreadContrastMultiplier),
+    fn.mul(vars.contrastT, LA_SPREAD, LA_SPREAD_CONTRAST_SCALE),
   ),
 );
 const forbiddenLb = fn.min(
   FORBIDDEN_RANGE_LB_MAX,
   fn.add(
     vars.forbiddenLbBase,
-    fn.mul(vars.contrastT, lbSpread, lbSpreadContrastMultiplier),
+    fn.mul(vars.contrastT, LB_SPREAD, LB_SPREAD_CONTRAST_SCALE),
   ),
 );
 
