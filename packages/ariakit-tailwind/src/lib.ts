@@ -502,7 +502,6 @@ function colorFn(name: string) {
 }
 
 const oklch = colorFn("oklch");
-const lch = colorFn("lch");
 
 type RoundStrategy = "up" | "down" | "to-zero";
 
@@ -524,7 +523,6 @@ export const fn = {
   /** Interpolates values into a CSS expression string. */
   exp,
   oklch,
-  lch,
   round,
 
   calc: (...args: Parameters<typeof exp>) =>
