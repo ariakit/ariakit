@@ -1057,7 +1057,7 @@ utility(
   ...withLayerL((parentL, isDark) => [
     set(vars.textContrastDirection, isDark ? 1 : -1),
     set(vars.textParentL, parentL),
-    set(vars.textChromaCap, 0.4),
+    set(vars.textChromaCap, isDark ? 0.25 : 0.4),
   ]),
 );
 
