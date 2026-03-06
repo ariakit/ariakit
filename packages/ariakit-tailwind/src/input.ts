@@ -1020,8 +1020,8 @@ const textAdjH = inputs.textH
   : fn.add(h, inputs.textRelativeH);
 
 const textColored = fn.oklch(textBaseColor, {
-  l: fn.clamp(inputs.textLMin, textAdjL, inputs.textLMax),
-  c: fn.clamp(inputs.textCMin, textAdjC, inputs.textCMax),
+  l: textAdjL,
+  c: textAdjC,
   h: textAdjH,
   a: textAlpha,
 });
@@ -1045,8 +1045,8 @@ const textClampedL = fn.add(
 
 // Apply directional color with chroma cap
 const textDirectional = fn.oklch(textColored, {
-  l: textClampedL,
-  c: fn.min(c, vars.textChromaCap),
+  l: fn.clamp(inputs.textLMin, textClampedL, inputs.textLMax),
+  c: fn.min(fn.clamp(inputs.textCMin, c, inputs.textCMax), vars.textChromaCap),
 });
 
 utility(
