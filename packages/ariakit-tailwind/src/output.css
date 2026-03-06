@@ -117,8 +117,8 @@
   --_ak-lbnd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
   --_ak-lsch: oklch(from var(--ak-layer) var(--_ak-tcl) 0 0);
   --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
-  --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 none);
-  --_ak-cn: min(0, min(1, (var(--_ak-ct) * -1)));
+  --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
+  --_ak-cn: calc(var(--_ak-ct) * -1);
   --_ak-lc: calc(var(--_ak-cn) * ((var(--_ak-lil) * -0.3334) + (var(--_ak-dal) * 0.3334)));
   --_ak-fla: max(0.2, (var(--_ak-flab) - (var(--_ak-ct) * 0.0825 * 4.2424)));
   --_ak-flb: min(0.9, (var(--_ak-flbb) + (var(--_ak-ct) * 0.04125 * 4.2424)));
@@ -348,49 +348,49 @@
   @container style(--_ak-ll) {
     --ak-text: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue))) / max((((var(--_ak-lil) * ((53.6 + ((1 - l) * 85)) / 100)) + (var(--_ak-dal) * ((45.7 + (l * 108)) / 100))) + (c * 0.135) + (var(--_ak-ct) * 0.3334)), var(--_ak-text-alpha))) clamp(var(--_ak-text-lightness-min), ((max(l, (var(--_ak-tpl) + ((max(0.5, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-tcd)))) * clamp(0, var(--_ak-tcd), 1)) + (min(l, (var(--_ak-tpl) + ((max(0.5, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-tcd)))) * (1 - clamp(0, var(--_ak-tcd), 1)))), var(--_ak-text-lightness-max)) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), var(--_ak-tcc)) h);
     --_ak-ct: calc(max(0, var(--contrast, 0)) / 100);
-    --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 none);
+    --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
   }
-  @container style(--_ak-ll: oklch(0 0 none)) {
+  @container style(--_ak-ll: oklch(0 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0;
     --_ak-tcc: 0.25;
   }
-  @container style(--_ak-ll: oklch(0.125 0 none)) {
+  @container style(--_ak-ll: oklch(0.125 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0.125;
     --_ak-tcc: 0.25;
   }
-  @container style(--_ak-ll: oklch(0.25 0 none)) {
+  @container style(--_ak-ll: oklch(0.25 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0.25;
     --_ak-tcc: 0.25;
   }
-  @container style(--_ak-ll: oklch(0.375 0 none)) {
+  @container style(--_ak-ll: oklch(0.375 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0.375;
     --_ak-tcc: 0.25;
   }
-  @container style(--_ak-ll: oklch(0.5 0 none)) {
+  @container style(--_ak-ll: oklch(0.5 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0.5;
     --_ak-tcc: 0.25;
   }
-  @container style(--_ak-ll: oklch(0.625 0 none)) {
+  @container style(--_ak-ll: oklch(0.625 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0.625;
     --_ak-tcc: 0.25;
   }
-  @container style(--_ak-ll: oklch(0.75 0 none)) {
+  @container style(--_ak-ll: oklch(0.75 0 0)) {
     --_ak-tcd: -1;
     --_ak-tpl: 0.75;
     --_ak-tcc: 0.4;
   }
-  @container style(--_ak-ll: oklch(0.875 0 none)) {
+  @container style(--_ak-ll: oklch(0.875 0 0)) {
     --_ak-tcd: -1;
     --_ak-tpl: 0.875;
     --_ak-tcc: 0.4;
   }
-  @container style(--_ak-ll: oklch(1 0 none)) {
+  @container style(--_ak-ll: oklch(1 0 0)) {
     --_ak-tcd: -1;
     --_ak-tpl: 1;
     --_ak-tcc: 0.4;

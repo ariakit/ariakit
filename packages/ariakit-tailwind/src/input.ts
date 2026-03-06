@@ -10,6 +10,7 @@ import {
   set,
 } from "./lib.ts";
 
+// These identifiers mirror OKLCH channel names used by `fn.oklch(from ...)`.
 const l = "l";
 const c = "c";
 const h = "h";
@@ -53,15 +54,20 @@ const LB_SPREAD_CONTRAST_SCALE = roundToDecimals(
   4,
 );
 
+const CHROMA_TOKEN_OPTIONS = { max: 40 };
+const HUE_TOKEN_OPTIONS = { max: 360, step: 15 };
+const QUANTIZED_LIGHTNESS_STEPS = 8;
+const QUANTIZED_LIGHTNESS_INTERVAL = 1 / QUANTIZED_LIGHTNESS_STEPS;
+
 const utilities = new Set<ReturnType<typeof ak.utility>>();
 
 /**
  * Registers an `ak` utility and stores it for the exported input list.
  */
 function utility(...args: Parameters<typeof ak.utility>) {
-  const utility = ak.utility(...args);
-  utilities.add(utility);
-  return utility;
+  const registeredUtility = ak.utility(...args);
+  utilities.add(registeredUtility);
+  return registeredUtility;
 }
 
 interface NumbersOptions {
@@ -73,19 +79,37 @@ interface NumbersOptions {
 /**
  * Builds quoted numeric tokens for `--value()` utility ranges.
  */
-function numbers({ min = 0, max = 100, step = 5 }: NumbersOptions = {}) {
+function getNumberTokens({
+  min = 0,
+  max = 100,
+  step = 5,
+}: NumbersOptions = {}) {
   return Array.from(
     { length: Math.floor((max - min) / step) + 1 },
-    (_, i) => `"${min + i * step}"`,
+    (_, index) => `"${min + index * step}"`,
   ).join(", ");
+}
+
+/**
+ * Parses a numeric utility token such as `10` or `45`.
+ */
+function getNumericTokenValue(pattern: string, options?: NumbersOptions) {
+  return fn.value("number", pattern, getNumberTokens(options));
+}
+
+/**
+ * Parses a numeric utility token and converts it to a 0..1 percentage.
+ */
+function getPercentTokenValue(pattern: string, options?: NumbersOptions) {
+  return fn.div(getNumericTokenValue(pattern, options), 100);
 }
 
 /**
  * Returns declaration children with their values negated. Used to derive
  * inverse utilities from the positive definitions.
  */
-function negChildren(rule: ReturnType<typeof utility>) {
-  return rule.children
+function getNegatedDeclarations(utilityRule: ReturnType<typeof utility>) {
+  return utilityRule.children
     .filter((child) => child.type === "declaration")
     .map((child) => {
       if (child.value == null) return;
@@ -97,15 +121,15 @@ function negChildren(rule: ReturnType<typeof utility>) {
 /**
  * Rounds a number to a specified number of decimal places.
  */
-function roundToDecimals(n: number, decimals: number) {
+function roundToDecimals(value: number, decimals: number) {
   const factor = 10 ** decimals;
-  return Math.round(n * factor) / factor;
+  return Math.round(value * factor) / factor;
 }
 
 /**
  * Returns whether `value` is within `[min, max]`
  */
-function getInRange(value: Value, min: number, max: number) {
+function getRangeMask(value: Value, min: number, max: number) {
   return fn.mul(
     fn.binary(fn.sub(value, min - 1e-6)),
     fn.binary(fn.sub(max, value)),
@@ -116,30 +140,60 @@ function getInRange(value: Value, min: number, max: number) {
  * Returns whether `l` is inside the forbidden lightness interval. The value is
  * 0 outside `[la, lb]` and approaches 1 inside it.
  */
-function getInForbiddenRange(l: Value, la: Value, lb: Value) {
-  return fn.binary(fn.mul(fn.sub(l, la), fn.sub(lb, l)));
+function getForbiddenRangeMask(
+  currentLightness: Value,
+  lowerBoundary: Value,
+  upperBoundary: Value,
+) {
+  return fn.binary(
+    fn.mul(
+      fn.sub(currentLightness, lowerBoundary),
+      fn.sub(upperBoundary, currentLightness),
+    ),
+  );
 }
 
 /**
  * Returns which forbidden boundary should be used for `l`. The result is 0 on
  * the lower side and 1 on the upper side.
  */
-function getForbiddenDirection(l: Value, la: Value, lb: Value) {
-  return fn.binary(fn.sub(l, fn.half(fn.add(la, lb))));
+function getForbiddenBoundaryDirection(
+  currentLightness: Value,
+  lowerBoundary: Value,
+  upperBoundary: Value,
+) {
+  return fn.binary(
+    fn.sub(currentLightness, fn.half(fn.add(lowerBoundary, upperBoundary))),
+  );
 }
 
 /**
  * Keeps lightness outside the forbidden interval. When `l` enters it, the value
  * is blended toward `la` or `lb`.
  */
-function getSafeLightness(l: Value, la: Value, lb: Value) {
-  const direction = getForbiddenDirection(l, la, lb);
-  const inForbiddenRange = getInForbiddenRange(l, la, lb);
+function getSafeLightness(
+  currentLightness: Value,
+  lowerBoundary: Value,
+  upperBoundary: Value,
+) {
+  const forbiddenBoundaryDirection = getForbiddenBoundaryDirection(
+    currentLightness,
+    lowerBoundary,
+    upperBoundary,
+  );
+  const forbiddenRangeMask = getForbiddenRangeMask(
+    currentLightness,
+    lowerBoundary,
+    upperBoundary,
+  );
   return fn.add(
-    fn.mul(l, fn.invert(inForbiddenRange)),
+    fn.mul(currentLightness, fn.invert(forbiddenRangeMask)),
     fn.mul(
-      fn.add(fn.mul(la, fn.invert(direction)), fn.mul(lb, direction)),
-      inForbiddenRange,
+      fn.add(
+        fn.mul(lowerBoundary, fn.invert(forbiddenBoundaryDirection)),
+        fn.mul(upperBoundary, forbiddenBoundaryDirection),
+      ),
+      forbiddenRangeMask,
     ),
   );
 }
@@ -150,19 +204,23 @@ function getSafeLightness(l: Value, la: Value, lb: Value) {
  * flip.
  */
 function getAutoLightness(
-  value: Value,
+  delta: Value,
   direction: Value,
-  la: Value,
-  lb: Value,
+  lowerBoundary: Value,
+  upperBoundary: Value,
 ) {
-  const nextL = fn.add(l, fn.mul(value, direction));
-  const nextLInForbiddenRange = getInForbiddenRange(nextL, la, lb);
+  const nextLightness = fn.add(l, fn.mul(delta, direction));
+  const nextLightnessInForbiddenRange = getForbiddenRangeMask(
+    nextLightness,
+    lowerBoundary,
+    upperBoundary,
+  );
   // Maps mask {0,1} to {+1,-1}: keep direction outside, flip inside.
   const shiftedDirection = fn.mul(
     direction,
-    fn.invert(fn.double(nextLInForbiddenRange)),
+    fn.invert(fn.double(nextLightnessInForbiddenRange)),
   );
-  return fn.mul(value, shiftedDirection);
+  return fn.mul(delta, shiftedDirection);
 }
 
 /**
@@ -175,7 +233,7 @@ function lightDark(light: Value, dark: Value) {
 /**
  * Returns all CSS color interpolation methods for `color-mix()`.
  */
-function colorMixMethods() {
+function getColorMixMethods() {
   const rectangular = [
     "srgb",
     "srgb-linear",
@@ -193,7 +251,10 @@ function colorMixMethods() {
   const hueStrategies = ["shorter", "longer", "increasing", "decreasing"];
   return [
     ...rectangular,
-    ...polar.flatMap((s) => [s, ...hueStrategies.map((h) => `${s} ${h} hue`)]),
+    ...polar.flatMap((space) => [
+      space,
+      ...hueStrategies.map((strategy) => `${space} ${strategy} hue`),
+    ]),
   ];
 }
 
@@ -205,13 +266,13 @@ const chroma = createNamespace("chroma");
 const mix = createNamespace("mix");
 
 const contrast = createVar("--contrast", 0);
-const contrastTValue = fn.div(fn.relu(contrast), CONTRAST_HIGH);
-const chromaT = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
+const globalContrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
+const normalizedChroma = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 
 // Band membership expressions — depend only on `l` and fixed constants.
-const bandDarkHigh = getInRange(l, 0, DARK_HIGH_MAX_L);
-const bandDarkLow = getInRange(l, DARK_HIGH_MAX_L, LA_BASE);
-const bandLightLow = getInRange(l, LB_BASE, LIGHT_LOW_MAX_L);
+const bandDarkHigh = getRangeMask(l, 0, DARK_HIGH_MAX_L);
+const bandDarkLow = getRangeMask(l, DARK_HIGH_MAX_L, LA_BASE);
+const bandLightLow = getRangeMask(l, LB_BASE, LIGHT_LOW_MAX_L);
 const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
 
 // Constants registered once as @property initial values. They only depend on
@@ -219,10 +280,10 @@ const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
 const constantMathVars = {
   textContrastL: _ak.prop("tcl", { initial: TEXT_CONTRAST_L }),
   forbiddenLaBase: _ak.prop("flab", {
-    initial: fn.sub(LA_BASE, fn.mul(chromaT, LA_SPREAD)),
+    initial: fn.sub(LA_BASE, fn.mul(normalizedChroma, LA_SPREAD)),
   }),
   forbiddenLbBase: _ak.prop("flbb", {
-    initial: fn.add(LB_BASE, fn.mul(chromaT, LB_SPREAD)),
+    initial: fn.add(LB_BASE, fn.mul(normalizedChroma, LB_SPREAD)),
   }),
   autoLDirection: _ak.prop("ald", { initial: fn.sub(DARK_L, LIGHT_L) }),
   darkL: _ak.prop("dal", { initial: DARK_L }),
@@ -237,8 +298,8 @@ const constantMathVars = {
 // @utility ak-layer.
 const layerMathVars = {
   contrastT: _ak.prop("ct"),
-  contrastNegative: _ak.prop("cn"),
-  lContrast: _ak.prop("lc"),
+  negativeContrastT: _ak.prop("cn"),
+  layerContrastBias: _ak.prop("lc"),
   forbiddenLa: _ak.prop("fla"),
   forbiddenLb: _ak.prop("flb"),
   safeL: _ak.prop("sl"),
@@ -377,7 +438,9 @@ const theme = at.theme(
   set(hue.var("square1", fn.add(h, 90))),
   set(hue.var("square2", fn.add(h, 180))),
   set(hue.var("square3", fn.add(h, 270))),
-  ...colorMixMethods().map((m) => set(mix.var(m.replaceAll(" ", "-"), m))),
+  ...getColorMixMethods().map((method) =>
+    set(mix.var(method.replaceAll(" ", "-"), method)),
+  ),
 );
 
 const dark = createVariant(
@@ -453,11 +516,11 @@ function getAutoL(value: Value) {
  */
 function getContrastL(contrastValue: Value) {
   const direction = vars.autoLDirection;
-  const la = vars.forbiddenLa;
-  const lb = vars.forbiddenLb;
-  const nextL = fn.add(l, fn.mul(contrastValue, direction));
-  const reachedFromDarkSide = fn.binary(fn.sub(nextL, la));
-  const reachedFromLightSide = fn.binary(fn.sub(lb, nextL));
+  const lowerBoundary = vars.forbiddenLa;
+  const upperBoundary = vars.forbiddenLb;
+  const nextLightness = fn.add(l, fn.mul(contrastValue, direction));
+  const reachedFromDarkSide = fn.binary(fn.sub(nextLightness, lowerBoundary));
+  const reachedFromLightSide = fn.binary(fn.sub(upperBoundary, nextLightness));
   const valueEnabled = fn.binary(contrastValue);
   // Only evaluate the boundary that matches current travel direction.
   const reachedForbiddenRange = fn.mul(
@@ -468,67 +531,76 @@ function getContrastL(contrastValue: Value) {
     ),
   );
   // Once boundary is reached, snap to the directional side of the band.
-  const targetL = fn.add(
-    fn.mul(nextL, fn.invert(reachedForbiddenRange)),
+  const targetLightness = fn.add(
+    fn.mul(nextLightness, fn.invert(reachedForbiddenRange)),
     fn.mul(vars.directionalBoundaryL, reachedForbiddenRange),
   );
-  return targetL;
+  return targetLightness;
 }
 
 /**
  * Resolves layer lightness from relative offset and optional absolute input.
  */
-function getLayerL(relativeL: Value, absoluteL?: VarProperty) {
-  const lMin = fn.max(l, fn.min(0.13, relativeL));
-  const lDefault = fn.add(lMin, relativeL);
-  return absoluteL ? fn.var(absoluteL, lDefault) : lDefault;
+function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
+  // Preserve the parent lightness as a floor so nested layers do not collapse
+  // into black when multiple negative offsets stack.
+  const baseLightnessFloor = fn.max(l, fn.min(0.13, relativeLightness));
+  const fallbackLightness = fn.add(baseLightnessFloor, relativeLightness);
+  return absoluteLightness
+    ? fn.var(absoluteLightness, fallbackLightness)
+    : fallbackLightness;
 }
 
 /**
  * Resolves layer chroma from relative offset and optional absolute input.
  */
-function getLayerC(relativeC: Value, absoluteC?: VarProperty) {
-  const cDefault = fn.add(c, relativeC);
-  return absoluteC ? fn.var(absoluteC, cDefault) : cDefault;
+function getLayerC(relativeChroma: Value, absoluteChroma?: VarProperty) {
+  const fallbackChroma = fn.add(c, relativeChroma);
+  return absoluteChroma
+    ? fn.var(absoluteChroma, fallbackChroma)
+    : fallbackChroma;
 }
 
 /**
  * Resolves layer hue from relative offset and optional absolute input.
  */
-function getLayerH(relativeH: Value, absoluteH?: VarProperty) {
-  const hDefault = fn.add(h, relativeH);
-  return absoluteH ? fn.var(absoluteH, hDefault) : hDefault;
+function getLayerH(relativeHue: Value, absoluteHue?: VarProperty) {
+  const fallbackHue = fn.add(h, relativeHue);
+  return absoluteHue ? fn.var(absoluteHue, fallbackHue) : fallbackHue;
 }
 
-const LIGHTNESS_LEVELS = 8;
-const LIGHTNESS_STEP = 1 / LIGHTNESS_LEVELS;
-
-function withLayerL(
+/**
+ * Container queries compare exact values, so layer lightness is quantized into
+ * fixed buckets before descendants derive text direction from it.
+ */
+function mapLayerLightnessSteps(
   callback: (
     parentL: number,
     isDark: boolean,
   ) => (ReturnType<typeof set> | undefined)[],
 ) {
-  return Array.from({ length: LIGHTNESS_LEVELS + 1 }, (_, i) =>
-    roundToDecimals(i / LIGHTNESS_LEVELS, 4),
+  return Array.from({ length: QUANTIZED_LIGHTNESS_STEPS + 1 }, (_, index) =>
+    roundToDecimals(index / QUANTIZED_LIGHTNESS_STEPS, 4),
   ).flatMap((parentL) => {
     const isDark = parentL < DARK_THRESHOLD_L;
-    const children = callback(parentL, isDark).filter((c) => c != null);
-    if (children.length === 0) return [];
+    const children = callback(parentL, isDark).filter((child) => child != null);
+    if (children.length === 0) {
+      return [];
+    }
     return at.container(
-      fn.style(vars.layerL, fn.oklch({ l: parentL, h: "none" })),
+      fn.style(vars.layerL, fn.oklch({ l: parentL })),
       ...children,
     );
   });
 }
 
-const idle = {
+const idleLayerChannels = {
   l: getLayerL(inputs.layerIdleRelativeL, inputs.layerL),
   c: getLayerC(inputs.layerIdleRelativeC, inputs.layerC),
   h: getLayerH(inputs.layerIdleRelativeH, inputs.layerH),
 };
 
-const state = {
+const stateLayerChannels = {
   l: getLayerL(inputs.layerRelativeL),
   c: getLayerC(inputs.layerRelativeC),
   h: getLayerH(inputs.layerRelativeH),
@@ -550,7 +622,7 @@ const forbiddenLb = fn.min(
 );
 
 const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
-const layerIdleBase = fn.oklch(layerBaseColor, idle);
+const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
 const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
   l: fn.add(
@@ -559,14 +631,14 @@ const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
       getLayerL(vars.layerIdleAutoDelta),
       inputs.layerLMax,
     ),
-    vars.lContrast,
+    vars.layerContrastBias,
   ),
 });
 const layerIdle = fn.oklch(vars.layerIdleAuto, {
   l: getContrastL(vars.layerIdleContrastValue),
 });
 
-const layerBase = fn.oklch(fn.oklch(vars.layerIdle, state), {
+const layerBase = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
   l: vars.safeL,
 });
 
@@ -589,13 +661,13 @@ const layer = fn.oklch(vars.layerContrast, {
  */
 function getBaseDeclarations(sourceColor: string | VarProperty) {
   return [
-    set(vars.contrastT, contrastTValue),
+    set(vars.contrastT, globalContrastT),
     set(
       vars.layerL,
       fn.oklch(sourceColor, {
-        l: fn.round(l, LIGHTNESS_STEP),
+        l: fn.round(l, QUANTIZED_LIGHTNESS_INTERVAL),
         c: 0,
-        h: "none",
+        h: 0,
       }),
     ),
   ];
@@ -603,10 +675,10 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
 
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
-  set(vars.contrastNegative, fn.min(0, fn.min(1, fn.neg(vars.contrastT)))),
+  set(vars.negativeContrastT, fn.neg(vars.contrastT)),
   set(
-    vars.lContrast,
-    fn.mul(vars.contrastNegative, lightDark(-CONTRAST_SCALE, CONTRAST_SCALE)),
+    vars.layerContrastBias,
+    fn.mul(vars.negativeContrastT, lightDark(-CONTRAST_SCALE, CONTRAST_SCALE)),
   ),
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
@@ -638,7 +710,9 @@ const layerColorDeclarations = [
 ];
 
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
-const edgeContrastT = fn.var(vars.contrastT, contrastTValue);
+const edgeContrastT = fn.var(vars.contrastT, globalContrastT);
+// Borders get a small extra push from the global contrast preference so they
+// stay perceptible even when the user does not specify an edge contrast value.
 const edgeDirectionalDelta = fn.add(
   inputs.edgeContrastL,
   fn.mul(edgeContrastT, 0.12),
@@ -659,14 +733,20 @@ const edge = fn.oklch(edgeRelative, {
   a: fn.clamp01(fn.add(inputs.edgeA, fn.mul(edgeContrastT, 0.5))),
 });
 
-const layerBandL = fn.add(
+// Collapse the continuous layer scale into five semantic buckets so variants
+// can target broad tonal ranges instead of exact lightness values.
+const layerBandLightness = fn.add(
   BAND_LEVEL_MID,
   fn.mul(vars.bandDarkHigh, BAND_LEVEL_DARK_HIGH - BAND_LEVEL_MID),
   fn.mul(vars.bandDarkLow, BAND_LEVEL_DARK_LOW - BAND_LEVEL_MID),
   fn.mul(vars.bandLightLow, BAND_LEVEL_LIGHT_LOW - BAND_LEVEL_MID),
   fn.mul(vars.bandLightHigh, BAND_LEVEL_LIGHT_HIGH - BAND_LEVEL_MID),
 );
-const layerBand = fn.oklch(vars.layer, { l: layerBandL, c: 0, h: 0 });
+const layerBand = fn.oklch(vars.layer, {
+  l: layerBandLightness,
+  c: 0,
+  h: 0,
+});
 const layerScheme = fn.oklch(vars.layer, {
   l: vars.textContrastL,
   c: 0,
@@ -674,14 +754,17 @@ const layerScheme = fn.oklch(vars.layer, {
 });
 
 // Min alpha adapts to layer lightness — higher for mid-lightness backgrounds
-const textMinALight = fn.div(fn.add(53.6, fn.mul(fn.sub(1, l), 85)), 100);
-const textMinADark = fn.div(fn.add(45.7, fn.mul(l, 108)), 100);
-const textMinA = fn.add(
-  lightDark(textMinALight, textMinADark),
+const textMinAlphaOnLightLayer = fn.div(
+  fn.add(53.6, fn.mul(fn.sub(1, l), 85)),
+  100,
+);
+const textMinAlphaOnDarkLayer = fn.div(fn.add(45.7, fn.mul(l, 108)), 100);
+const textMinimumAlpha = fn.add(
+  lightDark(textMinAlphaOnLightLayer, textMinAlphaOnDarkLayer),
   fn.mul(c, 0.135),
   fn.mul(vars.contrastT, CONTRAST_SCALE),
 );
-const textAlpha = fn.max(textMinA, inputs.textA);
+const textAlpha = fn.max(textMinimumAlpha, inputs.textA);
 const text = fn.oklch(vars.layer, {
   l: vars.textContrastL,
   c: 0,
@@ -718,10 +801,7 @@ utility(
   set(inputs.layerC, fn.value(chroma)),
   set(inputs.layerH, fn.value(hue)),
   set(inputs.layerColor, fn.value(color, "[color]")),
-  set(
-    inputs.layerIdleAutoL,
-    fn.div(fn.value("number", "[number]", numbers()), 100),
-  ),
+  set(inputs.layerIdleAutoL, getPercentTokenValue("[number]")),
 );
 
 utility(
@@ -739,10 +819,7 @@ utility(
 
 utility(
   "layer-mix-*",
-  set(
-    inputs.layerMixAmount,
-    fn.toPercent(fn.value("number", "[number]", numbers())),
-  ),
+  set(inputs.layerMixAmount, fn.toPercent(getNumericTokenValue("[number]"))),
   set(inputs.layerMixColor, fn.value(color, "[color]")),
   set(inputs.layerMixMethod, fn.value(mix)),
   set(
@@ -756,27 +833,21 @@ utility(
   ),
 );
 
-utility(
-  "state-*",
-  set(inputs.layerAutoL, fn.div(fn.value("number", "[*]", numbers()), 100)),
-);
+utility("state-*", set(inputs.layerAutoL, getPercentTokenValue("[*]")));
 
 const layerLighten = utility(
   "layer-lighten-*",
-  set(
-    inputs.layerIdleRelativeL,
-    fn.div(fn.value("number", "[*]", numbers()), 100),
-  ),
+  set(inputs.layerIdleRelativeL, getPercentTokenValue("[*]")),
 );
 
-utility("layer-darken-*", ...negChildren(layerLighten));
+utility("layer-darken-*", ...getNegatedDeclarations(layerLighten));
 
 const stateLighten = utility(
   "state-lighten-*",
-  set(inputs.layerRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.layerRelativeL, getPercentTokenValue("[*]")),
 );
 
-utility("state-darken-*", ...negChildren(stateLighten));
+utility("state-darken-*", ...getNegatedDeclarations(stateLighten));
 
 /**
  * Moves a hue toward a target by percentage on the shortest circular path.
@@ -792,7 +863,7 @@ utility(
   "layer-cool-*",
   set(
     inputs.layerH,
-    getHueToward(h, vars.hueCool, fn.value("number", "[*]", numbers())),
+    getHueToward(h, vars.hueCool, getNumericTokenValue("[*]")),
   ),
 );
 
@@ -800,55 +871,46 @@ utility(
   "layer-warm-*",
   set(
     inputs.layerH,
-    getHueToward(h, vars.hueWarm, fn.value("number", "[*]", numbers())),
+    getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]")),
   ),
 );
 
 utility(
   "layer-contrast-*",
-  set(
-    inputs.layerIdleContrastL,
-    fn.div(fn.value("number", "[*]", numbers()), 100),
-  ),
+  set(inputs.layerIdleContrastL, getPercentTokenValue("[*]")),
 );
 
 utility(
   "state-contrast-*",
-  set(inputs.layerContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.layerContrastL, getPercentTokenValue("[*]")),
 );
 
 utility(
   "layer-max-*",
   set(inputs.layerCMax, fn.value(chroma)),
   set(inputs.layerLMax, fn.value("[*]")),
-  set(inputs.layerLMax, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.layerLMax, getPercentTokenValue("[number]")),
 );
 
 utility(
   "layer-min-*",
   set(inputs.layerCMin, fn.value(chroma)),
   set(inputs.layerLMin, fn.value("[*]")),
-  set(inputs.layerLMin, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.layerLMin, getPercentTokenValue("[number]")),
 );
 
 utility(
   "layer-max-c-*",
   set(inputs.layerCMax, fn.value("[*]")),
   set(inputs.layerCMax, fn.value(chroma)),
-  set(
-    inputs.layerCMax,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.layerCMax, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "layer-min-c-*",
   set(inputs.layerCMin, fn.value("[*]")),
   set(inputs.layerCMin, fn.value(chroma)),
-  set(
-    inputs.layerCMin,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.layerCMin, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
@@ -868,59 +930,47 @@ const layerSaturate = utility(
   "layer-saturate-*",
   set(
     inputs.layerIdleRelativeC,
-    fn.div(fn.value("number", "[*]", numbers({ max: 40 })), 100),
+    getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS),
   ),
 );
-utility("layer-desaturate-*", ...negChildren(layerSaturate));
+utility("layer-desaturate-*", ...getNegatedDeclarations(layerSaturate));
 
 const stateSaturate = utility(
   "state-saturate-*",
-  set(
-    inputs.layerRelativeC,
-    fn.div(fn.value("number", "[*]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.layerRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
-utility("state-desaturate-*", ...negChildren(stateSaturate));
+utility("state-desaturate-*", ...getNegatedDeclarations(stateSaturate));
 
 utility(
   "layer-h-rotate-*",
   set(
     inputs.layerIdleRelativeH,
-    fn.value("number", "[*]", numbers({ max: 360, step: 15 })),
+    getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS),
   ),
 );
 
 utility(
   "state-h-rotate-*",
-  set(
-    inputs.layerRelativeH,
-    fn.value("number", "[*]", numbers({ max: 360, step: 15 })),
-  ),
+  set(inputs.layerRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
 utility(
   "layer-l-*",
   set(inputs.layerL, fn.value("[*]")),
-  set(inputs.layerL, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.layerL, getPercentTokenValue("[number]")),
 );
 
 utility(
   "layer-c-*",
   set(inputs.layerC, fn.value("[*]")),
   set(inputs.layerC, fn.value(chroma)),
-  set(
-    inputs.layerC,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.layerC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "layer-h-*",
   set(inputs.layerH, fn.value(hue, "[*]")),
-  set(
-    inputs.layerH,
-    fn.value("number", "[number]", numbers({ max: 360, step: 15 })),
-  ),
+  set(inputs.layerH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
 );
 
 utility(
@@ -934,99 +984,83 @@ utility(
   set(inputs.edgeC, fn.value(chroma)),
   set(inputs.edgeH, fn.value(hue)),
   set(inputs.edgeColor, fn.value(color, "[color]")),
-  set(inputs.edgeA, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.edgeA, getPercentTokenValue("[number]")),
 );
 
 const edgeLighten = utility(
   "edge-lighten-*",
-  set(inputs.edgeRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.edgeRelativeL, getPercentTokenValue("[*]")),
 );
-utility("edge-darken-*", ...negChildren(edgeLighten));
+utility("edge-darken-*", ...getNegatedDeclarations(edgeLighten));
 
 utility(
   "edge-cool-*",
-  set(
-    inputs.edgeH,
-    getHueToward(h, vars.hueCool, fn.value("number", "[*]", numbers())),
-  ),
+  set(inputs.edgeH, getHueToward(h, vars.hueCool, getNumericTokenValue("[*]"))),
 );
 
 utility(
   "edge-warm-*",
-  set(
-    inputs.edgeH,
-    getHueToward(h, vars.hueWarm, fn.value("number", "[*]", numbers())),
-  ),
+  set(inputs.edgeH, getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]"))),
 );
 
 utility(
   "edge-contrast-*",
-  set(inputs.edgeContrastL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.edgeContrastL, getPercentTokenValue("[*]")),
 );
 
 const edgeSaturate = utility(
   "edge-saturate-*",
-  set(
-    inputs.edgeRelativeC,
-    fn.div(fn.value("number", "[*]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.edgeRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
-utility("edge-desaturate-*", ...negChildren(edgeSaturate));
+utility("edge-desaturate-*", ...getNegatedDeclarations(edgeSaturate));
 
 utility(
   "edge-h-rotate-*",
-  set(
-    inputs.edgeRelativeH,
-    fn.value("number", "[*]", numbers({ max: 360, step: 15 })),
-  ),
+  set(inputs.edgeRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
 utility(
   "edge-l-*",
   set(inputs.edgeL, fn.value("[*]")),
-  set(inputs.edgeL, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.edgeL, getPercentTokenValue("[number]")),
 );
 
 utility(
   "edge-c-*",
   set(inputs.edgeC, fn.value("[*]")),
   set(inputs.edgeC, fn.value(chroma)),
-  set(
-    inputs.edgeC,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.edgeC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "edge-h-*",
   set(inputs.edgeH, fn.value(hue, "[*]")),
-  set(
-    inputs.edgeH,
-    fn.value("number", "[number]", numbers({ max: 360, step: 15 })),
-  ),
+  set(inputs.edgeH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
 );
 
 const textBaseColor = fn.var(inputs.textColor, vars.layer);
 
-// Apply relative/absolute L/C/H adjustments (inputs are raw LCH values)
-const textAdjL = inputs.textL
-  ? fn.var(inputs.textL, fn.add(l, inputs.textRelativeL))
-  : fn.add(l, inputs.textRelativeL);
-const textAdjC = inputs.textC
-  ? fn.var(inputs.textC, fn.add(c, inputs.textRelativeC))
-  : fn.add(c, inputs.textRelativeC);
-const textAdjH = inputs.textH
-  ? fn.var(inputs.textH, fn.add(h, inputs.textRelativeH))
-  : fn.add(h, inputs.textRelativeH);
+// Absolute text channel utilities override the relative offsets; otherwise the
+// offsets are applied on top of the current layer channels.
+const textAdjustedLightness = fn.var(
+  inputs.textL,
+  fn.add(l, inputs.textRelativeL),
+);
+const textAdjustedChroma = fn.var(
+  inputs.textC,
+  fn.add(c, inputs.textRelativeC),
+);
+const textAdjustedHue = fn.var(inputs.textH, fn.add(h, inputs.textRelativeH));
 
-const textColored = fn.oklch(textBaseColor, {
-  l: textAdjL,
-  c: textAdjC,
-  h: textAdjH,
+const textColorAdjusted = fn.oklch(textBaseColor, {
+  l: textAdjustedLightness,
+  c: textAdjustedChroma,
+  h: textAdjustedHue,
   a: textAlpha,
 });
 
-// Lightness: parentL + (contrastL + contrast*CONTRAST_SCALE) * direction
+// Text contrast utilities always keep at least a half-step delta so plain
+// `ak-text` still separates from the parent layer in both schemes.
 const textContrastShift = fn.mul(
   fn.add(
     fn.max(0.5, inputs.textContrastL),
@@ -1036,16 +1070,18 @@ const textContrastShift = fn.mul(
 );
 const textComputedL = fn.add(vars.textParentL, textContrastShift);
 
-// Direction-dependent clamping: dark→max(l, computed), light→min(l, computed)
-const textIsDark = fn.clamp01(vars.textContrastDirection);
-const textClampedL = fn.add(
-  fn.mul(fn.max(l, textComputedL), textIsDark),
-  fn.mul(fn.min(l, textComputedL), fn.invert(textIsDark)),
+// `textContrastDirection` is `1` on dark parents and `-1` on light parents.
+// Clamp it to a mask so CSS math can switch between max() and min().
+const textDarkDirectionMask = fn.clamp01(vars.textContrastDirection);
+const textDirectedLightness = fn.add(
+  fn.mul(fn.max(l, textComputedL), textDarkDirectionMask),
+  fn.mul(fn.min(l, textComputedL), fn.invert(textDarkDirectionMask)),
 );
 
-// Apply directional color with chroma cap
-const textDirectional = fn.oklch(textColored, {
-  l: fn.clamp(inputs.textLMin, textClampedL, inputs.textLMax),
+// Text keeps some chroma, but it is capped more aggressively on dark layers so
+// saturated colors do not overpower the foreground.
+const textDirectional = fn.oklch(textColorAdjusted, {
+  l: fn.clamp(inputs.textLMin, textDirectedLightness, inputs.textLMax),
   c: fn.min(fn.clamp(inputs.textCMin, c, inputs.textCMax), vars.textChromaCap),
 });
 
@@ -1058,7 +1094,7 @@ utility(
     set(vars.text, textDirectional),
     ...getBaseDeclarations(vars.layer),
   ),
-  ...withLayerL((parentL, isDark) => [
+  ...mapLayerLightnessSteps((parentL, isDark) => [
     set(vars.textContrastDirection, isDark ? 1 : -1),
     set(vars.textParentL, parentL),
     set(vars.textChromaCap, isDark ? 0.25 : 0.4),
@@ -1070,103 +1106,79 @@ utility(
   set(inputs.textC, fn.value(chroma)),
   set(inputs.textH, fn.value(hue)),
   set(inputs.textColor, fn.value(color, "[color]")),
-  set(
-    inputs.textContrastL,
-    fn.div(fn.value("number", "[number]", numbers()), 100),
-  ),
-  set(inputs.textA, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.textContrastL, getPercentTokenValue("[number]")),
+  set(inputs.textA, getPercentTokenValue("[number]")),
 );
 
 utility("text-layer", set(inputs.textColor, vars.layer));
 
 const textLighten = utility(
   "text-lighten-*",
-  set(inputs.textRelativeL, fn.div(fn.value("number", "[*]", numbers()), 100)),
+  set(inputs.textRelativeL, getPercentTokenValue("[*]")),
 );
-utility("text-darken-*", ...negChildren(textLighten));
+utility("text-darken-*", ...getNegatedDeclarations(textLighten));
 
 utility(
   "text-cool-*",
-  set(
-    inputs.textH,
-    getHueToward(h, vars.hueCool, fn.value("number", "[*]", numbers())),
-  ),
+  set(inputs.textH, getHueToward(h, vars.hueCool, getNumericTokenValue("[*]"))),
 );
 
 utility(
   "text-warm-*",
-  set(
-    inputs.textH,
-    getHueToward(h, vars.hueWarm, fn.value("number", "[*]", numbers())),
-  ),
+  set(inputs.textH, getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]"))),
 );
 
 const textSaturate = utility(
   "text-saturate-*",
-  set(
-    inputs.textRelativeC,
-    fn.div(fn.value("number", "[*]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.textRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
-utility("text-desaturate-*", ...negChildren(textSaturate));
+utility("text-desaturate-*", ...getNegatedDeclarations(textSaturate));
 
 utility(
   "text-l-*",
   set(inputs.textL, fn.value("[*]")),
-  set(inputs.textL, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.textL, getPercentTokenValue("[number]")),
 );
 
 utility(
   "text-c-*",
   set(inputs.textC, fn.value("[*]")),
   set(inputs.textC, fn.value(chroma)),
-  set(
-    inputs.textC,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.textC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "text-h-*",
   set(inputs.textH, fn.value(hue, "[*]")),
-  set(
-    inputs.textH,
-    fn.value("number", "[number]", numbers({ max: 360, step: 15 })),
-  ),
+  set(inputs.textH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
 );
 
 utility(
   "text-max-*",
   set(inputs.textCMax, fn.value(chroma)),
   set(inputs.textLMax, fn.value("[*]")),
-  set(inputs.textLMax, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.textLMax, getPercentTokenValue("[number]")),
 );
 
 utility(
   "text-min-*",
   set(inputs.textCMin, fn.value(chroma)),
   set(inputs.textLMin, fn.value("[*]")),
-  set(inputs.textLMin, fn.div(fn.value("number", "[number]", numbers()), 100)),
+  set(inputs.textLMin, getPercentTokenValue("[number]")),
 );
 
 utility(
   "text-max-c-*",
   set(inputs.textCMax, fn.value("[*]")),
   set(inputs.textCMax, fn.value(chroma)),
-  set(
-    inputs.textCMax,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.textCMax, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "text-min-c-*",
   set(inputs.textCMin, fn.value("[*]")),
   set(inputs.textCMin, fn.value(chroma)),
-  set(
-    inputs.textCMin,
-    fn.div(fn.value("number", "[number]", numbers({ max: 40 })), 100),
-  ),
+  set(inputs.textCMin, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
 );
 
 export const input = [
