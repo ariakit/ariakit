@@ -1,10 +1,12 @@
 {
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
+  "js/ts.preferences.preferTypeOnlyAutoImports": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.classFunctions": ["clsx", "twMerge", "twJoin"],
   "tailwindCSS.experimental.configFile": {

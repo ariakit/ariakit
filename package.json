@@ -90,6 +90,7 @@
   },
   "dependencies": {
     "@astrojs/mdx": "4.3.13",
+    "@axe-core/playwright": "4.11.1",
     "@babel/core": "7.29.0",
     "@babel/preset-env": "7.29.0",
     "@babel/preset-react": "7.28.5",
