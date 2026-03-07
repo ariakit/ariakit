@@ -61,6 +61,7 @@ const CHROMA_TOKEN_OPTIONS = { max: 40 };
 const HUE_TOKEN_OPTIONS = { max: 360, step: 15 };
 const QUANTIZED_LIGHTNESS_STEPS = 8;
 const QUANTIZED_LIGHTNESS_INTERVAL = 1 / QUANTIZED_LIGHTNESS_STEPS;
+const FRAME_PADDING_CAP = "1rem";
 
 const utilities = new Set<ReturnType<typeof ak.utility>>();
 
@@ -91,6 +92,19 @@ function getNumberTokens({
     { length: Math.floor((max - min) / step) + 1 },
     (_, index) => `"${min + index * step}"`,
   ).join(", ");
+}
+
+/**
+ * Returns quoted numeric tokens for the most common spacing values, with finer
+ * steps for smaller values and coarser steps for larger values.
+ */
+function getSpacingNumberTokens() {
+  return [
+    getNumberTokens({ max: 4, step: 0.5 }),
+    getNumberTokens({ min: 5, max: 12, step: 1 }),
+    getNumberTokens({ min: 14, max: 64, step: 4 }),
+    getNumberTokens({ min: 72, max: 96, step: 8 }),
+  ];
 }
 
 /**
@@ -264,9 +278,11 @@ function getColorMixMethods() {
 const ak = createNamespace("ak");
 const _ak = createNamespace("_ak");
 const hue = createNamespace("hue");
-const color = createNamespace("color");
 const chroma = createNamespace("chroma");
 const mix = createNamespace("mix");
+const color = createNamespace("color");
+const spacing = createNamespace("spacing");
+const radius = createNamespace("radius");
 
 const contrast = createVar("--contrast", 0);
 const globalContrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
@@ -359,6 +375,24 @@ const outlineMathVars = {
   outlineParentL: _ak.prop("opl", { initial: 0 }),
 };
 
+const frameVars = {
+  frameRadius: ak.prop.len("frame-radius", {
+    inherits: true,
+    initial: "0px",
+  }),
+  framePadding: ak.prop.len("frame-padding", {
+    inherits: true,
+    initial: "0px",
+  }),
+  frameMargin: ak.prop.len("frame-margin", { initial: "0px" }),
+  frameBorder: ak.prop.len("frame-border", { initial: "0px" }),
+  frameRing: ak.prop.len("frame-ring", { initial: "0px" }),
+  frameParentRadiusContext: _ak.var("fprc"),
+  frameParentPaddingContext: _ak.var("fppc"),
+  frameParentBorderContext: _ak.var("fpbc"),
+  frameParentRingContext: _ak.var("fpgc"),
+};
+
 const vars = {
   contrast,
   ...constantMathVars,
@@ -367,6 +401,7 @@ const vars = {
   ...layerColorVars,
   ...textMathVars,
   ...outlineMathVars,
+  ...frameVars,
 };
 
 const inputs = {
@@ -426,6 +461,16 @@ const inputs = {
   outlineCMin: _ak.prop("outline-chroma-min", { initial: 0 }),
   outlineCMax: _ak.prop("outline-chroma-max", vars.chromaP3Max),
   outlineH: _ak.prop("outline-hue"),
+  frameRadius: _ak.prop.len("frame-radius", "0px"),
+  framePadding: _ak.prop.len("frame-padding", { initial: "0px" }),
+  frameMargin: _ak.prop.len("frame-margin", { initial: "0px" }),
+  frameBorder: _ak.prop.len("frame-border", { initial: "0px" }),
+  frameRing: _ak.prop.len("frame-ring", { initial: "0px" }),
+  frameBordering: _ak.prop.len("frame-bordering", { initial: "0px" }),
+  frameRow: _ak.prop.number("frame-col", { initial: 0, inherits: true }),
+  frameStart: _ak.prop.number("frame-start", { initial: 0 }),
+  frameEnd: _ak.prop.number("frame-end", { initial: 0 }),
+  frameForce: _ak.prop.number("frame-force", { initial: 0 }),
 };
 
 const theme = at.theme(
@@ -1352,6 +1397,221 @@ utility(
     inputs.outlineCMin,
     getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS),
   ),
+);
+
+function getFrameBorderWidthDeclarations(target: VarProperty) {
+  return [
+    set(target, fn.value("[*]")),
+    set(
+      target,
+      fn.toPx(fn.value("number", "[number]", '"0", "1", "2", "4", "8"')),
+    ),
+  ];
+}
+
+const frameContext = createContext();
+
+const LAST_VISIBLE_SELECTOR = "&:not(:has(~ *:not([hidden],template)))";
+
+/**
+ * Returns cover/overflow declarations that use calc-based conditionals for
+ * axis and edge handling, avoiding container style queries on self properties.
+ */
+function getFrameStretchDeclarations({
+  inset,
+  parentRadius,
+}: {
+  inset: string;
+  parentRadius: string;
+}) {
+  const isCol = fn.sub(1, inputs.frameRow);
+  const isRow = inputs.frameRow;
+  const negInset = fn.neg(inset);
+  return [
+    rule("&:first-child", set(inputs.frameStart, 1)),
+    rule(LAST_VISIBLE_SELECTOR, set(inputs.frameEnd, 1)),
+    // Cross-axis margins always applied; main-axis margins only at edges
+    // Col: inline = cross, block = main
+    // Row: block = cross, inline = main
+    set.marginInlineStart(
+      fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameStart)), negInset),
+    ),
+    set.marginInlineEnd(
+      fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameEnd)), negInset),
+    ),
+    set.marginBlockStart(
+      fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameStart)), negInset),
+    ),
+    set.marginBlockEnd(
+      fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameEnd)), negInset),
+    ),
+    // Corner radii: each corner is rounded when its edge conditions are met
+    // start-start: start in either axis
+    set.borderStartStartRadius(fn.mul(inputs.frameStart, parentRadius)),
+    // start-end: (col AND start) OR (row AND end)
+    set.borderStartEndRadius(
+      fn.mul(
+        fn.max(
+          fn.mul(isCol, inputs.frameStart),
+          fn.mul(isRow, inputs.frameEnd),
+        ),
+        parentRadius,
+      ),
+    ),
+    // end-start: (col AND end) OR (row AND start)
+    set.borderEndStartRadius(
+      fn.mul(
+        fn.max(
+          fn.mul(isCol, inputs.frameEnd),
+          fn.mul(isRow, inputs.frameStart),
+        ),
+        parentRadius,
+      ),
+    ),
+    // end-end: end in either axis
+    set.borderEndEndRadius(fn.mul(inputs.frameEnd, parentRadius)),
+  ];
+}
+
+utility(
+  "frame",
+  set(vars.framePadding, inputs.framePadding),
+  set(vars.frameMargin, inputs.frameMargin),
+  set(vars.frameBorder, inputs.frameBorder),
+  set(vars.frameRing, inputs.frameRing),
+  set.padding(vars.framePadding),
+  set.scrollPadding(vars.framePadding),
+  set.borderWidth(vars.frameBorder),
+  set.borderRadius(vars.frameRadius),
+  at.apply`ring-[length:${vars.frameRing}]`,
+  frameContext(({ provide, inherit }) => {
+    const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
+    const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
+    const parentBorder = inherit(vars.frameParentBorderContext, "0px");
+    const parentPaddingAndMargin = fn.add(parentPadding, vars.frameMargin);
+    const nestedRadius = fn.sub(
+      parentRadius,
+      fn.add(parentPadding, parentBorder, vars.frameMargin),
+    );
+    const minimumRadius = fn.min("0.125rem", inputs.frameRadius);
+    const autoRadius = fn.max(minimumRadius, fn.max(nestedRadius, "0px"));
+    // Cap flag: 1 when parentPadding + margin > 1rem (use CSS sign() for
+    // length comparison). When capped, the child is far enough from the parent
+    // edge that concentric radius is not meaningful.
+    const capFlag = fn.max(
+      `sign(${fn.sub(parentPaddingAndMargin, FRAME_PADDING_CAP)})`,
+      0,
+    );
+    // When forced or capped, use the hint radius directly.
+    const forceOrCap = fn.clamp01(fn.add(inputs.frameForce, capFlag));
+    const frameRadius = fn.add(
+      fn.mul(forceOrCap, inputs.frameRadius),
+      fn.mul(fn.sub(1, forceOrCap), autoRadius),
+    );
+    return [
+      set(vars.frameRadius, frameRadius),
+      set(provide(vars.frameParentRadiusContext), vars.frameRadius),
+      set(provide(vars.frameParentPaddingContext), vars.framePadding),
+      set(provide(vars.frameParentBorderContext), vars.frameBorder),
+      set(provide(vars.frameParentRingContext), vars.frameRing),
+    ];
+  }),
+);
+
+utility("frame-force", set(inputs.frameForce, 1));
+
+utility(
+  "frame-*",
+  set(inputs.frameRadius, fn.value(radius, "[*]")),
+  set(inputs.framePadding, fn.modifier(spacing, "[*]")),
+  set(
+    inputs.framePadding,
+    fn.spacing(fn.modifier("number", "[number]", ...getSpacingNumberTokens())),
+  ),
+);
+
+utility("frame-rounded-*", set(inputs.frameRadius, fn.value(radius, "[*]")));
+
+utility(
+  "frame-p-*",
+  set(inputs.framePadding, fn.value(spacing, "[*]")),
+  set(
+    inputs.framePadding,
+    fn.spacing(fn.value("number", "[number]", ...getSpacingNumberTokens())),
+  ),
+);
+
+const frameMargin = utility(
+  "frame-m-*",
+  set(inputs.frameMargin, fn.value(spacing, "[*]")),
+  set(
+    inputs.frameMargin,
+    fn.spacing(fn.value("number", "[number]", ...getSpacingNumberTokens())),
+  ),
+);
+utility("-frame-m-*", getNegatedDeclarations(frameMargin));
+
+utility(
+  "frame-cover",
+  frameContext(({ inherit }) => {
+    const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
+    const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
+    return getFrameStretchDeclarations({
+      inset: parentPadding,
+      parentRadius,
+    });
+  }),
+);
+
+utility(
+  "frame-overflow",
+  frameContext(({ inherit }) => {
+    const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
+    const parentBorder = inherit(vars.frameParentBorderContext, "0px");
+    const parentRing = inherit(vars.frameParentRingContext, "0px");
+    const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
+    const inset = fn.add(parentPadding, parentBorder, parentRing);
+    return getFrameStretchDeclarations({ inset, parentRadius });
+  }),
+);
+
+utility("frame-row", set(inputs.frameRow, 1));
+utility("frame-col", set(inputs.frameRow, 0));
+
+utility("frame-start", set(inputs.frameStart, 1));
+utility("frame-end", set(inputs.frameEnd, 1));
+
+utility("frame-border", set(inputs.frameBorder, "1px"));
+utility("frame-border-*", getFrameBorderWidthDeclarations(inputs.frameBorder));
+
+utility("frame-ring", set(inputs.frameRing, "1px"));
+utility("frame-ring-*", getFrameBorderWidthDeclarations(inputs.frameRing));
+
+function getFrameBorderingDarkLight() {
+  return [
+    at.variant(
+      dark,
+      set(inputs.frameBorder, inputs.frameBordering),
+      set(inputs.frameRing, "0px"),
+    ),
+    at.variant(
+      light,
+      set(inputs.frameBorder, "0px"),
+      set(inputs.frameRing, inputs.frameBordering),
+    ),
+  ];
+}
+
+utility(
+  "frame-bordering",
+  set(inputs.frameBordering, "1px"),
+  getFrameBorderingDarkLight(),
+);
+
+utility(
+  "frame-bordering-*",
+  getFrameBorderWidthDeclarations(inputs.frameBordering),
+  getFrameBorderingDarkLight(),
 );
 
 export const input = [

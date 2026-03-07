@@ -597,6 +597,238 @@
   --_ak-outline-chroma-min: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
 }
 
+@utility ak-frame {
+  --ak-frame-padding: var(--_ak-frame-padding);
+  --ak-frame-margin: var(--_ak-frame-margin);
+  --ak-frame-border: var(--_ak-frame-border);
+  --ak-frame-ring: var(--_ak-frame-ring);
+  padding: var(--ak-frame-padding);
+  scroll-padding: var(--ak-frame-padding);
+  border-width: var(--ak-frame-border);
+  border-radius: var(--ak-frame-radius);
+  @apply ring-[length:var(--ak-frame-ring)];
+  @container style(--_context-1: even) {
+    --_context-1: odd;
+    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius, 0px)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius, 0px)), max((var(--_ak-fprc-even, 0px) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px))));
+    --_ak-fprc-odd: var(--ak-frame-radius);
+    --_ak-fppc-odd: var(--ak-frame-padding);
+    --_ak-fpbc-odd: var(--ak-frame-border);
+    --_ak-fpgc-odd: var(--ak-frame-ring);
+  }
+  @container style(--_context-1: odd) {
+    --_context-1: even;
+    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius, 0px)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius, 0px)), max((var(--_ak-fprc-odd, 0px) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), 0px))));
+    --_ak-fprc-even: var(--ak-frame-radius);
+    --_ak-fppc-even: var(--ak-frame-padding);
+    --_ak-fpbc-even: var(--ak-frame-border);
+    --_ak-fpgc-even: var(--ak-frame-ring);
+  }
+  @container not style(--_context-1) {
+    --_context-1: odd;
+    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius, 0px)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius, 0px)), max((var(--_ak-fprc-even, 0px) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px))));
+    --_ak-fprc-odd: var(--ak-frame-radius);
+    --_ak-fppc-odd: var(--ak-frame-padding);
+    --_ak-fpbc-odd: var(--ak-frame-border);
+    --_ak-fpgc-odd: var(--ak-frame-ring);
+  }
+}
+
+@utility ak-frame-force {
+  --_ak-frame-force: 1;
+}
+
+@utility ak-frame-* {
+  --_ak-frame-radius: --value(--radius-*, [*]);
+  --_ak-frame-padding: --modifier(--spacing-*, [*]);
+  --_ak-frame-padding: --spacing(--modifier(number, [number], "0", "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4", "5", "6", "7", "8", "9", "10", "11", "12", "14", "18", "22", "26", "30", "34", "38", "42", "46", "50", "54", "58", "62", "72", "80", "88", "96"));
+}
+
+@utility ak-frame-rounded-* {
+  --_ak-frame-radius: --value(--radius-*, [*]);
+}
+
+@utility ak-frame-p-* {
+  --_ak-frame-padding: --value(--spacing-*, [*]);
+  --_ak-frame-padding: --spacing(--value(number, [number], "0", "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4", "5", "6", "7", "8", "9", "10", "11", "12", "14", "18", "22", "26", "30", "34", "38", "42", "46", "50", "54", "58", "62", "72", "80", "88", "96"));
+}
+
+@utility ak-frame-m-* {
+  --_ak-frame-margin: --value(--spacing-*, [*]);
+  --_ak-frame-margin: --spacing(--value(number, [number], "0", "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4", "5", "6", "7", "8", "9", "10", "11", "12", "14", "18", "22", "26", "30", "34", "38", "42", "46", "50", "54", "58", "62", "72", "80", "88", "96"));
+}
+
+@utility -ak-frame-m-* {
+  --_ak-frame-margin: calc(--value(--spacing-*, [*]) * -1);
+  --_ak-frame-margin: calc(--spacing(--value(number, [number], "0", "0.5", "1", "1.5", "2", "2.5", "3", "3.5", "4", "5", "6", "7", "8", "9", "10", "11", "12", "14", "18", "22", "26", "30", "34", "38", "42", "46", "50", "54", "58", "62", "72", "80", "88", "96")) * -1);
+}
+
+@utility ak-frame-cover {
+  @container style(--_context-1: even) {
+    --_context-1: odd;
+    &:first-child {
+      --_ak-frame-start: 1;
+    }
+    &:not(:has(~ *:not([hidden],template))) {
+      --_ak-frame-end: 1;
+    }
+    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
+    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-even, 0px));
+    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-even, 0px));
+    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-even, 0px));
+    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-even, 0px));
+  }
+  @container style(--_context-1: odd) {
+    --_context-1: even;
+    &:first-child {
+      --_ak-frame-start: 1;
+    }
+    &:not(:has(~ *:not([hidden],template))) {
+      --_ak-frame-end: 1;
+    }
+    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * (var(--_ak-fppc-odd, 0px) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * (var(--_ak-fppc-odd, 0px) * -1));
+    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * (var(--_ak-fppc-odd, 0px) * -1));
+    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * (var(--_ak-fppc-odd, 0px) * -1));
+    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-odd, 0px));
+    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-odd, 0px));
+    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-odd, 0px));
+    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-odd, 0px));
+  }
+  @container not style(--_context-1) {
+    --_context-1: odd;
+    &:first-child {
+      --_ak-frame-start: 1;
+    }
+    &:not(:has(~ *:not([hidden],template))) {
+      --_ak-frame-end: 1;
+    }
+    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
+    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-even, 0px));
+    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-even, 0px));
+    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-even, 0px));
+    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-even, 0px));
+  }
+}
+
+@utility ak-frame-overflow {
+  @container style(--_context-1: even) {
+    --_context-1: odd;
+    &:first-child {
+      --_ak-frame-start: 1;
+    }
+    &:not(:has(~ *:not([hidden],template))) {
+      --_ak-frame-end: 1;
+    }
+    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
+    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
+    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
+    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-even, 0px));
+    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-even, 0px));
+    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-even, 0px));
+    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-even, 0px));
+  }
+  @container style(--_context-1: odd) {
+    --_context-1: even;
+    &:first-child {
+      --_ak-frame-start: 1;
+    }
+    &:not(:has(~ *:not([hidden],template))) {
+      --_ak-frame-end: 1;
+    }
+    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * ((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * ((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) * -1));
+    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * ((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) * -1));
+    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * ((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) * -1));
+    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-odd, 0px));
+    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-odd, 0px));
+    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-odd, 0px));
+    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-odd, 0px));
+  }
+  @container not style(--_context-1) {
+    --_context-1: odd;
+    &:first-child {
+      --_ak-frame-start: 1;
+    }
+    &:not(:has(~ *:not([hidden],template))) {
+      --_ak-frame-end: 1;
+    }
+    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
+    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
+    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
+    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-even, 0px));
+    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-even, 0px));
+    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-even, 0px));
+    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-even, 0px));
+  }
+}
+
+@utility ak-frame-row {
+  --_ak-frame-col: 1;
+}
+
+@utility ak-frame-col {
+  --_ak-frame-col: 0;
+}
+
+@utility ak-frame-start {
+  --_ak-frame-start: 1;
+}
+
+@utility ak-frame-end {
+  --_ak-frame-end: 1;
+}
+
+@utility ak-frame-border {
+  --_ak-frame-border: 1px;
+}
+
+@utility ak-frame-border-* {
+  --_ak-frame-border: --value([*]);
+  --_ak-frame-border: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
+}
+
+@utility ak-frame-ring {
+  --_ak-frame-ring: 1px;
+}
+
+@utility ak-frame-ring-* {
+  --_ak-frame-ring: --value([*]);
+  --_ak-frame-ring: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
+}
+
+@utility ak-frame-bordering {
+  --_ak-frame-bordering: 1px;
+  @variant ak-dark {
+    --_ak-frame-border: var(--_ak-frame-bordering);
+    --_ak-frame-ring: 0px;
+  }
+  @variant ak-light {
+    --_ak-frame-border: 0px;
+    --_ak-frame-ring: var(--_ak-frame-bordering);
+  }
+}
+
+@utility ak-frame-bordering-* {
+  --_ak-frame-bordering: --value([*]);
+  --_ak-frame-bordering: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
+  @variant ak-dark {
+    --_ak-frame-border: var(--_ak-frame-bordering);
+    --_ak-frame-ring: 0px;
+  }
+  @variant ak-light {
+    --_ak-frame-border: 0px;
+    --_ak-frame-ring: var(--_ak-frame-bordering);
+  }
+}
+
 @property --_ak-tcl {
   syntax: "*";
   inherits: false;
@@ -844,6 +1076,36 @@
   syntax: "*";
   inherits: false;
   initial-value: 0;
+}
+
+@property --ak-frame-radius {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --ak-frame-padding {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --ak-frame-margin {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --ak-frame-border {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --ak-frame-ring {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
 }
 
 @property --_ak-layer-color {
@@ -1157,4 +1419,63 @@
 @property --_ak-outline-hue {
   syntax: "*";
   inherits: false;
+}
+
+@property --_ak-frame-radius {
+  syntax: "<length>";
+  inherits: false;
+}
+
+@property --_ak-frame-padding {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --_ak-frame-margin {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --_ak-frame-border {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --_ak-frame-ring {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --_ak-frame-bordering {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --_ak-frame-col {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --_ak-frame-start {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-frame-end {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-frame-force {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
 }

@@ -540,6 +540,7 @@ export const fn = {
   half: (x: Value) => fn.div(x, 2),
   double: (x: Value) => fn.mul(x, 2),
   toPercent: (x: Value) => fn.mul(x, "1%"),
+  toPx: (x: Value) => fn.mul(x, "1px"),
 
   /** Inverts a normalized value using 1 - x. */
   invert: (x: Value) => fn.sub(1, x),
@@ -549,6 +550,10 @@ export const fn = {
   binary: (x: Value) => fn.clamp01(fn.inflate(x)),
   /** Builds a --value() expression. */
   value: (...args: Value[]) => `--value(${join(args)})`,
+  /** Builds a --spacing() expression. */
+  spacing: (...args: Value[]) => `--spacing(${join(args)})`,
+  /** Builds a --modifier() expression. */
+  modifier: (...args: Value[]) => `--modifier(${join(args)})`,
   /** Clamps an expression to a minimum of 0. */
   relu: (...args: Parameters<typeof exp>) => fn.max(0, fn.exp(...args)),
 
