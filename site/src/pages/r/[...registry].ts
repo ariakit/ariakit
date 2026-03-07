@@ -26,7 +26,10 @@ const logger = createLogger("registry");
 
 export const prerender = false;
 
-const previewImports = import.meta.glob("../../examples/**/preview.astro");
+const previewImports = import.meta.glob([
+  "../../examples/**/preview.astro",
+  "../../sandbox/**/preview.astro",
+]);
 
 const SRC_DIR_TOKEN = "/src/";
 const EXAMPLES_PREFIX = "examples/";
@@ -564,8 +567,11 @@ function getLibraryRegistryItem(
 
 async function getPreviewSource(entry: CollectionEntry<"previews">) {
   try {
-    const previewPath = `../../examples/${entry.id}/preview.astro`;
-    const loadPreview = previewImports[previewPath];
+    const previewPath = [
+      `../../examples/${entry.id}/preview.astro`,
+      `../../sandbox/${entry.id}/preview.astro`,
+    ].find((previewPath) => previewImports[previewPath]);
+    const loadPreview = previewPath ? previewImports[previewPath] : undefined;
     const mod = await loadPreview?.();
     if (!isObjectWithSource(mod)) {
       throw new Error(`Preview source not found for ${entry.id}`);
