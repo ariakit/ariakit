@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm run dev -w site &
+          pnpm --filter site run dev &
           echo "Waiting for dev server (http://localhost:4321)..."
           ready=0
           for i in {1..90}; do
@@ -53,7 +53,7 @@ jobs:
           fi
 
       - name: Generate OG images
-        run: npm run og-image-generate -w site
+        run: pnpm --filter site run og-image-generate
 
       - name: Generate patch or commit
         uses: ./.github/workflows/patch-or-commit

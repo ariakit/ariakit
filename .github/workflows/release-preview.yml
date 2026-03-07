@@ -22,10 +22,10 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
         with:
-          cache-npm: true
+          cache-pnpm: true
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Get changeset status
         id: changeset-status

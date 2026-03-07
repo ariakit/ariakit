@@ -22,7 +22,7 @@ async function getItemsToGenerate() {
     if (!response.ok) {
       console.error(`Failed to fetch from ${url}: ${response.statusText}`);
       console.error(
-        "Please make sure the dev server is running: `npm run dev`",
+        "Please make sure the dev server is running: `pnpm --filter site run dev`",
       );
       return [];
     }
@@ -30,7 +30,9 @@ async function getItemsToGenerate() {
     return items;
   } catch (_e) {
     console.error(`Failed to fetch from ${url}`);
-    console.error("Please make sure the dev server is running: `npm run dev`");
+    console.error(
+      "Please make sure the dev server is running: `pnpm --filter site run dev`",
+    );
     return [];
   }
 }
