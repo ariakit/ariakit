@@ -1,8 +1,4 @@
 ---
-import PreviewFramework from "#app/components/preview-framework.astro";
-import ReactExample from "./index.react.tsx";
-import SolidExample from "./index.solid.tsx";
-
 import sourceReact from "./index.react.tsx?source";
 import sourceSolid from "./index.solid.tsx?source";
 
@@ -12,7 +8,8 @@ export const source = {
 };
 ---
 
-<PreviewFramework>
-  <ReactExample client:load slot="react" />
-  <SolidExample client:load slot="solid" />
-</PreviewFramework>
+<div class="ak-layer ak-frame-container/4 grid gap-2 shadow">
+  <span>Item</span>
+  <div class="ak-separator ak-layer-current"></div>
+  <span>Item</span>
+</div>
