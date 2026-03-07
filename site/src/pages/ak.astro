@@ -272,6 +272,211 @@ import "./ak.css";
         </div>
       </div>
     </div>
+    <section class="mt-10 grid gap-6 max-w-6xl">
+      <div>
+        <h2 class="text-lg font-medium">Frame</h2>
+        <p class="text-sm opacity-70">
+          Nested radius, forced radius, cover, overflow, row layout, and
+          bordering.
+        </p>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="grid gap-3">
+          <div class="text-sm font-medium opacity-70">Nested concentric</div>
+          <div
+            class="w-fit ak-layer ak-layer-white ak-frame ak-frame-rounded-3xl ak-frame-p-5 ak-frame-border-1 ak-edge-20"
+          >
+            <div
+              class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-2xl ak-frame-p-1 ak-frame-border-1 ak-edge-20"
+            >
+              <div
+                class="ak-layer ak-layer-10 ak-frame ak-frame-rounded-xl ak-frame-p-1 ak-frame-border-1 ak-edge-40"
+              >
+                <div class="ak-layer ak-layer-black ak-frame ak-frame-lg/2">
+                  child radius stays concentric
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-3">
+          <div class="text-sm font-medium opacity-70">Force and overrides</div>
+          <div
+            class="w-fit ak-layer ak-layer-white ak-frame ak-frame-rounded-3xl ak-frame-p-5 ak-frame-border-1 ak-edge-20"
+          >
+            <div class="grid gap-3">
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-2xl ak-frame-p-4"
+              >
+                inherited radius
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-force ak-frame-rounded-sm ak-frame-p-4"
+              >
+                forced small radius
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-full ak-frame-p-3"
+              >
+                rounded and padding overrides
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-3">
+          <div class="text-sm font-medium opacity-70">
+            Margin affects self radius
+          </div>
+          <div
+            class="w-fit ak-layer ak-layer-white ak-frame ak-frame-rounded-3xl ak-frame-p-5 ak-frame-border-1 ak-edge-20"
+          >
+            <div class="grid gap-3">
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-xl ak-frame-p-3"
+              >
+                baseline
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-xl ak-frame-p-3 ak-frame-m-3"
+              >
+                positive frame margin
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-xl ak-frame-p-3 -ak-frame-m-2"
+              >
+                negative frame margin
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-3">
+          <div class="text-sm font-medium opacity-70">
+            Border, ring, and bordering
+          </div>
+          <div
+            class="w-fit ak-layer ak-layer-white ak-frame ak-frame-rounded-3xl ak-frame-p-5 ak-frame-border-1 ak-edge-20"
+          >
+            <div class="grid gap-3">
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-2xl ak-frame-p-3 ak-frame-border-2 ak-edge-20"
+              >
+                frame border
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-2xl ak-frame-p-3 ak-frame-ring-4 ak-edge-20"
+              >
+                frame ring
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-rounded-2xl ak-frame-p-3 ak-frame-bordering-2 ak-edge-20"
+              >
+                frame bordering
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="grid gap-3">
+          <div class="text-sm font-medium opacity-70">Cover and overflow</div>
+          <div
+            class="grid gap-4 ak-layer ak-layer-white ak-frame ak-frame-rounded-3xl ak-frame-p-4 ak-frame-border-1 ak-edge-20"
+          >
+            <div
+              class="grid gap-0 ak-layer ak-layer-10 ak-frame ak-frame-rounded-2xl ak-frame-p-3"
+            >
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-cover ak-frame-rounded-xl ak-frame-p-3"
+              >
+                cover first
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-cover ak-frame-rounded-xl ak-frame-p-3"
+              >
+                cover middle
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-cover ak-frame-rounded-xl ak-frame-p-3"
+              >
+                cover last
+              </div>
+            </div>
+            <div
+              class="grid gap-0 ak-layer ak-layer-10 ak-frame ak-frame-rounded-2xl ak-frame-p-3"
+            >
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-overflow ak-frame-rounded-xl ak-frame-p-3 ak-frame-border-1"
+              >
+                overflow first
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-overflow ak-frame-rounded-xl ak-frame-p-3 ak-frame-border-1"
+              >
+                overflow middle
+              </div>
+              <div
+                class="ak-layer ak-layer-primary ak-frame ak-frame-overflow ak-frame-rounded-xl ak-frame-p-3 ak-frame-border-1"
+              >
+                overflow last
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-3">
+          <div class="text-sm font-medium opacity-70">
+            Row axis and manual edges
+          </div>
+          <div
+            class="grid gap-4 ak-layer ak-layer-white ak-frame ak-frame-rounded-3xl ak-frame-p-4 ak-frame-border-1 ak-edge-20"
+          >
+            <div
+              class="flex ak-layer ak-layer-10 ak-frame ak-frame-rounded-2xl ak-frame-p-3 overflow-auto"
+            >
+              <div
+                class="min-w-36 ak-layer ak-layer-primary ak-frame ak-frame-row ak-frame-cover ak-frame-start ak-frame-rounded-xl ak-frame-p-3"
+              >
+                row start
+              </div>
+              <div
+                class="min-w-36 ak-layer ak-layer-primary ak-frame ak-frame-row ak-frame-cover ak-frame-rounded-xl ak-frame-p-3"
+              >
+                row middle
+              </div>
+              <div
+                class="min-w-36 ak-layer ak-layer-primary ak-frame ak-frame-row ak-frame-cover ak-frame-end ak-frame-rounded-xl ak-frame-p-3"
+              >
+                row end
+              </div>
+            </div>
+            <div
+              class="flex ak-layer ak-layer-10 ak-frame ak-frame-rounded-2xl ak-frame-p-3 overflow-auto"
+            >
+              <div
+                class="min-w-36 ak-layer ak-layer-primary ak-frame ak-frame-row ak-frame-overflow ak-frame-start ak-frame-rounded-xl ak-frame-p-3 ak-frame-border-1"
+              >
+                overflow start
+              </div>
+              <div
+                class="min-w-36 ak-layer ak-layer-primary ak-frame ak-frame-row ak-frame-overflow ak-frame-rounded-xl ak-frame-p-3 ak-frame-border-1"
+              >
+                overflow middle
+              </div>
+              <div
+                class="min-w-36 ak-layer ak-layer-primary ak-frame ak-frame-row ak-frame-overflow ak-frame-end ak-frame-rounded-xl ak-frame-p-3 ak-frame-border-1"
+              >
+                overflow end
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     <div
       class="p-4 ak-layer ak-layer-darken-60 ak-layer-magenta ak-layer-primary"
     >
