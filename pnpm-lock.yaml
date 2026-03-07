@@ -8,6 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@ariakit/solid':
+        specifier: workspace:*
+        version: link:packages/ariakit-solid
+      '@ariakit/tailwind':
+        specifier: workspace:*
+        version: link:packages/ariakit-tailwind
+      '@ariakit/test':
+        specifier: workspace:*
+        version: link:packages/ariakit-test
       '@astrojs/mdx':
         specifier: 4.3.13
         version: 4.3.13(astro@5.18.0(@types/node@24.12.0)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.31.1)(rollup@4.59.0)(terser@5.46.0)(typescript@5.9.3)(yaml@2.8.2))
@@ -478,6 +487,18 @@ importers:
 
   site:
     dependencies:
+      '@ariakit/core':
+        specifier: workspace:*
+        version: link:../packages/ariakit-core
+      '@ariakit/react':
+        specifier: workspace:*
+        version: link:../packages/ariakit-react
+      '@ariakit/react-core':
+        specifier: workspace:*
+        version: link:../packages/ariakit-react-core
+      '@ariakit/solid':
+        specifier: workspace:*
+        version: link:../packages/ariakit-solid
       '@astrojs/check':
         specifier: 0.9.6
         version: 0.9.6(prettier@3.8.1)(typescript@5.9.3)
@@ -535,6 +556,10 @@ importers:
       vfile:
         specifier: 6.0.3
         version: 6.0.3
+    devDependencies:
+      '@ariakit/test':
+        specifier: workspace:*
+        version: link:../packages/ariakit-test
 
   templates/react:
     dependencies:
@@ -581,6 +606,15 @@ importers:
 
   website:
     dependencies:
+      '@ariakit/core':
+        specifier: workspace:*
+        version: link:../packages/ariakit-core
+      '@ariakit/react':
+        specifier: workspace:*
+        version: link:../packages/ariakit-react
+      '@ariakit/react-core':
+        specifier: workspace:*
+        version: link:../packages/ariakit-react-core
       '@clerk/clerk-react':
         specifier: 4.32.5
         version: 4.32.5(react@19.2.4)
@@ -593,12 +627,22 @@ importers:
       '@vercel/analytics':
         specifier: 1.6.1
         version: 1.6.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
+      examples:
+        specifier: workspace:*
+        version: link:../examples
       geist:
         specifier: 1.5.1
         version: 1.5.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
+      guide:
+        specifier: workspace:*
+        version: link:../guide
       next:
         specifier: 14.2.35
         version: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+    devDependencies:
+      '@ariakit/test':
+        specifier: workspace:*
+        version: link:../packages/ariakit-test
 
 packages:
 

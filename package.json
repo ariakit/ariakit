@@ -86,6 +86,9 @@
     ]
   },
   "dependencies": {
+    "@ariakit/solid": "workspace:*",
+    "@ariakit/tailwind": "workspace:*",
+    "@ariakit/test": "workspace:*",
     "@astrojs/mdx": "4.3.13",
     "@babel/core": "7.29.0",
     "@babel/preset-env": "7.29.0",
