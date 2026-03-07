@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@ariakit/tailwind";
+@import "@ariakit/tailwind/output";
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
