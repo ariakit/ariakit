@@ -50,9 +50,15 @@ function getCodeBlockCode(example: ReferenceSectionItem["examples"][number]) {
   return `<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${example.code}</code>`;
 }
 
+function isDefinedExampleEntry(
+  entry: CollectionEntry<"examples"> | undefined
+): entry is CollectionEntry<"examples"> {
+  return entry !== undefined;
+}
+
 const liveExampleEntries = (
   await Promise.all(liveExamples.map((example) => getEntry("examples", example)))
-).filter((entry) => !!entry);
+).filter(isDefinedExampleEntry);
 ---
 
 <ContentHeading
