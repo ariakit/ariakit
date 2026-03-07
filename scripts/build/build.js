@@ -124,7 +124,6 @@ function buildSolid({ format, outDir }) {
       options.jsx = "preserve";
     },
     esbuildPlugins: [
-      // @ts-expect-error there are multiple esbuild dependencies installed
       solidPlugin({ solid: { generate: "dom" } }),
     ],
   });

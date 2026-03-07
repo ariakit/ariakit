@@ -46,6 +46,10 @@
     "./*": "./src/examples/_lib/*"
   },
   "dependencies": {
+    "@ariakit/core": "workspace:*",
+    "@ariakit/react": "workspace:*",
+    "@ariakit/react-core": "workspace:*",
+    "@ariakit/solid": "workspace:*",
     "@astrojs/check": "0.9.6",
     "@astrojs/cloudflare": "12.6.12",
     "@astrojs/react": "4.4.2",
@@ -65,5 +69,8 @@
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
     "vfile": "6.0.3"
+  },
+  "devDependencies": {
+    "@ariakit/test": "workspace:*"
   }
 }

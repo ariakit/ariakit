@@ -57,7 +57,7 @@
     "tsc-clean": "tsc --build --clean",
     "build": "pnpm -r --filter @ariakit/* run --if-present build",
     "build-website": "pnpm --filter website build",
-    "build-website-lite": "cross-env DISABLE_SHIKI=true pnpm run build-website",
+    "build-website-lite": "cross-env DISABLE_SHIKI=true DISABLE_REFERENCE_LINKS=true pnpm run build-website",
     "clean": "pnpm -r run clean --if-present",
     "changeset": "changeset",
     "version": "changeset version && pnpm install --lockfile-only --ignore-scripts",

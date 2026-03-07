@@ -13,11 +13,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ariakit/core": "workspace:*",
+    "@ariakit/react": "workspace:*",
+    "@ariakit/react-core": "workspace:*",
+    "examples": "workspace:*",
+    "guide": "workspace:*",
     "@clerk/clerk-react": "4.32.5",
     "@clerk/nextjs": "4.31.8",
     "@clerk/types": "3.65.5",
     "@vercel/analytics": "1.6.1",
     "geist": "1.5.1",
     "next": "14.2.35"
+  },
+  "devDependencies": {
+    "@ariakit/test": "workspace:*"
   }
 }

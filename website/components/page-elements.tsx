@@ -653,7 +653,7 @@ export function PageA({
     );
   }
   if (href) {
-    if (!isValidHref(href, pageLinks)) {
+    if (!process.env.DISABLE_REFERENCE_LINKS && !isValidHref(href, pageLinks)) {
       throw new Error(`Invalid link: ${href}`);
     }
     const url = new URL(href, "https://ariakit.org");
