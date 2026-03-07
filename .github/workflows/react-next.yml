@@ -22,8 +22,6 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-pnpm: true
 
   react-next:
     name: Test React Next (${{ matrix.shard }})

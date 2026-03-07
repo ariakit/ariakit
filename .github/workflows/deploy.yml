@@ -17,8 +17,6 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-pnpm: true
 
       - name: Build app
         run: pnpm run build-site

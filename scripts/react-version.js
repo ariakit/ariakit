@@ -1,6 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 
+/**
+ * @typedef RootPackageJson
+ * @property {Record<string, string>} [dependencies]
+ */
+
 const rootDir = path.resolve(import.meta.dirname, "..");
 const packageJsonPath = path.join(rootDir, "package.json");
 const lockfilePath = path.join(rootDir, "pnpm-lock.yaml");
@@ -21,14 +26,27 @@ const versionsByTarget = {
   },
 };
 
+/**
+ * @param {string} target
+ * @returns {target is keyof typeof versionsByTarget}
+ */
+function isValidTarget(target) {
+  return target in versionsByTarget;
+}
+
 function ensureBackupDir() {
   fs.mkdirSync(backupDir, { recursive: true });
 }
 
 function readPackageJson() {
-  return JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  return /** @type {RootPackageJson} */ (
+    JSON.parse(fs.readFileSync(packageJsonPath, "utf8"))
+  );
 }
 
+/**
+ * @param {RootPackageJson} packageJson
+ */
 function writePackageJson(packageJson) {
   fs.writeFileSync(
     packageJsonPath,
@@ -51,6 +69,9 @@ function restoreFiles() {
   }
 }
 
+/**
+ * @param {keyof typeof versionsByTarget} target
+ */
 function setVersions(target) {
   const versions = versionsByTarget[target];
   if (!versions) {
@@ -71,6 +92,9 @@ function main() {
   if (command === "set") {
     if (!target) {
       throw new Error("Target is required");
+    }
+    if (!isValidTarget(target)) {
+      throw new Error(`Invalid target: ${target}`);
     }
     setVersions(target);
     return;

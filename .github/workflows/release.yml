@@ -21,8 +21,6 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-pnpm: true
 
       - name: Update pnpm
         run: corepack prepare pnpm@latest --activate

@@ -26,8 +26,6 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-pnpm: true
 
       - name: Install playwright
         uses: ./.github/workflows/install-playwright
