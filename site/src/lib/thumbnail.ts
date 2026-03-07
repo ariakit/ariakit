@@ -7,6 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import type { ComponentType } from "react";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -14,13 +16,21 @@ import { renderToStaticMarkup } from "react-dom/server";
 export async function importThumbnail(name?: string) {
   if (!name) return;
   const example = name.split("/").shift();
+  if (!example) return;
+  const filePath = join(
+    import.meta.dirname,
+    `../examples/${example}/thumbnail.react.tsx`,
+  );
+  if (!existsSync(filePath)) {
+    console.log(`Missing thumbnail for ${name}`);
+    return;
+  }
   try {
     const { default: Thumbnail } = await import(
       `../examples/${example}/thumbnail.react.tsx`
     );
     return Thumbnail as ComponentType;
   } catch (_error) {
-    console.log(`Missing thumbnail for ${name}`);
     return;
   }
 }
