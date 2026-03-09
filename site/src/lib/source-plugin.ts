@@ -213,13 +213,10 @@ async function resolveImport(
   }
   const resolved = await context.resolve(id, importer);
   if (!resolved) return null;
-  const resolvedPath = external
-    ? resolveExternalImportPath(id, importer)
-    : resolved.id;
   return {
-    id: external ? id : resolved.id,
-    external: !!external,
-    resolvedPath,
+    id: resolved.id,
+    external: false,
+    resolvedPath: resolved.id,
     resolvedModule,
   };
 }
