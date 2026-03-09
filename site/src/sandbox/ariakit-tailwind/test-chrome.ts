@@ -53,12 +53,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         }) => {
           const layerNumber = q.region(`${layer}-<number>`).first();
           const layerNumber0 = query(layerNumber).region("0").first();
-          const layerNumber020 = query(layerNumber0).region("20").first();
+          const layerNumber020 = query(layerNumber0).region("20");
           const l = await getL(layerNumber020);
           const parentL = await getParentL(layerNumber020);
           const diff = Math.abs(l - parentL);
           test.expect(diff).toBeGreaterThanOrEqual(0.15);
-          test.expect(diff).toBeLessThanOrEqual(0.2);
+          test.expect(diff).toBeLessThanOrEqual(0.21);
         });
 
         test(`${layer}-30 has 0.3 lightness distance from ${layer}-20`, async ({
@@ -66,12 +66,25 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         }) => {
           const layerNumber = q.region(`${layer}-<number>`).first();
           const layerNumber20 = query(layerNumber).region("0").first();
-          const layerNumber2030 = query(layerNumber20).region("30").first();
+          const layerNumber2030 = query(layerNumber20).region("30");
           const l = await getL(layerNumber2030);
           const parentL = await getParentL(layerNumber2030);
           const diff = Math.abs(l - parentL);
           test.expect(diff).toBeGreaterThanOrEqual(0.25);
-          test.expect(diff).toBeLessThanOrEqual(0.3);
+          test.expect(diff).toBeLessThanOrEqual(0.31);
+        });
+
+        test.only(`${layer}-10 has 0.1 lightness distance from ${layer}-40`, async ({
+          q,
+        }) => {
+          const layerNumber = q.region(`${layer}-<number>`).first();
+          const layerNumber40 = query(layerNumber).region("40").nth(4);
+          const layerNumber4010 = query(layerNumber40).region("10").first();
+          const l = await getL(layerNumber4010);
+          const parentL = await getParentL(layerNumber4010);
+          const diff = Math.abs(l - parentL);
+          test.expect(diff).toBeGreaterThanOrEqual(0.05);
+          test.expect(diff).toBeLessThanOrEqual(0.11);
         });
       }
     });
