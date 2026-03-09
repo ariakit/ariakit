@@ -216,11 +216,10 @@ function getSafeLightness(
 }
 
 /**
- * Computes an automatic lightness delta that avoids forbidden lightness. When
- * the path from the current lightness crosses the forbidden interval, the
- * forbidden range is "collapsed" (skipped over) so the result continues in the
- * same direction on the far side. This prevents direction reversals and
- * maintains monotonically increasing distance from the parent layer.
+ * Computes an automatic lightness delta that avoids forbidden lightness. If the
+ * next lightness enters the forbidden interval, we either flip direction or
+ * clamp to the entry boundary, whichever yields more lightness distance from
+ * the original layer color.
  */
 function getAutoLightness(
   delta: Value,
@@ -228,32 +227,39 @@ function getAutoLightness(
   lowerBoundary: Value,
   upperBoundary: Value,
 ) {
-  const normalDelta = fn.mul(delta, direction);
-  const nextLightness = fn.add(l, normalDelta);
-  // Only apply the skip when l starts outside the forbidden range. Colors that
-  // already sit inside the range (e.g. brand colors) should not be shifted by
-  // the forbidden width.
-  const lIsSafe = fn.invert(
-    getForbiddenRangeMask(l, lowerBoundary, upperBoundary),
+  const nextLightness = fn.add(l, fn.mul(delta, direction));
+  const inForbidden = getForbiddenRangeMask(
+    nextLightness,
+    lowerBoundary,
+    upperBoundary,
   );
-  // Check if the path from l to nextLightness crosses the forbidden range
-  // entry boundary from the current travel direction.
+  // Normal delta when outside the forbidden range.
+  const normalDelta = fn.mul(delta, direction);
+  // Flipped delta (reverse direction).
+  const flippedDelta = fn.neg(normalDelta);
+  // Flipped result clamped to valid lightness range.
+  const flippedL = fn.clamp01(fn.add(l, flippedDelta));
+  const flippedDist = fn.abs(fn.sub(flippedL, l));
+  // Entry boundary: the near side of the forbidden range from the current
+  // travel direction. Going lighter hits lowerBoundary first; going darker
+  // hits upperBoundary first.
   const toLight = fn.clamp01(direction);
   const toDark = fn.invert(toLight);
-  const crossesMask = fn.mul(
-    lIsSafe,
-    fn.add(
-      fn.mul(toDark, fn.binary(fn.sub(upperBoundary, nextLightness))),
-      fn.mul(toLight, fn.binary(fn.sub(nextLightness, lowerBoundary))),
-    ),
+  const entryBoundary = fn.add(
+    fn.mul(lowerBoundary, toLight),
+    fn.mul(upperBoundary, toDark),
   );
-  // When crossing, add the forbidden range width to the delta so the result
-  // skips over the range and lands on the far side.
-  const forbiddenWidth = fn.sub(upperBoundary, lowerBoundary);
-  const skippedDelta = fn.mul(fn.add(delta, forbiddenWidth), direction);
+  const boundaryDelta = fn.sub(entryBoundary, l);
+  const boundaryDist = fn.abs(fn.sub(entryBoundary, l));
+  // Only flip if it produces more distance from the original lightness.
+  const shouldFlip = fn.binary(fn.sub(flippedDist, boundaryDist));
+  const forbiddenDelta = fn.add(
+    fn.mul(flippedDelta, shouldFlip),
+    fn.mul(boundaryDelta, fn.invert(shouldFlip)),
+  );
   return fn.add(
-    fn.mul(normalDelta, fn.invert(crossesMask)),
-    fn.mul(skippedDelta, crossesMask),
+    fn.mul(normalDelta, fn.invert(inForbidden)),
+    fn.mul(forbiddenDelta, inForbidden),
   );
 }
 

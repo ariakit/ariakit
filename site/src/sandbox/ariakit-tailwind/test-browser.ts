@@ -1,4 +1,5 @@
 import { AxeBuilder } from "@axe-core/playwright";
+import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 /**
@@ -6,33 +7,42 @@ import { withFramework } from "#app/test-utils/preview.ts";
  * oklch, rgb, and color(srgb) formats across browsers.
  */
 function lightness(color: string): number {
-  const oklch = color.match(/oklch\((\d+(?:\.\d+)?)/);
-  if (oklch) return parseFloat(oklch[1]);
-  // color(srgb r g b) — values are 0-1
-  const srgb = color.match(
-    /color\(srgb\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)/,
-  );
-  if (srgb) {
-    const [r, g, b] = [
-      parseFloat(srgb[1]),
-      parseFloat(srgb[2]),
-      parseFloat(srgb[3]),
-    ];
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  const oklch = color.match(/oklch\((?<l>\d+(?:\.\d+)?)/);
+  if (!oklch?.groups?.l) {
+    throw new Error(`Invalid oklch color: ${color}`);
   }
-  // rgb(r, g, b) — values are 0-255
-  const rgb = color.match(
-    /rgba?\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)/,
-  );
-  if (rgb) {
-    const [r, g, b] = [
-      parseFloat(rgb[1]),
-      parseFloat(rgb[2]),
-      parseFloat(rgb[3]),
-    ];
-    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-  }
-  return 0;
+  return parseFloat(oklch.groups.l);
+}
+
+interface LayerData {
+  parentTitle: string;
+  parentBg: string;
+  children: Array<{ title: string; bg: string }>;
+}
+
+/**
+ * Extracts parent/child background colors from a section region.
+ */
+function extractLayerData(section: Locator): Promise<LayerData[]> {
+  return section.evaluate((section) => {
+    const container = section.querySelector(":scope > div:last-child");
+    if (!container) return [];
+    const parents = container.querySelectorAll(":scope > section");
+    return Array.from(parents).map((parent) => {
+      const parentTitle =
+        (parent.firstElementChild as HTMLElement)?.textContent ?? "";
+      const parentBg = getComputedStyle(parent).backgroundColor;
+      const childContainer = parent.querySelector(":scope > div:last-child");
+      const childSections = childContainer
+        ? childContainer.querySelectorAll(":scope > section")
+        : [];
+      const children = Array.from(childSections).map((child) => ({
+        title: (child.firstElementChild as HTMLElement)?.textContent ?? "",
+        bg: getComputedStyle(child).backgroundColor,
+      }));
+      return { parentTitle, parentBg, children };
+    });
+  });
 }
 
 withFramework(import.meta.dirname, async ({ test, query: q }) => {
@@ -51,32 +61,14 @@ withFramework(import.meta.dirname, async ({ test, query: q }) => {
     browserName,
   }) => {
     test.skip(browserName === "firefox", "Firefox oklch getComputedStyle bug");
-    // For each auto lightness section (ak-layer-<number> and ak-state-<number>),
-    // verify that child layers produce monotonically increasing lightness
-    // distance from the parent as the layer number grows.
-    for (const sectionTitle of ["ak-layer-<number>", "ak-state-<number>"]) {
+    // Verify that child layers produce monotonically increasing lightness
+    // distance from the parent as the layer number grows. This applies to
+    // ak-layer-<number> (skip), ak-state-<number> (boundary-or-flip), and
+    // the combined ak-layer + ak-state case.
+    const sections = ["ak-layer-<number>", "ak-state-<number>"];
+    for (const sectionTitle of sections) {
       const section = q(page).region(sectionTitle).first();
-      const data = await section.evaluate((section) => {
-        const container = section.querySelector(":scope > div:last-child");
-        if (!container) return [];
-        const parents = container.querySelectorAll(":scope > section");
-        return Array.from(parents).map((parent) => {
-          const parentTitle =
-            (parent.firstElementChild as HTMLElement)?.textContent ?? "";
-          const parentBg = getComputedStyle(parent).backgroundColor;
-          const childContainer = parent.querySelector(
-            ":scope > div:last-child",
-          );
-          const childSections = childContainer
-            ? childContainer.querySelectorAll(":scope > section")
-            : [];
-          const children = Array.from(childSections).map((child) => ({
-            title: (child.firstElementChild as HTMLElement)?.textContent ?? "",
-            bg: getComputedStyle(child).backgroundColor,
-          }));
-          return { parentTitle, parentBg, children };
-        });
-      });
+      const data = await extractLayerData(section);
 
       for (const { parentTitle, parentBg, children } of data) {
         const parentL = lightness(parentBg);

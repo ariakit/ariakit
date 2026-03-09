@@ -483,6 +483,9 @@ export default function Example() {
           <Layer title="ak-layer-<number>">
             <Layers />
           </Layer>
+          <Layer title="ak-state-<number>">
+            <LayersState />
+          </Layer>
           <Layer title="ak-layer-contrast-<number>">
             <LayersContrast />
           </Layer>
@@ -502,6 +505,9 @@ export default function Example() {
           >
             <Layer title="ak-layer-<number>">
               <Layers />
+            </Layer>
+            <Layer title="ak-state-<number>">
+              <LayersState />
             </Layer>
             <Layer title="ak-layer-mix-<number>">
               <LayersMix />
