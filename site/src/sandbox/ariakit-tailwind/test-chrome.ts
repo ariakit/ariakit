@@ -108,6 +108,15 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           .toBeLessThan(0.01);
       });
 
+      test("plain ak-layer-brand stays on the nearest safe side", async ({
+        q,
+      }) => {
+        const brandSection = q.region("ak-layer-brand").first();
+        const brandLayer = query(brandSection).region("0").first();
+        const brandLightness = await getL(brandLayer);
+        test.expect(brandLightness).toBeLessThan(0.567);
+      });
+
       test("layer-contrast jumps when crossing the forbidden band", async ({
         q,
       }) => {
@@ -147,8 +156,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             ),
           ),
         );
-        test.expect(diffs[1]).toBeGreaterThan(diffs[0] + 0.02);
-        test.expect(diffs[2]).toBeGreaterThan(diffs[1] + 0.02);
+        const [firstDiff, secondDiff, thirdDiff] = diffs;
+        if (firstDiff == null || secondDiff == null || thirdDiff == null) {
+          throw new Error("Expected three lightness differences");
+        }
+        test.expect(secondDiff).toBeGreaterThan(firstDiff + 0.02);
+        test.expect(thirdDiff).toBeGreaterThan(secondDiff + 0.02);
       });
     });
   }

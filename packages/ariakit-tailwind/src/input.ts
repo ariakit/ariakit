@@ -611,6 +611,7 @@ function getContrastL(contrastValue: Value) {
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
   const bandWidth = fn.sub(upperBoundary, lowerBoundary);
+  const valueEnabled = fn.binary(contrastValue);
   const normalDelta = fn.mul(contrastValue, direction);
   const startLightness = getLayerL(0);
   const baseLightness = getLayerL(normalDelta);
@@ -638,7 +639,7 @@ function getContrastL(contrastValue: Value) {
   return fn.clamp01(
     fn.add(
       skippedLightness,
-      fn.mul(direction, bandWidth, enteredForbiddenRange),
+      fn.mul(direction, bandWidth, enteredForbiddenRange, valueEnabled),
     ),
   );
 }

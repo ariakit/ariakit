@@ -39,7 +39,11 @@ function Layer({
   );
 }
 
-function Layers(props: Omit<LayerProps, "title">) {
+interface LayersProps extends Omit<LayerProps, "title"> {
+  maxLevel?: number;
+}
+
+function Layers({ maxLevel = 100, ...props }: LayersProps) {
   return (
     <>
       <Layer
@@ -72,31 +76,41 @@ function Layers(props: Omit<LayerProps, "title">) {
         title="50"
         className={clsx("ak-layer-50", props.className)}
       />
-      <Layer
-        {...props}
-        title="60"
-        className={clsx("ak-layer-60", props.className)}
-      />
-      <Layer
-        {...props}
-        title="70"
-        className={clsx("ak-layer-70", props.className)}
-      />
-      <Layer
-        {...props}
-        title="80"
-        className={clsx("ak-layer-80", props.className)}
-      />
-      <Layer
-        {...props}
-        title="90"
-        className={clsx("ak-layer-90", props.className)}
-      />
-      <Layer
-        {...props}
-        title="100"
-        className={clsx("ak-layer-100", props.className)}
-      />
+      {maxLevel >= 60 && (
+        <Layer
+          {...props}
+          title="60"
+          className={clsx("ak-layer-60", props.className)}
+        />
+      )}
+      {maxLevel >= 70 && (
+        <Layer
+          {...props}
+          title="70"
+          className={clsx("ak-layer-70", props.className)}
+        />
+      )}
+      {maxLevel >= 80 && (
+        <Layer
+          {...props}
+          title="80"
+          className={clsx("ak-layer-80", props.className)}
+        />
+      )}
+      {maxLevel >= 90 && (
+        <Layer
+          {...props}
+          title="90"
+          className={clsx("ak-layer-90", props.className)}
+        />
+      )}
+      {maxLevel >= 100 && (
+        <Layer
+          {...props}
+          title="100"
+          className={clsx("ak-layer-100", props.className)}
+        />
+      )}
     </>
   );
 }
@@ -444,46 +458,6 @@ function LayersDarken(props: Omit<LayerProps, "title">) {
 export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
-      {/* <ak.TabProvider>
-        <ak.TabList>
-          <ak.Tab>ak-layer-&lt;number&gt;</ak.Tab>
-          <ak.Tab>ak-state-&lt;number&gt;</ak.Tab>
-          <ak.Tab>ak-layer-contrast-&lt;number&gt;</ak.Tab>
-          <ak.Tab>ak-layer-mix-&lt;number&gt;</ak.Tab>
-          <ak.Tab>ak-layer-lighten-&lt;number&gt;</ak.Tab>
-          <ak.Tab>ak-layer-darken-&lt;number&gt;</ak.Tab>
-        </ak.TabList>
-        <ak.TabPanel>
-          <Layers>
-            <Layers />
-          </Layers>
-        </ak.TabPanel>
-        <ak.TabPanel>
-          <LayersState>
-            <LayersState />
-          </LayersState>
-        </ak.TabPanel>
-        <ak.TabPanel>
-          <LayersContrast>
-            <LayersContrast />
-          </LayersContrast>
-        </ak.TabPanel>
-        <ak.TabPanel>
-          <LayersMix>
-            <LayersMix />
-          </LayersMix>
-        </ak.TabPanel>
-        <ak.TabPanel>
-          <LayersLighten>
-            <LayersLighten />
-          </LayersLighten>
-        </ak.TabPanel>
-        <ak.TabPanel>
-          <LayersDarken>
-            <LayersDarken />
-          </LayersDarken>
-        </ak.TabPanel>
-      </ak.TabProvider> */}
       <Layer title="ak-layer-<number>">
         <Layers>
           <Layers />
@@ -520,7 +494,7 @@ export default function Example() {
       </Layer>
 
       <Layer title="ak-layer-brand">
-        <Layers className="ak-layer-brand" orientation="vertical">
+        <Layers maxLevel={50} className="ak-layer-brand" orientation="vertical">
           <Layer title="ak-layer-<number>">
             <Layers />
           </Layer>
