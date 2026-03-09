@@ -7,6 +7,8 @@ description: Instructions for the @ariakit/tailwind package. Always use when pla
 
 - We're in the process of migrating to a new Tailwind CSS plugin system. You can disregard the existing `plugin.js` and related files. It's fine to use them as a reference when stuck, but we use new patterns in the new system.
 - Build with: `npm run build -w packages/ariakit-tailwind`
+- Test with: `npm run test -w site ariakit-tailwind`
+- Always add use cases to `site/src/sandbox/ariakit-tailwind` and test them there.
 
 ## Abstracting constant expressions into `@property` custom properties
 
