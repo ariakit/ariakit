@@ -226,40 +226,44 @@ function getAutoLightness(
   direction: Value,
   lowerBoundary: Value,
   upperBoundary: Value,
+  toLight: Value,
 ) {
-  const nextLightness = fn.add(l, fn.mul(delta, direction));
+  const normalDelta = fn.mul(delta, direction);
+  const nextLightness = fn.add(l, normalDelta);
   const inForbidden = getForbiddenRangeMask(
     nextLightness,
     lowerBoundary,
     upperBoundary,
   );
-  // Normal delta when outside the forbidden range.
-  const normalDelta = fn.mul(delta, direction);
-  // Flipped delta (reverse direction).
-  const flippedDelta = fn.neg(normalDelta);
   // Flipped result clamped to valid lightness range.
+  const flippedDelta = fn.neg(normalDelta);
   const flippedL = fn.clamp01(fn.add(l, flippedDelta));
-  const flippedDist = fn.abs(fn.sub(flippedL, l));
+  // Directional distance: sign is only meaningful when inForbidden=1
+  // where travel direction is well-defined, so we can avoid abs() which
+  // would duplicate the sub-expression in max(x, -x).
+  const flippedDist = fn.mul(fn.sub(l, flippedL), direction);
   // Entry boundary: the near side of the forbidden range from the current
   // travel direction. Going lighter hits lowerBoundary first; going darker
   // hits upperBoundary first.
-  const toLight = fn.clamp01(direction);
-  const toDark = fn.invert(toLight);
   const entryBoundary = fn.add(
     fn.mul(lowerBoundary, toLight),
-    fn.mul(upperBoundary, toDark),
+    fn.mul(upperBoundary, fn.invert(toLight)),
   );
   const boundaryDelta = fn.sub(entryBoundary, l);
-  const boundaryDist = fn.abs(fn.sub(entryBoundary, l));
+  const boundaryDist = fn.mul(boundaryDelta, direction);
   // Only flip if it produces more distance from the original lightness.
   const shouldFlip = fn.binary(fn.sub(flippedDist, boundaryDist));
+  // When forbidden: blend between boundary and flipped deltas.
+  // Using a + x*(b-a) instead of a*(1-x) + b*x so shouldFlip appears once.
   const forbiddenDelta = fn.add(
-    fn.mul(flippedDelta, shouldFlip),
-    fn.mul(boundaryDelta, fn.invert(shouldFlip)),
+    boundaryDelta,
+    fn.mul(shouldFlip, fn.sub(flippedDelta, boundaryDelta)),
   );
+  // Blend between normal and forbidden deltas.
+  // Same rearrangement so inForbidden appears once instead of three times.
   return fn.add(
-    fn.mul(normalDelta, fn.invert(inForbidden)),
-    fn.mul(forbiddenDelta, inForbidden),
+    normalDelta,
+    fn.mul(inForbidden, fn.sub(forbiddenDelta, normalDelta)),
   );
 }
 
@@ -594,6 +598,7 @@ function getAutoL(value: Value) {
     vars.autoLDirection,
     vars.forbiddenLa,
     vars.forbiddenLb,
+    vars.autoDirectionToLight,
   );
 }
 
