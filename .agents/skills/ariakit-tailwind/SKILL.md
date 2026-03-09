@@ -9,7 +9,7 @@ description: Instructions for the @ariakit/tailwind package. Always use when pla
 - Build with: `npm run build -w packages/ariakit-tailwind`
 - Test with: `npm run test -w site ariakit-tailwind`
 - Always add use cases to `site/src/sandbox/ariakit-tailwind` and test them there.
-- There's no need to add changesets for changes to the new plugin system until we finish the migration.
+- There's no need to add changesets for changes to the new plugin system for now.
 
 ## Abstracting constant expressions into `@property` custom properties
 
