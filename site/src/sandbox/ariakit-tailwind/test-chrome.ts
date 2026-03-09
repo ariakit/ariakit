@@ -35,6 +35,16 @@ async function getParentL(
   return getLFromOklchString(getProperty(parent));
 }
 
+async function getLightnessDiff(
+  locator: Locator,
+  getProperty: (style: CSSStyleDeclaration) => string = (style) =>
+    style.backgroundColor,
+) {
+  const lightness = await getL(locator, getProperty);
+  const parentLightness = await getParentL(locator, getProperty);
+  return Math.abs(lightness - parentLightness);
+}
+
 withFramework(import.meta.dirname, async ({ test, query }) => {
   for (const scheme of ["light", "dark"] as const) {
     test.describe(`${scheme} scheme`, () => {
@@ -54,9 +64,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           const layerNumber = q.region(`${layer}-<number>`).first();
           const layerNumber0 = query(layerNumber).region("0").first();
           const layerNumber020 = query(layerNumber0).region("20");
-          const l = await getL(layerNumber020);
-          const parentL = await getParentL(layerNumber020);
-          const diff = Math.abs(l - parentL);
+          const diff = await getLightnessDiff(layerNumber020);
           test.expect(diff).toBeGreaterThanOrEqual(0.15);
           test.expect(diff).toBeLessThanOrEqual(0.21);
         });
@@ -67,9 +75,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           const layerNumber = q.region(`${layer}-<number>`).first();
           const layerNumber20 = query(layerNumber).region("0").first();
           const layerNumber2030 = query(layerNumber20).region("30");
-          const l = await getL(layerNumber2030);
-          const parentL = await getParentL(layerNumber2030);
-          const diff = Math.abs(l - parentL);
+          const diff = await getLightnessDiff(layerNumber2030);
           test.expect(diff).toBeGreaterThanOrEqual(0.25);
           test.expect(diff).toBeLessThanOrEqual(0.31);
         });
@@ -80,13 +86,26 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           const layerNumber = q.region(`${layer}-<number>`).first();
           const layerNumber40 = query(layerNumber).region("40").nth(4);
           const layerNumber4010 = query(layerNumber40).region("10").first();
-          const l = await getL(layerNumber4010);
-          const parentL = await getParentL(layerNumber4010);
-          const diff = Math.abs(l - parentL);
+          const diff = await getLightnessDiff(layerNumber4010);
           test.expect(diff).toBeGreaterThanOrEqual(0.05);
           test.expect(diff).toBeLessThanOrEqual(0.11);
         });
       }
+
+      test("layer-contrast progression keeps increasing after the forbidden band", async ({
+        q,
+      }) => {
+        const contrastLayers = q.region("ak-layer-contrast-<number>").first();
+        const contrastLayer40 = query(contrastLayers).region("40").nth(4);
+        const contrastLayer4010 = query(contrastLayer40).region("10").first();
+        const contrastLayer4030 = query(contrastLayer40).region("30").first();
+        const contrastLayer4060 = query(contrastLayer40).region("60").first();
+        const diff10 = await getLightnessDiff(contrastLayer4010);
+        const diff30 = await getLightnessDiff(contrastLayer4030);
+        const diff60 = await getLightnessDiff(contrastLayer4060);
+        test.expect(diff30).toBeGreaterThan(diff10 + 0.05);
+        test.expect(diff60).toBeGreaterThan(diff30 + 0.05);
+      });
     });
   }
 });

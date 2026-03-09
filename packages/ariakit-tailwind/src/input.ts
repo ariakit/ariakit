@@ -351,7 +351,6 @@ const layerMathVars = {
   safeL: _ak.prop("sl"),
   autoDirectionToLight: _ak.prop("adtl"),
   autoDirectionToDark: _ak.prop("adtd"),
-  directionalBoundaryL: _ak.prop("dbl"),
   layerIdleAutoDelta: _ak.prop("liad"),
   layerAutoDelta: _ak.prop("lad"),
   layerIdleContrastValue: _ak.prop("licv"),
@@ -603,31 +602,29 @@ function getAutoL(value: Value) {
 }
 
 /**
- * Applies contrast lightness while stopping at forbidden boundaries.
- * This keeps contrast adjustments from crossing the unsafe lightness band.
+ * Applies contrast lightness while skipping the forbidden lightness band. Once
+ * the requested contrast crosses into the band, the full band width is added
+ * so the progression continues on the safe side instead of flattening.
  */
 function getContrastL(contrastValue: Value) {
   const direction = vars.autoLDirection;
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
   const nextLightness = fn.add(l, fn.mul(contrastValue, direction));
+  const bandWidth = fn.sub(upperBoundary, lowerBoundary);
   const reachedFromDarkSide = fn.binary(fn.sub(nextLightness, lowerBoundary));
   const reachedFromLightSide = fn.binary(fn.sub(upperBoundary, nextLightness));
   const valueEnabled = fn.binary(contrastValue);
-  // Only evaluate the boundary that matches current travel direction.
-  const reachedForbiddenRange = fn.mul(
+  // Only skip the band in the direction the contrast is already traveling.
+  const skippedForbiddenRange = fn.mul(
     valueEnabled,
     fn.add(
       fn.mul(vars.autoDirectionToLight, reachedFromDarkSide),
       fn.mul(vars.autoDirectionToDark, reachedFromLightSide),
     ),
   );
-  // Once boundary is reached, snap to the directional side of the band.
-  const targetLightness = fn.add(
-    fn.mul(nextLightness, fn.invert(reachedForbiddenRange)),
-    fn.mul(vars.directionalBoundaryL, reachedForbiddenRange),
-  );
-  return targetLightness;
+  const skippedBandShift = fn.mul(direction, bandWidth, skippedForbiddenRange);
+  return fn.clamp01(fn.add(nextLightness, skippedBandShift));
 }
 
 /**
@@ -776,13 +773,6 @@ const layerMathDeclarations = [
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
   set(vars.autoDirectionToDark, fn.clamp01(fn.neg(vars.autoLDirection))),
-  set(
-    vars.directionalBoundaryL,
-    fn.add(
-      fn.mul(vars.forbiddenLa, fn.invert(vars.autoDirectionToLight)),
-      fn.mul(vars.forbiddenLb, vars.autoDirectionToLight),
-    ),
-  ),
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
   set(vars.layerIdleAutoDelta, getAutoL(inputs.layerIdleAutoL)),
   set(vars.layerAutoDelta, getAutoL(inputs.layerAutoL)),
