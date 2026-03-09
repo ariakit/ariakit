@@ -38,7 +38,7 @@ const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
 
 const TEXT_MIN_CONTRAST = 0.5;
-const OUTLINE_MIN_CONTRAST = 0.4;
+const OUTLINE_MIN_CONTRAST = 0.5;
 
 const CONTRAST_SCALE = 0.3334;
 const TEXT_CONTRAST_L = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
@@ -355,13 +355,10 @@ const layerColorVars = {
   layerContrast: _ak.prop.canvas("lc"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
-  layerParent: ak.prop.color("layer-parent", {
-    inherits: true,
-    defaultValue: "canvas",
-  }),
+  layerParent: ak.var("layer-parent", "canvas"),
   edge: ak.prop.black("edge"),
   text: ak.prop.black("text", { inherits: true }),
-  outline: ak.prop.color("outline", "canvastext"),
+  outline: ak.var("outline", "canvastext"),
 };
 
 const textMathVars = {
@@ -461,7 +458,7 @@ const inputs = {
   outlineCMin: _ak.prop("outline-chroma-min", { initial: 0 }),
   outlineCMax: _ak.prop("outline-chroma-max", vars.chromaP3Max),
   outlineH: _ak.prop("outline-hue"),
-  frameRadius: _ak.prop.len("frame-radius", "0px"),
+  frameRadius: _ak.prop.len("frame-radius", { initial: "0px" }),
   framePadding: _ak.prop.len("frame-padding", { initial: "0px" }),
   frameMargin: _ak.prop.len("frame-margin", { initial: "0px" }),
   frameBorder: _ak.prop.len("frame-border", { initial: "0px" }),
@@ -1327,11 +1324,6 @@ utility(
   ),
 );
 
-utility(
-  "outline-contrast-*",
-  set(inputs.outlineContrastL, getPercentTokenValue("[*]")),
-);
-
 const outlineSaturate = utility(
   "outline-saturate-*",
   set(
@@ -1485,7 +1477,10 @@ utility(
   set.borderRadius(vars.frameRadius),
   at.apply`ring-[length:${vars.frameRing}]`,
   frameContext(({ provide, inherit }) => {
-    const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
+    const parentRadius = inherit(
+      vars.frameParentRadiusContext,
+      inputs.frameRadius,
+    );
     const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
     const parentBorder = inherit(vars.frameParentBorderContext, "0px");
     const parentPaddingAndMargin = fn.add(parentPadding, vars.frameMargin);

@@ -1,153 +1,523 @@
+import clsx from "clsx";
+import type { ComponentProps } from "react";
+import { useId } from "react";
+
+interface LayerProps extends ComponentProps<"section"> {
+  title: string;
+  orientation?: "vertical" | "horizontal";
+}
+
+function Layer({
+  title,
+  children,
+  orientation = "horizontal",
+  ...props
+}: LayerProps) {
+  const id = useId();
+  return (
+    <section
+      aria-labelledby={id}
+      {...props}
+      className={clsx(
+        "ak-layer ak-frame ak-frame-2xl/1 ak-edge-20 ak-frame-bordering font-mono flex gap-1 flex-col",
+        props.className,
+      )}
+    >
+      <div id={id}>{title}</div>
+      {children && (
+        <div
+          className={clsx(
+            "ak-layer ak-frame ak-frame-p-1 ak-frame-bordering ak-frame-overflow flex flex-wrap gap-[inherit]",
+            orientation === "vertical" ? "flex-col" : "flex-row",
+          )}
+        >
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function Layers(props: Omit<LayerProps, "title">) {
+  return (
+    <>
+      <Layer
+        {...props}
+        title="0"
+        className={clsx("ak-layer-0", props.className)}
+      />
+      <Layer
+        {...props}
+        title="10"
+        className={clsx("ak-layer-10", props.className)}
+      />
+      <Layer
+        {...props}
+        title="20"
+        className={clsx("ak-layer-20", props.className)}
+      />
+      <Layer
+        {...props}
+        title="30"
+        className={clsx("ak-layer-30", props.className)}
+      />
+      <Layer
+        {...props}
+        title="40"
+        className={clsx("ak-layer-40", props.className)}
+      />
+      <Layer
+        {...props}
+        title="50"
+        className={clsx("ak-layer-50", props.className)}
+      />
+      <Layer
+        {...props}
+        title="60"
+        className={clsx("ak-layer-60", props.className)}
+      />
+      <Layer
+        {...props}
+        title="70"
+        className={clsx("ak-layer-70", props.className)}
+      />
+      <Layer
+        {...props}
+        title="80"
+        className={clsx("ak-layer-80", props.className)}
+      />
+      <Layer
+        {...props}
+        title="90"
+        className={clsx("ak-layer-90", props.className)}
+      />
+      <Layer
+        {...props}
+        title="100"
+        className={clsx("ak-layer-100", props.className)}
+      />
+    </>
+  );
+}
+
+function LayersState(props: Omit<LayerProps, "title">) {
+  return (
+    <>
+      <Layer
+        {...props}
+        title="0"
+        className={clsx("ak-state-0", props.className)}
+      />
+      <Layer
+        {...props}
+        title="10"
+        className={clsx("ak-state-10", props.className)}
+      />
+      <Layer
+        {...props}
+        title="20"
+        className={clsx("ak-state-20", props.className)}
+      />
+      <Layer
+        {...props}
+        title="30"
+        className={clsx("ak-state-30", props.className)}
+      />
+      <Layer
+        {...props}
+        title="40"
+        className={clsx("ak-state-40", props.className)}
+      />
+      <Layer
+        {...props}
+        title="50"
+        className={clsx("ak-state-50", props.className)}
+      />
+      <Layer
+        {...props}
+        title="60"
+        className={clsx("ak-state-60", props.className)}
+      />
+      <Layer
+        {...props}
+        title="70"
+        className={clsx("ak-state-70", props.className)}
+      />
+      <Layer
+        {...props}
+        title="80"
+        className={clsx("ak-state-80", props.className)}
+      />
+      <Layer
+        {...props}
+        title="90"
+        className={clsx("ak-state-90", props.className)}
+      />
+      <Layer
+        {...props}
+        title="100"
+        className={clsx("ak-state-100", props.className)}
+      />
+    </>
+  );
+}
+
+function LayersContrast(props: Omit<LayerProps, "title">) {
+  return (
+    <>
+      <Layer
+        {...props}
+        title="0"
+        className={clsx("ak-layer-contrast-0", props.className)}
+      />
+      <Layer
+        {...props}
+        title="10"
+        className={clsx("ak-layer-contrast-10", props.className)}
+      />
+      <Layer
+        {...props}
+        title="20"
+        className={clsx("ak-layer-contrast-20", props.className)}
+      />
+      <Layer
+        {...props}
+        title="30"
+        className={clsx("ak-layer-contrast-30", props.className)}
+      />
+      <Layer
+        {...props}
+        title="40"
+        className={clsx("ak-layer-contrast-40", props.className)}
+      />
+      <Layer
+        {...props}
+        title="50"
+        className={clsx("ak-layer-contrast-50", props.className)}
+      />
+      <Layer
+        {...props}
+        title="60"
+        className={clsx("ak-layer-contrast-60", props.className)}
+      />
+      <Layer
+        {...props}
+        title="70"
+        className={clsx("ak-layer-contrast-70", props.className)}
+      />
+      <Layer
+        {...props}
+        title="80"
+        className={clsx("ak-layer-contrast-80", props.className)}
+      />
+      <Layer
+        {...props}
+        title="90"
+        className={clsx("ak-layer-contrast-90", props.className)}
+      />
+      <Layer
+        {...props}
+        title="100"
+        className={clsx("ak-layer-contrast-100", props.className)}
+      />
+    </>
+  );
+}
+
+function LayersMix(props: Omit<LayerProps, "title">) {
+  return (
+    <>
+      <Layer
+        {...props}
+        title="0"
+        className={clsx("ak-layer-mix-red-500 ak-layer-mix-0", props.className)}
+      />
+      <Layer
+        {...props}
+        title="10"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-10",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="20"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-20",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="30"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-30",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="40"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-40",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="50"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-50",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="60"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-60",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="70"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-70",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="80"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-80",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="90"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-90",
+          props.className,
+        )}
+      />
+      <Layer
+        {...props}
+        title="100"
+        className={clsx(
+          "ak-layer-mix-red-500 ak-layer-mix-100",
+          props.className,
+        )}
+      />
+    </>
+  );
+}
+
+function LayersLighten(props: Omit<LayerProps, "title">) {
+  return (
+    <>
+      <Layer
+        {...props}
+        title="0"
+        className={clsx("ak-layer-lighten-0", props.className)}
+      />
+      <Layer
+        {...props}
+        title="10"
+        className={clsx("ak-layer-lighten-10", props.className)}
+      />
+      <Layer
+        {...props}
+        title="20"
+        className={clsx("ak-layer-lighten-20", props.className)}
+      />
+      <Layer
+        {...props}
+        title="30"
+        className={clsx("ak-layer-lighten-30", props.className)}
+      />
+      <Layer
+        {...props}
+        title="40"
+        className={clsx("ak-layer-lighten-40", props.className)}
+      />
+      <Layer
+        {...props}
+        title="50"
+        className={clsx("ak-layer-lighten-50", props.className)}
+      />
+      <Layer
+        {...props}
+        title="60"
+        className={clsx("ak-layer-lighten-60", props.className)}
+      />
+      <Layer
+        {...props}
+        title="70"
+        className={clsx("ak-layer-lighten-70", props.className)}
+      />
+      <Layer
+        {...props}
+        title="80"
+        className={clsx("ak-layer-lighten-80", props.className)}
+      />
+      <Layer
+        {...props}
+        title="90"
+        className={clsx("ak-layer-lighten-90", props.className)}
+      />
+      <Layer
+        {...props}
+        title="100"
+        className={clsx("ak-layer-lighten-100", props.className)}
+      />
+    </>
+  );
+}
+
+function LayersDarken(props: Omit<LayerProps, "title">) {
+  return (
+    <>
+      <Layer
+        {...props}
+        title="0"
+        className={clsx("ak-layer-darken-0", props.className)}
+      />
+      <Layer
+        {...props}
+        title="10"
+        className={clsx("ak-layer-darken-10", props.className)}
+      />
+      <Layer
+        {...props}
+        title="20"
+        className={clsx("ak-layer-darken-20", props.className)}
+      />
+      <Layer
+        {...props}
+        title="30"
+        className={clsx("ak-layer-darken-30", props.className)}
+      />
+      <Layer
+        {...props}
+        title="40"
+        className={clsx("ak-layer-darken-40", props.className)}
+      />
+      <Layer
+        {...props}
+        title="50"
+        className={clsx("ak-layer-darken-50", props.className)}
+      />
+      <Layer
+        {...props}
+        title="60"
+        className={clsx("ak-layer-darken-60", props.className)}
+      />
+      <Layer
+        {...props}
+        title="70"
+        className={clsx("ak-layer-darken-70", props.className)}
+      />
+      <Layer
+        {...props}
+        title="80"
+        className={clsx("ak-layer-darken-80", props.className)}
+      />
+      <Layer
+        {...props}
+        title="90"
+        className={clsx("ak-layer-darken-90", props.className)}
+      />
+      <Layer
+        {...props}
+        title="100"
+        className={clsx("ak-layer-darken-100", props.className)}
+      />
+    </>
+  );
+}
+
 export default function Example() {
   return (
-    <div className="flex flex-col gap-8 p-8">
-      <section aria-label="Neutral layers">
-        <p className="text-xs font-medium uppercase tracking-wider opacity-60 mb-3">
-          Neutral layers
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            className="ak-layer ak-layer-10 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Neutral
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-20 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Surface
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-contrast-30 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Contrast
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-invert hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Inverted
-          </button>
-        </div>
-      </section>
+    <div className="flex flex-col gap-4 p-4">
+      <Layer title="ak-layer-<number>">
+        <Layers>
+          <Layers />
+        </Layers>
+      </Layer>
+      <Layer title="ak-state-<number>">
+        <LayersState>
+          <LayersState />
+        </LayersState>
+      </Layer>
+      <Layer title="ak-layer-contrast-<number>">
+        <LayersContrast>
+          <LayersContrast />
+        </LayersContrast>
+      </Layer>
+      <Layer title="ak-layer-mix-<number>">
+        <LayersMix>
+          <LayersMix />
+        </LayersMix>
+      </Layer>
+      <Layer title="ak-layer-black" className="ak-layer-black">
+        <Layer title="ak-layer-lighten-<number>">
+          <LayersLighten>
+            <LayersLighten />
+          </LayersLighten>
+        </Layer>
+      </Layer>
+      <Layer title="ak-layer-white" className="ak-layer-white">
+        <Layer title="ak-layer-darken-<number>">
+          <LayersDarken>
+            <LayersDarken />
+          </LayersDarken>
+        </Layer>
+      </Layer>
 
-      <section aria-label="Color layers">
-        <p className="text-xs font-medium uppercase tracking-wider opacity-60 mb-3">
-          Color layers
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            className="ak-layer ak-layer-blue-500 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
+      <Layer title="ak-layer-brand">
+        <Layers className="ak-layer-brand" orientation="vertical">
+          <Layer title="ak-layer-<number>">
+            <Layers />
+          </Layer>
+          <Layer title="ak-layer-contrast-<number>">
+            <LayersContrast />
+          </Layer>
+          <Layer title="ak-layer-mix-<number>">
+            <LayersMix />
+          </Layer>
+          <Layer title="ak-layer-lighten-<number>">
+            <LayersLighten />
+          </Layer>
+          <Layer title="ak-layer-darken-<number>">
+            <LayersDarken />
+          </Layer>
+          <Layer
+            title="ak-layer-complementary"
+            className="ak-layer-complementary"
+            orientation="vertical"
           >
-            Blue
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-red-500 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Red
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-green-600 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Green
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-yellow-400 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Yellow
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-purple-600 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Purple
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-orange-500 hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Orange
-          </button>
-        </div>
-      </section>
-
-      <section aria-label="Extreme layers">
-        <p className="text-xs font-medium uppercase tracking-wider opacity-60 mb-3">
-          Extremes
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            className="ak-layer ak-layer-black hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            Black
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-white hover:ak-state-10 ak-frame ak-frame-rounded-lg ak-frame-p-3"
-          >
-            White
-          </button>
-        </div>
-      </section>
-
-      <section aria-label="Concentric frames">
-        <p className="text-xs font-medium uppercase tracking-wider opacity-60 mb-3">
-          Concentric frames
-        </p>
-        <div className="ak-layer ak-layer-10 ak-frame ak-frame-rounded-2xl ak-frame-p-4 w-fit flex gap-3">
-          <button
-            type="button"
-            className="ak-layer ak-layer-blue-500 hover:ak-state-10 ak-frame ak-frame-rounded-xl ak-frame-p-3"
-          >
-            Nested blue
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-invert hover:ak-state-10 ak-frame ak-frame-rounded-xl ak-frame-p-3"
-          >
-            Nested inverted
-          </button>
-          <button
-            type="button"
-            className="ak-layer ak-layer-red-500 hover:ak-state-10 ak-frame ak-frame-rounded-xl ak-frame-p-3"
-          >
-            Nested red
-          </button>
-        </div>
-      </section>
-
-      <section aria-label="Text adaptation">
-        <p className="text-xs font-medium uppercase tracking-wider opacity-60 mb-3">
-          Auto-contrast text
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <div className="ak-layer ak-layer-blue-500 ak-frame ak-frame-rounded-lg ak-frame-p-4">
-            <p>Text on blue</p>
-          </div>
-          <div className="ak-layer ak-layer-yellow-400 ak-frame ak-frame-rounded-lg ak-frame-p-4">
-            <p>Text on yellow</p>
-          </div>
-          <div className="ak-layer ak-layer-black ak-frame ak-frame-rounded-lg ak-frame-p-4">
-            <p>Text on black</p>
-          </div>
-          <div className="ak-layer ak-layer-white ak-frame ak-frame-rounded-lg ak-frame-p-4">
-            <p>Text on white</p>
-          </div>
-          <div className="ak-layer ak-layer-red-500 ak-frame ak-frame-rounded-lg ak-frame-p-4">
-            <p>Text on red</p>
-          </div>
-          <div className="ak-layer ak-layer-green-600 ak-frame ak-frame-rounded-lg ak-frame-p-4">
-            <p>Text on green</p>
-          </div>
-        </div>
-      </section>
+            <Layer title="ak-layer-<number>">
+              <Layers />
+            </Layer>
+            <Layer title="ak-layer-mix-<number>">
+              <LayersMix />
+            </Layer>
+            <Layer title="ak-layer-contrast-<number>">
+              <LayersContrast />
+            </Layer>
+            <Layer title="ak-layer-lighten-<number>">
+              <LayersLighten />
+            </Layer>
+            <Layer title="ak-layer-darken-<number>">
+              <LayersDarken />
+            </Layer>
+          </Layer>
+        </Layers>
+      </Layer>
     </div>
   );
 }

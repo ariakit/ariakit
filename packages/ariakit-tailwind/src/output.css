@@ -478,7 +478,7 @@
   --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
   outline-color: var(--ak-outline, canvastext);
   @container style(--_ak-ll) {
-    --ak-outline: oklch(from oklch(from var(--_ak-outline-color, var(--ak-layer)) var(--_ak-outline-lightness, calc(l + var(--_ak-outline-relative-lightness))) var(--_ak-outline-chroma, calc(c + var(--_ak-outline-relative-chroma))) var(--_ak-outline-hue, calc(h + var(--_ak-outline-relative-hue)))) clamp(var(--_ak-outline-lightness-min), ((max(l, (var(--_ak-opl) + ((max(0.4, var(--_ak-outline-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-ocd)))) * clamp(0, var(--_ak-ocd), 1)) + (min(l, (var(--_ak-opl) + ((max(0.4, var(--_ak-outline-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-ocd)))) * (1 - clamp(0, var(--_ak-ocd), 1)))), var(--_ak-outline-lightness-max)) clamp(var(--_ak-outline-chroma-min), c, var(--_ak-outline-chroma-max, var(--chroma-p3-max, 0.368))) h);
+    --ak-outline: oklch(from oklch(from var(--_ak-outline-color, var(--ak-layer)) var(--_ak-outline-lightness, calc(l + var(--_ak-outline-relative-lightness))) var(--_ak-outline-chroma, calc(c + var(--_ak-outline-relative-chroma))) var(--_ak-outline-hue, calc(h + var(--_ak-outline-relative-hue)))) clamp(var(--_ak-outline-lightness-min), ((max(l, (var(--_ak-opl) + ((max(0.5, var(--_ak-outline-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-ocd)))) * clamp(0, var(--_ak-ocd), 1)) + (min(l, (var(--_ak-opl) + ((max(0.5, var(--_ak-outline-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-ocd)))) * (1 - clamp(0, var(--_ak-ocd), 1)))), var(--_ak-outline-lightness-max)) clamp(var(--_ak-outline-chroma-min), c, var(--_ak-outline-chroma-max, var(--chroma-p3-max, 0.368))) h);
   }
   @container style(--_ak-ll: oklch(0 0 0)) {
     --_ak-ocd: 1;
@@ -539,10 +539,6 @@
 
 @utility ak-outline-warm-* {
   --_ak-outline-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
-}
-
-@utility ak-outline-contrast-* {
-  --_ak-outline-contrast-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
 @utility ak-outline-saturate-* {
@@ -609,7 +605,7 @@
   @apply ring-[length:var(--ak-frame-ring)];
   @container style(--_context-1: even) {
     --_context-1: odd;
-    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius, 0px)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius, 0px)), max((var(--_ak-fprc-even, 0px) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px))));
+    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px))));
     --_ak-fprc-odd: var(--ak-frame-radius);
     --_ak-fppc-odd: var(--ak-frame-padding);
     --_ak-fpbc-odd: var(--ak-frame-border);
@@ -617,7 +613,7 @@
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius, 0px)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius, 0px)), max((var(--_ak-fprc-odd, 0px) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), 0px))));
+    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-odd, var(--_ak-frame-radius)) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), 0px))));
     --_ak-fprc-even: var(--ak-frame-radius);
     --_ak-fppc-even: var(--ak-frame-padding);
     --_ak-fpbc-even: var(--ak-frame-border);
@@ -625,7 +621,7 @@
   }
   @container not style(--_context-1) {
     --_context-1: odd;
-    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius, 0px)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius, 0px)), max((var(--_ak-fprc-even, 0px) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px))));
+    --ak-frame-radius: calc((clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1) * var(--_ak-frame-radius)) + ((1 - clamp(0, (var(--_ak-frame-force) + max(sign(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - 1rem)), 0)), 1)) * max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px))));
     --_ak-fprc-odd: var(--ak-frame-radius);
     --_ak-fppc-odd: var(--ak-frame-padding);
     --_ak-fpbc-odd: var(--ak-frame-border);
@@ -1026,11 +1022,6 @@
   initial-value: canvas;
 }
 
-@property --ak-layer-parent {
-  syntax: "<color>";
-  inherits: true;
-}
-
 @property --ak-edge {
   syntax: "<color>";
   inherits: false;
@@ -1041,11 +1032,6 @@
   syntax: "<color>";
   inherits: true;
   initial-value: black;
-}
-
-@property --ak-outline {
-  syntax: "<color>";
-  inherits: false;
 }
 
 @property --_ak-tcd {
@@ -1424,6 +1410,7 @@
 @property --_ak-frame-radius {
   syntax: "<length>";
   inherits: false;
+  initial-value: 0px;
 }
 
 @property --_ak-frame-padding {
