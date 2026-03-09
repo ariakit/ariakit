@@ -128,7 +128,7 @@
     "@wordpress/components": "32.3.0",
     "astro": "5.18.0",
     "autoprefixer": "10.4.27",
-    "babel-loader": "10.1.0",
+    "babel-loader": "10.1.1",
     "babel-plugin-transform-rewrite-imports": "1.5.4",
     "babel-preset-solid": "1.9.10",
     "canvas-confetti": "1.9.4",
