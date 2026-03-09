@@ -74,7 +74,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           test.expect(diff).toBeLessThanOrEqual(0.31);
         });
 
-        test.only(`${layer}-10 has 0.1 lightness distance from ${layer}-40`, async ({
+        test(`${layer}-10 has 0.1 lightness distance from ${layer}-40`, async ({
           q,
         }) => {
           const layerNumber = q.region(`${layer}-<number>`).first();
