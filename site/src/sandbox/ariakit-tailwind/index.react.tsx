@@ -20,6 +20,7 @@ function Layer({
       {...props}
       className={clsx(
         "ak-layer ak-frame ak-frame-2xl/1 ak-edge-20 ak-frame-bordering font-mono flex gap-1 flex-col",
+        // "[content-visibility:auto] [contain-intrinsic-size:2ch_1lh]",
         props.className,
       )}
     >
@@ -443,6 +444,46 @@ function LayersDarken(props: Omit<LayerProps, "title">) {
 export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
+      {/* <ak.TabProvider>
+        <ak.TabList>
+          <ak.Tab>ak-layer-&lt;number&gt;</ak.Tab>
+          <ak.Tab>ak-state-&lt;number&gt;</ak.Tab>
+          <ak.Tab>ak-layer-contrast-&lt;number&gt;</ak.Tab>
+          <ak.Tab>ak-layer-mix-&lt;number&gt;</ak.Tab>
+          <ak.Tab>ak-layer-lighten-&lt;number&gt;</ak.Tab>
+          <ak.Tab>ak-layer-darken-&lt;number&gt;</ak.Tab>
+        </ak.TabList>
+        <ak.TabPanel>
+          <Layers>
+            <Layers />
+          </Layers>
+        </ak.TabPanel>
+        <ak.TabPanel>
+          <LayersState>
+            <LayersState />
+          </LayersState>
+        </ak.TabPanel>
+        <ak.TabPanel>
+          <LayersContrast>
+            <LayersContrast />
+          </LayersContrast>
+        </ak.TabPanel>
+        <ak.TabPanel>
+          <LayersMix>
+            <LayersMix />
+          </LayersMix>
+        </ak.TabPanel>
+        <ak.TabPanel>
+          <LayersLighten>
+            <LayersLighten />
+          </LayersLighten>
+        </ak.TabPanel>
+        <ak.TabPanel>
+          <LayersDarken>
+            <LayersDarken />
+          </LayersDarken>
+        </ak.TabPanel>
+      </ak.TabProvider> */}
       <Layer title="ak-layer-<number>">
         <Layers>
           <Layers />
