@@ -1,6 +1,10 @@
+import { cv } from "clava";
 import clsx from "clsx";
 import type { ComponentProps } from "react";
 import { useId } from "react";
+
+const test = cv();
+console.log(test);
 
 interface LayerProps extends ComponentProps<"section"> {
   title: string;
