@@ -602,29 +602,45 @@ function getAutoL(value: Value) {
 }
 
 /**
- * Applies contrast lightness while skipping the forbidden lightness band. Once
- * the requested contrast crosses into the band, the full band width is added
- * so the progression continues on the safe side instead of flattening.
+ * Applies contrast lightness with the same baseline progression as
+ * `ak-layer-*`, except values that would land inside the forbidden band jump
+ * to the opposite boundary and preserve their remaining progress there.
  */
 function getContrastL(contrastValue: Value) {
   const direction = vars.autoLDirection;
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
-  const nextLightness = fn.add(l, fn.mul(contrastValue, direction));
   const bandWidth = fn.sub(upperBoundary, lowerBoundary);
-  const reachedFromDarkSide = fn.binary(fn.sub(nextLightness, lowerBoundary));
-  const reachedFromLightSide = fn.binary(fn.sub(upperBoundary, nextLightness));
-  const valueEnabled = fn.binary(contrastValue);
-  // Only skip the band in the direction the contrast is already traveling.
-  const skippedForbiddenRange = fn.mul(
-    valueEnabled,
+  const normalDelta = fn.mul(contrastValue, direction);
+  const startLightness = getLayerL(0);
+  const baseLightness = getLayerL(normalDelta);
+  const crossedFromDarkSide = fn.mul(
+    fn.binary(fn.sub(lowerBoundary, startLightness)),
+    fn.binary(fn.sub(baseLightness, lowerBoundary)),
+  );
+  const crossedFromLightSide = fn.mul(
+    fn.binary(fn.sub(startLightness, upperBoundary)),
+    fn.binary(fn.sub(upperBoundary, baseLightness)),
+  );
+  const crossedForbiddenRange = fn.add(
+    fn.mul(vars.autoDirectionToLight, crossedFromDarkSide),
+    fn.mul(vars.autoDirectionToDark, crossedFromLightSide),
+  );
+  const skippedLightness = fn.add(
+    baseLightness,
+    fn.mul(direction, bandWidth, crossedForbiddenRange),
+  );
+  const enteredForbiddenRange = getForbiddenRangeMask(
+    skippedLightness,
+    lowerBoundary,
+    upperBoundary,
+  );
+  return fn.clamp01(
     fn.add(
-      fn.mul(vars.autoDirectionToLight, reachedFromDarkSide),
-      fn.mul(vars.autoDirectionToDark, reachedFromLightSide),
+      skippedLightness,
+      fn.mul(direction, bandWidth, enteredForbiddenRange),
     ),
   );
-  const skippedBandShift = fn.mul(direction, bandWidth, skippedForbiddenRange);
-  return fn.clamp01(fn.add(nextLightness, skippedBandShift));
 }
 
 /**

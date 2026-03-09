@@ -92,19 +92,63 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         });
       }
 
-      test("layer-contrast progression keeps increasing after the forbidden band", async ({
+      test("layer-contrast matches layer below the forbidden band", async ({
         q,
       }) => {
+        const layerLayers = q.region("ak-layer-<number>").first();
         const contrastLayers = q.region("ak-layer-contrast-<number>").first();
-        const contrastLayer40 = query(contrastLayers).region("40").nth(4);
-        const contrastLayer4010 = query(contrastLayer40).region("10").first();
-        const contrastLayer4030 = query(contrastLayer40).region("30").first();
-        const contrastLayer4060 = query(contrastLayer40).region("60").first();
-        const diff10 = await getLightnessDiff(contrastLayer4010);
-        const diff30 = await getLightnessDiff(contrastLayer4030);
-        const diff60 = await getLightnessDiff(contrastLayer4060);
-        test.expect(diff30).toBeGreaterThan(diff10 + 0.05);
-        test.expect(diff60).toBeGreaterThan(diff30 + 0.05);
+        const layer0 = query(layerLayers).region("0").first();
+        const contrast0 = query(contrastLayers).region("0").first();
+        const layer20 = query(layer0).region("20").first();
+        const contrast20 = query(contrast0).region("20").first();
+        const layerLightness = await getL(layer20);
+        const contrastLightness = await getL(contrast20);
+        test
+          .expect(Math.abs(layerLightness - contrastLightness))
+          .toBeLessThan(0.01);
+      });
+
+      test("layer-contrast jumps when crossing the forbidden band", async ({
+        q,
+      }) => {
+        const jumpParent = 0;
+        const jumpChild = scheme === "light" ? 30 : 50;
+        const jumpParentIndex = jumpParent / 10;
+        const layerLayers = q.region("ak-layer-<number>").first();
+        const contrastLayers = q.region("ak-layer-contrast-<number>").first();
+        const layerParent = query(layerLayers)
+          .region(String(jumpParent))
+          .nth(jumpParentIndex);
+        const contrastParent = query(contrastLayers)
+          .region(String(jumpParent))
+          .nth(jumpParentIndex);
+        const layerChild = query(layerParent).region(String(jumpChild)).first();
+        const contrastChild = query(contrastParent)
+          .region(String(jumpChild))
+          .first();
+        const layerDiff = await getLightnessDiff(layerChild);
+        const contrastDiff = await getLightnessDiff(contrastChild);
+        test.expect(contrastDiff).toBeGreaterThan(layerDiff + 0.05);
+      });
+
+      test("layer-contrast keeps progressing after the jump", async ({ q }) => {
+        const progressionParent = 0;
+        const progressionValues =
+          scheme === "light" ? [20, 30, 40] : [40, 50, 60];
+        const progressionParentIndex = progressionParent / 10;
+        const contrastLayers = q.region("ak-layer-contrast-<number>").first();
+        const contrastParent = query(contrastLayers)
+          .region(String(progressionParent))
+          .nth(progressionParentIndex);
+        const diffs = await Promise.all(
+          progressionValues.map((value) =>
+            getLightnessDiff(
+              query(contrastParent).region(String(value)).first(),
+            ),
+          ),
+        );
+        test.expect(diffs[1]).toBeGreaterThan(diffs[0] + 0.02);
+        test.expect(diffs[2]).toBeGreaterThan(diffs[1] + 0.02);
       });
     });
   }
