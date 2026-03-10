@@ -12,7 +12,7 @@ import { join } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import { glob } from "astro/loaders";
 import { jsdoc } from "./lib/jsdoc-loader.ts";
-import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
+import { FrameworkSchema, ReferenceSchema, TagSchema } from "./lib/schemas.ts";
 
 function generateExampleId(options: { entry: string }) {
   return options.entry
@@ -112,6 +112,7 @@ const references = defineCollection({
       // watch: true,
     },
   ),
+  schema: ReferenceSchema,
 });
 
 export const collections = {

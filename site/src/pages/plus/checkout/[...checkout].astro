@@ -29,7 +29,7 @@ import { getPlusPrice, processCheckout } from "#app/lib/stripe.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
 import { SignUp } from "@clerk/astro/components";
 import { formatDistanceToNow } from "date-fns";
-import { z } from "zod";
+import { z } from "astro/zod";
 import Layout from "./_layout.astro";
 
 export const prerender = false;

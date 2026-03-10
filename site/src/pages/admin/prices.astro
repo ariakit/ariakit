@@ -12,11 +12,19 @@ import Select from "#app/components/select.astro";
 import SubmitButton from "#app/components/submit-button.astro";
 import { isAdmin } from "#app/lib/auth.ts";
 import { getPrices } from "#app/lib/kv.ts";
+import type { PriceData } from "#app/lib/schemas.ts";
 import { getPlusPriceKey, parsePlusPriceKey } from "#app/lib/stripe.ts";
 import { actions } from "astro:actions";
 import Layout from "./_layout.astro";
 import PriceCard from "./_price-card.astro";
 import { getCurrencyData, processFormRequest } from "./_utils.ts";
+
+interface PriceItem {
+  personal: PriceData;
+  team: PriceData;
+  countryCode?: string;
+  teamKey: string;
+}
 
 export const prerender = false;
 
@@ -30,15 +38,17 @@ if (formRequest) {
   return formRequest;
 }
 
-async function getPriceData() {
+async function getPriceData(): Promise<PriceItem[]> {
   const prices = await getPrices(Astro);
-  const personalPrices = prices.filter((price) => price.type === "personal");
-  return personalPrices.map((personal) => {
+  const personalPrices = prices.filter(
+    (price: PriceData) => price.type === "personal"
+  );
+  return personalPrices.map((personal: PriceData) => {
     const { countryCode } = parsePlusPriceKey(personal.key);
     const isTeamPrice = (price: typeof personal) => {
       return price.type === "team" && price.currency === personal.currency;
     };
-    const teamPrice = prices.find((price) => {
+    const teamPrice = prices.find((price: PriceData) => {
       if (!isTeamPrice(price)) return false;
       return countryCode === parsePlusPriceKey(price.key).countryCode;
     });

@@ -50,7 +50,7 @@ function isTsxFramework(
 }
 
 function getSource(source: typeof sourceProp) {
-  if (!source) return;
+  if (!source) return undefined;
   if ("files" in source) return source;
   if (!framework) return null;
   return source[framework] || null;

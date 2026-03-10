@@ -1,0 +1,91 @@
+diff --git a/node_modules/@astrojs/react/dist/index.js b/node_modules/@astrojs/react/dist/index.js
+index d1ae9a6..27db777 100644
+--- a/node_modules/@astrojs/react/dist/index.js
++++ b/node_modules/@astrojs/react/dist/index.js
+@@ -5,7 +5,28 @@ import {
+   versionsConfig
+ } from "./version.js";
+ import * as devalue from "devalue";
++import picomatch from "picomatch";
+ const FAST_REFRESH_PREAMBLE = react.preambleCode;
++function ensureArray(thing) {
++  if (Array.isArray(thing)) return thing;
++  if (thing == null) return [];
++  return [thing];
++}
++function normalizePath(path) {
++  return path.replace(/\\/g, "/");
++}
++function toRegExp(pattern) {
++  if (pattern instanceof RegExp) {
++    return pattern;
++  }
++  return picomatch.makeRe(normalizePath(pattern), { dot: true });
++}
++function compileFilterPatterns(include, exclude) {
++  return {
++    include: ensureArray(include).map(toRegExp),
++    exclude: ensureArray(exclude).map(toRegExp)
++  };
++}
+ function getRenderer(reactConfig) {
+   return {
+     name: "@astrojs/react",
+@@ -21,6 +42,7 @@ function optionsPlugin({
+ }) {
+   const virtualModule = "astro:react:opts";
+   const virtualModuleId = "\0" + virtualModule;
++  const compiled = include || exclude ? compileFilterPatterns(include, exclude) : void 0;
+   return {
+     name: "@astrojs/react:opts",
+     resolveId: {
+@@ -37,8 +59,8 @@ function optionsPlugin({
+       },
+       handler() {
+         const opts = {
+-          include,
+-          exclude,
++          include: compiled?.include,
++          exclude: compiled?.exclude,
+           experimentalReactChildren,
+           experimentalDisableStreaming
+         };
+diff --git a/node_modules/@astrojs/react/dist/server.js b/node_modules/@astrojs/react/dist/server.js
+index ddcf287..e00f0af 100644
+--- a/node_modules/@astrojs/react/dist/server.js
++++ b/node_modules/@astrojs/react/dist/server.js
+@@ -3,11 +3,32 @@ import React from "react";
+ import ReactDOM from "react-dom/server";
+ import { incrementId } from "./context.js";
+ import StaticHtml from "./static-html.js";
+-import { createFilter } from "@astrojs/internal-helpers/create-filter";
+ const slotName = (str) => str.trim().replace(/[-_]([a-z])/g, (_, w) => w.toUpperCase());
+ const reactTypeof = /* @__PURE__ */ Symbol.for("react.element");
+ const reactTransitionalTypeof = /* @__PURE__ */ Symbol.for("react.transitional.element");
+-const filter = opts?.include || opts?.exclude ? createFilter(opts.include, opts.exclude) : null;
++function normalizePath(path) {
++  return path.replace(/\\/g, "/");
++}
++function createFilterFromRegExps(includeMatchers, excludeMatchers) {
++  if (!includeMatchers.length && !excludeMatchers.length) {
++    return (id) => typeof id === "string" && !id.includes("\0");
++  }
++  return function(id) {
++    if (typeof id !== "string") return false;
++    if (id.includes("\0")) return false;
++    const pathId = normalizePath(id);
++    for (const matcher of excludeMatchers) {
++      matcher.lastIndex = 0;
++      if (matcher.test(pathId)) return false;
++    }
++    for (const matcher of includeMatchers) {
++      matcher.lastIndex = 0;
++      if (matcher.test(pathId)) return true;
++    }
++    return !includeMatchers.length;
++  };
++}
++const filter = opts?.include || opts?.exclude ? createFilterFromRegExps(opts.include ?? [], opts.exclude ?? []) : null;
+ async function check(Component, props, children, metadata) {
+   if (typeof Component === "object") {
+     return Component["$$typeof"].toString().slice("Symbol(".length).startsWith("react");

@@ -40,7 +40,6 @@ export interface JsDocFrameworkOptions {
 export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
   return {
     name: "jsdoc-loader",
-    schema: ReferenceSchema,
     async load(context: LoaderContext) {
       const logger = createLogger(context.logger);
 

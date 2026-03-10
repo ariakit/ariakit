@@ -57,6 +57,12 @@ export default defineConfig({
   }),
 
   vite: {
+    ssr: {
+      noExternal: ["@astrojs/internal-helpers"],
+      optimizeDeps: {
+        include: ["astro > picomatch"],
+      },
+    },
     plugins: [
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),

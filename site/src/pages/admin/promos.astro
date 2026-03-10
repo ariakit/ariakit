@@ -12,6 +12,7 @@ import { InlineLink } from "#app/components/inline-link.react.tsx";
 import Select from "#app/components/select.astro";
 import SubmitButton from "#app/components/submit-button.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
+import type { PromoData } from "#app/lib/schemas.ts";
 import { isAdmin } from "#app/lib/auth.ts";
 import { getAllPromos, getBestPromo } from "#app/lib/kv.ts";
 import { actions } from "astro:actions";
@@ -36,8 +37,10 @@ if (formRequest) {
 }
 
 const promos = await getAllPromos({ context: Astro, user: "any" });
-const salePromos = promos.filter((promo) => promo.type === "sale");
-const customerPromos = promos.filter((promo) => promo.type === "customer");
+const salePromos = promos.filter((promo: PromoData) => promo.type === "sale");
+const customerPromos = promos.filter(
+  (promo: PromoData) => promo.type === "customer"
+);
 const bestPromo = await getBestPromo(salePromos);
 
 const clerkInstanceUrl = await getClerkInstanceUrl(Astro);
