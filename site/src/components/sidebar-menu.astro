@@ -47,7 +47,7 @@ function isReferenceItem(item: SidebarMenuItem): item is ReferenceItem {
 }
 
 function getReferenceProps(item: SidebarMenuItem) {
-  if (!isReferenceItem(item)) return;
+  if (!isReferenceItem(item)) return undefined;
   const { href: _, ...referenceProps } = item;
   return referenceProps;
 }

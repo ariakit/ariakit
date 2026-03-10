@@ -8,7 +8,15 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { components } from "#app/components/content-components.astro";
+import ContentAdmonition from "#app/components/content-admonition.astro";
+import ContentCodeBlock from "#app/components/content-code-block.astro";
+import ContentDisclosure from "#app/components/content-disclosure.astro";
+import ContentHeading from "#app/components/content-heading.astro";
+import ContentLink from "#app/components/content-link.astro";
+import ContentListItem from "#app/components/content-list-item.astro";
+import ContentList from "#app/components/content-list.astro";
+import ContentParagraph from "#app/components/content-paragraph.astro";
+import ContentSeparator from "#app/components/content-separator.astro";
 import { markdownToHtml } from "#app/lib/content.ts";
 import { Markup } from "astro-remote";
 
@@ -19,6 +27,23 @@ interface Props {
 const { content } = Astro.props;
 
 const html = await markdownToHtml(content);
+const components = {
+  a: ContentLink,
+  p: ContentParagraph,
+  pre: ContentCodeBlock,
+  h1: ContentHeading,
+  h2: ContentHeading,
+  h3: ContentHeading,
+  h4: ContentHeading,
+  h5: ContentHeading,
+  h6: ContentHeading,
+  ul: ContentList,
+  ol: ContentList,
+  li: ContentListItem,
+  admonition: ContentAdmonition,
+  hr: ContentSeparator,
+  details: ContentDisclosure,
+};
 ---
 
 <Markup content={html} components={components} />

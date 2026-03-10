@@ -13,7 +13,15 @@ import {
   BoxPatternsRightOnly,
 } from "#app/components/box-patterns.react.tsx";
 import ContainerRightMenu from "#app/components/container-right-menu.astro";
-import { components } from "#app/components/content-components.astro";
+import ContentAdmonition from "#app/components/content-admonition.astro";
+import ContentCodeBlock from "#app/components/content-code-block.astro";
+import ContentDisclosure from "#app/components/content-disclosure.astro";
+import ContentHeading from "#app/components/content-heading.astro";
+import ContentLink from "#app/components/content-link.astro";
+import ContentListItem from "#app/components/content-list-item.astro";
+import ContentList from "#app/components/content-list.astro";
+import ContentParagraph from "#app/components/content-paragraph.astro";
+import ContentSeparator from "#app/components/content-separator.astro";
 import Meta from "#app/components/meta.astro";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
@@ -46,6 +54,23 @@ Astro.locals.framework = framework;
 
 const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;
+const components = {
+  a: ContentLink,
+  p: ContentParagraph,
+  pre: ContentCodeBlock,
+  h1: ContentHeading,
+  h2: ContentHeading,
+  h3: ContentHeading,
+  h4: ContentHeading,
+  h5: ContentHeading,
+  h6: ContentHeading,
+  ul: ContentList,
+  ol: ContentList,
+  li: ContentListItem,
+  admonition: ContentAdmonition,
+  hr: ContentSeparator,
+  details: ContentDisclosure,
+};
 const descriptionText = await descriptionToText(
   Description,
   framework,

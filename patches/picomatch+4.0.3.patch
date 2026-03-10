@@ -1,0 +1,26 @@
+--- a/node_modules/@astrojs/internal-helpers/node_modules/picomatch/package.json
++++ b/node_modules/@astrojs/internal-helpers/node_modules/picomatch/package.json
+@@ -6,11 +6,24 @@
+   "license": "MIT",
+   "files": [
+     "index.js",
+     "posix.js",
+     "lib"
+   ],
++  "exports": {
++    ".": {
++      "import": "./index.js",
++      "require": "./index.js",
++      "default": "./index.js"
++    },
++    "./posix": {
++      "import": "./posix.js",
++      "require": "./posix.js",
++      "default": "./posix.js"
++    }
++  },
+   "sideEffects": false,
+   "main": "index.js",
+   "engines": {
+     "node": ">=12"
+   },

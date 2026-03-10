@@ -30,9 +30,9 @@ invariant(framework, "Framework is required");
 const frameworkDetail = getFramework(framework);
 
 function getSource(source: Source | Record<Framework, Source>) {
-  if (!source) return;
+  if (!source) return undefined;
   if ("files" in source) return source;
-  if (!framework) return;
+  if (!framework) return undefined;
   return source[framework];
 }
 
