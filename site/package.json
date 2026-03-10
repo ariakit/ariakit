@@ -46,7 +46,7 @@
     "./*": "./src/examples/_lib/*"
   },
   "dependencies": {
-    "@astrojs/check": "0.9.6",
+    "@astrojs/check": "0.9.7",
     "@astrojs/cloudflare": "12.6.12",
     "@astrojs/react": "4.4.2",
     "@astrojs/solid-js": "5.1.3",
