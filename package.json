@@ -126,7 +126,7 @@
     "@vitest/coverage-v8": "4.0.18",
     "@vizzly-testing/cli": "0.29.6",
     "@wordpress/components": "32.3.0",
-    "astro": "6.0.1",
+    "astro": "6.0.2",
     "autoprefixer": "10.4.27",
     "babel-loader": "10.1.1",
     "babel-plugin-transform-rewrite-imports": "1.5.4",
@@ -211,6 +211,6 @@
     "vitest-fail-on-console": "0.10.1",
     "webpack": "5.105.4",
     "wrangler": "4.71.0",
-    "zod": "3.25.76"
+    "zod": "4.3.6"
   }
 }
