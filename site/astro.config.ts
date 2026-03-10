@@ -18,6 +18,7 @@ import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import type { Plugin } from "vite";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import {
   rehypeAdmonitions,
@@ -32,6 +33,24 @@ try {
 } catch (_error) {}
 
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+const workerdDependencyIncludes = ["@astrojs/internal-helpers > picomatch"];
+
+function workerdDependenciesPlugin(): Plugin {
+  return {
+    name: "workerd-dependencies",
+    configEnvironment(name, config) {
+      const isServerEnvironment = ["astro", "ssr", "prerender"].includes(name);
+      if (!isServerEnvironment) return;
+      if (config.optimizeDeps?.noDiscovery) return;
+      return {
+        optimizeDeps: {
+          include: workerdDependencyIncludes,
+        },
+      };
+    },
+  };
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -53,11 +72,19 @@ export default defineConfig({
 
   adapter: cloudflare({
     imageService: "compile",
-    platformProxy: { enabled: true },
   }),
 
   vite: {
+    resolve: {
+      alias: [
+        {
+          find: /^#app\/(.*)$/,
+          replacement: `${join(import.meta.dirname, "src")}/$1`,
+        },
+      ],
+    },
     plugins: [
+      workerdDependenciesPlugin(),
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],

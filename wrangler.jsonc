@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
-  "main": "./site/dist/_worker.js/index.js",
+  "main": "@astrojs/cloudflare/entrypoints/server",
   "preview_urls": false,
   "compatibility_date": "2025-11-27",
   "compatibility_flags": ["nodejs_compat"],

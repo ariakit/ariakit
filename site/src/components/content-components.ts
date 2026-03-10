@@ -1,4 +1,3 @@
----
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -13,8 +12,8 @@ import ContentCodeBlock from "./content-code-block.astro";
 import ContentDisclosure from "./content-disclosure.astro";
 import ContentHeading from "./content-heading.astro";
 import ContentLink from "./content-link.astro";
-import ContentListItem from "./content-list-item.astro";
 import ContentList from "./content-list.astro";
+import ContentListItem from "./content-list-item.astro";
 import ContentParagraph from "./content-paragraph.astro";
 import ContentSeparator from "./content-separator.astro";
 
@@ -35,4 +34,3 @@ export const components = {
   hr: ContentSeparator,
   details: ContentDisclosure,
 };
----
