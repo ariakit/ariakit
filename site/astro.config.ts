@@ -52,6 +52,7 @@ export default defineConfig({
   },
 
   adapter: cloudflare({
+    configPath: join(import.meta.dirname, "../wrangler.jsonc"),
     imageService: "compile",
     platformProxy: { enabled: true },
   }),

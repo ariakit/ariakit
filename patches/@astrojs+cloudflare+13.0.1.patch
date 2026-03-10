@@ -1,0 +1,15 @@
+diff --git a/node_modules/@astrojs/cloudflare/dist/index.js b/node_modules/@astrojs/cloudflare/dist/index.js
+index 4b435b7..31858a7 100644
+--- a/node_modules/@astrojs/cloudflare/dist/index.js
++++ b/node_modules/@astrojs/cloudflare/dist/index.js
+@@ -74,6 +74,10 @@ function createIntegration({
+                 return {
+                   ...entryWorkerConfig,
+                   name: "prerender",
++                  compatibility_flags: [
++                    ...entryWorkerConfig.compatibility_flags ?? [],
++                    "nodejs_compat"
++                  ],
+                   ...needsImagesBinding && !entryWorkerConfig.images && {
+                     images: { binding: imagesBindingName }
+                   }
