@@ -8,11 +8,11 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-import type { z } from "astro:content";
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
+import type { z } from "astro/zod";
 import type { FunctionLikeDeclaration } from "ts-morph";
 import { Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";

@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { z } from "zod";
+import { z } from "astro/zod";
 import { frameworks } from "./frameworks.ts";
 import { keys } from "./object.ts";
 import { parsePlusPriceKey } from "./stripe.ts";
