@@ -8,6 +8,8 @@
  */
 @import "./ariakit.css";
 
+@source "../../../packages/ariakit-ui/src/**";
+
 @theme {
   --container-wider: 92rem;
   --container-wide: 84rem;
@@ -17,6 +19,9 @@
   --container-overlap: 100.05rem;
 
   --leading-loose: 1.85;
+
+  --radius-playground: calc(var(--radius) * 3.5);
+  --spacing-playground: --spacing(0);
 }
 
 @theme inline {
@@ -64,8 +69,4 @@ astro-static-slot {
 html,
 body {
   @apply font-sans min-h-dvh antialiased;
-}
-
-body > * {
-  @apply ak-dark:scheme-dark;
 }

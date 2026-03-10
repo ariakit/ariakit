@@ -41,6 +41,7 @@
     "site",
     "templates",
     "packages/*solid*",
+    "packages/ariakit-ui",
     "examples/**/*.solid.tsx"
   ]
 }
