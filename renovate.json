@@ -44,6 +44,10 @@
       "matchPackageNames": ["/@radix-ui//"]
     },
     {
+      "groupName": "vite",
+      "matchPackageNames": ["vite", "/^@vitejs\\//"]
+    },
+    {
       "matchPackageNames": [
         "@wordpress/components",
         "cross-env",
