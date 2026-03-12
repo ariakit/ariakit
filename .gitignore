@@ -5,6 +5,8 @@
 dist
 test-results
 playwright-report
+.playwright
+.playwright-cli
 
 # dependencies
 node_modules
