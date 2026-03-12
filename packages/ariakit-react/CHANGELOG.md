@@ -1,5 +1,10 @@
 # @ariakit/react
 
+## 0.4.23
+
+- Fixed [`ComboboxDisclosure`](https://ariakit.org/reference/combobox-disclosure) so pressing Escape closes [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) when the popover starts open and the [`Combobox`](https://ariakit.org/reference/combobox) input is auto-focused.
+- Updated dependencies: `@ariakit/react-core@0.4.23`
+
 ## 0.4.22
 
 - Fixed [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio) so controlled reset states are reflected correctly by the menu item and [`MenuItemCheck`](https://ariakit.org/reference/menu-item-check).
