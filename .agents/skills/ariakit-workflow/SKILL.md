@@ -5,6 +5,19 @@ description: Workflow instructions for this repository. Always use when planning
 
 # Ariakit Workflow
 
+## General
+
 - Whenever you learn something new worth noting about workflow or code standards, make sure to update the agent’s skills.
 - If a skill change updates code standards or formatting rules, apply the change across existing files in the repository so the codebase stays in sync with the skills.
 - Add changesets in the `.changeset` folder for user-facing updates such as bug fixes, performance improvements, and new features. Refactors and other changes that do not affect shipped code should not require changesets.
+
+## Bug Reports
+
+- All bug report investigations should produce a workaround before any library fix is proposed or implemented.
+- Start by reproducing the bug in a sandbox or example and add an automated test that fails for the reported behavior.
+- If the user asks for a checkpoint, commit the failing repro state on a dedicated branch before continuing.
+- Keep the library code unchanged while investigating the workaround. The workaround should be demonstrated first in userland code.
+- Ariakit workarounds should follow the repository pattern: prefer a small consumer-side change that users can apply in their own app, such as an explicit prop override, a local event handler, a store method call, or a more specific callback condition.
+- A workaround must preserve the user-facing features that motivated the bug report whenever possible. Do not remove components or disable behavior unless that tradeoff is explicitly unavoidable and clearly stated.
+- Validate the workaround in the same repro sandbox by updating the userland code until the previously failing test passes.
+- When applying a workaround in a sandbox or example, add a short `TODO` comment with the GitHub issue URL so it is clear that the code is temporary and can be removed after the fix lands.
