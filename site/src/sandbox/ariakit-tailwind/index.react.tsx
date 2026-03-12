@@ -91,9 +91,60 @@ const layer = cv({
   },
 });
 
+const frame = cv({
+  variants: {
+    $rounded: {
+      false: "",
+      sm: "ak-frame-rounded-sm",
+      md: "ak-frame-rounded-md",
+      lg: "ak-frame-rounded-lg",
+      xl: "ak-frame-rounded-xl",
+      "2xl": "ak-frame-rounded-2xl",
+      "3xl": "ak-frame-rounded-3xl",
+    },
+    $p: {
+      0: "ak-frame-p-0",
+      1: "ak-frame-p-1",
+      2: "ak-frame-p-2",
+      3: "ak-frame-p-3",
+      4: "ak-frame-p-",
+      5: "ak-frame-p-5",
+      6: "ak-frame-p-6",
+      7: "ak-frame-p-7",
+      8: "ak-frame-p-8",
+      9: "ak-frame-p-9",
+      10: "ak-frame-p-10",
+    },
+    $border: {
+      true: "ak-frame-border-(--border-width)",
+      ring: "ak-frame-ring-(--border-width)",
+      bordering: "ak-frame-bordering-(--border-width)",
+    },
+    $borderWidth: {
+      0: "[border-width:0px]",
+      1: "[border-width:1px]",
+      2: "[border-width:2px]",
+      3: "[border-width:3px]",
+      4: "[border-width:4px]",
+    },
+  },
+  defaultVariants: {
+    $p: 1,
+    $rounded: "2xl",
+    $borderWidth: 1,
+  },
+  computed: (context) => {
+    if (context.variants.$rounded) {
+      context.addClass("ak-frame");
+    }
+  },
+});
+
+const layerFrame = cv({ extend: [layer, frame] });
+
 interface LayerProps
   extends ComponentProps<"section">,
-    VariantProps<typeof layer> {
+    VariantProps<typeof layerFrame> {
   orientation?: "vertical" | "horizontal";
 }
 
@@ -104,18 +155,20 @@ function Layer({
   ...props
 }: LayerProps) {
   const id = useId();
-  const [layerProps, rest] = splitProps(props, layer);
-  title ??= Object.values(layerProps)
-    .find((value) => typeof value === "number")
+  const [layerProps, rest] = splitProps(props, layerFrame);
+  title ??= Object.entries(layerProps)
+    .find(([key, value]) => {
+      if (!layer.variantKeys.includes(key as any)) return false;
+      return typeof value === "number";
+    })?.[1]
     ?.toString();
   return (
     <section
       aria-labelledby={id}
       {...rest}
-      {...layer.jsx({
+      {...layerFrame.jsx({
         ...layerProps,
-        class:
-          "ak-frame ak-frame-2xl/1 ak-edge-20 ak-frame-bordering font-mono flex gap-1 flex-col",
+        class: "font-mono flex gap-1 flex-col",
       })}
     >
       <div id={id}>{title}</div>

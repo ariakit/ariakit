@@ -135,7 +135,7 @@
     "canvas-confetti": "1.9.4",
     "chalk": "5.6.2",
     "chokidar": "5.0.0",
-    "clava": "0.1.18",
+    "clava": "0.2.0",
     "clsx": "2.1.1",
     "concurrently": "9.2.1",
     "cross-env": "10.1.0",

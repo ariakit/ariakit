@@ -95,19 +95,6 @@ function getNumberTokens({
 }
 
 /**
- * Returns quoted numeric tokens for the most common spacing values, with finer
- * steps for smaller values and coarser steps for larger values.
- */
-function getSpacingNumberTokens() {
-  return [
-    getNumberTokens({ max: 4, step: 0.5 }),
-    getNumberTokens({ min: 5, max: 12, step: 1 }),
-    getNumberTokens({ min: 14, max: 64, step: 4 }),
-    getNumberTokens({ min: 72, max: 96, step: 8 }),
-  ];
-}
-
-/**
  * Parses a numeric utility token such as `10` or `45`.
  */
 function getNumericTokenValue(pattern: string, options?: NumbersOptions) {
@@ -1554,30 +1541,22 @@ utility(
   "frame-*",
   set(inputs.frameRadius, fn.value(radius, "[*]")),
   set(inputs.framePadding, fn.modifier(spacing, "[*]")),
-  set(
-    inputs.framePadding,
-    fn.spacing(fn.modifier("number", "[number]", ...getSpacingNumberTokens())),
-  ),
+  set(inputs.framePadding, fn.spacing(fn.modifier("number", "[number]"))),
 );
 
 utility("frame-rounded-*", set(inputs.frameRadius, fn.value(radius, "[*]")));
+utility("frame-rounded-none", set(inputs.frameRadius, "0px"));
 
 utility(
   "frame-p-*",
   set(inputs.framePadding, fn.value(spacing, "[*]")),
-  set(
-    inputs.framePadding,
-    fn.spacing(fn.value("number", "[number]", ...getSpacingNumberTokens())),
-  ),
+  set(inputs.framePadding, fn.spacing(fn.value("number", "[number]"))),
 );
 
 const frameMargin = utility(
   "frame-m-*",
   set(inputs.frameMargin, fn.value(spacing, "[*]")),
-  set(
-    inputs.frameMargin,
-    fn.spacing(fn.value("number", "[number]", ...getSpacingNumberTokens())),
-  ),
+  set(inputs.frameMargin, fn.spacing(fn.value("number", "[number]"))),
 );
 utility("-frame-m-*", getNegatedDeclarations(frameMargin));
 
