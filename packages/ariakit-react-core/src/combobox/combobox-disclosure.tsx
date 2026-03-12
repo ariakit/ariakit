@@ -2,7 +2,8 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
-import { useEvent } from "../utils/hooks.ts";
+import { useEvent, useSafeLayoutEffect } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
@@ -80,7 +81,15 @@ export const useComboboxDisclosure = createHook<
     store.setDisclosureElement(baseElement);
   });
 
-  const open = store.useState("open");
+  const baseElement = useStoreState(store, "baseElement");
+  const open = useStoreState(store, "open");
+
+  // The combobox input should remain the disclosure element so focus and Escape
+  // handling keep working when the popover is already open on mount.
+  useSafeLayoutEffect(() => {
+    if (!baseElement) return;
+    store.setDisclosureElement(baseElement);
+  }, [store, baseElement]);
 
   props = {
     children,
