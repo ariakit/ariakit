@@ -207,7 +207,7 @@
     "unist-util-visit": "5.1.0",
     "use-local-storage-state": "19.5.0",
     "vite": "8.0.0",
-    "vite-plugin-solid": "2.11.0",
+    "vite-plugin-solid": "2.11.11",
     "vitest": "4.1.0",
     "vitest-fail-on-console": "0.10.1",
     "webpack": "5.105.4",
