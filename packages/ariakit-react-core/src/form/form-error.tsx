@@ -5,6 +5,7 @@ import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -71,7 +72,7 @@ export const useFormError = createHook<TagName, FormErrorOptions>(
       [id, name, getItemProp],
     );
 
-    const children = store.useState(() => {
+    const children = useStoreState(store, () => {
       const error = store?.getError(name);
       if (error == null) return;
       if (!store?.getFieldTouched(name)) return;

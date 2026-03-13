@@ -2,6 +2,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useFormContext } from "./form-context.tsx";
@@ -35,7 +36,7 @@ export const useFormSubmit = createHook<TagName, FormSubmitOptions>(
 
     props = {
       type: "submit",
-      disabled: store.useState("submitting"),
+      disabled: useStoreState(store, "submitting"),
       ...props,
     };
 

@@ -7,6 +7,7 @@ import type { ElementType, KeyboardEvent, MouseEvent } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useEvent, useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -97,12 +98,12 @@ export const useTagList = createHook<TagName, TagListOptions>(
 
     props = useComposite({ store, ...props });
 
-    const orientation = store.useState((state) =>
+    const orientation = useStoreState(store, (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
-    const items = store.useState((state) => state.renderedItems);
+    const items = useStoreState(store, (state) => state.renderedItems);
     const itemIds = items.filter((item) => !!item.value).map((item) => item.id);
-    const labelId = store.useState((state) => state.labelElement?.id);
+    const labelId = useStoreState(store, (state) => state.labelElement?.id);
 
     // Remove aria attributes from tha TagList element and add them to a
     // separate div that will serve as the accessible listbox element.

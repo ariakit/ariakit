@@ -82,10 +82,10 @@ export const useDisclosureContent = createHook<
   const ref = useRef<HTMLType>(null);
   const id = useId(props.id);
   const [transition, setTransition] = useState<TransitionState>(null);
-  const open = store.useState("open");
-  const mounted = store.useState("mounted");
-  const animated = store.useState("animated");
-  const contentElement = store.useState("contentElement");
+  const open = useStoreState(store, "open");
+  const mounted = useStoreState(store, "mounted");
+  const animated = useStoreState(store, "animated");
+  const contentElement = useStoreState(store, "contentElement");
   const otherElement = useStoreState(store.disclosure, "contentElement");
 
   // This is a workaround to avoid the content element from being reset to null

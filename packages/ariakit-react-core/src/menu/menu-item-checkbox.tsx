@@ -5,6 +5,7 @@ import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
 import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import { useInitialValue } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -104,7 +105,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
     }, [store, name, value, checked]);
 
     const checkboxStore = useCheckboxStore({
-      value: store.useState((state) => state.values[name]),
+      value: useStoreState(store, (state) => state.values[name]),
       setValue(internalValue) {
         store?.setValue(name, () => {
           if (checked === undefined) return internalValue;

@@ -5,6 +5,7 @@ import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -56,7 +57,7 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
       [store],
     );
 
-    const role = store.useState((state) =>
+    const role = useStoreState(store, (state) =>
       state.type === "description" ? "tooltip" : "none",
     );
 

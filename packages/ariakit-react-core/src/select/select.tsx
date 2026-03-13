@@ -20,6 +20,7 @@ import {
   useMergeRefs,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { SelectArrow } from "./select-arrow.tsx";
@@ -91,9 +92,9 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   const onKeyDownProp = props.onKeyDown;
   const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
   const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
-  const placement = store.useState("placement");
+  const placement = useStoreState(store, "placement");
   const dir = placement.split("-")[0] as BasePlacement;
-  const value = store.useState("value");
+  const value = useStoreState(store, "value");
   const multiSelectable = Array.isArray(value);
 
   const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
@@ -162,10 +163,10 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     setAutofill(false);
   }, [value]);
 
-  const labelId = store.useState((state) => state.labelElement?.id);
+  const labelId = useStoreState(store, (state) => state.labelElement?.id);
   const label = props["aria-label"];
   const labelledBy = props["aria-labelledby"] || labelId;
-  const items = store.useState((state) => {
+  const items = useStoreState(store, (state) => {
     if (!name) return;
     return state.items;
   });
@@ -261,7 +262,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     </>
   );
 
-  const contentElement = store.useState("contentElement");
+  const contentElement = useStoreState(store, "contentElement");
 
   props = {
     role: "combobox",

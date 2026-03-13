@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ReactNode } from "react";
+import { useStoreState } from "../utils/store.tsx";
 import { useComboboxContext } from "./combobox-context.tsx";
 import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
 
@@ -36,7 +37,7 @@ export function ComboboxValue({ store, children }: ComboboxValueProps = {}) {
       "ComboboxValue must receive a `store` prop or be wrapped in a ComboboxProvider component.",
   );
 
-  const value = store.useState("value");
+  const value = useStoreState(store, "value");
 
   if (children) {
     return children(value);

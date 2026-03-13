@@ -81,10 +81,11 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const id = useId(props.id);
 
     const onKeyDownProp = props.onKeyDown;
-    const dir = store.useState(
+    const dir = useStoreState(
+      store,
       (state) => state.placement.split("-")[0] as BasePlacement,
     );
-    const orientation = store.useState((state) =>
+    const orientation = useStoreState(store, (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
     const isHorizontal = orientation !== "vertical";
@@ -150,7 +151,7 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     );
 
     const ariaLabelledBy = useAriaLabelledBy({ store, ...props });
-    const mounted = store.useState("mounted");
+    const mounted = useStoreState(store, "mounted");
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 

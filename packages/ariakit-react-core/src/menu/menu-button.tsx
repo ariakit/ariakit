@@ -200,7 +200,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
         ? getPopupItemRole(parentContentElement, "menuitem")
         : undefined;
 
-    const contentElement = store.useState("contentElement");
+    const contentElement = useStoreState(store, "contentElement");
 
     props = {
       id,
