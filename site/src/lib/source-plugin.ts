@@ -16,7 +16,7 @@ import { resolve as resolveImportMeta } from "import-meta-resolve";
 import prettier from "prettier";
 import { readPackageUpSync } from "read-pkg-up";
 import ts from "typescript";
-import type { Plugin } from "vite";
+import type { HookHandler, Plugin } from "vite";
 import {
   getFramework,
   getFrameworkByFilename,
@@ -58,17 +58,9 @@ interface FlattenedCacheData {
 
 const flattenedFileCache = new Map<string, FlattenedCacheData>();
 
-interface ResolvedImport {
-  id: string;
-}
-
-interface SourcePluginContext {
-  addWatchFile(id: string): void;
-  resolve(
-    id: string,
-    importer?: string,
-  ): Promise<ResolvedImport | null> | ResolvedImport | null;
-}
+type SourcePluginContext = ThisParameterType<
+  HookHandler<NonNullable<Plugin["load"]>>
+>;
 
 /**
  * Compute a stable hash for a given string content.
