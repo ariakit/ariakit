@@ -38,7 +38,10 @@ export function withFramework(
   if (!id) {
     throw new Error(`Cannot parse preview id from ${dirname}`);
   }
-  const frameworkNames = getPreviewFramworks(dirname);
+  const frameworkNames = id.includes("nextjs")
+    ? (["react"] as const)
+    : getPreviewFramworks(dirname);
+
   for (const framework of frameworkNames) {
     test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page }) => {
