@@ -15,7 +15,6 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { resolve as resolveImportMeta } from "import-meta-resolve";
 import prettier from "prettier";
 import { readPackageUpSync } from "read-pkg-up";
-import type { PluginContext } from "rollup";
 import ts from "typescript";
 import type { Plugin } from "vite";
 import {
@@ -58,6 +57,18 @@ interface FlattenedCacheData {
 }
 
 const flattenedFileCache = new Map<string, FlattenedCacheData>();
+
+interface ResolvedImport {
+  id: string;
+}
+
+interface SourcePluginContext {
+  addWatchFile(id: string): void;
+  resolve(
+    id: string,
+    importer?: string,
+  ): Promise<ResolvedImport | null> | ResolvedImport | null;
+}
 
 /**
  * Compute a stable hash for a given string content.
@@ -195,7 +206,7 @@ function resolveExternalImportPath(id: string, importer: string) {
  * Resolve an import to a full path
  */
 async function resolveImport(
-  context: PluginContext,
+  context: SourcePluginContext,
   id: string,
   importer: string,
 ) {
@@ -248,7 +259,7 @@ function collectDependencyFromResolved(
 }
 
 async function addFrameworkDependenciesToFile(
-  context: PluginContext,
+  context: SourcePluginContext,
   filePath: string,
   file: SourceFile,
 ) {
@@ -269,7 +280,7 @@ async function addFrameworkDependenciesToFile(
  * placement under `source.sources`.
  */
 async function loadSourceFileCached(
-  context: PluginContext,
+  context: SourcePluginContext,
   id: string,
 ): Promise<CachedFileData> {
   const content = await fs.promises.readFile(id, "utf-8");
@@ -299,7 +310,7 @@ async function loadSourceFileCached(
  * Process a single file and extract its dependencies
  */
 async function processFile(
-  context: PluginContext,
+  context: SourcePluginContext,
   source: Source,
   id: string,
   processedModules = new Set<string>(),
@@ -324,7 +335,7 @@ async function processFile(
  * named imports that target utils members.
  */
 async function rewriteAliasesToRelativeForMerge(
-  context: PluginContext,
+  context: SourcePluginContext,
   files: Record<string, SourceFile>,
 ) {
   const out: Record<string, SourceFile> = {};
