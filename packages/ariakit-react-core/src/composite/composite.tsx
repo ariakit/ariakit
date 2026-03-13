@@ -26,6 +26,7 @@ import {
   useTransactionState,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -108,7 +109,7 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
 function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
-  const activeItem = store.useState((state) =>
+  const activeItem = useStoreState(store, (state) =>
     getEnabledItem(store, state.activeId),
   );
   useEffect(() => {
@@ -154,7 +155,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const ref = useRef<HTMLType>(null);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const scheduleFocus = useScheduleFocus(store);
-    const moves = store.useState("moves");
+    const moves = useStoreState(store, "moves");
 
     const [, setBaseElement] = useTransactionState(
       composite ? store.setBaseElement : null,
@@ -198,8 +199,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       }
     }, [store, moves, composite]);
 
-    const activeId = store.useState("activeId");
-    const virtualFocus = store.useState("virtualFocus");
+    const activeId = useStoreState(store, "activeId");
+    const virtualFocus = useStoreState(store, "virtualFocus");
 
     // At this point, if the activeId has changed and we still have a
     // previousElement, this means that the previousElement hasn't been blurred,
@@ -426,7 +427,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       [store],
     );
 
-    const activeDescendant = store.useState((state) => {
+    const activeDescendant = useStoreState(store, (state) => {
       if (!store) return;
       if (!composite) return;
       if (!state.virtualFocus) return;
@@ -445,7 +446,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       onKeyDown,
     };
 
-    const focusable = store.useState(
+    const focusable = useStoreState(
+      store,
       (state) => composite && (state.virtualFocus || state.activeId === null),
     );
 

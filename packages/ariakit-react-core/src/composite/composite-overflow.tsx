@@ -2,6 +2,7 @@ import type { CSSProperties, ElementType, FocusEvent } from "react";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
 import { useEvent } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { CompositeOverflowStore } from "./composite-overflow-store.ts";
@@ -47,7 +48,7 @@ export const useCompositeOverflow = createHook<
     store.show();
   });
 
-  const mounted = store.useState("mounted");
+  const mounted = useStoreState(store, "mounted");
 
   const getStyle = (styleProp?: CSSProperties) =>
     mounted ? styleProp : { ...hiddenStyle, ...styleProp };

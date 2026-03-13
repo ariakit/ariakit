@@ -10,6 +10,7 @@ import {
   useUpdateEffect,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FormScopedContextProvider, useFormContext } from "./form-context.tsx";
@@ -62,10 +63,10 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
   );
 
   const ref = useRef<HTMLType>(null);
-  const values = store.useState("values");
-  const submitSucceed = store.useState("submitSucceed");
-  const submitFailed = store.useState("submitFailed");
-  const items = store.useState("items");
+  const values = useStoreState(store, "values");
+  const submitSucceed = useStoreState(store, "submitSucceed");
+  const submitFailed = useStoreState(store, "submitFailed");
+  const items = useStoreState(store, "items");
   const defaultValues = useInitialValue(values);
 
   useEffect(

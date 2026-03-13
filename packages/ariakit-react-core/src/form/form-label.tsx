@@ -6,6 +6,7 @@ import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -78,7 +79,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
       [id, name, getItemProp],
     );
 
-    const field = store.useState((state) =>
+    const field = useStoreState(store, (state) =>
       state.items.find((item) => item.type === "field" && item.name === name),
     );
     const fieldTagName = useTagName(field?.element, "input");

@@ -19,6 +19,7 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -246,14 +247,14 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         "Popover must receive a `store` prop or be wrapped in a PopoverProvider component.",
     );
 
-    const arrowElement = store.useState("arrowElement");
-    const anchorElement = store.useState("anchorElement");
-    const disclosureElement = store.useState("disclosureElement");
-    const popoverElement = store.useState("popoverElement");
-    const contentElement = store.useState("contentElement");
-    const placement = store.useState("placement");
-    const mounted = store.useState("mounted");
-    const rendered = store.useState("rendered");
+    const arrowElement = useStoreState(store, "arrowElement");
+    const anchorElement = useStoreState(store, "anchorElement");
+    const disclosureElement = useStoreState(store, "disclosureElement");
+    const popoverElement = useStoreState(store, "popoverElement");
+    const contentElement = useStoreState(store, "contentElement");
+    const placement = useStoreState(store, "placement");
+    const mounted = useStoreState(store, "mounted");
+    const rendered = useStoreState(store, "rendered");
 
     const defaultArrowElementRef = useRef<HTMLElement | null>(null);
 

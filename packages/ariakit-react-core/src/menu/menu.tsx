@@ -78,10 +78,10 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const [initialFocusRef, setInitialFocusRef] =
     useState<MutableRefObject<HTMLElement | null>>();
 
-  const autoFocusOnShowState = store.useState("autoFocusOnShow");
-  const initialFocus = store.useState("initialFocus");
-  const baseElement = store.useState("baseElement");
-  const items = store.useState("renderedItems");
+  const autoFocusOnShowState = useStoreState(store, "autoFocusOnShow");
+  const initialFocus = useStoreState(store, "initialFocus");
+  const baseElement = useStoreState(store, "baseElement");
+  const items = useStoreState(store, "renderedItems");
 
   // Sets the initial focus ref.
   useEffect(() => {

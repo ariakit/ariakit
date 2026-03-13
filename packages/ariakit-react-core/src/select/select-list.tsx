@@ -18,6 +18,7 @@ import {
   useTransactionState,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -68,11 +69,11 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     );
 
     const id = useId(props.id);
-    const value = store.useState("value");
+    const value = useStoreState(store, "value");
     const multiSelectable = Array.isArray(value);
     const [defaultValue, setDefaultValue] = useState(value);
 
-    const mounted = store.useState("mounted");
+    const mounted = useStoreState(store, "mounted");
 
     // Stores the intial value so we can reset it later when Escape is pressed
     useEffect(() => {
@@ -159,7 +160,8 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
       };
     }
 
-    const labelId = store.useState(
+    const labelId = useStoreState(
+      store,
       (state) => headingId || state.labelElement?.id,
     );
 

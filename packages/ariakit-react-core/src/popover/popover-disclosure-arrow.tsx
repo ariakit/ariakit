@@ -1,6 +1,7 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useMemo } from "react";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { usePopoverContext } from "./popover-context.tsx";
@@ -43,7 +44,10 @@ export const usePopoverDisclosureArrow = createHook<
       "PopoverDisclosureArrow must be wrapped in a PopoverDisclosure component.",
   );
 
-  const position = store.useState((state) => placement || state.placement);
+  const position = useStoreState(
+    store,
+    (state) => placement || state.placement,
+  );
   const dir = position.split("-")[0] as BasePlacement;
   const points = pointsMap[dir];
 

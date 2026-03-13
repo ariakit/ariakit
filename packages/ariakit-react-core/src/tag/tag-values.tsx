@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ReactNode } from "react";
+import { useStoreState } from "../utils/store.tsx";
 import { useTagContext } from "./tag-context.tsx";
 import type { TagStore, TagStoreState } from "./tag-store.ts";
 
@@ -46,7 +47,7 @@ export function TagValues({ store, children }: TagValuesProps = {}) {
       "TagValues must receive a `store` prop or be wrapped in a TagProvider component.",
   );
 
-  const values = store.useState("values");
+  const values = useStoreState(store, "values");
 
   if (children) {
     return children(values);

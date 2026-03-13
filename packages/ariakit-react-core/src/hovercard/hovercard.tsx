@@ -30,6 +30,7 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -75,7 +76,7 @@ function useAutoFocusOnHide({
   ...props
 }: HovercardProps & { store: HovercardStore }) {
   const [autoFocusOnHide, setAutoFocusOnHide] = useState(false);
-  const mounted = store.useState("mounted");
+  const mounted = useStoreState(store, "mounted");
 
   // Resets autoFocusOnHide
   useEffect(() => {
@@ -160,8 +161,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       disablePointerEventsOnApproach,
     );
 
-    const open = store.useState("open");
-    const mounted = store.useState("mounted");
+    const open = useStoreState(store, "open");
+    const mounted = useStoreState(store, "mounted");
 
     // Checks whether the mouse is moving toward the hovercard. If not, hide the
     // card after a short delay (hideTimeout).
@@ -337,7 +338,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     props = useAutoFocusOnHide({ store, ...props });
 
     // If the hovercard is modal, we should always autoFocus on show.
-    const autoFocusOnShow = store.useState(
+    const autoFocusOnShow = useStoreState(
+      store,
       (state) => modal || state.autoFocusOnShow,
     );
 

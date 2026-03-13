@@ -1,5 +1,6 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -35,7 +36,7 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
         "ComboboxLabel must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const comboboxId = store.useState((state) => state.baseElement?.id);
+    const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
 
     props = {
       htmlFor: comboboxId,

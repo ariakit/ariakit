@@ -3,6 +3,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import type { CompositeRowOptions } from "../composite/composite-row.tsx";
 import { useCompositeRow } from "../composite/composite-row.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useSelectContext } from "./select-context.tsx";
@@ -37,7 +38,7 @@ export const useSelectRow = createHook<TagName, SelectRowOptions>(
         "SelectRow must be wrapped in a SelectList or SelectPopover component",
     );
 
-    const listElement = store.useState("listElement");
+    const listElement = useStoreState(store, "listElement");
     const popupRole = getPopupRole(listElement);
     const role = popupRole === "grid" ? "row" : "presentation";
 
