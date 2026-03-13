@@ -78,7 +78,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
       };
     }, [setList, value]);
 
-    const match = value != null && matches && matches?.includes(value);
+    const match = value != null && matches?.includes(value);
 
     // If the item is not in the list, don't render it.
     if (!match) return null;
