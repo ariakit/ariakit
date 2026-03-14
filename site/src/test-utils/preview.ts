@@ -8,7 +8,7 @@ import { visualTest } from "./visual.ts";
 
 const SITE_SRC_PATH = resolve(import.meta.dirname, "..");
 
-export function getPreviewId(dirname: string) {
+function getPreviewId(dirname: string) {
   const relativeDirname = relative(SITE_SRC_PATH, dirname);
   if (!relativeDirname) {
     return null;
