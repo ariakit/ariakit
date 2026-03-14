@@ -94,21 +94,24 @@ function shouldUseVizzly() {
   return process.env.USE_VIZZLY === "true";
 }
 
-export function getVisualSnapshotArg(snapshotDir: string, name: string) {
-  const snapshotPath = resolve(VISUAL_SNAPSHOT_DIR, name);
+export function getVisualSnapshotArg(
+  snapshotDir: string,
+  snapshotName: string,
+) {
+  const snapshotPath = resolve(VISUAL_SNAPSHOT_DIR, snapshotName);
   return relative(snapshotDir, snapshotPath);
 }
 
 export async function withVisualSnapshotInfo(
   testInfo: Pick<TestInfo, "snapshotDir" | "snapshotSuffix">,
-  fn: () => Promise<void>,
+  callback: () => Promise<void>,
 ) {
   const previousSnapshotDir = testInfo.snapshotDir;
   const previousSnapshotSuffix = testInfo.snapshotSuffix;
   testInfo.snapshotDir = VISUAL_SNAPSHOT_DIR;
   testInfo.snapshotSuffix = "";
   try {
-    await fn();
+    await callback();
   } finally {
     testInfo.snapshotDir = previousSnapshotDir;
     testInfo.snapshotSuffix = previousSnapshotSuffix;
