@@ -59,7 +59,9 @@ jobs:
                   return jobs;
                 }
               }
-              throw new Error("Exceeded workflow job pagination limit");
+              throw new Error(
+                `Exceeded workflow job pagination limit of ${maxPages} pages (${maxPages * perPage} jobs)`,
+              );
             };
             const listWorkflowRunArtifacts = async () => {
               const artifacts = [];
@@ -77,7 +79,9 @@ jobs:
                   return artifacts;
                 }
               }
-              throw new Error("Exceeded workflow artifact pagination limit");
+              throw new Error(
+                `Exceeded workflow artifact pagination limit of ${maxPages} pages (${maxPages * perPage} artifacts)`,
+              );
             };
             const jobs = await listWorkflowRunJobs();
             const artifacts = await listWorkflowRunArtifacts();
