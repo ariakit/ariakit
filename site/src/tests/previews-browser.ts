@@ -13,7 +13,7 @@ async function getPreviewPaths(baseURL: string) {
 
 test.describe.configure({ retries: 0 });
 
-test("previews @visual", async ({ page, baseURL }) => {
+test("previews @visual", async ({ page, baseURL }, testInfo) => {
   test.skip(!process.env.VISUAL_TEST);
   if (!baseURL) {
     throw new Error("Missing baseURL");
@@ -30,7 +30,7 @@ test("previews @visual", async ({ page, baseURL }) => {
       async () => {
         await page.goto(path);
         const id = path.replace(/^\/+/, "");
-        await visual(page, { id, viewports });
+        await visual(page, { id, viewports }, testInfo);
       },
       { timeout: TIMEOUT_PER_STEP },
     );

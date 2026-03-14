@@ -22,7 +22,6 @@ export default defineConfig({
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   testDir: "src",
-  snapshotPathTemplate: "src/tests/visual/{arg}{ext}",
   webServer: {
     command: "npm run preview-lite -w site -- --log-level warn",
     reuseExistingServer: !CI,
@@ -34,11 +33,6 @@ export default defineConfig({
     trace: "on-first-retry",
     launchOptions: {
       slowMo: HEADED ? 150 : undefined,
-    },
-  },
-  expect: {
-    toMatchSnapshot: {
-      maxDiffPixelRatio: 0.0005,
     },
   },
   projects: [

@@ -1,3 +1,4 @@
+import { relative, resolve } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, TestInfo } from "@playwright/test";
@@ -6,6 +7,8 @@ import { vizzlyScreenshot } from "@vizzly-testing/cli/client";
 import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
+const MAX_DIFF_PIXEL_RATIO = 0.0005;
+const VISUAL_SNAPSHOT_DIR = resolve(import.meta.dirname, "../tests/visual");
 
 const countMap = new Map<string, number>();
 
@@ -85,6 +88,31 @@ function getSnapshotName(params: {
   const count = countMap.get(baseName) || 0;
   countMap.set(baseName, count + 1);
   return `${baseName}-${count}.png`;
+}
+
+function shouldUseVizzly() {
+  return process.env.USE_VIZZLY === "true";
+}
+
+export function getVisualSnapshotArg(snapshotDir: string, name: string) {
+  const snapshotPath = resolve(VISUAL_SNAPSHOT_DIR, name);
+  return relative(snapshotDir, snapshotPath);
+}
+
+export async function withVisualSnapshotInfo(
+  testInfo: Pick<TestInfo, "snapshotDir" | "snapshotSuffix">,
+  fn: () => Promise<void>,
+) {
+  const previousSnapshotDir = testInfo.snapshotDir;
+  const previousSnapshotSuffix = testInfo.snapshotSuffix;
+  testInfo.snapshotDir = VISUAL_SNAPSHOT_DIR;
+  testInfo.snapshotSuffix = "";
+  try {
+    await fn();
+  } finally {
+    testInfo.snapshotDir = previousSnapshotDir;
+    testInfo.snapshotSuffix = previousSnapshotSuffix;
+  }
 }
 
 function getCombinedClip(a: Rect, b: Rect) {
@@ -230,9 +258,13 @@ async function withViewport(
   }
 }
 
-export async function visual(page: Page, options: ScreenshotOptions = {}) {
+export async function visual(
+  page: Page,
+  options: ScreenshotOptions = {},
+  testInfo = test.info(),
+) {
   expect(
-    test.info().tags,
+    testInfo.tags,
     "When running visual tests, the test title should contain @visual",
   ).toContain("@visual");
 
@@ -263,7 +295,6 @@ export async function visual(page: Page, options: ScreenshotOptions = {}) {
     await withViewport(page, viewport, async () => {
       for (const [styleName, style] of stylesEntries) {
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
-          const testInfo = test.info();
           const variants = [viewportName, styleName];
           const name = getSnapshotName({ id, testInfo, variants });
           await page.waitForLoadState("domcontentloaded");
@@ -273,12 +304,21 @@ export async function visual(page: Page, options: ScreenshotOptions = {}) {
             clipMargin,
             fullPage,
           });
-          await vizzlyScreenshot(name, buffer, {
-            properties: {
-              id,
-              style: styleName,
-              browser: testInfo.project.name,
-            },
+          if (shouldUseVizzly()) {
+            await vizzlyScreenshot(name, buffer, {
+              properties: {
+                id,
+                style: styleName,
+                browser: testInfo.project.name,
+              },
+            });
+            return;
+          }
+          const snapshotArg = getVisualSnapshotArg(testInfo.snapshotDir, name);
+          await withVisualSnapshotInfo(testInfo, async () => {
+            expect(buffer).toMatchSnapshot(snapshotArg, {
+              maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
+            });
           });
         });
       }
@@ -290,9 +330,9 @@ export const visualTest = test.extend<{
   visual: (options?: ScreenshotOptions) => Promise<void>;
   q: ReturnType<typeof query>;
 }>({
-  visual: async ({ page }, use) => {
+  visual: async ({ page }, use, testInfo) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await use((options) => visual(page, options));
+    await use((options) => visual(page, options, testInfo));
   },
   q: async ({ page }, use) => {
     await use(query(page));
