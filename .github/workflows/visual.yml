@@ -34,34 +34,64 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Check for snapshot artifacts
+      - name: Check for complete snapshot artifacts
         id: check-artifacts
         uses: actions/github-script@v8
         with:
           script: |
-            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              run_id: ${{ github.event.workflow_run.id }}
-            });
-            const hasSnapshots = artifacts.data.artifacts.some((artifact) =>
-              artifact.name.startsWith("app-visual-"),
+            const jobs = await github.paginate(
+              github.rest.actions.listJobsForWorkflowRun,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: ${{ github.event.workflow_run.id }},
+                per_page: 100,
+              },
+            );
+            const artifacts = await github.paginate(
+              github.rest.actions.listWorkflowRunArtifacts,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: ${{ github.event.workflow_run.id }},
+                per_page: 100,
+              },
+            );
+            const expectedSnapshotArtifacts = jobs
+              .filter((job) => job.name.startsWith("Test "))
+              .map((job) => job.name.replace(/^Test /, "").toLowerCase())
+              .map((project) => `app-visual-${project}`);
+            const snapshotArtifacts = artifacts
+              .map((artifact) => artifact.name)
+              .filter((artifact) => artifact.startsWith("app-visual-"));
+            const missingSnapshotArtifacts = expectedSnapshotArtifacts.filter(
+              (artifact) => !snapshotArtifacts.includes(artifact),
+            );
+            const hasCompleteSnapshots =
+              expectedSnapshotArtifacts.length > 0 &&
+              missingSnapshotArtifacts.length === 0;
+            console.log(
+              `Expected snapshot artifacts: ${expectedSnapshotArtifacts.join(", ") || "(none)"}`,
             );
             console.log(
-              `Found ${artifacts.data.artifacts.length} artifacts, hasSnapshots: ${hasSnapshots}`,
+              `Found snapshot artifacts: ${snapshotArtifacts.join(", ") || "(none)"}`,
             );
-            return hasSnapshots;
-          result-encoding: string
+            if (missingSnapshotArtifacts.length > 0) {
+              console.log(
+                `Missing snapshot artifacts: ${missingSnapshotArtifacts.join(", ")}`,
+              );
+            }
+            core.setOutput("ready", String(hasCompleteSnapshots));
 
       - name: Checkout trusted repository
-        if: steps.check-artifacts.outputs.result == 'true'
+        if: steps.check-artifacts.outputs.ready == 'true'
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
       - name: Checkout PR
-        if: steps.check-artifacts.outputs.result == 'true'
+        if: steps.check-artifacts.outputs.ready == 'true'
         uses: actions/checkout@v6
         with:
           path: pr
@@ -71,7 +101,7 @@ jobs:
           persist-credentials: false
 
       - name: Download snapshots
-        if: steps.check-artifacts.outputs.result == 'true'
+        if: steps.check-artifacts.outputs.ready == 'true'
         uses: actions/download-artifact@v8
         with:
           run-id: ${{ github.event.workflow_run.id }}
@@ -81,17 +111,17 @@ jobs:
           path: ${{ runner.temp }}/artifacts
 
       - name: Prepare screenshots
-        if: steps.check-artifacts.outputs.result == 'true'
+        if: steps.check-artifacts.outputs.ready == 'true'
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Extract snapshots
-        if: steps.check-artifacts.outputs.result == 'true'
+        if: steps.check-artifacts.outputs.ready == 'true'
         run: |
           find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
             -exec tar -xzf {} -C pr \;
 
       - name: Commit or create PR
-        if: steps.check-artifacts.outputs.result == 'true'
+        if: steps.check-artifacts.outputs.ready == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
