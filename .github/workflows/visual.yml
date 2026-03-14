@@ -17,7 +17,7 @@ jobs:
     name: Ignore stale commits
     permissions:
       contents: read
-    if: github.event.workflow_run.conclusion == 'failure' && env.USE_VIZZLY != 'true' && github.event.workflow_run.head_repository.full_name == github.repository
+    if: github.event.workflow_run.head_repository.full_name == github.repository
     uses: ./.github/workflows/ignore-stale-commits.yml
     with:
       head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
@@ -27,7 +27,7 @@ jobs:
   update-snapshots:
     name: Update snapshots
     needs: gate
-    if: needs.gate.outputs.is_latest == 'true'
+    if: needs.gate.outputs.is_latest == 'true' && env.USE_VIZZLY != 'true' && github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -53,18 +53,22 @@ jobs:
             return hasSnapshots;
           result-encoding: string
 
-      - name: Checkout repository
+      - name: Checkout trusted repository
         if: steps.check-artifacts.outputs.result == 'true'
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
-      - name: Prepare visual directory
+      - name: Checkout PR
         if: steps.check-artifacts.outputs.result == 'true'
-        run: |
-          rm -rf site/src/tests/visual
-          mkdir -p site/src/tests/visual
+        uses: actions/checkout@v6
+        with:
+          path: pr
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_branch }}
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
 
       - name: Download snapshots
         if: steps.check-artifacts.outputs.result == 'true'
@@ -74,50 +78,60 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pattern: app-visual-*
           merge-multiple: true
-          path: site/src/tests/visual
+          path: ${{ runner.temp }}/artifacts
+
+      - name: Prepare screenshots
+        if: steps.check-artifacts.outputs.result == 'true'
+        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
+
+      - name: Extract snapshots
+        if: steps.check-artifacts.outputs.result == 'true'
+        run: |
+          find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
+            -exec tar -xzf {} -C pr \;
 
       - name: Commit or create PR
         if: steps.check-artifacts.outputs.result == 'true'
-        uses: ariakit/ariakit/.github/workflows/commit-or-pr@839cec00801b16b283640cc5a02ea240e163cd7e
+        uses: ./.github/workflows/commit-or-pr
         with:
+          working-directory: pr
           event: ${{ github.event.workflow_run.event }}
           message: Update snapshots
           head-branch: ${{ github.event.workflow_run.head_branch }}
           new-branch: visual/update-snapshots
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
 
-  wipe-gate:
-    name: Ignore stale commits
-    permissions:
-      contents: read
-    if: env.USE_VIZZLY == 'true' && github.event.workflow_run.head_repository.full_name == github.repository
-    uses: ./.github/workflows/ignore-stale-commits.yml
-    with:
-      head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
-      head_branch: ${{ github.event.workflow_run.head_branch }}
-      head_sha: ${{ github.event.workflow_run.head_sha }}
-
   wipe-snapshots:
     name: Wipe snapshots
-    needs: wipe-gate
-    if: needs.wipe-gate.outputs.is_latest == 'true'
+    needs: gate
+    if: needs.gate.outputs.is_latest == 'true' && env.USE_VIZZLY == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout repository
+      - name: Checkout trusted repository
         uses: actions/checkout@v6
         with:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
-      - name: Remove visual snapshot directory
-        run: rm -rf site/src/tests/visual
+      - name: Checkout PR
+        uses: actions/checkout@v6
+        with:
+          path: pr
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_branch }}
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Remove visual snapshot directories
+        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Commit or create PR
-        uses: ariakit/ariakit/.github/workflows/commit-or-pr@839cec00801b16b283640cc5a02ea240e163cd7e
+        uses: ./.github/workflows/commit-or-pr
         with:
+          working-directory: pr
           event: ${{ github.event.workflow_run.event }}
           message: Remove file-based visual snapshots
           head-branch: ${{ github.event.workflow_run.head_branch }}

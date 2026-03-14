@@ -1,4 +1,3 @@
-import { relative, resolve } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, TestInfo } from "@playwright/test";
@@ -8,8 +7,6 @@ import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
 const MAX_DIFF_PIXEL_RATIO = 0.0005;
-const VISUAL_SNAPSHOT_DIR = resolve(import.meta.dirname, "../tests/visual");
-
 const countMap = new Map<string, number>();
 
 interface Rect {
@@ -72,50 +69,44 @@ export const defaultStyles = {
   dark: { "--color-canvas": "oklch(16.34% 0.0091 264.28)" },
 } satisfies Styles;
 
+function getSnapshotTitlePart(part: string) {
+  return part.replace(/@\S+/g, "").trim();
+}
+
 function getSnapshotName(params: {
   id?: string;
   testInfo: TestInfo;
   variants?: string[];
 }) {
   const { testInfo, variants = [], id } = params;
-  const parts = [
-    ...testInfo.titlePath,
-    id,
-    ...variants,
-    testInfo.project.name,
-  ].filter(Boolean);
+  const titleParts = testInfo.titlePath
+    .map(getSnapshotTitlePart)
+    .filter(Boolean);
+  const filteredTitleParts = titleParts
+    .filter((part) => !part.endsWith(".ts"))
+    .filter((part) => part !== "visual")
+    .slice(-2);
+  const idParts = id
+    ? id
+        .split("/")
+        .filter(Boolean)
+        .filter((part) => part !== "previews")
+    : [];
+  const parts =
+    idParts.length > 0 &&
+    filteredTitleParts.length === 1 &&
+    filteredTitleParts[0] === "previews"
+      ? [...idParts, ...variants]
+      : [...filteredTitleParts, ...idParts, ...variants];
   const baseName = slugify(parts.join("-"));
-  const count = countMap.get(baseName) || 0;
-  countMap.set(baseName, count + 1);
-  return `${baseName}-${count}.png`;
+  const countKey = `${testInfo.file}:${testInfo.project.name}:${baseName}`;
+  const count = countMap.get(countKey) || 0;
+  countMap.set(countKey, count + 1);
+  return `${baseName}-${count}-${testInfo.project.name}.png`;
 }
 
 function shouldUseVizzly() {
   return process.env.USE_VIZZLY === "true";
-}
-
-export function getVisualSnapshotArg(
-  snapshotDir: string,
-  snapshotName: string,
-) {
-  const snapshotPath = resolve(VISUAL_SNAPSHOT_DIR, snapshotName);
-  return relative(snapshotDir, snapshotPath);
-}
-
-export async function withVisualSnapshotInfo(
-  testInfo: Pick<TestInfo, "snapshotDir" | "snapshotSuffix">,
-  callback: () => Promise<void>,
-) {
-  const previousSnapshotDir = testInfo.snapshotDir;
-  const previousSnapshotSuffix = testInfo.snapshotSuffix;
-  testInfo.snapshotDir = VISUAL_SNAPSHOT_DIR;
-  testInfo.snapshotSuffix = "";
-  try {
-    await callback();
-  } finally {
-    testInfo.snapshotDir = previousSnapshotDir;
-    testInfo.snapshotSuffix = previousSnapshotSuffix;
-  }
 }
 
 function getCombinedClip(a: Rect, b: Rect) {
@@ -317,11 +308,8 @@ export async function visual(
             });
             return;
           }
-          const snapshotArg = getVisualSnapshotArg(testInfo.snapshotDir, name);
-          await withVisualSnapshotInfo(testInfo, async () => {
-            expect(buffer).toMatchSnapshot(snapshotArg, {
-              maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
-            });
+          expect(buffer).toMatchSnapshot(name, {
+            maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
           });
         });
       }
