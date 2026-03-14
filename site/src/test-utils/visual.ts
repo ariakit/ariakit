@@ -1,3 +1,4 @@
+import path from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, TestInfo } from "@playwright/test";
@@ -6,7 +7,6 @@ import { vizzlyScreenshot } from "@vizzly-testing/cli/client";
 import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
-const MAX_DIFF_PIXEL_RATIO = 0.0005;
 const countMap = new Map<string, number>();
 
 interface Rect {
@@ -73,7 +73,20 @@ function getSnapshotTitlePart(part: string) {
   return part.replace(/@\S+/g, "").trim();
 }
 
-function getSnapshotName(params: {
+function getTestFileDir(testInfo: TestInfo) {
+  const testDir =
+    testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
+  return path.dirname(path.relative(testDir, testInfo.file));
+}
+
+function getSnapshotCount(testInfo: TestInfo, baseName: string) {
+  const countKey = `${testInfo.file}:${testInfo.project.name}:${baseName}`;
+  const count = countMap.get(countKey) || 0;
+  countMap.set(countKey, count + 1);
+  return count;
+}
+
+function getFileSnapshotName(params: {
   id?: string;
   testInfo: TestInfo;
   variants?: string[];
@@ -99,10 +112,22 @@ function getSnapshotName(params: {
       ? [...idParts, ...variants]
       : [...filteredTitleParts, ...idParts, ...variants];
   const baseName = slugify(parts.join("-"));
-  const countKey = `${testInfo.file}:${testInfo.project.name}:${baseName}`;
-  const count = countMap.get(countKey) || 0;
-  countMap.set(countKey, count + 1);
-  return `${baseName}-${count}-${testInfo.project.name}.png`;
+  const count = getSnapshotCount(testInfo, baseName);
+  const countSuffix = count > 0 ? `-${count}` : "";
+  return `${baseName}${countSuffix}-${testInfo.project.name}.png`;
+}
+
+function getVizzlySnapshotName(params: {
+  testInfo: TestInfo;
+  fileSnapshotName: string;
+}) {
+  const { testInfo, fileSnapshotName } = params;
+  const { name, ext } = path.parse(fileSnapshotName);
+  const testFileDir = getTestFileDir(testInfo)
+    .split(path.sep)
+    .filter(Boolean)
+    .filter((part) => part !== "__screenshots__");
+  return `${slugify([...testFileDir, name].join("-"))}${ext}`;
 }
 
 function shouldUseVizzly() {
@@ -290,7 +315,11 @@ export async function visual(
       for (const [styleName, style] of stylesEntries) {
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
           const variants = [viewportName, styleName];
-          const name = getSnapshotName({ id, testInfo, variants });
+          const fileSnapshotName = getFileSnapshotName({
+            id,
+            testInfo,
+            variants,
+          });
           await page.waitForLoadState("domcontentloaded");
           await page.evaluate(() => document.fonts?.ready?.catch(() => {}));
           const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
@@ -300,7 +329,11 @@ export async function visual(
           });
           if (shouldUseVizzly()) {
             const buffer = await page.screenshot(screenshotOptions);
-            await vizzlyScreenshot(name, buffer, {
+            const vizzlySnapshotName = getVizzlySnapshotName({
+              testInfo,
+              fileSnapshotName,
+            });
+            await vizzlyScreenshot(vizzlySnapshotName, buffer, {
               properties: {
                 id,
                 style: styleName,
@@ -309,9 +342,8 @@ export async function visual(
             });
             return;
           }
-          await expect(page).toHaveScreenshot(name, {
+          await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
-            maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
           });
         });
       }
