@@ -9,7 +9,7 @@ env:
   USE_VIZZLY: ${{ vars.USE_VIZZLY || 'false' }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
   update-snapshots:
     name: Update snapshots
     needs: gate
-    if: needs.gate.outputs.is_latest == 'true' && env.USE_VIZZLY != 'true' && github.event.workflow_run.conclusion == 'failure'
+    if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -180,7 +180,7 @@ jobs:
   wipe-snapshots:
     name: Wipe snapshots
     needs: gate
-    if: needs.gate.outputs.is_latest == 'true' && env.USE_VIZZLY == 'true'
+    if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
