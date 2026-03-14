@@ -9,6 +9,7 @@ permissions:
   contents: read
 
 env:
+  USE_VIZZLY: ${{ vars.USE_VIZZLY || 'false' }}
   VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
   VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
   VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
@@ -145,13 +146,56 @@ jobs:
       - name: Test visual
         id: test-visual
         run: |
-          npx vizzly run \
-          --allow-no-token \
-          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
-          "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests"
+          if [ "$USE_VIZZLY" = "true" ]; then
+            npx vizzly run \
+            --allow-no-token \
+            --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
+            "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests"
+          else
+            # -x stops after the first failing test so we can rerun once with -u below.
+            ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
+          fi
+
+      - name: Reset snapshots
+        if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
+        run: find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" -delete
+
+      - name: Update snapshots
+        id: update-snapshots
+        if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
+        run: ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual -u
+
+      - name: Pack snapshots
+        if: always() && env.USE_VIZZLY != 'true'
+        run: |
+          mkdir -p "${{ runner.temp }}/artifacts"
+          python <<'PY'
+          import sys
+          import tarfile
+          from pathlib import Path
+
+          project = "${{ matrix.project }}"
+          root = Path("site/src")
+          archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
+          snapshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
+          if not snapshots:
+              sys.exit(0)
+          with tarfile.open(archive_path, "w:gz") as tar:
+              for snapshot in snapshots:
+                  tar.add(snapshot, arcname=snapshot.as_posix())
+          PY
+
+      - name: Upload snapshots
+        if: always() && env.USE_VIZZLY != 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-visual-${{ matrix.project }}
+          path: ${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.tar.gz
+          if-no-files-found: ignore
+          retention-days: 1
 
       - name: Upload test results to GitHub
-        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure')
+        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure' || steps.update-snapshots.outcome == 'failure')
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.project }}-test-results
@@ -165,13 +209,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        if: env.VIZZLY_TOKEN != ''
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: actions/checkout@v6
 
       - name: Install node modules
-        if: env.VIZZLY_TOKEN != ''
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: ./.github/workflows/install-node-modules
 
       - name: Finalize visual tests
-        if: env.VIZZLY_TOKEN != ''
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"

@@ -22,7 +22,6 @@ export default defineConfig({
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   testDir: "src",
-  snapshotPathTemplate: "src/tests/visual/{arg}{ext}",
   webServer: {
     command: "npm run preview-lite -w site -- --log-level warn",
     reuseExistingServer: !CI,
@@ -37,8 +36,9 @@ export default defineConfig({
     },
   },
   expect: {
-    toMatchSnapshot: {
+    toHaveScreenshot: {
       maxDiffPixelRatio: 0.0005,
+      pathTemplate: "{testDir}/{testFileDir}/__screenshots__/{arg}{ext}",
     },
   },
   projects: [
