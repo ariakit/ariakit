@@ -5,6 +5,9 @@ on:
     workflows: ["app"]
     types: [completed]
 
+env:
+  USE_VIZZLY: ${{ vars.USE_VIZZLY || 'false' }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
@@ -14,7 +17,7 @@ jobs:
     name: Ignore stale commits
     permissions:
       contents: read
-    if: github.event.workflow_run.conclusion == 'failure'
+    if: github.event.workflow_run.conclusion == 'failure' && env.USE_VIZZLY != 'true'
     uses: ./.github/workflows/ignore-stale-commits.yml
     with:
       head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
@@ -83,4 +86,44 @@ jobs:
           message: Update snapshots
           head-branch: ${{ github.event.workflow_run.head_branch }}
           new-branch: visual/update-snapshots
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+
+  wipe-gate:
+    name: Ignore stale commits
+    permissions:
+      contents: read
+    if: env.USE_VIZZLY == 'true'
+    uses: ./.github/workflows/ignore-stale-commits.yml
+    with:
+      head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
+      head_branch: ${{ github.event.workflow_run.head_branch }}
+      head_sha: ${{ github.event.workflow_run.head_sha }}
+
+  wipe-snapshots:
+    name: Wipe snapshots
+    needs: wipe-gate
+    if: needs.wipe-gate.outputs.is_latest == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_branch }}
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Remove visual snapshot directory
+        run: rm -rf site/src/tests/visual
+
+      - name: Commit or create PR
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          event: ${{ github.event.workflow_run.event }}
+          message: Remove file-based visual snapshots
+          head-branch: ${{ github.event.workflow_run.head_branch }}
+          new-branch: visual/remove-snapshots
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
