@@ -39,27 +39,63 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const jobs = await github.paginate(
-              github.rest.actions.listJobsForWorkflowRun,
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                run_id: ${{ github.event.workflow_run.id }},
-                per_page: 100,
-              },
-            );
-            const artifacts = await github.paginate(
-              github.rest.actions.listWorkflowRunArtifacts,
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                run_id: ${{ github.event.workflow_run.id }},
-                per_page: 100,
-              },
-            );
-            const expectedSnapshotArtifacts = jobs
-              .filter((job) => job.name.startsWith("Test "))
-              .map((job) => job.name.replace(/^Test /, "").toLowerCase())
+            const perPage = 100;
+            // 20 pages is enough for 2,000 jobs/artifacts, which is far beyond
+            // the size of this workflow run while still bounding API retries.
+            const maxPages = 20;
+            const listWorkflowRunJobs = async () => {
+              const jobs = [];
+              for (let page = 1; page <= maxPages; page += 1) {
+                const response = await github.rest.actions.listJobsForWorkflowRun({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: ${{ github.event.workflow_run.id }},
+                  per_page: perPage,
+                  page,
+                });
+                const pageJobs = response.data.jobs;
+                jobs.push(...pageJobs);
+                if (pageJobs.length < perPage) {
+                  return jobs;
+                }
+              }
+              throw new Error("Exceeded workflow job pagination limit");
+            };
+            const listWorkflowRunArtifacts = async () => {
+              const artifacts = [];
+              for (let page = 1; page <= maxPages; page += 1) {
+                const response = await github.rest.actions.listWorkflowRunArtifacts({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: ${{ github.event.workflow_run.id }},
+                  per_page: perPage,
+                  page,
+                });
+                const pageArtifacts = response.data.artifacts;
+                artifacts.push(...pageArtifacts);
+                if (pageArtifacts.length < perPage) {
+                  return artifacts;
+                }
+              }
+              throw new Error("Exceeded workflow artifact pagination limit");
+            };
+            const jobs = await listWorkflowRunJobs();
+            const artifacts = await listWorkflowRunArtifacts();
+            const snapshotJobs = jobs
+              .filter((job) => job.steps?.some((step) => step.name === "Upload snapshots"))
+              .map((job) => {
+                const project = job.name.startsWith("Test ")
+                  ? job.name.slice(5).toLowerCase()
+                  : undefined;
+                return {
+                  name: job.name,
+                  project,
+                };
+              });
+            const invalidSnapshotJobs = snapshotJobs.filter((job) => !job.project);
+            const expectedSnapshotArtifacts = snapshotJobs
+              .filter((job) => job.project)
+              .map((job) => job.project)
               .map((project) => `app-visual-${project}`);
             const snapshotArtifacts = artifacts
               .map((artifact) => artifact.name)
@@ -68,8 +104,14 @@ jobs:
               (artifact) => !snapshotArtifacts.includes(artifact),
             );
             const hasCompleteSnapshots =
+              invalidSnapshotJobs.length === 0 &&
               expectedSnapshotArtifacts.length > 0 &&
               missingSnapshotArtifacts.length === 0;
+            if (invalidSnapshotJobs.length > 0) {
+              console.log(
+                `Unexpected snapshot job names: ${invalidSnapshotJobs.map((job) => job.name).join(", ")}`,
+              );
+            }
             console.log(
               `Expected snapshot artifacts: ${expectedSnapshotArtifacts.join(", ") || "(none)"}`,
             );
