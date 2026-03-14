@@ -32,25 +32,7 @@ jobs:
           engine: chromium
 
       - name: Run app dev server
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run dev -w site &
-          echo "Waiting for dev server (http://localhost:4321)..."
-          ready=0
-          for i in {1..90}; do
-            if curl -sSf http://localhost:4321/og-image/api > /dev/null; then
-              echo "Dev server is up."
-              ready=1
-              break
-            fi
-            echo "Waiting... ($i)"
-            sleep 2
-          done
-          if [ "$ready" != "1" ]; then
-            echo "Dev server failed to start in time."
-            exit 1
-          fi
+        run: node --experimental-strip-types .github/scripts/og-images.ts run-dev-server
 
       - name: Generate OG images
         run: npm run og-image-generate -w site

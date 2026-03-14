@@ -32,15 +32,9 @@ jobs:
 
       - name: Determine patch file
         id: patch
-        run: |
-          ARTIFACTS_DIR="${{ runner.temp }}/artifacts"
-          if [ -f "$ARTIFACTS_DIR/og-images-diff/og-images.patch" ]; then
-            echo "file=$ARTIFACTS_DIR/og-images-diff/og-images.patch" >> $GITHUB_OUTPUT
-            echo "message=Update OG images" >> $GITHUB_OUTPUT
-          elif [ -f "$ARTIFACTS_DIR/build-styles-diff/build-styles.patch" ]; then
-            echo "file=$ARTIFACTS_DIR/build-styles-diff/build-styles.patch" >> $GITHUB_OUTPUT
-            echo "message=Update styles" >> $GITHUB_OUTPUT
-          fi
+        env:
+          ARTIFACTS_DIR: ${{ runner.temp }}/artifacts
+        run: node --experimental-strip-types .github/scripts/apply-generated-patch.ts determine-patch-file
 
       - name: Checkout trusted repository
         if: steps.patch.outputs.file
@@ -57,9 +51,10 @@ jobs:
 
       - name: Apply patch
         if: steps.patch.outputs.file
-        run: |
-          cd pr
-          git apply "${{ steps.patch.outputs.file }}"
+        env:
+          PATCH_FILE: ${{ steps.patch.outputs.file }}
+          WORKING_DIRECTORY: pr
+        run: node --experimental-strip-types .github/scripts/apply-generated-patch.ts apply-patch
 
       - name: Commit changes
         if: steps.patch.outputs.file

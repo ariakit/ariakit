@@ -36,98 +36,11 @@ jobs:
     steps:
       - name: Check for complete snapshot artifacts
         id: check-artifacts
-        uses: actions/github-script@v8
-        with:
-          script: |
-            const perPage = 100;
-            // 20 pages is enough for 2,000 jobs/artifacts, which is far beyond
-            // the size of this workflow run while still bounding API retries.
-            const maxPages = 20;
-            const listWorkflowRunJobs = async () => {
-              const jobs = [];
-              for (let page = 1; page <= maxPages; page += 1) {
-                const response = await github.rest.actions.listJobsForWorkflowRun({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  run_id: ${{ github.event.workflow_run.id }},
-                  per_page: perPage,
-                  page,
-                });
-                const pageJobs = response.data.jobs;
-                jobs.push(...pageJobs);
-                if (pageJobs.length < perPage) {
-                  return jobs;
-                }
-              }
-              throw new Error(
-                `Exceeded workflow job pagination limit of ${maxPages} pages (${maxPages * perPage} jobs)`,
-              );
-            };
-            const listWorkflowRunArtifacts = async () => {
-              const artifacts = [];
-              for (let page = 1; page <= maxPages; page += 1) {
-                const response = await github.rest.actions.listWorkflowRunArtifacts({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  run_id: ${{ github.event.workflow_run.id }},
-                  per_page: perPage,
-                  page,
-                });
-                const pageArtifacts = response.data.artifacts;
-                artifacts.push(...pageArtifacts);
-                if (pageArtifacts.length < perPage) {
-                  return artifacts;
-                }
-              }
-              throw new Error(
-                `Exceeded workflow artifact pagination limit of ${maxPages} pages (${maxPages * perPage} artifacts)`,
-              );
-            };
-            const jobs = await listWorkflowRunJobs();
-            const artifacts = await listWorkflowRunArtifacts();
-            const snapshotJobs = jobs
-              .filter((job) => job.steps?.some((step) => step.name === "Upload snapshots"))
-              .map((job) => {
-                const project = job.name.startsWith("Test ")
-                  ? job.name.slice(5).toLowerCase()
-                  : undefined;
-                return {
-                  name: job.name,
-                  project,
-                };
-              });
-            const invalidSnapshotJobs = snapshotJobs.filter((job) => !job.project);
-            const expectedSnapshotArtifacts = snapshotJobs
-              .filter((job) => job.project)
-              .map((job) => job.project)
-              .map((project) => `app-visual-${project}`);
-            const snapshotArtifacts = artifacts
-              .map((artifact) => artifact.name)
-              .filter((artifact) => artifact.startsWith("app-visual-"));
-            const missingSnapshotArtifacts = expectedSnapshotArtifacts.filter(
-              (artifact) => !snapshotArtifacts.includes(artifact),
-            );
-            const hasCompleteSnapshots =
-              invalidSnapshotJobs.length === 0 &&
-              expectedSnapshotArtifacts.length > 0 &&
-              missingSnapshotArtifacts.length === 0;
-            if (invalidSnapshotJobs.length > 0) {
-              console.log(
-                `Unexpected snapshot job names: ${invalidSnapshotJobs.map((job) => job.name).join(", ")}`,
-              );
-            }
-            console.log(
-              `Expected snapshot artifacts: ${expectedSnapshotArtifacts.join(", ") || "(none)"}`,
-            );
-            console.log(
-              `Found snapshot artifacts: ${snapshotArtifacts.join(", ") || "(none)"}`,
-            );
-            if (missingSnapshotArtifacts.length > 0) {
-              console.log(
-                `Missing snapshot artifacts: ${missingSnapshotArtifacts.join(", ")}`,
-              );
-            }
-            core.setOutput("ready", String(hasCompleteSnapshots));
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: node --experimental-strip-types .github/scripts/visual.ts check-artifacts
 
       - name: Checkout trusted repository
         if: steps.check-artifacts.outputs.ready == 'true'
@@ -158,13 +71,13 @@ jobs:
 
       - name: Prepare screenshots
         if: steps.check-artifacts.outputs.ready == 'true'
-        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
+        run: node --experimental-strip-types .github/scripts/visual.ts prepare-screenshots
 
       - name: Extract snapshots
         if: steps.check-artifacts.outputs.ready == 'true'
-        run: |
-          find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
-            -exec tar -xzf {} -C pr \;
+        env:
+          ARTIFACTS_DIR: ${{ runner.temp }}/artifacts
+        run: node --experimental-strip-types .github/scripts/visual.ts extract-snapshots
 
       - name: Commit or create PR
         if: steps.check-artifacts.outputs.ready == 'true'

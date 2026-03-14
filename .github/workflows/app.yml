@@ -145,20 +145,16 @@ jobs:
 
       - name: Test visual
         id: test-visual
-        run: |
-          if [ "$USE_VIZZLY" = "true" ]; then
-            npx vizzly run \
-            --allow-no-token \
-            --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
-            "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests"
-          else
-            # -x stops after the first failing test so we can rerun once with -u below.
-            ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
-          fi
+        env:
+          PROJECT: ${{ matrix.project }}
+          VISUAL_COMMAND: ${{ matrix.visual }}
+        run: node --experimental-strip-types .github/scripts/app.ts test-visual
 
       - name: Reset snapshots
         if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
-        run: find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" -delete
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: node --experimental-strip-types .github/scripts/app.ts reset-snapshots
 
       - name: Update snapshots
         id: update-snapshots
@@ -167,23 +163,10 @@ jobs:
 
       - name: Pack snapshots
         if: always() && env.USE_VIZZLY != 'true'
-        run: |
-          mkdir -p "${{ runner.temp }}/artifacts"
-          python <<'PY'
-          import sys
-          import tarfile
-          from pathlib import Path
-
-          project = "${{ matrix.project }}"
-          root = Path("site/src")
-          archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
-          snapshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
-          if not snapshots:
-              sys.exit(0)
-          with tarfile.open(archive_path, "w:gz") as tar:
-              for snapshot in snapshots:
-                  tar.add(snapshot, arcname=snapshot.as_posix())
-          PY
+        env:
+          PROJECT: ${{ matrix.project }}
+          ARTIFACTS_DIR: ${{ runner.temp }}/artifacts
+        run: node --experimental-strip-types .github/scripts/app.ts pack-snapshots
 
       - name: Upload snapshots
         if: always() && env.USE_VIZZLY != 'true'

@@ -32,23 +32,14 @@ jobs:
       - name: Read tip SHA on the branch
         id: tip
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEAD_REPO: ${{ inputs.head_repository }}
           HEAD_BRANCH: ${{ inputs.head_branch }}
-        run: |
-          set -euo pipefail
-          # Get current tip commit of the branch in the head repo
-          tip_sha=$(gh api repos/$HEAD_REPO/commits/$HEAD_BRANCH --jq .sha)
-          echo "tip_sha=$tip_sha" >> "$GITHUB_OUTPUT"
+        run: node --experimental-strip-types .github/scripts/ignore-stale-commits.ts read-tip-sha
 
       - name: Compare with triggering run SHA
         id: check
         env:
           HEAD_SHA: ${{ inputs.head_sha }}
           TIP_SHA: ${{ steps.tip.outputs.tip_sha }}
-        run: |
-          if [ "$HEAD_SHA" = "$TIP_SHA" ]; then
-            echo "is_latest=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "is_latest=false" >> "$GITHUB_OUTPUT"
-          fi
+        run: node --experimental-strip-types .github/scripts/ignore-stale-commits.ts compare-tip-sha
