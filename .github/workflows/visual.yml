@@ -17,7 +17,7 @@ jobs:
     name: Ignore stale commits
     permissions:
       contents: read
-    if: github.event.workflow_run.conclusion == 'failure' && env.USE_VIZZLY != 'true'
+    if: github.event.workflow_run.conclusion == 'failure' && env.USE_VIZZLY != 'true' && github.event.workflow_run.head_repository.full_name == github.repository
     uses: ./.github/workflows/ignore-stale-commits.yml
     with:
       head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
@@ -57,8 +57,6 @@ jobs:
         if: steps.check-artifacts.outputs.result == 'true'
         uses: actions/checkout@v6
         with:
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
@@ -80,7 +78,7 @@ jobs:
 
       - name: Commit or create PR
         if: steps.check-artifacts.outputs.result == 'true'
-        uses: ./.github/workflows/commit-or-pr
+        uses: ariakit/ariakit/.github/workflows/commit-or-pr@839cec00801b16b283640cc5a02ea240e163cd7e
         with:
           event: ${{ github.event.workflow_run.event }}
           message: Update snapshots
@@ -92,7 +90,7 @@ jobs:
     name: Ignore stale commits
     permissions:
       contents: read
-    if: env.USE_VIZZLY == 'true'
+    if: env.USE_VIZZLY == 'true' && github.event.workflow_run.head_repository.full_name == github.repository
     uses: ./.github/workflows/ignore-stale-commits.yml
     with:
       head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
@@ -111,8 +109,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
@@ -120,7 +116,7 @@ jobs:
         run: rm -rf site/src/tests/visual
 
       - name: Commit or create PR
-        uses: ./.github/workflows/commit-or-pr
+        uses: ariakit/ariakit/.github/workflows/commit-or-pr@839cec00801b16b283640cc5a02ea240e163cd7e
         with:
           event: ${{ github.event.workflow_run.event }}
           message: Remove file-based visual snapshots

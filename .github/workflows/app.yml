@@ -152,7 +152,7 @@ jobs:
             --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
             "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests"
           else
-            # Exit early on the first mismatch before rerunning with -u below.
+            # -x stops after the first failing test so we can rerun once with -u below.
             ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
           fi
 
