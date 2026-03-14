@@ -169,14 +169,13 @@ jobs:
         if: always() && env.USE_VIZZLY != 'true'
         run: |
           mkdir -p "${{ runner.temp }}/artifacts"
-          mapfile -d '' -t snapshots < <(
-            find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" -print0
-          )
-          if [ "${#snapshots[@]}" -eq 0 ]; then
+          snapshots_file="${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.txt"
+          find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" > "$snapshots_file"
+          if [ ! -s "$snapshots_file" ]; then
             exit 0
           fi
-          printf '%s\0' "${snapshots[@]}" \
-            | tar --null --files-from=- -czf "${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.tar.gz"
+          tar -czf "${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.tar.gz" \
+            -T "$snapshots_file"
 
       - name: Upload snapshots
         if: always() && env.USE_VIZZLY != 'true'

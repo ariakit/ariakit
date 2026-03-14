@@ -182,23 +182,23 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
   return getRectsClip(rects, margin);
 }
 
-async function captureScreenshotBuffer(
+async function getPlaywrightScreenshotOptions(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
   const { element, clipMargin, fullPage } = options;
   if (fullPage) {
-    return page.screenshot({ animations: "disabled" });
+    return { animations: "disabled" as const, fullPage: true };
   }
   if (!element) {
     const clip = await getBodyClip(page, clipMargin);
-    return page.screenshot({ animations: "disabled", clip });
+    return { animations: "disabled" as const, clip };
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
   const rect = await locator.boundingBox();
   invariant(rect, "Element not visible");
   const clip = applyClipMargin(rect, clipMargin);
-  return page.screenshot({ animations: "disabled", clip });
+  return { animations: "disabled" as const, clip };
 }
 
 async function withStyles(
@@ -293,12 +293,13 @@ export async function visual(
           const name = getSnapshotName({ id, testInfo, variants });
           await page.waitForLoadState("domcontentloaded");
           await page.evaluate(() => document.fonts?.ready?.catch(() => {}));
-          const buffer = await captureScreenshotBuffer(page, {
+          const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
             element,
             clipMargin,
             fullPage,
           });
           if (shouldUseVizzly()) {
+            const buffer = await page.screenshot(screenshotOptions);
             await vizzlyScreenshot(name, buffer, {
               properties: {
                 id,
@@ -308,7 +309,8 @@ export async function visual(
             });
             return;
           }
-          expect(buffer).toMatchSnapshot(name, {
+          await expect(page).toHaveScreenshot(name, {
+            ...screenshotOptions,
             maxDiffPixelRatio: MAX_DIFF_PIXEL_RATIO,
           });
         });

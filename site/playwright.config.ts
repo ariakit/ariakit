@@ -22,7 +22,6 @@ export default defineConfig({
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   testDir: "src",
-  snapshotPathTemplate: "{testDir}/{testFileDir}/__screenshots__/{arg}{ext}",
   webServer: {
     command: "npm run preview-lite -w site -- --log-level warn",
     reuseExistingServer: !CI,
@@ -34,6 +33,11 @@ export default defineConfig({
     trace: "on-first-retry",
     launchOptions: {
       slowMo: HEADED ? 150 : undefined,
+    },
+  },
+  expect: {
+    toHaveScreenshot: {
+      pathTemplate: "{testDir}/{testFileDir}/__screenshots__/{arg}{ext}",
     },
   },
   projects: [
