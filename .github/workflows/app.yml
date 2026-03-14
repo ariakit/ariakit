@@ -169,13 +169,21 @@ jobs:
         if: always() && env.USE_VIZZLY != 'true'
         run: |
           mkdir -p "${{ runner.temp }}/artifacts"
-          snapshots_file="${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.txt"
-          find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" > "$snapshots_file"
-          if [ ! -s "$snapshots_file" ]; then
-            exit 0
-          fi
-          tar -czf "${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.tar.gz" \
-            -T "$snapshots_file"
+          python <<'PY'
+          import sys
+          import tarfile
+          from pathlib import Path
+
+          project = "${{ matrix.project }}"
+          root = Path("site/src")
+          archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
+          snapshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
+          if not snapshots:
+              sys.exit(0)
+          with tarfile.open(archive_path, "w:gz") as tar:
+              for snapshot in snapshots:
+                  tar.add(snapshot, arcname=snapshot.as_posix())
+          PY
 
       - name: Upload snapshots
         if: always() && env.USE_VIZZLY != 'true'

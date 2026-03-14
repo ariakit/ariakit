@@ -192,13 +192,13 @@ async function getPlaywrightScreenshotOptions(
   }
   if (!element) {
     const clip = await getBodyClip(page, clipMargin);
-    return { animations: "disabled" as const, clip };
+    return { animations: "disabled" as const, clip, fullPage: false };
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
   const rect = await locator.boundingBox();
   invariant(rect, "Element not visible");
   const clip = applyClipMargin(rect, clipMargin);
-  return { animations: "disabled" as const, clip };
+  return { animations: "disabled" as const, clip, fullPage: false };
 }
 
 async function withStyles(
