@@ -144,8 +144,8 @@ const layer = cv({
     },
     $borderColor: {
       false: "",
-      blue: "ak-edge-blue-500",
-      blueRel: "ak-edge-cyan ak-edge-vivid ak-edge-100 ak-edge-l-50",
+      blue: "ak-edge-blue-500 ak-edge-100",
+      blueRel: "ak-edge-red ak-edge-vivid ak-edge-40 ak-edge-contrast-60",
       red: "ak-edge-red-500",
       green: "ak-edge-green-500",
       yellow: "ak-edge-yellow-500",
