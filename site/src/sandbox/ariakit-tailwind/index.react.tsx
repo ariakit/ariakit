@@ -1,11 +1,10 @@
 import type { VariantProps } from "clava";
 import { cv, splitProps } from "clava";
-import clsx from "clsx";
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { useId } from "react";
 
 const layer = cv({
-  class: "ak-layer",
+  class: ["ak-layer", "font-mono flex gap-(--ak-frame-padding) content-center"],
   variants: {
     $layer: {
       0: "ak-layer-0",
@@ -88,299 +87,188 @@ const layer = cv({
       90: "ak-layer-darken-90",
       100: "ak-layer-darken-100",
     },
-  },
-});
-
-const frame = cv({
-  variants: {
+    $frame: "ak-frame",
+    $forceRounded: "ak-frame-force",
     $rounded: {
       false: "",
-      sm: "ak-frame-rounded-sm",
-      md: "ak-frame-rounded-md",
-      lg: "ak-frame-rounded-lg",
-      xl: "ak-frame-rounded-xl",
-      "2xl": "ak-frame-rounded-2xl",
-      "3xl": "ak-frame-rounded-3xl",
+      none: "ak-frame-none",
+      sm: "ak-frame-sm",
+      md: "ak-frame-md",
+      lg: "ak-frame-lg",
+      xl: "ak-frame-xl",
+      "2xl": "ak-frame-2xl",
+      "3xl": "ak-frame-3xl",
     },
     $p: {
+      unset: "",
       0: "ak-frame-p-0",
       1: "ak-frame-p-1",
       2: "ak-frame-p-2",
       3: "ak-frame-p-3",
-      4: "ak-frame-p-",
+      4: "ak-frame-p-4",
       5: "ak-frame-p-5",
-      6: "ak-frame-p-6",
-      7: "ak-frame-p-7",
-      8: "ak-frame-p-8",
-      9: "ak-frame-p-9",
-      10: "ak-frame-p-10",
+    },
+    $m: {
+      unset: "",
+      0: "ak-frame-m-0",
+      1: "ak-frame-m-1",
+      2: "ak-frame-m-2",
+      3: "ak-frame-m-3",
+      4: "ak-frame-m-4",
+      5: "ak-frame-m-5",
+      "-1": "-ak-frame-m-1",
+      "-2": "-ak-frame-m-2",
+      "-3": "-ak-frame-m-3",
+      "-4": "-ak-frame-m-4",
+      "-5": "-ak-frame-m-5",
+    },
+    $stretch: {
+      true: "ak-frame-cover",
+      overflow: "ak-frame-overflow",
+    },
+    $flow: {
+      unset: "",
+      row: "ak-frame-row flex-wrap",
+      col: "ak-frame-col flex-col",
+    },
+    $position: {
+      unset: "",
+      start: "ak-frame-start",
+      end: "ak-frame-end",
     },
     $border: {
-      true: "ak-frame-border-(--border-width)",
+      false: "",
+      border: "ak-frame-border-(--border-width)",
       ring: "ak-frame-ring-(--border-width)",
       bordering: "ak-frame-bordering-(--border-width)",
     },
+    $borderColor: {
+      false: "",
+      blue: "ak-edge-blue-500",
+      blueRel: "ak-edge-cyan ak-edge-vivid ak-edge-100 ak-edge-l-50",
+      red: "ak-edge-red-500",
+      green: "ak-edge-green-500",
+      yellow: "ak-edge-yellow-500",
+    },
     $borderWidth: {
-      0: "[border-width:0px]",
-      1: "[border-width:1px]",
-      2: "[border-width:2px]",
-      3: "[border-width:3px]",
-      4: "[border-width:4px]",
+      false: "",
+      0: "[--border-width:0px]",
+      1: "[--border-width:1px]",
+      2: "[--border-width:2px]",
+      3: "[--border-width:3px]",
+      4: "[--border-width:4px]",
+    },
+    $textLevel: {
+      0: "ak-text-0",
+      10: "ak-text-10",
+      20: "ak-text-20",
+      30: "ak-text-30",
+      40: "ak-text-40",
+      50: "ak-text-50",
+      60: "ak-text-60",
+      70: "ak-text-70",
+      80: "ak-text-80",
+      90: "ak-text-90",
+      100: "ak-text-100",
     },
   },
   defaultVariants: {
-    $p: 1,
+    $frame: true,
+    $forceRounded: false,
     $rounded: "2xl",
+    $p: 1,
+    $m: "unset",
+    $stretch: false,
+    $flow: "row",
+    $position: "unset",
+    $border: "bordering",
     $borderWidth: 1,
-  },
-  computed: (context) => {
-    if (context.variants.$rounded) {
-      context.addClass("ak-frame");
-    }
   },
 });
 
-const layerFrame = cv({ extend: [layer, frame] });
-
 interface LayerProps
   extends ComponentProps<"section">,
-    VariantProps<typeof layerFrame> {
-  orientation?: "vertical" | "horizontal";
+    VariantProps<typeof layer> {
+  label?: ReactNode | ((props: VariantProps<typeof layer>) => ReactNode);
+  getVariants?: (
+    props: VariantProps<typeof layer>,
+  ) => VariantProps<typeof layer>;
 }
 
-function Layer({
-  title,
-  children,
-  orientation = "horizontal",
-  ...props
-}: LayerProps) {
+function Layer({ label, children, getVariants, ...props }: LayerProps) {
   const id = useId();
-  const [layerProps, rest] = splitProps(props, layerFrame);
-  title ??= Object.entries(layerProps)
-    .find(([key, value]) => {
-      if (!layer.variantKeys.includes(key as any)) return false;
-      return typeof value === "number";
-    })?.[1]
-    ?.toString();
+  const [layerProps, rest] = splitProps(props, layer);
+  const labelElement =
+    typeof label === "function" ? label(layer.getVariants(layerProps)) : label;
   return (
     <section
-      aria-labelledby={id}
+      aria-labelledby={label ? id : undefined}
       {...rest}
-      {...layerFrame.jsx({
-        ...layerProps,
-        class: "font-mono flex gap-1 flex-col",
-      })}
-    >
-      <div id={id}>{title}</div>
-      {children && (
-        <div
-          className={clsx(
-            "ak-layer ak-frame ak-frame-p-1 ak-frame-bordering ak-frame-overflow flex flex-wrap gap-[inherit]",
-            orientation === "vertical" ? "flex-col" : "flex-row",
-          )}
-        >
-          {children}
-        </div>
+      {...layer.jsx(
+        getVariants ? getVariants(layer.getVariants(layerProps)) : layerProps,
       )}
+    >
+      {labelElement && <div id={id}>{labelElement}</div>}
+      {children}
     </section>
   );
 }
 
-interface LayersProps extends LayerProps {
-  maxLevel?: number;
-}
+interface LayersProps extends ComponentProps<typeof Layer> {}
 
-function Layers({ maxLevel = 100, ...props }: LayersProps) {
+function Layers(props: LayersProps) {
+  const label = props.label ?? ((props) => `ak-layer-${props.$layer}`);
   return (
     <>
-      <Layer {...props} $layer={0} />
-      <Layer {...props} $layer={10} />
-      <Layer {...props} $layer={20} />
-      <Layer {...props} $layer={30} />
-      <Layer {...props} $layer={40} />
-      <Layer {...props} $layer={50} />
-      {maxLevel >= 60 && <Layer {...props} $layer={60} />}
-      {maxLevel >= 70 && <Layer {...props} $layer={70} />}
-      {maxLevel >= 80 && <Layer {...props} $layer={80} />}
-      {maxLevel >= 90 && <Layer {...props} $layer={90} />}
-      {maxLevel >= 100 && <Layer {...props} $layer={100} />}
+      <Layer {...props} $layer={0} label={label} />
+      <Layer {...props} $layer={10} label={label} />
+      <Layer {...props} $layer={20} label={label} />
+      <Layer {...props} $layer={30} label={label} />
+      <Layer {...props} $layer={40} label={label} />
+      <Layer {...props} $layer={50} label={label} />
+      <Layer {...props} $layer={60} label={label} />
+      <Layer {...props} $layer={70} label={label} />
+      <Layer {...props} $layer={80} label={label} />
+      <Layer {...props} $layer={90} label={label} />
+      <Layer {...props} $layer={100} label={label} />
     </>
   );
 }
 
-function LayersState(props: LayerProps) {
-  return (
-    <>
-      <Layer {...props} $state={0} />
-      <Layer {...props} $state={10} />
-      <Layer {...props} $state={20} />
-      <Layer {...props} $state={30} />
-      <Layer {...props} $state={40} />
-      <Layer {...props} $state={50} />
-      <Layer {...props} $state={60} />
-      <Layer {...props} $state={70} />
-      <Layer {...props} $state={80} />
-      <Layer {...props} $state={90} />
-      <Layer {...props} $state={100} />
-    </>
-  );
-}
-
-function LayersContrast(props: LayerProps) {
-  return (
-    <>
-      <Layer {...props} $contrast={0} />
-      <Layer {...props} $contrast={10} />
-      <Layer {...props} $contrast={20} />
-      <Layer {...props} $contrast={30} />
-      <Layer {...props} $contrast={40} />
-      <Layer {...props} $contrast={50} />
-      <Layer {...props} $contrast={60} />
-      <Layer {...props} $contrast={70} />
-      <Layer {...props} $contrast={80} />
-      <Layer {...props} $contrast={90} />
-      <Layer {...props} $contrast={100} />
-    </>
-  );
-}
-
-function LayersMix(props: LayerProps) {
-  return (
-    <>
-      <Layer {...props} $mixColor="red" $mix={0} />
-      <Layer {...props} $mixColor="red" $mix={10} />
-      <Layer {...props} $mixColor="red" $mix={20} />
-      <Layer {...props} $mixColor="red" $mix={30} />
-      <Layer {...props} $mixColor="red" $mix={40} />
-      <Layer {...props} $mixColor="red" $mix={50} />
-      <Layer {...props} $mixColor="red" $mix={60} />
-      <Layer {...props} $mixColor="red" $mix={70} />
-      <Layer {...props} $mixColor="red" $mix={80} />
-      <Layer {...props} $mixColor="red" $mix={90} />
-      <Layer {...props} $mixColor="red" $mix={100} />
-    </>
-  );
-}
-
-function LayersLighten(props: LayerProps) {
-  return (
-    <>
-      <Layer {...props} $lighten={0} />
-      <Layer {...props} $lighten={10} />
-      <Layer {...props} $lighten={20} />
-      <Layer {...props} $lighten={30} />
-      <Layer {...props} $lighten={40} />
-      <Layer {...props} $lighten={50} />
-      <Layer {...props} $lighten={60} />
-      <Layer {...props} $lighten={70} />
-      <Layer {...props} $lighten={80} />
-      <Layer {...props} $lighten={90} />
-      <Layer {...props} $lighten={100} />
-    </>
-  );
-}
-
-function LayersDarken(props: LayerProps) {
-  return (
-    <>
-      <Layer {...props} $darken={0} />
-      <Layer {...props} $darken={10} />
-      <Layer {...props} $darken={20} />
-      <Layer {...props} $darken={30} />
-      <Layer {...props} $darken={40} />
-      <Layer {...props} $darken={50} />
-      <Layer {...props} $darken={60} />
-      <Layer {...props} $darken={70} />
-      <Layer {...props} $darken={80} />
-      <Layer {...props} $darken={90} />
-      <Layer {...props} $darken={100} />
-    </>
-  );
+function getFrom<K extends keyof any, T>(
+  keyObject: K | undefined,
+  valueObject: T,
+  map: NoInfer<{ [key in K]?: T }>,
+) {
+  return keyObject != null ? (map[keyObject] ?? valueObject) : valueObject;
 }
 
 export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
-      <Layer title="ak-layer-<number>">
-        <Layers>
-          <Layers />
-        </Layers>
-      </Layer>
-      <Layer title="ak-state-<number>">
-        <LayersState>
-          <LayersState />
-        </LayersState>
-      </Layer>
-      <Layer title="ak-layer-contrast-<number>">
-        <LayersContrast>
-          <LayersContrast />
-        </LayersContrast>
-      </Layer>
-      <Layer title="ak-layer-mix-<number>">
-        <LayersMix>
-          <LayersMix />
-        </LayersMix>
-      </Layer>
-      <Layer title="ak-layer-black" className="ak-layer-black">
-        <Layer title="ak-layer-lighten-<number>">
-          <LayersLighten>
-            <LayersLighten />
-          </LayersLighten>
+      <Layer label="ak-layer-<number>" $flow="col">
+        <Layer $stretch="overflow">
+          <Layers $flow="col">
+            <Layer $borderWidth={2} $borderColor="blueRel">
+              <Layers
+                label={(props) => props.$layer}
+                getVariants={(props) => ({
+                  ...props,
+                  $textLevel: getFrom(props.$layer, props.$textLevel, {
+                    20: 0,
+                    70: 0,
+                    100: 0,
+                  }),
+                  $stretch: getFrom(props.$layer, props.$stretch, {
+                    0: "overflow",
+                    50: true,
+                    100: "overflow",
+                  }),
+                })}
+              />
+            </Layer>
+          </Layers>
         </Layer>
-      </Layer>
-      <Layer title="ak-layer-white" className="ak-layer-white">
-        <Layer title="ak-layer-darken-<number>">
-          <LayersDarken>
-            <LayersDarken />
-          </LayersDarken>
-        </Layer>
-      </Layer>
-
-      <Layer title="ak-layer-brand">
-        <Layers maxLevel={50} className="ak-layer-brand" orientation="vertical">
-          <Layer title="ak-layer-<number>">
-            <Layers />
-          </Layer>
-          <Layer title="ak-state-<number>">
-            <LayersState />
-          </Layer>
-          <Layer title="ak-layer-contrast-<number>">
-            <LayersContrast />
-          </Layer>
-          <Layer title="ak-layer-mix-<number>">
-            <LayersMix />
-          </Layer>
-          <Layer title="ak-layer-lighten-<number>">
-            <LayersLighten />
-          </Layer>
-          <Layer title="ak-layer-darken-<number>">
-            <LayersDarken />
-          </Layer>
-          <Layer
-            title="ak-layer-complementary"
-            className="ak-layer-complementary"
-            orientation="vertical"
-          >
-            <Layer title="ak-layer-<number>">
-              <Layers />
-            </Layer>
-            <Layer title="ak-state-<number>">
-              <LayersState />
-            </Layer>
-            <Layer title="ak-layer-mix-<number>">
-              <LayersMix />
-            </Layer>
-            <Layer title="ak-layer-contrast-<number>">
-              <LayersContrast />
-            </Layer>
-            <Layer title="ak-layer-lighten-<number>">
-              <LayersLighten />
-            </Layer>
-            <Layer title="ak-layer-darken-<number>">
-              <LayersDarken />
-            </Layer>
-          </Layer>
-        </Layers>
       </Layer>
     </div>
   );

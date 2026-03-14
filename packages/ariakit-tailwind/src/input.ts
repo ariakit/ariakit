@@ -36,8 +36,11 @@ const BAND_LEVEL_DARK_LOW = 0.25;
 const BAND_LEVEL_MID = 0.5;
 const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
+const LAYER_CONTAINER = "ak-layer";
 
-const TEXT_MIN_CONTRAST = 0.5;
+const CHILD_TEXT_MIN_CONTRAST = 0.52;
+const CHILD_TEXT_CHROMA_CAP_DARK = 0.0515;
+const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
 const OUTLINE_MIN_CONTRAST = 0.5;
 
 const CONTRAST_SCALE = 0.3334;
@@ -333,8 +336,8 @@ const layerMathVars = {
   contrastT: _ak.prop("ct"),
   negativeContrastT: _ak.prop("nct"),
   layerContrastBias: _ak.prop("lcb"),
-  forbiddenLa: _ak.prop("fla"),
-  forbiddenLb: _ak.prop("flb"),
+  forbiddenLa: _ak.prop("fla", { inherits: true }),
+  forbiddenLb: _ak.prop("flb", { inherits: true }),
   safeL: _ak.prop("sl"),
   autoDirectionToLight: _ak.prop("adtl"),
   autoDirectionToDark: _ak.prop("adtd"),
@@ -374,12 +377,6 @@ const layerColorVars = {
   outline: ak.var("outline", "canvastext"),
 };
 
-const textMathVars = {
-  textContrastDirection: _ak.prop("tcd", { initial: 1 }),
-  textParentL: _ak.prop("tpl", { initial: 0 }),
-  textChromaCap: _ak.prop("tcc", { initial: 0.4 }),
-};
-
 const outlineMathVars = {
   outlineContrastDirection: _ak.prop("ocd", { initial: 1 }),
   outlineParentL: _ak.prop("opl", { initial: 0 }),
@@ -401,6 +398,7 @@ const frameVars = {
   frameParentPaddingContext: _ak.var("fppc"),
   frameParentBorderContext: _ak.var("fpbc"),
   frameParentRingContext: _ak.var("fpgc"),
+  frameParentRowContext: _ak.var("fpwc"),
 };
 
 const vars = {
@@ -409,7 +407,6 @@ const vars = {
   ...layerMathVars,
   ...themeTokenVars,
   ...layerColorVars,
-  ...textMathVars,
   ...outlineMathVars,
   ...frameVars,
 };
@@ -522,18 +519,24 @@ const theme = at.theme(
 
 const dark = createVariant(
   "ak-dark",
-  at.container(fn.style(vars.layerScheme, "oklch(1 0 0)"), set("@slot")),
+  at.container(
+    `${LAYER_CONTAINER} ${fn.style(vars.layerScheme, "oklch(1 0 0)")}`,
+    set("@slot"),
+  ),
 );
 
 const light = createVariant(
   "ak-light",
-  at.container(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
+  at.container(
+    `${LAYER_CONTAINER} ${fn.style(vars.layerScheme, "oklch(0 0 0)")}`,
+    set("@slot"),
+  ),
 );
 
 const darkHigh = createVariant(
   "ak-dark-high",
   at.container(
-    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH })),
+    `${LAYER_CONTAINER} ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH }))}`,
     set("@slot"),
   ),
 );
@@ -541,7 +544,7 @@ const darkHigh = createVariant(
 const darkLow = createVariant(
   "ak-dark-low",
   at.container(
-    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_LOW })),
+    `${LAYER_CONTAINER} ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_LOW }))}`,
     set("@slot"),
   ),
 );
@@ -549,7 +552,7 @@ const darkLow = createVariant(
 const lightLow = createVariant(
   "ak-light-low",
   at.container(
-    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_LOW })),
+    `${LAYER_CONTAINER} ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_LOW }))}`,
     set("@slot"),
   ),
 );
@@ -557,7 +560,7 @@ const lightLow = createVariant(
 const lightHigh = createVariant(
   "ak-light-high",
   at.container(
-    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH })),
+    `${LAYER_CONTAINER} ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH }))}`,
     set("@slot"),
   ),
 );
@@ -681,6 +684,27 @@ function mapLayerLightnessSteps(
       return [];
     }
     return at.container(
+      `${LAYER_CONTAINER} ${fn.style(vars.layerL, fn.oklch({ l: parentL }))}`,
+      ...children,
+    );
+  });
+}
+
+function mapAncestorLayerLightnessSteps(
+  callback: (
+    parentL: number,
+    isDark: boolean,
+  ) => (ReturnType<typeof set> | undefined)[],
+) {
+  return Array.from({ length: QUANTIZED_LIGHTNESS_STEPS + 1 }, (_, index) =>
+    roundToDecimals(index / QUANTIZED_LIGHTNESS_STEPS, 4),
+  ).flatMap((parentL) => {
+    const isDark = parentL < DARK_THRESHOLD_L;
+    const children = callback(parentL, isDark).filter((child) => child != null);
+    if (children.length === 0) {
+      return [];
+    }
+    return at.container(
       fn.style(vars.layerL, fn.oklch({ l: parentL })),
       ...children,
     );
@@ -706,6 +730,36 @@ const forbiddenLa = fn.max(
     fn.mul(vars.contrastT, LA_SPREAD, LA_SPREAD_CONTRAST_SCALE),
   ),
 );
+
+function getForbiddenLaValue(chromaValue: string | VarProperty) {
+  const normalizedTextChroma = fn.div(
+    fn.min(chromaValue, CHROMA_MAX),
+    CHROMA_MAX,
+  );
+  return fn.max(
+    FORBIDDEN_RANGE_LA_MIN,
+    fn.sub(
+      LA_BASE,
+      fn.mul(normalizedTextChroma, LA_SPREAD),
+      fn.mul(vars.contrastT, LA_SPREAD, LA_SPREAD_CONTRAST_SCALE),
+    ),
+  );
+}
+
+function getForbiddenLbValue(chromaValue: string | VarProperty) {
+  const normalizedTextChroma = fn.div(
+    fn.min(chromaValue, CHROMA_MAX),
+    CHROMA_MAX,
+  );
+  return fn.min(
+    FORBIDDEN_RANGE_LB_MAX,
+    fn.add(
+      LB_BASE,
+      fn.mul(normalizedTextChroma, LB_SPREAD),
+      fn.mul(vars.contrastT, LB_SPREAD, LB_SPREAD_CONTRAST_SCALE),
+    ),
+  );
+}
 const forbiddenLb = fn.min(
   FORBIDDEN_RANGE_LB_MAX,
   fn.add(
@@ -862,6 +916,8 @@ const layerContext = createContext();
 
 utility(
   "layer",
+  set.containerType("normal"),
+  set.containerName(LAYER_CONTAINER),
   set.color(vars.text),
   set.borderColor(vars.edge),
   set.backgroundColor(vars.layer),
@@ -1138,49 +1194,68 @@ const textAdjustedChroma = fn.var(
 );
 const textAdjustedHue = fn.var(inputs.textH, fn.add(h, inputs.textRelativeH));
 
+// Child text preserves the base color alpha so numeric `ak-text-*` tokens can
+// still tune layer text opacity without reducing contrast on `ak-text`.
 const textColorAdjusted = fn.oklch(textBaseColor, {
   l: textAdjustedLightness,
   c: textAdjustedChroma,
   h: textAdjustedHue,
-  a: textAlpha,
 });
 
-// Text contrast utilities always keep at least a half-step delta so plain
-// `ak-text` still separates from the parent layer in both schemes.
-const textContrastShift = fn.mul(
-  fn.add(
-    fn.max(TEXT_MIN_CONTRAST, inputs.textContrastL),
-    fn.mul(vars.contrastT, CONTRAST_SCALE),
-  ),
-  vars.textContrastDirection,
-);
-const textComputedL = fn.add(vars.textParentL, textContrastShift);
-
-// `textContrastDirection` is `1` on dark parents and `-1` on light parents.
-// Clamp it to a mask so CSS math can switch between max() and min().
-const textDarkDirectionMask = fn.clamp01(vars.textContrastDirection);
-const textDirectedLightness = fn.add(
-  fn.mul(fn.max(l, textComputedL), textDarkDirectionMask),
-  fn.mul(fn.min(l, textComputedL), fn.invert(textDarkDirectionMask)),
-);
-
-// Text keeps some chroma, but it is capped more aggressively on dark layers so
-// saturated colors do not overpower the foreground.
-const textDirectional = fn.oklch(textColorAdjusted, {
-  l: fn.clamp(inputs.textLMin, textDirectedLightness, inputs.textLMax),
-  c: fn.min(fn.clamp(inputs.textCMin, c, inputs.textCMax), vars.textChromaCap),
-});
+function getTextDirectional(parentL: number, isDark: boolean) {
+  const textContrastDirection = isDark ? 1 : -1;
+  const textChromaCap = isDark
+    ? CHILD_TEXT_CHROMA_CAP_DARK
+    : CHILD_TEXT_CHROMA_CAP_LIGHT;
+  // Text contrast utilities always keep at least a half-step delta so plain
+  // `ak-text` still separates from the parent layer in both schemes.
+  const textContrastShift = fn.mul(
+    fn.add(
+      fn.max(CHILD_TEXT_MIN_CONTRAST, inputs.textContrastL),
+      fn.mul(vars.contrastT, CONTRAST_SCALE),
+    ),
+    textContrastDirection,
+  );
+  const textComputedL = fn.add(parentL, textContrastShift);
+  const textUserLightness = fn.clamp(inputs.textLMin, l, inputs.textLMax);
+  const textAccessibleLightness = fn.clamp01(textComputedL);
+  // `textContrastDirection` is `1` on dark parents and `-1` on light parents.
+  // Clamp it to a mask so CSS math can switch between max() and min().
+  const textDarkDirectionMask = fn.clamp01(textContrastDirection);
+  const textDirectedLightness = fn.add(
+    fn.mul(
+      fn.max(textUserLightness, textAccessibleLightness),
+      textDarkDirectionMask,
+    ),
+    fn.mul(
+      fn.min(textUserLightness, textAccessibleLightness),
+      fn.invert(textDarkDirectionMask),
+    ),
+  );
+  const textChroma = fn.min(
+    fn.clamp(inputs.textCMin, c, inputs.textCMax),
+    textChromaCap,
+  );
+  // Child text utilities can push lightness around, but they must still land on
+  // the accessible side of the parent layer's forbidden range.
+  const textSafeLightness = getSafeLightness(
+    textDirectedLightness,
+    getForbiddenLaValue(textChroma),
+    getForbiddenLbValue(textChroma),
+  );
+  return fn.oklch(textColorAdjusted, {
+    l: textSafeLightness,
+    c: textChroma,
+  });
+}
 
 utility(
   "text",
   getBaseDeclarations(vars.layer),
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
-  at.container(fn.style(vars.layerL), set(vars.text, textDirectional)),
-  mapLayerLightnessSteps((parentL, isDark) => [
-    set(vars.textContrastDirection, isDark ? 1 : -1),
-    set(vars.textParentL, parentL),
-    set(vars.textChromaCap, isDark ? 0.25 : 0.4),
+  ...mapAncestorLayerLightnessSteps((parentL, isDark) => [
+    set.color(getTextDirectional(parentL, isDark)),
   ]),
 );
 
@@ -1189,8 +1264,8 @@ utility(
   set(inputs.textC, fn.value(chroma)),
   set(inputs.textH, fn.value(hue)),
   set(inputs.textColor, fn.value(color, "[color]")),
-  set(inputs.textContrastL, getPercentTokenValue("[number]")),
   set(inputs.textA, getPercentTokenValue("[number]")),
+  set(inputs.textContrastL, getPercentTokenValue("[number]")),
 );
 
 utility("text-layer", set(inputs.textColor, vars.layer));
@@ -1432,58 +1507,80 @@ const LAST_VISIBLE_SELECTOR = "&:not(:has(~ *:not([hidden],template)))";
  * axis and edge handling, avoiding container style queries on self properties.
  */
 function getFrameStretchDeclarations({
-  inset,
+  stretchInset,
+  radiusInset,
+  childPadding,
   parentRadius,
+  parentRow,
 }: {
-  inset: string;
+  stretchInset: string;
+  radiusInset: string;
+  childPadding: string;
   parentRadius: string;
+  parentRow: string;
 }) {
-  const isCol = fn.sub(1, inputs.frameRow);
-  const isRow = inputs.frameRow;
-  const negInset = fn.neg(inset);
+  const isCol = fn.sub(1, parentRow);
+  const isRow = parentRow;
+  const negStretchInset = fn.neg(stretchInset);
+  const childRadius = fn.max(fn.sub(parentRadius, radiusInset), "0px");
   return [
     rule("&:first-child", set(inputs.frameStart, 1)),
     rule(LAST_VISIBLE_SELECTOR, set(inputs.frameEnd, 1)),
+    // Keep the frame model aligned with the visual stretch so descendant
+    // frames inherit the corrected geometry.
+    set(inputs.frameForce, 1),
+    set(inputs.frameRadius, childRadius),
+    set(inputs.framePadding, childPadding),
+    set(inputs.frameMargin, negStretchInset),
     // Cross-axis margins always applied; main-axis margins only at edges
     // Col: inline = cross, block = main
     // Row: block = cross, inline = main
     set.marginInlineStart(
-      fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameStart)), negInset),
+      fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameStart)), negStretchInset),
     ),
     set.marginInlineEnd(
-      fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameEnd)), negInset),
+      fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameEnd)), negStretchInset),
     ),
     set.marginBlockStart(
-      fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameStart)), negInset),
+      fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameStart)), negStretchInset),
     ),
     set.marginBlockEnd(
-      fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameEnd)), negInset),
+      fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameEnd)), negStretchInset),
     ),
+    set.borderRadius(fn.important(childRadius)),
     // Corner radii: each corner is rounded when its edge conditions are met
     // start-start: start in either axis
-    set.borderStartStartRadius(fn.mul(inputs.frameStart, parentRadius)),
+    set.borderTopLeftRadius(
+      fn.important(fn.mul(inputs.frameStart, childRadius)),
+    ),
     // start-end: (col AND start) OR (row AND end)
-    set.borderStartEndRadius(
-      fn.mul(
-        fn.max(
-          fn.mul(isCol, inputs.frameStart),
-          fn.mul(isRow, inputs.frameEnd),
+    set.borderTopRightRadius(
+      fn.important(
+        fn.mul(
+          fn.max(
+            fn.mul(isCol, inputs.frameStart),
+            fn.mul(isRow, inputs.frameEnd),
+          ),
+          childRadius,
         ),
-        parentRadius,
       ),
     ),
     // end-start: (col AND end) OR (row AND start)
-    set.borderEndStartRadius(
-      fn.mul(
-        fn.max(
-          fn.mul(isCol, inputs.frameEnd),
-          fn.mul(isRow, inputs.frameStart),
+    set.borderBottomLeftRadius(
+      fn.important(
+        fn.mul(
+          fn.max(
+            fn.mul(isCol, inputs.frameEnd),
+            fn.mul(isRow, inputs.frameStart),
+          ),
+          childRadius,
         ),
-        parentRadius,
       ),
     ),
     // end-end: end in either axis
-    set.borderEndEndRadius(fn.mul(inputs.frameEnd, parentRadius)),
+    set.borderBottomRightRadius(
+      fn.important(fn.mul(inputs.frameEnd, childRadius)),
+    ),
   ];
 }
 
@@ -1531,6 +1628,7 @@ utility(
       set(provide(vars.frameParentPaddingContext), vars.framePadding),
       set(provide(vars.frameParentBorderContext), vars.frameBorder),
       set(provide(vars.frameParentRingContext), vars.frameRing),
+      set(provide(vars.frameParentRowContext), inputs.frameRow),
     ];
   }),
 );
@@ -1564,10 +1662,15 @@ utility(
   "frame-cover",
   frameContext(({ inherit }) => {
     const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
+    const parentBorder = inherit(vars.frameParentBorderContext, "0px");
     const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
+    const parentRow = inherit(vars.frameParentRowContext, "0");
     return getFrameStretchDeclarations({
-      inset: parentPadding,
+      stretchInset: parentPadding,
+      radiusInset: parentBorder,
+      childPadding: parentPadding,
       parentRadius,
+      parentRow,
     });
   }),
 );
@@ -1579,8 +1682,20 @@ utility(
     const parentBorder = inherit(vars.frameParentBorderContext, "0px");
     const parentRing = inherit(vars.frameParentRingContext, "0px");
     const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
-    const inset = fn.add(parentPadding, parentBorder, parentRing);
-    return getFrameStretchDeclarations({ inset, parentRadius });
+    const parentRow = inherit(vars.frameParentRowContext, "0");
+    // Rings sit outside the border box, so a child ring must be removed from
+    // the border-box stretch inset to keep visible overflow aligned.
+    const stretchInset = fn.sub(
+      fn.add(parentPadding, parentBorder, parentRing),
+      inputs.frameRing,
+    );
+    return getFrameStretchDeclarations({
+      stretchInset,
+      radiusInset: parentBorder,
+      childPadding: parentPadding,
+      parentRadius,
+      parentRow,
+    });
   }),
 );
 

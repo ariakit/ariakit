@@ -71,42 +71,44 @@
 }
 
 @custom-variant ak-dark {
-  @container style(--_ak-ls: oklch(1 0 0)) {
+  @container ak-layer style(--_ak-ls: oklch(1 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-light {
-  @container style(--_ak-ls: oklch(0 0 0)) {
+  @container ak-layer style(--_ak-ls: oklch(0 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-dark-high {
-  @container style(--_ak-lbd: oklch(0 0 0)) {
+  @container ak-layer style(--_ak-lbd: oklch(0 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-dark-low {
-  @container style(--_ak-lbd: oklch(0.25 0 0)) {
+  @container ak-layer style(--_ak-lbd: oklch(0.25 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-light-low {
-  @container style(--_ak-lbd: oklch(0.75 0 0)) {
+  @container ak-layer style(--_ak-lbd: oklch(0.75 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-light-high {
-  @container style(--_ak-lbd: oklch(1 0 0)) {
+  @container ak-layer style(--_ak-lbd: oklch(1 0 0)) {
     @slot;
   }
 }
 
 @utility ak-layer {
+  container-type: normal;
+  container-name: ak-layer;
   color: var(--ak-text);
   border-color: var(--ak-edge);
   background-color: var(--ak-layer);
@@ -346,53 +348,32 @@
   --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
   background-color: transparent !important;
   color: var(--ak-text);
-  @container style(--_ak-ll) {
-    --ak-text: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue))) / max((((var(--_ak-lil) * ((53.6 + ((1 - l) * 85)) / 100)) + (var(--_ak-dal) * ((45.7 + (l * 108)) / 100))) + (c * 0.135) + (var(--_ak-ct) * 0.3334)), var(--_ak-text-alpha))) clamp(var(--_ak-text-lightness-min), ((max(l, (var(--_ak-tpl) + ((max(0.5, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-tcd)))) * clamp(0, var(--_ak-tcd), 1)) + (min(l, (var(--_ak-tpl) + ((max(0.5, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-tcd)))) * (1 - clamp(0, var(--_ak-tcd), 1)))), var(--_ak-text-lightness-max)) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), var(--_ak-tcc)) h);
-  }
   @container style(--_ak-ll: oklch(0 0 0)) {
-    --_ak-tcd: 1;
-    --_ak-tpl: 0;
-    --_ak-tcc: 0.25;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515) h);
   }
   @container style(--_ak-ll: oklch(0.125 0 0)) {
-    --_ak-tcd: 1;
-    --_ak-tpl: 0.125;
-    --_ak-tcc: 0.25;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.125 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515) h);
   }
   @container style(--_ak-ll: oklch(0.25 0 0)) {
-    --_ak-tcd: 1;
-    --_ak-tpl: 0.25;
-    --_ak-tcc: 0.25;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.25 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515) h);
   }
   @container style(--_ak-ll: oklch(0.375 0 0)) {
-    --_ak-tcd: 1;
-    --_ak-tpl: 0.375;
-    --_ak-tcc: 0.25;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.375 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515) h);
   }
   @container style(--_ak-ll: oklch(0.5 0 0)) {
-    --_ak-tcd: 1;
-    --_ak-tpl: 0.5;
-    --_ak-tcc: 0.25;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.5 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515) h);
   }
   @container style(--_ak-ll: oklch(0.625 0 0)) {
-    --_ak-tcd: 1;
-    --_ak-tpl: 0.625;
-    --_ak-tcc: 0.25;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * clamp(0, 1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.625 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * 1)), 1)) * (1 - clamp(0, 1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.0515) h);
   }
   @container style(--_ak-ll: oklch(0.75 0 0)) {
-    --_ak-tcd: -1;
-    --_ak-tpl: 0.75;
-    --_ak-tcc: 0.4;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.75 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2) h);
   }
   @container style(--_ak-ll: oklch(0.875 0 0)) {
-    --_ak-tcd: -1;
-    --_ak-tpl: 0.875;
-    --_ak-tcc: 0.4;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (0.875 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2) h);
   }
   @container style(--_ak-ll: oklch(1 0 0)) {
-    --_ak-tcd: -1;
-    --_ak-tpl: 1;
-    --_ak-tcc: 0.4;
+    color: oklch(from oklch(from var(--_ak-text-color, var(--ak-layer)) var(--_ak-text-lightness, calc(l + var(--_ak-text-relative-lightness))) var(--_ak-text-chroma, calc(c + var(--_ak-text-relative-chroma))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) * (1 - clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))))) * 1000000), 1))) + (((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) * (1 - clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) + (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) * clamp(0, ((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - ((max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424))) + min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424)))) / 2)) * 1000000), 1))) * clamp(0, (((((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))) - max(0.2, (0.55 - ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.0825) - (var(--_ak-ct) * 0.0825 * 4.2424)))) * (min(0.9, (0.725 + ((min(min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2), 0.368) / 0.368) * 0.04125) + (var(--_ak-ct) * 0.04125 * 4.2424))) - ((max(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * clamp(0, -1, 1)) + (min(clamp(var(--_ak-text-lightness-min), l, var(--_ak-text-lightness-max)), clamp(0, (1 + ((max(0.52, var(--_ak-text-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * -1)), 1)) * (1 - clamp(0, -1, 1)))))) * 1000000), 1))) min(clamp(var(--_ak-text-chroma-min), c, var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))), 0.2) h);
   }
 }
 
@@ -400,8 +381,8 @@
   --_ak-text-chroma: --value(--chroma-*);
   --_ak-text-hue: --value(--hue-*);
   --_ak-text-color: --value(--color-*, [color]);
-  --_ak-text-contrast-lightness: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-text-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-contrast-lightness: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
 @utility ak-text-layer {
@@ -479,39 +460,39 @@
   @container style(--_ak-ll) {
     --ak-outline: oklch(from oklch(from var(--_ak-outline-color, var(--ak-layer)) var(--_ak-outline-lightness, calc(l + var(--_ak-outline-relative-lightness))) var(--_ak-outline-chroma, calc(c + var(--_ak-outline-relative-chroma))) var(--_ak-outline-hue, calc(h + var(--_ak-outline-relative-hue)))) clamp(var(--_ak-outline-lightness-min), ((max(l, (var(--_ak-opl) + ((max(0.5, var(--_ak-outline-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-ocd)))) * clamp(0, var(--_ak-ocd), 1)) + (min(l, (var(--_ak-opl) + ((max(0.5, var(--_ak-outline-contrast-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-ocd)))) * (1 - clamp(0, var(--_ak-ocd), 1)))), var(--_ak-outline-lightness-max)) clamp(var(--_ak-outline-chroma-min), c, var(--_ak-outline-chroma-max, var(--chroma-p3-max, 0.368))) h);
   }
-  @container style(--_ak-ll: oklch(0 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(0 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0;
   }
-  @container style(--_ak-ll: oklch(0.125 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(0.125 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.125;
   }
-  @container style(--_ak-ll: oklch(0.25 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(0.25 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.25;
   }
-  @container style(--_ak-ll: oklch(0.375 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(0.375 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.375;
   }
-  @container style(--_ak-ll: oklch(0.5 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(0.5 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.5;
   }
-  @container style(--_ak-ll: oklch(0.625 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(0.625 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.625;
   }
-  @container style(--_ak-ll: oklch(0.75 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(0.75 0 0)) {
     --_ak-ocd: -1;
     --_ak-opl: 0.75;
   }
-  @container style(--_ak-ll: oklch(0.875 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(0.875 0 0)) {
     --_ak-ocd: -1;
     --_ak-opl: 0.875;
   }
-  @container style(--_ak-ll: oklch(1 0 0)) {
+  @container ak-layer style(--_ak-ll: oklch(1 0 0)) {
     --_ak-ocd: -1;
     --_ak-opl: 1;
   }
@@ -609,6 +590,7 @@
     --_ak-fppc-odd: var(--ak-frame-padding);
     --_ak-fpbc-odd: var(--ak-frame-border);
     --_ak-fpgc-odd: var(--ak-frame-ring);
+    --_ak-fpwc-odd: var(--_ak-frame-col);
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
@@ -617,6 +599,7 @@
     --_ak-fppc-even: var(--ak-frame-padding);
     --_ak-fpbc-even: var(--ak-frame-border);
     --_ak-fpgc-even: var(--ak-frame-ring);
+    --_ak-fpwc-even: var(--_ak-frame-col);
   }
   @container not style(--_context-1) {
     --_context-1: odd;
@@ -625,6 +608,7 @@
     --_ak-fppc-odd: var(--ak-frame-padding);
     --_ak-fpbc-odd: var(--ak-frame-border);
     --_ak-fpgc-odd: var(--ak-frame-ring);
+    --_ak-fpwc-odd: var(--_ak-frame-col);
   }
 }
 
@@ -670,14 +654,19 @@
     &:not(:has(~ *:not([hidden],template))) {
       --_ak-frame-end: 1;
     }
-    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
-    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
-    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
-    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
-    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-even, 0px));
-    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-even, 0px));
-    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-even, 0px));
-    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-even, 0px));
+    --_ak-frame-force: 1;
+    --_ak-frame-radius: max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px);
+    --_ak-frame-padding: var(--_ak-fppc-even, 0px);
+    --_ak-frame-margin: calc(var(--_ak-fppc-even, 0px) * -1);
+    margin-inline-start: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-block-start: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-block-end: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
+    border-radius: max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px) !important;
+    border-top-left-radius: calc(var(--_ak-frame-start) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-top-right-radius: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-bottom-left-radius: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-bottom-right-radius: calc(var(--_ak-frame-end) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
@@ -687,14 +676,19 @@
     &:not(:has(~ *:not([hidden],template))) {
       --_ak-frame-end: 1;
     }
-    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * (var(--_ak-fppc-odd, 0px) * -1));
-    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * (var(--_ak-fppc-odd, 0px) * -1));
-    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * (var(--_ak-fppc-odd, 0px) * -1));
-    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * (var(--_ak-fppc-odd, 0px) * -1));
-    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-odd, 0px));
-    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-odd, 0px));
-    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-odd, 0px));
-    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-odd, 0px));
+    --_ak-frame-force: 1;
+    --_ak-frame-radius: max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px);
+    --_ak-frame-padding: var(--_ak-fppc-odd, 0px);
+    --_ak-frame-margin: calc(var(--_ak-fppc-odd, 0px) * -1);
+    margin-inline-start: calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * (var(--_ak-fppc-odd, 0px) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * (var(--_ak-fppc-odd, 0px) * -1));
+    margin-block-start: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start))) * (var(--_ak-fppc-odd, 0px) * -1));
+    margin-block-end: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end))) * (var(--_ak-fppc-odd, 0px) * -1));
+    border-radius: max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px) !important;
+    border-top-left-radius: calc(var(--_ak-frame-start) * max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px)) !important;
+    border-top-right-radius: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px)) !important;
+    border-bottom-left-radius: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px)) !important;
+    border-bottom-right-radius: calc(var(--_ak-frame-end) * max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px)) !important;
   }
   @container not style(--_context-1) {
     --_context-1: odd;
@@ -704,14 +698,19 @@
     &:not(:has(~ *:not([hidden],template))) {
       --_ak-frame-end: 1;
     }
-    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
-    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
-    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
-    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
-    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-even, 0px));
-    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-even, 0px));
-    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-even, 0px));
-    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-even, 0px));
+    --_ak-frame-force: 1;
+    --_ak-frame-radius: max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px);
+    --_ak-frame-padding: var(--_ak-fppc-even, 0px);
+    --_ak-frame-margin: calc(var(--_ak-fppc-even, 0px) * -1);
+    margin-inline-start: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-block-start: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * (var(--_ak-fppc-even, 0px) * -1));
+    margin-block-end: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * (var(--_ak-fppc-even, 0px) * -1));
+    border-radius: max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px) !important;
+    border-top-left-radius: calc(var(--_ak-frame-start) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-top-right-radius: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-bottom-left-radius: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-bottom-right-radius: calc(var(--_ak-frame-end) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
   }
 }
 
@@ -724,14 +723,19 @@
     &:not(:has(~ *:not([hidden],template))) {
       --_ak-frame-end: 1;
     }
-    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
-    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
-    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
-    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
-    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-even, 0px));
-    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-even, 0px));
-    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-even, 0px));
-    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-even, 0px));
+    --_ak-frame-force: 1;
+    --_ak-frame-radius: max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px);
+    --_ak-frame-padding: var(--_ak-fppc-even, 0px);
+    --_ak-frame-margin: calc(((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1);
+    margin-inline-start: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-block-start: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-block-end: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
+    border-radius: max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px) !important;
+    border-top-left-radius: calc(var(--_ak-frame-start) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-top-right-radius: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-bottom-left-radius: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-bottom-right-radius: calc(var(--_ak-frame-end) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
@@ -741,14 +745,19 @@
     &:not(:has(~ *:not([hidden],template))) {
       --_ak-frame-end: 1;
     }
-    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * ((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) * -1));
-    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * ((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) * -1));
-    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * ((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) * -1));
-    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * ((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) * -1));
-    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-odd, 0px));
-    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-odd, 0px));
-    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-odd, 0px));
-    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-odd, 0px));
+    --_ak-frame-force: 1;
+    --_ak-frame-radius: max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px);
+    --_ak-frame-padding: var(--_ak-fppc-odd, 0px);
+    --_ak-frame-margin: calc(((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1);
+    margin-inline-start: calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * (((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * (((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-block-start: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start))) * (((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-block-end: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end))) * (((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1));
+    border-radius: max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px) !important;
+    border-top-left-radius: calc(var(--_ak-frame-start) * max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px)) !important;
+    border-top-right-radius: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px)) !important;
+    border-bottom-left-radius: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px)) !important;
+    border-bottom-right-radius: calc(var(--_ak-frame-end) * max((var(--_ak-fprc-odd, 0px) - var(--_ak-fpbc-odd, 0px)), 0px)) !important;
   }
   @container not style(--_context-1) {
     --_context-1: odd;
@@ -758,14 +767,19 @@
     &:not(:has(~ *:not([hidden],template))) {
       --_ak-frame-end: 1;
     }
-    margin-inline-start: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
-    margin-inline-end: calc(max((1 - var(--_ak-frame-col)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
-    margin-block-start: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-start))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
-    margin-block-end: calc(max(var(--_ak-frame-col), ((1 - var(--_ak-frame-col)) * var(--_ak-frame-end))) * ((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) * -1));
-    border-start-start-radius: calc(var(--_ak-frame-start) * var(--_ak-fprc-even, 0px));
-    border-start-end-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-start)), (var(--_ak-frame-col) * var(--_ak-frame-end))) * var(--_ak-fprc-even, 0px));
-    border-end-start-radius: calc(max(((1 - var(--_ak-frame-col)) * var(--_ak-frame-end)), (var(--_ak-frame-col) * var(--_ak-frame-start))) * var(--_ak-fprc-even, 0px));
-    border-end-end-radius: calc(var(--_ak-frame-end) * var(--_ak-fprc-even, 0px));
+    --_ak-frame-force: 1;
+    --_ak-frame-radius: max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px);
+    --_ak-frame-padding: var(--_ak-fppc-even, 0px);
+    --_ak-frame-margin: calc(((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1);
+    margin-inline-start: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-inline-end: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-block-start: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
+    margin-block-end: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
+    border-radius: max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px) !important;
+    border-top-left-radius: calc(var(--_ak-frame-start) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-top-right-radius: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-bottom-left-radius: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
+    border-bottom-right-radius: calc(var(--_ak-frame-end) * max((var(--_ak-fprc-even, 0px) - var(--_ak-fpbc-even, 0px)), 0px)) !important;
   }
 }
 
@@ -905,12 +919,12 @@
 
 @property --_ak-fla {
   syntax: "*";
-  inherits: false;
+  inherits: true;
 }
 
 @property --_ak-flb {
   syntax: "*";
-  inherits: false;
+  inherits: true;
 }
 
 @property --_ak-sl {
@@ -1030,24 +1044,6 @@
   syntax: "<color>";
   inherits: true;
   initial-value: black;
-}
-
-@property --_ak-tcd {
-  syntax: "*";
-  inherits: false;
-  initial-value: 1;
-}
-
-@property --_ak-tpl {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0;
-}
-
-@property --_ak-tcc {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0.4;
 }
 
 @property --_ak-ocd {
