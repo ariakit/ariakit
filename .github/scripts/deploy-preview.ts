@@ -12,7 +12,8 @@ function generateAlias(): void {
   const slug = headBranch
     .toLowerCase()
     .replaceAll(/[^a-z0-9-]+/g, "-")
-    .replaceAll(/^-+|-+$/g, "");
+    .replace(/^-+/g, "")
+    .replace(/-+$/g, "");
   setOutput("slug", slug);
 }
 
