@@ -1,14 +1,26 @@
 import { readdirSync } from "node:fs";
+import { isAbsolute, relative, resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
 import { test } from "@playwright/test";
 import { frameworks, getIndexFile } from "#app/lib/frameworks.ts";
 import { keys } from "#app/lib/object.ts";
 import { visualTest } from "./visual.ts";
 
-function getPreviewId(dirname: string) {
-  if (!dirname.includes("site/src")) return null;
-  const id = dirname.replace(/^.*site\/src\/[^/]+\/(.+)$/, "$1");
-  return id;
+const SITE_SRC_PATH = resolve(import.meta.dirname, "..");
+
+export function getPreviewId(dirname: string) {
+  const relativeDirname = relative(SITE_SRC_PATH, dirname);
+  if (!relativeDirname) {
+    return null;
+  }
+  if (relativeDirname.startsWith("..") || isAbsolute(relativeDirname)) {
+    return null;
+  }
+  const [, ...parts] = relativeDirname.split(/[\\/]/);
+  if (parts.length === 0) {
+    return null;
+  }
+  return parts.join("/");
 }
 
 function getPreviewFramworks(dirname: string) {
