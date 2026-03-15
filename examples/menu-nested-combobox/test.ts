@@ -1,5 +1,9 @@
 import { click, hover, press, q, type } from "@ariakit/test";
 
+function menu() {
+  return q.within(q.dialog("Actions"));
+}
+
 test("open/hide menu", async () => {
   await click(q.button("Actions"));
   expect(q.dialog("Actions")).toBeVisible();
@@ -22,19 +26,23 @@ test("open/hide menu with keyboard", async () => {
 
 test("filter actions", async () => {
   await click(q.button("Actions"));
+  const actions = menu();
   await type("de");
-  expect(q.option("Default checked")).toHaveFocus();
-  expect(q.option("Default checked")).toHaveAttribute(
+  expect(actions.option(/^Defaultchecked$/)).toHaveFocus();
+  expect(actions.option(/^Defaultchecked$/)).toHaveAttribute(
     "data-active-item",
     "true",
   );
   await press.ArrowDown();
-  expect(q.option("Default background checked")).toHaveFocus();
+  expect(actions.option(/^Default backgroundchecked$/)).toHaveFocus();
   await press.ArrowDown();
-  expect(q.option("Delete")).toHaveFocus();
-  expect(q.option("Delete")).toHaveAttribute("data-active-item", "true");
+  expect(actions.option(/^Delete$/)).toHaveFocus();
+  expect(actions.option(/^Delete$/)).toHaveAttribute(
+    "data-active-item",
+    "true",
+  );
   await press.ArrowDown();
-  expect(q.option("Code not checked")).toHaveFocus();
+  expect(actions.option(/^Codenot checked$/)).toHaveFocus();
 });
 
 test("reset filter on hide", async () => {
@@ -113,8 +121,8 @@ test("set block type", async () => {
   expect(q.text("Callout")).toBeInTheDocument();
   await press.Enter();
   await type("Turn into");
-  expect(q.option("Text not checked")).toHaveFocus();
-  expect(q.option("Callout checked")).toBeInTheDocument();
+  expect(menu().option(/^Textnot checked$/)).toHaveFocus();
+  expect(menu().option(/^Calloutchecked$/)).toBeInTheDocument();
   await press.Enter();
   expect(q.dialog("Actions")).not.toBeInTheDocument();
   expect(q.text("Text")).toBeInTheDocument();

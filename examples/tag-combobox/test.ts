@@ -21,6 +21,18 @@ function tags() {
     .map((el) => el.textContent);
 }
 
+function suggestion(name: string) {
+  return (
+    q.option
+      .all()
+      .find(
+        (element) =>
+          element.classList.contains("ak-combobox-item") &&
+          element.textContent?.includes(name),
+      ) ?? null
+  );
+}
+
 test("initial state", async () => {
   expect(tags()).toEqual(["Abigail Patterson"]);
 });
@@ -54,8 +66,8 @@ test("suggestions reset after selecting a tag", async () => {
   expect(tags()).toEqual(["Abigail Patterson", "Daniel Green"]);
   await press.ArrowDown();
   await press.ArrowDown();
-  expect(q.option(/Abigail Patterson /)).toHaveAttribute("data-active-item");
-  expect(q.option(/Abigail Patterson /)).toHaveAttribute(
+  expect(suggestion("Abigail Patterson")).toHaveAttribute("data-active-item");
+  expect(suggestion("Abigail Patterson")).toHaveAttribute(
     "aria-selected",
     "true",
   );
@@ -72,20 +84,23 @@ test("deselecting a tag should not highlight the input text if it is not the fir
   await type("aid");
   expect(q.combobox()).toHaveValue("aid");
   expect(getSelectionText(q.combobox())).toBe("");
-  expect(q.option(/Aiden Freeman /)).toHaveAttribute("data-active-item");
-  expect(q.option(/Aiden Freeman /)).toHaveAttribute("aria-selected", "true");
+  expect(suggestion("Aiden Freeman")).toHaveAttribute("data-active-item");
+  expect(suggestion("Aiden Freeman")).toHaveAttribute("aria-selected", "true");
   await press.Enter();
   expect(tags()).toEqual(["Abigail Patterson"]);
   expect(q.combobox()).toHaveValue("");
-  expect(q.option(/Aiden Freeman /)).toHaveAttribute("data-active-item");
-  expect(q.option(/Aiden Freeman /)).toHaveAttribute("aria-selected", "false");
+  expect(suggestion("Aiden Freeman")).toHaveAttribute("data-active-item");
+  expect(suggestion("Aiden Freeman")).toHaveAttribute("aria-selected", "false");
   await press.ArrowUp();
   expect(q.combobox()).toHaveValue("abigailrivera35@email.com");
-  expect(q.option(/Abigail Rivera /)).toHaveAttribute("data-active-item");
-  expect(q.option(/Abigail Rivera /)).toHaveAttribute("aria-selected", "false");
+  expect(suggestion("Abigail Rivera")).toHaveAttribute("data-active-item");
+  expect(suggestion("Abigail Rivera")).toHaveAttribute(
+    "aria-selected",
+    "false",
+  );
   await press.ArrowDown();
   expect(q.combobox()).toHaveValue("aidenfreeman91@email.com");
   expect(getSelectionText(q.combobox())).toBe("");
-  expect(q.option(/Aiden Freeman /)).toHaveAttribute("data-active-item");
-  expect(q.option(/Aiden Freeman /)).toHaveAttribute("aria-selected", "false");
+  expect(suggestion("Aiden Freeman")).toHaveAttribute("data-active-item");
+  expect(suggestion("Aiden Freeman")).toHaveAttribute("aria-selected", "false");
 });
