@@ -302,7 +302,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       test.use({ colorScheme: scheme });
       const isDark = scheme === "dark";
 
-      test("no color contrast violations (WCAG AA)", async ({ page }) => {
+      test.only("no color contrast violations (WCAG AA)", async ({ page }) => {
         test.setTimeout(60_000);
         const results = await new AxeBuilder({ page })
           .withRules(["color-contrast"])
@@ -310,7 +310,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         expect(results.violations).toEqual([]);
       });
 
-      test.only("text alpha stays on the layer text only", async ({ q }) => {
+      test("text alpha stays on the layer text only", async ({ q }) => {
         const region = q.region("0 frame-cover");
         const qq = query(region);
         const [title, plain, text10] = await Promise.all([
