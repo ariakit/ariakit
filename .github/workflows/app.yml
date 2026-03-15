@@ -93,30 +93,30 @@ jobs:
             name: Chrome
             engine: chromium
             project: chrome
-            test: xvfb-run pnpm -F site run test --
-            visual: xvfb-run pnpm -F site run test-visual --
+            test: xvfb-run pnpm -F site run test
+            visual: xvfb-run pnpm -F site run test-visual
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
-            test: xvfb-run pnpm -F site run test --
-            visual: xvfb-run pnpm -F site run test-visual --
+            test: xvfb-run pnpm -F site run test
+            visual: xvfb-run pnpm -F site run test-visual
           # - os: ubuntu-latest
           #   name: Android
           #   engine: chromium
           #   project: android
-          #   run: xvfb-run pnpm -F site run test-visual --
+          #   run: xvfb-run pnpm -F site run test-visual
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari
-            test: pnpm -F site run test --
-            visual: pnpm -F site run test-visual --
+            test: pnpm -F site run test
+            visual: pnpm -F site run test-visual
           # - os: macos-latest
           #   name: iOS
           #   engine: webkit
           #   project: ios
-          #   run: pnpm -F site run test-visual --
+          #   run: pnpm -F site run test-visual
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
