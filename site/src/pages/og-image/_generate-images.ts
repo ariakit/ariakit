@@ -30,7 +30,7 @@ async function getItemsToGenerate() {
     return items;
   } catch (_e) {
     console.error(`Failed to fetch from ${url}`);
-    console.error("Please make sure the dev server is running: `npm run dev`");
+    console.error("Please make sure the dev server is running: `pnpm run dev`");
     return [];
   }
 }

@@ -102,11 +102,8 @@ jobs:
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
 
-      - name: Install React 17
-        run: pnpm run react17
-
       - name: Test
-        run: pnpm test --shard ${{ matrix.shard }}
+        run: REACT_VERSION=17 pnpm test --shard ${{ matrix.shard }}
 
   website:
     name: Build website
