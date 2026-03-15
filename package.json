@@ -5,8 +5,8 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "start": "pnpm -F website start",
-    "react17": "pnpm add react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
-    "reactnext": "pnpm add react@next react-dom@next",
+    "react17": "pnpm add -w react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
+    "reactnext": "pnpm add -w react@next react-dom@next",
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm -F website run dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",

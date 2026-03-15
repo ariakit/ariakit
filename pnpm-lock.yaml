@@ -541,6 +541,9 @@ importers:
       '@astrojs/cloudflare':
         specifier: 12.6.13
         version: 12.6.13(@types/node@25.5.0)(astro@5.18.1(@types/node@25.5.0)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@5.9.3)(yaml@2.8.2))(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
+      '@astrojs/markdown-remark':
+        specifier: 6.3.11
+        version: 6.3.11
       '@astrojs/react':
         specifier: 4.4.2
         version: 4.4.2(@types/node@25.5.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(jiti@2.6.1)(lightningcss@1.32.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(terser@5.46.0)(yaml@2.8.2)
