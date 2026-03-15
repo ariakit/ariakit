@@ -76,6 +76,7 @@
         "textarea-caret",
         "tsup",
         "typescript",
+        "playwright",
         "webpack",
         "zod",
         "/^@babel//",
