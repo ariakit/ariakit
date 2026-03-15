@@ -45,13 +45,15 @@ export async function getPrices(
   const store = getPlusStore(context);
   if (!keys?.length) {
     const result = await store.list<PriceData>({ prefix: priceKey() });
-    return result.keys.map((key) => key.metadata).filter(nonNullable);
+    return result.keys
+      .map((key: { metadata?: PriceData | undefined }) => key.metadata)
+      .filter(nonNullable);
   }
   const priceKeys = keys.map(priceKey);
   const prices = await store.getWithMetadata<PriceData>(priceKeys);
   return prices
     .values()
-    .map((price) => price?.metadata)
+    .map((price: { metadata: PriceData | null } | null) => price?.metadata)
     .filter(nonNullable)
     .toArray();
 }
@@ -81,7 +83,9 @@ export async function getAllPromos({
 }: GetPromoParams): Promise<PromoData[]> {
   const store = getPlusStore(context);
   const result = await store.list<PromoData>({ prefix: promoKey() });
-  const promos = result.keys.map((key) => key.metadata);
+  const promos = result.keys.map(
+    (key: { metadata?: PromoData | undefined }) => key.metadata,
+  );
   return promos.filter((promo): promo is PromoData => {
     if (promo == null) return false;
     if (user !== "any" && promo.user && promo.user !== user) return false;
