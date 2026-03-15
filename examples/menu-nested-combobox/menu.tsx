@@ -179,7 +179,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
             // element to indicate whether the item is checked or not, ensuring
             // cross-browser/AT compatibility.
             <Ariakit.VisuallyHidden>
-              {checked ? "checked" : "not checked"}
+              {checked ? " checked" : " not checked"}
             </Ariakit.VisuallyHidden>
           )}
         </React.Fragment>
