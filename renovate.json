@@ -44,6 +44,17 @@
       "matchPackageNames": ["/@radix-ui//"]
     },
     {
+      "groupName": "vite",
+      "matchPackageNames": ["vite", "/^@vitejs\\//"]
+    },
+    {
+      "matchPackageNames": ["lint-staged"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
+    },
+    {
       "matchPackageNames": [
         "@wordpress/components",
         "cross-env",

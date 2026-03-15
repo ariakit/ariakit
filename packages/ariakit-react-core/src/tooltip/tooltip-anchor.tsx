@@ -9,6 +9,7 @@ import { useEffect, useRef } from "react";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import { useEvent } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useTooltipProviderContext } from "./tooltip-context.tsx";
@@ -134,8 +135,8 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       }
     });
 
-    const type = store.useState("type");
-    const contentId = store.useState((state) => state.contentElement?.id);
+    const type = useStoreState(store, "type");
+    const contentId = useStoreState(store, (state) => state.contentElement?.id);
 
     props = {
       "aria-labelledby": type === "label" ? contentId : undefined,

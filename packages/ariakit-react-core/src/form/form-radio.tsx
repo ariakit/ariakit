@@ -3,6 +3,7 @@ import type { ChangeEvent, ElementType } from "react";
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
 import { useEvent } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -57,7 +58,8 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
     });
 
     const checkedProp = props.checked;
-    const checked = store.useState(
+    const checked = useStoreState(
+      store,
       () => checkedProp ?? store?.getValue(name) === value,
     );
 

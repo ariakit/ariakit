@@ -45,6 +45,7 @@ import {
   useUpdateEffect,
   useUpdateLayoutEffect,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
@@ -154,7 +155,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // We can only allow auto select when the combobox focus is handled via the
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
     // first item on every keypress.
-    const autoSelect = store.useState(
+    const autoSelect = useStoreState(
+      store,
       (state) => state.virtualFocus && autoSelectProp,
     );
 
@@ -170,7 +172,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       setCanInline(true);
     }, [inline]);
 
-    const storeValue = store.useState("value");
+    const storeValue = useStoreState(store, "value");
 
     // Keep track of the previous selected values so we can set the
     // inlineActiveValue below only when the current activeValue isn't already
@@ -184,7 +186,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       });
     }, []);
 
-    const inlineActiveValue = store.useState((state) => {
+    const inlineActiveValue = useStoreState(store, (state) => {
       if (!inline) return;
       if (!canInline) return;
       // It doesn't make sense to inline the active value if it's already
@@ -202,9 +204,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       return state.activeValue;
     });
 
-    const items = store.useState("renderedItems");
-    const open = store.useState("open");
-    const contentElement = store.useState("contentElement");
+    const items = useStoreState(store, "renderedItems");
+    const open = useStoreState(store, "open");
+    const contentElement = useStoreState(store, "contentElement");
 
     // The current input value may differ from state.value when
     // autoComplete is either "both" or "inline", in which case it will be
@@ -349,7 +351,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       canAutoSelectRef.current = open;
     }, [autoSelect, open]);
 
-    const resetValueOnSelect = store.useState("resetValueOnSelect");
+    const resetValueOnSelect = useStoreState(store, "resetValueOnSelect");
 
     // Auto select the first item on type. This effect runs both when the value
     // changes and when the items change so we also catch async items.
@@ -578,7 +580,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       ? autoComplete
       : undefined;
 
-    const isActiveItem = store.useState((state) => state.activeId === null);
+    const isActiveItem = useStoreState(
+      store,
+      (state) => state.activeId === null,
+    );
 
     props = {
       id,

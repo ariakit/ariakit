@@ -1,3 +1,4 @@
+import path from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, TestInfo } from "@playwright/test";
@@ -6,7 +7,6 @@ import { vizzlyScreenshot } from "@vizzly-testing/cli/client";
 import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
-
 const countMap = new Map<string, number>();
 
 interface Rect {
@@ -69,22 +69,69 @@ export const defaultStyles = {
   dark: { "--color-canvas": "oklch(16.34% 0.0091 264.28)" },
 } satisfies Styles;
 
-function getSnapshotName(params: {
+function getSnapshotTitlePart(part: string) {
+  return part.replace(/@\S+/g, "").trim();
+}
+
+function getTestFileDir(testInfo: TestInfo) {
+  const testDir =
+    testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
+  return path.dirname(path.relative(testDir, testInfo.file));
+}
+
+function getSnapshotCount(testInfo: TestInfo, baseName: string) {
+  const countKey = `${testInfo.file}:${testInfo.project.name}:${baseName}`;
+  const count = countMap.get(countKey) || 0;
+  countMap.set(countKey, count + 1);
+  return count;
+}
+
+function getFileSnapshotName(params: {
   id?: string;
   testInfo: TestInfo;
   variants?: string[];
 }) {
   const { testInfo, variants = [], id } = params;
-  const parts = [
-    ...testInfo.titlePath,
-    id,
-    ...variants,
-    testInfo.project.name,
-  ].filter(Boolean);
+  const titleParts = testInfo.titlePath
+    .map(getSnapshotTitlePart)
+    .filter(Boolean);
+  const filteredTitleParts = titleParts
+    .filter((part) => !part.endsWith(".ts"))
+    .filter((part) => part !== "visual")
+    .slice(-2);
+  const idParts = id
+    ? id
+        .split("/")
+        .filter(Boolean)
+        .filter((part) => part !== "previews")
+    : [];
+  const parts =
+    idParts.length > 0 &&
+    filteredTitleParts.length === 1 &&
+    filteredTitleParts[0] === "previews"
+      ? [...idParts, ...variants]
+      : [...filteredTitleParts, ...idParts, ...variants];
   const baseName = slugify(parts.join("-"));
-  const count = countMap.get(baseName) || 0;
-  countMap.set(baseName, count + 1);
-  return `${baseName}-${count}.png`;
+  const count = getSnapshotCount(testInfo, baseName);
+  const countSuffix = count > 0 ? `-${count}` : "";
+  return `${baseName}${countSuffix}-${testInfo.project.name}.png`;
+}
+
+function getVizzlySnapshotName(params: {
+  testInfo: TestInfo;
+  fileSnapshotName: string;
+}) {
+  const { testInfo, fileSnapshotName } = params;
+  const { name, ext } = path.parse(fileSnapshotName);
+  const testFileDir = getTestFileDir(testInfo)
+    .split(path.sep)
+    .filter(Boolean)
+    .filter((part) => part !== "__screenshots__");
+  return `${slugify([...testFileDir, name].join("-"))}${ext}`;
+}
+
+function shouldUseVizzly() {
+  return process.env.USE_VIZZLY === "true";
 }
 
 function getCombinedClip(a: Rect, b: Rect) {
@@ -160,23 +207,23 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
   return getRectsClip(rects, margin);
 }
 
-async function captureScreenshotBuffer(
+async function getPlaywrightScreenshotOptions(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
   const { element, clipMargin, fullPage } = options;
   if (fullPage) {
-    return page.screenshot({ animations: "disabled" });
+    return { animations: "disabled" as const, fullPage: true };
   }
   if (!element) {
     const clip = await getBodyClip(page, clipMargin);
-    return page.screenshot({ animations: "disabled", clip });
+    return { animations: "disabled" as const, clip, fullPage: false };
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
   const rect = await locator.boundingBox();
   invariant(rect, "Element not visible");
   const clip = applyClipMargin(rect, clipMargin);
-  return page.screenshot({ animations: "disabled", clip });
+  return { animations: "disabled" as const, clip, fullPage: false };
 }
 
 async function withStyles(
@@ -230,9 +277,13 @@ async function withViewport(
   }
 }
 
-export async function visual(page: Page, options: ScreenshotOptions = {}) {
+export async function visual(
+  page: Page,
+  options: ScreenshotOptions = {},
+  testInfo = test.info(),
+) {
   expect(
-    test.info().tags,
+    testInfo.tags,
     "When running visual tests, the test title should contain @visual",
   ).toContain("@visual");
 
@@ -263,22 +314,36 @@ export async function visual(page: Page, options: ScreenshotOptions = {}) {
     await withViewport(page, viewport, async () => {
       for (const [styleName, style] of stylesEntries) {
         await withStyles(page, { ...style, ...defaultStyle }, async () => {
-          const testInfo = test.info();
           const variants = [viewportName, styleName];
-          const name = getSnapshotName({ id, testInfo, variants });
+          const fileSnapshotName = getFileSnapshotName({
+            id,
+            testInfo,
+            variants,
+          });
           await page.waitForLoadState("domcontentloaded");
           await page.evaluate(() => document.fonts?.ready?.catch(() => {}));
-          const buffer = await captureScreenshotBuffer(page, {
+          const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
             element,
             clipMargin,
             fullPage,
           });
-          await vizzlyScreenshot(name, buffer, {
-            properties: {
-              id,
-              style: styleName,
-              browser: testInfo.project.name,
-            },
+          if (shouldUseVizzly()) {
+            const buffer = await page.screenshot(screenshotOptions);
+            const vizzlySnapshotName = getVizzlySnapshotName({
+              testInfo,
+              fileSnapshotName,
+            });
+            await vizzlyScreenshot(vizzlySnapshotName, buffer, {
+              properties: {
+                id,
+                style: styleName,
+                browser: testInfo.project.name,
+              },
+            });
+            return;
+          }
+          await expect(page).toHaveScreenshot(fileSnapshotName, {
+            ...screenshotOptions,
           });
         });
       }
@@ -290,9 +355,9 @@ export const visualTest = test.extend<{
   visual: (options?: ScreenshotOptions) => Promise<void>;
   q: ReturnType<typeof query>;
 }>({
-  visual: async ({ page }, use) => {
+  visual: async ({ page }, use, testInfo) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await use((options) => visual(page, options));
+    await use((options) => visual(page, options, testInfo));
   },
   q: async ({ page }, use) => {
     await use(query(page));

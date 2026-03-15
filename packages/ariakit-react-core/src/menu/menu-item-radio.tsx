@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
 import { useInitialValue, useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -79,7 +80,10 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
       });
     }, [store, name, value, checked]);
 
-    const isChecked = store.useState((state) => state.values[name] === value);
+    const isChecked = useStoreState(
+      store,
+      (state) => state.values[name] === value,
+    );
 
     props = useWrapElement(
       props,

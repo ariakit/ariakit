@@ -64,7 +64,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         "ComboboxPopover must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const baseElement = store.useState("baseElement");
+    const baseElement = useStoreState(store, "baseElement");
     const hiddenByClickOutsideRef = useRef(false);
 
     // When new tags are rendered while the combobox popover is open, they will

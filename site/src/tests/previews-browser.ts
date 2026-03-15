@@ -1,5 +1,4 @@
-import { test } from "@playwright/test";
-import { viewports, visual } from "#app/test-utils/visual.ts";
+import { visualTest as test, viewports } from "#app/test-utils/visual.ts";
 
 const TIMEOUT_PER_STEP = 10_000;
 
@@ -13,7 +12,7 @@ async function getPreviewPaths(baseURL: string) {
 
 test.describe.configure({ retries: 0 });
 
-test("previews @visual", async ({ page, baseURL }) => {
+test("previews @visual", async ({ page, baseURL, visual }) => {
   test.skip(!process.env.VISUAL_TEST);
   if (!baseURL) {
     throw new Error("Missing baseURL");
@@ -21,16 +20,13 @@ test("previews @visual", async ({ page, baseURL }) => {
   const paths = await getPreviewPaths(baseURL);
   test.setTimeout(paths.length * TIMEOUT_PER_STEP);
 
-  // Set prefers-reduced-motion to reduce flakiness from animations
-  await page.emulateMedia({ reducedMotion: "reduce" });
-
   for (const path of paths) {
     await test.step(
       path,
       async () => {
         await page.goto(path);
         const id = path.replace(/^\/+/, "");
-        await visual(page, { id, viewports });
+        await visual({ id, viewports });
       },
       { timeout: TIMEOUT_PER_STEP },
     );
