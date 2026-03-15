@@ -10,25 +10,25 @@ test("selected tab is restored only after the animation ends", async () => {
   const dialog = pageDialog();
   await press.ArrowDown();
   await press.ArrowRight();
-  expect(dialog.tab(/^Examples/)).toHaveFocus();
-  expect(dialog.tab(/^Examples/)).toHaveAttribute("data-active-item");
-  expect(dialog.tab(/^Examples/)).toHaveAttribute("aria-selected", "true");
-  expect(dialog.tabpanel(/^Examples/)).toBeVisible();
+  expect(dialog.tab("Examples 31")).toHaveFocus();
+  expect(dialog.tab("Examples 31")).toHaveAttribute("data-active-item");
+  expect(dialog.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
+  expect(dialog.tabpanel("Examples 31")).toBeVisible();
   await press.Escape();
   expect(q.combobox()).toHaveAttribute("data-active-item");
-  expect(dialog.tab(/^Examples/)).not.toHaveFocus();
-  expect(dialog.tab(/^Examples/)).not.toHaveAttribute("data-active-item");
-  expect(dialog.tab(/^Examples/)).toHaveAttribute("aria-selected", "true");
+  expect(dialog.tab("Examples 31")).not.toHaveFocus();
+  expect(dialog.tab("Examples 31")).not.toHaveAttribute("data-active-item");
+  expect(dialog.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
   await waitFor(() => expect(q.dialog("Pages")).not.toBeInTheDocument());
   await press.ArrowDown();
   await press.ArrowDown();
-  expect(pageDialog().tab(/^Components/)).toHaveFocus();
-  expect(pageDialog().tab(/^Components/)).toHaveAttribute("data-active-item");
-  expect(pageDialog().tab(/^Components/)).toHaveAttribute(
+  expect(pageDialog().tab("Components 16")).toHaveFocus();
+  expect(pageDialog().tab("Components 16")).toHaveAttribute("data-active-item");
+  expect(pageDialog().tab("Components 16")).toHaveAttribute(
     "aria-selected",
     "true",
   );
-  expect(pageDialog().tabpanel(/^Components/)).toBeVisible();
+  expect(pageDialog().tabpanel("Components 16")).toBeVisible();
 });
 
 test("can re-open the dialog with arrow down while the animation is running", async () => {
@@ -42,16 +42,18 @@ test("can re-open the dialog with arrow down while the animation is running", as
   await sleep(200);
   await press.ArrowDown();
   expect(q.dialog("Pages")).toBeVisible();
-  expect(dialog.tab(/^Examples/)).not.toHaveFocus();
-  expect(dialog.tab(/^Examples/)).not.toHaveAttribute("data-active-item");
-  expect(dialog.tab(/^Examples/)).toHaveAttribute("aria-selected", "true");
-  expect(dialog.tabpanel(/^Examples/)).toBeVisible();
+  expect(dialog.tab("Examples 31")).not.toHaveFocus();
+  expect(dialog.tab("Examples 31")).not.toHaveAttribute("data-active-item");
+  expect(dialog.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
+  expect(dialog.tabpanel("Examples 31")).toBeVisible();
   await sleep(1000);
   expect(q.dialog("Pages")).toBeVisible();
-  expect(pageDialog().tabpanel(/^Examples/)).toBeVisible();
-  expect(pageDialog().tab(/^Examples/)).not.toHaveFocus();
-  expect(pageDialog().tab(/^Examples/)).not.toHaveAttribute("data-active-item");
-  expect(pageDialog().tab(/^Examples/)).toHaveAttribute(
+  expect(pageDialog().tabpanel("Examples 31")).toBeVisible();
+  expect(pageDialog().tab("Examples 31")).not.toHaveFocus();
+  expect(pageDialog().tab("Examples 31")).not.toHaveAttribute(
+    "data-active-item",
+  );
+  expect(pageDialog().tab("Examples 31")).toHaveAttribute(
     "aria-selected",
     "true",
   );

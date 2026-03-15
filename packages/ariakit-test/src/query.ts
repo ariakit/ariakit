@@ -23,6 +23,27 @@ function createQueries(container?: HTMLElement) {
 
 const documentQueries = createQueries();
 
+function getNodeText(node: Node | null) {
+  if (!node) return "";
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent ?? "";
+  }
+  if (!(node instanceof Element)) {
+    return "";
+  }
+  if (node.getAttribute("aria-hidden") === "true") {
+    return "";
+  }
+  if (node instanceof HTMLInputElement && node.placeholder) {
+    return node.placeholder;
+  }
+  const parts = Array.from(node.childNodes).map(getNodeText).filter(Boolean);
+  if (parts.length) {
+    return parts.join(" ");
+  }
+  return node.textContent ?? "";
+}
+
 function matchName(name: string | RegExp, accessibleName: string | null) {
   if (accessibleName == null) return false;
   if (typeof name === "string") {
@@ -39,15 +60,10 @@ function getNameOption(name?: string | RegExp, includesHidden?: boolean) {
     if (element.getAttribute("aria-label")) return false;
     const labeledBy = element.getAttribute("aria-labelledby");
     if (!labeledBy) {
-      const content =
-        "placeholder" in element && element.placeholder != null
-          ? element.placeholder
-          : element.textContent;
-      return matchName(name, content);
+      return matchName(name, getNodeText(element));
     }
     const label = document.getElementById(labeledBy);
-    if (!label?.textContent) return false;
-    return matchName(name, label.textContent);
+    return matchName(name, getNodeText(label));
   };
 }
 
