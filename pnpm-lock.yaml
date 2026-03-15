@@ -559,6 +559,9 @@ importers:
       '@clerk/astro':
         specifier: 2.17.8
         version: 2.17.8(astro@5.18.1(@types/node@25.5.0)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@5.9.3)(yaml@2.8.2))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@shikijs/langs':
+        specifier: 4.0.2
+        version: 4.0.2
       '@shikijs/themes':
         specifier: 4.0.2
         version: 4.0.2
