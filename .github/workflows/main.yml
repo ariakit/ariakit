@@ -84,7 +84,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Test
-        run: pnpm test -- --shard ${{ matrix.shard }}
+        run: pnpm test --shard ${{ matrix.shard }}
 
   react17:
     name: Test React 17 (${{ matrix.shard }})
@@ -106,7 +106,7 @@ jobs:
         run: pnpm run react17
 
       - name: Test
-        run: pnpm test -- --shard ${{ matrix.shard }}
+        run: pnpm test --shard ${{ matrix.shard }}
 
   website:
     name: Build website

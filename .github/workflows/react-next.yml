@@ -46,4 +46,4 @@ jobs:
         run: pnpm run reactnext
 
       - name: Test
-        run: pnpm test -- --shard ${{ matrix.shard }}
+        run: pnpm test --shard ${{ matrix.shard }}

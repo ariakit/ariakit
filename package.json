@@ -48,7 +48,7 @@
     "test-android": "playwright test --project=android",
     "test-android-headed": "playwright test --project=android --headed",
     "test-android-debug": "playwright test --project=android --ui",
-    "coverage": "pnpm test -- --coverage",
+    "coverage": "pnpm test --coverage",
     "postcoverage": "open-cli coverage/index.html",
     "lint": "biome check",
     "lint-fix": "biome check --write",
