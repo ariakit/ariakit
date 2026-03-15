@@ -9,7 +9,7 @@
  */
 import type { CollectionEntry, RenderResult } from "astro:content";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { MarkdownProcessor } from "@astrojs/markdown-remark";
+import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import type { Element } from "hast";
 import { toText } from "hast-util-to-text";
@@ -138,9 +138,8 @@ async function getMarkdownProcessor() {
   markdownProcessor = await createMarkdownProcessor({
     syntaxHighlight: false,
     rehypePlugins: [
-      // @ts-ignore RehypePlugin type uses a different hast version
       [
-        rehypeAsTagName,
+        rehypeAsTagName as RehypePlugin,
         { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
       ],
     ],

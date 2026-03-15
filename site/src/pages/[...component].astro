@@ -37,7 +37,10 @@ import { trimRight } from "#app/lib/string.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 import Layout from "#app/pages/_layout.astro";
-import { createMarkdownProcessor } from "@astrojs/markdown-remark";
+import {
+  type RehypePlugin,
+  createMarkdownProcessor,
+} from "@astrojs/markdown-remark";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
@@ -179,9 +182,8 @@ function isCurrentHref(href: string, pathname = Astro.url.pathname) {
 const processor = await createMarkdownProcessor({
   syntaxHighlight: false,
   rehypePlugins: [
-    // @ts-ignore RehypePlugin type uses a different hast version
     [
-      rehypeAsTagName,
+      rehypeAsTagName as RehypePlugin,
       { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
     ],
   ],

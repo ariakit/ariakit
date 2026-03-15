@@ -58,6 +58,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.4.7
         version: 2.4.7
+      '@changesets/apply-release-plan':
+        specifier: 7.1.0
+        version: 7.1.0(patch_hash=6775a2568bb9d97a114bc21bb3b7034e7c5fb7c2e1d1291e830e5630d33209e4)
       '@changesets/cli':
         specifier: 2.30.0
         version: 2.30.0(@types/node@24.12.0)
@@ -549,6 +552,9 @@ importers:
       '@astrojs/cloudflare':
         specifier: 12.6.13
         version: 12.6.13(@types/node@25.5.0)(astro@5.18.1(@types/node@25.5.0)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@5.9.3)(yaml@2.8.2))(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2)
+      '@astrojs/markdown-remark':
+        specifier: 6.3.11
+        version: 6.3.11
       '@astrojs/react':
         specifier: 4.4.2
         version: 4.4.2(@types/node@25.5.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(jiti@2.6.1)(lightningcss@1.32.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(terser@5.46.0)(yaml@2.8.2)
@@ -558,6 +564,12 @@ importers:
       '@clerk/astro':
         specifier: 2.17.8
         version: 2.17.8(astro@5.18.1(@types/node@25.5.0)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@5.9.3)(yaml@2.8.2))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@shikijs/langs':
+        specifier: 4.0.2
+        version: 4.0.2
+      '@shikijs/themes':
+        specifier: 4.0.2
+        version: 4.0.2
       '@stripe/stripe-js':
         specifier: 7.9.0
         version: 7.9.0
@@ -573,6 +585,9 @@ importers:
       html-entities:
         specifier: 2.6.0
         version: 2.6.0
+      playwright:
+        specifier: 1.56.1
+        version: 1.56.1
       pluralize:
         specifier: 8.0.0
         version: 8.0.0

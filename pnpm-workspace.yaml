@@ -6,3 +6,7 @@ packages:
   - guide
   - website
   - site
+
+publicHoistPattern:
+  - "*react*"
+  - "*testing-library*"
