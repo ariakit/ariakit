@@ -53,6 +53,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.4.7
         version: 2.4.7
+      '@changesets/apply-release-plan':
+        specifier: 7.1.0
+        version: 7.1.0
       '@changesets/cli':
         specifier: 2.30.0
         version: 2.30.0(@types/node@24.12.0)
@@ -556,6 +559,9 @@ importers:
       '@clerk/astro':
         specifier: 2.17.8
         version: 2.17.8(astro@5.18.1(@types/node@25.5.0)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@5.9.3)(yaml@2.8.2))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@shikijs/themes':
+        specifier: 4.0.2
+        version: 4.0.2
       '@stripe/stripe-js':
         specifier: 7.9.0
         version: 7.9.0
@@ -646,22 +652,31 @@ importers:
     dependencies:
       '@clerk/clerk-react':
         specifier: 4.32.5
-        version: 4.32.5(react@19.2.4)
+        version: 4.32.5(react@18.3.1)
       '@clerk/nextjs':
         specifier: 4.31.8
-        version: 4.31.8(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 4.31.8(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/types':
         specifier: 3.65.5
         version: 3.65.5
       '@vercel/analytics':
         specifier: 2.0.1
-        version: 2.0.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)
+        version: 2.0.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+      examples:
+        specifier: workspace:*
+        version: link:../examples
       geist:
         specifier: 1.5.1
-        version: 1.5.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
+        version: 1.5.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))
       next:
         specifier: 14.2.35
-        version: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
 
 packages:
 
@@ -12397,9 +12412,9 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/backend@0.38.15(react@19.2.4)':
+  '@clerk/backend@0.38.15(react@18.3.1)':
     dependencies:
-      '@clerk/shared': 1.4.2(react@19.2.4)
+      '@clerk/shared': 1.4.2(react@18.3.1)
       '@clerk/types': 3.65.5
       '@peculiar/webcrypto': 1.4.1
       '@types/node': 16.18.6
@@ -12421,17 +12436,17 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/clerk-react@4.32.5(react@19.2.4)':
+  '@clerk/clerk-react@4.32.5(react@18.3.1)':
     dependencies:
-      '@clerk/shared': 1.4.2(react@19.2.4)
+      '@clerk/shared': 1.4.2(react@18.3.1)
       '@clerk/types': 3.65.5
-      react: 19.2.4
+      react: 18.3.1
       tslib: 2.4.1
 
-  '@clerk/clerk-sdk-node@4.13.23(react@19.2.4)':
+  '@clerk/clerk-sdk-node@4.13.23(react@18.3.1)':
     dependencies:
-      '@clerk/backend': 0.38.15(react@19.2.4)
-      '@clerk/shared': 1.4.2(react@19.2.4)
+      '@clerk/backend': 0.38.15(react@18.3.1)
+      '@clerk/shared': 1.4.2(react@18.3.1)
       '@clerk/types': 3.65.5
       '@types/cookies': 0.7.7
       '@types/express': 4.17.14
@@ -12442,25 +12457,25 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@clerk/nextjs@4.31.8(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@clerk/nextjs@4.31.8(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/backend': 0.38.15(react@19.2.4)
-      '@clerk/clerk-react': 4.32.5(react@19.2.4)
-      '@clerk/clerk-sdk-node': 4.13.23(react@19.2.4)
-      '@clerk/shared': 1.4.2(react@19.2.4)
+      '@clerk/backend': 0.38.15(react@18.3.1)
+      '@clerk/clerk-react': 4.32.5(react@18.3.1)
+      '@clerk/clerk-sdk-node': 4.13.23(react@18.3.1)
+      '@clerk/shared': 1.4.2(react@18.3.1)
       '@clerk/types': 3.65.5
-      next: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
+      next: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
       tslib: 2.4.1
 
-  '@clerk/shared@1.4.2(react@19.2.4)':
+  '@clerk/shared@1.4.2(react@18.3.1)':
     dependencies:
       glob-to-regexp: 0.4.1
       js-cookie: 3.0.1
-      swr: 2.2.0(react@19.2.4)
+      swr: 2.2.0(react@18.3.1)
     optionalDependencies:
-      react: 19.2.4
+      react: 18.3.1
 
   '@clerk/shared@3.47.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
@@ -15960,10 +15975,10 @@ snapshots:
       '@use-gesture/core': 10.3.1
       react: 18.3.1
 
-  '@vercel/analytics@2.0.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react@19.2.4)':
+  '@vercel/analytics@2.0.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)':
     optionalDependencies:
-      next: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      react: 19.2.4
+      next: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
 
   '@vitejs/plugin-react@4.7.0(vite@6.4.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.2))':
     dependencies:
@@ -17955,9 +17970,9 @@ snapshots:
 
   fuzzysort@3.1.0: {}
 
-  geist@1.5.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)):
+  geist@1.5.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
-      next: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   gensync@1.0.0-beta.2: {}
 
@@ -19789,32 +19804,6 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
-    dependencies:
-      '@next/env': 14.2.35
-      '@swc/helpers': 0.5.5
-      busboy: 1.6.0
-      caniuse-lite: 1.0.30001779
-      graceful-fs: 4.2.11
-      postcss: 8.4.31
-      react: 19.2.4
-      react-dom: 19.2.4(react@19.2.4)
-      styled-jsx: 5.1.1(@babel/core@7.29.0)(babel-plugin-macros@3.1.0)(react@19.2.4)
-    optionalDependencies:
-      '@next/swc-darwin-arm64': 14.2.33
-      '@next/swc-darwin-x64': 14.2.33
-      '@next/swc-linux-arm64-gnu': 14.2.33
-      '@next/swc-linux-arm64-musl': 14.2.33
-      '@next/swc-linux-x64-gnu': 14.2.33
-      '@next/swc-linux-x64-musl': 14.2.33
-      '@next/swc-win32-arm64-msvc': 14.2.33
-      '@next/swc-win32-ia32-msvc': 14.2.33
-      '@next/swc-win32-x64-msvc': 14.2.33
-      '@playwright/test': 1.56.1
-    transitivePeerDependencies:
-      - '@babel/core'
-      - babel-plugin-macros
-
   next@16.1.6(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@next/env': 16.1.6
@@ -21419,14 +21408,6 @@ snapshots:
       '@babel/core': 7.29.0
       babel-plugin-macros: 3.1.0
 
-  styled-jsx@5.1.1(@babel/core@7.29.0)(babel-plugin-macros@3.1.0)(react@19.2.4):
-    dependencies:
-      client-only: 0.0.1
-      react: 19.2.4
-    optionalDependencies:
-      '@babel/core': 7.29.0
-      babel-plugin-macros: 3.1.0
-
   styled-jsx@5.1.6(@babel/core@7.29.0)(babel-plugin-macros@3.1.0)(react@19.2.4):
     dependencies:
       client-only: 0.0.1
@@ -21534,10 +21515,10 @@ snapshots:
       picocolors: 1.1.1
       sax: 1.5.0
 
-  swr@2.2.0(react@19.2.4):
+  swr@2.2.0(react@18.3.1):
     dependencies:
-      react: 19.2.4
-      use-sync-external-store: 1.6.0(react@19.2.4)
+      react: 18.3.1
+      use-sync-external-store: 1.6.0(react@18.3.1)
 
   swr@2.3.4(react@19.2.4):
     dependencies:
