@@ -61,6 +61,13 @@ const nextConfig = {
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
 
+    // Ignore optional dependencies that pnpm doesn't hoist
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      sugarss: false,
+      babylon: false,
+    };
+
     // Solid support
     const solidRule = {
       use: [

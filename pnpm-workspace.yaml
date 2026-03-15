@@ -1,0 +1,12 @@
+packages:
+  - packages/*
+  - templates/*
+  - nextjs
+  - examples
+  - guide
+  - website
+  - site
+
+publicHoistPattern:
+  - "*react*"
+  - "*testing-library*"

@@ -7,7 +7,7 @@
 This guide is intended to help you get started with contributing to the project. By following these steps — **which should take no more than 30 minutes** —, you will understand the development process and workflow.
 
 1. [Cloning the repository](#cloning-the-repository)
-2. [Installing Node.js and npm](#installing-nodejs-and-npm)
+2. [Installing Node.js and pnpm](#installing-nodejs-and-pnpm)
 3. [Installing dependencies](#installing-dependencies)
 4. [Starting the development server](#starting-the-development-server)
 5. [Creating a component](#creating-a-component)
@@ -27,8 +27,7 @@ This guide is intended to help you get started with contributing to the project.
 This guide covers more advanced topics. Pick the topics based on your needs.
 
 16. [Versioning](#versioning)
-17. [Running with React 17](#running-with-react-17)
-18. [Writing end-to-end tests](#writing-end-to-end-tests)
+17. [Writing end-to-end tests](#writing-end-to-end-tests)
 
 <br>
 
@@ -56,20 +55,20 @@ Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://g
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
-## Installing Node.js and npm
+## Installing Node.js and pnpm
 
-This repository uses [npm workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces) to manage multiple ESM projects. You need to install **npm v7 or higher** and **Node.js v18 or higher**.
+This repository uses [pnpm workspaces](https://pnpm.io/workspaces) to manage multiple ESM projects. You need to install **[pnpm](https://pnpm.io/installation)** and **Node.js v18 or higher**.
 
-You can run the following commands in your terminal to check your local Node.js and npm versions:
+You can run the following commands in your terminal to check your local Node.js and pnpm versions:
 
 ```bash
 node -v
-npm -v
+pnpm -v
 ```
 
-If the versions are not correct or you don't have Node.js or npm installed, download them from https://nodejs.org.
+If you don't have Node.js installed, download it from https://nodejs.org. You can install pnpm via `corepack enable` (built into Node.js) or follow the [pnpm installation guide](https://pnpm.io/installation).
 
-Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js and npm versions. Once in the project's root directory, run the following command in your terminal:
+Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js version. Once in the project's root directory, run the following command in your terminal:
 
 ```bash
 nvm use
@@ -86,7 +85,7 @@ nvm use
 Once in the project's root directory, run the following command to install the project's dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 <div align="right">
@@ -98,7 +97,7 @@ npm install
 After installing the project's dependencies, run the following command to start the development server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 > If you're on Windows, we recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or [Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit).
@@ -260,7 +259,7 @@ test("my component", () => {
 Now run the following command in your terminal to watch the test results:
 
 ```bash
-npm test watch my-component
+pnpm test watch my-component
 ```
 
 <div align="right">
@@ -481,20 +480,6 @@ Once your pull request is merged into the `main` branch, the `Publish` PR will b
     <a href="#advanced-tutorial">&uarr; back to top</a></b>
 </div>
 
-## Running with React 17
-
-Ariakit supports both React 17 and React 18. If you want to see if your example works with React 17, you can run the following commands.
-
-```bash
-npm run test-react17
-```
-
-This command will automatically re-install React 18 at the end of the process. If, for some reason, this doesn't happen automatically, you should run `npm i` in your terminal.
-
-<div align="right">
-    <a href="#advanced-tutorial">&uarr; back to top</a></b>
-</div>
-
 ## Writing end-to-end tests
 
 Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. They use [JSDOM](https://github.com/jsdom/jsdom), which implements JavaScript DOM APIs in a Node.js environment.
@@ -520,19 +505,19 @@ Now run the following command in your terminal to see the test results (make sur
 > **Note**: The [development server](#starting-the-development-server) must be running in another terminal instance.
 
 ```bash
-npm run test-browser my-component
+pnpm run test-browser my-component
 ```
 
 You can also run the tests in headed mode:
 
 ```bash
-npm run test-browser-headed my-component
+pnpm run test-browser-headed my-component
 ```
 
 Or in debug mode:
 
 ```bash
-npm run test-browser-debug my-component
+pnpm run test-browser-debug my-component
 ```
 
 <div align="right">

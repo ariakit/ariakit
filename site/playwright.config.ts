@@ -23,7 +23,7 @@ export default defineConfig({
   retries: 1,
   testDir: "src",
   webServer: {
-    command: "npm run preview-lite -w site -- --log-level warn",
+    command: "pnpm run preview-lite --log-level warn",
     reuseExistingServer: !CI,
     stdout: CI ? "pipe" : "ignore",
     port: 4321,
