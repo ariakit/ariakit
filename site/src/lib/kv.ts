@@ -83,7 +83,7 @@ export async function getAllPromos({
 }: GetPromoParams): Promise<PromoData[]> {
   const store = getPlusStore(context);
   const result = await store.list<PromoData>({ prefix: promoKey() });
-  const promos = result.keys.map(
+  const promos: (PromoData | undefined)[] = result.keys.map(
     (key: { metadata?: PromoData | undefined }) => key.metadata,
   );
   return promos.filter((promo): promo is PromoData => {
