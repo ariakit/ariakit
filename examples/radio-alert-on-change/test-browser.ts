@@ -18,7 +18,7 @@ function dialogCalled(page: Page) {
 test("moving to checked native radio does not trigger alert/onChange", async ({
   page,
 }) => {
-  const q = query(query(page).radiogroup("Native"));
+  const q = query(page).within.radiogroup("Native");
   const dialog = dialogCalled(page);
   await q.radio("apple").click();
   expect(dialog.calledTimes).toBe(1);
@@ -33,7 +33,7 @@ test("moving to checked native radio does not trigger alert/onChange", async ({
 test("clicking on checked custom radio does not trigger alert/onChange", async ({
   page,
 }) => {
-  const q = query(query(page).radiogroup("Custom"));
+  const q = query(page).within.radiogroup("Custom");
   const dialog = dialogCalled(page);
   await q.radio("apple").click();
   expect(dialog.calledTimes).toBe(1);

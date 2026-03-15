@@ -6,7 +6,7 @@ async function getContent(button: Locator) {
   return button.page().locator(`[id="${contentId}"]`);
 }
 
-withFramework(import.meta.dirname, async ({ test, query }) => {
+withFramework(import.meta.dirname, async ({ test }) => {
   test("hover @visual", async ({ q, visual }) => {
     await q.button("Lina Park").hover();
     await visual();
@@ -20,7 +20,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   test("click select @visual", async ({ q, visual }) => {
-    const qq = query(q.button("Lina Park"));
+    const qq = q.within(q.button("Lina Park"));
     await qq.combobox("Order Status").click();
     await visual();
   });
