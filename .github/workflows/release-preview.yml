@@ -61,7 +61,7 @@ jobs:
         run: |
           packages=$(echo $AFFECTED_PACKAGES | jq -r '.[]' | tr '\n' ' ')
           if [ -n "$packages" ]; then
-            pnpm exec pkg-pr-new publish --compact --template './templates/*' $packages
+            pnpm dlx pkg-pr-new publish --compact --template './templates/*' $packages
           else
             echo "No affected packages to publish"
           fi

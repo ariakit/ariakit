@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "tsc": "tsc",
-    "build": "pnpm run tsc && vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
