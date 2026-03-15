@@ -228,7 +228,7 @@ export async function getPlusPrice({
   type = "personal",
   countryCode = getCountryCode(context.request.headers),
   currency = getCurrency(countryCode),
-}: GetPlusPriceParams) {
+}: GetPlusPriceParams): Promise<PlusPrice | null> {
   if (!stripe) return null;
   const keys = [
     getPlusPriceKey({ type, currency, countryCode }),

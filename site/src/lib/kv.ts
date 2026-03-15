@@ -38,7 +38,10 @@ export async function getPrice(context: APIContext, key: string) {
   return price.metadata;
 }
 
-export async function getPrices(context: APIContext, keys?: string[]) {
+export async function getPrices(
+  context: APIContext,
+  keys?: string[],
+): Promise<PriceData[]> {
   const store = getPlusStore(context);
   if (!keys?.length) {
     const result = await store.list<PriceData>({ prefix: priceKey() });
@@ -71,7 +74,11 @@ interface GetPromoParams {
   user?: string | null | "any";
 }
 
-export async function getAllPromos({ context, product, user }: GetPromoParams) {
+export async function getAllPromos({
+  context,
+  product,
+  user,
+}: GetPromoParams): Promise<PromoData[]> {
   const store = getPlusStore(context);
   const result = await store.list<PromoData>({ prefix: promoKey() });
   const promos = result.keys.map((key) => key.metadata);
