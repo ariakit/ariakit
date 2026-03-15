@@ -27,8 +27,7 @@ This guide is intended to help you get started with contributing to the project.
 This guide covers more advanced topics. Pick the topics based on your needs.
 
 16. [Versioning](#versioning)
-17. [Running with React 17](#running-with-react-17)
-18. [Writing end-to-end tests](#writing-end-to-end-tests)
+17. [Writing end-to-end tests](#writing-end-to-end-tests)
 
 <br>
 
@@ -476,20 +475,6 @@ Added `MyComponent` component.
 ```
 
 Once your pull request is merged into the `main` branch, the `Publish` PR will be automatically created/updated with the new changes. Once we merge this PR, the affected packages will be automatically published to npm and the [changelog](packages/ariakit-react/CHANGELOG.md) will be updated.
-
-<div align="right">
-    <a href="#advanced-tutorial">&uarr; back to top</a></b>
-</div>
-
-## Running with React 17
-
-Ariakit supports both React 17 and React 18. If you want to see if your example works with React 17, you can run the following commands.
-
-```bash
-pnpm run test-react17
-```
-
-This command will automatically re-install React 18 at the end of the process. If, for some reason, this doesn't happen automatically, you should run `pnpm install` in your terminal.
 
 <div align="right">
     <a href="#advanced-tutorial">&uarr; back to top</a></b>
