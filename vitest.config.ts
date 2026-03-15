@@ -1,10 +1,15 @@
-import { join } from "node:path";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
 import { version } from "react";
 import solidPlugin from "vite-plugin-solid";
 import type { Plugin } from "vitest/config";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./site/src/lib/source-plugin.ts";
+
+const require = createRequire(import.meta.url);
+const reactDir = dirname(require.resolve("react/package.json"));
+const reactDomDir = dirname(require.resolve("react-dom/package.json"));
 
 const excludeFromReact17 = [
   "examples/form-callback-queue",
@@ -37,14 +42,19 @@ const sourcePluginInstance = sourcePlugin(
 );
 
 const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
-  // @ts-expect-error I believe this error will go away when we regenerate
-  // package-lock.json
+  // @ts-expect-error Plugin type mismatch between vite and vitest
   react: [reactPlugin(), sourcePluginInstance],
   solid: [solidPlugin(), sourcePluginInstance],
 };
 
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
+  resolve: {
+    alias: [
+      { find: /^react-dom($|\/)/, replacement: `${reactDomDir}$1` },
+      { find: /^react($|\/)/, replacement: `${reactDir}$1` },
+    ],
+  },
   test: {
     globals: true,
     watch: false,

@@ -17,11 +17,9 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-npm: true
 
       - name: Build app
-        run: npm run build-site
+        run: pnpm run build-site
 
       - name: Deploy Next.js app to Cloudflare
         uses: cloudflare/wrangler-action@v3

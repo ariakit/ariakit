@@ -44,7 +44,7 @@
     "components"
   ],
   "dependencies": {
-    "@ariakit/solid-core": "0.1.4"
+    "@ariakit/solid-core": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
