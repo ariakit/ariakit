@@ -86,25 +86,6 @@ jobs:
       - name: Test
         run: pnpm test --shard ${{ matrix.shard }}
 
-  react17:
-    name: Test React 17 (${{ matrix.shard }})
-    needs: install
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: ["1/2", "2/2"]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
-
-      - name: Test
-        run: pnpm run test-react17 --shard ${{ matrix.shard }}
-
   website:
     name: Build website
     needs: install
