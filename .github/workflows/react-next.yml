@@ -42,8 +42,8 @@ jobs:
       - name: Print version of react@next
         run: npm view react@next && npm view react-dom@next
 
-      - name: Install React@next
-        run: pnpm run reactnext
+      - name: Update react-next aliases to latest
+        run: pnpm run update-reactnext
 
       - name: Test
-        run: REACT_VERSION=next pnpm test --shard ${{ matrix.shard }}
+        run: pnpm run test-reactnext --shard ${{ matrix.shard }}

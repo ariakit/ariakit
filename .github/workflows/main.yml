@@ -103,7 +103,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Test
-        run: REACT_VERSION=17 pnpm test --shard ${{ matrix.shard }}
+        run: pnpm run test-react17 --shard ${{ matrix.shard }}
 
   website:
     name: Build website

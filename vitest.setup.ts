@@ -15,6 +15,22 @@ if (!version.startsWith("17")) {
   failOnConsole();
 }
 
+// React 17 lacks startTransition, useDeferredValue, useTransition, useId.
+// Provide lightweight polyfills so ariakit components work in tests.
+// Top-level vi.mock is hoisted above imports; the factory checks at runtime.
+vi.mock("react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react")>();
+  if (!actual.version.startsWith("17")) return actual;
+  let id = 0;
+  return {
+    startTransition: (v: () => any) => v(),
+    useDeferredValue: <T>(v: T) => v,
+    useTransition: () => [false, (v: () => any) => v()],
+    useId: () => actual.useMemo(() => `id-${id++}`, []),
+    ...actual,
+  };
+});
+
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {
     const toHaveFocus = matchers.toHaveFocus.bind(this) as any;
@@ -46,20 +62,6 @@ expect.extend({
     };
   },
 });
-
-if (version.startsWith("17")) {
-  vi.mock("react", async () => {
-    const actual = await vi.importActual<typeof import("react")>("react");
-    let id = 0;
-    const mocks = {
-      startTransition: (v: () => any) => v(),
-      useDeferredValue: <T>(v: T) => v,
-      useTransition: () => [false, (v: () => any) => v()],
-      useId: () => actual.useMemo(() => `id-${id++}`, []),
-    };
-    return { ...mocks, ...actual };
-  });
-}
 
 async function tryImport(path: string) {
   return import(path)

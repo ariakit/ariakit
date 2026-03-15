@@ -6,29 +6,29 @@ import type { Plugin } from "vitest/config";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./site/src/lib/source-plugin.ts";
 
-// REACT_VERSION selects which React copy vitest uses via resolve aliases:
+// REACT_VERSION selects which React copy to test against:
 //   - unset: default react/react-dom (currently v18)
 //   - "17":  react-17/react-dom-17 aliases (npm:react@17, npm:react-dom@17)
-//   - "next": react-next/react-dom-next aliases (installed by `pnpm run reactnext`)
-// The "17" aliases are installed alongside the defaults, so switching is
-// non-destructive — no pnpm add/restore needed, no lockfile mutations.
+//   - "next": react-next/react-dom-next aliases (updated by `pnpm run reactnext`)
+// The aliased packages are installed alongside the defaults, so switching
+// is non-destructive — no pnpm add/restore needed, no lockfile mutations.
+// Module redirection is handled by vitest.react-version.ts (patches
+// Node.js Module._resolveFilename) and Vite resolve.alias (for ESM).
 const REACT_VERSION = process.env.REACT_VERSION;
 const isReact17 = REACT_VERSION === "17";
-const isReactNext = REACT_VERSION === "next";
 
-// In a pnpm monorepo, each workspace package resolves its own copy of react
-// from its node_modules. We use createRequire to find the exact react and
-// react-dom directories installed at the root, then alias all imports to them.
-// This ensures vitest always uses a single React copy.
+// In a pnpm monorepo, each workspace package may resolve its own copy of
+// react from its node_modules. We pin all imports to a single copy via
+// resolve.alias to prevent "multiple React instances" errors in tests.
 const require = createRequire(import.meta.url);
-const reactPkg = isReact17 ? "react-17" : isReactNext ? "react-next" : "react";
-const reactDomPkg = isReact17
-  ? "react-dom-17"
-  : isReactNext
-    ? "react-dom-next"
-    : "react-dom";
-const reactDir = dirname(require.resolve(`${reactPkg}/package.json`));
-const reactDomDir = dirname(require.resolve(`${reactDomPkg}/package.json`));
+
+function resolvePkg(pkg: string) {
+  return dirname(require.resolve(`${pkg}/package.json`));
+}
+
+const reactSuffix = REACT_VERSION ? `-${REACT_VERSION}` : "";
+const reactDir = resolvePkg(`react${reactSuffix}`);
+const reactDomDir = resolvePkg(`react-dom${reactSuffix}`);
 
 const excludeFromReact17 = [
   "examples/form-callback-queue",
@@ -67,23 +67,18 @@ const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
   resolve: {
-    // Redirect all react/react-dom imports to the root-resolved versions.
-    // Without this, workspace packages may each resolve their own copy of
-    // react, causing "multiple React instances" errors in tests.
     alias: [
       { find: /^react-dom($|\/)/, replacement: `${reactDomDir}$1` },
       { find: /^react($|\/)/, replacement: `${reactDir}$1` },
-      // When testing with React 17, also redirect @testing-library/react to
-      // v12 and @testing-library/dom to v8, which are compatible with React 17.
       ...(isReact17
         ? [
             {
               find: /^@testing-library\/react($|\/)/,
-              replacement: `${dirname(require.resolve("testing-library-react-12/package.json"))}$1`,
+              replacement: `${resolvePkg("testing-library-react-12")}$1`,
             },
             {
               find: /^@testing-library\/dom($|\/)/,
-              replacement: `${dirname(require.resolve("testing-library-dom-8/package.json"))}$1`,
+              replacement: `${resolvePkg("testing-library-dom-8")}$1`,
             },
           ]
         : []),
@@ -95,7 +90,9 @@ export default defineConfig({
     watch: false,
     testTimeout: 10_000,
     environment: "jsdom",
-    setupFiles: ["vitest.setup.ts"],
+    // vitest.react-version.ts patches Module._resolveFilename to redirect
+    // CJS require('react-dom') calls that bypass Vite's resolve.alias.
+    setupFiles: ["vitest.react-version.ts", "vitest.setup.ts"],
     include: ["**/*test.{ts,tsx}", `**/*test.${LOADER}.{ts,tsx}`],
     exclude: [
       ...configDefaults.exclude,

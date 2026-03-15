@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "start": "pnpm -F website start",
-    "reactnext": "pnpm add -w react-next@npm:react@next react-dom-next@npm:react-dom@next",
+    "update-reactnext": "pnpm add -w react-next@npm:react@next react-dom-next@npm:react-dom@next",
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm -F website run dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
@@ -20,7 +20,7 @@
     "test-solid": "ARIAKIT_TEST_LOADER=solid vitest",
     "test-watch": "vitest watch",
     "test-react17": "cross-env REACT_VERSION=17 vitest",
-    "test-reactnext": "pnpm run reactnext && cross-env REACT_VERSION=next vitest; git checkout package.json pnpm-lock.yaml && pnpm install",
+    "test-reactnext": "cross-env REACT_VERSION=next vitest",
     "playwright": "playwright test",
     "test-browser": "playwright test --project=chrome --project=safari --project=firefox",
     "test-browser-solid": "ARIAKIT_TEST_LOADER=solid playwright test --project=chrome --project=safari --project=firefox",
