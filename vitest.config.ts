@@ -54,6 +54,7 @@ export default defineConfig({
       { find: /^react-dom($|\/)/, replacement: `${reactDomDir}$1` },
       { find: /^react($|\/)/, replacement: `${reactDir}$1` },
     ],
+    dedupe: ["react", "react-dom"],
   },
   test: {
     globals: true,

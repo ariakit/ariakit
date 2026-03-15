@@ -65,5 +65,8 @@
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
     "vfile": "6.0.3"
+  },
+  "devDependencies": {
+    "@types/hast": "3.0.4"
   }
 }

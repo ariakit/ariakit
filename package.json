@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.11.0",
   "scripts": {
     "start": "pnpm -F website start",
-    "react17": "pnpm add -w react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8 && pnpm -F @ariakit/react -F @ariakit/react-core -F @ariakit/test add react@17 react-dom@17",
+    "react17": "pnpm add -w react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8 && pnpm -F @ariakit/react -F @ariakit/react-core -F @ariakit/test add react@17 react-dom@17 @testing-library/react@12 @testing-library/dom@8",
     "reactnext": "pnpm add -w react@next react-dom@next && pnpm -F @ariakit/react -F @ariakit/react-core -F @ariakit/test add react@next react-dom@next",
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm -F website run dev'",
@@ -75,7 +75,9 @@
     "overrides": {
       "@wordpress/components>@ariakit/react": "workspace:*"
     },
-    "patchedDependencies": {},
+    "patchedDependencies": {
+      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
+    },
     "onlyBuiltDependencies": [
       "esbuild",
       "sharp",

@@ -138,6 +138,7 @@ async function getMarkdownProcessor() {
   markdownProcessor = await createMarkdownProcessor({
     syntaxHighlight: false,
     rehypePlugins: [
+      // @ts-ignore RehypePlugin type uses a different hast version
       [
         rehypeAsTagName,
         { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
