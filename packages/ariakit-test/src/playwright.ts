@@ -54,7 +54,7 @@ function createRoleQueries<T>(
 function createWithinQuery<TLocator extends QueryRoot<TLocator>>(
   locator: QueryRoot<TLocator>,
 ): WithinQuery<TLocator> {
-  const within = ((element) => query(element)) as WithinQuery<TLocator>;
+  const within = ((root) => query(root)) as WithinQuery<TLocator>;
 
   const roleQueries = createRoleQueries((role) => {
     return (
@@ -69,9 +69,6 @@ function createWithinQuery<TLocator extends QueryRoot<TLocator>>(
   return Object.assign(within, roleQueries, { text });
 }
 
-export function query<TLocator extends QueryRoot<TLocator>>(
-  locator: QueryRoot<TLocator>,
-): QueryObject<TLocator>;
 export function query<TLocator extends QueryRoot<TLocator>>(
   locator: QueryRoot<TLocator>,
 ): QueryObject<TLocator> {
