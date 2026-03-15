@@ -22,7 +22,7 @@ async function getItemsToGenerate() {
     if (!response.ok) {
       console.error(`Failed to fetch from ${url}: ${response.statusText}`);
       console.error(
-        "Please make sure the dev server is running: `npm run dev`",
+        "Please make sure the dev server is running: `pnpm run dev`",
       );
       return [];
     }
