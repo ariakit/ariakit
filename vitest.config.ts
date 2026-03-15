@@ -7,6 +7,11 @@ import type { Plugin } from "vitest/config";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./site/src/lib/source-plugin.ts";
 
+// In a pnpm monorepo, each workspace package resolves its own copy of react
+// from its node_modules. We use createRequire to find the exact react and
+// react-dom directories installed at the root, then alias all imports to them.
+// This ensures vitest always uses a single React copy, which is critical for
+// the `pnpm run react17` script that swaps the root's React version.
 const require = createRequire(import.meta.url);
 const reactDir = dirname(require.resolve("react/package.json"));
 const reactDomDir = dirname(require.resolve("react-dom/package.json"));
@@ -50,6 +55,9 @@ const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
   resolve: {
+    // Redirect all react/react-dom imports to the root-resolved versions.
+    // Without this, workspace packages may each resolve their own copy of
+    // react, causing "multiple React instances" errors in tests.
     alias: [
       { find: /^react-dom($|\/)/, replacement: `${reactDomDir}$1` },
       { find: /^react($|\/)/, replacement: `${reactDir}$1` },
