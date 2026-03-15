@@ -28,18 +28,21 @@ test("filter actions", async () => {
   await click(q.button("Actions"));
   const actions = menu();
   await type("de");
-  expect(actions.option("Default checked")).toHaveFocus();
-  expect(actions.option("Default checked")).toHaveAttribute(
+  expect(actions.option(/^Default\s*checked$/)).toHaveFocus();
+  expect(actions.option(/^Default\s*checked$/)).toHaveAttribute(
     "data-active-item",
     "true",
   );
   await press.ArrowDown();
-  expect(actions.option("Default background checked")).toHaveFocus();
+  expect(actions.option(/^Default background\s*checked$/)).toHaveFocus();
   await press.ArrowDown();
-  expect(actions.option("Delete")).toHaveFocus();
-  expect(actions.option("Delete")).toHaveAttribute("data-active-item", "true");
+  expect(actions.option(/^Delete$/)).toHaveFocus();
+  expect(actions.option(/^Delete$/)).toHaveAttribute(
+    "data-active-item",
+    "true",
+  );
   await press.ArrowDown();
-  expect(actions.option("Code not checked")).toHaveFocus();
+  expect(actions.option(/^Code\s*not checked$/)).toHaveFocus();
 });
 
 test("reset filter on hide", async () => {
@@ -118,8 +121,8 @@ test("set block type", async () => {
   expect(q.text("Callout")).toBeInTheDocument();
   await press.Enter();
   await type("Turn into");
-  expect(menu().option("Text not checked")).toHaveFocus();
-  expect(menu().option("Callout checked")).toBeInTheDocument();
+  expect(menu().option(/^Text\s*not checked$/)).toHaveFocus();
+  expect(menu().option(/^Callout\s*checked$/)).toBeInTheDocument();
   await press.Enter();
   expect(q.dialog("Actions")).not.toBeInTheDocument();
   expect(q.text("Text")).toBeInTheDocument();
