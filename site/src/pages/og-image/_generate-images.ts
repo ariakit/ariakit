@@ -58,7 +58,9 @@ async function generateImage(browser: Browser, item: OGImageItem) {
 
 async function main() {
   console.log("🔥 Generating OG images");
-  const browser = await chromium.launch();
+  // Use the full Chromium channel because headless-shell produces incorrect
+  // OG image captures for the repeated thumbnail strip on newer Playwright.
+  const browser = await chromium.launch({ channel: "chromium" });
   try {
     const items = await getItemsToGenerate();
     if (!items.length) return;
