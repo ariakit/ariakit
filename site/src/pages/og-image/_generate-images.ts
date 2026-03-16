@@ -25,27 +25,32 @@ const MAX_DIFF_PIXEL_RATIO = 0.001;
 
 function isWithinTolerance(newBuffer: Buffer, existingPath: string) {
   if (!fs.existsSync(existingPath)) return false;
-  const existingBuffer = fs.readFileSync(existingPath);
-  // Byte-identical files need no further comparison.
-  if (Buffer.compare(newBuffer, existingBuffer) === 0) return true;
-  const existingPng = PNG.sync.read(existingBuffer);
-  const newPng = PNG.sync.read(newBuffer);
-  if (
-    existingPng.width !== newPng.width ||
-    existingPng.height !== newPng.height
-  ) {
+  try {
+    const existingBuffer = fs.readFileSync(existingPath);
+    // Byte-identical files need no further comparison.
+    if (Buffer.compare(newBuffer, existingBuffer) === 0) return true;
+    const existingPng = PNG.sync.read(existingBuffer);
+    const newPng = PNG.sync.read(newBuffer);
+    if (
+      existingPng.width !== newPng.width ||
+      existingPng.height !== newPng.height
+    ) {
+      return false;
+    }
+    const totalPixels = existingPng.width * existingPng.height;
+    const diffCount = pixelmatch(
+      existingPng.data,
+      newPng.data,
+      undefined,
+      existingPng.width,
+      existingPng.height,
+      { threshold: 0.1 },
+    );
+    return diffCount / totalPixels <= MAX_DIFF_PIXEL_RATIO;
+  } catch (error) {
+    console.warn(`⚠️  Could not compare ${existingPath}, regenerating`, error);
     return false;
   }
-  const totalPixels = existingPng.width * existingPng.height;
-  const diffCount = pixelmatch(
-    existingPng.data,
-    newPng.data,
-    undefined,
-    existingPng.width,
-    existingPng.height,
-    { threshold: 0.1 },
-  );
-  return diffCount / totalPixels <= MAX_DIFF_PIXEL_RATIO;
 }
 
 async function getItemsToGenerate() {
