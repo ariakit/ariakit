@@ -154,12 +154,14 @@ const teams = await getCurrentUserTeams(Astro);
                 </li>
                 <li>
                   <SignOutButton
-                    class="ak-button"
+                    asChild
                     redirectUrl={getPlusAccountPath({
                       url: Astro.url,
                       path: "login",
                     })}
-                  />
+                  >
+                    <button type="button" class="ak-button">Sign out</button>
+                  </SignOutButton>
                 </li>
               </ul>
             )
