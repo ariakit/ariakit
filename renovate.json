@@ -24,8 +24,13 @@
       ]
     },
     {
+      "matchFileNames": ["website/package.json"],
+      "matchPackageNames": ["/^@clerk\\//"],
+      "enabled": false
+    },
+    {
       "groupName": "clerk",
-      "matchPackageNames": ["/clerk/"]
+      "matchPackageNames": ["/^@clerk\\//"]
     },
     {
       "groupName": "stripe",
