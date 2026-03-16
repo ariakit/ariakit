@@ -93,6 +93,20 @@ async function generateImage(browser: Browser, item: OGImageItem) {
   }
 }
 
+function removeStaleImages(items: OGImageItem[]) {
+  const expectedPaths = new Set(
+    items.map((item) => path.join(PUBLIC_DIR, item.imagePath)),
+  );
+  const ogImageDir = path.join(PUBLIC_DIR, "og-image");
+  if (!fs.existsSync(ogImageDir)) return;
+  for (const file of fs.readdirSync(ogImageDir)) {
+    const filePath = path.join(ogImageDir, file);
+    if (expectedPaths.has(filePath)) continue;
+    fs.unlinkSync(filePath);
+    console.log(`🗑️  Removed stale ${path.relative(PUBLIC_DIR, filePath)}`);
+  }
+}
+
 async function main() {
   console.log("🔥 Generating OG images");
   // Use the full Chromium channel because headless-shell produces incorrect
@@ -116,6 +130,7 @@ async function main() {
         `Failed to generate OG images for: ${failedPaths.join(", ")}`,
       );
     }
+    removeStaleImages(items);
     console.log("✨ Done");
   } finally {
     await browser.close();
