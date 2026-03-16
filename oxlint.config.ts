@@ -37,13 +37,17 @@ export default defineConfig({
       },
     },
     {
+      // We have our own `forwardRef` implementation that doesn't need the `ref`
+      // parameter, which leads to false positives.
       files: ["packages/ariakit-react-core/src/**/*.{ts,tsx}"],
       rules: {
         "forward-ref-uses-ref": "off",
       },
     },
     {
-      files: ["site/src/lib/reference-tokenizer.ts"],
+      // Disable this rule for the site because some types depend on the site
+      // being built first, and linting may run before the site is built.
+      files: ["site/src/lib/**/*.ts"],
       rules: {
         "no-redundant-type-constituents": "off",
       },
