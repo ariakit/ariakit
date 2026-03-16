@@ -103,7 +103,7 @@
   },
   "devDependencies": {
     "@ariakit/test": "workspace:*",
-    "@cloudflare/workers-types": "4.20260313.1",
+    "@cloudflare/workers-types": "4.20260316.1",
     "@playwright/test": "1.58.2",
     "@types/canvas-confetti": "1.9.0",
     "@types/hast": "3.0.4",
