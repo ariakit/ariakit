@@ -94,6 +94,10 @@ export function useCollectionItemOffscreen<
 
       observerRef.current.observe(element);
     },
+    // This callback intentionally depends on `updated` so `forceUpdate()`
+    // causes React to re-run the ref callback when the offscreen root becomes
+    // available.
+    // oxlint-disable-next-line exhaustive-deps
     [updated, offscreenBehavior, offscreenRoot],
   );
 

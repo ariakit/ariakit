@@ -1,16 +1,19 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "react", "import"],
+  "options": {
+    "typeAware": true
+  },
   "ignorePatterns": [
     "**/node_modules",
+    "website",
     "**/dist",
     "**/build",
     "**/.next",
     "**/.pages",
     "**/.astro",
-    "**/.types",
     "**/*.astro",
-    "**/*.css",
+    "**/.types",
     "site/src/styles/styles.json"
   ],
   "rules": {
@@ -36,6 +39,18 @@
       "files": ["*.d.ts"],
       "rules": {
         "@typescript-eslint/consistent-type-imports": "off"
+      }
+    },
+    {
+      "files": ["packages/ariakit-react-core/src/**/*.{ts,tsx}"],
+      "rules": {
+        "react/forward-ref-uses-ref": "off"
+      }
+    },
+    {
+      "files": ["site/src/lib/reference-tokenizer.ts"],
+      "rules": {
+        "@typescript-eslint/no-redundant-type-constituents": "off"
       }
     }
   ]

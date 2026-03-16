@@ -49,7 +49,7 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
         "FormRadio must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const onChangeProp = props.onChange;
 
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {

@@ -101,7 +101,7 @@ function useAutoFocusOnHide({
     return sync(store, ["anchorElement"], (state) => {
       finalFocusRef.current = state.anchorElement;
     });
-  }, []);
+  }, [store]);
 
   props = {
     autoFocusOnHide,
@@ -279,10 +279,14 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     useEffect(() => {
       if (!domReady) return;
       return () => {
+        // oxlint-disable-next-line exhaustive-deps
         if (!openRef.current) {
           store?.setAutoFocusOnShow(false);
         }
       };
+      // This cleanup intentionally reads the live ref so it can observe the
+      // latest open state at unmount time.
+      // oxlint-disable-next-line exhaustive-deps
     }, [store, domReady]);
 
     const registerOnParent = useContext(NestedHovercardContext);

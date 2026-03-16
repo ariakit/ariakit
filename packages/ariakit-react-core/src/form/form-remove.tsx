@@ -84,7 +84,7 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
         "FormRemove must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {

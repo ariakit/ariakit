@@ -56,7 +56,7 @@ export function useFormStoreProps<
       useValidate,
       useSubmit,
     }),
-    [],
+    [store, useValue, useValidate, useSubmit],
   );
 }
 

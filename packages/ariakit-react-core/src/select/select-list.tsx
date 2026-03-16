@@ -108,7 +108,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
 
     const headingContextValue: typeof headingState = useMemo(
       () => [headingId, setHeadingId],
-      [headingId],
+      [headingId, setHeadingId],
     );
 
     const [childStore, setChildStore] = useState<SelectStore | null>(null);

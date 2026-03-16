@@ -78,7 +78,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
   useUpdateEffect(() => {
     if (!validateOnChange) return;
     if (values === defaultValues) return;
-    store?.validate();
+    void store?.validate();
   }, [validateOnChange, values, defaultValues, store]);
 
   useEffect(() => {
@@ -100,6 +100,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
     if (isTextField(element)) {
       element.select();
     }
+    // oxlint-disable-next-line exhaustive-deps
   }, [autoFocusOnSubmit, submitFailed, items]);
 
   const onSubmitProp = props.onSubmit;
@@ -108,7 +109,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
     onSubmitProp?.(event);
     if (event.defaultPrevented) return;
     event.preventDefault();
-    store?.submit();
+    void store?.submit();
     if (!autoFocusOnSubmit) return;
     setShouldFocusOnSubmit(true);
   });
@@ -121,7 +122,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
     if (!validateOnBlur) return;
     if (!store) return;
     if (!isField(event.target, store.getState().items)) return;
-    store.validate();
+    void store.validate();
   });
 
   const onResetProp = props.onReset;

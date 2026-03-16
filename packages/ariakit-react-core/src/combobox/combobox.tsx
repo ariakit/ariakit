@@ -185,7 +185,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       return sync(store, ["selectedValue", "activeId"], (_, prev) => {
         prevSelectedValueRef.current = prev.selectedValue;
       });
-    }, []);
+    }, [store]);
 
     const inlineActiveValue = useStoreState(store, (state) => {
       if (!inline) return;

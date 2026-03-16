@@ -67,7 +67,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
-    const name = `${nameProp}`;
+    const name = String(nameProp);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {

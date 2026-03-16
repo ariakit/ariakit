@@ -60,7 +60,7 @@ export const useFormError = createHook<TagName, FormErrorOptions>(
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
-    const name = `${nameProp}`;
+    const name = String(nameProp);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {

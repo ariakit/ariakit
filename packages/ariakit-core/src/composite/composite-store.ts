@@ -618,11 +618,13 @@ export interface CompositeStoreFunctions<
    * @example
    * const nextId = store.next();
    */
-  next(options?: NextOptions): string | null | undefined;
-  /**
-   * @deprecated Use the object syntax instead: `next({ skip: 2 })`.
-   */
-  next(skip?: number): string | null | undefined;
+  next: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `next({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the previous enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -630,11 +632,13 @@ export interface CompositeStoreFunctions<
    * @example
    * const previousId = store.previous();
    */
-  previous(options?: NextOptions): string | null | undefined;
-  /**
-   * @deprecated Use the object syntax instead: `previous({ skip: 2 })`.
-   */
-  previous(skip?: number): string | null | undefined;
+  previous: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `previous({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the enabled item above based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -642,11 +646,13 @@ export interface CompositeStoreFunctions<
    * @example
    * const upId = store.up();
    */
-  up(options?: NextOptions): string | null | undefined;
-  /**
-   * @deprecated Use the object syntax instead: `up({ skip: 2 })`.
-   */
-  up(skip?: number): string | null | undefined;
+  up: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `up({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the enabled item below based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -654,11 +660,13 @@ export interface CompositeStoreFunctions<
    * @example
    * const downId = store.down();
    */
-  down(options?: NextOptions): string | null | undefined;
-  /**
-   * @deprecated Use the object syntax instead: `down({ skip: 2 })`.
-   */
-  down(skip?: number): string | null | undefined;
+  down: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `down({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the first enabled item.
    */

@@ -45,7 +45,7 @@ export const useFormInput = createHook<TagName, FormInputOptions>(
         "FormInput must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const onChangeProp = props.onChange;
 
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {

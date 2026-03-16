@@ -126,7 +126,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const { value } = currentTarget;
       // Set the value in the store if the value changes
       if (setValueOnChangeProp(event)) {
-        UndoManager.execute(() => {
+        void UndoManager.execute(() => {
           store.setValue(value);
           // When the value is not set synchronously, the selection range may be
           // lost.
@@ -158,7 +158,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           for (const tagValue of values) {
             store.addValue(tagValue);
           }
-          UndoManager.execute(() => {
+          void UndoManager.execute(() => {
             store.setValue(trailingvalue);
             if (trailingvalue === prevValue) return;
             return () => store.setValue(prevValue);

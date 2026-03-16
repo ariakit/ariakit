@@ -82,7 +82,7 @@ test("set value on tab after moving to another item", async ({ page }) => {
   expect(await getSelectionValue(page)).toBe("ple");
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("ArrowDown");
-  expect(getCombobox(page)).toHaveValue("Papaya");
+  await expect(getCombobox(page)).toHaveValue("Papaya");
   await page.keyboard.press("Tab");
   await expect(getCombobox(page)).not.toBeFocused();
   await expect(getPopover(page)).not.toBeVisible();

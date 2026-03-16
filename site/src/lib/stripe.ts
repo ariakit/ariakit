@@ -44,7 +44,13 @@ function createHttpClient(enabled: boolean) {
   return Stripe.createFetchHttpClient(
     async (...args: Parameters<typeof fetch>) => {
       const { info, error } = logger.start();
-      const url = new URL(args[0].toString());
+      const input = args[0];
+      const url =
+        typeof input === "string"
+          ? new URL(input)
+          : input instanceof URL
+            ? input
+            : new URL(input.url);
       const response = await fetch(...args);
       if (response.ok) {
         info(url.pathname);

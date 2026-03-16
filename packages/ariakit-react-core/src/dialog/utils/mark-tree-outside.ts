@@ -34,6 +34,7 @@ export function isElementMarked(element: Element, id?: string) {
     if (element[elementProperty]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
+    // oxlint-disable-next-line no-constant-condition
   } while (true);
 }
 

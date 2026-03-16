@@ -106,7 +106,7 @@ function useEventOutside({
       callListener(event);
     };
     return addGlobalEventListener(type, onEvent, capture);
-  }, [open, capture]);
+  }, [open, capture, store, type, callListener]);
 }
 
 function shouldHideOnInteractOutside(

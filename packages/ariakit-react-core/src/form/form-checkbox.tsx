@@ -51,7 +51,7 @@ export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
         "FormCheckbox must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
 
     const checkboxStore = useCheckboxStore({
       value: store.useValue(name),

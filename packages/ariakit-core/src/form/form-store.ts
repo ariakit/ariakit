@@ -47,7 +47,7 @@ export function get<T>(
   path: StringLike | string[],
   defaultValue?: T,
 ): T {
-  const [key, ...rest] = Array.isArray(path) ? path : `${path}`.split(".");
+  const [key, ...rest] = Array.isArray(path) ? path : String(path).split(".");
   if (key == null || !values) {
     return defaultValue as T;
   }
@@ -62,7 +62,7 @@ function set<T extends FormStoreValues | unknown[]>(
   path: StringLike | string[],
   value: unknown,
 ): T {
-  const [k, ...rest] = Array.isArray(path) ? path : `${path}`.split(".");
+  const [k, ...rest] = Array.isArray(path) ? path : String(path).split(".");
   if (k == null) return values;
   const key = k as keyof T;
   const isIntegerKey = isInteger(key);
@@ -85,7 +85,7 @@ function set<T extends FormStoreValues | unknown[]>(
     nextValues[index as keyof T] = result as T[keyof T];
     return nextValues;
   }
-  return { ...values, [key]: result };
+  return Object.assign({}, values, { [key]: result });
 }
 
 function setAll<T extends FormStoreValues, V>(values: T, value: V) {

@@ -117,5 +117,5 @@ export function useAllEvents(ref: React.RefObject<Element>, stack: string[]) {
         element.removeEventListener(event, handler);
       }
     };
-  }, [ref]);
+  }, [ref, stack]);
 }

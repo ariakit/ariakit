@@ -90,7 +90,7 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
         "FormControl must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
 

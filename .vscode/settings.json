@@ -19,7 +19,7 @@
     "source.fixAll.oxc": "explicit"
   },
   "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[json]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
@@ -37,7 +37,7 @@
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[astro]": {
     "editor.defaultFormatter": "astro-build.astro-vscode",

@@ -59,6 +59,7 @@
     "@astrojs/solid-js": "5.1.3",
     "@clerk/astro": "3.0.4",
     "@fontsource-variable/inter": "5.2.8",
+    "@react-aria/utils": "3.33.1",
     "@shikijs/langs": "4.0.2",
     "@shikijs/themes": "4.0.2",
     "@stackblitz/sdk": "1.11.0",

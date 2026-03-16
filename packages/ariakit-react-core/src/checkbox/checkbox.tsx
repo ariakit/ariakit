@@ -110,7 +110,7 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
         element.name = name;
       }
       if (valueProp !== undefined) {
-        element.value = `${valueProp}`;
+        element.value = String(valueProp);
       }
     }, [propertyUpdated, mixed, nativeCheckbox, isChecked, name, valueProp]);
 

@@ -78,7 +78,7 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
         "FormPush must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const [shouldFocus, setShouldFocus] = useState(false);
 
     useEffect(() => {

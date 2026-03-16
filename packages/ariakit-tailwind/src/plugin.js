@@ -30,6 +30,7 @@ import { vars } from "./vars.js";
 
 /** @type {ReturnType<typeof plugin>} */
 const AriakitTailwind = plugin(
+  // oxlint-disable-next-line unbound-method
   ({ addBase, addVariant, addUtilities, matchUtilities, theme }) => {
     addVariant("ak-dark", IN_DARK);
     addVariant("ak-light", IN_LIGHT);

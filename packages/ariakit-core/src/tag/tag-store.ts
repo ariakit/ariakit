@@ -45,7 +45,7 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
 
   const setValues: TagStore["setValues"] = (values) => {
     const { values: previousValues } = tag.getState();
-    UndoManager.execute(() => {
+    void UndoManager.execute(() => {
       let changed = true;
       tag.setState("values", (prev) => {
         const next = applyState(values, prev);

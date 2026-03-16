@@ -49,7 +49,7 @@ export function withFramework(
           waitUntil: "networkidle",
         });
       });
-      callback({ id, framework, query, test: visualTest });
+      return callback({ id, framework, query, test: visualTest });
     });
   }
 }

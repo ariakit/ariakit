@@ -606,6 +606,7 @@ export function useCollectionRenderer<T extends Item = any>({
       if (shallowEqual(prevIndices, indices)) return prevIndices;
       return indices;
     });
+    // oxlint-disable-next-line exhaustive-deps
   }, [
     elementsUpdated,
     items,
@@ -736,7 +737,7 @@ export function useCollectionRenderer<T extends Item = any>({
     return () => {
       observer.disconnect();
     };
-  }, [scroller, processVisibleIndicesEvent]);
+  }, [scroller, horizontal, processVisibleIndicesEvent]);
 
   const elementObserver = useMemo(() => {
     if (typeof ResizeObserver !== "function") return;

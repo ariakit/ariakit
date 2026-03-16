@@ -165,7 +165,7 @@ module.exports = {
         const boxShadowUtils = Object.entries(boxShadow).reduce(
           (acc, [key, shadow]) => {
             acc[`.shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
-              "box-shadow": `${shadow}`,
+              "box-shadow": String(shadow),
             };
             return acc;
           },

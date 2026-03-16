@@ -21,8 +21,7 @@ interface LinkItem {
 }
 
 interface ReferenceItem
-  extends LinkItem,
-    ComponentProps<typeof ReferenceLabel> {}
+  extends LinkItem, ComponentProps<typeof ReferenceLabel> {}
 
 interface HeadingItem {
   label: string;

@@ -82,7 +82,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     };
     parentWrapper.addEventListener("scroll", onScroll);
     return () => parentWrapper.removeEventListener("scroll", onScroll);
-  }, [parent, menu.hide, menu.stopAnimation]);
+  }, [parent, menu]);
 
   const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
     <Ariakit.MenuButton

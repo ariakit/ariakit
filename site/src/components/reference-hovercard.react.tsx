@@ -96,7 +96,7 @@ export function ReferenceHovercardAnchor({
           if (!partialPath) return false;
           if (prefetchRef.current) return true;
           prefetchRef.current = true;
-          queryClient.prefetchQuery({
+          void queryClient.prefetchQuery({
             queryKey: getQueryKey(partialPath),
             queryFn: () => fetchPartialPath(partialPath),
           });

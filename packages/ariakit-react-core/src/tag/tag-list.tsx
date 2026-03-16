@@ -74,10 +74,10 @@ export const useTagList = createHook<TagName, TagListOptions>(
       const shiftZ = (event.shiftKey && z) || (pc && event.key === "y");
       if (mod && shiftZ) {
         event.preventDefault();
-        UndoManager.redo();
+        void UndoManager.redo();
       } else if (mod && z) {
         event.preventDefault();
-        UndoManager.undo();
+        void UndoManager.undo();
       }
     });
 

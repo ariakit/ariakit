@@ -412,7 +412,9 @@ function getFunctionDeclaration(
   node: Node,
 ): FunctionLikeDeclaration | undefined {
   if (Node.isFunctionLikeDeclaration(node)) return node;
-  return node.getFirstDescendant(Node.isFunctionLikeDeclaration);
+  return node.getFirstDescendant((node) =>
+    Node.isFunctionLikeDeclaration(node),
+  );
 }
 
 /**

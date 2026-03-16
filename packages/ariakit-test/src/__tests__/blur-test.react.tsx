@@ -17,7 +17,7 @@ test("blur", async () => {
     );
   };
 
-  render(<Test />);
+  await render(<Test />);
 
   expect(q.button()).toHaveFocus();
   await blur(q.button());

@@ -21,6 +21,7 @@ function inSnapshot(id: string, element: Element) {
     if (element[propertyName]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
+    // oxlint-disable-next-line no-constant-condition
   } while (true);
 }
 

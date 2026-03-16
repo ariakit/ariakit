@@ -1,7 +1,10 @@
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
 
-initOpenNextCloudflareForDev();
+initOpenNextCloudflareForDev().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
 
 const nextConfig: NextConfig = {
   reactCompiler: true,

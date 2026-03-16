@@ -74,7 +74,7 @@ export async function deletePrice(context: APIContext, key: string) {
 interface GetPromoParams {
   context: APIContext;
   product?: string | null;
-  user?: string | null | "any";
+  user?: string | null;
 }
 
 export async function getAllPromos({

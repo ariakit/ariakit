@@ -176,11 +176,10 @@ export function useCompositeRenderer<T extends Item = any>({
     persistentIndices,
     ...props,
     children: (item) => {
-      const nextItem = {
-        ...item,
+      const nextItem = Object.assign({}, item, {
         "aria-setsize": setSize,
         "aria-posinset": ariaPosInSet + (itemsCount[item.index - 1] ?? 0),
-      };
+      });
       return renderItem?.(nextItem as ItemProps<T>);
     },
   });
