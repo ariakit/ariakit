@@ -173,8 +173,8 @@ importers:
         specifier: 0.10.1
         version: 0.10.1(@vitest/utils@4.1.0)(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))(vitest@4.1.0(@types/node@24.12.0)(jsdom@29.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2)))
       wrangler:
-        specifier: 4.73.0
-        version: 4.73.0(@cloudflare/workers-types@4.20260316.1)
+        specifier: 4.74.0
+        version: 4.74.0(@cloudflare/workers-types@4.20260316.1)
 
   examples:
     dependencies:
@@ -268,7 +268,7 @@ importers:
     devDependencies:
       '@opennextjs/cloudflare':
         specifier: 1.17.1
-        version: 1.17.1(encoding@0.1.13)(next@16.1.6(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.73.0(@cloudflare/workers-types@4.20260316.1))
+        version: 1.17.1(encoding@0.1.13)(next@16.1.6(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.74.0(@cloudflare/workers-types@4.20260316.1))
       '@tailwindcss/postcss':
         specifier: 4.2.1
         version: 4.2.1
@@ -607,8 +607,8 @@ importers:
         specifier: 4.1.0
         version: 4.1.0(@types/node@24.12.0)(jsdom@29.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
       wrangler:
-        specifier: 4.73.0
-        version: 4.73.0(@cloudflare/workers-types@4.20260316.1)
+        specifier: 4.74.0
+        version: 4.74.0(@cloudflare/workers-types@4.20260316.1)
 
   templates/react:
     dependencies:
@@ -8282,8 +8282,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  miniflare@4.20260312.0:
-    resolution: {integrity: sha512-pieP2rfXynPT6VRINYaiHe/tfMJ4c5OIhqRlIdLF6iZ9g5xgpEmvimvIgMpgAdDJuFlrLcwDUi8MfAo2R6dt/w==}
+  miniflare@4.20260312.1:
+    resolution: {integrity: sha512-YSWxec9ssisqkQgaCgcIQxZlB41E9hMiq1nxUgxXHRrE9NsfyC6ptSt8yfgBobsKIseAVKLTB/iEDpMumBv8oA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -10679,8 +10679,8 @@ packages:
       '@cloudflare/workers-types':
         optional: true
 
-  wrangler@4.73.0:
-    resolution: {integrity: sha512-VJXsqKDFCp6OtFEHXITSOR5kh95JOknwPY8m7RyQuWJQguSybJy43m4vhoCSt42prutTef7eeuw7L4V4xiynGw==}
+  wrangler@4.74.0:
+    resolution: {integrity: sha512-3qprbhgdUyqYGHZ+Y1k0gsyHLMOlLrKL/HU0LDqLlCkbsKPprUA0/ThE4IZsxD84xAAXY6pv5JUuxS2+OnMa3A==}
     engines: {node: '>=20.0.0'}
     hasBin: true
     peerDependencies:
@@ -13960,7 +13960,7 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.17.1(encoding@0.1.13)(next@16.1.6(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.73.0(@cloudflare/workers-types@4.20260316.1))':
+  '@opennextjs/cloudflare@1.17.1(encoding@0.1.13)(next@16.1.6(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.74.0(@cloudflare/workers-types@4.20260316.1))':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
@@ -13971,7 +13971,7 @@ snapshots:
       glob: 12.0.0
       next: 16.1.6(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       ts-tqdm: 0.8.6
-      wrangler: 4.73.0(@cloudflare/workers-types@4.20260316.1)
+      wrangler: 4.74.0(@cloudflare/workers-types@4.20260316.1)
       yargs: 18.0.0
     transitivePeerDependencies:
       - aws-crt
@@ -19962,7 +19962,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  miniflare@4.20260312.0:
+  miniflare@4.20260312.1:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.34.5
@@ -22753,13 +22753,13 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  wrangler@4.73.0(@cloudflare/workers-types@4.20260316.1):
+  wrangler@4.74.0(@cloudflare/workers-types@4.20260316.1):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.2
       '@cloudflare/unenv-preset': 2.15.0(unenv@2.0.0-rc.24)(workerd@1.20260312.1)
       blake3-wasm: 2.1.5
       esbuild: 0.27.3
-      miniflare: 4.20260312.0
+      miniflare: 4.20260312.1
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.24
       workerd: 1.20260312.1
