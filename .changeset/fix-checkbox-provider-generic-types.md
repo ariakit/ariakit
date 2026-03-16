@@ -9,16 +9,17 @@ This fixes TypeScript errors when wrapping [`CheckboxProvider`](https://ariakit.
 
 Before, generic wrappers often needed a non-null assertion to satisfy the provider props:
 
-```tsx
+```tsx {15}
+interface CheckboxCardGridProps<T extends string | number> extends Pick<
+  Ariakit.CheckboxProviderProps<T>,
+  "value" | "setValue" | "defaultValue"
+> {}
+
 function CheckboxCardGrid<T extends string | number>({
   value,
   setValue,
   defaultValue,
-}: {
-  value?: T[];
-  setValue?: (value: T[]) => void;
-  defaultValue?: T[];
-}) {
+}: CheckboxCardGridProps<T>) {
   return (
     <CheckboxProvider
       value={value}
@@ -31,22 +32,10 @@ function CheckboxCardGrid<T extends string | number>({
 
 Now the same wrapper can type-check without the workaround:
 
-```tsx
-function CheckboxCardGrid<T extends string | number>({
-  value,
-  setValue,
-  defaultValue,
-}: {
-  value?: T[];
-  setValue?: (value: T[]) => void;
-  defaultValue?: T[];
-}) {
-  return (
-    <CheckboxProvider
-      value={value}
-      setValue={setValue}
-      defaultValue={defaultValue}
-    />
-  );
-}
+```tsx {4}
+<CheckboxProvider
+  value={value}
+  setValue={setValue}
+  defaultValue={defaultValue}
+/>
 ```
