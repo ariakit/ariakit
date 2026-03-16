@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.32.1",
   "scripts": {
     "start": "pnpm -F website start",
     "dev-package-json": "node scripts/build/package-json-dev.js",
