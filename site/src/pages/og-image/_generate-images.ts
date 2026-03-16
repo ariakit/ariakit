@@ -7,13 +7,46 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import fs from "node:fs";
 import path from "node:path";
+import pixelmatch from "pixelmatch";
 import type { Browser } from "playwright";
 import { chromium } from "playwright";
+import { PNG } from "pngjs";
 import type { OGImageItem } from "./api.ts";
 
 const BASE_URL = "http://localhost:4321";
 const PUBLIC_DIR = path.resolve(process.cwd(), "public");
+
+// Maximum fraction of pixels allowed to differ before the image is
+// considered changed. This avoids committing images that only differ
+// due to sub-pixel rendering or anti-aliasing across runs.
+const MAX_DIFF_PIXEL_RATIO = 0.001;
+
+function isWithinTolerance(newBuffer: Buffer, existingPath: string) {
+  if (!fs.existsSync(existingPath)) return false;
+  const existingBuffer = fs.readFileSync(existingPath);
+  // Byte-identical files need no further comparison.
+  if (Buffer.compare(newBuffer, existingBuffer) === 0) return true;
+  const existingPng = PNG.sync.read(existingBuffer);
+  const newPng = PNG.sync.read(newBuffer);
+  if (
+    existingPng.width !== newPng.width ||
+    existingPng.height !== newPng.height
+  ) {
+    return false;
+  }
+  const totalPixels = existingPng.width * existingPng.height;
+  const diffCount = pixelmatch(
+    existingPng.data,
+    newPng.data,
+    null,
+    existingPng.width,
+    existingPng.height,
+    { threshold: 0.1 },
+  );
+  return diffCount / totalPixels <= MAX_DIFF_PIXEL_RATIO;
+}
 
 async function getItemsToGenerate() {
   const url = `${BASE_URL}/og-image/api`;
@@ -41,8 +74,16 @@ async function generateImage(browser: Browser, item: OGImageItem) {
   try {
     await page.goto(url, { waitUntil: "networkidle" });
     const imagePath = path.join(PUBLIC_DIR, item.imagePath);
-    await page.screenshot({ path: imagePath, type: "png", timeout: 60_000 });
-    console.log(`✅ Generated ${path.relative(PUBLIC_DIR, imagePath)}`);
+    const buffer = await page.screenshot({ type: "png", timeout: 60_000 });
+    const relativePath = path.relative(PUBLIC_DIR, imagePath);
+
+    if (isWithinTolerance(buffer, imagePath)) {
+      console.log(`⏭️  Skipped ${relativePath} (within tolerance)`);
+    } else {
+      fs.mkdirSync(path.dirname(imagePath), { recursive: true });
+      fs.writeFileSync(imagePath, buffer);
+      console.log(`✅ Generated ${relativePath}`);
+    }
   } catch (e) {
     console.error(`❌ Failed to generate ${item.path}`);
     console.error(e);
