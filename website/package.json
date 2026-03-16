@@ -17,7 +17,6 @@
     "@ariakit/react": "workspace:*",
     "@ariakit/react-core": "workspace:*",
     "@ariakit/solid": "workspace:*",
-    "@ariakit/test": "workspace:*",
     "@babel/core": "7.29.0",
     "@babel/preset-env": "7.29.0",
     "@babel/preset-react": "7.28.5",
@@ -102,6 +101,7 @@
     "@types/react-dom": "18.3.7",
     "@types/textarea-caret": "3.0.4",
     "@types/use-sync-external-store": "0.0.6",
+    "@ariakit/test": "workspace:*",
     "@vitejs/plugin-react": "6.0.1"
   }
 }
