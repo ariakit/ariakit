@@ -73,6 +73,7 @@
         "react-router",
         "react-shadow",
         "react-toastify",
+        "pnpm",
         "textarea-caret",
         "tsup",
         "typescript",
