@@ -24,6 +24,8 @@ description: Workflow instructions for this repository. Always use when planning
 
 ## Verification
 
+- If local commands fail because workspace dependencies or CLIs are missing,
+  run `pnpm install` from the repository root before other verification steps.
 - After making changes, run the relevant checks before finishing the task.
 - Run `pnpm tsc` from the repository root when you change TypeScript code or anything else that could affect TypeScript behavior, including dependencies and shared configs.
 - Run `pnpm test` from the repository root when you change code covered by the root Vitest suite.
