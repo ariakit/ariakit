@@ -3,6 +3,11 @@
   "semanticCommits": "disabled",
   "packageRules": [
     {
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": ["next"],
+      "enabled": false
+    },
+    {
       "matchFileNames": ["website/package.json"],
       "matchPackageNames": [
         "@babel/core",
@@ -22,7 +27,6 @@
         "hast-util-to-string",
         "hastscript",
         "marked",
-        "next",
         "null-loader",
         "parse-numeric-range",
         "postcss",
