@@ -40,7 +40,7 @@ function isWithinTolerance(newBuffer: Buffer, existingPath: string) {
   const diffCount = pixelmatch(
     existingPng.data,
     newPng.data,
-    null,
+    undefined,
     existingPng.width,
     existingPng.height,
     { threshold: 0.1 },
