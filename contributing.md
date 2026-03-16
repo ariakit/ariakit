@@ -208,13 +208,11 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 `examples/my-component/style.css`
 
-<!-- prettier-ignore -->
 ```css
 .my-component {
-  @apply
-    bg-red-600
+  @apply bg-red-600
     text-white
-    dark:bg-red-800
+    dark:bg-red-800;
 }
 ```
 
@@ -296,13 +294,11 @@ We can `@import` CSS files from other examples. You'll usually import the styles
 
 `examples/my-component-custom-prop/style.css`
 
-<!-- prettier-ignore -->
 ```css
 @import url("../my-component/style.css");
 
 .my-component {
-  @apply
-    p-4
+  @apply p-4;
 }
 ```
 

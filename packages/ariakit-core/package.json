@@ -28,6 +28,11 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
+  "devDependencies": {
+    "oxfmt": "0.41.0",
+    "oxlint": "1.56.0",
+    "oxlint-tsgolint": "0.17.0"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",
