@@ -7,7 +7,6 @@ import * as presetEnv from "@babel/preset-env";
 import * as presetReact from "@babel/preset-react";
 // @ts-expect-error
 import * as presetTypescript from "@babel/preset-typescript";
-// eslint-disable-next-line no-unused-vars -- used in JSDoc type annotations
 import * as t from "@babel/types";
 import { globSync } from "glob";
 import { readPackageUpSync } from "read-pkg-up";

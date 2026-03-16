@@ -57,7 +57,7 @@ async function loadReact(dir: string) {
   if (failedImport) return false;
   const element = createElement(ReactSuspense, {
     fallback: null,
-    // eslint-disable-next-line react/no-children-prop -- createElement requires children prop
+    // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
     children: createElement(component),
   });
   const { unmount } = await renderReact(element, { strictMode: true });
