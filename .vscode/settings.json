@@ -12,32 +12,12 @@
     "templates/react/src/style.css": "templates/react/**"
   },
   "css.validate": false,
-  "stylelint.enable": true,
   "editor.snippetSuggestions": "bottom",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnType": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "[html]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[astro]": {
     "editor.defaultFormatter": "astro-build.astro-vscode",
@@ -45,13 +25,6 @@
       "source.organizeImports": "explicit",
       "source.removeUnusedImports": "explicit"
     }
-  },
-  "[markdown]": {
-    "editor.wordWrap": "on"
-  },
-  "[mdx]": {
-    "editor.wordWrap": "on",
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "yaml.schemas": {
     "https://json.schemastore.org/github-action.json": [
