@@ -441,22 +441,24 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           }
         }
 
-        // Find removed components (were cached but no longer in index.ts)
-        const removedComponents: string[] = [];
-        if (cachedState) {
-          for (const comp of Object.keys(cachedState.components)) {
-            if (!componentModules.includes(comp)) {
-              removedComponents.push(comp);
+        // When the cache is absent (first run, corrupted, or format change),
+        // clear all existing store entries for this framework so stale
+        // entries from a previous run don't persist.
+        if (!cachedState) {
+          for (const key of context.store.keys()) {
+            if (key.startsWith(`${framework}/`)) {
+              context.store.delete(key);
             }
           }
-        }
-
-        // Delete store entries for removed components
-        for (const comp of removedComponents) {
-          const cached = cachedState?.components[comp];
-          if (!cached) continue;
-          for (const id of cached.entryIds) {
-            context.store.delete(id);
+        } else {
+          // Find removed components (were cached but no longer in index.ts)
+          for (const comp of Object.keys(cachedState.components)) {
+            if (componentModules.includes(comp)) continue;
+            const cached = cachedState.components[comp];
+            if (!cached) continue;
+            for (const id of cached.entryIds) {
+              context.store.delete(id);
+            }
           }
         }
 
@@ -481,7 +483,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         }
 
         // Skip entirely if nothing changed
-        if (changedComponents.size === 0 && removedComponents.length === 0) {
+        if (changedComponents.size === 0) {
           info(`Skipped references for ${framework} (no changes)`);
           continue;
         }
