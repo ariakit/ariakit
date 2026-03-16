@@ -80,7 +80,8 @@ interface CustomPropertyOptions {
 }
 
 export interface CustomProperty
-  extends TypeObject<Type["CustomProperty"]>,
+  extends
+    TypeObject<Type["CustomProperty"]>,
     DashedIdentObject,
     CustomPropertyOptions {}
 
@@ -104,8 +105,9 @@ export interface CustomVariant extends TypeObject<Type["CustomVariant"]> {
   children: AtRuleChild[];
 }
 
-interface Decl<P extends Property = Property>
-  extends TypeObject<Type["Declaration"]> {
+interface Decl<P extends Property = Property> extends TypeObject<
+  Type["Declaration"]
+> {
   property: P;
   value: P extends CSSProperty ? CSSProperties[P] : PropertyValue;
 }
@@ -297,8 +299,7 @@ export function createContext(reset?: boolean) {
 }
 
 export interface Namespace
-  extends TypeObject<Type["Namespace"]>,
-    DashedIdentObject {
+  extends TypeObject<Type["Namespace"]>, DashedIdentObject {
   name: string;
   ns: typeof createNamespace;
   utility: typeof utility;
@@ -492,9 +493,9 @@ function colorFn(name: string) {
       a,
     } = resolvedOptions ?? {};
     if (from != null) {
-      return fn.exp`${name}(from ${from} ${l} ${c} ${h}${a != null ? ` / ${a}` : ""})`;
+      return fn.exp`${name}(from ${from} ${l} ${c} ${h}${a != null ? ` / ${fn.exp(a)}` : ""})`;
     }
-    return fn.exp`${name}(${l} ${c} ${h}${a != null ? ` / ${a}` : ""})`;
+    return fn.exp`${name}(${l} ${c} ${h}${a != null ? ` / ${fn.exp(a)}` : ""})`;
   }
   return color;
 }
@@ -506,7 +507,7 @@ type RoundStrategy = "up" | "down" | "to-zero";
 function round(value: Value, interval?: Value): string;
 function round(strategy: RoundStrategy, value: Value, interval?: Value): string;
 function round(
-  strategyOrValue: Value | RoundStrategy,
+  strategyOrValue: Value,
   valueOrInterval?: Value,
   interval?: Value,
 ) {
@@ -568,7 +569,7 @@ export const fn = {
   query: (property: Property | VarProperty, value?: Value) => {
     const propertyName = getIdent(property);
     const propertyValue = isVarProperty(value) ? fn.var(value) : value;
-    return `(${propertyName}${propertyValue != null ? `: ${propertyValue}` : ""})`;
+    return `(${propertyName}${propertyValue != null ? `: ${fn.exp(propertyValue)}` : ""})`;
   },
 
   /** Builds a style() query condition. */
@@ -614,6 +615,6 @@ export const fn = {
         resolvedFallbackValue = resolveVarFallbackValue(fallbackValue);
       }
     }
-    return `var(${varName}${resolvedFallbackValue != null ? `, ${resolvedFallbackValue}` : ""})`;
+    return `var(${varName}${resolvedFallbackValue != null ? `, ${fn.exp(resolvedFallbackValue)}` : ""})`;
   },
 };

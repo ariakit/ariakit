@@ -252,8 +252,7 @@ interface TitleSampleProps extends VariantProps<typeof textSample> {
 }
 
 interface LayerProps
-  extends ComponentProps<"section">,
-    VariantProps<typeof layerSurfaceFrame> {
+  extends ComponentProps<"section">, VariantProps<typeof layerSurfaceFrame> {
   childrenFrameClassName?: string;
   childrenFrameProps?: VariantProps<typeof frame>;
   orientation?: "vertical" | "horizontal";
@@ -281,14 +280,18 @@ function Layer({
 }: LayerProps) {
   const id = useId();
   const [layerProps, rest] = splitProps(props, layerSurfaceFrame);
-  title ??= Object.entries(layerProps)
-    .find(([key, value]) => {
+  if (title == null) {
+    const entry = Object.entries(layerProps).find(([key, value]) => {
       if (!layer.variantKeys.some((variantKey) => variantKey === key)) {
         return false;
       }
       return typeof value === "number";
-    })?.[1]
-    ?.toString();
+    });
+    const value = entry?.[1];
+    if (typeof value === "number") {
+      title = String(value);
+    }
+  }
   return (
     <section
       aria-labelledby={id}

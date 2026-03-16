@@ -70,14 +70,14 @@ const edgeContrastT = fn.var(vars.contrastT, contrastTValue);
 return absoluteL ? fn.var(absoluteL, lDefault) : lDefault;
 
 // ❌ avoid — edgeContrastL has { initial: 1 }, no explicit fallback needed
-fn.add(fn.var(inputs.edgeContrastL), fn.mul(edgeContrastT, 0.12))
+fn.add(fn.var(inputs.edgeContrastL), fn.mul(edgeContrastT, 0.12));
 
 // ✅ preferred — initial-value handles the default
-fn.add(inputs.edgeContrastL, fn.mul(edgeContrastT, 0.12))
+fn.add(inputs.edgeContrastL, fn.mul(edgeContrastT, 0.12));
 
 // ❌ avoid — chromaP3Max was defined with defaultValue 0.368, already included
-fn.add(fn.var(vars.chromaP3Max), someOtherValue)
+fn.add(fn.var(vars.chromaP3Max), someOtherValue);
 
 // ✅ preferred — var(--chroma-p3-max, 0.368) is emitted automatically
-fn.add(vars.chromaP3Max, someOtherValue)
+fn.add(vars.chromaP3Max, someOtherValue);
 ```

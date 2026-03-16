@@ -187,8 +187,7 @@ const layer = cv({
 });
 
 interface LayerProps
-  extends ComponentProps<"section">,
-    VariantProps<typeof layer> {
+  extends ComponentProps<"section">, VariantProps<typeof layer> {
   label?: ReactNode | ((props: VariantProps<typeof layer>) => ReactNode);
   getVariants?: (
     props: VariantProps<typeof layer>,
