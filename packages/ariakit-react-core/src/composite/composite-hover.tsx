@@ -170,8 +170,9 @@ export const CompositeHover = memo(
   }),
 );
 
-export interface CompositeHoverOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CompositeHoverOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

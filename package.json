@@ -2,7 +2,6 @@
   "name": "root",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.32.1",
   "scripts": {
     "start": "pnpm -F website start",
     "dev-package-json": "node scripts/build/package-json-dev.js",
@@ -46,8 +45,8 @@
     "test-android-debug": "playwright test --project=android --ui",
     "coverage": "pnpm test --coverage",
     "postcoverage": "open-cli coverage/index.html",
-    "lint": "biome check",
-    "lint-fix": "biome check --write",
+    "lint": "oxlint && oxfmt --check",
+    "lint-fix": "oxlint --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "tsc": "conc -r 'tsc' 'pnpm -F site run tsc' 'pnpm -F nextjs run tsc' 'pnpm -F \"./templates/*\" run tsc' 'tsc -p tsconfig.solid.json'",
     "tsc-clean": "tsc --build --clean",
@@ -60,26 +59,6 @@
     "publish": "pnpm run build && changeset publish",
     "prepare": "husky"
   },
-  "lint-staged": {
-    "package.json": [
-      "pnpm -r run --if-present clean",
-      "biome check --no-errors-on-unmatched --write"
-    ],
-    "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write"
-  },
-  "pnpm": {
-    "overrides": {
-      "@wordpress/components>@ariakit/react": "workspace:*"
-    },
-    "patchedDependencies": {
-      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp",
-      "workerd"
-    ]
-  },
   "devDependencies": {
     "@ariakit/core": "workspace:*",
     "@ariakit/react": "workspace:*",
@@ -89,7 +68,6 @@
     "@ariakit/tailwind": "workspace:*",
     "@ariakit/test": "workspace:*",
     "@axe-core/playwright": "4.11.1",
-    "@biomejs/biome": "2.4.7",
     "@changesets/apply-release-plan": "7.1.0",
     "@changesets/cli": "2.30.0",
     "@playwright/test": "1.58.2",
@@ -106,10 +84,10 @@
     "chalk": "5.6.2",
     "chokidar": "5.0.0",
     "clava": "0.2.0",
-    "csstype": "3.2.3",
     "concurrently": "9.2.1",
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
+    "csstype": "3.2.3",
     "esbuild-plugin-solid": "0.6.0",
     "fs-extra": "11.3.4",
     "glob": "13.0.6",
@@ -118,6 +96,9 @@
     "lint-staged": "16.4.0",
     "next": "14.2.35",
     "open-cli": "8.0.0",
+    "oxfmt": "0.41.0",
+    "oxlint": "1.56.0",
+    "oxlint-tsgolint": "0.17.0",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
     "prettier": "3.8.1",
@@ -136,6 +117,28 @@
     "vite-plugin-solid": "2.11.11",
     "vitest": "4.1.0",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.73.0"
+    "wrangler": "4.74.0"
+  },
+  "lint-staged": {
+    "package.json": "pnpm -r run --if-present clean",
+    "*.{js,ts,tsx,md,mdx}": [
+      "oxlint --fix",
+      "oxfmt"
+    ],
+    "*.json": "oxfmt --no-error-on-unmatched-pattern"
+  },
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "overrides": {
+      "@wordpress/components>@ariakit/react": "workspace:*"
+    },
+    "patchedDependencies": {
+      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
   }
 }

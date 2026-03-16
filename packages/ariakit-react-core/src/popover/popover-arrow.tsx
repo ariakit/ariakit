@@ -190,8 +190,9 @@ export const PopoverArrow = memo(
   }),
 );
 
-export interface PopoverArrowOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface PopoverArrowOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

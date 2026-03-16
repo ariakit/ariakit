@@ -59,8 +59,7 @@ export const SelectPopover = createDialogComponent(
 );
 
 export interface SelectPopoverOptions<T extends ElementType = TagName>
-  extends SelectListOptions<T>,
-    Omit<PopoverOptions<T>, "store"> {}
+  extends SelectListOptions<T>, Omit<PopoverOptions<T>, "store"> {}
 
 export type SelectPopoverProps<T extends ElementType = TagName> = Props<
   T,

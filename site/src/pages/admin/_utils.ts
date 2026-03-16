@@ -38,7 +38,11 @@ export async function getPaginationData(context: APIContext) {
   return { limit, offset, query };
 }
 
-export function setURLParam(url: URL, key: keyof Params, value: unknown) {
+export function setURLParam(
+  url: URL,
+  key: keyof Params,
+  value: string | number | null | undefined,
+) {
   if (value === null) {
     url.searchParams.delete(key);
   } else if (value != null) {

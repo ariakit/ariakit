@@ -117,7 +117,8 @@ export const Menubar = forwardRef(function Menubar(props: MenubarProps) {
 });
 
 export interface MenubarOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     Pick<
       MenubarStoreProps,
       "focusLoop" | "orientation" | "rtl" | "virtualFocus"

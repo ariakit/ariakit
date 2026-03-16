@@ -14,32 +14,12 @@
     "templates/react/src/style.css": "templates/react/**"
   },
   "css.validate": false,
-  "stylelint.enable": true,
   "editor.snippetSuggestions": "bottom",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnType": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.biome": "explicit"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "source.fixAll.oxc": "explicit"
   },
   "[astro]": {
     "editor.defaultFormatter": "astro-build.astro-vscode",
@@ -47,13 +27,6 @@
       "source.organizeImports": "explicit",
       "source.removeUnusedImports": "explicit"
     }
-  },
-  "[markdown]": {
-    "editor.wordWrap": "on"
-  },
-  "[mdx]": {
-    "editor.wordWrap": "on",
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "yaml.schemas": {
     "https://json.schemastore.org/github-action.json": [

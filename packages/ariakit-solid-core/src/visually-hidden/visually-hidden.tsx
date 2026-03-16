@@ -57,7 +57,8 @@ export function VisuallyHidden(props: VisuallyHiddenProps) {
   return createInstance(TagName, htmlProps);
 }
 
-export interface VisuallyHiddenOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface VisuallyHiddenOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type VisuallyHiddenProps = Props<TagName, VisuallyHiddenOptions>;

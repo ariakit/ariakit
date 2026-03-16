@@ -52,8 +52,9 @@ export const ToolbarSeparator = forwardRef(function ToolbarSeparator(
   return createElement(TagName, htmlProps);
 });
 
-export interface ToolbarSeparatorOptions<T extends ElementType = TagName>
-  extends CompositeSeparatorOptions<T> {
+export interface ToolbarSeparatorOptions<
+  T extends ElementType = TagName,
+> extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
    * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.

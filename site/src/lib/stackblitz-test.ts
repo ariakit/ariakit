@@ -313,7 +313,7 @@ test("openInStackblitz forwards initialOpenFile", () => {
   expect(options.openFile).toBe("index.tsx");
 });
 
-test("embedStackblitz configures preview view", () => {
+test("embedStackblitz configures preview view", async () => {
   const props: SiteStackblitzProps = {
     id: "menu-preview",
     framework: "react-vite",
@@ -328,7 +328,7 @@ test("embedStackblitz configures preview view", () => {
     parentElement: { clientHeight: 300 },
   } as unknown as HTMLElement;
 
-  embedStackblitz(element, props);
+  await embedStackblitz(element, props);
 
   expect(embedProjectMock).toHaveBeenCalledTimes(1);
   const [, , options] = embedProjectMock.mock.calls[0] || [];

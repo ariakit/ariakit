@@ -85,20 +85,25 @@ export type SelectStoreValue = Core.SelectStoreValue;
 export interface SelectStoreItem extends Core.SelectStoreItem {}
 
 export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
-  extends Core.SelectStoreState<T>,
+  extends
+    Core.SelectStoreState<T>,
     CompositeStoreState<SelectStoreItem>,
     PopoverStoreState {}
 
 export interface SelectStoreFunctions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends Pick<SelectStoreOptions<T>, "combobox" | "disclosure">,
+>
+  extends
+    Pick<SelectStoreOptions<T>, "combobox" | "disclosure">,
     Omit<Core.SelectStoreFunctions<T>, "combobox" | "disclosure">,
     CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {}
 
 export interface SelectStoreOptions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends Omit<Core.SelectStoreOptions<T>, "combobox" | "disclosure">,
+>
+  extends
+    Omit<Core.SelectStoreOptions<T>, "combobox" | "disclosure">,
     CompositeStoreOptions<SelectStoreItem>,
     PopoverStoreOptions {
   /**
@@ -127,9 +132,11 @@ export interface SelectStoreOptions<
 }
 
 export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
-  extends SelectStoreOptions<T>,
+  extends
+    SelectStoreOptions<T>,
     Omit<Core.SelectStoreProps<T>, "combobox" | "disclosure"> {}
 
 export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
-  extends SelectStoreFunctions<T>,
+  extends
+    SelectStoreFunctions<T>,
     Omit<Store<Core.SelectStore<T>>, "combobox" | "disclosure"> {}

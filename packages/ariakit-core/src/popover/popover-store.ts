@@ -155,8 +155,7 @@ export interface PopoverStoreFunctions extends DialogStoreFunctions {
 }
 
 export interface PopoverStoreOptions
-  extends DialogStoreOptions,
-    StoreOptions<PopoverStoreState, "placement"> {
+  extends DialogStoreOptions, StoreOptions<PopoverStoreState, "placement"> {
   /**
    * A reference to another popover store that's controlling another popover to
    * keep them in sync.
@@ -165,9 +164,7 @@ export interface PopoverStoreOptions
 }
 
 export interface PopoverStoreProps
-  extends PopoverStoreOptions,
-    StoreProps<PopoverStoreState> {}
+  extends PopoverStoreOptions, StoreProps<PopoverStoreState> {}
 
 export interface PopoverStore
-  extends PopoverStoreFunctions,
-    Store<PopoverStoreState> {}
+  extends PopoverStoreFunctions, Store<PopoverStoreState> {}

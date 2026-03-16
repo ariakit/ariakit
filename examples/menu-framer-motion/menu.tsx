@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { MotionProps } from "framer-motion";
 import { AnimatePresence, MotionConfig, motion } from "framer-motion";
 import * as React from "react";
@@ -72,8 +72,9 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 });
 
-export interface MenuItemProps
-  extends React.ComponentPropsWithoutRef<typeof MotionMenuItem> {}
+export interface MenuItemProps extends React.ComponentPropsWithoutRef<
+  typeof MotionMenuItem
+> {}
 
 // Instead of using the Ariakit `render` prop, we give control to Framer Motion
 // so it can process the props before we pass the remainder to

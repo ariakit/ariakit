@@ -35,7 +35,8 @@ export function MenuProvider(props: MenuProviderProps = {}) {
   );
 }
 
-export interface MenuProviderProps<T extends Values = Values>
-  extends MenuStoreProps<T> {
+export interface MenuProviderProps<
+  T extends Values = Values,
+> extends MenuStoreProps<T> {
   children?: ReactNode;
 }

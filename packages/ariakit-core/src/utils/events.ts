@@ -9,7 +9,7 @@ export function isPortalEvent(
 ): boolean {
   return Boolean(
     event.currentTarget &&
-      !contains(event.currentTarget as Node, event.target as Element),
+    !contains(event.currentTarget as Node, event.target as Element),
   );
 }
 

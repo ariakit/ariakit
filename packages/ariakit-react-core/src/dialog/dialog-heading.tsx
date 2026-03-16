@@ -65,8 +65,9 @@ export const DialogHeading = forwardRef(function DialogHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogHeadingOptions<T extends ElementType = TagName>
-  extends HeadingOptions<T> {
+export interface DialogHeadingOptions<
+  T extends ElementType = TagName,
+> extends HeadingOptions<T> {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If

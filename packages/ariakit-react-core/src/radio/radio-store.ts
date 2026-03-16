@@ -38,16 +38,13 @@ export function useRadioStore(props: RadioStoreProps = {}): RadioStore {
 }
 
 export interface RadioStoreState
-  extends Core.RadioStoreState,
-    CompositeStoreState {}
+  extends Core.RadioStoreState, CompositeStoreState {}
 
 export interface RadioStoreFunctions
-  extends Core.RadioStoreFunctions,
-    CompositeStoreFunctions {}
+  extends Core.RadioStoreFunctions, CompositeStoreFunctions {}
 
 export interface RadioStoreOptions
-  extends Core.RadioStoreOptions,
-    CompositeStoreOptions {
+  extends Core.RadioStoreOptions, CompositeStoreOptions {
   /**
    * Function that will be called when the
    * [`value`](https://ariakit.org/reference/radio-provider#value) state
@@ -57,9 +54,7 @@ export interface RadioStoreOptions
 }
 
 export interface RadioStoreProps
-  extends RadioStoreOptions,
-    Core.RadioStoreProps {}
+  extends RadioStoreOptions, Core.RadioStoreProps {}
 
 export interface RadioStore
-  extends RadioStoreFunctions,
-    Store<Core.RadioStore> {}
+  extends RadioStoreFunctions, Store<Core.RadioStore> {}

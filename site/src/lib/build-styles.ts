@@ -844,6 +844,5 @@ async function main() {
 
 const isMain = import.meta.filename === path.resolve(process.argv[1] ?? "");
 if (isMain) {
-  // no void to preserve stack traces on unhandled rejections
-  main();
+  await main();
 }

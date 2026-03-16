@@ -78,8 +78,9 @@ export const TagListLabel = forwardRef(function TagListLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface TagListLabelOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface TagListLabelOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

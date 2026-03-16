@@ -190,8 +190,9 @@ export const TooltipAnchor = forwardRef(function TooltipAnchor(
   return createElement(TagName, htmlProps);
 });
 
-export interface TooltipAnchorOptions<T extends ElementType = TagName>
-  extends HovercardAnchorOptions<T> {
+export interface TooltipAnchorOptions<
+  T extends ElementType = TagName,
+> extends HovercardAnchorOptions<T> {
   /**
    * Object returned by the
    * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.

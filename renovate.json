@@ -67,6 +67,10 @@
       "matchPackageNames": ["vite", "/^@vitejs\\//"]
     },
     {
+      "groupName": "oxc",
+      "matchPackageNames": ["/^oxlint/", "/^oxfmt/"]
+    },
+    {
       "matchPackageNames": ["lint-staged"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
@@ -75,6 +79,7 @@
     },
     {
       "matchPackageNames": [
+        "@astrojs/check",
         "@wordpress/components",
         "cross-env",
         "cross-spawn",
@@ -83,7 +88,6 @@
         "fs-extra",
         "glob",
         "jsdom",
-        "lerna",
         "lodash-es",
         "match-sorter",
         "null-loader",
@@ -100,7 +104,6 @@
         "webpack",
         "zod",
         "/^@babel//",
-        "/^@biomejs//",
         "/^@playwright//",
         "/^@radix-ui//",
         "/^@rollup//",

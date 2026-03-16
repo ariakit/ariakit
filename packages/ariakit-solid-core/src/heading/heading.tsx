@@ -73,8 +73,9 @@ export const Heading = function Heading(props: HeadingProps) {
   return createInstance(TagName, htmlProps);
 };
 
-export interface HeadingOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface HeadingOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type HeadingProps<T extends ValidComponent = TagName> = Props<
   T,

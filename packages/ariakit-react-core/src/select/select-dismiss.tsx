@@ -59,8 +59,9 @@ export const SelectDismiss = forwardRef(function SelectDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectDismissOptions<T extends ElementType = TagName>
-  extends PopoverDismissOptions<T> {
+export interface SelectDismissOptions<
+  T extends ElementType = TagName,
+> extends PopoverDismissOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.

@@ -53,8 +53,9 @@ export const CompositeGroupLabel = forwardRef(function CompositeGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeGroupLabelOptions<T extends ElementType = TagName>
-  extends GroupLabelOptions<T> {
+export interface CompositeGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends GroupLabelOptions<T> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

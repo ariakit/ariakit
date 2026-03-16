@@ -127,8 +127,9 @@ export const CompositeInput = memo(
   }),
 );
 
-export interface CompositeInputOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CompositeInputOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

@@ -46,7 +46,8 @@ export function CheckboxProvider(props: CheckboxProviderProps = {}) {
   );
 }
 
-export interface CheckboxProviderProps<T extends Value = Value>
-  extends CheckboxStoreProps<T> {
+export interface CheckboxProviderProps<
+  T extends Value = Value,
+> extends CheckboxStoreProps<T> {
   children?: ReactNode;
 }

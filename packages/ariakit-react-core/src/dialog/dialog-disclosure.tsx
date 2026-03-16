@@ -66,8 +66,9 @@ export const DialogDisclosure = forwardRef(function DialogDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogDisclosureOptions<T extends ElementType = TagName>
-  extends DisclosureOptions<T> {
+export interface DialogDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DisclosureOptions<T> {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If

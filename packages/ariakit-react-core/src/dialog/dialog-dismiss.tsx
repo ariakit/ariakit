@@ -91,8 +91,9 @@ export const DialogDismiss = forwardRef(function DialogDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogDismissOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface DialogDismissOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If

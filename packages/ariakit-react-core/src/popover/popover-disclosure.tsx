@@ -88,8 +88,7 @@ export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
 });
 
 export interface PopoverDisclosureOptions<T extends ElementType = TagName>
-  extends PopoverAnchorOptions<T>,
-    Omit<DialogDisclosureOptions<T>, "store"> {}
+  extends PopoverAnchorOptions<T>, Omit<DialogDisclosureOptions<T>, "store"> {}
 
 export type PopoverDisclosureProps<T extends ElementType = TagName> = Props<
   T,

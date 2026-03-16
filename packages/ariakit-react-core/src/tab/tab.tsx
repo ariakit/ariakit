@@ -188,8 +188,9 @@ export const Tab = memo(
   }),
 );
 
-export interface TabOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface TabOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not

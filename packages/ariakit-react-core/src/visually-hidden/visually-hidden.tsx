@@ -57,8 +57,9 @@ export const VisuallyHidden = forwardRef(function VisuallyHidden(
   return createElement(TagName, htmlProps);
 });
 
-export interface VisuallyHiddenOptions<_T extends ElementType = TagName>
-  extends Options {}
+export interface VisuallyHiddenOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type VisuallyHiddenProps<T extends ElementType = TagName> = Props<
   T,

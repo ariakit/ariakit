@@ -42,7 +42,8 @@ export function FormProvider(props: FormProviderProps = {}) {
   );
 }
 
-export interface FormProviderProps<T extends Values = Values>
-  extends FormStoreProps<T> {
+export interface FormProviderProps<
+  T extends Values = Values,
+> extends FormStoreProps<T> {
   children?: ReactNode;
 }

@@ -220,8 +220,7 @@ export const SelectItem = memo(
 );
 
 export interface SelectItemOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T>,
-    CompositeHoverOptions<T> {
+  extends CompositeItemOptions<T>, CompositeHoverOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If

@@ -9,7 +9,7 @@
  */
 import { invariant } from "@ariakit/core/utils/misc";
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { SplitSquareHorizontal } from "lucide-react";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
@@ -18,14 +18,14 @@ import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { slugify } from "#app/lib/string.ts";
 import { useControllableState } from "#app/lib/use-controllable-state.ts";
-import type {
-  CodeBlockProps as CodeBlockBaseProps,
-  CodeBlockTabProps as CodeBlockTabBaseProps,
-} from "./code-block.types.ts";
 import {
   CodeBlockEdit,
   getStackblitzFramework,
 } from "./code-block-edit.react.tsx";
+import type {
+  CodeBlockProps as CodeBlockBaseProps,
+  CodeBlockTabProps as CodeBlockTabBaseProps,
+} from "./code-block.types.ts";
 import { useCollapsible } from "./collapsible.react.tsx";
 import { CopyCode } from "./copy-code.react.tsx";
 import { Tooltip } from "./tooltip.react.tsx";
@@ -85,8 +85,7 @@ function SingleTabPanel(props: ak.TabPanelProps) {
 }
 
 export interface CodeBlockProps
-  extends Omit<React.ComponentProps<"div">, "lang">,
-    CodeBlockBaseProps {
+  extends Omit<React.ComponentProps<"div">, "lang">, CodeBlockBaseProps {
   topbar?: React.ReactNode;
   showFilename?: boolean;
   collapsibleClassName?: string;
@@ -139,7 +138,7 @@ export function CodeBlock({
         "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
       )}
     >
-      <div className="absolute top-0 end-0 ak-frame-cover/1.5 z-3 pointer-events-none size-max">
+      <div className="absolute top-0 inset-e-0 ak-frame-cover/1.5 z-3 pointer-events-none size-max">
         <CopyCode
           text={code}
           className="pointer-events-auto supports-hover:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
@@ -272,7 +271,7 @@ export function CodeBlockPreviewIframe({
 
   React.useEffect(() => {
     setLoaded(false);
-  }, [previewUrl]);
+  }, [previewUrl, setLoaded]);
 
   React.useEffect(() => {
     const iframe = iframeRef.current;
@@ -473,7 +472,7 @@ export function CodeBlockPreviewIframe({
         true,
       );
     };
-  }, [previewUrl, clickAndWait, scrollTop, fullscreen]);
+  }, [previewUrl, clickAndWait, scrollTop, fullscreen, setLoaded]);
 
   return (
     <div className="relative h-full" style={{ minHeight }}>
@@ -530,7 +529,7 @@ export function CodeBlockPreview({
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       if (!target) return;
-      const link = target.closest("a") as HTMLAnchorElement | null;
+      const link = target.closest("a");
       if (!link) return;
       if (link.target === "_blank") return;
       event.preventDefault();
@@ -570,7 +569,8 @@ export function CodeBlockPreview({
 }
 
 export interface CodeBlockTabsProps
-  extends Pick<CodeBlockPreviewProps, "title" | "fullscreen">,
+  extends
+    Pick<CodeBlockPreviewProps, "title" | "fullscreen">,
     Pick<
       CodeBlockPreviewIframeProps,
       "fallback" | "clickAndWait" | "scrollTop" | "minHeight"
@@ -871,7 +871,7 @@ export function CodeBlockTabs({
               {preview && (
                 <div
                   className={clsx(
-                    "absolute @max-[64rem]:hidden z-1 text-lg ak-text/0 top-1/2 end-0 -translate-y-1/2 translate-x-7 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full",
+                    "absolute @max-[64rem]:hidden z-1 text-lg ak-text/0 top-1/2 inset-e-0 -translate-y-1/2 translate-x-7 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full",
                   )}
                 >
                   <Icon name="chevronRight" />

@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { ComponentProps, ReactNode } from "react";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { InlineFragment } from "./inline-fragment.react.tsx";

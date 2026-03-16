@@ -62,8 +62,9 @@ export const GroupLabel = function GroupLabel(props: GroupLabelProps) {
   return createInstance(TagName, htmlProps);
 };
 
-export interface GroupLabelOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface GroupLabelOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type GroupLabelProps<T extends ValidComponent = TagName> = Props<
   T,

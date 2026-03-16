@@ -112,8 +112,9 @@ export const Disclosure = forwardRef(function Disclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface DisclosureOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface DisclosureOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)

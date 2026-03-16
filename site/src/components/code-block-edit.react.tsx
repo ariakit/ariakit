@@ -1,6 +1,5 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
-
 import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import type { Framework } from "#app/lib/schemas.ts";
@@ -8,8 +7,7 @@ import type { Source } from "#app/lib/source.ts";
 import type { SiteStackblitzFramework } from "#app/lib/stackblitz.ts";
 import { openInStackblitz } from "#app/lib/stackblitz.ts";
 
-export interface CodeBlockEditProps
-  extends React.ComponentPropsWithRef<"button"> {
+export interface CodeBlockEditProps extends React.ComponentPropsWithRef<"button"> {
   source?: Source;
   framework?: Framework;
   example?: string;

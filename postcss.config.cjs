@@ -1,10 +1,10 @@
-const { join } = require("node:path");
+const path = require("node:path");
 
 module.exports = {
   plugins: {
     "postcss-import": {},
     tailwindcss: {
-      config: join(__dirname, "./tailwind.config.cjs"),
+      config: path.join(__dirname, "./tailwind.config.cjs"),
     },
     autoprefixer: {},
   },

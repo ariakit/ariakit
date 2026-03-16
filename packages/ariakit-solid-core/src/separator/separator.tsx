@@ -46,8 +46,9 @@ export const Separator = function Separator(props: SeparatorProps) {
   return createInstance(TagName, htmlProps);
 };
 
-export interface SeparatorOptions<_T extends ValidComponent = TagName>
-  extends Options {
+export interface SeparatorOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {
   /**
    * The orientation of the separator.
    * @default "horizontal"

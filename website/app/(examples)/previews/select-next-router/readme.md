@@ -89,9 +89,8 @@ In this example, we use the [`useSelectContext`](/reference/use-select-context) 
 
 ```jsx
 const select = useSelectContext();
-const isMultiSelect = useStoreState(
-  select,
-  (state) => Array.isArray(state.value),
+const isMultiSelect = useStoreState(select, (state) =>
+  Array.isArray(state.value),
 );
 ```
 

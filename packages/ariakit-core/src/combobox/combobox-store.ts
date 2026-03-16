@@ -217,8 +217,8 @@ export interface ComboboxStoreItem extends CompositeStoreItem {
 
 export interface ComboboxStoreState<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends CompositeStoreState<ComboboxStoreItem>,
-    PopoverStoreState {
+>
+  extends CompositeStoreState<ComboboxStoreItem>, PopoverStoreState {
   /** @default true */
   includesBaseElement: CompositeStoreState<ComboboxStoreItem>["includesBaseElement"];
   /** @default true */
@@ -301,7 +301,9 @@ export interface ComboboxStoreState<
 
 export interface ComboboxStoreFunctions<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends Pick<ComboboxStoreOptions<T>, "tag">,
+>
+  extends
+    Pick<ComboboxStoreOptions<T>, "tag">,
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {
   /**
@@ -331,7 +333,9 @@ export interface ComboboxStoreFunctions<
 
 export interface ComboboxStoreOptions<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends StoreOptions<
+>
+  extends
+    StoreOptions<
       ComboboxStoreState<T>,
       | "includesBaseElement"
       | "focusLoop"
@@ -370,10 +374,10 @@ export interface ComboboxStoreOptions<
 
 export interface ComboboxStoreProps<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends ComboboxStoreOptions<T>,
-    StoreProps<ComboboxStoreState<T>> {}
+>
+  extends ComboboxStoreOptions<T>, StoreProps<ComboboxStoreState<T>> {}
 
 export interface ComboboxStore<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends ComboboxStoreFunctions<T>,
-    Store<ComboboxStoreState<T>> {}
+>
+  extends ComboboxStoreFunctions<T>, Store<ComboboxStoreState<T>> {}

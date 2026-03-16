@@ -156,6 +156,7 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
         setRef(ref, value);
       }
     };
+    // oxlint-disable-next-line exhaustive-deps
   }, refs);
 }
 
@@ -274,6 +275,7 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
       return effect();
     }
     mounted.current = true;
+    // oxlint-disable-next-line exhaustive-deps
   }, deps);
 
   useEffect(
@@ -298,6 +300,7 @@ export function useUpdateLayoutEffect(
       return effect();
     }
     mounted.current = true;
+    // oxlint-disable-next-line exhaustive-deps
   }, deps);
 
   useSafeLayoutEffect(
@@ -345,6 +348,7 @@ export function useWrapElement<P>(
       }
       return callback(element);
     },
+    // oxlint-disable-next-line exhaustive-deps
     [...deps, props.wrapElement],
   );
 
@@ -377,7 +381,7 @@ export function useMetadataProps<T, K extends keyof any>(
 ) {
   const parent = props.onLoadedMetadataCapture;
   const onLoadedMetadataCapture = useMemo(() => {
-    return Object.assign(() => {}, { ...parent, [key]: value });
+    return Object.assign(() => {}, parent, { [key]: value });
   }, [parent, key, value]);
 
   return [parent?.[key], { onLoadedMetadataCapture }] as const;

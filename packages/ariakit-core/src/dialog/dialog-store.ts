@@ -20,9 +20,7 @@ export interface DialogStoreFunctions extends DisclosureStoreFunctions {}
 export interface DialogStoreOptions extends DisclosureStoreOptions {}
 
 export interface DialogStoreProps
-  extends DialogStoreOptions,
-    StoreProps<DialogStoreState> {}
+  extends DialogStoreOptions, StoreProps<DialogStoreState> {}
 
 export interface DialogStore
-  extends DialogStoreFunctions,
-    Store<DialogStoreState> {}
+  extends DialogStoreFunctions, Store<DialogStoreState> {}

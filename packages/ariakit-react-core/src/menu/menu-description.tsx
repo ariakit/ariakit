@@ -48,8 +48,9 @@ export const MenuDescription = forwardRef(function MenuDescription(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuDescriptionOptions<T extends ElementType = TagName>
-  extends HovercardDescriptionOptions<T> {
+export interface MenuDescriptionOptions<
+  T extends ElementType = TagName,
+> extends HovercardDescriptionOptions<T> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

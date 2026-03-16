@@ -474,8 +474,9 @@ export const Composite = forwardRef(function Composite(props: CompositeProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T> {
+export interface CompositeOptions<
+  T extends ElementType = TagName,
+> extends FocusableOptions<T> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

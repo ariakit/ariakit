@@ -14,7 +14,8 @@ import { DateFromNow } from "./date-from-now.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 
 export interface UpdateLinkProps
-  extends UpdateItem,
+  extends
+    UpdateItem,
     Omit<ComponentPropsWithoutRef<typeof Link>, "href" | "title" | "type"> {
   dateStyle?: "fromNow" | "long";
   layer?: "popup" | "page";
