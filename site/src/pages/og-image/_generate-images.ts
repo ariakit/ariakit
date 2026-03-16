@@ -10,7 +10,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import pixelmatch from "pixelmatch";
-import type { Browser } from "playwright";
+import type { Page } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
 import type { OGImageItem } from "./api.ts";
@@ -68,16 +68,24 @@ async function getItemsToGenerate() {
   }
 }
 
-async function generateImage(browser: Browser, item: OGImageItem) {
-  const url = `${BASE_URL}/og-image${item.path}`;
-  const page = await browser.newPage({
-    viewport: { width: 600, height: 315 },
-    deviceScaleFactor: 2,
-    colorScheme: "dark",
+async function waitForImageReady(page: Page) {
+  await page.waitForLoadState("load");
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve);
+      });
+    });
   });
+}
+
+async function generateImage(page: Page, item: OGImageItem) {
+  const url = `${BASE_URL}/og-image${item.path}`;
 
   try {
-    await page.goto(url, { waitUntil: "networkidle" });
+    await page.goto(url, { waitUntil: "commit" });
+    await waitForImageReady(page);
     const imagePath = path.join(PUBLIC_DIR, item.imagePath);
     const buffer = await page.screenshot({ type: "png", timeout: 60_000 });
     const relativePath = path.relative(PUBLIC_DIR, imagePath);
@@ -93,8 +101,6 @@ async function generateImage(browser: Browser, item: OGImageItem) {
     console.error(`❌ Failed to generate ${item.path}`);
     console.error(e);
     throw e;
-  } finally {
-    await page.close();
   }
 }
 
@@ -117,6 +123,12 @@ async function main() {
   // Use the full Chromium channel because headless-shell produces incorrect
   // OG image captures for the repeated thumbnail strip on newer Playwright.
   const browser = await chromium.launch({ channel: "chromium" });
+  const context = await browser.newContext({
+    viewport: { width: 600, height: 315 },
+    deviceScaleFactor: 2,
+    colorScheme: "dark",
+  });
+  const page = await context.newPage();
   try {
     const items = await getItemsToGenerate();
     if (!items.length) {
@@ -125,7 +137,7 @@ async function main() {
     const failedPaths: string[] = [];
     for (const item of items) {
       try {
-        await generateImage(browser, item);
+        await generateImage(page, item);
       } catch (_error) {
         failedPaths.push(item.path);
       }
@@ -138,6 +150,7 @@ async function main() {
     removeStaleImages(items);
     console.log("✨ Done");
   } finally {
+    await context.close();
     await browser.close();
   }
 }
