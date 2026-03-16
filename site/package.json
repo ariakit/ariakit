@@ -63,7 +63,7 @@
     "@shikijs/langs": "4.0.2",
     "@shikijs/themes": "4.0.2",
     "@stackblitz/sdk": "1.11.0",
-    "@stripe/stripe-js": "8.9.0",
+    "@stripe/stripe-js": "8.10.0",
     "@tailwindcss/vite": "4.2.1",
     "@tanstack/react-query": "5.90.21",
     "astro": "5.18.1",
