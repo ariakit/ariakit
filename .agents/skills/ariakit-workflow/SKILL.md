@@ -19,7 +19,7 @@ description: Workflow instructions for this repository. Always use when planning
 - For published packages (`packages/*`): prod dependencies use caret ranges (e.g., `^1.0.0`), dev dependencies use exact versions (e.g., `1.0.0`).
 - For private workspaces and root: all dependencies (prod and dev) use exact versions with no caret.
 - Internal workspace references always use `workspace:*`.
-- `@types/*` packages are always `devDependencies`.
+- `@types/*` packages are normally `devDependencies`. The exception is when a published package re-exports types from a `@types/*` package in its public API — in that case it must be a prod dependency so consumers get the types.
 - When removing an import, check if the dependency is still used elsewhere in the workspace. Remove it from `package.json` if no longer needed.
 
 ## Bug Reports
