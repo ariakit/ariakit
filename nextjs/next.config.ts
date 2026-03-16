@@ -1,12 +1,7 @@
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
 
-initOpenNextCloudflareForDev().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
-
-const nextConfig: NextConfig = {
+const config: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
   typescript: {
@@ -36,4 +31,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default async function nextConfig(): Promise<NextConfig> {
+  await initOpenNextCloudflareForDev();
+  return config;
+}
