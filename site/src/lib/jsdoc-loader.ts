@@ -209,7 +209,8 @@ function parseFrameworkCache(json: string | undefined): FrameworkCache | null {
   try {
     const parsed = JSON.parse(json);
     if (typeof parsed !== "object" || parsed === null) return null;
-    if (typeof parsed.components !== "object") return null;
+    if (!parsed.components || typeof parsed.components !== "object")
+      return null;
     return parsed as FrameworkCache;
   } catch {
     return null;
