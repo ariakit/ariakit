@@ -7,6 +7,9 @@ import { vizzlyScreenshot } from "@vizzly-testing/cli/client";
 import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
+const CLIP_STABILITY_INTERVAL = 16;
+const CLIP_STABILITY_DURATION = 100;
+const CLIP_STABILITY_TIMEOUT = 1000;
 const countMap = new Map<string, number>();
 
 interface Rect {
@@ -142,16 +145,18 @@ function getCombinedClip(a: Rect, b: Rect) {
   return { x, y, width: right - x, height: bottom - y };
 }
 
+function areRectsEqual(a: Rect, b: Rect) {
+  return (
+    a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+  );
+}
+
 function applyClipMargin(rect: Rect, margin = DEFAULT_CLIP_MARGIN) {
-  const right = Math.ceil(rect.x + rect.width + margin);
-  const bottom = Math.ceil(rect.y + rect.height + margin);
-  const x = Math.max(0, Math.floor(rect.x - margin));
-  const y = Math.max(0, Math.floor(rect.y - margin));
   return {
-    x,
-    y,
-    width: right - x,
-    height: bottom - y,
+    x: rect.x - margin,
+    y: rect.y - margin,
+    width: rect.width + margin * 2,
+    height: rect.height + margin * 2,
   };
 }
 
@@ -171,12 +176,8 @@ function getRectsClip(rects: Rect[], margin = DEFAULT_CLIP_MARGIN) {
   return applyClipMargin({ x, y, width, height }, margin);
 }
 
-async function getPageScrollPosition(page: Page) {
-  return page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }));
-}
-
 async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
-  const { rects, scrollX, scrollY } = await page.evaluate(() => {
+  const rects = await page.evaluate(() => {
     const viewportWidth = document.documentElement.clientWidth;
     const rects: Rect[] = [];
     const walk = (el: Element, padded = true) => {
@@ -210,49 +211,62 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
         walk(child, false);
       }
     }
-    return {
-      rects: rects.map((rect) => ({
-        x: rect.x,
-        y: rect.y,
-        width: rect.width,
-        height: rect.height,
-      })),
-      scrollX: window.scrollX,
-      scrollY: window.scrollY,
-    };
+    return rects;
   });
-  const pageRects = rects.map((rect) => ({
-    ...rect,
-    x: rect.x + scrollX,
-    y: rect.y + scrollY,
-  }));
-  return getRectsClip(pageRects, margin);
+  return getRectsClip(rects, margin);
+}
+
+async function getScreenshotClip(
+  page: Page,
+  options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
+) {
+  const { element, clipMargin, fullPage } = options;
+  if (fullPage) {
+    return null;
+  }
+  if (!element) {
+    return getBodyClip(page, clipMargin);
+  }
+  const locator = typeof element === "string" ? page.locator(element) : element;
+  const rect = await locator.boundingBox();
+  invariant(rect, "Element not visible");
+  return applyClipMargin(rect, clipMargin);
+}
+
+async function waitForStableScreenshotClip(
+  page: Page,
+  options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
+) {
+  if (options.fullPage) {
+    return;
+  }
+  // Some previews update their layout a few frames after they become visible.
+  // Wait until the computed clip stays unchanged for a short window.
+  let previousClip = await getScreenshotClip(page, options);
+  let stableSince = Date.now();
+  const deadline = Date.now() + CLIP_STABILITY_TIMEOUT;
+  while (Date.now() < deadline) {
+    await page.waitForTimeout(CLIP_STABILITY_INTERVAL);
+    const clip = await getScreenshotClip(page, options);
+    if (previousClip && clip && areRectsEqual(previousClip, clip)) {
+      if (Date.now() - stableSince >= CLIP_STABILITY_DURATION) {
+        return;
+      }
+      continue;
+    }
+    stableSince = Date.now();
+    previousClip = clip;
+  }
 }
 
 async function getPlaywrightScreenshotOptions(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
-  const { element, clipMargin, fullPage } = options;
-  if (fullPage) {
+  const clip = await getScreenshotClip(page, options);
+  if (!clip) {
     return { animations: "disabled" as const, fullPage: true };
   }
-  if (!element) {
-    const clip = await getBodyClip(page, clipMargin);
-    return { animations: "disabled" as const, clip, fullPage: false };
-  }
-  const locator = typeof element === "string" ? page.locator(element) : element;
-  const rect = await locator.boundingBox();
-  invariant(rect, "Element not visible");
-  const scrollPosition = await getPageScrollPosition(page);
-  const clip = applyClipMargin(
-    {
-      ...rect,
-      x: rect.x + scrollPosition.x,
-      y: rect.y + scrollPosition.y,
-    },
-    clipMargin,
-  );
   return { animations: "disabled" as const, clip, fullPage: false };
 }
 
@@ -352,6 +366,11 @@ export async function visual(
           });
           await page.waitForLoadState("domcontentloaded");
           await page.evaluate(() => document.fonts?.ready?.catch(() => {}));
+          await waitForStableScreenshotClip(page, {
+            element,
+            clipMargin,
+            fullPage,
+          });
           const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
             element,
             clipMargin,
