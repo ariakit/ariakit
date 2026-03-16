@@ -76,12 +76,22 @@
       ]
     },
     {
+      "matchFileNames": ["website/package.json"],
+      "matchPackageNames": ["/^@clerk\\//"],
+      "enabled": false
+    },
+    {
       "groupName": "clerk",
-      "matchPackageNames": ["/clerk/"]
+      "matchPackageNames": ["/^@clerk\\//"]
+    },
+    {
+      "matchFileNames": ["website/package.json"],
+      "matchPackageNames": ["stripe", "/^@stripe\\//"],
+      "enabled": false
     },
     {
       "groupName": "stripe",
-      "matchPackageNames": ["/stripe/"]
+      "matchPackageNames": ["stripe", "/^@stripe\\//"]
     },
     {
       "groupName": "monaco",
@@ -125,9 +135,11 @@
         "react-router",
         "react-shadow",
         "react-toastify",
+        "pnpm",
         "textarea-caret",
         "tsup",
         "typescript",
+        "playwright",
         "webpack",
         "zod",
         "/^@babel//",
