@@ -22,6 +22,15 @@ description: Workflow instructions for this repository. Always use when planning
 - `@types/*` packages are normally `devDependencies`. The exception is when a published package re-exports types from a `@types/*` package in its public API — in that case it must be a prod dependency so consumers get the types.
 - When removing an import, check if the dependency is still used elsewhere in the workspace. Remove it from `package.json` if no longer needed.
 
+## Verification
+
+- After making changes, run the relevant checks before finishing the task.
+- Run `pnpm tsc` from the repository root when you change TypeScript code or anything else that could affect TypeScript behavior, including dependencies and shared configs.
+- Run `pnpm test` from the repository root when you change code covered by the root Vitest suite.
+- Run `pnpm dev-site` from the repository root to manually test site-impacting changes, even when the changed files live outside the `site` workspace.
+- Run `pnpm -F site test` from the repository root when your changes affect behavior covered by the browser tests in the `site` workspace. Consider this for cross-workspace changes too, not only edits inside `site`.
+- Run `pnpm build` from the repository root when your changes could affect the published packages or their build output.
+
 ## Bug Reports
 
 - All bug report investigations should produce a workaround before any library fix is proposed or implemented.
