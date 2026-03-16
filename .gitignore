@@ -5,6 +5,7 @@
 dist
 test-results
 playwright-report
+.types
 .playwright
 .playwright-cli
 

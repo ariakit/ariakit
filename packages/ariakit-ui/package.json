@@ -1,0 +1,39 @@
+{
+  "name": "@ariakit/ui",
+  "version": "0.0.1",
+  "description": "Ariakit UI",
+  "sideEffects": false,
+  "private": true,
+  "license": "MIT",
+  "homepage": "https://ariakit.org",
+  "type": "module",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-ui"
+  },
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "scripts": {
+    "lint": "biome check .",
+    "tsc": "tsc -b"
+  },
+  "keywords": [
+    "ariakit",
+    "ui"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "clava": "0.1.15"
+  }
+}

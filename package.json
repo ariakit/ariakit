@@ -51,7 +51,7 @@
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "tsc": "conc -r 'tsc' 'pnpm -F site run tsc' 'pnpm -F nextjs run tsc' 'pnpm -F \"./templates/*\" run tsc' 'tsc -p tsconfig.solid.json'",
     "tsc-clean": "tsc --build --clean",
-    "build": "pnpm -F \"@ariakit/*\" run build",
+    "build": "pnpm -F \"@ariakit/*\" run --if-present build",
     "build-website": "pnpm -F website run build",
     "build-website-lite": "cross-env DISABLE_SHIKI=true pnpm run build-website",
     "clean": "pnpm -r run --if-present clean",
