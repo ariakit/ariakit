@@ -62,7 +62,6 @@
     "stripe": "17.7.0",
     "tailwind-merge": "2.6.1",
     "ts-morph": "27.0.2",
-    "typescript": "5.9.3",
     "unified": "10.1.2",
     "unist-util-visit": "5.1.0",
     "use-local-storage-state": "19.5.0",

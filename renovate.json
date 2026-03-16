@@ -45,7 +45,6 @@
         "stripe",
         "tailwind-merge",
         "ts-morph",
-        "typescript",
         "unified",
         "unist-util-visit",
         "use-local-storage-state",

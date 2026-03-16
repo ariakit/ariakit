@@ -31,6 +31,9 @@ importers:
       '@ariakit/solid-core':
         specifier: workspace:*
         version: link:packages/ariakit-solid-core
+      '@ariakit/tailwind':
+        specifier: workspace:*
+        version: link:packages/ariakit-tailwind
       '@ariakit/test':
         specifier: workspace:*
         version: link:packages/ariakit-test
@@ -109,6 +112,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 4.1.0
         version: 4.1.0(vitest@4.1.0(@types/node@24.12.0)(jsdom@29.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.2)))
+      '@vizzly-testing/cli':
+        specifier: 0.29.6
+        version: 0.29.6(typescript@5.9.3)
       '@wordpress/components':
         specifier: 32.3.0
         version: 32.3.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -220,6 +226,9 @@ importers:
       tsup:
         specifier: 8.5.1
         version: 8.5.1(jiti@1.21.7)(postcss@8.5.8)(typescript@5.9.3)(yaml@2.8.2)
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
       vite:
         specifier: 8.0.0
         version: 8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.2)
@@ -232,6 +241,9 @@ importers:
       vitest-fail-on-console:
         specifier: 0.10.1
         version: 0.10.1(@vitest/utils@4.1.0)(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.2))(vitest@4.1.0(@types/node@24.12.0)(jsdom@29.0.0(@noble/hashes@1.8.0))(msw@2.12.10(@types/node@24.12.0)(typescript@5.9.3))(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.2)))
+      wrangler:
+        specifier: 4.73.0
+        version: 4.73.0(@cloudflare/workers-types@4.20260313.1)
 
   examples: {}
 
@@ -369,9 +381,6 @@ importers:
 
   site:
     dependencies:
-      '@ariakit/tailwind':
-        specifier: workspace:*
-        version: link:../packages/ariakit-tailwind
       '@astrojs/check':
         specifier: 0.9.7
         version: 0.9.7(prettier@3.8.1)(typescript@5.9.3)
@@ -414,9 +423,6 @@ importers:
       '@types/pluralize':
         specifier: 0.0.33
         version: 0.0.33
-      '@vizzly-testing/cli':
-        specifier: 0.29.6
-        version: 0.29.6(typescript@5.9.3)
       astro:
         specifier: 5.18.1
         version: 5.18.1(@types/node@25.5.0)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@5.9.3)(yaml@2.8.2)
@@ -486,9 +492,6 @@ importers:
       ts-morph:
         specifier: 27.0.2
         version: 27.0.2
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
       unified:
         specifier: 11.0.5
         version: 11.0.5
@@ -501,9 +504,6 @@ importers:
       vfile:
         specifier: 6.0.3
         version: 6.0.3
-      wrangler:
-        specifier: 4.73.0
-        version: 4.73.0(@cloudflare/workers-types@4.20260313.1)
       zod:
         specifier: 3.25.76
         version: 3.25.76
@@ -704,9 +704,6 @@ importers:
       ts-morph:
         specifier: 27.0.2
         version: 27.0.2
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
       unified:
         specifier: 10.1.2
         version: 10.1.2

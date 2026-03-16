@@ -46,7 +46,6 @@
     "./*": "./src/examples/_lib/*"
   },
   "dependencies": {
-    "@ariakit/tailwind": "workspace:*",
     "@astrojs/check": "0.9.7",
     "@astrojs/cloudflare": "12.6.13",
     "@astrojs/markdown-remark": "6.3.11",
@@ -61,7 +60,6 @@
     "@tanstack/react-query": "5.90.21",
     "@stripe/stripe-js": "7.9.0",
     "@types/pluralize": "0.0.33",
-    "@vizzly-testing/cli": "0.29.6",
     "astro": "5.18.1",
     "astro-remote": "0.3.4",
     "canvas-confetti": "1.9.4",
@@ -85,12 +83,10 @@
     "stripe": "18.5.0",
     "tailwindcss": "4.2.1",
     "ts-morph": "27.0.2",
-    "typescript": "5.9.3",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
     "use-local-storage-state": "19.5.0",
     "vfile": "6.0.3",
-    "wrangler": "4.73.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
