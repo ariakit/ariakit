@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
@@ -41,6 +41,7 @@ interface ComponentCache {
 
 interface FrameworkCache {
   components: Record<string, ComponentCache>;
+  sharedFiles?: Record<string, number>;
 }
 
 /**
@@ -144,6 +145,43 @@ function getComponentSourceFilePaths(
   }
 
   return [...files];
+}
+
+/**
+ * Collects all source files under `{corePath}/src/` that live in shared
+ * (non-component) directories such as `utils/`. These files are imported
+ * by virtually every component, so any change should trigger a full
+ * framework rebuild.
+ */
+function getSharedSourceFiles(
+  corePath: string,
+  componentModules: string[],
+): string[] {
+  const srcDir = join(corePath, "src");
+  if (!existsSync(srcDir)) return [];
+
+  const componentSet = new Set(componentModules);
+  const files: string[] = [];
+
+  const collectFiles = (dir: string) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = join(dir, entry.name);
+      if (entry.isDirectory()) {
+        collectFiles(fullPath);
+      } else if (entry.isFile()) {
+        files.push(fullPath);
+      }
+    }
+  };
+
+  for (const entry of readdirSync(srcDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    // Skip component directories — those are tracked per-component
+    if (componentSet.has(entry.name)) continue;
+    collectFiles(join(srcDir, entry.name));
+  }
+
+  return files;
 }
 
 /**
@@ -354,6 +392,12 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           currentFileState[comp] = getFileMtimes(files);
         }
 
+        // Track shared (non-component) source files like utils/ that are
+        // imported by virtually every component. A change in any shared
+        // file forces a full framework rebuild.
+        const sharedFiles = getSharedSourceFiles(corePath, componentModules);
+        const sharedMtimes = getFileMtimes(sharedFiles);
+
         // Load cached state from meta
         const cacheKey = `cache:${framework}`;
         const cachedJson = context.meta.get(cacheKey);
@@ -361,12 +405,24 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           ? JSON.parse(cachedJson)
           : null;
 
+        const sharedFilesChanged = !mtimesEqual(
+          sharedMtimes,
+          cachedState?.sharedFiles,
+        );
+
         // Find directly changed components by comparing mtimes
         const directlyChanged = new Set<string>();
-        for (const comp of componentModules) {
-          const cached = cachedState?.components[comp];
-          if (!mtimesEqual(currentFileState[comp], cached?.files)) {
+        if (sharedFilesChanged) {
+          // Shared files affect all components
+          for (const comp of componentModules) {
             directlyChanged.add(comp);
+          }
+        } else {
+          for (const comp of componentModules) {
+            const cached = cachedState?.components[comp];
+            if (!mtimesEqual(currentFileState[comp], cached?.files)) {
+              directlyChanged.add(comp);
+            }
           }
         }
 
@@ -454,6 +510,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         }
 
         // Persist cache for next run
+        newCache.sharedFiles = sharedMtimes;
         context.meta.set(cacheKey, JSON.stringify(newCache));
 
         const changedCount = changedComponents.size;
@@ -548,6 +605,8 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           };
         }
 
+        const sharedFiles = getSharedSourceFiles(corePath, componentModules);
+        newCache.sharedFiles = getFileMtimes(sharedFiles);
         context.meta.set(cacheKey, JSON.stringify(newCache));
         info(`Loaded ${references.length} references for ${framework}`);
       });
