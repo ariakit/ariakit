@@ -40,7 +40,7 @@
     "color-string": "^2.0.0"
   },
   "devDependencies": {
-    "@types/color-string": "^1.5.5",
+    "@types/color-string": "1.5.5",
     "tailwindcss": "4.2.1"
   },
   "peerDependencies": {

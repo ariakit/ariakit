@@ -15,7 +15,7 @@ description: Workflow instructions for this repository. Always use when planning
 
 - Every workspace must declare the dependencies it actually uses in its own `package.json`. Do not rely on hoisting from the root.
 - When adding a new import of an external package to a workspace, add that package to the workspace's `package.json` (`dependencies` for prod, `devDependencies` for types and test/build tools).
-- The root `package.json` should only contain `devDependencies` used by root-level code (scripts in `scripts/`, config files like `vitest.config.ts`, `playwright.config.ts`, `postcss.config.cjs`, `tailwind.config.cjs`, and CLI tooling like `biome`, `changesets`, `husky`, etc.).
+- The root `package.json` should only contain `devDependencies` used by root-level code (scripts in `scripts/`, config files like `vitest.config.ts`, `playwright.config.ts`, `postcss.config.cjs`, `tailwind.config.cjs`, and CLI tooling like `biome`, `changesets`, `husky`, etc.) plus `next` which Vercel requires in the root for framework detection.
 - For published packages (`packages/*`): prod dependencies use caret ranges (e.g., `^1.0.0`), dev dependencies use exact versions (e.g., `1.0.0`).
 - For private workspaces and root: all dependencies (prod and dev) use exact versions with no caret.
 - Internal workspace references always use `workspace:*`.
