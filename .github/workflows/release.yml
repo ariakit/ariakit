@@ -21,11 +21,6 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-npm: true
-
-      - name: Update npm
-        run: npm install -g npm@latest
 
       - name: Configure git
         run: |
@@ -37,8 +32,8 @@ jobs:
         with:
           title: Publish
           commit: Publish
-          version: npm run version
-          publish: npm run publish
+          version: pnpm run version
+          publish: pnpm run publish
           setupGitUser: false
         env:
           GITHUB_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}

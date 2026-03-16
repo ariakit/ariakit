@@ -71,7 +71,7 @@ export default function Example() {
                 alt=""
                 className="ak-tag-avatar"
               />
-              <span className="ak-tag-name">{user.name}</span>
+              <span className="ak-tag-name">{user.name}</span>{" "}
               <span className="ak-tag-email">{user.email}</span>
             </TagOption>
           ))}

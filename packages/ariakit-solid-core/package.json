@@ -37,7 +37,7 @@
     "core"
   ],
   "dependencies": {
-    "@ariakit/core": "0.4.18",
+    "@ariakit/core": "workspace:*",
     "@solid-primitives/props": "3.2.3",
     "@solid-primitives/utils": "6.4.0"
   },

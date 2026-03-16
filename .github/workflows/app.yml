@@ -26,8 +26,6 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-npm: true
 
   # install-macos:
   #   name: Install node modules (macOS)
@@ -38,8 +36,6 @@ jobs:
 
   #     - name: Install node modules
   #       uses: ./.github/workflows/install-node-modules
-  #       with:
-  #         cache-npm: true
 
   build:
     name: Build app
@@ -53,7 +49,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build app
-        run: npm run build-lite -w site
+        run: pnpm -F site run build-lite
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v7
@@ -75,7 +71,7 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build Next.js app
-        run: npm run build-worker -w nextjs
+        run: pnpm -F nextjs run build-worker
 
       - name: Upload Next.js artifact
         uses: actions/upload-artifact@v7
@@ -97,30 +93,30 @@ jobs:
             name: Chrome
             engine: chromium
             project: chrome
-            test: xvfb-run npm run test -w site --
-            visual: xvfb-run npm run test-visual -w site --
+            test: xvfb-run pnpm -F site run test
+            visual: xvfb-run pnpm -F site run test-visual
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
-            test: xvfb-run npm run test -w site --
-            visual: xvfb-run npm run test-visual -w site --
+            test: xvfb-run pnpm -F site run test
+            visual: xvfb-run pnpm -F site run test-visual
           # - os: ubuntu-latest
           #   name: Android
           #   engine: chromium
           #   project: android
-          #   run: xvfb-run npm run test-visual -w site --
+          #   run: xvfb-run pnpm -F site run test-visual
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari
-            test: npm run test -w site --
-            visual: npm run test-visual -w site --
+            test: pnpm -F site run test
+            visual: pnpm -F site run test-visual
           # - os: macos-latest
           #   name: iOS
           #   engine: webkit
           #   project: ios
-          #   run: npm run test-visual -w site --
+          #   run: pnpm -F site run test-visual
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -147,7 +143,7 @@ jobs:
         id: test-visual
         run: |
           if [ "$USE_VIZZLY" = "true" ]; then
-            npx vizzly run \
+            pnpm exec vizzly run \
             --allow-no-token \
             --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
             "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests"
@@ -218,4 +214,4 @@ jobs:
 
       - name: Finalize visual tests
         if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
-        run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
+        run: pnpm exec vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"

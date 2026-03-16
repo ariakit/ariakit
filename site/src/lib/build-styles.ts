@@ -829,7 +829,7 @@ async function main() {
     const actual = await fs.readFile(out, "utf8");
     if (expected !== actual) {
       console.error(
-        "styles.json is out of date. Run: npm run build-styles -w site",
+        "styles.json is out of date. Run: pnpm -F site run build-styles",
       );
       process.exitCode = 1;
     }

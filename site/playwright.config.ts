@@ -24,7 +24,7 @@ export default defineConfig({
   testDir: "src",
   snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
   webServer: {
-    command: "npm run preview-lite -w site -- --log-level warn",
+    command: "pnpm run preview-lite --log-level warn",
     reuseExistingServer: !CI,
     stdout: CI ? "pipe" : "ignore",
     port: 4321,

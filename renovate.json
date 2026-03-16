@@ -3,6 +3,15 @@
   "semanticCommits": "disabled",
   "packageRules": [
     {
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": ["next"],
+      "enabled": false
+    },
+    {
+      "matchFileNames": ["website/package.json"],
+      "enabled": false
+    },
+    {
       "matchPackageNames": ["shiki"],
       "matchCurrentVersion": "/^1\\./",
       "allowedVersions": "/^1\\./"
@@ -24,12 +33,22 @@
       ]
     },
     {
+      "matchFileNames": ["website/package.json"],
+      "matchPackageNames": ["/^@clerk\\//"],
+      "enabled": false
+    },
+    {
       "groupName": "clerk",
-      "matchPackageNames": ["/clerk/"]
+      "matchPackageNames": ["/^@clerk\\//"]
+    },
+    {
+      "matchFileNames": ["website/package.json"],
+      "matchPackageNames": ["stripe", "/^@stripe\\//"],
+      "enabled": false
     },
     {
       "groupName": "stripe",
-      "matchPackageNames": ["/stripe/"]
+      "matchPackageNames": ["stripe", "/^@stripe\\//"]
     },
     {
       "groupName": "monaco",
@@ -73,9 +92,11 @@
         "react-router",
         "react-shadow",
         "react-toastify",
+        "pnpm",
         "textarea-caret",
         "tsup",
         "typescript",
+        "playwright",
         "webpack",
         "zod",
         "/^@babel//",
