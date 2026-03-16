@@ -60,8 +60,9 @@ export const MenuSeparator = forwardRef(function MenuSeparator(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuSeparatorOptions<T extends ElementType = TagName>
-  extends CompositeSeparatorOptions<T> {
+export interface MenuSeparatorOptions<
+  T extends ElementType = TagName,
+> extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

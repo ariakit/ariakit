@@ -102,7 +102,8 @@ export const CompositeItem = forwardRef(function CompositeItem({
 });
 
 export interface CompositeItemOptions<T extends ElementType = TagName>
-  extends Base.CompositeItemOptions<T>,
+  extends
+    Base.CompositeItemOptions<T>,
     Omit<CollectionItemOptions<T>, "store"> {}
 
 export type CompositeItemProps<T extends ElementType = TagName> = Props<

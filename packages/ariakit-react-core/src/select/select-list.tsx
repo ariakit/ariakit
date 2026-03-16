@@ -3,10 +3,10 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, KeyboardEvent } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import type { CompositeOptions } from "../composite/composite.tsx";
-import { useComposite } from "../composite/composite.tsx";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
@@ -107,7 +107,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
 
     const headingContextValue: typeof headingState = useMemo(
       () => [headingId, setHeadingId],
-      [headingId],
+      [headingId, setHeadingId],
     );
 
     const [childStore, setChildStore] = useState<SelectStore | null>(null);
@@ -214,7 +214,8 @@ export const SelectList = forwardRef(function SelectList(
 });
 
 export interface SelectListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**

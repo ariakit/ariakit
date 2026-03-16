@@ -1,9 +1,15 @@
 {
   "name": "site",
-  "type": "module",
   "version": "0.0.1",
-  "license": "See license.md",
   "private": true,
+  "license": "See license.md",
+  "type": "module",
+  "imports": {
+    "#app/*": "./src/*"
+  },
+  "exports": {
+    "./*": "./src/examples/_lib/*"
+  },
   "scripts": {
     "dev": "astro dev",
     "dev-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run dev",
@@ -39,12 +45,6 @@
     "og-image-generate": "node src/pages/og-image/_generate-images.ts",
     "build-styles": "node src/lib/build-styles.ts"
   },
-  "imports": {
-    "#app/*": "./src/*"
-  },
-  "exports": {
-    "./*": "./src/examples/_lib/*"
-  },
   "dependencies": {
     "@ariakit/core": "workspace:*",
     "@ariakit/react": "workspace:*",
@@ -59,6 +59,7 @@
     "@astrojs/solid-js": "5.1.3",
     "@clerk/astro": "3.0.4",
     "@fontsource-variable/inter": "5.2.8",
+    "@react-aria/utils": "3.33.1",
     "@shikijs/langs": "4.0.2",
     "@shikijs/themes": "4.0.2",
     "@stackblitz/sdk": "1.11.0",

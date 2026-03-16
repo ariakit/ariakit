@@ -30,7 +30,7 @@ test("click on tooltip and press esc", async () => {
   expect(q.tooltip(tooltip)).not.toBeInTheDocument();
   await hover(q.link());
   await waitFor(() => expect(q.tooltip(tooltip)).toBeVisible());
-  await click(q.tooltip(tooltip)!);
+  await click(q.tooltip(tooltip));
   expect(q.tooltip(tooltip)).toBeVisible();
   await press.Escape();
   expect(q.link()).toHaveFocus();

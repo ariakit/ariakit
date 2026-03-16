@@ -49,8 +49,9 @@ export const PopoverDescription = forwardRef(function PopoverDescription(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDescriptionOptions<T extends ElementType = TagName>
-  extends DialogDescriptionOptions<T> {
+export interface PopoverDescriptionOptions<
+  T extends ElementType = TagName,
+> extends DialogDescriptionOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

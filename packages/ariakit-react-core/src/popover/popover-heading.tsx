@@ -48,8 +48,9 @@ export const PopoverHeading = forwardRef(function PopoverHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverHeadingOptions<T extends ElementType = TagName>
-  extends DialogHeadingOptions<T> {
+export interface PopoverHeadingOptions<
+  T extends ElementType = TagName,
+> extends DialogHeadingOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

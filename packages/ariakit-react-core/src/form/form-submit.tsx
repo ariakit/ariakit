@@ -70,8 +70,9 @@ export const FormSubmit = forwardRef(function FormSubmit(
   return createElement(TagName, htmlProps);
 });
 
-export interface FormSubmitOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface FormSubmitOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

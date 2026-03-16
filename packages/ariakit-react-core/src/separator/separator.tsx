@@ -38,8 +38,9 @@ export const Separator = forwardRef(function Separator(props: SeparatorProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface SeparatorOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface SeparatorOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * The orientation of the separator.
    * @default "horizontal"

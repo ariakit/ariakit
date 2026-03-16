@@ -66,7 +66,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
-    const name = `${nameProp}`;
+    const name = String(nameProp);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
@@ -160,8 +160,9 @@ export const FormLabel = memo(
   }),
 );
 
-export interface FormLabelOptions<T extends ElementType = TagName>
-  extends CollectionItemOptions<T> {
+export interface FormLabelOptions<
+  T extends ElementType = TagName,
+> extends CollectionItemOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

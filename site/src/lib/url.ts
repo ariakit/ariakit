@@ -273,5 +273,5 @@ export function partialURLToReferencePath(url: string | URL) {
   if (item) {
     return `${pathname}#${item}`;
   }
-  return `${pathname}`;
+  return pathname;
 }

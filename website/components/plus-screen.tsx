@@ -9,6 +9,7 @@ import { usePrice } from "@/lib/use-price.ts";
 import { CodePlaceholder } from "./code-placeholder.tsx";
 import { Focusable } from "./focusable.tsx";
 import { InlineLink } from "./inline-link.tsx";
+import { PlusBordered } from "./plus-bordered.tsx";
 import {
   PlusCheckoutButton,
   PlusCheckoutFrame,
@@ -17,7 +18,6 @@ import {
   PlusFeaturePreviewContainer,
   PlusProvider,
 } from "./plus.tsx";
-import { PlusBordered } from "./plus-bordered.tsx";
 
 export function PlusScreen() {
   const searchParams = useSearchParams();

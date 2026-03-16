@@ -138,8 +138,9 @@ export const ComboboxDisclosure = forwardRef(function ComboboxDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxDisclosureOptions<T extends ElementType = TagName>
-  extends DialogDisclosureOptions<T> {
+export interface ComboboxDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

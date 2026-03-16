@@ -184,8 +184,7 @@ export const MenuItem = memo(
 );
 
 export interface MenuItemOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T>,
-    CompositeHoverOptions<T> {
+  extends CompositeItemOptions<T>, CompositeHoverOptions<T> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) or

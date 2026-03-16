@@ -256,8 +256,7 @@ export const Menu = createDialogComponent(
 );
 
 export interface MenuOptions<T extends ElementType = TagName>
-  extends MenuListOptions<T>,
-    Omit<HovercardOptions<T>, "store"> {}
+  extends MenuListOptions<T>, Omit<HovercardOptions<T>, "store"> {}
 
 export type MenuProps<T extends ElementType = TagName> = Props<
   T,

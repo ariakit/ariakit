@@ -283,7 +283,8 @@ export const MenuButton = forwardRef(function MenuButton(
 });
 
 export interface MenuButtonOptions<T extends ElementType = TagName>
-  extends HovercardAnchorOptions<T>,
+  extends
+    HovercardAnchorOptions<T>,
     PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T> {
   /**

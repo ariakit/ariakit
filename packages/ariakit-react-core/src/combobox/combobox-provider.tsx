@@ -43,7 +43,8 @@ export function ComboboxProvider(props: ComboboxProviderProps = {}) {
   );
 }
 
-export interface ComboboxProviderProps<T extends Value = Value>
-  extends ComboboxStoreProps<T> {
+export interface ComboboxProviderProps<
+  T extends Value = Value,
+> extends ComboboxStoreProps<T> {
   children?: ReactNode;
 }

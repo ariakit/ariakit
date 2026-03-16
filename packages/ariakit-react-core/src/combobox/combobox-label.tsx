@@ -70,8 +70,9 @@ export const ComboboxLabel = memo(
   }),
 );
 
-export interface ComboboxLabelOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface ComboboxLabelOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

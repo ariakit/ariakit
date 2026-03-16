@@ -49,7 +49,7 @@ export function isTagEnabled(
 
 export function getTag(id: string, frameworks?: Framework[]) {
   if (!isTagEnabled(id, frameworks)) return null;
-  return { id, ...tags[id as keyof typeof tags] };
+  return { id, ...tags[id] };
 }
 
 export function mapTags(tags: string[], frameworks?: Framework[]) {

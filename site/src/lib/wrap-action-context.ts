@@ -7,8 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { ActionAPIContext } from "astro:actions";
 import type { APIContext } from "astro";
+import type { ActionAPIContext } from "astro:actions";
 
 export function wrapActionContext(context: ActionAPIContext) {
   return context as APIContext;

@@ -464,10 +464,10 @@ function findTopLevelObjectKeys(
       const match = idRegex.exec(text);
       if (match) {
         const name = match[1]!;
-        const start = objStart + match.index!;
+        const start = objStart + match.index;
         const end = start + name.length;
         keys.push({ start, end, name });
-        index = match.index! + name.length;
+        index = match.index + name.length;
         continue;
       }
     }
@@ -498,7 +498,7 @@ function findUseStoreStateStateRanges(
     const matchIndex = (stringMatch.index || 0) + callStartIndex;
     const quote = stringMatch[1]!;
     const name = stringMatch[2]!;
-    const quotePosition = stringMatch[0]!.lastIndexOf(quote + name + quote);
+    const quotePosition = stringMatch[0].lastIndexOf(quote + name + quote);
     const absoluteStart = matchIndex + quotePosition + 1;
     ranges.push({
       start: absoluteStart,
@@ -515,7 +515,7 @@ function findUseStoreStateStateRanges(
   if (arrowMatch) {
     const matchIndex = (arrowMatch.index || 0) + callStartIndex;
     const name = arrowMatch[2]!;
-    const absoluteStart = matchIndex + arrowMatch[0]!.lastIndexOf(name);
+    const absoluteStart = matchIndex + arrowMatch[0].lastIndexOf(name);
     ranges.push({
       start: absoluteStart,
       end: absoluteStart + name.length,
@@ -560,8 +560,8 @@ function findClassTokenRanges(code: string): TokenRange[] {
       const segment = segmentRegex.exec(code);
       if (!segment) break;
 
-      const segmentText = segment[0]!;
-      const segmentStart = segment.index!;
+      const segmentText = segment[0];
+      const segmentStart = segment.index;
       const segmentAbsEnd = Math.min(segmentStart + segmentText.length, end);
 
       // Split by colons (Tailwind modifiers), ignoring colons inside [] or ()
@@ -798,7 +798,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
     nextNonSpace.lastIndex = afterBrace;
     const nextChar = nextNonSpace.exec(code);
     if (!nextChar) break;
-    if (isQuoteChar(nextChar[0]!)) continue;
+    if (isQuoteChar(nextChar[0])) continue;
 
     // Find matching closing brace while respecting strings
     let depth = 1;
@@ -1121,7 +1121,7 @@ function processNamedImports(
         if (!ref) continue;
 
         // Calculate precise position of the local name
-        const specText = specMatch[0]!;
+        const specText = specMatch[0];
         const exportedIndex = specText.indexOf(exported);
         const localPosInSpec =
           exportedIndex === 0 && specMatch[2]
@@ -1182,7 +1182,7 @@ function processComponentTags(
   let nsMatch: RegExpExecArray | null;
 
   while ((nsMatch = nsCompRegex.exec(code))) {
-    const fullMatch = nsMatch[0]!;
+    const fullMatch = nsMatch[0];
     const namespace = nsMatch[1]!;
     const componentName = nsMatch[2]!;
 

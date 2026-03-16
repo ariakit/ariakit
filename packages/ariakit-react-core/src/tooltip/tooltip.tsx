@@ -123,8 +123,9 @@ export const Tooltip = createDialogComponent(
   useTooltipProviderContext,
 );
 
-export interface TooltipOptions<T extends ElementType = TagName>
-  extends HovercardOptions<T> {
+export interface TooltipOptions<
+  T extends ElementType = TagName,
+> extends HovercardOptions<T> {
   /**
    * Object returned by the
    * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.

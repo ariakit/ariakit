@@ -5,8 +5,10 @@ import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.ts";
 
 export * from "./index.ts";
 
-export interface RenderOptions
-  extends Omit<ReactTestingLibrary.RenderOptions, "queries"> {
+export interface RenderOptions extends Omit<
+  ReactTestingLibrary.RenderOptions,
+  "queries"
+> {
   strictMode?: boolean;
 }
 

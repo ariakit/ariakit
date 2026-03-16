@@ -84,8 +84,9 @@ export const FormField = memo(
   }),
 );
 
-export interface FormFieldOptions<T extends ElementType = TagName>
-  extends FormControlOptions<T> {}
+export interface FormFieldOptions<
+  T extends ElementType = TagName,
+> extends FormControlOptions<T> {}
 
 export type FormFieldProps<T extends ElementType = TagName> = Props<
   T,

@@ -66,8 +66,9 @@ export const ComboboxItemCheck = forwardRef(function ComboboxItemCheck(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxItemCheckOptions<T extends ElementType = TagName>
-  extends CheckboxCheckOptions<T> {
+export interface ComboboxItemCheckOptions<
+  T extends ElementType = TagName,
+> extends CheckboxCheckOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

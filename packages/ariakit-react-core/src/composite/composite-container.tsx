@@ -251,8 +251,9 @@ export const CompositeContainer = forwardRef(function CompositeContainer(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeContainerOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CompositeContainerOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

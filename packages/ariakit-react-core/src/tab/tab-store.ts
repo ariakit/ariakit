@@ -65,18 +65,19 @@ export function useTabStore(props: TabStoreProps = {}): TabStore {
 export interface TabStoreItem extends Core.TabStoreItem {}
 
 export interface TabStoreState
-  extends Core.TabStoreState,
-    CompositeStoreState<TabStoreItem> {}
+  extends Core.TabStoreState, CompositeStoreState<TabStoreItem> {}
 
 export interface TabStoreFunctions
-  extends Pick<TabStoreOptions, "composite" | "combobox">,
+  extends
+    Pick<TabStoreOptions, "composite" | "combobox">,
     Omit<Core.TabStoreFunctions, "panels" | "composite" | "combobox">,
     CompositeStoreFunctions<TabStoreItem> {
   panels: Store<Core.TabStoreFunctions["panels"]>;
 }
 
 export interface TabStoreOptions
-  extends Omit<Core.TabStoreOptions, "composite" | "combobox">,
+  extends
+    Omit<Core.TabStoreOptions, "composite" | "combobox">,
     CompositeStoreOptions<TabStoreItem> {
   /**
    * Function that will be called when the
@@ -115,9 +116,9 @@ export interface TabStoreOptions
 }
 
 export interface TabStoreProps
-  extends TabStoreOptions,
-    Omit<Core.TabStoreProps, "composite" | "combobox"> {}
+  extends TabStoreOptions, Omit<Core.TabStoreProps, "composite" | "combobox"> {}
 
 export interface TabStore
-  extends TabStoreFunctions,
+  extends
+    TabStoreFunctions,
     Omit<Store<Core.TabStore>, "panels" | "composite" | "combobox"> {}

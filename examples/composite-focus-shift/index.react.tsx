@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { ElementRef } from "react";
 import { forwardRef } from "react";
 

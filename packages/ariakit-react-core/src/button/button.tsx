@@ -61,8 +61,9 @@ export const Button = forwardRef(function Button(props: ButtonProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface ButtonOptions<T extends ElementType = TagName>
-  extends CommandOptions<T> {}
+export interface ButtonOptions<
+  T extends ElementType = TagName,
+> extends CommandOptions<T> {}
 
 export type ButtonProps<T extends ElementType = TagName> = Props<
   T,

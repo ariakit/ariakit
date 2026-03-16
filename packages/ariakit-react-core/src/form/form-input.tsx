@@ -44,7 +44,7 @@ export const useFormInput = createHook<TagName, FormInputOptions>(
         "FormInput must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const onChangeProp = props.onChange;
 
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
@@ -96,8 +96,7 @@ export const FormInput = memo(
 );
 
 export interface FormInputOptions<T extends ElementType = TagName>
-  extends FormControlOptions<T>,
-    FocusableOptions<T> {}
+  extends FormControlOptions<T>, FocusableOptions<T> {}
 
 export type FormInputProps<T extends ElementType = TagName> = Props<
   T,

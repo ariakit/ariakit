@@ -79,8 +79,7 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
 });
 
 export interface ComboboxItemOptions<T extends ElementType = TagName>
-  extends Base.ComboboxItemOptions<T>,
-    Omit<CompositeItemOptions<T>, "store"> {}
+  extends Base.ComboboxItemOptions<T>, Omit<CompositeItemOptions<T>, "store"> {}
 
 export type ComboboxItemProps<T extends ElementType = TagName> = Props<
   T,

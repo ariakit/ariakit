@@ -58,8 +58,9 @@ export const SelectGroupLabel = forwardRef(function SelectGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectGroupLabelOptions<T extends ElementType = TagName>
-  extends CompositeGroupLabelOptions<T> {
+export interface SelectGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If

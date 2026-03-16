@@ -69,7 +69,7 @@ export const Role = forwardRef(
   function Role(props: RoleProps) {
     return createElement(TagName, props);
   },
-) as FC<RoleProps<"div">> & RoleElements;
+) as FC<RoleProps> & RoleElements;
 
 Object.assign(
   Role,
@@ -81,8 +81,9 @@ Object.assign(
   }, {} as RoleElements),
 );
 
-export interface RoleOptions<_T extends ElementType = TagName>
-  extends Options {}
+export interface RoleOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type RoleProps<T extends ElementType = TagName> = Props<
   T,

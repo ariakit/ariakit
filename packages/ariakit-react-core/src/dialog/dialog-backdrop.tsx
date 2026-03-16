@@ -4,12 +4,14 @@ import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
 import { Role } from "../role/role.tsx";
 import { useSafeLayoutEffect } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
-import type { DialogProps } from "./dialog.tsx";
 import type { DialogStore } from "./dialog-store.ts";
+import type { DialogProps } from "./dialog.tsx";
 import { markAncestor } from "./utils/mark-tree-outside.ts";
 
-interface DialogBackdropProps
-  extends Pick<DialogProps, "backdrop" | "alwaysVisible" | "hidden"> {
+interface DialogBackdropProps extends Pick<
+  DialogProps,
+  "backdrop" | "alwaysVisible" | "hidden"
+> {
   store: DialogStore;
 }
 

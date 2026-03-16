@@ -38,7 +38,8 @@ export function SelectProvider(props: SelectProviderProps = {}) {
   );
 }
 
-export interface SelectProviderProps<T extends Value = Value>
-  extends SelectStoreProps<T> {
+export interface SelectProviderProps<
+  T extends Value = Value,
+> extends SelectStoreProps<T> {
   children?: ReactNode;
 }

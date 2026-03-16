@@ -311,7 +311,8 @@ export const Select = forwardRef(function Select(props: SelectProps) {
 });
 
 export interface SelectOptions<T extends ElementType = TagName>
-  extends PopoverDisclosureOptions<T>,
+  extends
+    PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<
       SelectHTMLAttributes<HTMLSelectElement>,

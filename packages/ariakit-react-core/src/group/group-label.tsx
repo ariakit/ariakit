@@ -60,8 +60,9 @@ export const GroupLabel = forwardRef(function GroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface GroupLabelOptions<_T extends ElementType = TagName>
-  extends Options {}
+export interface GroupLabelOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type GroupLabelProps<T extends ElementType = TagName> = Props<
   T,

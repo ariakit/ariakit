@@ -29,6 +29,7 @@ import { vars } from "./vars.js";
 
 /** @type {ReturnType<typeof plugin>} */
 const AriakitTailwind = plugin(
+  // oxlint-disable-next-line unbound-method
   ({ addBase, addVariant, addUtilities, matchUtilities, theme }) => {
     addVariant("ak-dark", IN_DARK);
     addVariant("ak-light", IN_LIGHT);
@@ -157,7 +158,7 @@ const AriakitTailwind = plugin(
       const c = `max(0, c - ${level} * ${cMultiplier})`;
       const h = "h";
 
-      if (`${contrast}` !== "0") {
+      if (contrast !== "0") {
         const layerContrast = `min(1, calc(-1 * ${contrast}))`;
         const negativeContrast = `min(0, ${layerContrast})`;
         l = `calc(${l} + ${lMultiplier} * ${negativeContrast} * ${oklchLightDark(downUp(level, "-1", "-5"), downUp(level, "-0.5", "1"))})`;
@@ -907,28 +908,22 @@ const AriakitTailwind = plugin(
           getFrameCss({ radiusKey, modifier: extra.modifier }),
       },
       {
-        values: Object.keys(theme("radius")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            acc[key] = key;
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
-        modifiers: Object.keys(theme("spacing")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            if (key === "DEFAULT") return acc;
-            const isNumber = /^\d*\.?\d+$/u.test(key);
-            if (isNumber) {
-              acc[key] = `--spacing(${key})`;
-            } else {
-              acc[key] = t("spacing", key);
-            }
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
+        values: Object.keys(theme("radius")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          acc[key] = key;
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
+        modifiers: Object.keys(theme("spacing")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          if (key === "DEFAULT") return acc;
+          const isNumber = /^\d*\.?\d+$/u.test(key);
+          if (isNumber) {
+            acc[key] = `--spacing(${key})`;
+          } else {
+            acc[key] = t("spacing", key);
+          }
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
       },
     );
 
@@ -967,20 +962,17 @@ const AriakitTailwind = plugin(
         },
       },
       {
-        values: Object.keys(theme("spacing")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            if (key === "DEFAULT") return acc;
-            const isNumber = /^\d*\.?\d+$/u.test(key);
-            if (isNumber) {
-              acc[key] = `--spacing(${key})`;
-            } else {
-              acc[key] = t("spacing", key);
-            }
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
+        values: Object.keys(theme("spacing")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          if (key === "DEFAULT") return acc;
+          const isNumber = /^\d*\.?\d+$/u.test(key);
+          if (isNumber) {
+            acc[key] = `--spacing(${key})`;
+          } else {
+            acc[key] = t("spacing", key);
+          }
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
       },
     );
 
@@ -994,20 +986,17 @@ const AriakitTailwind = plugin(
         },
       },
       {
-        values: Object.keys(theme("spacing")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            if (key === "DEFAULT") return acc;
-            const isNumber = /^\d*\.?\d+$/u.test(key);
-            if (isNumber) {
-              acc[key] = `--spacing(${key})`;
-            } else {
-              acc[key] = t("spacing", key);
-            }
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
+        values: Object.keys(theme("spacing")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          if (key === "DEFAULT") return acc;
+          const isNumber = /^\d*\.?\d+$/u.test(key);
+          if (isNumber) {
+            acc[key] = `--spacing(${key})`;
+          } else {
+            acc[key] = t("spacing", key);
+          }
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
       },
     );
 
@@ -1051,14 +1040,11 @@ const AriakitTailwind = plugin(
           getFrameRoundedCss({ radiusKey, force: true }),
       },
       {
-        values: Object.keys(theme("radius")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            acc[key] = key;
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
+        values: Object.keys(theme("radius")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          acc[key] = key;
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
       },
     );
 

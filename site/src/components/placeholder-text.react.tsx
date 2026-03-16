@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import clsx from "clsx";
+import { clsx } from "clsx";
 
 export interface PlaceholderTextProps {
   children?: string;

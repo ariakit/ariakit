@@ -175,8 +175,9 @@ export const Tag = memo(
   }),
 );
 
-export interface TagOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface TagOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

@@ -38,8 +38,8 @@ import {
   useState,
 } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
-import { Check } from "@/icons/check.tsx";
 import { CheckCircle } from "@/icons/check-circle.tsx";
+import { Check } from "@/icons/check.tsx";
 import { ChevronRight } from "@/icons/chevron-right.tsx";
 import { Heart } from "@/icons/heart.tsx";
 import type { PlusPrice } from "@/lib/stripe.ts";
@@ -87,8 +87,7 @@ function usePlusStore(props: PlusStoreProps) {
 }
 
 export interface PlusProviderProps
-  extends PlusStoreProps,
-    HovercardProviderProps {}
+  extends PlusStoreProps, HovercardProviderProps {}
 
 export function PlusProvider(props: PlusProviderProps) {
   const store = usePlusStore(props);

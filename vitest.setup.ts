@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom/vitest";
-
 import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { createElement, Suspense as ReactSuspense } from "react";
@@ -58,7 +57,7 @@ async function loadReact(dir: string) {
   if (failedImport) return false;
   const element = createElement(ReactSuspense, {
     fallback: null,
-    // biome-ignore lint/correctness/noChildrenProp: createElement requires children prop
+    // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
     children: createElement(component),
   });
   const { unmount } = await renderReact(element, { strictMode: true });

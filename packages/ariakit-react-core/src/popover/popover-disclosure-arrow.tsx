@@ -109,8 +109,9 @@ export const PopoverDisclosureArrow = forwardRef(
   },
 );
 
-export interface PopoverDisclosureArrowOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface PopoverDisclosureArrowOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

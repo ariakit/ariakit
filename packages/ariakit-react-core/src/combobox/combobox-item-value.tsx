@@ -190,8 +190,9 @@ export const ComboboxItemValue = forwardRef(function ComboboxItemValue(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxItemValueOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface ComboboxItemValueOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

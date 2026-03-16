@@ -70,10 +70,10 @@ export interface CheckboxStoreOptions<
 
 export interface CheckboxStoreProps<
   T extends CheckboxStoreValue = CheckboxStoreValue,
-> extends CheckboxStoreOptions<T>,
-    Core.CheckboxStoreProps<T> {}
+>
+  extends CheckboxStoreOptions<T>, Core.CheckboxStoreProps<T> {}
 
 export interface CheckboxStore<
   T extends CheckboxStoreValue = CheckboxStoreValue,
-> extends CheckboxStoreFunctions<T>,
-    Store<Core.CheckboxStore<T>> {}
+>
+  extends CheckboxStoreFunctions<T>, Store<Core.CheckboxStore<T>> {}

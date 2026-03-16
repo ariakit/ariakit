@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type * as React from "react";
 
 export interface ContentDisclosureProps extends React.ComponentProps<"div"> {

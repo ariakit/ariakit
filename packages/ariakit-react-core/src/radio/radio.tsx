@@ -199,8 +199,9 @@ export const Radio = memo(
   }),
 );
 
-export interface RadioOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface RadioOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If

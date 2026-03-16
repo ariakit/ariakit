@@ -184,7 +184,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       return sync(store, ["selectedValue", "activeId"], (_, prev) => {
         prevSelectedValueRef.current = prev.selectedValue;
       });
-    }, []);
+    }, [store]);
 
     const inlineActiveValue = useStoreState(store, (state) => {
       if (!inline) return;
@@ -643,8 +643,7 @@ export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
 });
 
 export interface ComboboxOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
-    PopoverAnchorOptions<T> {
+  extends CompositeOptions<T>, PopoverAnchorOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

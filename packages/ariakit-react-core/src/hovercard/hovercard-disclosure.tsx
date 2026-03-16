@@ -174,8 +174,9 @@ export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardDisclosureOptions<T extends ElementType = TagName>
-  extends DialogDisclosureOptions<T> {
+export interface HovercardDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

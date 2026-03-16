@@ -252,8 +252,7 @@ export const ComboboxItem = memo(
 );
 
 export interface ComboboxItemOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T>,
-    CompositeHoverOptions<T> {
+  extends CompositeItemOptions<T>, CompositeHoverOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

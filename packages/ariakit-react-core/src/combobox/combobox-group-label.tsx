@@ -54,8 +54,9 @@ export const ComboboxGroupLabel = forwardRef(function ComboboxGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxGroupLabelOptions<T extends ElementType = TagName>
-  extends CompositeGroupLabelOptions<T> {
+export interface ComboboxGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

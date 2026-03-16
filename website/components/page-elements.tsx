@@ -221,8 +221,7 @@ export function PageFigure({ node, ...props }: PageFigureProps) {
   return <figure {...props} className={className} />;
 }
 
-export interface PageBlockquoteProps
-  extends ComponentPropsWithoutRef<"blockquote"> {
+export interface PageBlockquoteProps extends ComponentPropsWithoutRef<"blockquote"> {
   node?: Element;
 }
 

@@ -125,7 +125,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const { value } = currentTarget;
       // Set the value in the store if the value changes
       if (setValueOnChangeProp(event)) {
-        UndoManager.execute(() => {
+        void UndoManager.execute(() => {
           store.setValue(value);
           // When the value is not set synchronously, the selection range may be
           // lost.
@@ -157,7 +157,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           for (const tagValue of values) {
             store.addValue(tagValue);
           }
-          UndoManager.execute(() => {
+          void UndoManager.execute(() => {
             store.setValue(trailingvalue);
             if (trailingvalue === prevValue) return;
             return () => store.setValue(prevValue);
@@ -235,8 +235,9 @@ export const TagInput = forwardRef(function TagInput(props: TagInputProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagInputOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface TagInputOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

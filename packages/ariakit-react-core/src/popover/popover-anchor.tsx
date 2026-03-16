@@ -51,8 +51,9 @@ export const PopoverAnchor = forwardRef(function PopoverAnchor(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverAnchorOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface PopoverAnchorOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

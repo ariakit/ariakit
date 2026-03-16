@@ -53,8 +53,9 @@ export const ToolbarItem = memo(
   }),
 );
 
-export interface ToolbarItemOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface ToolbarItemOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.

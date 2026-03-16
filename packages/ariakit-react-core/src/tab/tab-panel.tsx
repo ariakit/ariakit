@@ -226,7 +226,8 @@ export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
 });
 
 export interface TabPanelOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T>,
+  extends
+    FocusableOptions<T>,
     CollectionItemOptions<T>,
     Omit<DisclosureContentOptions<T>, "store"> {
   /**

@@ -64,8 +64,9 @@ export const SelectItemCheck = forwardRef(function SelectItemCheck(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectItemCheckOptions<T extends ElementType = TagName>
-  extends CheckboxCheckOptions<T> {
+export interface SelectItemCheckOptions<
+  T extends ElementType = TagName,
+> extends CheckboxCheckOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.

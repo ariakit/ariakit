@@ -93,6 +93,10 @@ export function useCollectionItemOffscreen<
 
       observerRef.current.observe(element);
     },
+    // This callback intentionally depends on `updated` so `forceUpdate()`
+    // causes React to re-run the ref callback when the offscreen root becomes
+    // available.
+    // oxlint-disable-next-line exhaustive-deps
     [updated, offscreenBehavior, offscreenRoot],
   );
 
@@ -131,8 +135,9 @@ export const CollectionItem = forwardRef(function CollectionItem({
   return <Component {...htmlProps} />;
 });
 
-export interface CollectionItemOptions<T extends ElementType = TagName>
-  extends Base.CollectionItemOptions<T> {
+export interface CollectionItemOptions<
+  T extends ElementType = TagName,
+> extends Base.CollectionItemOptions<T> {
   offscreenBehavior?: "active" | "passive" | "lazy";
   offscreenRoot?:
     | HTMLElement

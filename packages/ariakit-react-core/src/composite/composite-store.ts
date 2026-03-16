@@ -70,18 +70,18 @@ export interface CompositeStoreItem extends Core.CompositeStoreItem {}
 
 export interface CompositeStoreState<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends Core.CompositeStoreState<T>,
-    CollectionStoreState<T> {}
+>
+  extends Core.CompositeStoreState<T>, CollectionStoreState<T> {}
 
 export interface CompositeStoreFunctions<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends Core.CompositeStoreFunctions<T>,
-    CollectionStoreFunctions<T> {}
+>
+  extends Core.CompositeStoreFunctions<T>, CollectionStoreFunctions<T> {}
 
 export interface CompositeStoreOptions<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends Core.CompositeStoreOptions<T>,
-    CollectionStoreOptions<T> {
+>
+  extends Core.CompositeStoreOptions<T>, CollectionStoreOptions<T> {
   /**
    * A callback that gets called when the
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -92,10 +92,10 @@ export interface CompositeStoreOptions<
 
 export interface CompositeStoreProps<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreOptions<T>,
-    Core.CompositeStoreProps<T> {}
+>
+  extends CompositeStoreOptions<T>, Core.CompositeStoreProps<T> {}
 
 export interface CompositeStore<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreFunctions<T>,
-    Store<Core.CompositeStore<T>> {}
+>
+  extends CompositeStoreFunctions<T>, Store<Core.CompositeStore<T>> {}
