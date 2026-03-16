@@ -9,7 +9,7 @@
  */
 
 import { existsSync, readFileSync, statSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, resolve, sep } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
 import type { z } from "astro:content";
@@ -44,9 +44,52 @@ interface FrameworkCache {
 }
 
 /**
- * Gets the source file paths that a component module depends on, without
- * creating a ts-morph project. This is cheap — just regex on the public
- * module file plus filesystem existence checks.
+ * Resolves a path without an extension to the first existing `.tsx` or
+ * `.ts` variant, returning `undefined` if neither exists.
+ */
+function resolveExtension(basePath: string): string | undefined {
+  if (existsSync(`${basePath}.tsx`)) return `${basePath}.tsx`;
+  if (existsSync(`${basePath}.ts`)) return `${basePath}.ts`;
+  return undefined;
+}
+
+/**
+ * Parses a source file for relative imports and returns the resolved
+ * absolute paths of those that fall within `boundaryDir`. This captures
+ * local helper files (e.g., utils, context) that live inside the same
+ * component directory.
+ */
+function getLocalImports(
+  sourceFilePath: string,
+  boundaryDir: string,
+): string[] {
+  if (!existsSync(sourceFilePath)) return [];
+  const content = readFileSync(sourceFilePath, "utf-8");
+  const dir = dirname(sourceFilePath);
+  const paths: string[] = [];
+
+  const importPattern = /from\s+["'](\.\.?\/[^"']+)["']/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = importPattern.exec(content)) !== null) {
+    const importPath = match[1];
+    if (!importPath) continue;
+    const resolvedPath = resolve(dir, importPath);
+    // Only include files within the component's own directory
+    if (!resolvedPath.startsWith(boundaryDir + sep)) continue;
+    if (existsSync(resolvedPath)) {
+      paths.push(resolvedPath);
+    }
+  }
+  return paths;
+}
+
+/**
+ * Gets the full set of source file paths that a component module depends
+ * on, without creating a ts-morph project. Starts from the public module
+ * re-exports and recursively follows local imports within the component
+ * directory so that internal helpers (utils, context files, backdrop
+ * components, etc.) are included for mtime tracking.
  */
 function getComponentSourceFilePaths(
   component: string,
@@ -57,13 +100,17 @@ function getComponentSourceFilePaths(
   const publicModulePath = join(packagePath, "src", `${component}.ts`);
   if (!existsSync(publicModulePath)) return [];
 
-  const files = [publicModulePath];
+  const files = new Set<string>([publicModulePath]);
   const content = readFileSync(publicModulePath, "utf-8");
+  const componentDir = join(corePath, "src", component);
 
   const reExportPattern =
     /export\s*(?:type\s*)?\{\s*[^}]+\s*\}\s*from\s*["']([^"']+)["']/g;
   const corePackagePrefix = `@ariakit/${framework}-core/`;
   let match: RegExpExecArray | null;
+
+  // Seed the walk with directly re-exported core source files
+  const queue: string[] = [];
 
   while ((match = reExportPattern.exec(content)) !== null) {
     const fromPath = match[1];
@@ -75,14 +122,28 @@ function getComponentSourceFilePaths(
       fromPath.replace(new RegExp(`^${corePackagePrefix}`), ""),
     );
 
-    if (existsSync(`${resolvedPath}.tsx`)) {
-      files.push(`${resolvedPath}.tsx`);
-    } else if (existsSync(`${resolvedPath}.ts`)) {
-      files.push(`${resolvedPath}.ts`);
+    const finalPath = resolveExtension(resolvedPath);
+    if (finalPath && !files.has(finalPath)) {
+      files.add(finalPath);
+      queue.push(finalPath);
     }
   }
 
-  return [...new Set(files)];
+  // Recursively follow local imports within the component directory so
+  // internal helpers, utils, and context files are included.
+  while (queue.length > 0) {
+    const filePath = queue.shift();
+    if (!filePath) break;
+    const localImports = getLocalImports(filePath, componentDir);
+    for (const importedPath of localImports) {
+      if (!files.has(importedPath)) {
+        files.add(importedPath);
+        queue.push(importedPath);
+      }
+    }
+  }
+
+  return [...files];
 }
 
 /**
@@ -169,10 +230,10 @@ function getComponentFromCorePath(
   filePath: string,
   corePath: string,
 ): string | undefined {
-  const srcPrefix = join(corePath, "src") + "/";
+  const srcPrefix = join(corePath, "src") + sep;
   if (!filePath.startsWith(srcPrefix)) return undefined;
   const relativePath = filePath.slice(srcPrefix.length);
-  const firstSegment = relativePath.split("/")[0];
+  const firstSegment = relativePath.split(sep)[0];
   return firstSegment;
 }
 
@@ -279,7 +340,8 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
         const componentModules = getComponentModules(packagePath);
 
-        // Build current file state per component (cheap — just stat calls)
+        // Collect source files and mtimes per component in a single pass
+        const sourceFilesByComponent: Record<string, string[]> = {};
         const currentFileState: Record<string, Record<string, number>> = {};
         for (const comp of componentModules) {
           const files = getComponentSourceFilePaths(
@@ -288,6 +350,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
             corePath,
             framework,
           );
+          sourceFilesByComponent[comp] = files;
           currentFileState[comp] = getFileMtimes(files);
         }
 
@@ -297,17 +360,6 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         const cachedState: FrameworkCache | null = cachedJson
           ? JSON.parse(cachedJson)
           : null;
-
-        // Collect source file paths per component for dependency analysis
-        const sourceFilesByComponent: Record<string, string[]> = {};
-        for (const comp of componentModules) {
-          sourceFilesByComponent[comp] = getComponentSourceFilePaths(
-            comp,
-            packagePath,
-            corePath,
-            framework,
-          );
-        }
 
         // Find directly changed components by comparing mtimes
         const directlyChanged = new Set<string>();
