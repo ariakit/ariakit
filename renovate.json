@@ -75,6 +75,7 @@
     },
     {
       "matchPackageNames": [
+        "@astrojs/check",
         "@wordpress/components",
         "cross-env",
         "cross-spawn",
