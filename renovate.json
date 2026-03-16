@@ -3,6 +3,20 @@
   "semanticCommits": "disabled",
   "packageRules": [
     {
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": ["next"],
+      "enabled": false
+    },
+    {
+      "matchFileNames": ["website/package.json"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["shiki"],
+      "matchCurrentVersion": "/^1\\./",
+      "allowedVersions": "/^1\\./"
+    },
+    {
       "matchPackageNames": ["tailwindcss"],
       "matchCurrentVersion": "/^3\\./",
       "enabled": false
@@ -19,12 +33,22 @@
       ]
     },
     {
+      "matchFileNames": ["website/package.json"],
+      "matchPackageNames": ["/^@clerk\\//"],
+      "enabled": false
+    },
+    {
       "groupName": "clerk",
-      "matchPackageNames": ["/clerk/"]
+      "matchPackageNames": ["/^@clerk\\//"]
+    },
+    {
+      "matchFileNames": ["website/package.json"],
+      "matchPackageNames": ["stripe", "/^@stripe\\//"],
+      "enabled": false
     },
     {
       "groupName": "stripe",
-      "matchPackageNames": ["/stripe/"]
+      "matchPackageNames": ["stripe", "/^@stripe\\//"]
     },
     {
       "groupName": "monaco",
@@ -37,6 +61,17 @@
     {
       "groupName": "radix",
       "matchPackageNames": ["/@radix-ui//"]
+    },
+    {
+      "groupName": "vite",
+      "matchPackageNames": ["vite", "/^@vitejs\\//"]
+    },
+    {
+      "matchPackageNames": ["lint-staged"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
     },
     {
       "matchPackageNames": [
@@ -57,9 +92,11 @@
         "react-router",
         "react-shadow",
         "react-toastify",
+        "pnpm",
         "textarea-caret",
         "tsup",
         "typescript",
+        "playwright",
         "webpack",
         "zod",
         "/^@babel//",

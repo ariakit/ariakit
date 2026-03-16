@@ -22,13 +22,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
+      - name: Install node modules
+        uses: ./.github/workflows/install-node-modules
 
       - name: Build styles
-        run: npm run build-styles -w site
+        run: pnpm -F site run build-styles
 
       - name: Generate patch or commit
         uses: ./.github/workflows/patch-or-commit

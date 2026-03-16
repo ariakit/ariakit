@@ -9,6 +9,7 @@ permissions:
   contents: read
 
 env:
+  USE_VIZZLY: ${{ vars.USE_VIZZLY || 'false' }}
   VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
   VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
   VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
@@ -25,8 +26,6 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-npm: true
 
   # install-macos:
   #   name: Install node modules (macOS)
@@ -37,8 +36,6 @@ jobs:
 
   #     - name: Install node modules
   #       uses: ./.github/workflows/install-node-modules
-  #       with:
-  #         cache-npm: true
 
   build:
     name: Build app
@@ -52,10 +49,10 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build app
-        run: npm run build-lite -w site
+        run: pnpm -F site run build-lite
 
       - name: Upload app artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: app-dist
           path: site/dist
@@ -74,10 +71,10 @@ jobs:
         uses: ./.github/workflows/install-node-modules
 
       - name: Build Next.js app
-        run: npm run build-worker -w nextjs
+        run: pnpm -F nextjs run build-worker
 
       - name: Upload Next.js artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: nextjs-dist
           path: nextjs/.open-next
@@ -96,30 +93,30 @@ jobs:
             name: Chrome
             engine: chromium
             project: chrome
-            test: xvfb-run npm run test -w site --
-            visual: xvfb-run npm run test-visual -w site --
+            test: xvfb-run pnpm -F site run test
+            visual: xvfb-run pnpm -F site run test-visual
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
-            test: xvfb-run npm run test -w site --
-            visual: xvfb-run npm run test-visual -w site --
+            test: xvfb-run pnpm -F site run test
+            visual: xvfb-run pnpm -F site run test-visual
           # - os: ubuntu-latest
           #   name: Android
           #   engine: chromium
           #   project: android
-          #   run: xvfb-run npm run test-visual -w site --
+          #   run: xvfb-run pnpm -F site run test-visual
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari
-            test: npm run test -w site --
-            visual: npm run test-visual -w site --
+            test: pnpm -F site run test
+            visual: pnpm -F site run test-visual
           # - os: macos-latest
           #   name: iOS
           #   engine: webkit
           #   project: ios
-          #   run: npm run test-visual -w site --
+          #   run: pnpm -F site run test-visual
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -133,7 +130,7 @@ jobs:
           engine: ${{ matrix.engine }}
 
       - name: Download app artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: app-dist
           path: site/dist
@@ -145,14 +142,57 @@ jobs:
       - name: Test visual
         id: test-visual
         run: |
-          npx vizzly run \
-          --allow-no-token \
-          --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
-          "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests"
+          if [ "$USE_VIZZLY" = "true" ]; then
+            pnpm exec vizzly run \
+            --allow-no-token \
+            --parallel-id="${{ github.run_id }}-${{ github.run_attempt }}" \
+            "${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests"
+          else
+            # -x stops after the first failing test so we can rerun once with -u below.
+            ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
+          fi
+
+      - name: Reset snapshots
+        if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
+        run: find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" -delete
+
+      - name: Update snapshots
+        id: update-snapshots
+        if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
+        run: ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual -u
+
+      - name: Pack snapshots
+        if: always() && env.USE_VIZZLY != 'true'
+        run: |
+          mkdir -p "${{ runner.temp }}/artifacts"
+          python <<'PY'
+          import sys
+          import tarfile
+          from pathlib import Path
+
+          project = "${{ matrix.project }}"
+          root = Path("site/src")
+          archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
+          snapshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
+          if not snapshots:
+              sys.exit(0)
+          with tarfile.open(archive_path, "w:gz") as tar:
+              for snapshot in snapshots:
+                  tar.add(snapshot, arcname=snapshot.as_posix())
+          PY
+
+      - name: Upload snapshots
+        if: always() && env.USE_VIZZLY != 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-visual-${{ matrix.project }}
+          path: ${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.tar.gz
+          if-no-files-found: ignore
+          retention-days: 1
 
       - name: Upload test results to GitHub
-        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure')
-        uses: actions/upload-artifact@v6
+        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure' || steps.update-snapshots.outcome == 'failure')
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.project }}-test-results
           path: site/test-results
@@ -165,13 +205,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        if: env.VIZZLY_TOKEN != ''
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: actions/checkout@v6
 
       - name: Install node modules
-        if: env.VIZZLY_TOKEN != ''
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: ./.github/workflows/install-node-modules
 
       - name: Finalize visual tests
-        if: env.VIZZLY_TOKEN != ''
-        run: npx vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
+        run: pnpm exec vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"

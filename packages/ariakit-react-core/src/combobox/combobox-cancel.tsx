@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useEvent, useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
@@ -65,8 +66,8 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
       store?.move(null);
     });
 
-    const comboboxId = store.useState((state) => state.baseElement?.id);
-    const empty = store.useState((state) => state.value === "");
+    const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
+    const empty = useStoreState(store, (state) => state.value === "");
 
     props = useWrapElement(
       props,

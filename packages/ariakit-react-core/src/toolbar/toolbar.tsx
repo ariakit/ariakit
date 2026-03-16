@@ -2,6 +2,7 @@ import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
@@ -47,7 +48,7 @@ export const useToolbar = createHook<TagName, ToolbarOptions>(
       rtl,
     });
 
-    const orientation = store.useState((state) =>
+    const orientation = useStoreState(store, (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
 

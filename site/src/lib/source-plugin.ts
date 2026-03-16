@@ -11,12 +11,12 @@
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { resolve as resolveImportMeta } from "import-meta-resolve";
 import prettier from "prettier";
 import { readPackageUpSync } from "read-pkg-up";
-import resolveFrom from "resolve-from";
-import type { PluginContext } from "rollup";
 import ts from "typescript";
-import type { Plugin } from "vite";
+import type { HookHandler, Plugin } from "vite";
 import {
   getFramework,
   getFrameworkByFilename,
@@ -57,6 +57,10 @@ interface FlattenedCacheData {
 }
 
 const flattenedFileCache = new Map<string, FlattenedCacheData>();
+
+type SourcePluginContext = ThisParameterType<
+  HookHandler<NonNullable<Plugin["load"]>>
+>;
 
 /**
  * Compute a stable hash for a given string content.
@@ -179,10 +183,22 @@ async function formatWithPrettier(
 }
 
 /**
+ * Resolve an external import path
+ */
+function resolveExternalImportPath(id: string, importer: string) {
+  const importerUrl = pathToFileURL(importer).href;
+  const resolved = resolveImportMeta(id, importerUrl);
+  if (resolved.startsWith("file:")) {
+    return fileURLToPath(resolved);
+  }
+  return resolved;
+}
+
+/**
  * Resolve an import to a full path
  */
 async function resolveImport(
-  context: PluginContext,
+  context: SourcePluginContext,
   id: string,
   importer: string,
 ) {
@@ -194,19 +210,16 @@ async function resolveImport(
     return {
       id,
       external: true,
-      resolvedPath: resolveFrom(dirname(importer), id),
+      resolvedPath: resolveExternalImportPath(id, importer),
       resolvedModule,
     };
   }
   const resolved = await context.resolve(id, importer);
   if (!resolved) return null;
-  const resolvedPath = external
-    ? resolveFrom(dirname(importer), id)
-    : resolved.id;
   return {
-    id: external ? id : resolved.id,
-    external: !!external,
-    resolvedPath,
+    id: resolved.id,
+    external: false,
+    resolvedPath: resolved.id,
     resolvedModule,
   };
 }
@@ -238,7 +251,7 @@ function collectDependencyFromResolved(
 }
 
 async function addFrameworkDependenciesToFile(
-  context: PluginContext,
+  context: SourcePluginContext,
   filePath: string,
   file: SourceFile,
 ) {
@@ -259,7 +272,7 @@ async function addFrameworkDependenciesToFile(
  * placement under `source.sources`.
  */
 async function loadSourceFileCached(
-  context: PluginContext,
+  context: SourcePluginContext,
   id: string,
 ): Promise<CachedFileData> {
   const content = await fs.promises.readFile(id, "utf-8");
@@ -289,7 +302,7 @@ async function loadSourceFileCached(
  * Process a single file and extract its dependencies
  */
 async function processFile(
-  context: PluginContext,
+  context: SourcePluginContext,
   source: Source,
   id: string,
   processedModules = new Set<string>(),
@@ -314,7 +327,7 @@ async function processFile(
  * named imports that target utils members.
  */
 async function rewriteAliasesToRelativeForMerge(
-  context: PluginContext,
+  context: SourcePluginContext,
   files: Record<string, SourceFile>,
 ) {
   const out: Record<string, SourceFile> = {};

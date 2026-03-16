@@ -24,7 +24,7 @@ export default defineConfig({
   retries: 1,
   testIgnore: ["site/**"],
   webServer: {
-    command: "npm start",
+    command: "pnpm start",
     reuseExistingServer: !CI,
     stdout: CI ? "pipe" : "ignore",
     port: 3000,

@@ -2,6 +2,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import type { SeparatorOptions } from "../separator/separator.tsx";
 import { useSeparator } from "../separator/separator.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useCompositeContext } from "./composite-context.tsx";
@@ -37,7 +38,7 @@ export const useCompositeSeparator = createHook<
       "CompositeSeparator must be wrapped in a Composite component.",
   );
 
-  const orientation = store.useState((state) =>
+  const orientation = useStoreState(store, (state) =>
     state.orientation === "horizontal" ? "vertical" : "horizontal",
   );
 

@@ -15,7 +15,9 @@ import { jsdoc } from "./lib/jsdoc-loader.ts";
 import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
 
 function generateExampleId(options: { entry: string }) {
-  return options.entry.replace(/\/[^/]+\.mdx?$/, "");
+  return options.entry
+    .replace(/\/[^/]+\.mdx?$/, "")
+    .replace(/^(?:examples|sandbox)\//, "");
 }
 
 const guides = defineCollection({
@@ -84,8 +86,8 @@ const galleries = defineCollection({
 
 const previews = defineCollection({
   loader: glob({
-    pattern: "**/preview.mdx",
-    base: join(import.meta.dirname, "examples"),
+    pattern: ["examples/**/preview.mdx", "sandbox/**/preview.mdx"],
+    base: import.meta.dirname,
     generateId: generateExampleId,
   }),
   schema: z.object({

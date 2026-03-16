@@ -10,7 +10,7 @@ import type {
 import { useCollectionStoreProps } from "../collection/collection-store.ts";
 import { useEvent } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
-import { useStore, useStoreProps } from "../utils/store.tsx";
+import { useStore, useStoreProps, useStoreState } from "../utils/store.tsx";
 
 export function useFormStoreProps<
   T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">,
@@ -22,7 +22,7 @@ export function useFormStoreProps<
   useStoreProps(store, props, "touched", "setTouched");
 
   const useValue = useCallback<FormStore["useValue"]>(
-    (name) => store.useState(() => store.getValue(name)),
+    (name) => useStoreState(store, () => store.getValue(name)),
     [store],
   );
 
@@ -32,7 +32,7 @@ export function useFormStoreProps<
       // Whenever the items change (for example, when form fields are lazily
       // rendered), we need to reset the callbacks so they always run in a
       // consistent order.
-      const items = store.useState("items");
+      const items = useStoreState(store, "items");
       useEffect(() => store.onValidate(callback), [items, callback]);
     },
     [store],
@@ -42,7 +42,7 @@ export function useFormStoreProps<
     (callback) => {
       callback = useEvent(callback);
       // Same logic as useValidate.
-      const items = store.useState("items");
+      const items = useStoreState(store, "items");
       useEffect(() => store.onSubmit(callback), [items, callback]);
     },
     [store],

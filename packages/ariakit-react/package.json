@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react",
-  "version": "0.4.21",
+  "version": "0.4.23",
   "description": "Toolkit for building accessible web apps with React",
   "sideEffects": false,
   "license": "MIT",
@@ -37,11 +37,15 @@
     "components"
   ],
   "dependencies": {
-    "@ariakit/react-core": "0.4.21"
+    "@ariakit/react-core": "workspace:*"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
     "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "exports": {
     ".": "./src/index.ts",

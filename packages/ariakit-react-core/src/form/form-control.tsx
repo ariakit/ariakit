@@ -12,6 +12,7 @@ import {
   useId,
   useMergeRefs,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -42,7 +43,7 @@ function getNamedElement(
 }
 
 function useItem(store: FormStore, name: string, type: ItemType) {
-  return store.useState((state) =>
+  return useStoreState(store, (state) =>
     state.items.find((item) => item.type === type && item.name === name),
   );
 }
@@ -132,7 +133,8 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
       props["aria-describedby"],
     );
 
-    const invalid = store.useState(
+    const invalid = useStoreState(
+      store,
       () => !!store?.getError(name) && store.getFieldTouched(name),
     );
 

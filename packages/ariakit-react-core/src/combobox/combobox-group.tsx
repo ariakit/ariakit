@@ -3,6 +3,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.tsx";
 import { useCompositeGroup } from "../composite/composite-group.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useComboboxScopedContext } from "./combobox-context.tsx";
@@ -39,7 +40,7 @@ export const useComboboxGroup = createHook<TagName, ComboboxGroupOptions>(
         "ComboboxRow must be wrapped in a ComboboxList or ComboboxPopover component",
     );
 
-    const contentElement = store.useState("contentElement");
+    const contentElement = useStoreState(store, "contentElement");
     const popupRole = getPopupRole(contentElement);
 
     if (popupRole === "grid") {

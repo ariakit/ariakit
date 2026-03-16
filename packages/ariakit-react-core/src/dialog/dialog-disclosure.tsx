@@ -3,6 +3,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import type { DisclosureOptions } from "../disclosure/disclosure.tsx";
 import { useDisclosure } from "../disclosure/disclosure.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useDialogProviderContext } from "./dialog-context.tsx";
@@ -33,7 +34,7 @@ export const useDialogDisclosure = createHook<TagName, DialogDisclosureOptions>(
         "DialogDisclosure must receive a `store` prop or be wrapped in a DialogProvider component.",
     );
 
-    const contentElement = store.useState("contentElement");
+    const contentElement = useStoreState(store, "contentElement");
 
     props = {
       "aria-haspopup": getPopupRole(contentElement, "dialog"),

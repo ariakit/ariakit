@@ -10,6 +10,7 @@ import {
   useMergeRefs,
   useMetadataProps,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useDisclosureProviderContext } from "./disclosure-context.tsx";
@@ -45,8 +46,8 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
 
     const ref = useRef<HTMLType>(null);
     const [expanded, setExpanded] = useState(false);
-    const disclosureElement = store.useState("disclosureElement");
-    const open = store.useState("open");
+    const disclosureElement = useStoreState(store, "disclosureElement");
+    const open = useStoreState(store, "open");
 
     // Assigns the disclosure element whenever it's undefined or disconnected
     // from the DOM. If the current element is the disclosure element, it will
@@ -74,7 +75,7 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
       store?.toggle();
     });
 
-    const contentElement = store.useState("contentElement");
+    const contentElement = useStoreState(store, "contentElement");
 
     props = {
       "aria-expanded": expanded,

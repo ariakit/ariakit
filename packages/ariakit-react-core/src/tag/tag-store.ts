@@ -25,7 +25,7 @@ export function useTagStoreProps<T extends Core.TagStore>(
  * @example
  * ```jsx
  * const tag = useTagStore({ defaultValues: ["Apple", "Banana"]});
- * const values = tag.useState("values");
+ * const values = useStoreState(tag, "values");
  *
  * <TagList store={tag}>
  *   {values.map((value) => (

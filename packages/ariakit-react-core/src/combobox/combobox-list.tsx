@@ -10,6 +10,7 @@ import {
   useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import {
@@ -53,11 +54,11 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
 
     const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
-    const mounted = store.useState("mounted");
+    const mounted = useStoreState(store, "mounted");
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
-    const multiSelectable = store.useState((state) =>
+    const multiSelectable = useStoreState(store, (state) =>
       Array.isArray(state.selectedValue),
     );
     const role = useAttribute(ref, "role", props.role);
@@ -68,7 +69,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       : undefined;
 
     const [hasListboxInside, setHasListboxInside] = useState(false);
-    const contentElement = store.useState("contentElement");
+    const contentElement = useStoreState(store, "contentElement");
 
     // We support nested <ComboboxList> elements (usually in the form of
     // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so

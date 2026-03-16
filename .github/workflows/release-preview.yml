@@ -21,17 +21,15 @@ jobs:
 
       - name: Install node modules
         uses: ./.github/workflows/install-node-modules
-        with:
-          cache-npm: true
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
 
       - name: Get changeset status
         id: changeset-status
         run: |
           # Only consider changesets added since the base branch (i.e., in this PR)
-          if npx changeset status --since=${{ github.base_ref }} --output changes.json 2>/dev/null; then
+          if pnpm exec changeset status --since=${{ github.base_ref }} --output changes.json 2>/dev/null; then
             echo "has-changesets=true" >> $GITHUB_OUTPUT
           else
             echo "has-changesets=false" >> $GITHUB_OUTPUT
@@ -63,7 +61,7 @@ jobs:
         run: |
           packages=$(echo $AFFECTED_PACKAGES | jq -r '.[]' | tr '\n' ' ')
           if [ -n "$packages" ]; then
-            npx pkg-pr-new publish --compact --template './templates/*' $packages
+            pnpm dlx pkg-pr-new publish --compact --template './templates/*' $packages
           else
             echo "No affected packages to publish"
           fi

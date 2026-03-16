@@ -2,7 +2,7 @@ import "@testing-library/jest-dom/vitest";
 
 import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { createElement, Suspense as ReactSuspense, version } from "react";
+import { createElement, Suspense as ReactSuspense } from "react";
 import {
   createComponent,
   render as renderSolid,
@@ -11,9 +11,7 @@ import {
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";
 
-if (!version.startsWith("17")) {
-  failOnConsole();
-}
+failOnConsole();
 
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {
@@ -46,20 +44,6 @@ expect.extend({
     };
   },
 });
-
-if (version.startsWith("17")) {
-  vi.mock("react", async () => {
-    const actual = await vi.importActual<typeof import("react")>("react");
-    let id = 0;
-    const mocks = {
-      startTransition: (v: () => any) => v(),
-      useDeferredValue: <T>(v: T) => v,
-      useTransition: () => [false, (v: () => any) => v()],
-      useId: () => actual.useMemo(() => `id-${id++}`, []),
-    };
-    return { ...mocks, ...actual };
-  });
-}
 
 async function tryImport(path: string) {
   return import(path)
