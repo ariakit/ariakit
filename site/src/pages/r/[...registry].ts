@@ -256,7 +256,7 @@ function getFlattenedSources(
     return source.sources;
   }
   if ("id" in source && !("utilities" in source)) {
-    return { [source.id]: source as SourceFile };
+    return { [source.id]: source };
   }
   return {};
 }

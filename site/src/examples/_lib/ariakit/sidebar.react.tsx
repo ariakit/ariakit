@@ -1,5 +1,5 @@
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 import { useIsMobile } from "../react-hooks/use-is-mobile.ts";
 
@@ -16,7 +16,7 @@ const SidebarContext = React.createContext<SidebarContextType>(
 );
 
 export interface SidebarProps
-  extends ak.RoleProps<"div">, Partial<SidebarContextType> {
+  extends ak.RoleProps, Partial<SidebarContextType> {
   collapsible?: boolean | "icon";
   collapsed?: boolean;
   /** Custom base class name. */
@@ -106,7 +106,7 @@ export function SidebarToggle({ baseClassName, ...props }: SidebarToggleProps) {
   );
 }
 
-export interface SidebarHeaderProps extends ak.RoleProps<"div"> {
+export interface SidebarHeaderProps extends ak.RoleProps {
   /** Custom base class name. */
   baseClassName?: string;
 }
@@ -120,7 +120,7 @@ export function SidebarHeader({ baseClassName, ...props }: SidebarHeaderProps) {
   );
 }
 
-export interface SidebarBodyProps extends ak.RoleProps<"div"> {
+export interface SidebarBodyProps extends ak.RoleProps {
   /** Custom base class name. */
   baseClassName?: string;
 }
@@ -134,7 +134,7 @@ export function SidebarBody({ baseClassName, ...props }: SidebarBodyProps) {
   );
 }
 
-export interface SidebarFooterProps extends ak.RoleProps<"div"> {
+export interface SidebarFooterProps extends ak.RoleProps {
   /** Custom base class name. */
   baseClassName?: string;
 }

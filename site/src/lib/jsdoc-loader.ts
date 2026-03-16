@@ -247,8 +247,8 @@ function getExamples(node: Node) {
   const examples: Reference["examples"] = [];
 
   for (const tag of tags) {
-    if ((tag as any).getTagName() !== "example") continue;
-    const rawText = (tag as any).getComment();
+    if (tag.getTagName() !== "example") continue;
+    const rawText = tag.getComment();
     if (!rawText) continue;
     // Ensure it's a string
     const text = String(rawText);

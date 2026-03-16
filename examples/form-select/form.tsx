@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 import type { SelectProps } from "./select.tsx";
 import { Select } from "./select.tsx";

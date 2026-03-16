@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type * as React from "react";
 import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
 import type {

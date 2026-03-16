@@ -5,19 +5,19 @@ export default defineConfig({
   options: {
     typeAware: true,
   },
-  ignorePatterns: [
-    "**/node_modules",
-    "website",
-    "**/dist",
-    "**/build",
-    "**/.next",
-    "**/.pages",
-    "**/.astro",
-    "**/*.astro",
-    "**/.types",
-    "site/src/styles/styles.json",
-  ],
+  ignorePatterns: ["website", "**/*.astro"],
+  categories: {
+    correctness: "error",
+    suspicious: "warn",
+    pedantic: "off",
+  },
   rules: {
+    "no-unsafe-type-assertion": "off",
+    "no-unassigned-import": "off",
+    "react-in-jsx-scope": "off",
+    "no-shadow": "off",
+    "iframe-missing-sandbox": "off",
+    "consistent-type-imports": ["error", { fixStyle: "separate-type-imports" }],
     "no-unused-vars": [
       "error",
       {
@@ -28,30 +28,24 @@ export default defineConfig({
         argsIgnorePattern: "^_",
       },
     ],
-    "@typescript-eslint/consistent-type-imports": [
-      "error",
-      {
-        fixStyle: "separate-type-imports",
-      },
-    ],
   },
   overrides: [
     {
       files: ["*.d.ts"],
       rules: {
-        "@typescript-eslint/consistent-type-imports": "off",
+        "consistent-type-imports": "off",
       },
     },
     {
       files: ["packages/ariakit-react-core/src/**/*.{ts,tsx}"],
       rules: {
-        "react/forward-ref-uses-ref": "off",
+        "forward-ref-uses-ref": "off",
       },
     },
     {
       files: ["site/src/lib/reference-tokenizer.ts"],
       rules: {
-        "@typescript-eslint/no-redundant-type-constituents": "off",
+        "no-redundant-type-constituents": "off",
       },
     },
   ],

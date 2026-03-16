@@ -9,7 +9,7 @@ import type { APIContext } from "astro";
  * SPDX-License-Identifier: UNLICENSED
  */
 import { ActionError, defineAction } from "astro:actions";
-import type Stripe from "stripe";
+import type { Stripe } from "stripe";
 import { z } from "zod";
 import { getUser, isAdmin } from "#app/lib/auth.ts";
 import {

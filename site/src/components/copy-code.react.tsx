@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "../icons/icon.react.tsx";

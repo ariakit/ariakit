@@ -12,11 +12,16 @@ import type { BivariantCallback } from "../utils/types.ts";
 
 function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);
-  const lastItem = [...items].reverse().find((item) => !!item.element);
+  const lastElement = [...items]
+    .reverse()
+    .find((item) => !!item.element)?.element;
   let parentElement = firstItem?.element?.parentElement;
-  while (parentElement && lastItem?.element) {
+  if (!lastElement) {
+    return getDocument(parentElement).body;
+  }
+  while (parentElement) {
     const parent = parentElement;
-    if (lastItem && parent.contains(lastItem.element)) {
+    if (parent.contains(lastElement)) {
       return parentElement;
     }
     parentElement = parentElement.parentElement;

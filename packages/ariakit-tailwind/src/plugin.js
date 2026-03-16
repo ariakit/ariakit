@@ -158,7 +158,7 @@ const AriakitTailwind = plugin(
       const c = `max(0, c - ${level} * ${cMultiplier})`;
       const h = "h";
 
-      if (`${contrast}` !== "0") {
+      if (contrast !== "0") {
         const layerContrast = `min(1, calc(-1 * ${contrast}))`;
         const negativeContrast = `min(0, ${layerContrast})`;
         l = `calc(${l} + ${lMultiplier} * ${negativeContrast} * ${oklchLightDark(downUp(level, "-1", "-5"), downUp(level, "-0.5", "1"))})`;

@@ -46,7 +46,7 @@ test("hide menu by clicking on dialog", async () => {
   await click(q.button("Share"));
   expect(q.dialog()).toBeVisible();
   expect(q.menu()).toBeVisible();
-  await click(q.dialog()!);
+  await click(q.dialog());
   expect(q.dialog()).toBeVisible();
   expect(q.menu()).not.toBeInTheDocument();
   expect(q.dialog()).toHaveFocus();

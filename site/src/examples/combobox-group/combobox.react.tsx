@@ -1,5 +1,5 @@
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 
 export interface ComboboxProps extends Omit<ak.ComboboxProps, "onChange"> {

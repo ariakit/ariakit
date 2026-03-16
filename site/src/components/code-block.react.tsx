@@ -9,7 +9,7 @@
  */
 import { invariant } from "@ariakit/core/utils/misc";
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { SplitSquareHorizontal } from "lucide-react";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
@@ -529,7 +529,7 @@ export function CodeBlockPreview({
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       if (!target) return;
-      const link = target.closest("a") as HTMLAnchorElement | null;
+      const link = target.closest("a");
       if (!link) return;
       if (link.target === "_blank") return;
       event.preventDefault();

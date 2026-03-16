@@ -56,7 +56,7 @@ export function type(
 
       // After key down, focus may change and be on a text field, so we get the
       // active element again.
-      element = (getActiveElement(element) || element) as HTMLElement;
+      element = getActiveElement(element) || element;
 
       if (isTextField(element)) {
         const input = element as TextField;

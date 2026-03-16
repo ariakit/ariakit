@@ -190,7 +190,7 @@ export function useStoreStateObject(
   const storeSubscribe = React.useCallback(
     (callback: () => void) => {
       if (!store) return noopSubscribe();
-      return subscribe(store as CoreStore, null, callback);
+      return subscribe(store, null, callback);
     },
     [store],
   );

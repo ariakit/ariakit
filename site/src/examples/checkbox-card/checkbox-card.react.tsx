@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { ComponentProps, CSSProperties } from "react";
 
 type CheckboxProps = Pick<
@@ -87,7 +87,7 @@ export function CheckboxCardGrid<T extends Value = Value>({
     <Ariakit.CheckboxProvider
       value={value}
       setValue={setValue}
-      defaultValue={defaultValue!}
+      defaultValue={defaultValue}
     >
       <div
         {...props}

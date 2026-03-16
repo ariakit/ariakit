@@ -319,7 +319,7 @@ export function makeProxies(rootPath) {
       [
         "",
         `Created proxies in ${chalk.bold(pkg.name)}:`,
-        `${created.join(", ")}`,
+        created.join(", "),
       ].join("\n"),
     );
   }

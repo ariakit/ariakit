@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 import * as rac from "react-aria-components";
 import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
