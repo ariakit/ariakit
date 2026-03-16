@@ -9,8 +9,8 @@
  */
 
 import type { z } from "astro:content";
-import { existsSync, readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
 import type { FunctionLikeDeclaration } from "ts-morph";
@@ -34,6 +34,225 @@ export interface JsDocFrameworkOptions {
   watch?: boolean;
 }
 
+interface ComponentCache {
+  files: Record<string, number>;
+  entryIds: string[];
+}
+
+interface FrameworkCache {
+  components: Record<string, ComponentCache>;
+}
+
+/**
+ * Gets the source file paths that a component module depends on, without
+ * creating a ts-morph project. This is cheap — just regex on the public
+ * module file plus filesystem existence checks.
+ */
+function getComponentSourceFilePaths(
+  component: string,
+  packagePath: string,
+  corePath: string,
+  framework: string,
+): string[] {
+  const publicModulePath = join(packagePath, "src", `${component}.ts`);
+  if (!existsSync(publicModulePath)) return [];
+
+  const files = [publicModulePath];
+  const content = readFileSync(publicModulePath, "utf-8");
+
+  const reExportPattern =
+    /export\s*(?:type\s*)?\{\s*[^}]+\s*\}\s*from\s*["']([^"']+)["']/g;
+  const corePackagePrefix = `@ariakit/${framework}-core/`;
+  let match: RegExpExecArray | null;
+
+  while ((match = reExportPattern.exec(content)) !== null) {
+    const fromPath = match[1];
+    if (!fromPath) continue;
+
+    const resolvedPath = join(
+      corePath,
+      "src",
+      fromPath.replace(new RegExp(`^${corePackagePrefix}`), ""),
+    );
+
+    if (existsSync(`${resolvedPath}.tsx`)) {
+      files.push(`${resolvedPath}.tsx`);
+    } else if (existsSync(`${resolvedPath}.ts`)) {
+      files.push(`${resolvedPath}.ts`);
+    }
+  }
+
+  return [...new Set(files)];
+}
+
+/**
+ * Returns a map of file paths to their modification times in milliseconds.
+ */
+function getFileMtimes(files: string[]): Record<string, number> {
+  const mtimes: Record<string, number> = {};
+  for (const file of files) {
+    try {
+      mtimes[file] = statSync(file).mtimeMs;
+    } catch {
+      // File no longer exists — will trigger a rebuild
+    }
+  }
+  return mtimes;
+}
+
+/**
+ * Checks whether two mtime maps are identical (same keys and values).
+ */
+function mtimesEqual(
+  a: Record<string, number> | undefined,
+  b: Record<string, number> | undefined,
+): boolean {
+  if (!a || !b) return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  for (const key of keysA) {
+    if (a[key] !== b[key]) return false;
+  }
+  return true;
+}
+
+/**
+ * Stores references for a component in the data store and returns the
+ * generated entry IDs.
+ */
+function storeComponentReferences(
+  store: LoaderContext["store"],
+  references: Reference[],
+): string[] {
+  const entryIds: string[] = [];
+  for (const data of references) {
+    const nameSlug = slugify(data.name);
+    const id = `${data.framework}/${data.component}/${nameSlug}`;
+    store.set({ id, data });
+    entryIds.push(id);
+  }
+  return entryIds;
+}
+
+/**
+ * Parses a core source file for relative imports to other component
+ * directories (e.g., `from "../composite/composite.tsx"`). Returns the
+ * resolved absolute paths of those imports.
+ */
+function getSourceFileImportedPaths(sourceFilePath: string): string[] {
+  if (!existsSync(sourceFilePath)) return [];
+  const content = readFileSync(sourceFilePath, "utf-8");
+  const dir = dirname(sourceFilePath);
+  const paths: string[] = [];
+
+  // Only match imports that go up to a sibling component directory
+  const importPattern = /from\s+["'](\.\.\/[^"']+)["']/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = importPattern.exec(content)) !== null) {
+    const importPath = match[1];
+    if (!importPath) continue;
+    const resolvedPath = resolve(dir, importPath);
+    if (existsSync(resolvedPath)) {
+      paths.push(resolvedPath);
+    }
+  }
+  return paths;
+}
+
+/**
+ * Maps an absolute core source file path back to its component name by
+ * extracting the first directory segment under `{corePath}/src/`.
+ */
+function getComponentFromCorePath(
+  filePath: string,
+  corePath: string,
+): string | undefined {
+  const srcPrefix = join(corePath, "src") + "/";
+  if (!filePath.startsWith(srcPrefix)) return undefined;
+  const relativePath = filePath.slice(srcPrefix.length);
+  const firstSegment = relativePath.split("/")[0];
+  return firstSegment;
+}
+
+/**
+ * Builds a component-level dependency graph by scanning cross-component
+ * imports in all core source files. Returns a map from each component to
+ * the list of other components it imports from.
+ */
+function buildComponentDependencyGraph(
+  componentModules: string[],
+  sourceFilesByComponent: Record<string, string[]>,
+  corePath: string,
+): Record<string, string[]> {
+  const componentSet = new Set(componentModules);
+  const deps: Record<string, Set<string>> = {};
+
+  for (const comp of componentModules) {
+    deps[comp] = new Set();
+    const sourceFiles = sourceFilesByComponent[comp] ?? [];
+    for (const file of sourceFiles) {
+      // Only scan core source files for cross-component imports
+      if (!file.startsWith(join(corePath, "src"))) continue;
+
+      const importedPaths = getSourceFileImportedPaths(file);
+      for (const importedPath of importedPaths) {
+        const depComp = getComponentFromCorePath(importedPath, corePath);
+        if (depComp && depComp !== comp && componentSet.has(depComp)) {
+          deps[comp].add(depComp);
+        }
+      }
+    }
+  }
+
+  const result: Record<string, string[]> = {};
+  for (const [comp, depSet] of Object.entries(deps)) {
+    result[comp] = [...depSet];
+  }
+  return result;
+}
+
+/**
+ * Given a set of directly changed components and a dependency graph,
+ * returns all components that need rebuilding — the directly changed ones
+ * plus every component that transitively depends on them.
+ */
+function propagateChanges(
+  directlyChanged: Set<string>,
+  deps: Record<string, string[]>,
+  allComponents: string[],
+): Set<string> {
+  // Build reverse dependency map: component → components that depend on it
+  const reverseDeps: Record<string, Set<string>> = {};
+  for (const comp of allComponents) {
+    reverseDeps[comp] = new Set();
+  }
+  for (const [comp, compDeps] of Object.entries(deps)) {
+    for (const dep of compDeps) {
+      reverseDeps[dep]?.add(comp);
+    }
+  }
+
+  // BFS from changed components through reverse dependencies
+  const affected = new Set(directlyChanged);
+  const queue = [...directlyChanged];
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current) break;
+    const dependents = reverseDeps[current];
+    if (!dependents) continue;
+    for (const dependent of dependents) {
+      if (!affected.has(dependent)) {
+        affected.add(dependent);
+        queue.push(dependent);
+      }
+    }
+  }
+
+  return affected;
+}
+
 /**
  * Creates a JSDoc loader for multiple ariakit framework packages
  */
@@ -44,25 +263,162 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
     async load(context: LoaderContext) {
       const logger = createLogger(context.logger);
 
-      // Function to reload all references for a given framework
-      const loadAllReferences = (options: JsDocFrameworkOptions) => {
-        const { info } = logger.start();
-        const references = loadReferences({
-          packagePath: options.packagePath,
-          corePath: options.corePath,
-          framework: options.framework,
-        });
-        for (const data of references) {
-          const nameSlug = slugify(data.name);
-          const id = `${data.framework}/${data.component}/${nameSlug}`;
-          context.store.set({ id, data });
+      // Lazily create the ts-morph project only when at least one component
+      // needs re-parsing.
+      let project: Project | undefined;
+      const getProject = () => {
+        if (!project) {
+          project = createProject();
         }
-        info(`Loaded ${references.length} references for ${options.framework}`);
+        return project;
       };
 
-      context.store.clear();
       for (const options of frameworkOptions) {
-        loadAllReferences(options);
+        const { info } = logger.start();
+        const { framework, packagePath, corePath } = options;
+
+        const componentModules = getComponentModules(packagePath);
+
+        // Build current file state per component (cheap — just stat calls)
+        const currentFileState: Record<string, Record<string, number>> = {};
+        for (const comp of componentModules) {
+          const files = getComponentSourceFilePaths(
+            comp,
+            packagePath,
+            corePath,
+            framework,
+          );
+          currentFileState[comp] = getFileMtimes(files);
+        }
+
+        // Load cached state from meta
+        const cacheKey = `cache:${framework}`;
+        const cachedJson = context.meta.get(cacheKey);
+        const cachedState: FrameworkCache | null = cachedJson
+          ? JSON.parse(cachedJson)
+          : null;
+
+        // Collect source file paths per component for dependency analysis
+        const sourceFilesByComponent: Record<string, string[]> = {};
+        for (const comp of componentModules) {
+          sourceFilesByComponent[comp] = getComponentSourceFilePaths(
+            comp,
+            packagePath,
+            corePath,
+            framework,
+          );
+        }
+
+        // Find directly changed components by comparing mtimes
+        const directlyChanged = new Set<string>();
+        for (const comp of componentModules) {
+          const cached = cachedState?.components[comp];
+          if (!mtimesEqual(currentFileState[comp], cached?.files)) {
+            directlyChanged.add(comp);
+          }
+        }
+
+        // Find removed components (were cached but no longer in index.ts)
+        const removedComponents: string[] = [];
+        if (cachedState) {
+          for (const comp of Object.keys(cachedState.components)) {
+            if (!componentModules.includes(comp)) {
+              removedComponents.push(comp);
+            }
+          }
+        }
+
+        // Delete store entries for removed components
+        for (const comp of removedComponents) {
+          const cached = cachedState?.components[comp];
+          if (!cached) continue;
+          for (const id of cached.entryIds) {
+            context.store.delete(id);
+          }
+        }
+
+        // Propagate changes through the dependency graph. Components that
+        // import types from a changed component (e.g., ComboboxOptions
+        // extends CompositeOptions) must also be rebuilt even if their own
+        // files haven't changed.
+        let changedComponents: Set<string>;
+        if (directlyChanged.size > 0) {
+          const depGraph = buildComponentDependencyGraph(
+            componentModules,
+            sourceFilesByComponent,
+            corePath,
+          );
+          changedComponents = propagateChanges(
+            directlyChanged,
+            depGraph,
+            componentModules,
+          );
+        } else {
+          changedComponents = directlyChanged;
+        }
+
+        // Skip entirely if nothing changed
+        if (changedComponents.size === 0 && removedComponents.length === 0) {
+          info(`Skipped references for ${framework} (no changes)`);
+          continue;
+        }
+
+        // Delete old store entries for changed components before re-parsing
+        for (const comp of changedComponents) {
+          const cached = cachedState?.components[comp];
+          if (!cached) continue;
+          for (const id of cached.entryIds) {
+            context.store.delete(id);
+          }
+        }
+
+        // Build new cache, starting from unchanged components
+        const newCache: FrameworkCache = { components: {} };
+        for (const comp of componentModules) {
+          if (changedComponents.has(comp)) continue;
+          const cached = cachedState?.components[comp];
+          if (!cached) continue;
+          newCache.components[comp] = cached;
+        }
+
+        // Parse only changed components
+        let totalReferences = 0;
+        for (const comp of changedComponents) {
+          const references = parseComponentReferences({
+            project: getProject(),
+            component: comp,
+            packagePath,
+            corePath,
+            framework,
+          });
+
+          const entryIds = storeComponentReferences(context.store, references);
+
+          const fileMtimes = currentFileState[comp];
+          if (fileMtimes) {
+            newCache.components[comp] = { files: fileMtimes, entryIds };
+          }
+          totalReferences += references.length;
+        }
+
+        // Persist cache for next run
+        context.meta.set(cacheKey, JSON.stringify(newCache));
+
+        const changedCount = changedComponents.size;
+        if (changedCount === componentModules.length) {
+          info(`Loaded ${totalReferences} references for ${framework}`);
+        } else {
+          const propagatedCount = changedCount - directlyChanged.size;
+          const parts = [`${directlyChanged.size} directly changed`];
+          if (propagatedCount > 0) {
+            parts.push(`${propagatedCount} via dependencies`);
+          }
+          info(
+            `Loaded ${totalReferences} references for ` +
+              `${changedCount}/${componentModules.length} components ` +
+              `in ${framework} (${parts.join(", ")})`,
+          );
+        }
       }
 
       if (!context.watcher) return;
@@ -80,12 +436,68 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
       if (!watchedPaths.size) return;
 
+      // In watch mode, reload all references for the affected framework.
+      // This keeps the watcher simple while still updating the cache for
+      // subsequent cold starts.
       context.watcher.on("all", (_, path) => {
         const options = frameworkOptions.find(({ corePath, packagePath }) =>
           [corePath, packagePath].some((p) => path.includes(p)),
         );
         if (!options) return;
-        loadAllReferences(options);
+
+        const { info } = logger.start();
+        const { framework, packagePath, corePath } = options;
+
+        // Clear all entries for this framework
+        const cacheKey = `cache:${framework}`;
+        const cachedJson = context.meta.get(cacheKey);
+        const cachedState: FrameworkCache | null = cachedJson
+          ? JSON.parse(cachedJson)
+          : null;
+        if (cachedState) {
+          for (const comp of Object.values(cachedState.components)) {
+            for (const id of comp.entryIds) {
+              context.store.delete(id);
+            }
+          }
+        }
+
+        // Reload all references for this framework
+        const references = loadReferences({
+          packagePath,
+          corePath,
+          framework,
+        });
+
+        // Rebuild cache
+        const componentModules = getComponentModules(packagePath);
+        const newCache: FrameworkCache = { components: {} };
+        const entryIdsByComponent: Record<string, string[]> = {};
+
+        for (const data of references) {
+          const nameSlug = slugify(data.name);
+          const id = `${data.framework}/${data.component}/${nameSlug}`;
+          context.store.set({ id, data });
+          const compIds = entryIdsByComponent[data.component] ?? [];
+          compIds.push(id);
+          entryIdsByComponent[data.component] = compIds;
+        }
+
+        for (const comp of componentModules) {
+          const files = getComponentSourceFilePaths(
+            comp,
+            packagePath,
+            corePath,
+            framework,
+          );
+          newCache.components[comp] = {
+            files: getFileMtimes(files),
+            entryIds: entryIdsByComponent[comp] ?? [],
+          };
+        }
+
+        context.meta.set(cacheKey, JSON.stringify(newCache));
+        info(`Loaded ${references.length} references for ${framework}`);
       });
     },
   };
