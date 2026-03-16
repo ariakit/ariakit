@@ -53,7 +53,7 @@
     "@ariakit/tailwind": "workspace:*",
     "@astrojs/check": "0.9.7",
     "@astrojs/cloudflare": "12.6.13",
-    "@astrojs/markdown-remark": "6.3.11",
+    "@astrojs/markdown-remark": "7.0.0",
     "@astrojs/mdx": "4.3.14",
     "@astrojs/react": "4.4.2",
     "@astrojs/solid-js": "5.1.3",
