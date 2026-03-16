@@ -1,5 +1,8 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
-import type { PickRequired } from "@ariakit/core/utils/types";
+import type {
+  BivariantCallback,
+  PickRequired,
+} from "@ariakit/core/utils/types";
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
@@ -62,7 +65,7 @@ export interface CheckboxStoreOptions<
    *   const checkbox = useCheckboxStore({ value, setValue: onChange });
    * }
    */
-  setValue?: (value: CheckboxStoreState<T>["value"]) => void;
+  setValue?: BivariantCallback<(value: CheckboxStoreState<T>["value"]) => void>;
 }
 
 export interface CheckboxStoreProps<
