@@ -156,12 +156,19 @@ const signedIn = isSignedIn(Astro);
             signedIn && (
               <li class="ms-auto">
                 <SignOutButton
-                  class="ak-link [&&]:ak-text/60 ak-button hover:no-underline"
+                  asChild
                   redirectUrl={getPlusCheckoutPath({
                     url: Astro.url,
                     step: "login",
                   })}
-                />
+                >
+                  <button
+                    type="button"
+                    class="ak-link [&&]:ak-text/60 ak-button hover:no-underline"
+                  >
+                    Sign out
+                  </button>
+                </SignOutButton>
               </li>
             )
           }

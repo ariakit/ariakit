@@ -85,8 +85,15 @@ export function expanded(
 }
 
 export function isSalePromo(promo: Stripe.PromotionCode | Stripe.Coupon) {
-  const coupon = "coupon" in promo ? promo.coupon : promo;
+  const coupon = "promotion" in promo ? promo.promotion.coupon : promo;
+  if (!coupon || typeof coupon === "string" || coupon.deleted) return false;
   return coupon.metadata?.type === SALE_PROMO_TYPE;
+}
+
+export function getPromotionCoupon(promo: Stripe.PromotionCode) {
+  const coupon = promo.promotion.coupon;
+  if (!coupon || typeof coupon === "string") return null;
+  return coupon;
 }
 
 export interface CreateSalePromoParams {
@@ -131,7 +138,10 @@ export async function createSalePromo({
   const expiresAtTime = expiresAt ? getUnixTime(expiresAt) : undefined;
 
   const promo = await stripe.promotionCodes.create({
-    coupon: coupon.id,
+    promotion: {
+      type: "coupon",
+      coupon: coupon.id,
+    },
     customer: customer || undefined,
     max_redemptions: maxRedemptions,
     expires_at: expiresAtTime,
