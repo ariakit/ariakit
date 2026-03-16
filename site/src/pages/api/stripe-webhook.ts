@@ -21,6 +21,7 @@ import { createLogger } from "#app/lib/logger.ts";
 import { objectId } from "#app/lib/object.ts";
 import { badRequest, internalServerError, ok } from "#app/lib/response.ts";
 import {
+  getPromotionCoupon,
   getStripeClient,
   isSalePromo,
   parsePlusPriceKey,
@@ -159,8 +160,17 @@ export const POST: APIRoute = async (context) => {
   ) {
     let userId: string | null = null;
     const promo = event.data.object;
-    const coupon = promo.coupon;
-    const isSale = isSalePromo(promo);
+    let coupon = getPromotionCoupon(promo);
+    if (!coupon) {
+      const couponId = promo.promotion.coupon;
+      if (!couponId || typeof couponId !== "string") {
+        await deletePromo(context, promo.id);
+        logger.error("Promotion code has no coupon", promo.id);
+        return ok();
+      }
+      coupon = await stripe.coupons.retrieve(couponId);
+    }
+    const isSale = isSalePromo(coupon);
     if (!isSale && !promo.customer) {
       await deletePromo(context, promo.id);
       logger.info("Promotion code not a plus sale", promo.id);
@@ -180,6 +190,7 @@ export const POST: APIRoute = async (context) => {
       return ok();
     }
     if (!coupon.percent_off) {
+      await deletePromo(context, promo.id);
       logger.error("Promotion code has no percent off", promo.id);
       return ok();
     }
