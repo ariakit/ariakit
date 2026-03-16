@@ -3,8 +3,10 @@ import Link from "next/link.js";
 import type { ComponentProps, ReactNode } from "react";
 import { Children, isValidElement } from "react";
 import { twJoin } from "tailwind-merge";
+
 import pageIndex from "@/build-pages/index.ts";
 import { getPageIcon } from "@/lib/get-page-icon.tsx";
+
 import { InlineLink } from "./inline-link.tsx";
 import { PageItem } from "./page-item.tsx";
 

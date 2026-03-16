@@ -1,6 +1,7 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useEffect } from "react";
+
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
 import { useInitialValue, useWrapElement } from "../utils/hooks.ts";
@@ -156,8 +157,7 @@ export const MenuItemRadio = memo(
 );
 
 export interface MenuItemRadioOptions<T extends ElementType = TagName>
-  extends MenuItemOptions<T>,
-    Omit<RadioOptions<T>, "store"> {
+  extends MenuItemOptions<T>, Omit<RadioOptions<T>, "store"> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

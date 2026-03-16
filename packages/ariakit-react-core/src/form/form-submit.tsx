@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useStoreState } from "../utils/store.tsx";
@@ -70,8 +71,9 @@ export const FormSubmit = forwardRef(function FormSubmit(
   return createElement(TagName, htmlProps);
 });
 
-export interface FormSubmitOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface FormSubmitOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

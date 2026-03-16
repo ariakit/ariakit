@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -48,8 +49,9 @@ export const HovercardHeading = forwardRef(function HovercardHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardHeadingOptions<T extends ElementType = TagName>
-  extends PopoverHeadingOptions<T> {
+export interface HovercardHeadingOptions<
+  T extends ElementType = TagName,
+> extends PopoverHeadingOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

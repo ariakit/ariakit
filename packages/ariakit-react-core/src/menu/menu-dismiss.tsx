@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.tsx";
 import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -50,8 +51,9 @@ export const MenuDismiss = forwardRef(function MenuDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuDismissOptions<T extends ElementType = TagName>
-  extends HovercardDismissOptions<T> {
+export interface MenuDismissOptions<
+  T extends ElementType = TagName,
+> extends HovercardDismissOptions<T> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

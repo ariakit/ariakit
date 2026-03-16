@@ -1,6 +1,7 @@
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import type { ValidComponent } from "solid-js";
 import { Show } from "solid-js";
+
 import { createRef, mergeProps } from "../utils/reactivity.ts";
 import {
   createHook,
@@ -91,8 +92,9 @@ export const FocusTrapRegion = function FocusTrapRegion(
   return createInstance(TagName, htmlProps);
 };
 
-export interface FocusTrapRegionOptions<_T extends ValidComponent = TagName>
-  extends Options {
+export interface FocusTrapRegionOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {
   /**
    * If true, it will trap the focus in the region.
    * @default false

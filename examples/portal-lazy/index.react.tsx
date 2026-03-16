@@ -1,5 +1,6 @@
 import { Portal } from "@ariakit/react";
 import { lazy, Suspense } from "react";
+
 import "./style.css";
 
 const Button = lazy(() =>

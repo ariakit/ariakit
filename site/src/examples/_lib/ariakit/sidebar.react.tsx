@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
+
 import { useIsMobile } from "../react-hooks/use-is-mobile.ts";
 
 interface SidebarContextType {
@@ -16,8 +17,7 @@ const SidebarContext = React.createContext<SidebarContextType>(
 );
 
 export interface SidebarProps
-  extends ak.RoleProps<"div">,
-    Partial<SidebarContextType> {
+  extends ak.RoleProps<"div">, Partial<SidebarContextType> {
   collapsible?: boolean | "icon";
   collapsed?: boolean;
   /** Custom base class name. */
@@ -73,8 +73,7 @@ export function Sidebar({
 }
 
 export interface SidebarProviderProps
-  extends ak.DialogProviderProps,
-    Partial<SidebarContextType> {}
+  extends ak.DialogProviderProps, Partial<SidebarContextType> {}
 
 export function SidebarProvider({
   side = defaultSidebarContext.side,

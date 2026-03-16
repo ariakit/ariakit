@@ -25,12 +25,14 @@ import {
   useRef,
 } from "react";
 import { twJoin } from "tailwind-merge";
+
 import { ChevronRight } from "@/icons/chevron-right.tsx";
 import { NewWindow } from "@/icons/new-window.tsx";
 import { Search } from "@/icons/search.tsx";
 import { Spinner } from "@/icons/spinner.tsx";
 import { useMedia } from "@/lib/use-media.ts";
 import { whenIdle } from "@/lib/when-idle.ts";
+
 import { Command } from "./command.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 import { Popup } from "./popup.tsx";
@@ -43,11 +45,10 @@ const FooterContext = createContext(false);
 const HideAllContext = createContext<(() => void) | null>(null);
 const HasTitleContext = createContext(false);
 
-export interface HeaderMenuProps
-  extends Omit<
-    ComponentPropsWithoutRef<"button">,
-    "value" | "onChange" | "onToggle"
-  > {
+export interface HeaderMenuProps extends Omit<
+  ComponentPropsWithoutRef<"button">,
+  "value" | "onChange" | "onToggle"
+> {
   label?: ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;

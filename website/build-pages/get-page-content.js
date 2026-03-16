@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { basename, extname } from "node:path";
+
 import { camelCase, upperFirst } from "lodash-es";
+
 import { getPageName } from "./get-page-name.js";
 import { pathToPosix } from "./path-to-posix.js";
 

@@ -16,10 +16,12 @@ import {
 import { createPortal, flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
+
 import { ChevronDown } from "@/icons/chevron-down.tsx";
 import { ChevronUp } from "@/icons/chevron-up.tsx";
 import { NewWindow } from "@/icons/new-window.tsx";
 import { tsToJsFilename } from "@/lib/ts-to-js-filename.ts";
+
 import {
   AuthEnabled,
   AuthLoaded,
@@ -154,7 +156,6 @@ export function PlaygroundClient({
     () =>
       Object.entries(files).reduce<typeof files>(
         (acc, [file, code]) => ({
-          // biome-ignore lint/performance/noAccumulatingSpread: TODO
           ...acc,
           [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
         }),

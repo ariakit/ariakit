@@ -16,6 +16,7 @@ import type {
   RefObject,
 } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import {
@@ -474,8 +475,9 @@ export const Composite = forwardRef(function Composite(props: CompositeProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T> {
+export interface CompositeOptions<
+  T extends ElementType = TagName,
+> extends FocusableOptions<T> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

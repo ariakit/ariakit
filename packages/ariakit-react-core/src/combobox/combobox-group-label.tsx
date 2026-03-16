@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.tsx";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -54,8 +55,9 @@ export const ComboboxGroupLabel = forwardRef(function ComboboxGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxGroupLabelOptions<T extends ElementType = TagName>
-  extends CompositeGroupLabelOptions<T> {
+export interface ComboboxGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

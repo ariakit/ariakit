@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ChangeEvent, ElementType } from "react";
+
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import { useEvent } from "../utils/hooks.ts";
@@ -96,8 +97,7 @@ export const FormInput = memo(
 );
 
 export interface FormInputOptions<T extends ElementType = TagName>
-  extends FormControlOptions<T>,
-    FocusableOptions<T> {}
+  extends FormControlOptions<T>, FocusableOptions<T> {}
 
 export type FormInputProps<T extends ElementType = TagName> = Props<
   T,

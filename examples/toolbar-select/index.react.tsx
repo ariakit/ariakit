@@ -1,6 +1,8 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
+
 import * as icons from "./icons.tsx";
+
 import "./style.css";
 
 const options = [

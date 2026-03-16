@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.tsx";
 import { useDialogHeading } from "../dialog/dialog-heading.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -48,8 +49,9 @@ export const PopoverHeading = forwardRef(function PopoverHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverHeadingOptions<T extends ElementType = TagName>
-  extends DialogHeadingOptions<T> {
+export interface PopoverHeadingOptions<
+  T extends ElementType = TagName,
+> extends DialogHeadingOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

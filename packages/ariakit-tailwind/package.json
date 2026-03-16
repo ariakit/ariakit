@@ -26,7 +26,7 @@
   },
   "scripts": {
     "build": "",
-    "lint": "biome check ."
+    "lint": "oxlint . && oxfmt --check ."
   },
   "keywords": [
     "ariakit",

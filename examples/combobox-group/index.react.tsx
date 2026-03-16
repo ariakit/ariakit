@@ -1,6 +1,7 @@
 import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
 import * as React from "react";
+
 import {
   Combobox,
   ComboboxGroup,
@@ -8,6 +9,7 @@ import {
   ComboboxSeparator,
 } from "./combobox.tsx";
 import food from "./food.ts";
+
 import "./style.css";
 
 export default function Example() {

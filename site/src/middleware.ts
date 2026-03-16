@@ -1,3 +1,5 @@
+import { clerkMiddleware } from "@clerk/astro/server";
+import type { APIContext, MiddlewareNext } from "astro";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -8,8 +10,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { getActionContext } from "astro:actions";
-import { clerkMiddleware } from "@clerk/astro/server";
-import type { APIContext, MiddlewareNext } from "astro";
+
 import { isAdmin } from "./lib/auth.ts";
 import { unauthorized } from "./lib/response.ts";
 

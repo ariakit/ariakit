@@ -2,6 +2,7 @@ import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
 import type { ValidComponent } from "solid-js";
 import { mergeProps, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
+
 import type {
   ExtractPropsWithDefaultsExtractedProps,
   ExtractPropsWithDefaultsRestProps,

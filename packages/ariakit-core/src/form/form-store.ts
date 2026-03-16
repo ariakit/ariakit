@@ -364,8 +364,9 @@ export interface FormStoreItem extends CollectionStoreItem {
   name: string;
 }
 
-export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
-  extends CollectionStoreState<FormStoreItem> {
+export interface FormStoreState<
+  T extends FormStoreValues = FormStoreValues,
+> extends CollectionStoreState<FormStoreItem> {
   /**
    * Form values.
    *
@@ -409,8 +410,9 @@ export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
   submitFailed: number;
 }
 
-export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
-  extends CollectionStoreFunctions<FormStoreItem> {
+export interface FormStoreFunctions<
+  T extends FormStoreValues = FormStoreValues,
+> extends CollectionStoreFunctions<FormStoreItem> {
   /**
    * An object containing the names of the form fields for type safety.
    *
@@ -576,7 +578,8 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
 }
 
 export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
-  extends CollectionStoreOptions<FormStoreItem>,
+  extends
+    CollectionStoreOptions<FormStoreItem>,
     StoreOptions<FormStoreState<T>, "values" | "errors" | "touched"> {
   /**
    * The default values of the form.
@@ -594,9 +597,7 @@ export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
 }
 
 export interface FormStoreProps<T extends FormStoreValues = FormStoreValues>
-  extends FormStoreOptions<T>,
-    StoreProps<FormStoreState<T>> {}
+  extends FormStoreOptions<T>, StoreProps<FormStoreState<T>> {}
 
 export interface FormStore<T extends FormStoreValues = FormStoreValues>
-  extends FormStoreFunctions<T>,
-    Store<FormStoreState<T>> {}
+  extends FormStoreFunctions<T>, Store<FormStoreState<T>> {}

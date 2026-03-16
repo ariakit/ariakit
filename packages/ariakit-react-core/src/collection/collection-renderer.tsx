@@ -22,6 +22,7 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
+
 import {
   useBooleanEvent,
   useEvent,
@@ -860,8 +861,9 @@ export type CollectionRendererItemProps<
   P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
-export interface CollectionRendererOptions<T extends Item = any>
-  extends Options {
+export interface CollectionRendererOptions<
+  T extends Item = any,
+> extends Options {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
@@ -983,5 +985,7 @@ export interface CollectionRendererOptions<T extends Item = any>
   children?: (item: ItemProps<T>) => ReactNode;
 }
 
-export interface CollectionRendererProps<T extends Item = any>
-  extends Props<TagName, CollectionRendererOptions<T>> {}
+export interface CollectionRendererProps<T extends Item = any> extends Props<
+  TagName,
+  CollectionRendererOptions<T>
+> {}

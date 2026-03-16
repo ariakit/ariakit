@@ -1,5 +1,6 @@
 import type { ElementType } from "react";
 import { useContext } from "react";
+
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
@@ -73,8 +74,9 @@ export const SelectHeading = forwardRef(function SelectHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectHeadingOptions<T extends ElementType = TagName>
-  extends PopoverHeadingOptions<T> {
+export interface SelectHeadingOptions<
+  T extends ElementType = TagName,
+> extends PopoverHeadingOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.

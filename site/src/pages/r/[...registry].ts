@@ -1,9 +1,11 @@
+import { basename, dirname, extname, join } from "node:path";
+
+import type { APIRoute } from "astro";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
-import { basename, dirname, extname, join } from "node:path";
-import type { APIRoute } from "astro";
 import type { Registry, RegistryItem } from "shadcn/schema";
 import { z } from "zod/v4";
+
 import {
   getFrameworkByFilename,
   isFrameworkDependency,

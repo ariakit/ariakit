@@ -1,6 +1,7 @@
 import { isButton } from "@ariakit/core/utils/dom";
 import type { ElementType } from "react";
 import { useEffect, useRef, useState } from "react";
+
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 import { useMergeRefs, useTagName } from "../utils/hooks.ts";
@@ -61,8 +62,9 @@ export const Button = forwardRef(function Button(props: ButtonProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface ButtonOptions<T extends ElementType = TagName>
-  extends CommandOptions<T> {}
+export interface ButtonOptions<
+  T extends ElementType = TagName,
+> extends CommandOptions<T> {}
 
 export type ButtonProps<T extends ElementType = TagName> = Props<
   T,

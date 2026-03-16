@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { CompositeContainerOptions } from "../composite/composite-container.tsx";
 import { useCompositeContainer } from "../composite/composite-container.tsx";
 import {
@@ -59,8 +60,7 @@ export const ToolbarContainer = memo(
 );
 
 export interface ToolbarContainerOptions<T extends ElementType = TagName>
-  extends ToolbarItemOptions<T>,
-    Omit<CompositeContainerOptions<T>, "store"> {}
+  extends ToolbarItemOptions<T>, Omit<CompositeContainerOptions<T>, "store"> {}
 
 export type ToolbarContainerProps<T extends ElementType = TagName> = Props<
   T,

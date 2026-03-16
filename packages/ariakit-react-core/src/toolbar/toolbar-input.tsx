@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import {
   createElement,
   createHook,
@@ -54,8 +55,9 @@ export const ToolbarInput = memo(
   }),
 );
 
-export interface ToolbarInputOptions<T extends ElementType = TagName>
-  extends ToolbarItemOptions<T> {}
+export interface ToolbarInputOptions<
+  T extends ElementType = TagName,
+> extends ToolbarItemOptions<T> {}
 
 export type ToolbarInputProps<T extends ElementType = TagName> = Props<
   T,

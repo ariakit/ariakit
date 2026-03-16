@@ -1,10 +1,11 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
-import type { CompositeOptions } from "../composite/composite.tsx";
-import { useComposite } from "../composite/composite.tsx";
+
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
@@ -208,7 +209,8 @@ export const MenuList = forwardRef(function MenuList(props: MenuListProps) {
 });
 
 export interface MenuListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**

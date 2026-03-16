@@ -1,5 +1,6 @@
 import type { ElementType } from "react";
 import { useContext, useMemo, useRef } from "react";
+
 import { useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -66,8 +67,9 @@ export const Heading = forwardRef(function Heading(props: HeadingProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface HeadingOptions<_T extends ElementType = TagName>
-  extends Options {}
+export interface HeadingOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type HeadingProps<T extends ElementType = TagName> = Props<
   T,

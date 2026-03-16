@@ -283,10 +283,10 @@ export interface CollectionStoreOptions<
 
 export interface CollectionStoreProps<
   T extends CollectionStoreItem = CollectionStoreItem,
-> extends CollectionStoreOptions<T>,
-    StoreProps<CollectionStoreState<T>> {}
+>
+  extends CollectionStoreOptions<T>, StoreProps<CollectionStoreState<T>> {}
 
 export interface CollectionStore<
   T extends CollectionStoreItem = CollectionStoreItem,
-> extends CollectionStoreFunctions<T>,
-    Store<CollectionStoreState<T>> {}
+>
+  extends CollectionStoreFunctions<T>, Store<CollectionStoreState<T>> {}

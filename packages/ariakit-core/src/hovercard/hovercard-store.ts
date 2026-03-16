@@ -98,16 +98,15 @@ export interface HovercardStoreFunctions extends PopoverStoreFunctions {
 }
 
 export interface HovercardStoreOptions
-  extends StoreOptions<
+  extends
+    StoreOptions<
       HovercardStoreState,
       "placement" | "timeout" | "showTimeout" | "hideTimeout"
     >,
     PopoverStoreOptions {}
 
 export interface HovercardStoreProps
-  extends HovercardStoreOptions,
-    StoreProps<HovercardStoreState> {}
+  extends HovercardStoreOptions, StoreProps<HovercardStoreState> {}
 
 export interface HovercardStore
-  extends HovercardStoreFunctions,
-    Store<HovercardStoreState> {}
+  extends HovercardStoreFunctions, Store<HovercardStoreState> {}

@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
@@ -80,8 +81,9 @@ export const RadioGroup = forwardRef(function RadioGroup(
   return createElement(TagName, htmlProps);
 });
 
-export interface RadioGroupOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface RadioGroupOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If

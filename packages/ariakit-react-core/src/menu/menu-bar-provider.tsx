@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+
 import type { MenubarProviderProps } from "../menubar/menubar-provider.tsx";
 import { MenubarProvider } from "../menubar/menubar-provider.tsx";
 

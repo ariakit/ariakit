@@ -1,4 +1,5 @@
 import { kebabCase } from "lodash-es";
+
 import pageIndex from "@/build-pages/index.ts";
 
 const tags: string[] = [];

@@ -1,5 +1,6 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
 import type { PickRequired } from "@ariakit/core/utils/types";
+
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
@@ -67,10 +68,10 @@ export interface CheckboxStoreOptions<
 
 export interface CheckboxStoreProps<
   T extends CheckboxStoreValue = CheckboxStoreValue,
-> extends CheckboxStoreOptions<T>,
-    Core.CheckboxStoreProps<T> {}
+>
+  extends CheckboxStoreOptions<T>, Core.CheckboxStoreProps<T> {}
 
 export interface CheckboxStore<
   T extends CheckboxStoreValue = CheckboxStoreValue,
-> extends CheckboxStoreFunctions<T>,
-    Store<Core.CheckboxStore<T>> {}
+>
+  extends CheckboxStoreFunctions<T>, Store<Core.CheckboxStore<T>> {}

@@ -1,5 +1,6 @@
 import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
+
 import { test } from "../test-utils.ts";
 
 test("combobox should not throw when input type=email", async ({ page }) => {

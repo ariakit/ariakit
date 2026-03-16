@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
@@ -78,8 +79,9 @@ export const TagListLabel = forwardRef(function TagListLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface TagListLabelOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface TagListLabelOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

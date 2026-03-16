@@ -9,6 +9,7 @@
  */
 import type { APIRoute } from "astro";
 import { z } from "zod";
+
 import { getCurrentUserId, getCustomer } from "#app/lib/auth.ts";
 import { URLSchema } from "#app/lib/schemas.ts";
 import { getStripeClient } from "#app/lib/stripe.ts";

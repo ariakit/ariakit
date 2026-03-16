@@ -45,9 +45,7 @@ export interface MenubarStoreFunctions extends CompositeStoreFunctions {}
 export interface MenubarStoreOptions extends CompositeStoreOptions {}
 
 export interface MenubarStoreProps
-  extends MenubarStoreOptions,
-    StoreProps<MenubarStoreState> {}
+  extends MenubarStoreOptions, StoreProps<MenubarStoreState> {}
 
 export interface MenubarStore
-  extends MenubarStoreFunctions,
-    Store<MenubarStoreState> {}
+  extends MenubarStoreFunctions, Store<MenubarStoreState> {}

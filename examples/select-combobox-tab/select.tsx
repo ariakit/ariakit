@@ -168,8 +168,10 @@ export function SelectTabPanel(props: SelectTabPanelProps) {
   );
 }
 
-export interface SelectListProps
-  extends Omit<Ariakit.SelectListProps, "store"> {}
+export interface SelectListProps extends Omit<
+  Ariakit.SelectListProps,
+  "store"
+> {}
 
 export function SelectList(props: SelectListProps) {
   const combobox = Ariakit.useComboboxContext();

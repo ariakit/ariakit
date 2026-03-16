@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
@@ -97,8 +98,9 @@ export const TabList = forwardRef(function TabList(props: TabListProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TabListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface TabListOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not

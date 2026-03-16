@@ -5,6 +5,7 @@
  */
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
+
 import "./style.css";
 
 export default function Example() {

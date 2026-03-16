@@ -1,5 +1,6 @@
 import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
+
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useEvent } from "../utils/hooks.ts";
@@ -91,8 +92,9 @@ export const DialogDismiss = forwardRef(function DialogDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogDismissOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface DialogDismissOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If

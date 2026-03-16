@@ -8,6 +8,7 @@ import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isFirefox } from "@ariakit/core/utils/platform";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import { useEvent, useMergeRefs, useMetadataProps } from "../utils/hooks.ts";
@@ -181,8 +182,9 @@ export const Command = forwardRef(function Command(props: CommandProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface CommandOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T> {
+export interface CommandOptions<
+  T extends ElementType = TagName,
+> extends FocusableOptions<T> {
   /**
    * If set to `true`, pressing the enter key while this element is focused will
    * trigger a click on the element, regardless of whether it's a native button

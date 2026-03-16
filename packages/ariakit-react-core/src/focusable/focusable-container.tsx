@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import { useWrapElement } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -52,8 +53,9 @@ export const FocusableContainer = forwardRef(function FocusableContainer(
   return createElement(TagName, htmlProps);
 });
 
-export interface FocusableContainerOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface FocusableContainerOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Determines whether [`Focusable`](https://ariakit.org/reference/focusable)
    * elements inside the container should be automatically focused when the

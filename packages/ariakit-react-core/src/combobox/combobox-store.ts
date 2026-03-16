@@ -1,5 +1,6 @@
 import * as Core from "@ariakit/core/combobox/combobox-store";
 import type { PickRequired } from "@ariakit/core/utils/types";
+
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -97,20 +98,26 @@ export interface ComboboxStoreItem extends Core.ComboboxStoreItem {}
 
 export interface ComboboxStoreState<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends Core.ComboboxStoreState<T>,
+>
+  extends
+    Core.ComboboxStoreState<T>,
     CompositeStoreState<ComboboxStoreItem>,
     PopoverStoreState {}
 
 export interface ComboboxStoreFunctions<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends Pick<ComboboxStoreOptions<T>, "tag">,
+>
+  extends
+    Pick<ComboboxStoreOptions<T>, "tag">,
     Omit<Core.ComboboxStoreFunctions<T>, "tag" | "disclosure">,
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {}
 
 export interface ComboboxStoreOptions<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends Omit<Core.ComboboxStoreOptions<T>, "tag" | "disclosure">,
+>
+  extends
+    Omit<Core.ComboboxStoreOptions<T>, "tag" | "disclosure">,
     CompositeStoreOptions<ComboboxStoreItem>,
     PopoverStoreOptions {
   /**
@@ -149,10 +156,14 @@ export interface ComboboxStoreOptions<
 
 export interface ComboboxStoreProps<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends ComboboxStoreOptions<T>,
+>
+  extends
+    ComboboxStoreOptions<T>,
     Omit<Core.ComboboxStoreProps<T>, "tag" | "disclosure"> {}
 
 export interface ComboboxStore<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends ComboboxStoreFunctions<T>,
+>
+  extends
+    ComboboxStoreFunctions<T>,
     Omit<Store<Core.ComboboxStore<T>>, "tag" | "disclosure"> {}

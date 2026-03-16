@@ -2,6 +2,7 @@ import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useMemo, useState } from "react";
+
 import { useId, useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import {
@@ -190,8 +191,9 @@ export const PopoverArrow = memo(
   }),
 );
 
-export interface PopoverArrowOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface PopoverArrowOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

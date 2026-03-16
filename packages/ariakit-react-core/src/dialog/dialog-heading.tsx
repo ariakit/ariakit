@@ -1,5 +1,6 @@
 import type { ElementType } from "react";
 import { useContext } from "react";
+
 import type { HeadingOptions } from "../heading/heading.tsx";
 import { useHeading } from "../heading/heading.tsx";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
@@ -65,8 +66,9 @@ export const DialogHeading = forwardRef(function DialogHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogHeadingOptions<T extends ElementType = TagName>
-  extends HeadingOptions<T> {
+export interface DialogHeadingOptions<
+  T extends ElementType = TagName,
+> extends HeadingOptions<T> {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If

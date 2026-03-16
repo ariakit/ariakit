@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { GroupLabelOptions } from "../group/group-label.tsx";
 import { useGroupLabel } from "../group/group-label.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -53,8 +54,9 @@ export const CompositeGroupLabel = forwardRef(function CompositeGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeGroupLabelOptions<T extends ElementType = TagName>
-  extends GroupLabelOptions<T> {
+export interface CompositeGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends GroupLabelOptions<T> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

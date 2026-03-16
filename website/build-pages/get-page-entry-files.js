@@ -1,5 +1,6 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
+
 import { PAGE_FILE_REGEX } from "./const.js";
 import { getPageName } from "./get-page-name.js";
 import { pathToPosix } from "./path-to-posix.js";

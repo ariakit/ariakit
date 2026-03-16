@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
+
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { useEvent, useWrapElement } from "../utils/hooks.ts";
@@ -88,8 +89,7 @@ export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
 });
 
 export interface PopoverDisclosureOptions<T extends ElementType = TagName>
-  extends PopoverAnchorOptions<T>,
-    Omit<DialogDisclosureOptions<T>, "store"> {}
+  extends PopoverAnchorOptions<T>, Omit<DialogDisclosureOptions<T>, "store"> {}
 
 export type PopoverDisclosureProps<T extends ElementType = TagName> = Props<
   T,

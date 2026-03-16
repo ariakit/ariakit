@@ -1,4 +1,5 @@
 import { Menubar } from "@ariakit/react";
+
 import {
   Menu,
   MenuButton,
@@ -6,6 +7,7 @@ import {
   MenuProvider,
   MenuSeparator,
 } from "./menu.tsx";
+
 import "./style.css";
 
 export default function Example() {

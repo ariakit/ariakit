@@ -2,6 +2,7 @@ import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useCallback, useRef } from "react";
+
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
@@ -125,8 +126,9 @@ export const FormError = memo(
   }),
 );
 
-export interface FormErrorOptions<T extends ElementType = TagName>
-  extends CollectionItemOptions<T> {
+export interface FormErrorOptions<
+  T extends ElementType = TagName,
+> extends CollectionItemOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

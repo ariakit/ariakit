@@ -1,9 +1,10 @@
 import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useEffect } from "react";
+
+import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
-import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import { useInitialValue } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import {
@@ -186,8 +187,7 @@ export const MenuItemCheckbox = memo(
 );
 
 export interface MenuItemCheckboxOptions<T extends ElementType = TagName>
-  extends MenuItemOptions<T>,
-    Omit<CheckboxOptions<T>, "store"> {
+  extends MenuItemOptions<T>, Omit<CheckboxOptions<T>, "store"> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.tsx";
 import { usePopoverDismiss } from "../popover/popover-dismiss.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -50,8 +51,9 @@ export const HovercardDismiss = forwardRef(function HovercardDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardDismissOptions<T extends ElementType = TagName>
-  extends PopoverDismissOptions<T> {
+export interface HovercardDismissOptions<
+  T extends ElementType = TagName,
+> extends PopoverDismissOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

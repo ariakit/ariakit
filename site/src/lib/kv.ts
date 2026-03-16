@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { APIContext } from "astro";
+
 import { getUnixTime } from "./datetime.ts";
 import { nonNullable } from "./object.ts";
 import type { PriceData, PromoData } from "./schemas.ts";

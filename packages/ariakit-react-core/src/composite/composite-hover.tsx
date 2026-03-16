@@ -8,6 +8,7 @@ import {
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback } from "react";
+
 import {
   useBooleanEvent,
   useEvent,
@@ -170,8 +171,9 @@ export const CompositeHover = memo(
   }),
 );
 
-export interface CompositeHoverOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CompositeHoverOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

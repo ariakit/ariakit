@@ -27,14 +27,15 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,
   useDisclosureContent,
 } from "../disclosure/disclosure-content.tsx";
+import { useFocusableContainer } from "../focusable/focusable-container.tsx";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
-import { useFocusableContainer } from "../focusable/focusable-container.tsx";
 import { HeadingLevel } from "../heading/heading-level.tsx";
 import type { PortalOptions } from "../portal/portal.tsx";
 import { usePortal } from "../portal/portal.tsx";
@@ -609,9 +610,7 @@ export const Dialog = createDialogComponent(
 );
 
 export interface DialogOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T>,
-    PortalOptions<T>,
-    DisclosureContentOptions<T> {
+  extends FocusableOptions<T>, PortalOptions<T>, DisclosureContentOptions<T> {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If

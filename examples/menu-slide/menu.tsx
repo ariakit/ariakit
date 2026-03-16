@@ -175,8 +175,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 });
 
-export interface MenuItemProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+export interface MenuItemProps extends React.ComponentPropsWithoutRef<"button"> {
   label: React.ReactNode;
   disabled?: boolean;
 }
@@ -195,8 +194,7 @@ export const MenuItem = React.forwardRef<HTMLButtonElement, MenuItemProps>(
   },
 );
 
-export interface MenuSeparatorProps
-  extends React.ComponentPropsWithoutRef<"hr"> {}
+export interface MenuSeparatorProps extends React.ComponentPropsWithoutRef<"hr"> {}
 
 export const MenuSeparator = React.forwardRef<
   HTMLHRElement,

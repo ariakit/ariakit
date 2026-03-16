@@ -3,6 +3,7 @@ import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import type { ElementType, MutableRefObject } from "react";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
+
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
@@ -256,8 +257,7 @@ export const Menu = createDialogComponent(
 );
 
 export interface MenuOptions<T extends ElementType = TagName>
-  extends MenuListOptions<T>,
-    Omit<HovercardOptions<T>, "store"> {}
+  extends MenuListOptions<T>, Omit<HovercardOptions<T>, "store"> {}
 
 export type MenuProps<T extends ElementType = TagName> = Props<
   T,

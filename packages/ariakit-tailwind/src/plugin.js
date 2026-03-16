@@ -1,5 +1,6 @@
 import colorString from "color-string";
 import plugin from "tailwindcss/plugin";
+
 import {
   bareValue,
   colorMix,
@@ -907,28 +908,22 @@ const AriakitTailwind = plugin(
           getFrameCss({ radiusKey, modifier: extra.modifier }),
       },
       {
-        values: Object.keys(theme("radius")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            acc[key] = key;
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
-        modifiers: Object.keys(theme("spacing")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            if (key === "DEFAULT") return acc;
-            const isNumber = /^\d*\.?\d+$/u.test(key);
-            if (isNumber) {
-              acc[key] = `--spacing(${key})`;
-            } else {
-              acc[key] = t("spacing", key);
-            }
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
+        values: Object.keys(theme("radius")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          acc[key] = key;
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
+        modifiers: Object.keys(theme("spacing")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          if (key === "DEFAULT") return acc;
+          const isNumber = /^\d*\.?\d+$/u.test(key);
+          if (isNumber) {
+            acc[key] = `--spacing(${key})`;
+          } else {
+            acc[key] = t("spacing", key);
+          }
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
       },
     );
 
@@ -967,20 +962,17 @@ const AriakitTailwind = plugin(
         },
       },
       {
-        values: Object.keys(theme("spacing")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            if (key === "DEFAULT") return acc;
-            const isNumber = /^\d*\.?\d+$/u.test(key);
-            if (isNumber) {
-              acc[key] = `--spacing(${key})`;
-            } else {
-              acc[key] = t("spacing", key);
-            }
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
+        values: Object.keys(theme("spacing")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          if (key === "DEFAULT") return acc;
+          const isNumber = /^\d*\.?\d+$/u.test(key);
+          if (isNumber) {
+            acc[key] = `--spacing(${key})`;
+          } else {
+            acc[key] = t("spacing", key);
+          }
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
       },
     );
 
@@ -994,20 +986,17 @@ const AriakitTailwind = plugin(
         },
       },
       {
-        values: Object.keys(theme("spacing")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            if (key === "DEFAULT") return acc;
-            const isNumber = /^\d*\.?\d+$/u.test(key);
-            if (isNumber) {
-              acc[key] = `--spacing(${key})`;
-            } else {
-              acc[key] = t("spacing", key);
-            }
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
+        values: Object.keys(theme("spacing")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          if (key === "DEFAULT") return acc;
+          const isNumber = /^\d*\.?\d+$/u.test(key);
+          if (isNumber) {
+            acc[key] = `--spacing(${key})`;
+          } else {
+            acc[key] = t("spacing", key);
+          }
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
       },
     );
 
@@ -1051,14 +1040,11 @@ const AriakitTailwind = plugin(
           getFrameRoundedCss({ radiusKey, force: true }),
       },
       {
-        values: Object.keys(theme("radius")).reduce(
-          (acc, key) => {
-            if (key === "__CSS_VALUES__") return acc;
-            acc[key] = key;
-            return acc;
-          },
-          /** @type {Record<string, string>} */ ({}),
-        ),
+        values: Object.keys(theme("radius")).reduce((acc, key) => {
+          if (key === "__CSS_VALUES__") return acc;
+          acc[key] = key;
+          return acc;
+        }, /** @type {Record<string, string>} */ ({})),
       },
     );
 

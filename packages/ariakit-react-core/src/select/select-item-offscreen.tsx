@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";
 import { useCompositeItemOffscreen } from "../composite/composite-item-offscreen.tsx";
 import { Role } from "../role/role.tsx";
@@ -51,8 +52,7 @@ export const SelectItem = forwardRef(function SelectItem({
 });
 
 export interface SelectItemOptions<T extends ElementType = TagName>
-  extends Base.SelectItemOptions<T>,
-    Omit<CompositeItemOptions<T>, "store"> {}
+  extends Base.SelectItemOptions<T>, Omit<CompositeItemOptions<T>, "store"> {}
 
 export type SelectItemProps<T extends ElementType = TagName> = Props<
   T,

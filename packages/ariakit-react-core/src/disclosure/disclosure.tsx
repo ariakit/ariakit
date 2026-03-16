@@ -2,6 +2,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import {
@@ -112,8 +113,9 @@ export const Disclosure = forwardRef(function Disclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface DisclosureOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface DisclosureOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)

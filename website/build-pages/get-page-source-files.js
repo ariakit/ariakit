@@ -1,5 +1,7 @@
 import { dirname, extname, resolve } from "node:path";
+
 import { visit } from "unist-util-visit";
+
 import { isPlaygroundNode } from "./ast.js";
 import { getPageTree } from "./get-page-tree.js";
 

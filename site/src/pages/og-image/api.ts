@@ -1,3 +1,4 @@
+import type { APIRoute } from "astro";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -8,7 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { getCollection } from "astro:content";
-import type { APIRoute } from "astro";
+
 import { uniq } from "#app/lib/array.ts";
 import { getGuideDetail } from "#app/lib/content.ts";
 import { trim } from "#app/lib/string.ts";

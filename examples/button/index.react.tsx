@@ -1,4 +1,5 @@
 import { Button } from "@ariakit/react";
+
 import "./button.css";
 
 export default function Example() {

@@ -2,6 +2,7 @@ import { Button } from "@ariakit/react";
 import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
 import { useId, useMemo, useState } from "react";
+
 import {
   CommandMenu,
   CommandMenuFooter,
@@ -15,6 +16,7 @@ import {
   CommandMenuTabPanel,
 } from "./command-menu.tsx";
 import { flatPages, pages } from "./pages.ts";
+
 import "./theme.css";
 
 export default function Example() {

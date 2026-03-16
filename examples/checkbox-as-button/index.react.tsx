@@ -1,4 +1,5 @@
 import { Checkbox, useCheckboxStore, useStoreState } from "@ariakit/react";
+
 import "./style.css";
 
 export default function Example() {

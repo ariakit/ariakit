@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation.js";
+
 import pagesConfig from "@/build-pages/config.js";
 import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
 import { getPageName } from "@/build-pages/get-page-name.js";

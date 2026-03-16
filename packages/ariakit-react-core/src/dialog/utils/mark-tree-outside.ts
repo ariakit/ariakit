@@ -1,4 +1,5 @@
 import { chain } from "@ariakit/core/utils/misc";
+
 import { isBackdrop } from "./is-backdrop.ts";
 import { setProperty } from "./orchestrate.ts";
 import { walkTreeOutside } from "./walk-tree-outside.ts";
@@ -33,7 +34,6 @@ export function isElementMarked(element: Element, id?: string) {
     if (element[elementProperty]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
-    // biome-ignore lint/correctness/noConstantCondition: Intentional infinite loop with break condition
   } while (true);
 }
 

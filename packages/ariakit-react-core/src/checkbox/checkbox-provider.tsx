@@ -1,5 +1,6 @@
 import type { PickRequired } from "@ariakit/core/utils/types";
 import type { ReactElement, ReactNode } from "react";
+
 import { CheckboxContextProvider } from "./checkbox-context.tsx";
 import type {
   CheckboxStoreProps,
@@ -46,7 +47,8 @@ export function CheckboxProvider(props: CheckboxProviderProps = {}) {
   );
 }
 
-export interface CheckboxProviderProps<T extends Value = Value>
-  extends CheckboxStoreProps<T> {
+export interface CheckboxProviderProps<
+  T extends Value = Value,
+> extends CheckboxStoreProps<T> {
   children?: ReactNode;
 }

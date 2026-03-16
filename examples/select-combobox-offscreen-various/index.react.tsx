@@ -9,7 +9,9 @@ import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
 import { matchSorter } from "match-sorter";
 import { startTransition, useMemo, useRef, useState } from "react";
+
 import { countries } from "./countries.ts";
+
 import "./theme.css";
 
 function getItem(country: string) {
@@ -32,7 +34,8 @@ const items = countries.map(getItem);
 const itemsByGroup = groupItems(items);
 
 interface ComboboxProps
-  extends Pick<Ariakit.ComboboxProps, "autoSelect">,
+  extends
+    Pick<Ariakit.ComboboxProps, "autoSelect">,
     Pick<Ariakit.ComboboxPopoverProps, "unmountOnHide">,
     Pick<ComboboxItemProps, "offscreenBehavior"> {
   group?: boolean;
@@ -132,7 +135,8 @@ function Combobox({
 }
 
 interface SelectProps
-  extends Pick<SelectItemProps, "offscreenBehavior">,
+  extends
+    Pick<SelectItemProps, "offscreenBehavior">,
     Pick<Ariakit.SelectProviderProps, "defaultValue">,
     Pick<Ariakit.SelectPopoverProps, "unmountOnHide"> {
   group?: boolean;
@@ -203,7 +207,8 @@ function Select({
 }
 
 interface SelectComboboxProps
-  extends Pick<Ariakit.ComboboxProps, "autoSelect">,
+  extends
+    Pick<Ariakit.ComboboxProps, "autoSelect">,
     Pick<SelectItemProps, "offscreenBehavior">,
     Pick<Ariakit.SelectProviderProps, "defaultValue">,
     Pick<Ariakit.SelectPopoverProps, "unmountOnHide"> {

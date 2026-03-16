@@ -9,6 +9,7 @@ import {
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
+
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -251,8 +252,9 @@ export const CompositeContainer = forwardRef(function CompositeContainer(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeContainerOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CompositeContainerOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

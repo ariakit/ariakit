@@ -1,4 +1,5 @@
 import type { ValidComponent } from "solid-js";
+
 import { mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -57,7 +58,8 @@ export function VisuallyHidden(props: VisuallyHiddenProps) {
   return createInstance(TagName, htmlProps);
 }
 
-export interface VisuallyHiddenOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface VisuallyHiddenOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type VisuallyHiddenProps = Props<TagName, VisuallyHiddenOptions>;

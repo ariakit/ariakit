@@ -1,6 +1,8 @@
 import { join } from "node:path";
+
 import invariant from "tiny-invariant";
 import { Node, Project, ts } from "ts-morph";
+
 import { getPageName } from "./get-page-name.js";
 
 const project = new Project({

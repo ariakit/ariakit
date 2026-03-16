@@ -1,4 +1,5 @@
 import type { ElementType, FC } from "react";
+
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
@@ -81,8 +82,9 @@ Object.assign(
   }, {} as RoleElements),
 );
 
-export interface RoleOptions<_T extends ElementType = TagName>
-  extends Options {}
+export interface RoleOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type RoleProps<T extends ElementType = TagName> = Props<
   T,

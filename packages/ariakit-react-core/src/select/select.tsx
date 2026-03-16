@@ -10,6 +10,7 @@ import type {
   SelectHTMLAttributes,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
@@ -311,7 +312,8 @@ export const Select = forwardRef(function Select(props: SelectProps) {
 });
 
 export interface SelectOptions<T extends ElementType = TagName>
-  extends PopoverDisclosureOptions<T>,
+  extends
+    PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<
       SelectHTMLAttributes<HTMLSelectElement>,

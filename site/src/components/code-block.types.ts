@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { BundledLanguage } from "shiki";
+
 import type * as icons from "../icons/icons.ts";
 
 type IconName = keyof typeof icons;

@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { GroupOptions } from "../group/group.tsx";
 import { useGroup } from "../group/group.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -57,8 +58,9 @@ export const CompositeGroup = forwardRef(function CompositeGroup(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeGroupOptions<T extends ElementType = TagName>
-  extends GroupOptions<T> {
+export interface CompositeGroupOptions<
+  T extends ElementType = TagName,
+> extends GroupOptions<T> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

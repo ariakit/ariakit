@@ -2,6 +2,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, MouseEvent } from "react";
 import { useContext, useEffect } from "react";
+
 import { Role } from "../role/role.tsx";
 import { useBooleanEvent, useEvent, useId } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -137,8 +138,9 @@ export const TagRemove = forwardRef(function TagRemove(props: TagRemoveProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagRemoveOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface TagRemoveOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

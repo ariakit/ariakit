@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.tsx";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -58,8 +59,9 @@ export const SelectGroupLabel = forwardRef(function SelectGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectGroupLabelOptions<T extends ElementType = TagName>
-  extends CompositeGroupLabelOptions<T> {
+export interface SelectGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If

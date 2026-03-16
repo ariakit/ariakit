@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/dialog/dialog-store";
+
 import type {
   DisclosureStoreFunctions,
   DisclosureStoreOptions,
@@ -34,21 +35,18 @@ export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
 }
 
 export interface DialogStoreState
-  extends Core.DialogStoreState,
-    DisclosureStoreState {}
+  extends Core.DialogStoreState, DisclosureStoreState {}
 
 export interface DialogStoreFunctions
-  extends Omit<Core.DialogStoreFunctions, "disclosure">,
+  extends
+    Omit<Core.DialogStoreFunctions, "disclosure">,
     DisclosureStoreFunctions {}
 
 export interface DialogStoreOptions
-  extends Omit<Core.DialogStoreOptions, "disclosure">,
-    DisclosureStoreOptions {}
+  extends Omit<Core.DialogStoreOptions, "disclosure">, DisclosureStoreOptions {}
 
 export interface DialogStoreProps
-  extends DialogStoreOptions,
-    Omit<Core.DialogStoreProps, "disclosure"> {}
+  extends DialogStoreOptions, Omit<Core.DialogStoreProps, "disclosure"> {}
 
 export interface DialogStore
-  extends DialogStoreFunctions,
-    Omit<Store<Core.DialogStore>, "disclosure"> {}
+  extends DialogStoreFunctions, Omit<Store<Core.DialogStore>, "disclosure"> {}

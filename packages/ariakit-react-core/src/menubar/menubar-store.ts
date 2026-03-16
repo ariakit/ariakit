@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/menubar/menubar-store";
+
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -33,21 +34,16 @@ export function useMenubarStore(props: MenubarStoreProps = {}): MenubarStore {
 }
 
 export interface MenubarStoreState
-  extends Core.MenubarStoreState,
-    CompositeStoreState {}
+  extends Core.MenubarStoreState, CompositeStoreState {}
 
 export interface MenubarStoreFunctions
-  extends Core.MenubarStoreFunctions,
-    CompositeStoreFunctions {}
+  extends Core.MenubarStoreFunctions, CompositeStoreFunctions {}
 
 export interface MenubarStoreOptions
-  extends Core.MenubarStoreOptions,
-    CompositeStoreOptions {}
+  extends Core.MenubarStoreOptions, CompositeStoreOptions {}
 
 export interface MenubarStoreProps
-  extends MenubarStoreOptions,
-    Core.MenubarStoreProps {}
+  extends MenubarStoreOptions, Core.MenubarStoreProps {}
 
 export interface MenubarStore
-  extends MenubarStoreFunctions,
-    Store<Core.MenubarStore> {}
+  extends MenubarStoreFunctions, Store<Core.MenubarStore> {}

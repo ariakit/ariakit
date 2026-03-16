@@ -1,3 +1,4 @@
+import type { APIContext } from "astro";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -8,7 +9,6 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { ActionAPIContext } from "astro:actions";
-import type { APIContext } from "astro";
 
 export function wrapActionContext(context: ActionAPIContext) {
   return context as APIContext;

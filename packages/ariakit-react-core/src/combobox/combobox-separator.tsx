@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -70,8 +71,9 @@ export const ComboboxSeparator = forwardRef(function ComboboxSeparator(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxSeparatorOptions<T extends ElementType = TagName>
-  extends CompositeSeparatorOptions<T> {
+export interface ComboboxSeparatorOptions<
+  T extends ElementType = TagName,
+> extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

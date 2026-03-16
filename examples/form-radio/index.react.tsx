@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { useId } from "react";
+
 import "./style.css";
 
 export default function Example() {

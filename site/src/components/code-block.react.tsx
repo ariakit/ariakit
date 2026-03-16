@@ -13,19 +13,21 @@ import clsx from "clsx";
 import { SplitSquareHorizontal } from "lucide-react";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
+
 import { Icon } from "#app/icons/icon.react.tsx";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { slugify } from "#app/lib/string.ts";
 import { useControllableState } from "#app/lib/use-controllable-state.ts";
-import type {
-  CodeBlockProps as CodeBlockBaseProps,
-  CodeBlockTabProps as CodeBlockTabBaseProps,
-} from "./code-block.types.ts";
+
 import {
   CodeBlockEdit,
   getStackblitzFramework,
 } from "./code-block-edit.react.tsx";
+import type {
+  CodeBlockProps as CodeBlockBaseProps,
+  CodeBlockTabProps as CodeBlockTabBaseProps,
+} from "./code-block.types.ts";
 import { useCollapsible } from "./collapsible.react.tsx";
 import { CopyCode } from "./copy-code.react.tsx";
 import { Tooltip } from "./tooltip.react.tsx";
@@ -85,8 +87,7 @@ function SingleTabPanel(props: ak.TabPanelProps) {
 }
 
 export interface CodeBlockProps
-  extends Omit<React.ComponentProps<"div">, "lang">,
-    CodeBlockBaseProps {
+  extends Omit<React.ComponentProps<"div">, "lang">, CodeBlockBaseProps {
   topbar?: React.ReactNode;
   showFilename?: boolean;
   collapsibleClassName?: string;
@@ -570,7 +571,8 @@ export function CodeBlockPreview({
 }
 
 export interface CodeBlockTabsProps
-  extends Pick<CodeBlockPreviewProps, "title" | "fullscreen">,
+  extends
+    Pick<CodeBlockPreviewProps, "title" | "fullscreen">,
     Pick<
       CodeBlockPreviewIframeProps,
       "fallback" | "clickAndWait" | "scrollTop" | "minHeight"

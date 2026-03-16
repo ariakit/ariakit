@@ -6,6 +6,7 @@ import {
 import { createStore, sync } from "@ariakit/core/utils/store";
 import type { ElementType, FocusEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
+
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import { useEvent } from "../utils/hooks.ts";
@@ -190,8 +191,9 @@ export const TooltipAnchor = forwardRef(function TooltipAnchor(
   return createElement(TagName, htmlProps);
 });
 
-export interface TooltipAnchorOptions<T extends ElementType = TagName>
-  extends HovercardAnchorOptions<T> {
+export interface TooltipAnchorOptions<
+  T extends ElementType = TagName,
+> extends HovercardAnchorOptions<T> {
   /**
    * Object returned by the
    * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.

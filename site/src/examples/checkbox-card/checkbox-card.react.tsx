@@ -8,8 +8,7 @@ type CheckboxProps = Pick<
 >;
 
 export interface CheckboxCardProps
-  extends CheckboxProps,
-    Omit<ComponentProps<"label">, keyof CheckboxProps> {
+  extends CheckboxProps, Omit<ComponentProps<"label">, keyof CheckboxProps> {
   variant?: "default" | "vertical" | "round";
 }
 
@@ -68,7 +67,8 @@ export function CheckboxCardCheck({ ...props }: CheckboxCardCheckProps) {
 type Value = Ariakit.CheckboxStoreState["value"];
 
 export interface CheckboxCardGridProps<T extends Value = Value>
-  extends Omit<ComponentProps<"div">, "defaultValue">,
+  extends
+    Omit<ComponentProps<"div">, "defaultValue">,
     Pick<
       Ariakit.CheckboxProviderProps<T>,
       "value" | "setValue" | "defaultValue"

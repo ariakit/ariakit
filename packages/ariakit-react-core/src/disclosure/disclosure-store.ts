@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
+
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
@@ -38,7 +39,8 @@ export function useDisclosureStore(
 export interface DisclosureStoreState extends Core.DisclosureStoreState {}
 
 export interface DisclosureStoreFunctions
-  extends Pick<DisclosureStoreOptions, "disclosure">,
+  extends
+    Pick<DisclosureStoreOptions, "disclosure">,
     Omit<Core.DisclosureStoreFunctions, "disclosure"> {}
 
 export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
@@ -74,9 +76,11 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
 }
 
 export interface DisclosureStoreProps
-  extends DisclosureStoreOptions,
+  extends
+    DisclosureStoreOptions,
     Omit<Core.DisclosureStoreProps, "disclosure"> {}
 
 export interface DisclosureStore
-  extends DisclosureStoreFunctions,
+  extends
+    DisclosureStoreFunctions,
     Omit<Store<Core.DisclosureStore>, "disclosure"> {}

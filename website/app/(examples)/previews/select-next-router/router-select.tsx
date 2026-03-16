@@ -12,6 +12,7 @@ import Link from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
 import type { ElementRef } from "react";
 import * as React from "react";
+
 import "./style.css";
 
 const SelectParamContext = React.createContext<string | null>(null);
@@ -77,8 +78,7 @@ export const Select = React.forwardRef<
 });
 
 export interface SelectItemProps
-  extends Omit<LinkProps, "href">,
-    Ariakit.SelectItemProps<"a"> {}
+  extends Omit<LinkProps, "href">, Ariakit.SelectItemProps<"a"> {}
 
 export const SelectItem = React.forwardRef<
   ElementRef<typeof Link>,

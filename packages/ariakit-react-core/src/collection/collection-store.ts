@@ -3,6 +3,7 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
+
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
@@ -78,10 +79,10 @@ export interface CollectionStoreOptions<
 
 export interface CollectionStoreProps<
   T extends CollectionStoreItem = CollectionStoreItem,
-> extends CollectionStoreOptions<T>,
-    Core.CollectionStoreProps<T> {}
+>
+  extends CollectionStoreOptions<T>, Core.CollectionStoreProps<T> {}
 
 export interface CollectionStore<
   T extends CollectionStoreItem = CollectionStoreItem,
-> extends CollectionStoreFunctions<T>,
-    Store<Core.CollectionStore<T>> {}
+>
+  extends CollectionStoreFunctions<T>, Store<Core.CollectionStore<T>> {}

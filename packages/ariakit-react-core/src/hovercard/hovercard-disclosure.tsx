@@ -8,6 +8,7 @@ import type {
   FocusEvent as ReactFocusEvent,
 } from "react";
 import { useEffect, useState } from "react";
+
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";
@@ -174,8 +175,9 @@ export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardDisclosureOptions<T extends ElementType = TagName>
-  extends DialogDisclosureOptions<T> {
+export interface HovercardDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

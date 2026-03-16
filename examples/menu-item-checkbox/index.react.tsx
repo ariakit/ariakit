@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { Menu, MenuItemCheckbox } from "./menu.tsx";
+
 import "./style.css";
 
 export default function Example() {

@@ -1,7 +1,9 @@
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import { useDeferredValue, useMemo } from "react";
+
 import list from "../select-combobox/list.ts";
+
 import "./style.css";
 
 export default function Example() {

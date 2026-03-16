@@ -2,6 +2,7 @@ import { getDocument } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useRef } from "react";
+
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
@@ -172,8 +173,7 @@ export const ComboboxPopover = createDialogComponent(
 );
 
 export interface ComboboxPopoverOptions<T extends ElementType = TagName>
-  extends ComboboxListOptions<T>,
-    Omit<PopoverOptions<T>, "store"> {}
+  extends ComboboxListOptions<T>, Omit<PopoverOptions<T>, "store"> {}
 
 export type ComboboxPopoverProps<T extends ElementType = TagName> = Props<
   T,

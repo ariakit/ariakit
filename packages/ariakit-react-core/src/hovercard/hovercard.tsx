@@ -17,6 +17,7 @@ import {
   useRef,
   useState,
 } from "react";
+
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
@@ -389,8 +390,9 @@ export const Hovercard = createDialogComponent(
   useHovercardProviderContext,
 );
 
-export interface HovercardOptions<T extends ElementType = TagName>
-  extends PopoverOptions<T> {
+export interface HovercardOptions<
+  T extends ElementType = TagName,
+> extends PopoverOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

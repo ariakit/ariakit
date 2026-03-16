@@ -1,5 +1,6 @@
 import type { PickRequired } from "@ariakit/core/utils/types";
 import type { ReactElement, ReactNode } from "react";
+
 import { ComboboxContextProvider } from "./combobox-context.tsx";
 import type {
   ComboboxStoreProps,
@@ -43,7 +44,8 @@ export function ComboboxProvider(props: ComboboxProviderProps = {}) {
   );
 }
 
-export interface ComboboxProviderProps<T extends Value = Value>
-  extends ComboboxStoreProps<T> {
+export interface ComboboxProviderProps<
+  T extends Value = Value,
+> extends ComboboxStoreProps<T> {
   children?: ReactNode;
 }

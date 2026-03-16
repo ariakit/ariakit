@@ -1,5 +1,6 @@
 import type { ElementType } from "react";
 import { useContext } from "react";
+
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";
 import { useCompositeItemOffscreen } from "../composite/composite-item-offscreen.tsx";
 import { Role } from "../role/role.tsx";
@@ -79,8 +80,7 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
 });
 
 export interface ComboboxItemOptions<T extends ElementType = TagName>
-  extends Base.ComboboxItemOptions<T>,
-    Omit<CompositeItemOptions<T>, "store"> {}
+  extends Base.ComboboxItemOptions<T>, Omit<CompositeItemOptions<T>, "store"> {}
 
 export type ComboboxItemProps<T extends ElementType = TagName> = Props<
   T,

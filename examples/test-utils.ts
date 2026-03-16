@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import { basename, dirname, resolve } from "node:path";
+
 import {
   getTextboxSelection,
   getTextboxValue,
@@ -7,6 +8,7 @@ import {
 } from "@ariakit/core/utils/dom";
 import type { Locator, Page, PageScreenshotOptions } from "@playwright/test";
 import { test as base } from "@playwright/test";
+
 import type { AllowedTestLoader } from "../vitest.config.ts";
 
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??

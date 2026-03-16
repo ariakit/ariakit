@@ -1,4 +1,5 @@
 import type { CSSProperties, ElementType, FocusEvent } from "react";
+
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
 import { useEvent } from "../utils/hooks.ts";
@@ -104,8 +105,9 @@ export const CompositeOverflow = forwardRef(function CompositeOverflow(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeOverflowOptions<T extends ElementType = TagName>
-  extends PopoverOptions<T> {
+export interface CompositeOverflowOptions<
+  T extends ElementType = TagName,
+> extends PopoverOptions<T> {
   /**
    * Object returned by the `useCompositeOverflowStore` hook.
    */

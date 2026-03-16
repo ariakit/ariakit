@@ -1,5 +1,6 @@
 import type { FullOptions } from "fast-fuzzy";
 import { Searcher, search } from "fast-fuzzy";
+
 import type { PageContent } from "@/build-pages/contents.ts";
 import contents from "@/build-pages/contents.ts";
 
@@ -85,7 +86,6 @@ function truncate(
   return final + suffix;
 }
 
-// biome-ignore lint/suspicious/noGlobalAssign: Required for web worker message handler
 onmessage = (
   event: MessageEvent<{ query: string; category?: string; allData?: boolean }>,
 ) => {

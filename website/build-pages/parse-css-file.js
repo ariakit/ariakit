@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { basename, dirname, extname } from "node:path";
+
 import postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
 import discardComments from "postcss-discard-comments";

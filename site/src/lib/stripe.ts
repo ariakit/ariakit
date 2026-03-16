@@ -9,6 +9,7 @@
  */
 import type { APIContext } from "astro";
 import { Stripe } from "stripe";
+
 import { findInOrder } from "./array.ts";
 import type { User } from "./auth.ts";
 import {
@@ -214,7 +215,8 @@ export function parsePlusPriceKey(key: string) {
 }
 
 export interface PlusPrice
-  extends PriceData,
+  extends
+    PriceData,
     Pick<
       PromoData,
       "percentOff" | "expiresAt" | "maxRedemptions" | "timesRedeemed"

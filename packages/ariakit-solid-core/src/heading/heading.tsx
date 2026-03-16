@@ -1,5 +1,6 @@
 import type { ValidComponent } from "solid-js";
 import { createMemo, useContext } from "solid-js";
+
 import { extractTagName } from "../utils/misc.ts";
 import { createRef, mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
@@ -73,8 +74,9 @@ export const Heading = function Heading(props: HeadingProps) {
   return createInstance(TagName, htmlProps);
 };
 
-export interface HeadingOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface HeadingOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type HeadingProps<T extends ValidComponent = TagName> = Props<
   T,

@@ -3,6 +3,7 @@ import { getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { chain } from "@ariakit/core/utils/misc";
 import { isApple, isMac } from "@ariakit/core/utils/platform";
 import { useEffect } from "react";
+
 import { assignStyle, setCSSProperty } from "./orchestrate.ts";
 import { useRootDialog } from "./use-root-dialog.ts";
 

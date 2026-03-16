@@ -10,6 +10,7 @@
 import { clerkClient } from "@clerk/astro/server";
 import type { APIContext } from "astro";
 import { z } from "zod";
+
 import { getFlagEmoji } from "#app/lib/locale.ts";
 
 const paramsSchema = z.object({

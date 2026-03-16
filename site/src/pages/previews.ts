@@ -1,5 +1,5 @@
-import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
+import { getCollection } from "astro:content";
 
 export const GET: APIRoute = async () => {
   const entries = await getCollection("previews");

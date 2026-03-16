@@ -20,6 +20,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useCallback, useContext, useMemo, useRef } from "react";
+
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";
@@ -472,8 +473,7 @@ export const CompositeItem = memo(
 );
 
 export interface CompositeItemOptions<T extends ElementType = TagName>
-  extends CommandOptions<T>,
-    CollectionItemOptions<T> {
+  extends CommandOptions<T>, CollectionItemOptions<T> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

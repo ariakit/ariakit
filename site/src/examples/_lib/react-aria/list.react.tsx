@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import type * as React from "react";
+
 import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
+
 import type {
   DisclosureButtonProps,
   DisclosureContentProps,
@@ -44,7 +46,8 @@ export function List({ ordered, baseClassName, ...props }: ListProps) {
 }
 
 export interface ListItemProps
-  extends React.ComponentProps<"li">,
+  extends
+    React.ComponentProps<"li">,
     Pick<ListItemCheckProps, "checked" | "progress"> {
   /** Custom base class name. */
   baseClassName?: string;
@@ -135,8 +138,7 @@ export function ListDisclosure(props: ListDisclosureProps) {
 }
 
 export interface ListDisclosureButtonProps
-  extends DisclosureButtonProps,
-    Pick<ListItemProps, "checked" | "progress"> {}
+  extends DisclosureButtonProps, Pick<ListItemProps, "checked" | "progress"> {}
 
 export function ListDisclosureButton({
   checked,

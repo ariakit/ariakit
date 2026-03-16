@@ -1,5 +1,6 @@
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import type { ElementType } from "react";
+
 import type { CollectionItemOptions } from "../collection/collection-item-offscreen.tsx";
 import { useCollectionItemOffscreen } from "../collection/collection-item-offscreen.tsx";
 import type { ComboboxStoreState } from "../combobox/combobox-store.ts";
@@ -102,7 +103,8 @@ export const CompositeItem = forwardRef(function CompositeItem({
 });
 
 export interface CompositeItemOptions<T extends ElementType = TagName>
-  extends Base.CompositeItemOptions<T>,
+  extends
+    Base.CompositeItemOptions<T>,
     Omit<CollectionItemOptions<T>, "store"> {}
 
 export type CompositeItemProps<T extends ElementType = TagName> = Props<

@@ -1,3 +1,6 @@
+import { invariant } from "@ariakit/core/utils/misc";
+import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -8,13 +11,11 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { CollectionEntry, RenderResult } from "astro:content";
-import { invariant } from "@ariakit/core/utils/misc";
-import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
-import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import type { Element } from "hast";
 import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
+
 import { createContainer } from "./astro.ts";
 import { isFramework } from "./frameworks.ts";
 import { rehypeAsTagName } from "./rehype.ts";

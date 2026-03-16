@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -60,8 +61,9 @@ export const SelectSeparator = forwardRef(function SelectSeparator(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectSeparatorOptions<T extends ElementType = TagName>
-  extends CompositeSeparatorOptions<T> {
+export interface SelectSeparatorOptions<
+  T extends ElementType = TagName,
+> extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If

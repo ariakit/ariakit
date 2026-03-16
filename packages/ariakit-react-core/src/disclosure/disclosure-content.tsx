@@ -2,6 +2,7 @@ import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
+
 import { DialogScopedContextProvider } from "../dialog/dialog-context.tsx";
 import {
   useId,
@@ -268,8 +269,9 @@ export const DisclosureContent = forwardRef(function DisclosureContent({
   return <DisclosureContentImpl {...props} />;
 });
 
-export interface DisclosureContentOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface DisclosureContentOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)

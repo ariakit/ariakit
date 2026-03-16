@@ -1,5 +1,6 @@
 import { Checkbox } from "@ariakit/react";
 import { useState } from "react";
+
 import "./style.css";
 
 export default function Example() {

@@ -1,5 +1,6 @@
 import type { ValidComponent } from "solid-js";
 import { createEffect, onCleanup, useContext } from "solid-js";
+
 import { createId } from "../utils/misc.ts";
 import { mergeProps, stableAccessor } from "../utils/reactivity.ts";
 import { createHook, createInstance } from "../utils/system.tsx";
@@ -62,8 +63,9 @@ export const GroupLabel = function GroupLabel(props: GroupLabelProps) {
   return createInstance(TagName, htmlProps);
 };
 
-export interface GroupLabelOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface GroupLabelOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type GroupLabelProps<T extends ValidComponent = TagName> = Props<
   T,

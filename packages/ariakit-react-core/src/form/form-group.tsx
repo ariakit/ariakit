@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { GroupOptions } from "../group/group.tsx";
 import { useGroup } from "../group/group.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -60,8 +61,9 @@ export const FormGroup = forwardRef(function FormGroup(props: FormGroupProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FormGroupOptions<T extends ElementType = TagName>
-  extends GroupOptions<T> {
+export interface FormGroupOptions<
+  T extends ElementType = TagName,
+> extends GroupOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

@@ -9,6 +9,7 @@
  */
 
 import type { CollectionEntry } from "astro:content";
+
 import { getReferenceItemId } from "#app/lib/reference.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import { getReferencePath } from "#app/lib/url.ts";

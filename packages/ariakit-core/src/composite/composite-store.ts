@@ -13,17 +13,16 @@ import type { SetState } from "../utils/types.ts";
 
 type Orientation = "horizontal" | "vertical" | "both";
 
-interface NextOptions
-  extends Pick<
-    Partial<CompositeStoreState>,
-    | "activeId"
-    | "focusShift"
-    | "focusLoop"
-    | "focusWrap"
-    | "includesBaseElement"
-    | "renderedItems"
-    | "rtl"
-  > {
+interface NextOptions extends Pick<
+  Partial<CompositeStoreState>,
+  | "activeId"
+  | "focusShift"
+  | "focusLoop"
+  | "focusWrap"
+  | "includesBaseElement"
+  | "renderedItems"
+  | "rtl"
+> {
   /**
    * The number of items to skip.
    */
@@ -672,7 +671,9 @@ export interface CompositeStoreFunctions<
 
 export interface CompositeStoreOptions<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CollectionStoreOptions<T>,
+>
+  extends
+    CollectionStoreOptions<T>,
     StoreOptions<
       CompositeStoreState<T>,
       | "id"
@@ -696,10 +697,10 @@ export interface CompositeStoreOptions<
 
 export interface CompositeStoreProps<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreOptions<T>,
-    StoreProps<CompositeStoreState<T>> {}
+>
+  extends CompositeStoreOptions<T>, StoreProps<CompositeStoreState<T>> {}
 
 export interface CompositeStore<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreFunctions<T>,
-    Store<CompositeStoreState<T>> {}
+>
+  extends CompositeStoreFunctions<T>, Store<CompositeStoreState<T>> {}

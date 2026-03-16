@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { GroupLabelOptions } from "../group/group-label.tsx";
 import { useGroupLabel } from "../group/group-label.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -60,8 +61,9 @@ export const FormGroupLabel = forwardRef(function FormGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface FormGroupLabelOptions<T extends ElementType = TagName>
-  extends GroupLabelOptions<T> {
+export interface FormGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends GroupLabelOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

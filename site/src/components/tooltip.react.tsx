@@ -10,10 +10,13 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import type { ReactElement, ReactNode } from "react";
+
 import { getPortalRoot } from "../lib/get-portal-root.ts";
 
-export interface TooltipProps
-  extends Omit<ak.TooltipProps, "title" | "children"> {
+export interface TooltipProps extends Omit<
+  ak.TooltipProps,
+  "title" | "children"
+> {
   placement?: ak.TooltipProviderProps["placement"];
   children: ReactElement;
   title: ReactNode;

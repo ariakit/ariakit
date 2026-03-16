@@ -3,6 +3,7 @@ import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback, useEffect, useRef } from "react";
+
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import {
@@ -160,8 +161,9 @@ export const HovercardAnchor = forwardRef(function HovercardAnchor(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardAnchorOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T> {
+export interface HovercardAnchorOptions<
+  T extends ElementType = TagName,
+> extends FocusableOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

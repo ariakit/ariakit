@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
 import { usePopoverArrow } from "../popover/popover-arrow.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -54,8 +55,9 @@ export const HovercardArrow = forwardRef(function HovercardArrow(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardArrowOptions<T extends ElementType = TagName>
-  extends PopoverArrowOptions<T> {
+export interface HovercardArrowOptions<
+  T extends ElementType = TagName,
+> extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

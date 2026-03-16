@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/composite/composite-overflow-store";
+
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
@@ -42,15 +43,16 @@ export function useCompositeOverflowStore(
 }
 
 export interface CompositeOverflowStoreState
-  extends Core.CompositeOverflowStoreState,
-    PopoverStoreState {}
+  extends Core.CompositeOverflowStoreState, PopoverStoreState {}
 
 export interface CompositeOverflowStoreFunctions
-  extends Omit<Core.CompositeOverflowStoreFunctions, "disclosure">,
+  extends
+    Omit<Core.CompositeOverflowStoreFunctions, "disclosure">,
     PopoverStoreFunctions {}
 
 export interface CompositeOverflowStoreOptions
-  extends Omit<Core.CompositeOverflowStoreOptions, "disclosure">,
+  extends
+    Omit<Core.CompositeOverflowStoreOptions, "disclosure">,
     PopoverStoreOptions {}
 
 export type CompositeOverflowStoreProps = CompositeOverflowStoreOptions &

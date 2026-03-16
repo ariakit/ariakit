@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ChangeEvent, ElementType } from "react";
+
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
 import { useEvent } from "../utils/hooks.ts";
@@ -114,8 +115,7 @@ export const FormRadio = memo(
 );
 
 export interface FormRadioOptions<T extends ElementType = TagName>
-  extends FormControlOptions<T>,
-    Omit<RadioOptions<T>, "store" | "name"> {}
+  extends FormControlOptions<T>, Omit<RadioOptions<T>, "store" | "name"> {}
 
 export type FormRadioProps<T extends ElementType = TagName> = Props<
   T,

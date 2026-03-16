@@ -3,6 +3,7 @@ import { getFirstTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback, useRef } from "react";
+
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.ts";
@@ -160,8 +161,9 @@ export const FormLabel = memo(
   }),
 );
 
-export interface FormLabelOptions<T extends ElementType = TagName>
-  extends CollectionItemOptions<T> {
+export interface FormLabelOptions<
+  T extends ElementType = TagName,
+> extends CollectionItemOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

@@ -1,6 +1,7 @@
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useContext } from "react";
+
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -63,8 +64,9 @@ export const DialogDescription = forwardRef(function DialogDescription(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogDescriptionOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface DialogDescriptionOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If

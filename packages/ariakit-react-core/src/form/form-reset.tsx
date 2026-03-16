@@ -1,5 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useStoreState } from "../utils/store.tsx";
@@ -66,8 +67,9 @@ export const FormReset = forwardRef(function FormReset(props: FormResetProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FormResetOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface FormResetOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

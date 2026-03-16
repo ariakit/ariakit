@@ -1,5 +1,6 @@
 import type { ElementType } from "react";
 import { useEffect } from "react";
+
 import type { MenubarOptions } from "../menubar/menubar.tsx";
 import { useMenubar } from "../menubar/menubar.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -74,8 +75,9 @@ export const MenuBar = forwardRef(function MenuBar(props: MenuBarProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuBarOptions<T extends ElementType = TagName>
-  extends MenubarOptions<T> {}
+export interface MenuBarOptions<
+  T extends ElementType = TagName,
+> extends MenubarOptions<T> {}
 
 export type MenuBarProps<T extends ElementType = TagName> = Props<
   T,

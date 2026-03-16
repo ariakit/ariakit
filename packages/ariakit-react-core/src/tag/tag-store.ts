@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/tag/tag-store";
+
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -46,16 +47,13 @@ export function useTagStore(props: TagStoreProps = {}): TagStore {
 export interface TagStoreItem extends Core.TagStoreItem {}
 
 export interface TagStoreState
-  extends Core.TagStoreState,
-    CompositeStoreState<TagStoreItem> {}
+  extends Core.TagStoreState, CompositeStoreState<TagStoreItem> {}
 
 export interface TagStoreFunctions
-  extends Core.TagStoreFunctions,
-    CompositeStoreFunctions<TagStoreItem> {}
+  extends Core.TagStoreFunctions, CompositeStoreFunctions<TagStoreItem> {}
 
 export interface TagStoreOptions
-  extends Core.TagStoreOptions,
-    CompositeStoreOptions<TagStoreItem> {
+  extends Core.TagStoreOptions, CompositeStoreOptions<TagStoreItem> {
   /**
    * A callback that gets called when the
    * [`value`](https://ariakit.org/reference/tag-provider#value) state

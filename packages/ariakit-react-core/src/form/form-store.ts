@@ -2,6 +2,7 @@ import * as Core from "@ariakit/core/form/form-store";
 import type { StringLike } from "@ariakit/core/form/types";
 import type { PickRequired } from "@ariakit/core/utils/types";
 import { useCallback, useEffect, useMemo } from "react";
+
 import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,
@@ -102,12 +103,10 @@ export interface FormStoreValues extends Core.FormStoreValues {}
 export interface FormStoreItem extends Core.FormStoreItem {}
 
 export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
-  extends Core.FormStoreState<T>,
-    CollectionStoreState<FormStoreItem> {}
+  extends Core.FormStoreState<T>, CollectionStoreState<FormStoreItem> {}
 
 export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
-  extends Core.FormStoreFunctions<T>,
-    CollectionStoreFunctions<FormStoreItem> {
+  extends Core.FormStoreFunctions<T>, CollectionStoreFunctions<FormStoreItem> {
   /**
    * A custom hook that rerenders the component when the value of the given
    * field changes. It accepts a string or a reference to a field name from the
@@ -160,8 +159,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
 }
 
 export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
-  extends Core.FormStoreOptions<T>,
-    CollectionStoreOptions<FormStoreItem> {
+  extends Core.FormStoreOptions<T>, CollectionStoreOptions<FormStoreItem> {
   /**
    * Function that will be called when
    * [`values`](https://ariakit.org/reference/use-form-store#values) state
@@ -191,9 +189,7 @@ export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
 }
 
 export interface FormStoreProps<T extends FormStoreValues = FormStoreValues>
-  extends FormStoreOptions<T>,
-    Core.FormStoreProps<T> {}
+  extends FormStoreOptions<T>, Core.FormStoreProps<T> {}
 
 export interface FormStore<T extends FormStoreValues = FormStoreValues>
-  extends FormStoreFunctions<T>,
-    Store<Core.FormStore<T>> {}
+  extends FormStoreFunctions<T>, Store<Core.FormStore<T>> {}

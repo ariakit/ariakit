@@ -1,4 +1,5 @@
 import * as Dialog from "./dialog.tsx";
+
 import "./style.css";
 
 export default function Example() {

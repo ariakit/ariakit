@@ -31,6 +31,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
@@ -643,8 +644,7 @@ export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
 });
 
 export interface ComboboxOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
-    PopoverAnchorOptions<T> {
+  extends CompositeOptions<T>, PopoverAnchorOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/toolbar/toolbar-store";
+
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -37,21 +38,16 @@ export function useToolbarStore(props: ToolbarStoreProps = {}): ToolbarStore {
 }
 
 export interface ToolbarStoreState
-  extends Core.ToolbarStoreState,
-    CompositeStoreState {}
+  extends Core.ToolbarStoreState, CompositeStoreState {}
 
 export interface ToolbarStoreFunctions
-  extends Core.ToolbarStoreFunctions,
-    CompositeStoreFunctions {}
+  extends Core.ToolbarStoreFunctions, CompositeStoreFunctions {}
 
 export interface ToolbarStoreOptions
-  extends Core.ToolbarStoreOptions,
-    CompositeStoreOptions {}
+  extends Core.ToolbarStoreOptions, CompositeStoreOptions {}
 
 export interface ToolbarStoreProps
-  extends ToolbarStoreOptions,
-    Core.ToolbarStoreProps {}
+  extends ToolbarStoreOptions, Core.ToolbarStoreProps {}
 
 export interface ToolbarStore
-  extends ToolbarStoreFunctions,
-    Store<Core.ToolbarStore> {}
+  extends ToolbarStoreFunctions, Store<Core.ToolbarStore> {}

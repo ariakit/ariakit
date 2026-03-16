@@ -9,6 +9,7 @@
  */
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
+
 import cloudflare from "@astrojs/cloudflare";
 import { rehypeHeadingIds } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
@@ -18,6 +19,7 @@ import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import {
   rehypeAdmonitions,

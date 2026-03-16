@@ -9,7 +9,9 @@
  */
 import clsx from "clsx";
 import type { ComponentProps, ReactNode } from "react";
+
 import { Icon } from "#app/icons/icon.react.tsx";
+
 import { InlineFragment } from "./inline-fragment.react.tsx";
 
 interface InlineLinkProps extends ComponentProps<"a"> {

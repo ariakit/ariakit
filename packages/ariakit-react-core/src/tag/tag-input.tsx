@@ -14,6 +14,7 @@ import type {
   KeyboardEvent,
   SyntheticEvent,
 } from "react";
+
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.ts";
@@ -235,8 +236,9 @@ export const TagInput = forwardRef(function TagInput(props: TagInputProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagInputOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface TagInputOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

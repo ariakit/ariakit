@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from "react";
 import { Suspense } from "react";
+
 import PostMessage from "./post-message.tsx";
 
 export default function Layout({ children }: PropsWithChildren) {

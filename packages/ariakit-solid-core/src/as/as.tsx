@@ -1,5 +1,6 @@
 import type { Component, ComponentProps, JSX, ValidComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
+
 import { mergeProps } from "../utils/reactivity.ts";
 
 type AsElements = {

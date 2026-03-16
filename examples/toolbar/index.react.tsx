@@ -1,5 +1,7 @@
 import * as Ariakit from "@ariakit/react";
+
 import { bold, italic, redo, underline, undo } from "./icons.tsx";
+
 import "./style.css";
 
 export default function Example() {

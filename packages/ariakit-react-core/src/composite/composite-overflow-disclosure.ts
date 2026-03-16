@@ -1,6 +1,7 @@
 import { sync } from "@ariakit/core/utils/store";
 import type { ElementType, FocusEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";
@@ -100,8 +101,8 @@ export const CompositeOverflowDisclosure = forwardRef(
 
 export interface CompositeOverflowDisclosureOptions<
   T extends ElementType = TagName,
-> extends Omit<CompositeItemOptions<T>, "store">,
-    PopoverDisclosureOptions<T> {
+>
+  extends Omit<CompositeItemOptions<T>, "store">, PopoverDisclosureOptions<T> {
   /**
    * Object returned by the `useCompositeOverflowStore` hook.
    */

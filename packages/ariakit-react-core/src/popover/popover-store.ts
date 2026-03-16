@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/core/popover/popover-store";
+
 import type {
   DialogStoreFunctions,
   DialogStoreOptions,
@@ -36,21 +37,18 @@ export function usePopoverStore(props: PopoverStoreProps = {}): PopoverStore {
 }
 
 export interface PopoverStoreState
-  extends Core.PopoverStoreState,
-    DialogStoreState {}
+  extends Core.PopoverStoreState, DialogStoreState {}
 
 export interface PopoverStoreFunctions
-  extends Omit<Core.PopoverStoreFunctions, "disclosure">,
+  extends
+    Omit<Core.PopoverStoreFunctions, "disclosure">,
     DialogStoreFunctions {}
 
 export interface PopoverStoreOptions
-  extends Omit<Core.PopoverStoreOptions, "disclosure">,
-    DialogStoreOptions {}
+  extends Omit<Core.PopoverStoreOptions, "disclosure">, DialogStoreOptions {}
 
 export interface PopoverStoreProps
-  extends PopoverStoreOptions,
-    Omit<Core.PopoverStoreProps, "disclosure"> {}
+  extends PopoverStoreOptions, Omit<Core.PopoverStoreProps, "disclosure"> {}
 
 export interface PopoverStore
-  extends PopoverStoreFunctions,
-    Omit<Store<Core.PopoverStore>, "disclosure"> {}
+  extends PopoverStoreFunctions, Omit<Store<Core.PopoverStore>, "disclosure"> {}

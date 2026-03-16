@@ -5,6 +5,7 @@ import {
 import type { BivariantCallback } from "@ariakit/core/utils/types";
 import type { ChangeEvent, ElementType, FocusEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
+
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import {
@@ -199,8 +200,9 @@ export const Radio = memo(
   }),
 );
 
-export interface RadioOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface RadioOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If

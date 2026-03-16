@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { ReactNode } from "react";
+
 import type { Reference } from "#app/lib/schemas.ts";
 
 export interface ReferenceLabelProps {

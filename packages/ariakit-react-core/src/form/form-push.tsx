@@ -2,6 +2,7 @@ import type { StringLike } from "@ariakit/core/form/types";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
+
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
@@ -162,8 +163,7 @@ export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
 });
 
 export interface FormPushOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T>,
-    CollectionItemOptions<T> {
+  extends ButtonOptions<T>, CollectionItemOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

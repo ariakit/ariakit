@@ -1,5 +1,7 @@
 import { basename, dirname, extname } from "node:path";
+
 import { kebabCase } from "lodash-es";
+
 import { PAGE_INDEX_FILE_REGEX, PAGE_SOLID_REGEX } from "./const.js";
 
 /**

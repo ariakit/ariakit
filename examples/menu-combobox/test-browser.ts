@@ -1,5 +1,6 @@
 import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
+
 import { test } from "../test-utils.ts";
 
 test("auto select first option", async ({ page }) => {

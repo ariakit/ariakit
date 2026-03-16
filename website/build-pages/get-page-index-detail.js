@@ -1,5 +1,6 @@
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
+
 import { getPageName } from "./get-page-name.js";
 import { getPageTree } from "./get-page-tree.js";
 

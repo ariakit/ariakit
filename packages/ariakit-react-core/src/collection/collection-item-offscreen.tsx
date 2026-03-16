@@ -1,6 +1,7 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, RefCallback, RefObject } from "react";
 import { useCallback, useRef, useState } from "react";
+
 import { Role } from "../role/role.tsx";
 import { useForceUpdate, useId, useMergeRefs } from "../utils/hooks.ts";
 import { forwardRef } from "../utils/system.tsx";
@@ -131,8 +132,9 @@ export const CollectionItem = forwardRef(function CollectionItem({
   return <Component {...htmlProps} />;
 });
 
-export interface CollectionItemOptions<T extends ElementType = TagName>
-  extends Base.CollectionItemOptions<T> {
+export interface CollectionItemOptions<
+  T extends ElementType = TagName,
+> extends Base.CollectionItemOptions<T> {
   offscreenBehavior?: "active" | "passive" | "lazy";
   offscreenRoot?:
     | HTMLElement

@@ -1,4 +1,5 @@
 import type { Component, JSX, ValidComponent } from "solid-js";
+
 import { createHook, createInstance } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 
@@ -81,8 +82,9 @@ Object.assign(
   }, {} as RoleElements),
 );
 
-export interface RoleOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface RoleOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type RoleProps<T extends ValidComponent = TagName> = Props<
   T,

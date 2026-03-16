@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
@@ -117,7 +118,8 @@ export const Menubar = forwardRef(function Menubar(props: MenubarProps) {
 });
 
 export interface MenubarOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     Pick<
       MenubarStoreProps,
       "focusLoop" | "orientation" | "rtl" | "virtualFocus"

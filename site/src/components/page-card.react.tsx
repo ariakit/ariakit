@@ -11,8 +11,7 @@
 import clsx from "clsx";
 import * as React from "react";
 
-export interface PageCardProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+export interface PageCardProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   title: string;
   thumbnail?: string | null;
   description?: string;

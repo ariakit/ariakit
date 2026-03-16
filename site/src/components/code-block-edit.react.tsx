@@ -8,8 +8,7 @@ import type { Source } from "#app/lib/source.ts";
 import type { SiteStackblitzFramework } from "#app/lib/stackblitz.ts";
 import { openInStackblitz } from "#app/lib/stackblitz.ts";
 
-export interface CodeBlockEditProps
-  extends React.ComponentPropsWithRef<"button"> {
+export interface CodeBlockEditProps extends React.ComponentPropsWithRef<"button"> {
   source?: Source;
   framework?: Framework;
   example?: string;

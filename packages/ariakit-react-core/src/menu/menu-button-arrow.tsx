@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.tsx";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -65,8 +66,9 @@ export const MenuButtonArrow = forwardRef(function MenuButtonArrow(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuButtonArrowOptions<T extends ElementType = TagName>
-  extends PopoverDisclosureArrowOptions<T> {
+export interface MenuButtonArrowOptions<
+  T extends ElementType = TagName,
+> extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

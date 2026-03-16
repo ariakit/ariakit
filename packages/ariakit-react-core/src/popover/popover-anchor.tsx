@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import { useMergeRefs } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -51,8 +52,9 @@ export const PopoverAnchor = forwardRef(function PopoverAnchor(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverAnchorOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface PopoverAnchorOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

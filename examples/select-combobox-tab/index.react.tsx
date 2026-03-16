@@ -1,5 +1,6 @@
 import { matchSorter } from "match-sorter";
 import { useMemo, useState } from "react";
+
 import * as defaultData from "./data.ts";
 import { BranchIcon, TagIcon } from "./icons.tsx";
 import type { SelectProps } from "./select.tsx";
@@ -12,6 +13,7 @@ import {
   SelectTabList,
   SelectTabPanel,
 } from "./select.tsx";
+
 import "./theme.css";
 
 export default function Example() {

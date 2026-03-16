@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.tsx";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -61,8 +62,9 @@ export const SelectArrow = forwardRef(function SelectArrow(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectArrowOptions<T extends ElementType = TagName>
-  extends PopoverDisclosureArrowOptions<T> {
+export interface SelectArrowOptions<
+  T extends ElementType = TagName,
+> extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If

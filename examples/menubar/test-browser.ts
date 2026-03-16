@@ -1,5 +1,6 @@
 import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
+
 import { test } from "../test-utils.ts";
 
 test("re-open submenu and shift-tab back to the parent menu", async ({

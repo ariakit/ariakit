@@ -3,6 +3,7 @@ import { isApple } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";
+
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import {
@@ -175,8 +176,9 @@ export const Tag = memo(
   }),
 );
 
-export interface TagOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface TagOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

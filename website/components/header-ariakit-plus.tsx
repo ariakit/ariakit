@@ -22,8 +22,10 @@ import {
 } from "next/navigation.js";
 import type { ComponentPropsWithoutRef, ElementRef } from "react";
 import { forwardRef, Suspense } from "react";
+
 import { NewWindow } from "@/icons/new-window.tsx";
 import { useSubscription } from "@/lib/use-subscription.ts";
+
 import { Command } from "./command.tsx";
 import { DropdownItem } from "./dropdown-item.tsx";
 import { Popup } from "./popup.tsx";

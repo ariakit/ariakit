@@ -2,6 +2,7 @@ import type { StringLike } from "@ariakit/core/form/types";
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
+
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useEvent } from "../utils/hooks.ts";
@@ -159,8 +160,9 @@ export const FormRemove = forwardRef(function FormRemove(
   return createElement(TagName, htmlProps);
 });
 
-export interface FormRemoveOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface FormRemoveOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

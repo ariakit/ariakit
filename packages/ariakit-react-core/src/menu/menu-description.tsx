@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.tsx";
 import { useHovercardDescription } from "../hovercard/hovercard-description.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -48,8 +49,9 @@ export const MenuDescription = forwardRef(function MenuDescription(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuDescriptionOptions<T extends ElementType = TagName>
-  extends HovercardDescriptionOptions<T> {
+export interface MenuDescriptionOptions<
+  T extends ElementType = TagName,
+> extends HovercardDescriptionOptions<T> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

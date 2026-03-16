@@ -11,6 +11,7 @@ import {
 } from "@floating-ui/dom";
 import type { ElementType, HTMLAttributes } from "react";
 import { useRef, useState } from "react";
+
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
 import {
@@ -499,8 +500,9 @@ export const Popover = createDialogComponent(
   usePopoverProviderContext,
 );
 
-export interface PopoverOptions<T extends ElementType = TagName>
-  extends DialogOptions<T> {
+export interface PopoverOptions<
+  T extends ElementType = TagName,
+> extends DialogOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

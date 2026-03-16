@@ -1,5 +1,6 @@
 import type { ElementType, ReactNode } from "react";
 import { useMemo } from "react";
+
 import type {
   CollectionRendererBaseItemProps,
   CollectionRendererItem,
@@ -205,8 +206,10 @@ export const CompositeRenderer = forwardRef(function CompositeRenderer<
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeRendererOptions<T extends Item = any>
-  extends Omit<CollectionRendererOptions<T>, "store" | "children"> {
+export interface CompositeRendererOptions<T extends Item = any> extends Omit<
+  CollectionRendererOptions<T>,
+  "store" | "children"
+> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -231,5 +234,7 @@ export interface CompositeRendererOptions<T extends Item = any>
   children?: (item: ItemProps<T>) => ReactNode;
 }
 
-export interface CompositeRendererProps<T extends Item = any>
-  extends Props<TagName, CompositeRendererOptions<T>> {}
+export interface CompositeRendererProps<T extends Item = any> extends Props<
+  TagName,
+  CompositeRendererOptions<T>
+> {}

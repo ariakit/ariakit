@@ -1,5 +1,6 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
 import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
@@ -70,8 +71,9 @@ export const ComboboxLabel = memo(
   }),
 );
 
-export interface ComboboxLabelOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface ComboboxLabelOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

@@ -8,7 +8,9 @@ import {
   SelectProvider,
 } from "@ariakit/react";
 import { useState } from "react";
+
 import list from "./list.ts";
+
 import "./style.css";
 
 function renderValue(value: string[]) {

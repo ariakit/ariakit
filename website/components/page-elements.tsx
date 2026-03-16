@@ -5,12 +5,14 @@ import type { ComponentPropsWithoutRef } from "react";
 import { Children, cloneElement, isValidElement, useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
+
 import pageLinks from "@/build-pages/links.ts";
 import type { PageIndexDetail, TableOfContents } from "@/build-pages/types.ts";
 import { ArrowRight } from "@/icons/arrow-right.tsx";
 import { Hashtag } from "@/icons/hashtag.tsx";
 import { NewWindow } from "@/icons/new-window.tsx";
 import { isValidHref } from "@/lib/is-valid-href.ts";
+
 import {
   AuthDisabled,
   AuthEnabled,
@@ -221,8 +223,7 @@ export function PageFigure({ node, ...props }: PageFigureProps) {
   return <figure {...props} className={className} />;
 }
 
-export interface PageBlockquoteProps
-  extends ComponentPropsWithoutRef<"blockquote"> {
+export interface PageBlockquoteProps extends ComponentPropsWithoutRef<"blockquote"> {
   node?: Element;
 }
 

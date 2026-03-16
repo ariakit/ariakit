@@ -2,6 +2,7 @@ import Link from "next/link.js";
 import type { ComponentPropsWithoutRef } from "react";
 import { forwardRef, useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
+
 import { getPageTitle } from "@/build-pages/get-page-title.js";
 import pageIndex from "@/build-pages/index.ts";
 import { ChevronRight } from "@/icons/chevron-right.tsx";
@@ -10,11 +11,13 @@ import { Npm } from "@/icons/npm.tsx";
 import { Substack } from "@/icons/substack.tsx";
 import { getPageIcon } from "@/lib/get-page-icon.tsx";
 import type { UpdateItem } from "@/updates.ts";
+
 import { DateFromNow } from "./date-from-now.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 
 export interface UpdateLinkProps
-  extends UpdateItem,
+  extends
+    UpdateItem,
     Omit<ComponentPropsWithoutRef<typeof Link>, "href" | "title" | "type"> {
   dateStyle?: "fromNow" | "long";
   layer?: "popup" | "page";

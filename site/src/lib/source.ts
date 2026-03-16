@@ -9,6 +9,7 @@
  */
 
 import { dirname, extname, relative, resolve } from "node:path";
+
 import type { StyleDependency } from "./styles.ts";
 
 // ============================================================================

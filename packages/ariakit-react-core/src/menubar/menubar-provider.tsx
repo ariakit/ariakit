@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import { MenubarContextProvider } from "./menubar-context.tsx";
 import type { MenubarStoreProps } from "./menubar-store.ts";
 import { useMenubarStore } from "./menubar-store.ts";

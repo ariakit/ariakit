@@ -1,4 +1,5 @@
 import type { ValidComponent } from "solid-js";
+
 import { mergeProps } from "../utils/reactivity.ts";
 import { createHook, createInstance, withOptions } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -46,8 +47,9 @@ export const Separator = function Separator(props: SeparatorProps) {
   return createInstance(TagName, htmlProps);
 };
 
-export interface SeparatorOptions<_T extends ValidComponent = TagName>
-  extends Options {
+export interface SeparatorOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {
   /**
    * The orientation of the separator.
    * @default "horizontal"

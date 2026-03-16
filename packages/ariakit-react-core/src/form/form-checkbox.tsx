@@ -1,8 +1,9 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
+import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
-import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import {
   createElement,
   createHook,
@@ -98,8 +99,7 @@ export const FormCheckbox = memo(
 );
 
 export interface FormCheckboxOptions<T extends ElementType = TagName>
-  extends FormControlOptions<T>,
-    Omit<CheckboxOptions<T>, "store" | "name"> {}
+  extends FormControlOptions<T>, Omit<CheckboxOptions<T>, "store" | "name"> {}
 
 export type FormCheckboxProps<T extends ElementType = TagName> = Props<
   T,

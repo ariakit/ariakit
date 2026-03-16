@@ -1,4 +1,5 @@
 import { matchSorter } from "match-sorter";
+
 import type { Action } from "./actions.ts";
 
 export function filterActions(

@@ -1,6 +1,7 @@
 import { getPopupRole } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+
 import type { CompositeRowOptions } from "../composite/composite-row.tsx";
 import { useCompositeRow } from "../composite/composite-row.tsx";
 import { useStoreState } from "../utils/store.tsx";
@@ -83,8 +84,9 @@ export const ComboboxRow = forwardRef(function ComboboxRow(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxRowOptions<T extends ElementType = TagName>
-  extends CompositeRowOptions<T> {
+export interface ComboboxRowOptions<
+  T extends ElementType = TagName,
+> extends CompositeRowOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

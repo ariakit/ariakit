@@ -135,8 +135,10 @@ export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
   },
 );
 
-export interface MenuItemProps
-  extends Omit<Ariakit.ComboboxItemProps, "store"> {
+export interface MenuItemProps extends Omit<
+  Ariakit.ComboboxItemProps,
+  "store"
+> {
   name?: string;
 }
 

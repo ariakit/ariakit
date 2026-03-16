@@ -1,6 +1,7 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useMemo } from "react";
+
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -109,8 +110,9 @@ export const PopoverDisclosureArrow = forwardRef(
   },
 );
 
-export interface PopoverDisclosureArrowOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface PopoverDisclosureArrowOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

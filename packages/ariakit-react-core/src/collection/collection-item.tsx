@@ -2,6 +2,7 @@ import type { CollectionStoreItem } from "@ariakit/core/collection/collection-st
 import { identity, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useEffect, useRef } from "react";
+
 import { useId, useMergeRefs } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -80,8 +81,9 @@ export const CollectionItem = forwardRef(function CollectionItem(
   return createElement(TagName, htmlProps);
 });
 
-export interface CollectionItemOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CollectionItemOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)

@@ -9,6 +9,7 @@ import {
 import type { ElementType, MutableRefObject, RefCallback } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+
 import { FocusTrap } from "../focus-trap/focus-trap.tsx";
 import {
   useMergeRefs,
@@ -343,8 +344,9 @@ export const Portal = forwardRef(function Portal(props: PortalProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface PortalOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface PortalOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the
    * same as the order in which the underlying

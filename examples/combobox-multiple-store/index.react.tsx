@@ -1,7 +1,9 @@
 import { matchSorter } from "match-sorter";
 import { useDeferredValue, useMemo, useState } from "react";
+
 import list from "../combobox-multiple/list.ts";
 import { Combobox, ComboboxItem } from "./combobox-multiple.tsx";
+
 import "./style.css";
 
 export default function Example() {

@@ -4,6 +4,7 @@ import { invariant } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { UndoManager } from "@ariakit/core/utils/undo";
 import type { ElementType, KeyboardEvent, MouseEvent } from "react";
+
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useEvent, useWrapElement } from "../utils/hooks.ts";
@@ -182,8 +183,9 @@ export const TagList = forwardRef(function TagList(props: TagListProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface TagListOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

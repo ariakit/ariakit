@@ -27,6 +27,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
+
 import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -497,8 +498,9 @@ export const Focusable = forwardRef(function Focusable(props: FocusableProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FocusableOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface FocusableOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Determines if the element is disabled. This sets the `aria-disabled`
    * attribute accordingly, enabling support for all elements, including those

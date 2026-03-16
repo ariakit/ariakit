@@ -1,4 +1,5 @@
 import type { ElementType } from "react";
+
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.tsx";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
@@ -50,8 +51,9 @@ export const PopoverDismiss = forwardRef(function PopoverDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDismissOptions<T extends ElementType = TagName>
-  extends DialogDismissOptions<T> {
+export interface PopoverDismissOptions<
+  T extends ElementType = TagName,
+> extends DialogDismissOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
