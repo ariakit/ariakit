@@ -78,10 +78,10 @@ export interface CollectionStoreOptions<
 
 export interface CollectionStoreProps<
   T extends CollectionStoreItem = CollectionStoreItem,
-> extends CollectionStoreOptions<T>,
-    Core.CollectionStoreProps<T> {}
+>
+  extends CollectionStoreOptions<T>, Core.CollectionStoreProps<T> {}
 
 export interface CollectionStore<
   T extends CollectionStoreItem = CollectionStoreItem,
-> extends CollectionStoreFunctions<T>,
-    Store<Core.CollectionStore<T>> {}
+>
+  extends CollectionStoreFunctions<T>, Store<Core.CollectionStore<T>> {}

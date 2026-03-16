@@ -60,8 +60,9 @@ export const FormGroup = forwardRef(function FormGroup(props: FormGroupProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FormGroupOptions<T extends ElementType = TagName>
-  extends GroupOptions<T> {
+export interface FormGroupOptions<
+  T extends ElementType = TagName,
+> extends GroupOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

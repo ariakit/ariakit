@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { createContext, useContext } from "react";
 import type {
   DisclosureButtonProps,

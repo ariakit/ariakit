@@ -89,7 +89,7 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
         "FormControl must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
 
@@ -193,8 +193,9 @@ export const FormControl = memo(
   }),
 );
 
-export interface FormControlOptions<T extends ElementType = TagName>
-  extends CollectionItemOptions<T> {
+export interface FormControlOptions<
+  T extends ElementType = TagName,
+> extends CollectionItemOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

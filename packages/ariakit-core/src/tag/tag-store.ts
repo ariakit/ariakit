@@ -45,7 +45,7 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
 
   const setValues: TagStore["setValues"] = (values) => {
     const { values: previousValues } = tag.getState();
-    UndoManager.execute(() => {
+    void UndoManager.execute(() => {
       let changed = true;
       tag.setState("values", (prev) => {
         const next = applyState(values, prev);
@@ -114,8 +114,7 @@ export interface TagStoreState extends CompositeStoreState<TagStoreItem> {
   values: string[];
 }
 
-export interface TagStoreFunctions
-  extends CompositeStoreFunctions<TagStoreItem> {
+export interface TagStoreFunctions extends CompositeStoreFunctions<TagStoreItem> {
   /**
    * Sets the `inputElement` state.
    */
@@ -151,7 +150,8 @@ export interface TagStoreFunctions
 }
 
 export interface TagStoreOptions
-  extends StoreOptions<TagStoreState, "value" | "values">,
+  extends
+    StoreOptions<TagStoreState, "value" | "values">,
     CompositeStoreOptions<TagStoreItem> {
   /**
    * The initial value of the tag input.
@@ -166,7 +166,6 @@ export interface TagStoreOptions
 }
 
 export interface TagStoreProps
-  extends TagStoreOptions,
-    StoreProps<TagStoreState> {}
+  extends TagStoreOptions, StoreProps<TagStoreState> {}
 
 export interface TagStore extends TagStoreFunctions, Store<TagStoreState> {}

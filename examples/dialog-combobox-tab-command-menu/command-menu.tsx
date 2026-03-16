@@ -4,7 +4,7 @@
  * https://ariakit.org/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { ComponentProps, ReactNode } from "react";
 import {
   createContext,

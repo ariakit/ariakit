@@ -472,8 +472,7 @@ export const CompositeItem = memo(
 );
 
 export interface CompositeItemOptions<T extends ElementType = TagName>
-  extends CommandOptions<T>,
-    CollectionItemOptions<T> {
+  extends CommandOptions<T>, CollectionItemOptions<T> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

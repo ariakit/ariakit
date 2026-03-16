@@ -135,7 +135,7 @@ export const useMyComponent = createHook<TagName, MyComponentOptions>(
   function useMyComponent({ customProp = "My component", ...props }) {
     props = { children: customProp, ...props };
     return props;
-  }
+  },
 );
 
 /**
@@ -153,13 +153,14 @@ export const MyComponent = forwardRef(function MyComponent(
   return createElement(TagName, htmlProps);
 });
 
-export interface MyComponentOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface MyComponentOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Description for custom prop.
    */
   customProp?: string;
-};
+}
 
 export type MyComponentProps<T extends ElementType = TagName> = Props<
   T,
@@ -207,13 +208,11 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 `examples/my-component/style.css`
 
-<!-- prettier-ignore -->
 ```css
 .my-component {
-  @apply
-    bg-red-600
+  @apply bg-red-600
     text-white
-    dark:bg-red-800
+    dark:bg-red-800;
 }
 ```
 
@@ -295,13 +294,11 @@ We can `@import` CSS files from other examples. You'll usually import the styles
 
 `examples/my-component-custom-prop/style.css`
 
-<!-- prettier-ignore -->
 ```css
 @import url("../my-component/style.css");
 
 .my-component {
-  @apply
-    p-4
+  @apply p-4;
 }
 ```
 

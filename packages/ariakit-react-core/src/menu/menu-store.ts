@@ -83,15 +83,11 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
 export type MenuStoreValues = Core.MenuStoreValues;
 
 export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
-  extends Core.MenuStoreState<T>,
-    CompositeStoreState,
-    HovercardStoreState {}
+  extends Core.MenuStoreState<T>, CompositeStoreState, HovercardStoreState {}
 
 export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
-  extends Pick<
-      MenuStoreOptions,
-      "combobox" | "parent" | "menubar" | "disclosure"
-    >,
+  extends
+    Pick<MenuStoreOptions, "combobox" | "parent" | "menubar" | "disclosure">,
     Omit<
       Core.MenuStoreFunctions<T>,
       "combobox" | "parent" | "menubar" | "disclosure"
@@ -100,7 +96,8 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
     HovercardStoreFunctions {}
 
 export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
-  extends Omit<Core.MenuStoreOptions<T>, "disclosure">,
+  extends
+    Omit<Core.MenuStoreOptions<T>, "disclosure">,
     CompositeStoreOptions,
     HovercardStoreOptions {
   /**
@@ -145,14 +142,16 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
 }
 
 export interface MenuStoreProps<T extends MenuStoreValues = MenuStoreValues>
-  extends MenuStoreOptions<T>,
+  extends
+    MenuStoreOptions<T>,
     Omit<
       Core.MenuStoreProps<T>,
       "combobox" | "parent" | "menubar" | "disclosure"
     > {}
 
 export interface MenuStore<T extends MenuStoreValues = MenuStoreValues>
-  extends MenuStoreFunctions<T>,
+  extends
+    MenuStoreFunctions<T>,
     Omit<
       Store<Core.MenuStore<T>>,
       "combobox" | "parent" | "menubar" | "disclosure"

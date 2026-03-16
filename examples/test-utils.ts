@@ -19,7 +19,7 @@ export function preview(name: string) {
     case "solid":
       return `/previews/${name}__solid`;
     default:
-      throw new Error(`Unknown test loader: ${LOADER}`);
+      throw new Error(`Unknown test loader: ${String(LOADER)}`);
   }
 }
 
@@ -145,7 +145,7 @@ export async function screenshot({
   }
 
   for (const colorScheme of colorSchemes) {
-    page.emulateMedia({ colorScheme });
+    await page.emulateMedia({ colorScheme });
 
     const folder = `${dirname(test.info().file)}/images`;
     const path = `${folder}/${name}-${colorScheme}.png`;

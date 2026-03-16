@@ -157,8 +157,7 @@ export const ComboboxList = forwardRef(function ComboboxList(
 });
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
-  extends Options,
-    Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
+  extends Options, Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

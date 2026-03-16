@@ -81,8 +81,9 @@ Object.assign(
   }, {} as RoleElements),
 );
 
-export interface RoleOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface RoleOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type RoleProps<T extends ValidComponent = TagName> = Props<
   T,

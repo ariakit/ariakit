@@ -103,7 +103,7 @@ export function createStore<S extends State>(
           return sync(store, [key], (state) => {
             setState(
               key,
-              state[key]!,
+              state[key],
               // @ts-expect-error - Not public API. This is just to prevent
               // infinite loops.
               true,

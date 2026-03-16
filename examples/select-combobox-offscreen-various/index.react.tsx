@@ -3,7 +3,7 @@ import type { ComboboxItemProps } from "@ariakit/react-core/combobox/combobox-it
 import { ComboboxItem } from "@ariakit/react-core/combobox/combobox-item-offscreen";
 import type { SelectItemProps } from "@ariakit/react-core/select/select-item-offscreen";
 import { SelectItem } from "@ariakit/react-core/select/select-item-offscreen";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
@@ -32,7 +32,8 @@ const items = countries.map(getItem);
 const itemsByGroup = groupItems(items);
 
 interface ComboboxProps
-  extends Pick<Ariakit.ComboboxProps, "autoSelect">,
+  extends
+    Pick<Ariakit.ComboboxProps, "autoSelect">,
     Pick<Ariakit.ComboboxPopoverProps, "unmountOnHide">,
     Pick<ComboboxItemProps, "offscreenBehavior"> {
   group?: boolean;
@@ -132,7 +133,8 @@ function Combobox({
 }
 
 interface SelectProps
-  extends Pick<SelectItemProps, "offscreenBehavior">,
+  extends
+    Pick<SelectItemProps, "offscreenBehavior">,
     Pick<Ariakit.SelectProviderProps, "defaultValue">,
     Pick<Ariakit.SelectPopoverProps, "unmountOnHide"> {
   group?: boolean;
@@ -203,7 +205,8 @@ function Select({
 }
 
 interface SelectComboboxProps
-  extends Pick<Ariakit.ComboboxProps, "autoSelect">,
+  extends
+    Pick<Ariakit.ComboboxProps, "autoSelect">,
     Pick<SelectItemProps, "offscreenBehavior">,
     Pick<Ariakit.SelectProviderProps, "defaultValue">,
     Pick<Ariakit.SelectPopoverProps, "unmountOnHide"> {

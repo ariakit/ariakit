@@ -77,7 +77,7 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
         "FormPush must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const [shouldFocus, setShouldFocus] = useState(false);
 
     useEffect(() => {
@@ -162,8 +162,7 @@ export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
 });
 
 export interface FormPushOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T>,
-    CollectionItemOptions<T> {
+  extends ButtonOptions<T>, CollectionItemOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

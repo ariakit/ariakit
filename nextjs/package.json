@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "private": true,
   "type": "module",
+  "imports": {
+    "#app/*": "./*"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,11 +14,8 @@
     "start": "next start",
     "tsc": "next typegen && tsc"
   },
-  "imports": {
-    "#app/*": "./*"
-  },
   "dependencies": {
-    "@ariakit/react": "0.4.23",
+    "@ariakit/react": "workspace:*",
     "next": "16.1.6",
     "react": "19.2.4",
     "react-dom": "19.2.4"

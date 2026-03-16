@@ -137,8 +137,9 @@ export const TagRemove = forwardRef(function TagRemove(props: TagRemoveProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagRemoveOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface TagRemoveOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

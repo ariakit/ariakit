@@ -36,21 +36,18 @@ export function useTooltipStore(props: TooltipStoreProps = {}): TooltipStore {
 }
 
 export interface TooltipStoreState
-  extends Core.TooltipStoreState,
-    HovercardStoreState {}
+  extends Core.TooltipStoreState, HovercardStoreState {}
 
 export interface TooltipStoreFunctions
-  extends Omit<Core.TooltipStoreFunctions, "disclosure">,
+  extends
+    Omit<Core.TooltipStoreFunctions, "disclosure">,
     HovercardStoreFunctions {}
 
 export interface TooltipStoreOptions
-  extends Omit<Core.TooltipStoreOptions, "disclosure">,
-    HovercardStoreOptions {}
+  extends Omit<Core.TooltipStoreOptions, "disclosure">, HovercardStoreOptions {}
 
 export interface TooltipStoreProps
-  extends TooltipStoreOptions,
-    Omit<Core.TooltipStoreProps, "disclosure"> {}
+  extends TooltipStoreOptions, Omit<Core.TooltipStoreProps, "disclosure"> {}
 
 export interface TooltipStore
-  extends TooltipStoreFunctions,
-    Omit<Store<Core.TooltipStore>, "disclosure"> {}
+  extends TooltipStoreFunctions, Omit<Store<Core.TooltipStore>, "disclosure"> {}

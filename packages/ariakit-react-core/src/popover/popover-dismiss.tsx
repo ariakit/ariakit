@@ -50,8 +50,9 @@ export const PopoverDismiss = forwardRef(function PopoverDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDismissOptions<T extends ElementType = TagName>
-  extends DialogDismissOptions<T> {
+export interface PopoverDismissOptions<
+  T extends ElementType = TagName,
+> extends DialogDismissOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

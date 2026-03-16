@@ -131,8 +131,10 @@ export interface DisclosureStoreState {
   disclosureElement: HTMLElement | null;
 }
 
-export interface DisclosureStoreFunctions
-  extends Pick<DisclosureStoreOptions, "disclosure"> {
+export interface DisclosureStoreFunctions extends Pick<
+  DisclosureStoreOptions,
+  "disclosure"
+> {
   /**
    * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
    * state.
@@ -193,8 +195,10 @@ export interface DisclosureStoreFunctions
   setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
 }
 
-export interface DisclosureStoreOptions
-  extends StoreOptions<DisclosureStoreState, "open" | "animated"> {
+export interface DisclosureStoreOptions extends StoreOptions<
+  DisclosureStoreState,
+  "open" | "animated"
+> {
   /**
    * @deprecated Manually setting the `animated` prop is no longer necessary.
    * This will be removed in a future release.
@@ -216,9 +220,7 @@ export interface DisclosureStoreOptions
 }
 
 export interface DisclosureStoreProps
-  extends DisclosureStoreOptions,
-    StoreProps<DisclosureStoreState> {}
+  extends DisclosureStoreOptions, StoreProps<DisclosureStoreState> {}
 
 export interface DisclosureStore
-  extends DisclosureStoreFunctions,
-    Store<DisclosureStoreState> {}
+  extends DisclosureStoreFunctions, Store<DisclosureStoreState> {}

@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 import * as rac from "react-aria-components";
 import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
@@ -63,8 +63,10 @@ export function DisclosureGroup({
   });
 }
 
-export interface DisclosureButtonProps
-  extends Omit<rac.ButtonProps, "children"> {
+export interface DisclosureButtonProps extends Omit<
+  rac.ButtonProps,
+  "children"
+> {
   actions?: React.ReactNode;
   description?: React.ReactNode;
   baseClassName?: string;
@@ -173,8 +175,7 @@ export function DisclosureButton({
 }
 
 export interface DisclosureContentProps
-  extends rac.DisclosurePanelProps,
-    Pick<DisclosureContentBodyProps, "prose"> {
+  extends rac.DisclosurePanelProps, Pick<DisclosureContentBodyProps, "prose"> {
   body?: React.ReactElement | DisclosureContentBodyProps;
   guide?: boolean;
   baseClassName?: string;
@@ -204,8 +205,7 @@ export function DisclosureContent({
   );
 }
 
-export interface DisclosureContentBodyProps
-  extends React.ComponentProps<"div"> {
+export interface DisclosureContentBodyProps extends React.ComponentProps<"div"> {
   prose?: boolean;
   baseClassName?: string;
 }

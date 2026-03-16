@@ -1,5 +1,5 @@
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { useEffect } from "react";
 import { createRender } from "../react-utils/create-render.ts";
 import type {

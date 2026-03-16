@@ -129,8 +129,10 @@ export type SelectRendererItemProps<
   P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
-export interface SelectRendererOptions<T extends Item = any>
-  extends Omit<CompositeRendererOptions<T>, "store"> {
+export interface SelectRendererOptions<T extends Item = any> extends Omit<
+  CompositeRendererOptions<T>,
+  "store"
+> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
@@ -152,5 +154,7 @@ export interface SelectRendererOptions<T extends Item = any>
   value?: SelectStoreValue;
 }
 
-export interface SelectRendererProps<T extends Item = any>
-  extends Props<TagName, SelectRendererOptions<T>> {}
+export interface SelectRendererProps<T extends Item = any> extends Props<
+  TagName,
+  SelectRendererOptions<T>
+> {}

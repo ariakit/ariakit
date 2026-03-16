@@ -499,8 +499,9 @@ export const Popover = createDialogComponent(
   usePopoverProviderContext,
 );
 
-export interface PopoverOptions<T extends ElementType = TagName>
-  extends DialogOptions<T> {
+export interface PopoverOptions<
+  T extends ElementType = TagName,
+> extends DialogOptions<T> {
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.

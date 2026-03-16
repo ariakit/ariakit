@@ -244,8 +244,7 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
   selectOnMove?: boolean;
 }
 
-export interface TabStoreFunctions
-  extends CompositeStoreFunctions<TabStoreItem> {
+export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem> {
   /**
    * Sets the
    * [`selectedId`](https://ariakit.org/reference/tab-provider#selectedid) state
@@ -288,7 +287,8 @@ export interface TabStoreFunctions
 }
 
 export interface TabStoreOptions
-  extends StoreOptions<
+  extends
+    StoreOptions<
       TabStoreState,
       "orientation" | "focusLoop" | "selectedId" | "selectOnMove"
     >,
@@ -325,7 +325,6 @@ export interface TabStoreOptions
 }
 
 export interface TabStoreProps
-  extends TabStoreOptions,
-    StoreProps<TabStoreState> {}
+  extends TabStoreOptions, StoreProps<TabStoreState> {}
 
 export interface TabStore extends TabStoreFunctions, Store<TabStoreState> {}

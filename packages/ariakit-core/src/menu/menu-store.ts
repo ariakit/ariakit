@@ -153,8 +153,7 @@ export type MenuStoreValues = Record<
 >;
 
 export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
-  extends CompositeStoreState,
-    HovercardStoreState {
+  extends CompositeStoreState, HovercardStoreState {
   /** @default "vertical" */
   orientation: CompositeStoreState["orientation"];
   /** @default "bottom-start" */
@@ -180,7 +179,8 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
 }
 
 export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
-  extends CompositeStoreFunctions,
+  extends
+    CompositeStoreFunctions,
     HovercardStoreFunctions,
     Pick<MenuStoreOptions, "combobox" | "parent" | "menubar"> {
   /**
@@ -222,7 +222,8 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
 }
 
 export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
-  extends StoreOptions<
+  extends
+    StoreOptions<
       MenuStoreState<T>,
       "orientation" | "placement" | "hideTimeout" | "values"
     >,
@@ -256,9 +257,7 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
 }
 
 export interface MenuStoreProps<T extends MenuStoreValues = MenuStoreValues>
-  extends MenuStoreOptions<T>,
-    StoreProps<MenuStoreState<T>> {}
+  extends MenuStoreOptions<T>, StoreProps<MenuStoreState<T>> {}
 
 export interface MenuStore<T extends MenuStoreValues = MenuStoreValues>
-  extends MenuStoreFunctions<T>,
-    Store<MenuStoreState<T>> {}
+  extends MenuStoreFunctions<T>, Store<MenuStoreState<T>> {}

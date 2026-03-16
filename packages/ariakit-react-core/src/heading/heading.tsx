@@ -66,8 +66,9 @@ export const Heading = forwardRef(function Heading(props: HeadingProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface HeadingOptions<_T extends ElementType = TagName>
-  extends Options {}
+export interface HeadingOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type HeadingProps<T extends ElementType = TagName> = Props<
   T,

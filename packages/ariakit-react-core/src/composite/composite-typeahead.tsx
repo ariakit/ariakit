@@ -218,8 +218,9 @@ export const CompositeTypeahead = forwardRef(function CompositeTypeahead(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeTypeaheadOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CompositeTypeaheadOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

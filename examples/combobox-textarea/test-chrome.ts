@@ -3,7 +3,7 @@ import { test } from "../test-utils.ts";
 
 test("popover is positioned correctly", async ({ page }) => {
   test.info().snapshotSuffix = "";
-  page.setViewportSize({ width: 800, height: 600 });
+  await page.setViewportSize({ width: 800, height: 600 });
   const textarea = page.getByRole("combobox", { name: "Comment" });
   await textarea.click({ position: { x: 10, y: 10 } });
   await textarea.type("Hello @a");

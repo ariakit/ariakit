@@ -83,8 +83,9 @@ export const ComboboxRow = forwardRef(function ComboboxRow(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxRowOptions<T extends ElementType = TagName>
-  extends CompositeRowOptions<T> {
+export interface ComboboxRowOptions<
+  T extends ElementType = TagName,
+> extends CompositeRowOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

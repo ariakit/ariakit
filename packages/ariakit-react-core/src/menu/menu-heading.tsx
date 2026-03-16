@@ -48,8 +48,9 @@ export const MenuHeading = forwardRef(function MenuHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuHeadingOptions<T extends ElementType = TagName>
-  extends HovercardHeadingOptions<T> {
+export interface MenuHeadingOptions<
+  T extends ElementType = TagName,
+> extends HovercardHeadingOptions<T> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

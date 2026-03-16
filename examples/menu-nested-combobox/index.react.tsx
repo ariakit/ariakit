@@ -3,7 +3,6 @@ import type { Action } from "./actions.ts";
 import { actions, defaultValues } from "./actions.ts";
 import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.tsx";
 import { filterActions } from "./utils.ts";
-
 import "./style.css";
 
 function renderItems(items: Action[], group?: string) {

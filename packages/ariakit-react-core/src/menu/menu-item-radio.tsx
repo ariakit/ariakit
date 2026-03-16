@@ -156,8 +156,7 @@ export const MenuItemRadio = memo(
 );
 
 export interface MenuItemRadioOptions<T extends ElementType = TagName>
-  extends MenuItemOptions<T>,
-    Omit<RadioOptions<T>, "store"> {
+  extends MenuItemOptions<T>, Omit<RadioOptions<T>, "store"> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

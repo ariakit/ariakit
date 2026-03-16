@@ -120,8 +120,9 @@ export const ComboboxCancel = forwardRef(function ComboboxCancel(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxCancelOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface ComboboxCancelOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)

@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type * as React from "react";
 
 export interface ProgressProps extends React.ComponentProps<"div"> {

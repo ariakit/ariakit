@@ -51,8 +51,7 @@ export const SelectItem = forwardRef(function SelectItem({
 });
 
 export interface SelectItemOptions<T extends ElementType = TagName>
-  extends Base.SelectItemOptions<T>,
-    Omit<CompositeItemOptions<T>, "store"> {}
+  extends Base.SelectItemOptions<T>, Omit<CompositeItemOptions<T>, "store"> {}
 
 export type SelectItemProps<T extends ElementType = TagName> = Props<
   T,

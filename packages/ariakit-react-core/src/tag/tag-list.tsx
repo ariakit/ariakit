@@ -73,10 +73,10 @@ export const useTagList = createHook<TagName, TagListOptions>(
       const shiftZ = (event.shiftKey && z) || (pc && event.key === "y");
       if (mod && shiftZ) {
         event.preventDefault();
-        UndoManager.redo();
+        void UndoManager.redo();
       } else if (mod && z) {
         event.preventDefault();
-        UndoManager.undo();
+        void UndoManager.undo();
       }
     });
 
@@ -182,8 +182,9 @@ export const TagList = forwardRef(function TagList(props: TagListProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface TagListOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not

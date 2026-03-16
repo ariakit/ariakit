@@ -89,8 +89,9 @@ export const CheckboxCheck = forwardRef(function CheckboxCheck(
   return createElement(TagName, htmlProps);
 });
 
-export interface CheckboxCheckOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CheckboxCheckOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)

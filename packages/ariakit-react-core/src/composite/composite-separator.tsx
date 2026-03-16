@@ -69,8 +69,9 @@ export const CompositeSeparator = forwardRef(function CompositeSeparator(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeSeparatorOptions<T extends ElementType = TagName>
-  extends SeparatorOptions<T> {
+export interface CompositeSeparatorOptions<
+  T extends ElementType = TagName,
+> extends SeparatorOptions<T> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

@@ -181,8 +181,9 @@ export const Command = forwardRef(function Command(props: CommandProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface CommandOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T> {
+export interface CommandOptions<
+  T extends ElementType = TagName,
+> extends FocusableOptions<T> {
   /**
    * If set to `true`, pressing the enter key while this element is focused will
    * trigger a click on the element, regardless of whether it's a native button

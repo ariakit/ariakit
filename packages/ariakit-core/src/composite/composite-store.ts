@@ -13,17 +13,16 @@ import type { SetState } from "../utils/types.ts";
 
 type Orientation = "horizontal" | "vertical" | "both";
 
-interface NextOptions
-  extends Pick<
-    Partial<CompositeStoreState>,
-    | "activeId"
-    | "focusShift"
-    | "focusLoop"
-    | "focusWrap"
-    | "includesBaseElement"
-    | "renderedItems"
-    | "rtl"
-  > {
+interface NextOptions extends Pick<
+  Partial<CompositeStoreState>,
+  | "activeId"
+  | "focusShift"
+  | "focusLoop"
+  | "focusWrap"
+  | "includesBaseElement"
+  | "renderedItems"
+  | "rtl"
+> {
   /**
    * The number of items to skip.
    */
@@ -619,11 +618,13 @@ export interface CompositeStoreFunctions<
    * @example
    * const nextId = store.next();
    */
-  next(options?: NextOptions): string | null | undefined;
-  /**
-   * @deprecated Use the object syntax instead: `next({ skip: 2 })`.
-   */
-  next(skip?: number): string | null | undefined;
+  next: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `next({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the previous enabled item based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -631,11 +632,13 @@ export interface CompositeStoreFunctions<
    * @example
    * const previousId = store.previous();
    */
-  previous(options?: NextOptions): string | null | undefined;
-  /**
-   * @deprecated Use the object syntax instead: `previous({ skip: 2 })`.
-   */
-  previous(skip?: number): string | null | undefined;
+  previous: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `previous({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the enabled item above based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -643,11 +646,13 @@ export interface CompositeStoreFunctions<
    * @example
    * const upId = store.up();
    */
-  up(options?: NextOptions): string | null | undefined;
-  /**
-   * @deprecated Use the object syntax instead: `up({ skip: 2 })`.
-   */
-  up(skip?: number): string | null | undefined;
+  up: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `up({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the enabled item below based on the current
    * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
@@ -655,11 +660,13 @@ export interface CompositeStoreFunctions<
    * @example
    * const downId = store.down();
    */
-  down(options?: NextOptions): string | null | undefined;
-  /**
-   * @deprecated Use the object syntax instead: `down({ skip: 2 })`.
-   */
-  down(skip?: number): string | null | undefined;
+  down: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `down({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the first enabled item.
    */
@@ -672,7 +679,9 @@ export interface CompositeStoreFunctions<
 
 export interface CompositeStoreOptions<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CollectionStoreOptions<T>,
+>
+  extends
+    CollectionStoreOptions<T>,
     StoreOptions<
       CompositeStoreState<T>,
       | "id"
@@ -696,10 +705,10 @@ export interface CompositeStoreOptions<
 
 export interface CompositeStoreProps<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreOptions<T>,
-    StoreProps<CompositeStoreState<T>> {}
+>
+  extends CompositeStoreOptions<T>, StoreProps<CompositeStoreState<T>> {}
 
 export interface CompositeStore<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreFunctions<T>,
-    Store<CompositeStoreState<T>> {}
+>
+  extends CompositeStoreFunctions<T>, Store<CompositeStoreState<T>> {}

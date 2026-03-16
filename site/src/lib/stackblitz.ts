@@ -1,7 +1,6 @@
 import { hasOwnProperty, invariant } from "@ariakit/core/utils/misc";
 import type { Project, ProjectFiles } from "@stackblitz/sdk";
 import _sdk from "@stackblitz/sdk";
-
 import type { StyleDependency } from "./styles.ts";
 import {
   getStyleDefinition,

@@ -52,8 +52,9 @@ export const FocusableContainer = forwardRef(function FocusableContainer(
   return createElement(TagName, htmlProps);
 });
 
-export interface FocusableContainerOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface FocusableContainerOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Determines whether [`Focusable`](https://ariakit.org/reference/focusable)
    * elements inside the container should be automatically focused when the

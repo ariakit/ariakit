@@ -83,7 +83,7 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
         "FormRemove must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
@@ -159,8 +159,9 @@ export const FormRemove = forwardRef(function FormRemove(
   return createElement(TagName, htmlProps);
 });
 
-export interface FormRemoveOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface FormRemoveOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

@@ -109,7 +109,7 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
         element.name = name;
       }
       if (valueProp !== undefined) {
-        element.value = `${valueProp}`;
+        element.value = String(valueProp);
       }
     }, [propertyUpdated, mixed, nativeCheckbox, isChecked, name, valueProp]);
 
@@ -207,8 +207,9 @@ export const Checkbox = forwardRef(function Checkbox(props: CheckboxProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface CheckboxOptions<T extends ElementType = TagName>
-  extends CommandOptions<T> {
+export interface CheckboxOptions<
+  T extends ElementType = TagName,
+> extends CommandOptions<T> {
   /**
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)

@@ -96,8 +96,9 @@ export const SelectLabel = memo(
   }),
 );
 
-export interface SelectLabelOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface SelectLabelOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If

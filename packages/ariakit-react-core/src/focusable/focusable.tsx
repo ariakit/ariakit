@@ -497,8 +497,9 @@ export const Focusable = forwardRef(function Focusable(props: FocusableProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FocusableOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface FocusableOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Determines if the element is disabled. This sets the `aria-disabled`
    * attribute accordingly, enabling support for all elements, including those

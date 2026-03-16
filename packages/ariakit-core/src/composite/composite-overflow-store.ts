@@ -17,15 +17,14 @@ export function createCompositeOverflowStore(
 
 export interface CompositeOverflowStoreState extends PopoverStoreState {}
 
-export interface CompositeOverflowStoreFunctions
-  extends PopoverStoreFunctions {}
+export interface CompositeOverflowStoreFunctions extends PopoverStoreFunctions {}
 
 export interface CompositeOverflowStoreOptions extends PopoverStoreOptions {}
 
 export interface CompositeOverflowStoreProps
-  extends CompositeOverflowStoreOptions,
+  extends
+    CompositeOverflowStoreOptions,
     StoreProps<CompositeOverflowStoreState> {}
 
 export interface CompositeOverflowStore
-  extends CompositeOverflowStoreFunctions,
-    Store<CompositeOverflowStoreState> {}
+  extends CompositeOverflowStoreFunctions, Store<CompositeOverflowStoreState> {}

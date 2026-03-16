@@ -20,7 +20,7 @@ function inSnapshot(id: string, element: Element) {
     if (element[propertyName]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
-    // biome-ignore lint/correctness/noConstantCondition: Intentional infinite loop with break condition
+    // oxlint-disable-next-line no-constant-condition
   } while (true);
 }
 

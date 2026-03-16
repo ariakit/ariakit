@@ -64,8 +64,9 @@ export const TooltipArrow = forwardRef(function TooltipArrow(
   return createElement(TagName, htmlProps);
 });
 
-export interface TooltipArrowOptions<T extends ElementType = TagName>
-  extends PopoverArrowOptions<T> {
+export interface TooltipArrowOptions<
+  T extends ElementType = TagName,
+> extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
    * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.

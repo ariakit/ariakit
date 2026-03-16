@@ -10,7 +10,7 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import * as ak from "@ariakit/react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 import type { ReferenceLabelProps } from "#app/components/reference-label.react.tsx";
 import { getReferenceLabelColors } from "#app/components/reference-label.react.tsx";
@@ -95,7 +95,7 @@ export function ReferenceHovercardAnchor({
           if (!partialPath) return false;
           if (prefetchRef.current) return true;
           prefetchRef.current = true;
-          queryClient.prefetchQuery({
+          void queryClient.prefetchQuery({
             queryKey: getQueryKey(partialPath),
             queryFn: () => fetchPartialPath(partialPath),
           });

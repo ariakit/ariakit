@@ -53,8 +53,9 @@ export const MenuGroupLabel = forwardRef(function MenuGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuGroupLabelOptions<T extends ElementType = TagName>
-  extends CompositeGroupLabelOptions<T> {
+export interface MenuGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not

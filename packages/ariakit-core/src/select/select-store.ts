@@ -197,8 +197,7 @@ export interface SelectStoreItem extends CompositeStoreItem {
 }
 
 export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
-  extends CompositeStoreState<SelectStoreItem>,
-    PopoverStoreState {
+  extends CompositeStoreState<SelectStoreItem>, PopoverStoreState {
   /** @default true */
   virtualFocus: CompositeStoreState<SelectStoreItem>["virtualFocus"];
   /** @default null */
@@ -253,7 +252,9 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
 
 export interface SelectStoreFunctions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends Pick<SelectStoreOptions<T>, "combobox">,
+>
+  extends
+    Pick<SelectStoreOptions<T>, "combobox">,
     CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {
   /**
@@ -281,7 +282,9 @@ export interface SelectStoreFunctions<
 
 export interface SelectStoreOptions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends StoreOptions<
+>
+  extends
+    StoreOptions<
       SelectStoreState<T>,
       | "virtualFocus"
       | "activeId"
@@ -315,9 +318,7 @@ export interface SelectStoreOptions<
 }
 
 export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
-  extends SelectStoreOptions<T>,
-    StoreProps<SelectStoreState<T>> {}
+  extends SelectStoreOptions<T>, StoreProps<SelectStoreState<T>> {}
 
 export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
-  extends SelectStoreFunctions<T>,
-    Store<SelectStoreState<T>> {}
+  extends SelectStoreFunctions<T>, Store<SelectStoreState<T>> {}

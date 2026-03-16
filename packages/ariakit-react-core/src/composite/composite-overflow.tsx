@@ -104,8 +104,9 @@ export const CompositeOverflow = forwardRef(function CompositeOverflow(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeOverflowOptions<T extends ElementType = TagName>
-  extends PopoverOptions<T> {
+export interface CompositeOverflowOptions<
+  T extends ElementType = TagName,
+> extends PopoverOptions<T> {
   /**
    * Object returned by the `useCompositeOverflowStore` hook.
    */

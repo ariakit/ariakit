@@ -63,8 +63,9 @@ export const MenuItemCheck = forwardRef(function MenuItemCheck(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuItemCheckOptions<T extends ElementType = TagName>
-  extends Omit<CheckboxCheckOptions<T>, "store"> {
+export interface MenuItemCheckOptions<
+  T extends ElementType = TagName,
+> extends Omit<CheckboxCheckOptions<T>, "store"> {
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.

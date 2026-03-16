@@ -91,7 +91,8 @@ export const Toolbar = forwardRef(function Toolbar(props: ToolbarProps) {
 });
 
 export interface ToolbarOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     Pick<
       ToolbarStoreProps,
       "focusLoop" | "orientation" | "rtl" | "virtualFocus"

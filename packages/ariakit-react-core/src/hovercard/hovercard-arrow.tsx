@@ -54,8 +54,9 @@ export const HovercardArrow = forwardRef(function HovercardArrow(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardArrowOptions<T extends ElementType = TagName>
-  extends PopoverArrowOptions<T> {
+export interface HovercardArrowOptions<
+  T extends ElementType = TagName,
+> extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

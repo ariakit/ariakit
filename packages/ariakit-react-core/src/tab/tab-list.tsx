@@ -97,8 +97,9 @@ export const TabList = forwardRef(function TabList(props: TabListProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TabListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface TabListOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not

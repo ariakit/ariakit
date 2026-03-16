@@ -160,8 +160,9 @@ export const HovercardAnchor = forwardRef(function HovercardAnchor(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardAnchorOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T> {
+export interface HovercardAnchorOptions<
+  T extends ElementType = TagName,
+> extends FocusableOptions<T> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)

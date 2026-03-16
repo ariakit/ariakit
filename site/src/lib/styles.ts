@@ -170,7 +170,6 @@ export function scanAkTokens(...contents: string[]): Set<string> {
   for (const content of contents) {
     if (!content) continue;
     let match: RegExpExecArray | null;
-    // eslint-disable-next-line no-cond-assign
     while ((match = re.exec(content)) !== null) {
       const token = match[0];
       if (!token) continue;

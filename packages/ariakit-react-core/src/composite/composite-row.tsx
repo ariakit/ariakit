@@ -108,8 +108,9 @@ export const CompositeRow = forwardRef(function CompositeRow(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeRowOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CompositeRowOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)

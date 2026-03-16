@@ -78,8 +78,9 @@ export const SelectRow = forwardRef(function SelectRow(props: SelectRowProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectRowOptions<T extends ElementType = TagName>
-  extends CompositeRowOptions<T> {
+export interface SelectRowOptions<
+  T extends ElementType = TagName,
+> extends CompositeRowOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If

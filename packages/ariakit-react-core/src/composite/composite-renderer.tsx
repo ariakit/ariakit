@@ -175,11 +175,10 @@ export function useCompositeRenderer<T extends Item = any>({
     persistentIndices,
     ...props,
     children: (item) => {
-      const nextItem = {
-        ...item,
+      const nextItem = Object.assign({}, item, {
         "aria-setsize": setSize,
         "aria-posinset": ariaPosInSet + (itemsCount[item.index - 1] ?? 0),
-      };
+      });
       return renderItem?.(nextItem as ItemProps<T>);
     },
   });
@@ -205,8 +204,10 @@ export const CompositeRenderer = forwardRef(function CompositeRenderer<
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeRendererOptions<T extends Item = any>
-  extends Omit<CollectionRendererOptions<T>, "store" | "children"> {
+export interface CompositeRendererOptions<T extends Item = any> extends Omit<
+  CollectionRendererOptions<T>,
+  "store" | "children"
+> {
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
@@ -231,5 +232,7 @@ export interface CompositeRendererOptions<T extends Item = any>
   children?: (item: ItemProps<T>) => ReactNode;
 }
 
-export interface CompositeRendererProps<T extends Item = any>
-  extends Props<TagName, CompositeRendererOptions<T>> {}
+export interface CompositeRendererProps<T extends Item = any> extends Props<
+  TagName,
+  CompositeRendererOptions<T>
+> {}

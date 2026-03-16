@@ -70,8 +70,9 @@ export const Collection = forwardRef(function Collection(
   return createElement(TagName, htmlProps);
 });
 
-export interface CollectionOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CollectionOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)

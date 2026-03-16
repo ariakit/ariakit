@@ -73,8 +73,9 @@ export const SelectHeading = forwardRef(function SelectHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectHeadingOptions<T extends ElementType = TagName>
-  extends PopoverHeadingOptions<T> {
+export interface SelectHeadingOptions<
+  T extends ElementType = TagName,
+> extends PopoverHeadingOptions<T> {
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.

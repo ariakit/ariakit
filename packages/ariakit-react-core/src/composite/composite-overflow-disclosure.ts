@@ -100,8 +100,8 @@ export const CompositeOverflowDisclosure = forwardRef(
 
 export interface CompositeOverflowDisclosureOptions<
   T extends ElementType = TagName,
-> extends Omit<CompositeItemOptions<T>, "store">,
-    PopoverDisclosureOptions<T> {
+>
+  extends Omit<CompositeItemOptions<T>, "store">, PopoverDisclosureOptions<T> {
   /**
    * Object returned by the `useCompositeOverflowStore` hook.
    */

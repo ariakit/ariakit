@@ -66,8 +66,9 @@ export const FormReset = forwardRef(function FormReset(props: FormResetProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FormResetOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface FormResetOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
    * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not

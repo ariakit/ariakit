@@ -8,11 +8,11 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-import type { z } from "astro:content";
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
+import type { z } from "astro:content";
 import type { FunctionLikeDeclaration } from "ts-morph";
 import { Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";
@@ -659,8 +659,8 @@ function getExamples(node: Node) {
   const examples: Reference["examples"] = [];
 
   for (const tag of tags) {
-    if ((tag as any).getTagName() !== "example") continue;
-    const rawText = (tag as any).getComment();
+    if (tag.getTagName() !== "example") continue;
+    const rawText = tag.getComment();
     if (!rawText) continue;
     // Ensure it's a string
     const text = String(rawText);
@@ -822,7 +822,9 @@ function getFunctionDeclaration(
   node: Node,
 ): FunctionLikeDeclaration | undefined {
   if (Node.isFunctionLikeDeclaration(node)) return node;
-  return node.getFirstDescendant(Node.isFunctionLikeDeclaration);
+  return node.getFirstDescendant((node) =>
+    Node.isFunctionLikeDeclaration(node),
+  );
 }
 
 /**

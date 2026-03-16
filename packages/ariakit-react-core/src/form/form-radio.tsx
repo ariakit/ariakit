@@ -48,7 +48,7 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
         "FormRadio must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const onChangeProp = props.onChange;
 
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
@@ -114,8 +114,7 @@ export const FormRadio = memo(
 );
 
 export interface FormRadioOptions<T extends ElementType = TagName>
-  extends FormControlOptions<T>,
-    Omit<RadioOptions<T>, "store" | "name"> {}
+  extends FormControlOptions<T>, Omit<RadioOptions<T>, "store" | "name"> {}
 
 export type FormRadioProps<T extends ElementType = TagName> = Props<
   T,
