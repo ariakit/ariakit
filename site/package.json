@@ -36,7 +36,7 @@
     "test-visual-ios": "cross-env VISUAL_TEST=true playwright test --project=ios",
     "test-visual-android": "cross-env VISUAL_TEST=true playwright test --project=android",
     "og-image-clean": "rimraf public/og-image",
-    "og-image-generate": "pnpm run og-image-clean && node src/pages/og-image/_generate-images.ts",
+    "og-image-generate": "node src/pages/og-image/_generate-images.ts",
     "build-styles": "node src/lib/build-styles.ts"
   },
   "imports": {
@@ -90,6 +90,9 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@types/hast": "3.0.4"
+    "@types/hast": "3.0.4",
+    "@types/pngjs": "6.0.5",
+    "pixelmatch": "7.1.0",
+    "pngjs": "7.0.0"
   }
 }
