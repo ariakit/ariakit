@@ -200,6 +200,23 @@ function getFileMtimes(files: string[]): Record<string, number> {
 }
 
 /**
+ * Safely parses a JSON string into a `FrameworkCache`. Returns `null` if
+ * the string is falsy, malformed, or doesn't match the expected shape
+ * (e.g., after a format change or interrupted write).
+ */
+function parseFrameworkCache(json: string | undefined): FrameworkCache | null {
+  if (!json) return null;
+  try {
+    const parsed = JSON.parse(json);
+    if (typeof parsed !== "object" || parsed === null) return null;
+    if (typeof parsed.components !== "object") return null;
+    return parsed as FrameworkCache;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Checks whether two mtime maps are identical (same keys and values).
  */
 function mtimesEqual(
@@ -400,10 +417,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
         // Load cached state from meta
         const cacheKey = `cache:${framework}`;
-        const cachedJson = context.meta.get(cacheKey);
-        const cachedState: FrameworkCache | null = cachedJson
-          ? JSON.parse(cachedJson)
-          : null;
+        const cachedState = parseFrameworkCache(context.meta.get(cacheKey));
 
         const sharedFilesChanged = !mtimesEqual(
           sharedMtimes,
@@ -559,10 +573,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
         // Clear all entries for this framework
         const cacheKey = `cache:${framework}`;
-        const cachedJson = context.meta.get(cacheKey);
-        const cachedState: FrameworkCache | null = cachedJson
-          ? JSON.parse(cachedJson)
-          : null;
+        const cachedState = parseFrameworkCache(context.meta.get(cacheKey));
         if (cachedState) {
           for (const comp of Object.values(cachedState.components)) {
             for (const id of comp.entryIds) {
