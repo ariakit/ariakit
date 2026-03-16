@@ -152,11 +152,15 @@ function areRectsEqual(a: Rect, b: Rect) {
 }
 
 function applyClipMargin(rect: Rect, margin = DEFAULT_CLIP_MARGIN) {
+  const newX = Math.max(0, rect.x - margin);
+  const newY = Math.max(0, rect.y - margin);
+  const deltaX = newX - (rect.x - margin);
+  const deltaY = newY - (rect.y - margin);
   return {
-    x: rect.x - margin,
-    y: rect.y - margin,
-    width: rect.width + margin * 2,
-    height: rect.height + margin * 2,
+    x: newX,
+    y: newY,
+    width: Math.max(0, rect.width + margin * 2 - deltaX),
+    height: Math.max(0, rect.height + margin * 2 - deltaY),
   };
 }
 
@@ -243,11 +247,13 @@ async function waitForStableScreenshotClip(
   // Some previews update their layout a few frames after they become visible.
   // Wait until the computed clip stays unchanged for a short window.
   let previousClip = await getScreenshotClip(page, options);
+  let lastClip = previousClip;
   let stableSince = Date.now();
   const deadline = Date.now() + CLIP_STABILITY_TIMEOUT;
   while (Date.now() < deadline) {
     await page.waitForTimeout(CLIP_STABILITY_INTERVAL);
     const clip = await getScreenshotClip(page, options);
+    lastClip = clip;
     if (previousClip && clip && areRectsEqual(previousClip, clip)) {
       if (Date.now() - stableSince >= CLIP_STABILITY_DURATION) {
         return;
@@ -257,6 +263,13 @@ async function waitForStableScreenshotClip(
     stableSince = Date.now();
     previousClip = clip;
   }
+  console.debug("waitForStableScreenshotClip timed out", {
+    clipStabilityTimeout: CLIP_STABILITY_TIMEOUT,
+    clipStabilityDuration: CLIP_STABILITY_DURATION,
+    stableFor: Date.now() - stableSince,
+    previousClip,
+    lastClip,
+  });
 }
 
 async function getPlaywrightScreenshotOptions(
