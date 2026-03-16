@@ -463,8 +463,8 @@ importers:
         specifier: 1.11.0
         version: 1.11.0
       '@stripe/stripe-js':
-        specifier: 8.9.0
-        version: 8.9.0
+        specifier: 8.10.0
+        version: 8.10.0
       '@tailwindcss/vite':
         specifier: 4.2.1
         version: 4.2.1(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))
@@ -5304,8 +5304,8 @@ packages:
     resolution: {integrity: sha512-/5zxRol+MU4I7fjZXPxP2M6E1nuHOxAzoc0tOEC/TLnC31Gzc+5EE93mIjoAnu28O1Sqpl7/BkceDHwnGmn75A==}
     engines: {node: '>=12.16'}
 
-  '@stripe/stripe-js@8.9.0':
-    resolution: {integrity: sha512-OJkXvUI5GAc56QdiSRimQDvWYEqn475J+oj8RzRtFTCPtkJNO2TWW619oDY+nn1ExR+2tCVTQuRQBbR4dRugww==}
+  '@stripe/stripe-js@8.10.0':
+    resolution: {integrity: sha512-E1FtmN4/AMpdV0zDUyEnTVMpQTMDi7iy2njG22DpFcSxeCujK22bQ/hmF3bGtNUclqGJhOZMkf7rjUyOAcj4CQ==}
     engines: {node: '>=12.16'}
 
   '@swc/counter@0.1.3':
@@ -16287,7 +16287,7 @@ snapshots:
 
   '@stripe/stripe-js@6.1.0': {}
 
-  '@stripe/stripe-js@8.9.0': {}
+  '@stripe/stripe-js@8.10.0': {}
 
   '@swc/counter@0.1.3': {}
 
