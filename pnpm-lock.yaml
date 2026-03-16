@@ -79,12 +79,6 @@ importers:
       '@stackblitz/sdk':
         specifier: 1.11.0
         version: 1.11.0
-      '@stripe/react-stripe-js':
-        specifier: 3.10.0
-        version: 3.10.0(@stripe/stripe-js@6.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@stripe/stripe-js':
-        specifier: 6.1.0
-        version: 6.1.0
       '@tailwindcss/vite':
         specifier: 4.2.1
         version: 4.2.1(vite@8.0.0(@types/node@24.12.0)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.2))
@@ -346,9 +340,6 @@ importers:
       solid-js:
         specifier: 1.9.11
         version: 1.9.11
-      stripe:
-        specifier: 17.7.0
-        version: 17.7.0
       stylelint:
         specifier: 17.4.0
         version: 17.4.0(typescript@5.9.3)
@@ -677,6 +668,12 @@ importers:
       '@clerk/types':
         specifier: 3.65.5
         version: 3.65.5
+      '@stripe/react-stripe-js':
+        specifier: 3.10.0
+        version: 3.10.0(@stripe/stripe-js@6.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@stripe/stripe-js':
+        specifier: 6.1.0
+        version: 6.1.0
       '@vercel/analytics':
         specifier: 2.0.1
         version: 2.0.1(next@14.2.35(@babel/core@7.29.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
@@ -695,6 +692,9 @@ importers:
       react-dom:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
+      stripe:
+        specifier: 17.7.0
+        version: 17.7.0
 
 packages:
 

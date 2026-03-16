@@ -33,8 +33,13 @@
       "matchPackageNames": ["/^@clerk\\//"]
     },
     {
+      "matchFileNames": ["website/package.json"],
+      "matchPackageNames": ["stripe", "/^@stripe\\//"],
+      "enabled": false
+    },
+    {
       "groupName": "stripe",
-      "matchPackageNames": ["/stripe/"]
+      "matchPackageNames": ["stripe", "/^@stripe\\//"]
     },
     {
       "groupName": "monaco",
