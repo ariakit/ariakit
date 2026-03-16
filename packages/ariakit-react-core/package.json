@@ -2,46 +2,46 @@
   "name": "@ariakit/react-core",
   "version": "0.4.23",
   "description": "Ariakit React core",
-  "sideEffects": false,
-  "license": "MIT",
+  "keywords": [
+    "ariakit",
+    "core",
+    "react"
+  ],
   "homepage": "https://ariakit.org",
-  "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ariakit/ariakit.git",
-    "directory": "packages/ariakit-react-core"
-  },
+  "license": "MIT",
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
     "url": "https://github.com/diegohaz"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-react-core"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "lint": "oxlint . && oxfmt --check .",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "react",
-    "core"
-  ],
   "dependencies": {
     "@ariakit/core": "workspace:*",
     "@floating-ui/dom": "^1.0.0",
     "use-sync-external-store": "^1.2.0"
   },
-  "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
-  },
   "devDependencies": {
     "@types/use-sync-external-store": "0.0.6",
     "react": "18.3.1",
     "react-dom": "18.3.1"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "exports": {
     ".": "./src/index.ts",

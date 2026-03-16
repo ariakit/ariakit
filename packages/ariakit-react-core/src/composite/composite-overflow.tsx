@@ -1,5 +1,4 @@
 import type { CSSProperties, ElementType, FocusEvent } from "react";
-
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
 import { useEvent } from "../utils/hooks.ts";

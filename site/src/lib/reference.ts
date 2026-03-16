@@ -9,7 +9,6 @@
  */
 
 import type { CollectionEntry } from "astro:content";
-
 import type { Reference, ReferenceProp } from "./schemas.ts";
 import { slugify } from "./string.ts";
 

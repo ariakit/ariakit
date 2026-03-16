@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-
 import { DisclosureContextProvider } from "./disclosure-context.tsx";
 import type { DisclosureStoreProps } from "./disclosure-store.ts";
 import { useDisclosureStore } from "./disclosure-store.ts";

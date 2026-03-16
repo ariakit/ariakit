@@ -4,10 +4,8 @@ import Link from "next/link.js";
 import type { BundledLanguage, SpecialLanguage, ThemedToken } from "shiki";
 import { bundledLanguages, codeToTokensBase, FontStyle } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
-
 import pageLinks from "@/build-pages/links.ts";
 import { isValidHref } from "@/lib/is-valid-href.ts";
-
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
 import { PageHovercardAnchor } from "./page-hovercard.tsx";
 

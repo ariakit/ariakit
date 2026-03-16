@@ -1,8 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { lazy, useState, useTransition } from "react";
-
 import { Spinner } from "./spinner.tsx";
-
 import "./style.css";
 import { usePerceptibleValue } from "./use-perceptible-value.ts";
 

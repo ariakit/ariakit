@@ -1,9 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import * as React from "react";
-
 import { getList, getValue } from "./list.ts";
-
 import "./style.css";
 import {
   getAnchorRect,

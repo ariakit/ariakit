@@ -9,7 +9,6 @@
  */
 import clsx from "clsx";
 import * as React from "react";
-
 import { Icon } from "#app/icons/icon.react.tsx";
 
 interface UseCollapsibleProps {

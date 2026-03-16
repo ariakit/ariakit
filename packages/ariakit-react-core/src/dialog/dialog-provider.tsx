@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-
 import { DialogContextProvider } from "./dialog-context.tsx";
 import type { DialogStoreProps } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";

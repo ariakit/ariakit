@@ -6,7 +6,6 @@ import type {
   getQueriesForElement,
 } from "@testing-library/dom";
 import { queries as baseQueries } from "@testing-library/dom";
-
 import type { AriaRole } from "./__aria-role.ts";
 import { roles } from "./__aria-role.ts";
 

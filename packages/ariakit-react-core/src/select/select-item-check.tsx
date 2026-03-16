@@ -1,6 +1,5 @@
 import type { ElementType } from "react";
 import { useContext } from "react";
-
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.tsx";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

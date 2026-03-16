@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.tsx";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

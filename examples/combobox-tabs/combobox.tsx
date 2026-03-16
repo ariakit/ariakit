@@ -6,7 +6,6 @@
 import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
-
 import { ArrowIcon, ReturnIcon } from "./icons.tsx";
 
 export interface ComboboxProviderProps extends Ariakit.ComboboxProviderProps {

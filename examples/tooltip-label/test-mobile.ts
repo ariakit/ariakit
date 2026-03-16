@@ -1,5 +1,4 @@
 import { expect } from "@playwright/test";
-
 import { test } from "../test-utils.ts";
 
 test("tooltip does not appear on mobile click", async ({ page }) => {

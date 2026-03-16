@@ -1,7 +1,6 @@
 import type { FocusableProps } from "@ariakit/react";
 import { Focusable, Role } from "@ariakit/react";
 import * as React from "react";
-
 import "./style.css";
 
 interface TextareaProps extends FocusableProps<"textarea"> {}

@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import {

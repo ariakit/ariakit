@@ -1,7 +1,5 @@
 import { MemoryRouter, Outlet, Route, Routes } from "react-router";
-
 import { Tab, TabList, TabPanel, Tabs } from "./tabs.tsx";
-
 import "./style.css";
 
 function GroceriesTabs() {

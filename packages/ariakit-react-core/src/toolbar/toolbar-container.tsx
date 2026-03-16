@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { CompositeContainerOptions } from "../composite/composite-container.tsx";
 import { useCompositeContainer } from "../composite/composite-container.tsx";
 import {

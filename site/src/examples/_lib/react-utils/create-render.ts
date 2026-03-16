@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { isIterable } from "./is-iterable.ts";
 import { mergeProps } from "./merge-props.ts";
 

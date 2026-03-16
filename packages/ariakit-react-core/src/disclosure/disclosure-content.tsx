@@ -2,7 +2,6 @@ import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-
 import { DialogScopedContextProvider } from "../dialog/dialog-context.tsx";
 import {
   useId,

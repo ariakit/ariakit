@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/radio/radio-store";
-
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,

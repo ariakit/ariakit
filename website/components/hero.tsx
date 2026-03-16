@@ -1,6 +1,5 @@
 import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
-
 import { ArrowRight } from "@/icons/arrow-right.tsx";
 
 export function Hero() {

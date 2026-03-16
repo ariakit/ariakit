@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { CompositeGroupOptions } from "../composite/composite-group.tsx";
 import { useCompositeGroup } from "../composite/composite-group.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

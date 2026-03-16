@@ -8,7 +8,6 @@ import {
   Routes,
   useNavigate,
 } from "react-router";
-
 import "./style.css";
 
 function Post() {

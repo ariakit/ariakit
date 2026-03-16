@@ -8,7 +8,6 @@ import {
   Suspense as SolidSuspense,
 } from "solid-js/web";
 import failOnConsole from "vitest-fail-on-console";
-
 import type { AllowedTestLoader } from "./vitest.config.ts";
 
 failOnConsole();

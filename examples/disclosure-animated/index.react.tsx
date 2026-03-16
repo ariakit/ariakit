@@ -4,7 +4,6 @@
  * https://ariakit.org/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-
 import "./style.css";
 
 export default function Example() {

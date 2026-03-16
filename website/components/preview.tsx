@@ -5,10 +5,8 @@ import type { ReactNode } from "react";
 import { Suspense, useEffect, useState } from "react";
 import { createComponent } from "solid-js";
 import { render } from "solid-js/web";
-
 import examples from "@/build-pages/examples.ts";
 import { Spinner } from "@/icons/spinner.tsx";
-
 import { SolidPreviewContent } from "./preview.solid.tsx";
 
 const ignoredExampleIds = ["examples-menu-wordpress-modal"];

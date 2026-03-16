@@ -4,7 +4,6 @@ import { cx, invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, FocusEvent, RefObject } from "react";
 import { useCallback, useRef } from "react";
-
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import {

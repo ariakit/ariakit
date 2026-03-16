@@ -10,7 +10,6 @@ import type { APIContext, MiddlewareNext } from "astro";
  * SPDX-License-Identifier: UNLICENSED
  */
 import { getActionContext } from "astro:actions";
-
 import { isAdmin } from "./lib/auth.ts";
 import { unauthorized } from "./lib/response.ts";
 

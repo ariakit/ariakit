@@ -1,7 +1,5 @@
 import { useId } from "react";
-
 import { Tab, TabList, TabPanel, TabProvider } from "./animated-tabs.tsx";
-
 import "./style.css";
 
 export default function Example() {

@@ -1,6 +1,5 @@
 import { Group, GroupLabel } from "@ariakit/react";
 import { useState } from "react";
-
 import {
   CheckboxCard,
   CheckboxCardCheck,

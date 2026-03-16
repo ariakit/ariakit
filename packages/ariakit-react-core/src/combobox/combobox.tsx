@@ -31,7 +31,6 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";

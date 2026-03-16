@@ -1,5 +1,4 @@
 import { expect } from "@playwright/test";
-
 import { test } from "../test-utils.ts";
 
 test("menu closes when tapping dialog", async ({ page }) => {

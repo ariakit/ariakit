@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/hovercard/hovercard-store";
-
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,

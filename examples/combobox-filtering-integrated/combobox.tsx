@@ -7,7 +7,6 @@ import * as Ariakit from "@ariakit/react";
 import clsx from "clsx";
 import { matchSorter } from "match-sorter";
 import * as React from "react";
-
 import "./style.css";
 
 const ComboboxContext = React.createContext<{

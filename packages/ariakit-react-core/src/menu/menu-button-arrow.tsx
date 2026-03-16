@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.tsx";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.tsx";
 import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

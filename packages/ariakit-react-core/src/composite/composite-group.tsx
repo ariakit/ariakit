@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { GroupOptions } from "../group/group.tsx";
 import { useGroup } from "../group/group.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

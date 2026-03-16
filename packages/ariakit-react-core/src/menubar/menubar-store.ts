@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/menubar/menubar-store";
-
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,

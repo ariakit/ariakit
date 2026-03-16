@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/dialog/dialog-store";
-
 import type {
   DisclosureStoreFunctions,
   DisclosureStoreOptions,

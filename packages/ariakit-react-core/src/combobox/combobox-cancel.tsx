@@ -1,7 +1,6 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import { Fragment } from "react";
-
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useEvent, useWrapElement } from "../utils/hooks.ts";

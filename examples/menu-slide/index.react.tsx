@@ -1,5 +1,4 @@
 import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.tsx";
-
 import "./style.css";
 
 export default function Example() {

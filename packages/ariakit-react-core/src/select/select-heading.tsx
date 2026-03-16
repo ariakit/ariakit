@@ -1,6 +1,5 @@
 import type { ElementType } from "react";
 import { useContext } from "react";
-
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";

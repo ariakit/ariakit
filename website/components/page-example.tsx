@@ -1,8 +1,6 @@
 import { readFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
-
 import type { AnchorHTMLAttributes } from "react";
-
 import pagesConfig from "@/build-pages/config.js";
 import { getCSSFilesFromDeps } from "@/build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "@/build-pages/get-example-deps.js";

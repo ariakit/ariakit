@@ -1,6 +1,5 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
-
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useStoreState } from "../utils/store.tsx";

@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-
 import { allFilters } from "./all-filters.ts";
 import {
   FilterMenu,
@@ -8,7 +7,6 @@ import {
   FilterMenuSeparator,
 } from "./filter-menu.tsx";
 import { FilterSelect, FilterSelectItem } from "./filter-select.tsx";
-
 import "./style.css";
 
 type Filters = Record<string, string | undefined>;

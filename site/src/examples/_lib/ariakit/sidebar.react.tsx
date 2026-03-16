@@ -1,7 +1,6 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import * as React from "react";
-
 import { useIsMobile } from "../react-hooks/use-is-mobile.ts";
 
 interface SidebarContextType {

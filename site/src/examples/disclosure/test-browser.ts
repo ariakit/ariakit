@@ -1,5 +1,4 @@
 import type { Locator } from "@playwright/test";
-
 import { withFramework } from "#app/test-utils/preview.ts";
 
 async function getContent(button: Locator) {

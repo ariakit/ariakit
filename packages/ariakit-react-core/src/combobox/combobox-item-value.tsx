@@ -5,7 +5,6 @@ import {
 } from "@ariakit/core/utils/misc";
 import type { ElementType, ReactElement } from "react";
 import { useContext, useMemo } from "react";
-
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";

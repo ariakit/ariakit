@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.tsx";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

@@ -1,5 +1,4 @@
 import { join } from "node:path";
-
 import { invariant } from "@ariakit/core/utils/misc";
 import { glob } from "astro/loaders";
 /**
@@ -12,7 +11,6 @@ import { glob } from "astro/loaders";
  * SPDX-License-Identifier: UNLICENSED
  */
 import { defineCollection, reference, z } from "astro:content";
-
 import { jsdoc } from "./lib/jsdoc-loader.ts";
 import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
 

@@ -1,6 +1,5 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
-
 import type { SeparatorOptions } from "../separator/separator.tsx";
 import { useSeparator } from "../separator/separator.tsx";
 import { useStoreState } from "../utils/store.tsx";

@@ -1,6 +1,5 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
-
 import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,

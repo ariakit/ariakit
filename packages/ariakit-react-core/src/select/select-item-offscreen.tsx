@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";
 import { useCompositeItemOffscreen } from "../composite/composite-item-offscreen.tsx";
 import { Role } from "../role/role.tsx";

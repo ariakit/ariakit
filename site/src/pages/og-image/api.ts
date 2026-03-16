@@ -9,7 +9,6 @@ import type { APIRoute } from "astro";
  * SPDX-License-Identifier: UNLICENSED
  */
 import { getCollection } from "astro:content";
-
 import { uniq } from "#app/lib/array.ts";
 import { getGuideDetail } from "#app/lib/content.ts";
 import { trim } from "#app/lib/string.ts";

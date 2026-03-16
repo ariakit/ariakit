@@ -1,6 +1,5 @@
 import colorString from "color-string";
 import plugin from "tailwindcss/plugin";
-
 import {
   bareValue,
   colorMix,

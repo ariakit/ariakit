@@ -9,7 +9,6 @@ import {
 import type { ElementType, MutableRefObject, RefCallback } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-
 import { FocusTrap } from "../focus-trap/focus-trap.tsx";
 import {
   useMergeRefs,

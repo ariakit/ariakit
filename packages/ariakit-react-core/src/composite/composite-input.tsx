@@ -6,7 +6,6 @@ import {
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType, FocusEvent, KeyboardEvent } from "react";
 import { useEffect } from "react";
-
 import { useEvent } from "../utils/hooks.ts";
 import {
   createElement,

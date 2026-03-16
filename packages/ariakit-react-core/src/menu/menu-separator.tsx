@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

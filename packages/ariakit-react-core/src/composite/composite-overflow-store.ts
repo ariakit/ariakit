@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/composite/composite-overflow-store";
-
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,

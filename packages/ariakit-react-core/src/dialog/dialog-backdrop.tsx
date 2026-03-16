@@ -1,5 +1,4 @@
 import { isValidElement, useEffect, useRef } from "react";
-
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
 import { Role } from "../role/role.tsx";

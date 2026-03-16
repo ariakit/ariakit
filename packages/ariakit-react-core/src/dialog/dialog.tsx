@@ -27,7 +27,6 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,

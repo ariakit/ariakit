@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-
 import { ToolbarContextProvider } from "./toolbar-context.tsx";
 import type { ToolbarStoreProps } from "./toolbar-store.ts";
 import { useToolbarStore } from "./toolbar-store.ts";

@@ -1,5 +1,4 @@
 import { expect, query } from "@ariakit/test/playwright";
-
 import { test } from "../test-utils.ts";
 
 test("https://github.com/ariakit/ariakit/issues/4247", async ({ page }) => {

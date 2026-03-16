@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/popover/popover-store";
-
 import type {
   DialogStoreFunctions,
   DialogStoreOptions,

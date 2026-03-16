@@ -1,9 +1,7 @@
 import { SlotFillProvider } from "@wordpress/components";
 import { useState } from "react";
-
 import { createMenuSlot, Menu, MenuItem } from "./menu.tsx";
 import { Modal } from "./modal.tsx";
-
 import "./style.css";
 import { Tooltip } from "./tooltip.tsx";
 

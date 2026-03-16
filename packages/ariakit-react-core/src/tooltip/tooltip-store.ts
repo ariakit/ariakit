@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/tooltip/tooltip-store";
-
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,

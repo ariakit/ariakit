@@ -2,7 +2,6 @@ import * as Core from "@ariakit/core/form/form-store";
 import type { StringLike } from "@ariakit/core/form/types";
 import type { PickRequired } from "@ariakit/core/utils/types";
 import { useCallback, useEffect, useMemo } from "react";
-
 import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,

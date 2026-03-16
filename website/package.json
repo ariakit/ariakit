@@ -1,8 +1,8 @@
 {
   "name": "website",
   "version": "0.0.0",
-  "type": "module",
   "private": true,
+  "type": "module",
   "exports": {
     "./*": "./*"
   },
@@ -88,6 +88,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
+    "@ariakit/test": "workspace:*",
     "@playwright/test": "1.58.2",
     "@types/babel__core": "7.20.5",
     "@types/cross-spawn": "6.0.6",
@@ -101,7 +102,6 @@
     "@types/react-dom": "18.3.7",
     "@types/textarea-caret": "3.0.4",
     "@types/use-sync-external-store": "0.0.6",
-    "@ariakit/test": "workspace:*",
     "@vitejs/plugin-react": "6.0.1"
   }
 }

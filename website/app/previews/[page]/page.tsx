@@ -1,8 +1,6 @@
 import { resolve } from "node:path";
-
 import { notFound } from "next/navigation.js";
 import { twJoin } from "tailwind-merge";
-
 import pagesConfig from "@/build-pages/config.js";
 import { getCSSFilesFromDeps } from "@/build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "@/build-pages/get-example-deps.js";

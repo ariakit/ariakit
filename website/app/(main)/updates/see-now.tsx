@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-
 import { useUpdates } from "@/lib/use-updates.ts";
 import type { UpdateItem } from "@/updates.ts";
 

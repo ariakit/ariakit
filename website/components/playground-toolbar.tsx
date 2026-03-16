@@ -10,11 +10,9 @@ import {
   ToolbarItem,
 } from "@ariakit/react";
 import { twJoin } from "tailwind-merge";
-
 import { Edit } from "@/icons/edit.tsx";
 import { JavaScript } from "@/icons/javascript.tsx";
 import { TypeScript } from "@/icons/typescript.tsx";
-
 import { AuthEnabled } from "./auth.tsx";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
 import type { PlaygroundEditProps } from "./playground-edit.tsx";

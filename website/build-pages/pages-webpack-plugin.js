@@ -1,11 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
-
 import chalk from "chalk";
 import fse from "fs-extra";
 import { camelCase, groupBy } from "lodash-es";
 import invariant from "tiny-invariant";
-
 import { nonNullable } from "../lib/non-nullable.js";
 import {
   getPageEntryFiles,

@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
-
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";

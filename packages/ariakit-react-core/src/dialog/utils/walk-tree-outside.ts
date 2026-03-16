@@ -1,6 +1,5 @@
 import { contains, getDocument } from "@ariakit/core/utils/dom";
 import { chain } from "@ariakit/core/utils/misc";
-
 import { setProperty } from "./orchestrate.ts";
 
 type Elements = Array<Element | null>;

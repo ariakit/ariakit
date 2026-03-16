@@ -23,9 +23,7 @@ import {
 } from "react";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
-
 import { useSubscription } from "@/lib/use-subscription.ts";
-
 import { Command } from "./command.tsx";
 import { Popup } from "./popup.tsx";
 

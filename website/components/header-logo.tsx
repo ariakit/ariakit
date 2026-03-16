@@ -1,7 +1,6 @@
 "use client";
 
 import { useSelectedLayoutSegments } from "next/navigation.js";
-
 import { Logo } from "./logo.tsx";
 
 export function HeaderLogo() {

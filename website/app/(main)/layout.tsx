@@ -1,5 +1,4 @@
 import type { PropsWithChildren, ReactNode } from "react";
-
 import { AuthProvider } from "@/components/auth.tsx";
 import { Footer } from "@/components/footer.tsx";
 import { Header } from "@/components/header.tsx";

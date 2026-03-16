@@ -1,5 +1,4 @@
 import { Group, GroupLabel } from "@ariakit/react";
-
 import {
   CheckboxCard,
   CheckboxCardCheck,

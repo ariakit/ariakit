@@ -1,5 +1,4 @@
 import { writeFileSync } from "node:fs";
-
 import { vars } from "./vars.js";
 
 // =============================================================================

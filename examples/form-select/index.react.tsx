@@ -7,7 +7,6 @@ import {
   useFormStore,
 } from "./form.tsx";
 import { SelectItem } from "./select.tsx";
-
 import "./style.css";
 
 export default function Example() {

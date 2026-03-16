@@ -1,5 +1,4 @@
 import * as Core from "@ariakit/core/tag/tag-store";
-
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,

@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "private": true,
   "type": "module",
+  "imports": {
+    "#app/*": "./*"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,9 +13,6 @@
     "preview": "opennextjs-cloudflare preview",
     "start": "next start",
     "tsc": "next typegen && tsc"
-  },
-  "imports": {
-    "#app/*": "./*"
   },
   "dependencies": {
     "@ariakit/react": "0.4.23",

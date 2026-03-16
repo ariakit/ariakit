@@ -13,7 +13,6 @@ import {
   useContext,
   useId,
 } from "react";
-
 import { ArrowIcon, ReturnIcon } from "./icons.tsx";
 
 const CommandMenuGridColsContext = createContext(0);

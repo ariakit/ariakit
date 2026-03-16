@@ -1,6 +1,5 @@
 import * as Core from "@ariakit/core/combobox/combobox-store";
 import type { PickRequired } from "@ariakit/core/utils/types";
-
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,

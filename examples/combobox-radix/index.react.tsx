@@ -7,7 +7,6 @@ import {
 } from "@ariakit/react";
 import * as RadixPopover from "@radix-ui/react-popover";
 import { useRef, useState } from "react";
-
 import "./style.css";
 
 export default function Example() {

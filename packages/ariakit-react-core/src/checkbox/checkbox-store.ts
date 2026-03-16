@@ -1,6 +1,5 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
 import type { PickRequired } from "@ariakit/core/utils/types";
-
 import { useUpdateEffect } from "../utils/hooks.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";

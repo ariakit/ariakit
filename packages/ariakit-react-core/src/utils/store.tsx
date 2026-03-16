@@ -16,7 +16,6 @@ import * as React from "react";
 // This doesn't work in ESM, because use-sync-external-store only exposes CJS.
 // The following is a workaround until ESM is supported.
 import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
-
 import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.ts";
 
 const { useSyncExternalStore } = useSyncExternalStoreExports;

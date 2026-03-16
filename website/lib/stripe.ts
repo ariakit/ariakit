@@ -2,7 +2,6 @@ import { differenceInMonths } from "date-fns/differenceInMonths";
 import get from "lodash-es/get.js";
 import { Stripe } from "stripe";
 import invariant from "tiny-invariant";
-
 import type { User, UserResource } from "./clerk.ts";
 import {
   getCurrentUser,

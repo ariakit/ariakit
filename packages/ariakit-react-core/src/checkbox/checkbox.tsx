@@ -9,7 +9,6 @@ import type {
   MouseEvent,
 } from "react";
 import { useEffect, useRef, useState } from "react";
-
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 import {

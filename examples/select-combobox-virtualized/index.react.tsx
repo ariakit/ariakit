@@ -6,9 +6,7 @@ import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
 import { matchSorter } from "match-sorter";
 import { startTransition, useEffect, useState } from "react";
-
 import { countries } from "./countries.ts";
-
 import "./style.css";
 
 function getItem(country: string) {

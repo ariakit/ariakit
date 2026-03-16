@@ -2,35 +2,39 @@
   "name": "@ariakit/test",
   "version": "0.4.13",
   "description": "Ariakit test utils",
-  "sideEffects": false,
-  "license": "MIT",
+  "keywords": [
+    "ariakit",
+    "react"
+  ],
   "homepage": "https://ariakit.org",
-  "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ariakit/ariakit.git",
-    "directory": "packages/ariakit-test"
-  },
+  "license": "MIT",
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
     "url": "https://github.com/diegohaz"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-test"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "lint": "oxlint . && oxfmt --check .",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "react"
-  ],
   "dependencies": {
     "@ariakit/core": "workspace:*",
     "@testing-library/dom": "^8.0.0 || ^9.0.0 || ^10.0.0"
+  },
+  "devDependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "peerDependencies": {
     "@playwright/test": "^1.27.0",
@@ -47,10 +51,6 @@
     "react": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
   },
   "exports": {
     ".": "./src/index.ts",

@@ -1,6 +1,5 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
-
 import "./style.css";
 
 // https://github.com/ariakit/ariakit/issues/4129

@@ -1,6 +1,5 @@
 import { getPopupItemRole } from "@ariakit/core/utils/dom";
 import type { ElementType } from "react";
-
 import type { CollectionItemOptions } from "../collection/collection-item-offscreen.tsx";
 import { useCollectionItemOffscreen } from "../collection/collection-item-offscreen.tsx";
 import type { ComboboxStoreState } from "../combobox/combobox-store.ts";

@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { HovercardHeadingOptions } from "../hovercard/hovercard-heading.tsx";
 import { useHovercardHeading } from "../hovercard/hovercard-heading.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

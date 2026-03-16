@@ -6,7 +6,6 @@ import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import remarkGfm from "remark-gfm";
 import invariant from "tiny-invariant";
-
 import pagesConfig from "@/build-pages/config.js";
 import { getPageContent } from "@/build-pages/get-page-content.js";
 import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
@@ -16,7 +15,6 @@ import { getReferences } from "@/build-pages/reference-utils.js";
 import type { Page, TableOfContents } from "@/build-pages/types.ts";
 import { rehypeCodeMeta } from "@/lib/rehype-code-meta.ts";
 import { rehypeWrapHeadings } from "@/lib/rehype-wrap-headings.ts";
-
 import { AuthEnabled } from "./auth.tsx";
 import {
   PageA,

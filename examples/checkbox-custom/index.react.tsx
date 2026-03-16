@@ -1,5 +1,4 @@
 import { Checkbox } from "./checkbox.tsx";
-
 import "./style.css";
 
 export default function Example() {

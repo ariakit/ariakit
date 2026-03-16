@@ -9,7 +9,6 @@
  */
 import type { APIContext } from "astro";
 import { Stripe } from "stripe";
-
 import { findInOrder } from "./array.ts";
 import type { User } from "./auth.ts";
 import {

@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { GroupLabelOptions } from "../group/group-label.tsx";
 import { useGroupLabel } from "../group/group-label.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

@@ -1,5 +1,4 @@
 import { query } from "@ariakit/test/playwright";
-
 import { screenshot, test } from "../test-utils.ts";
 
 test("generate images", async ({ page }) => {

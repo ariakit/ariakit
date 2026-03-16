@@ -8,7 +8,6 @@ import {
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback } from "react";
-
 import {
   useBooleanEvent,
   useEvent,

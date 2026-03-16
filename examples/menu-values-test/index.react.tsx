@@ -1,6 +1,5 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
-
 import "./style.css";
 
 const fruits = ["Apple", "Banana", "Grape", "Orange"];

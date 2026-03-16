@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { DialogDescriptionOptions } from "../dialog/dialog-description.tsx";
 import { useDialogDescription } from "../dialog/dialog-description.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

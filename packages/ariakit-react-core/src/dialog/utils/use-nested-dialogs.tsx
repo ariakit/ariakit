@@ -7,7 +7,6 @@ import {
   useMemo,
   useState,
 } from "react";
-
 import { useSafeLayoutEffect } from "../../utils/hooks.ts";
 import type { WrapElement } from "../../utils/types.ts";
 import type { DialogStore } from "../dialog-store.ts";

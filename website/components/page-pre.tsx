@@ -4,9 +4,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { Children, isValidElement } from "react";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
-
 import { defer } from "@/lib/defer.ts";
-
 import { CodeBlock } from "./code-block.tsx";
 
 export interface PagePreProps extends ComponentProps<"pre"> {

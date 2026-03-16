@@ -1,6 +1,5 @@
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-
 import { test } from "../../../../../examples/test-utils.ts";
 
 const getLink = (page: Page, name: string) => page.getByRole("link", { name });

@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { FormGroupOptions } from "./form-group.tsx";

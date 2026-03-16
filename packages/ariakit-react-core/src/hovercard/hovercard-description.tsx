@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 import type { PopoverDescriptionOptions } from "../popover/popover-description.tsx";
 import { usePopoverDescription } from "../popover/popover-description.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";

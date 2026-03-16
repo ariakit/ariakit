@@ -1,8 +1,6 @@
 import type { MotionProps, Variants } from "framer-motion";
 import { useState } from "react";
-
 import { Menu, MenuItem } from "./menu.tsx";
-
 import "./style.css";
 
 const menu = {

@@ -20,7 +20,6 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useCallback, useContext, useMemo, useRef } from "react";
-
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";

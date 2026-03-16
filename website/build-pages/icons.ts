@@ -1,5 +1,4 @@
 import type { ElementType } from "react";
-
 // @ts-ignore
 import * as _icons from "../.pages/icons.ts";
 

@@ -9,12 +9,10 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-
 import pixelmatch from "pixelmatch";
 import type { Page } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
-
 import type { OGImageItem } from "./api.ts";
 
 const BASE_URL = "http://localhost:4321";

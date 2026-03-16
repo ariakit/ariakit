@@ -1,6 +1,5 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ChangeEvent, ElementType } from "react";
-
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
 import { useEvent } from "../utils/hooks.ts";

@@ -2,7 +2,6 @@
   "name": "root",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.32.1",
   "scripts": {
     "start": "pnpm -F website start",
     "dev-package-json": "node scripts/build/package-json-dev.js",
@@ -60,26 +59,6 @@
     "publish": "pnpm run build && changeset publish",
     "prepare": "husky"
   },
-  "lint-staged": {
-    "package.json": "pnpm -r run --if-present clean",
-    "*.{js,ts,tsx}": [
-      "oxlint --fix",
-      "oxfmt"
-    ]
-  },
-  "pnpm": {
-    "overrides": {
-      "@wordpress/components>@ariakit/react": "workspace:*"
-    },
-    "patchedDependencies": {
-      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp",
-      "workerd"
-    ]
-  },
   "devDependencies": {
     "@ariakit/core": "workspace:*",
     "@ariakit/react": "workspace:*",
@@ -136,5 +115,26 @@
     "vitest": "4.1.0",
     "vitest-fail-on-console": "0.10.1",
     "wrangler": "4.73.0"
+  },
+  "lint-staged": {
+    "package.json": "pnpm -r run --if-present clean",
+    "*.{js,ts,tsx}": [
+      "oxlint --fix",
+      "oxfmt"
+    ]
+  },
+  "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "overrides": {
+      "@wordpress/components>@ariakit/react": "workspace:*"
+    },
+    "patchedDependencies": {
+      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
   }
 }

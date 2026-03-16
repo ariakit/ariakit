@@ -1,13 +1,11 @@
 import { Button } from "@ariakit/react";
 import { useState } from "react";
-
 import {
   Popover,
   PopoverArrow,
   PopoverDescription,
   PopoverHeading,
 } from "./popover.tsx";
-
 import "./style.css";
 
 export default function Example() {

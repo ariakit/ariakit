@@ -3,7 +3,6 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
-
 import { useComboboxProviderContext } from "../combobox/combobox-context.tsx";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {

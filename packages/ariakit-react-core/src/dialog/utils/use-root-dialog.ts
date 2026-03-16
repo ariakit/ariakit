@@ -1,7 +1,6 @@
 import { getDocument } from "@ariakit/core/utils/dom";
 import { useCallback, useEffect } from "react";
 import { flushSync } from "react-dom";
-
 import { useForceUpdate } from "../../utils/hooks.ts";
 
 interface Props {

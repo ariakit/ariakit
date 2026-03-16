@@ -2,18 +2,13 @@
   "name": "@ariakit/solid-core",
   "version": "0.1.4",
   "description": "Ariakit Solid core",
-  "sideEffects": false,
-  "license": "MIT",
+  "keywords": [
+    "ariakit",
+    "core",
+    "solid"
+  ],
   "homepage": "https://ariakit.org",
-  "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ariakit/ariakit.git",
-    "directory": "packages/ariakit-solid-core"
-  },
+  "license": "MIT",
   "author": {
     "name": "Dani Guardiola",
     "email": "hi@daniguardio.la",
@@ -26,16 +21,21 @@
       "url": "https://github.com/diegohaz"
     }
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid-core"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "lint": "oxlint . && oxfmt --check .",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "solid",
-    "core"
-  ],
   "dependencies": {
     "@ariakit/core": "workspace:*",
     "@solid-primitives/props": "3.2.3",

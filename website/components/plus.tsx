@@ -38,7 +38,6 @@ import {
   useState,
 } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
-
 import { CheckCircle } from "@/icons/check-circle.tsx";
 import { Check } from "@/icons/check.tsx";
 import { ChevronRight } from "@/icons/chevron-right.tsx";
@@ -46,7 +45,6 @@ import { Heart } from "@/icons/heart.tsx";
 import type { PlusPrice } from "@/lib/stripe.ts";
 import { useMedia } from "@/lib/use-media.ts";
 import { useSubscription } from "@/lib/use-subscription.ts";
-
 import { Command } from "./command.tsx";
 import { useRootPathname } from "./root-pathname.tsx";
 

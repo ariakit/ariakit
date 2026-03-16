@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import type { ListDisclosureProps } from "#app/examples/_lib/react-aria/list.react.tsx";
 import {
   List,

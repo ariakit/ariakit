@@ -1,6 +1,5 @@
 import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
-
 import { isPlaygroundParagraphNode } from "./ast.js";
 import { getPageIndexDetail } from "./get-page-index-detail.js";
 import { getPageTree } from "./get-page-tree.js";

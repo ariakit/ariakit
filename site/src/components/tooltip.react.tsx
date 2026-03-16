@@ -10,7 +10,6 @@
 import * as ak from "@ariakit/react";
 import clsx from "clsx";
 import type { ReactElement, ReactNode } from "react";
-
 import { getPortalRoot } from "../lib/get-portal-root.ts";
 
 export interface TooltipProps extends Omit<

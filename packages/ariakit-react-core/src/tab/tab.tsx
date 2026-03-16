@@ -1,7 +1,6 @@
 import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
-
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import {
   CompositeItem,

@@ -1,6 +1,5 @@
 import * as Ariakit from "@ariakit/react";
 import { useEffect, useRef, useState } from "react";
-
 import "./style.css";
 
 function useLoaded() {

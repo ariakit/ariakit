@@ -1,6 +1,5 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
-
 import { useEvent, useId, useMergeRefs } from "../utils/hooks.ts";
 import {
   createElement,

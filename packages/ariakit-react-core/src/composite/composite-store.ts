@@ -1,6 +1,5 @@
 import * as Core from "@ariakit/core/composite/composite-store";
 import type { PickRequired } from "@ariakit/core/utils/types";
-
 import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,

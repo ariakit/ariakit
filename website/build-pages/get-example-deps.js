@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-
 import { parseSync, traverse } from "@babel/core";
 // @ts-expect-error
 import * as presetEnv from "@babel/preset-env";

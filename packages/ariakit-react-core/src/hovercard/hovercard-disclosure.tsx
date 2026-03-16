@@ -8,7 +8,6 @@ import type {
   FocusEvent as ReactFocusEvent,
 } from "react";
 import { useEffect, useState } from "react";
-
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";

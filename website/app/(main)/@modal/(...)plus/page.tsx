@@ -5,7 +5,6 @@ import Link from "next/link.js";
 import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
 import type { ComponentPropsWithoutRef, ElementRef } from "react";
 import { forwardRef, Suspense } from "react";
-
 import { AuthEnabled } from "@/components/auth.tsx";
 import { Command } from "@/components/command.tsx";
 import { PlusScreen } from "@/components/plus-screen.tsx";

@@ -8,7 +8,6 @@ import { disabledFromProps } from "@ariakit/core/utils/misc";
 import { isFirefox } from "@ariakit/core/utils/platform";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
-
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import { useEvent, useMergeRefs, useMetadataProps } from "../utils/hooks.ts";

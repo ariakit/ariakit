@@ -1,6 +1,5 @@
 import type { ElementType, ReactNode } from "react";
 import { useMemo } from "react";
-
 import type {
   CollectionRendererBaseItemProps,
   CollectionRendererItem,

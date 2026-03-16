@@ -1,5 +1,4 @@
 import type { FrameLocator, Locator, Page } from "@playwright/test";
-
 import type { AriaRole } from "./__aria-role.ts";
 import { roles } from "./__aria-role.ts";
 

@@ -4,7 +4,6 @@ import { invariant } from "@ariakit/core/utils/misc";
 import { isApple } from "@ariakit/core/utils/platform";
 import { UndoManager } from "@ariakit/core/utils/undo";
 import type { ElementType, KeyboardEvent, MouseEvent } from "react";
-
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useEvent, useWrapElement } from "../utils/hooks.ts";

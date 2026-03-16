@@ -1,7 +1,6 @@
 import groupBy from "lodash-es/groupBy.js";
 import { matchSorter } from "match-sorter";
 import { useId, useMemo, useState } from "react";
-
 import { flatPages, pages } from "../combobox-tabs/pages.ts";
 import {
   Combobox,
@@ -12,7 +11,6 @@ import {
   ComboboxTab,
   ComboboxTabList,
 } from "./combobox.tsx";
-
 import "./style.css";
 
 const categories = ["All", ...Object.keys(pages)];

@@ -1,5 +1,4 @@
 import type { MetadataRoute } from "next";
-
 import pagesConfig from "@/build-pages/config.js";
 import index from "@/build-pages/index.ts";
 import { getTagSlug, getTags } from "@/lib/tag.ts";

@@ -1,6 +1,5 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
-
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";

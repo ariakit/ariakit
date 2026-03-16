@@ -1,7 +1,6 @@
 import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { useEffect, useRef } from "react";
-
 import { isSafariFocusAncestor } from "../../focusable/focusable.tsx";
 import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.ts";
 import { useStoreState } from "../../utils/store.tsx";

@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-
 import "./style.css";
 import useMedia from "./use-media.ts";
 

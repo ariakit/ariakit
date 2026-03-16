@@ -1,7 +1,6 @@
 import { query } from "@ariakit/test/playwright";
 import type { Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-
 import { test } from "../test-utils.ts";
 
 function getWrapper(page: Page) {

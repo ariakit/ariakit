@@ -22,7 +22,6 @@ import {
   useRef,
   useState,
 } from "react";
-
 import { setRef } from "./misc.ts";
 import type { WrapElement } from "./types.ts";
 
