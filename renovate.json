@@ -3,6 +3,15 @@
   "semanticCommits": "disabled",
   "packageRules": [
     {
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": ["next"],
+      "enabled": false
+    },
+    {
+      "matchFileNames": ["website/package.json"],
+      "enabled": false
+    },
+    {
       "matchPackageNames": ["shiki"],
       "matchCurrentVersion": "/^1\\./",
       "allowedVersions": "/^1\\./"
