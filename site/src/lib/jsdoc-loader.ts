@@ -567,7 +567,9 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
       // subsequent cold starts.
       context.watcher.on("all", (_, path) => {
         const options = frameworkOptions.find(({ corePath, packagePath }) =>
-          [corePath, packagePath].some((p) => path.includes(p)),
+          [corePath, packagePath].some(
+            (p) => path.startsWith(p + sep) || path === p,
+          ),
         );
         if (!options) return;
 
