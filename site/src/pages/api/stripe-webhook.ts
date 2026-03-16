@@ -184,12 +184,7 @@ export const POST: APIRoute = async (context) => {
       }
       userId = objectId(user);
     }
-    if (!promo.active || coupon.deleted) {
-      await deletePromo(context, promo.id);
-      logger.info("Promotion code not valid anymore", promo.id);
-      return ok();
-    }
-    if (!coupon.valid) {
+    if (!promo.active || coupon.deleted || !coupon.valid) {
       await deletePromo(context, promo.id);
       logger.info("Promotion code not valid anymore", promo.id);
       return ok();
