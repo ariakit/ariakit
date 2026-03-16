@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.11.0",
+  "packageManager": "pnpm@10.32.1",
   "scripts": {
     "start": "pnpm -F website start",
     "dev-package-json": "node scripts/build/package-json-dev.js",
@@ -91,7 +91,7 @@
     "@biomejs/biome": "2.4.7",
     "@changesets/apply-release-plan": "7.1.0",
     "@changesets/cli": "2.30.0",
-    "@playwright/test": "1.56.1",
+    "@playwright/test": "1.58.2",
     "@radix-ui/react-popover": "1.1.15",
     "@radix-ui/react-select": "2.2.6",
     "@tailwindcss/vite": "4.2.1",

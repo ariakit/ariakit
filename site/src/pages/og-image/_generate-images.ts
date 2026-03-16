@@ -20,18 +20,13 @@ async function getItemsToGenerate() {
   try {
     const response = await fetch(url);
     if (!response.ok) {
-      console.error(`Failed to fetch from ${url}: ${response.statusText}`);
-      console.error(
-        "Please make sure the dev server is running: `pnpm run dev`",
-      );
-      return [];
+      throw new Error(`Failed to fetch from ${url}: ${response.statusText}`);
     }
     const items: OGImageItem[] = await response.json();
     return items;
-  } catch (_e) {
-    console.error(`Failed to fetch from ${url}`);
+  } catch (error) {
     console.error("Please make sure the dev server is running: `pnpm run dev`");
-    return [];
+    throw error;
   }
 }
 
@@ -46,11 +41,12 @@ async function generateImage(browser: Browser, item: OGImageItem) {
   try {
     await page.goto(url, { waitUntil: "networkidle" });
     const imagePath = path.join(PUBLIC_DIR, item.imagePath);
-    await page.screenshot({ path: imagePath, type: "png" });
+    await page.screenshot({ path: imagePath, type: "png", timeout: 60_000 });
     console.log(`✅ Generated ${path.relative(PUBLIC_DIR, imagePath)}`);
   } catch (e) {
     console.error(`❌ Failed to generate ${item.path}`);
     console.error(e);
+    throw e;
   } finally {
     await page.close();
   }
@@ -58,12 +54,27 @@ async function generateImage(browser: Browser, item: OGImageItem) {
 
 async function main() {
   console.log("🔥 Generating OG images");
-  const browser = await chromium.launch();
+  // Use the full Chromium channel because headless-shell produces incorrect
+  // OG image captures for the repeated thumbnail strip on newer Playwright.
+  const browser = await chromium.launch({ channel: "chromium" });
   try {
     const items = await getItemsToGenerate();
-    if (!items.length) return;
-    const promises = items.map((item) => generateImage(browser, item));
-    await Promise.all(promises);
+    if (!items.length) {
+      throw new Error("No OG image items found");
+    }
+    const failedPaths: string[] = [];
+    for (const item of items) {
+      try {
+        await generateImage(browser, item);
+      } catch (_error) {
+        failedPaths.push(item.path);
+      }
+    }
+    if (failedPaths.length) {
+      throw new Error(
+        `Failed to generate OG images for: ${failedPaths.join(", ")}`,
+      );
+    }
     console.log("✨ Done");
   } finally {
     await browser.close();
