@@ -195,6 +195,7 @@ export const POST: APIRoute = async (context) => {
       return ok();
     }
     if (!coupon.percent_off) {
+      await deletePromo(context, promo.id);
       logger.error("Promotion code has no percent off", promo.id);
       return ok();
     }
