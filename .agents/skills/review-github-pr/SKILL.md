@@ -21,6 +21,8 @@ gh api graphql -f query='
             isResolved
             resolvedBy { login }
             path
+            line
+            startLine
             comments(first: 20) {
               nodes {
                 databaseId

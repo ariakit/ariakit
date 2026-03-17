@@ -64,8 +64,8 @@ jobs:
           set -euo pipefail
 
           fetch_comment() {
-            gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments?per_page=100" \
-              --jq '[.[] | select(.user.login == "pkg-pr-new[bot]")] | last | .body // empty'
+            gh api --paginate --slurp "repos/$REPO/issues/$PR_NUMBER/comments?per_page=100" \
+              | jq -r '[.[][] | select(.user.login == "pkg-pr-new[bot]")] | last | .body // empty'
           }
 
           comment_body=$(fetch_comment)
@@ -129,8 +129,8 @@ jobs:
           } > body.md
 
           while IFS= read -r issue_number; do
-            existing=$(gh api "repos/$REPO/issues/$issue_number/comments" \
-              --jq "[.[] | select(.body | contains(\"$marker\"))] | length")
+            existing=$(gh api --paginate --slurp "repos/$REPO/issues/$issue_number/comments?per_page=100" \
+              | jq "[.[][] | select(.body | contains(\"$marker\"))] | length")
             if [ "$existing" -gt 0 ]; then
               echo "Skipping issue #$issue_number (already commented)"
               continue
