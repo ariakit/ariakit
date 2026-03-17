@@ -1,9 +1,13 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "src/env.d.ts", "**/*.astro"],
+  "include": [
+    ".astro/types.d.ts",
+    "src/env.d.ts",
+    "../worker-configuration.d.ts",
+    "**/*.astro"
+  ],
   "exclude": ["dist", "node_modules", ".types"],
   "compilerOptions": {
-    "noUncheckedIndexedAccess": true,
-    "types": ["../worker-configuration.d.ts"]
+    "noUncheckedIndexedAccess": true
   }
 }
