@@ -77,6 +77,12 @@ Use the GitHub REST API to post replies:
 gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies -f body="..."
 ```
 
+When replying to the Copilot bot (`copilot-pull-request-reviewer`), start the reply with `@copilot` so Copilot processes the response. For example:
+
+```
+@copilot Fixed in {commit_sha} — {brief description}.
+```
+
 ## 5. Push
 
 Push all fix commits at once after all comments have been addressed:
