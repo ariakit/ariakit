@@ -16,7 +16,7 @@ declare module "*?source" {
 }
 
 declare module "cloudflare:workers" {
-  export const env: Pick<Cloudflare.Env, "PLUS" | "EVENTS" | "ADMIN">;
+  export const env: Cloudflare.Env;
 }
 
 declare module "#app/styles/styles.json" {

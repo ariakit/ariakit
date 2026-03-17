@@ -18,6 +18,8 @@ import Layout from "./_layout.astro";
 import PriceCard from "./_price-card.astro";
 import { getCurrencyData, processFormRequest } from "./_utils.ts";
 
+const { env } = await import("cloudflare:workers");
+
 export const prerender = false;
 
 if (!(await isAdmin(Astro))) {
@@ -31,7 +33,7 @@ if (formRequest) {
 }
 
 async function getPriceData() {
-  const prices = await getPrices(Astro);
+  const prices = await getPrices(env);
   const personalPrices = prices.filter((price) => price.type === "personal");
   return personalPrices.map((personal) => {
     const { countryCode } = parsePlusPriceKey(personal.key);
