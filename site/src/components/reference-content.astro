@@ -47,7 +47,7 @@ interface ReferenceSectionContent extends ReferenceSection {
 }
 
 function formatExamplesToHtml(examples: typeof data.examples = []) {
-  return examples.map((example) => ({
+  return examples.map((example: (typeof data.examples)[number]) => ({
     ...example,
     codeHtml: `<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${encode(example.code)}</code>`,
   }));
@@ -161,7 +161,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
         }
         <Markdown content={description} />
         {
-          formattedExamples.map((example) => (
+          formattedExamples.map((example: (typeof formattedExamples)[number]) => (
             <Fragment>
               {example.description && (
                 <ContentParagraph>{example.description}</ContentParagraph>

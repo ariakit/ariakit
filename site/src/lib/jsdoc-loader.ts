@@ -12,17 +12,16 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
-import type { z } from "astro:content";
 import type { FunctionLikeDeclaration } from "ts-morph";
 import { Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";
-import type { FrameworkSchema, Reference } from "./schemas.ts";
+import type { Framework, Reference } from "./schemas.ts";
 import { ReferenceSchema } from "./schemas.ts";
 import { slugify } from "./string.ts";
 
 export interface JsDocFrameworkOptions {
   /** Framework name */
-  framework: z.infer<typeof FrameworkSchema>;
+  framework: Framework;
   /**
    * Path to the ariakit core package (e.g., `ariakit-react-core`,
    * `ariakit-solid-core`)
@@ -1068,7 +1067,7 @@ function getSymbolName(node: Node): string {
 interface CreateReferenceParams {
   node: Node;
   component: string;
-  framework: z.infer<typeof FrameworkSchema>;
+  framework: Framework;
   propsNode?: Node;
 }
 
@@ -1225,7 +1224,7 @@ interface ParseReExportedReferencesParams {
   publicExports: Set<string>;
   packagePath: string;
   corePath: string;
-  framework: z.infer<typeof FrameworkSchema>;
+  framework: Framework;
 }
 
 /**
@@ -1304,7 +1303,7 @@ interface ParseSourceFileExportsParams {
   exportList: string;
   publicExports: Set<string>;
   corePath: string;
-  framework: z.infer<typeof FrameworkSchema>;
+  framework: Framework;
 }
 
 /**
@@ -1399,7 +1398,7 @@ interface ParseDirectExportReferencesParams {
   publicExports: Set<string>;
   packagePath: string;
   corePath: string;
-  framework: z.infer<typeof FrameworkSchema>;
+  framework: Framework;
 }
 
 /**
@@ -1454,7 +1453,7 @@ interface ParseComponentReferencesParams {
   component: string;
   packagePath: string;
   corePath: string;
-  framework: z.infer<typeof FrameworkSchema>;
+  framework: Framework;
 }
 
 /**
@@ -1521,7 +1520,7 @@ function getComponentModules(packagePath: string) {
 interface LoadReferencesParams {
   packagePath: string;
   corePath: string;
-  framework: z.infer<typeof FrameworkSchema>;
+  framework: Framework;
 }
 
 /**

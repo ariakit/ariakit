@@ -9,6 +9,6 @@
  */
 import { admin } from "./admin.ts";
 
-export const server = {
+export const server: { admin: typeof admin } = {
   admin,
 };

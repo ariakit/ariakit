@@ -20,20 +20,32 @@ function promoKey(key = "") {
   return `promo:${key}`;
 }
 
-export function getPlusStore(context: APIContext) {
-  return context.locals.runtime.env.PLUS;
+export async function getPlusStore(_context: APIContext) {
+  const { env } = await import("cloudflare:workers");
+  if (!env.PLUS) {
+    throw new Error('Missing Cloudflare KV binding "PLUS".');
+  }
+  return env.PLUS;
 }
 
-export function getEventsStore(context: APIContext) {
-  return context.locals.runtime.env.EVENTS;
+export async function getEventsStore(_context: APIContext) {
+  const { env } = await import("cloudflare:workers");
+  if (!env.EVENTS) {
+    throw new Error('Missing Cloudflare KV binding "EVENTS".');
+  }
+  return env.EVENTS;
 }
 
-export function getAdminStore(context: APIContext) {
-  return context.locals.runtime.env.ADMIN;
+export async function getAdminStore(_context: APIContext) {
+  const { env } = await import("cloudflare:workers");
+  if (!env.ADMIN) {
+    throw new Error('Missing Cloudflare KV binding "ADMIN".');
+  }
+  return env.ADMIN;
 }
 
 export async function getPrice(context: APIContext, key: string) {
-  const store = getPlusStore(context);
+  const store = await getPlusStore(context);
   const price = await store.getWithMetadata<PriceData>(priceKey(key));
   return price.metadata;
 }
@@ -42,7 +54,7 @@ export async function getPrices(
   context: APIContext,
   keys?: string[],
 ): Promise<PriceData[]> {
-  const store = getPlusStore(context);
+  const store = await getPlusStore(context);
   if (!keys?.length) {
     const result = await store.list<PriceData>({ prefix: priceKey() });
     return result.keys
@@ -59,14 +71,14 @@ export async function getPrices(
 }
 
 export async function putPrice(context: APIContext, data: PriceData) {
-  const store = getPlusStore(context);
+  const store = await getPlusStore(context);
   await store.put(priceKey(data.key), data.amount.toString(), {
     metadata: data,
   });
 }
 
 export async function deletePrice(context: APIContext, key: string) {
-  const store = getPlusStore(context);
+  const store = await getPlusStore(context);
   await store.delete(priceKey(key));
 }
 
@@ -81,7 +93,7 @@ export async function getAllPromos({
   product,
   user,
 }: GetPromoParams): Promise<PromoData[]> {
-  const store = getPlusStore(context);
+  const store = await getPlusStore(context);
   const result = await store.list<PromoData>({ prefix: promoKey() });
   const promos: (PromoData | undefined)[] = result.keys.map(
     (key: { metadata?: PromoData | undefined }) => key.metadata,
@@ -127,35 +139,35 @@ export async function getBestPromo(
 }
 
 export async function putPromo(context: APIContext, data: PromoData) {
-  const store = getPlusStore(context);
+  const store = await getPlusStore(context);
   await store.put(promoKey(data.id), data.percentOff.toString(), {
     metadata: data,
   });
 }
 
 export async function deletePromo(context: APIContext, id: string) {
-  const store = getPlusStore(context);
+  const store = await getPlusStore(context);
   await store.delete(promoKey(id));
 }
 
 export async function processEvent(context: APIContext, id: string) {
-  const store = getEventsStore(context);
+  const store = await getEventsStore(context);
   await store.put(id, "processed");
 }
 
 export async function isEventProcessed(context: APIContext, id: string) {
-  const store = getEventsStore(context);
+  const store = await getEventsStore(context);
   const event = await store.get(id);
   return event !== null;
 }
 
 export async function syncAdmin(context: APIContext, time = getUnixTime()) {
-  const store = getAdminStore(context);
+  const store = await getAdminStore(context);
   await store.put("last-sync", time.toString());
 }
 
 export async function getAdminLastSync(context: APIContext) {
-  const store = getAdminStore(context);
+  const store = await getAdminStore(context);
   const lastSync = await store.get("last-sync");
   if (!lastSync) return;
   return Number.parseInt(lastSync, 10);

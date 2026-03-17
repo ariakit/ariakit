@@ -373,7 +373,7 @@ async function setPrice(context: APIContext, input: SetPriceInput) {
   logger.info("Set price %s to %s", key, formattedAmount);
 }
 
-export const admin = {
+export const admin: Record<string, ReturnType<typeof defineAction>> = {
   sync: defineAction({
     accept: "form",
     async handler(_, action) {

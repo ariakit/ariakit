@@ -89,8 +89,10 @@ if (isLoginStep) {
     });
     const url = new URL(Astro.url);
     url.searchParams.delete("session_id");
-    const step: PlusCheckoutStep = session ? "access" : "payment";
-    return Astro.redirect(getPlusCheckoutPath({ step, url }), 303);
+    return Astro.redirect(
+      getPlusCheckoutPath({ step: session ? "access" : "payment", url }),
+      303
+    );
   }
   if (isPaymentStep && plusType === "personal" && hasPersonal) {
     return Astro.redirect(getPath("access"));

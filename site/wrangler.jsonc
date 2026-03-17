@@ -1,0 +1,23 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2025-11-27",
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "0f9b6f7e893f4404919acd893a220ac4",
+    },
+    {
+      "binding": "PLUS",
+      "id": "805a2deebf034516b9fdaa776ebaf83e",
+    },
+    {
+      "binding": "EVENTS",
+      "id": "2693472753774223ab25c58880991173",
+    },
+    {
+      "binding": "ADMIN",
+      "id": "added36c1d7349b887e9d0caab35dd6c",
+    },
+  ],
+}

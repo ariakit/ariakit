@@ -16,10 +16,15 @@ import ChipLinkList from "#app/components/chip-link-list.astro";
 import ChipLink from "#app/components/chip-link.astro";
 import ContainerLeftMenu from "#app/components/container-left-menu.astro";
 import ContainerRightMenu from "#app/components/container-right-menu.astro";
-import { components } from "#app/components/content-components.astro";
+import ContentAdmonition from "#app/components/content-admonition.astro";
+import ContentCodeBlock from "#app/components/content-code-block.astro";
 import ContentHeading from "#app/components/content-heading.astro";
 import ContentLink from "#app/components/content-link.astro";
+import ContentDisclosure from "#app/components/content-disclosure.astro";
+import ContentListItem from "#app/components/content-list-item.astro";
+import ContentList from "#app/components/content-list.astro";
 import ContentParagraph from "#app/components/content-paragraph.astro";
+import ContentSeparator from "#app/components/content-separator.astro";
 import HorizontalScroll from "#app/components/horizontal-scroll.astro";
 import Meta from "#app/components/meta.astro";
 import PageCardExample from "#app/components/page-card-example.astro";
@@ -37,12 +42,28 @@ import { trimRight } from "#app/lib/string.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 import Layout from "#app/pages/_layout.astro";
-import {
-  type RehypePlugin,
-  createMarkdownProcessor,
-} from "@astrojs/markdown-remark";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
+
+// Temporary Astro 6 workaround: importing this content-components map from a
+// shared `.astro` module breaks the build with a missing default export error.
+const components = {
+  a: ContentLink,
+  p: ContentParagraph,
+  pre: ContentCodeBlock,
+  h1: ContentHeading,
+  h2: ContentHeading,
+  h3: ContentHeading,
+  h4: ContentHeading,
+  h5: ContentHeading,
+  h6: ContentHeading,
+  ul: ContentList,
+  ol: ContentList,
+  li: ContentListItem,
+  admonition: ContentAdmonition,
+  hr: ContentSeparator,
+  details: ContentDisclosure,
+};
 
 export const getStaticPaths = (async () => {
   const entries = await getCollection("components");
@@ -176,22 +197,6 @@ const apiLinks = referenceMenu.filter(isLinkItem);
 function isCurrentHref(href: string, pathname = Astro.url.pathname) {
   const url = new URL(href, Astro.url.origin);
   return trimRight(pathname, "/") === trimRight(url.pathname, "/");
-}
-
-// TODO: This should be a singleton.
-const processor = await createMarkdownProcessor({
-  syntaxHighlight: false,
-  rehypePlugins: [
-    [
-      rehypeAsTagName as RehypePlugin,
-      { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
-    ],
-  ],
-});
-
-async function parseDescription(description: string) {
-  const result = await processor.render(description);
-  return result.code;
 }
 ---
 
