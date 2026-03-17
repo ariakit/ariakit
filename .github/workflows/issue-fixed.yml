@@ -1,0 +1,104 @@
+name: issue-fixed
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  comment:
+    name: Comment on fixed issues
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Get linked issues
+        id: issues
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          issue_numbers=$(gh api graphql -f query="
+            query {
+              repository(owner: \"$REPO_OWNER\", name: \"$REPO_NAME\") {
+                pullRequest(number: $PR_NUMBER) {
+                  closingIssuesReferences(first: 10) {
+                    nodes {
+                      number
+                    }
+                  }
+                }
+              }
+            }
+          " --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[].number')
+
+          if [ -z "$issue_numbers" ]; then
+            echo "No linked issues found"
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "numbers<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$issue_numbers" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Get pkg-pr-new comment
+        if: steps.issues.outputs.found == 'true'
+        id: packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          comment_body=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq '[.[] | select(.user.login == "pkg-pr-new[bot]")] | last | .body // empty')
+
+          if [ -z "$comment_body" ]; then
+            echo "No pkg-pr-new comment found"
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          npm_commands=$(echo "$comment_body" | grep -oP 'npm i https://pkg\.pr\.new/\S+')
+
+          if [ -z "$npm_commands" ]; then
+            echo "No npm commands found in pkg-pr-new comment"
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "found=true" >> "$GITHUB_OUTPUT"
+          echo "commands<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$npm_commands" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Comment on issues
+        if: steps.packages.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBERS: ${{ steps.issues.outputs.numbers }}
+          NPM_COMMANDS: ${{ steps.packages.outputs.commands }}
+        run: |
+          {
+            echo "This issue has been fixed and will be included in the next release."
+            echo ""
+            echo "If you'd like to try it now, you can install the canary version:"
+            echo ""
+            while IFS= read -r cmd; do
+              echo '```'
+              echo "$cmd"
+              echo '```'
+              echo ""
+            done <<< "$NPM_COMMANDS"
+          } > body.md
+
+          while IFS= read -r issue_number; do
+            gh issue comment "$issue_number" \
+              --repo "$REPO" \
+              --body-file body.md
+            echo "Commented on issue #$issue_number"
+          done <<< "$ISSUE_NUMBERS"
