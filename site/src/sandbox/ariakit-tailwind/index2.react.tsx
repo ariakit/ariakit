@@ -1,6 +1,6 @@
 import type { VariantProps } from "clava";
 import { cv, splitProps } from "clava";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { ComponentProps } from "react";
 import { useId } from "react";
 
@@ -110,7 +110,7 @@ const frame = cv({
       xl: "ak-frame-rounded-xl",
       "2xl": "ak-frame-rounded-2xl",
       "3xl": "ak-frame-rounded-3xl",
-      demo6: "ak-frame-rounded-[6px]",
+      demo6: "ak-frame-[6px]",
     },
     $p: {
       false: "",
