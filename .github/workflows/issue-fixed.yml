@@ -28,7 +28,7 @@ jobs:
             query {
               repository(owner: \"$REPO_OWNER\", name: \"$REPO_NAME\") {
                 pullRequest(number: $PR_NUMBER) {
-                  closingIssuesReferences(first: 10) {
+                  closingIssuesReferences(first: 50) {
                     nodes {
                       number
                       repository {
@@ -90,12 +90,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
           REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
           ISSUE_NUMBERS: ${{ steps.issues.outputs.numbers }}
           NPM_COMMANDS: ${{ steps.packages.outputs.commands }}
         run: |
           set -euo pipefail
 
+          marker="<!-- issue-fixed-pr-$PR_NUMBER -->"
+
           {
+            echo "$marker"
             echo "This issue has been fixed and will be included in the next release."
             echo ""
             echo "If you'd like to try it now, you can install the canary version:"
@@ -109,6 +113,12 @@ jobs:
           } > body.md
 
           while IFS= read -r issue_number; do
+            existing=$(gh api "repos/$REPO/issues/$issue_number/comments" \
+              --jq "[.[] | select(.body | contains(\"$marker\"))] | length")
+            if [ "$existing" -gt 0 ]; then
+              echo "Skipping issue #$issue_number (already commented)"
+              continue
+            fi
             gh issue comment "$issue_number" \
               --repo "$REPO" \
               --body-file body.md
