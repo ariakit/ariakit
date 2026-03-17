@@ -60,6 +60,7 @@ For every top-level comment in an unresolved thread, determine its status:
 ## 3. Fix valid comments
 
 - Group related fixes into logical commits (e.g., all JSON-safety fixes in one commit, all dependency-tracking fixes in another).
+- If the original PR is already merged and a valid unresolved comment still requires code changes, create a new follow-up branch and open a new PR for the fix. Do not try to amend the merged PR.
 - After each fix, run the relevant verification commands (see the `ariakit-workflow` skill) to confirm correctness.
 - Commit with a clear message describing what was fixed and why.
 
@@ -69,6 +70,7 @@ Every top-level comment in an unresolved thread must get a reply, regardless of 
 
 - **Resolved in code:** "Resolved in {commit_sha} — {brief description of what was fixed}."
 - **Fixed now:** "Fixed in {commit_sha} — {brief description}."
+- **Fixed in follow-up PR:** "Fixed in {commit_sha} via follow-up PR #{pr_number} — {brief description}."
 - **Invalid:** "This is not an issue because {explanation}." Be specific and cite the relevant code behavior.
 
 Use the GitHub REST API to post replies:
