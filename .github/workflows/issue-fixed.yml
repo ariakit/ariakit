@@ -88,7 +88,7 @@ jobs:
             exit 0
           fi
 
-          npm_commands=$(echo "$comment_body" | grep -oE 'npm i https://pkg\.pr\.new/[^ ]+' || true)
+          npm_commands=$(printf '%s\n' "$comment_body" | grep -oE 'npm i https://pkg\.pr\.new/[A-Za-z0-9._~:/?#@!$&()*+,;=%-]+' || true)
 
           if [ -z "$npm_commands" ]; then
             echo "No npm commands found in pkg-pr-new comment"
@@ -121,10 +121,8 @@ jobs:
             echo "If you'd like to try it now, you can install the canary version:"
             echo ""
             while IFS= read -r cmd; do
-              echo '```'
-              echo "$cmd"
-              echo '```'
-              echo ""
+              printf '    %s\n' "$cmd"
+              echo
             done <<< "$NPM_COMMANDS"
           } > body.md
 
