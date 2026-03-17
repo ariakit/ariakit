@@ -580,9 +580,6 @@ importers:
       '@ariakit/test':
         specifier: workspace:*
         version: link:../packages/ariakit-test
-      '@cloudflare/workers-types':
-        specifier: 4.20260316.1
-        version: 4.20260316.1
       '@playwright/test':
         specifier: 1.58.2
         version: 1.58.2
