@@ -897,8 +897,8 @@ importers:
         specifier: 5.105.4
         version: 5.105.4(esbuild@0.27.4)
       zod:
-        specifier: 4.3.6
-        version: 4.3.6
+        specifier: 3.25.76
+        version: 3.25.76
     devDependencies:
       '@ariakit/test':
         specifier: workspace:*
