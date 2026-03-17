@@ -11,6 +11,14 @@ description: Workflow instructions for this repository. Always use when planning
 - If a skill change updates code standards or formatting rules, apply the change across existing files in the repository so the codebase stays in sync with the skills.
 - Add changesets in the `.changeset` folder for user-facing updates such as bug fixes, performance improvements, and new features. Refactors and other changes that do not affect shipped code should not require changesets.
 
+## Worktrees
+
+- Before creating a worktree (via `EnterWorktree` or `git worktree add`), always fetch the base branch from origin first so you start from the latest remote state:
+  ```sh
+  git fetch origin main
+  ```
+  Replace `main` with the actual base branch if it differs. This prevents starting work from a stale local branch.
+
 ## Dependencies
 
 - Every workspace must declare the dependencies it actually uses in its own `package.json`. Do not rely on hoisting from the root.
