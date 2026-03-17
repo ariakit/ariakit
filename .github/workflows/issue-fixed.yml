@@ -1,7 +1,7 @@
 name: issue-fixed
 
 on:
-  pull_request:
+  pull_request_target:
     types: [closed]
 
 jobs:
@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: read
+      issues: read
     steps:
       - name: Get linked issues
         id: issues
@@ -20,6 +22,8 @@ jobs:
           REPO_NAME: ${{ github.event.repository.name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          set -euo pipefail
+
           issue_numbers=$(gh api graphql -f query="
             query {
               repository(owner: \"$REPO_OWNER\", name: \"$REPO_NAME\") {
@@ -27,12 +31,16 @@ jobs:
                   closingIssuesReferences(first: 10) {
                     nodes {
                       number
+                      repository {
+                        owner { login }
+                        name
+                      }
                     }
                   }
                 }
               }
             }
-          " --jq '.data.repository.pullRequest.closingIssuesReferences.nodes[].number')
+          " --jq ".data.repository.pullRequest.closingIssuesReferences.nodes[] | select(.repository.owner.login == \"$REPO_OWNER\" and .repository.name == \"$REPO_NAME\") | .number")
 
           if [ -z "$issue_numbers" ]; then
             echo "No linked issues found"
@@ -53,6 +61,8 @@ jobs:
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          set -euo pipefail
+
           comment_body=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
             --jq '[.[] | select(.user.login == "pkg-pr-new[bot]")] | last | .body // empty')
 
@@ -62,7 +72,7 @@ jobs:
             exit 0
           fi
 
-          npm_commands=$(echo "$comment_body" | grep -oP 'npm i https://pkg\.pr\.new/\S+')
+          npm_commands=$(echo "$comment_body" | grep -oP 'npm i https://pkg\.pr\.new/\S+' || true)
 
           if [ -z "$npm_commands" ]; then
             echo "No npm commands found in pkg-pr-new comment"
@@ -83,6 +93,8 @@ jobs:
           ISSUE_NUMBERS: ${{ steps.issues.outputs.numbers }}
           NPM_COMMANDS: ${{ steps.packages.outputs.commands }}
         run: |
+          set -euo pipefail
+
           {
             echo "This issue has been fixed and will be included in the next release."
             echo ""
