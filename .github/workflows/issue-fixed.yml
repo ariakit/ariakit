@@ -1,26 +1,61 @@
 name: issue-fixed
 
 on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to process
+        required: true
+        type: number
   pull_request_target:
     types: [closed]
 
 jobs:
   comment:
     name: Comment on fixed issues
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: read
-      issues: read
+      issues: write
     steps:
+      - name: Resolve PR number
+        env:
+          EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          set -euo pipefail
+
+          pr_number=${INPUT_PR_NUMBER:-$EVENT_PR_NUMBER}
+
+          if [ -z "$pr_number" ]; then
+            echo "PR number not found"
+            exit 1
+          fi
+
+          echo "PR_NUMBER=$pr_number" >> "$GITHUB_ENV"
+
+      - name: Validate merged pull request
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          merged=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq ".merged")
+          if [ "$merged" != "true" ]; then
+            echo "Pull request #$PR_NUMBER is not merged"
+            exit 1
+          fi
+
       - name: Get linked issues
         id: issues
         env:
           GH_TOKEN: ${{ github.token }}
           REPO_OWNER: ${{ github.repository_owner }}
           REPO_NAME: ${{ github.event.repository.name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
 
@@ -59,7 +94,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -euo pipefail
 
@@ -104,9 +138,8 @@ jobs:
       - name: Comment on issues
         if: steps.packages.outputs.found == 'true'
         env:
-          GH_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
+          GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
           ISSUE_NUMBERS: ${{ steps.issues.outputs.numbers }}
           NPM_COMMANDS: ${{ steps.packages.outputs.commands }}
         run: |
