@@ -3,6 +3,7 @@ reviews:
   suggested_reviewers: false
   in_progress_fortune: false
   poem: false
+  high_level_summary_in_walkthrough: true
   auto_review:
     ignore_usernames:
       - ariakit-bot
