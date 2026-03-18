@@ -8,6 +8,7 @@ description: Workflow instructions for this repository. Always use when planning
 ## General
 
 - Whenever you learn something new worth noting about workflow or code standards, make sure to update the agent’s skills.
+- Always edit skill files in `.agents/skills/`, not `.claude/skills/`. The latter is a symlink to the former, and editing through the symlink can cause issues with git operations.
 - If a skill change updates code standards or formatting rules, apply the change across existing files in the repository so the codebase stays in sync with the skills.
 - Add changesets in the `.changeset` folder for user-facing updates such as bug fixes, performance improvements, and new features. Refactors and other changes that do not affect shipped code should not require changesets.
 
