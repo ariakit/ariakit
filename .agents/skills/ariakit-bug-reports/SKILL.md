@@ -6,7 +6,7 @@ description: Bug report investigation workflow for this repository. Use when wor
 # Ariakit Bug Reports
 
 - Start by reproducing the bug in a sandbox under `site/src/sandbox/<issue-number>/` and add an automated test that fails for the reported behavior. Most bug reports include a StackBlitz URL with the user's reproduction. You should always open that URL and review the code for reference. To run the browser tests locally, start the dev server with `pnpm dev-site` (faster than building) and then run `pnpm -F site run test-chrome -- --grep "<issue-number>"`. At this point, you should commit your changes and create a draft PR so we can see the failed CI checks. Then start working on the workaround.
-- If you need to adjust the tests later because they weren't accurate, make sure they fail without any workaround or library fix applied. Push that so we can validate it in CI, then reapply the workaround or library fix and keep going.
+- If you need to adjust the tests later because they weren't accurate, make sure they fail without any workaround or library fix applied. Commit **and push** so we can validate it in CI, then reapply the workaround or library fix and keep going. Every commit that changes test expectations must be pushed immediately so CI runs against it.
 - All bug report investigations should produce a workaround before any library fix is proposed or implemented.
 - Keep the library code unchanged while investigating the workaround. The workaround should be demonstrated first in userland code.
 - Workarounds should follow the repository pattern: prefer a small consumer-side change that users can apply in their own app, such as an explicit prop override, a local event handler, a store method call, or a more specific callback condition.
