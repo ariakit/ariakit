@@ -32,6 +32,8 @@ import { formatDistanceToNow } from "date-fns";
 import { z } from "zod";
 import Layout from "./_layout.astro";
 
+const { env } = await import("cloudflare:workers");
+
 export const prerender = false;
 
 const schema = z.tuple([PlusCheckoutStepSchema, PlusTypeSchema]);
@@ -85,12 +87,15 @@ if (isLoginStep) {
   if (sessionId) {
     const session = await processCheckout({
       context: Astro,
+      env,
       session: sessionId,
     });
     const url = new URL(Astro.url);
     url.searchParams.delete("session_id");
-    const step: PlusCheckoutStep = session ? "access" : "payment";
-    return Astro.redirect(getPlusCheckoutPath({ step, url }), 303);
+    return Astro.redirect(
+      getPlusCheckoutPath({ step: session ? "access" : "payment", url }),
+      303
+    );
   }
   if (isPaymentStep && plusType === "personal" && hasPersonal) {
     return Astro.redirect(getPath("access"));
@@ -107,7 +112,7 @@ async function getPriceData() {
   const currentUserPlus = await getCurrentUserPlus(Astro);
   return Promise.all(
     PLUS_TYPES.map(async (type) => {
-      const price = await getPlusPrice({ context: Astro, type });
+      const price = await getPlusPrice({ context: Astro, env, type });
       if (!price) return null;
       return {
         ...price,

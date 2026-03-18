@@ -15,6 +15,10 @@ declare module "*?source" {
   export default source;
 }
 
+declare module "cloudflare:workers" {
+  export const env: Cloudflare.Env;
+}
+
 declare module "#app/styles/styles.json" {
   const styles: import("./lib/styles.ts").StylesJson;
   export default styles;
@@ -23,9 +27,7 @@ declare module "#app/styles/styles.json" {
 type PlusType = import("./lib/schemas.ts").PlusType;
 type Framework = import("./lib/schemas.ts").Framework;
 type User = import("@clerk/astro/server").User;
-type Runtime = import("@astrojs/cloudflare").Runtime<
-  Pick<Cloudflare.Env, "PLUS" | "EVENTS" | "ADMIN">
->;
+type Runtime = import("@astrojs/cloudflare").Runtime;
 
 declare namespace App {
   interface Locals extends Runtime {

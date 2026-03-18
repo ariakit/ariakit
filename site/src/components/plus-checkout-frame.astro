@@ -12,6 +12,8 @@ import { createLogger } from "#app/lib/logger.ts";
 import type { PlusType } from "#app/lib/schemas.ts";
 import { createCheckout, getPlusPrice } from "#app/lib/stripe.ts";
 
+const { env } = await import("cloudflare:workers");
+
 export const prerender = false;
 
 interface Props {
@@ -21,7 +23,7 @@ interface Props {
 const logger = createLogger("plus-checkout-frame");
 
 const { type } = Astro.props;
-const price = await getPlusPrice({ context: Astro, type });
+const price = await getPlusPrice({ context: Astro, env, type });
 
 if (!price) {
   logger.error("Price not found");

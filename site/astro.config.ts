@@ -52,11 +52,23 @@ export default defineConfig({
   },
 
   adapter: cloudflare({
+    // Temporary Astro 6/@astrojs/cloudflare v13 workaround: we need an
+    // explicit Wrangler config so preview/build output keeps nodejs_compat and
+    // our KV bindings.
+    configPath: "./wrangler.jsonc",
     imageService: "compile",
+    prerenderEnvironment: "node",
     platformProxy: { enabled: true },
   }),
 
   vite: {
+    resolve: {
+      alias: {
+        // Temporary Astro 6 workaround: generated client entrypoints resolve
+        // "#app" differently unless we register the alias in Vite explicitly.
+        "#app": join(import.meta.dirname, "src"),
+      },
+    },
     plugins: [
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),

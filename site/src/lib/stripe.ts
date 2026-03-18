@@ -27,6 +27,7 @@ import {
   isEventProcessed,
   processEvent,
   putPromo,
+  type KVEnv,
 } from "./kv.ts";
 import { getCountryCode, getCurrency } from "./locale.ts";
 import { createLogger } from "./logger.ts";
@@ -104,6 +105,7 @@ export function getPromotionCoupon(promo: Stripe.PromotionCode) {
 
 export interface CreateSalePromoParams {
   context: APIContext;
+  env: KVEnv;
   percentOff: number;
   user?: User | string | null;
   expiresAt?: Date;
@@ -112,6 +114,7 @@ export interface CreateSalePromoParams {
 
 export async function createSalePromo({
   context,
+  env,
   percentOff,
   user,
   expiresAt,
@@ -152,7 +155,7 @@ export async function createSalePromo({
     max_redemptions: maxRedemptions,
     expires_at: expiresAtTime,
   });
-  await putPromo(context, {
+  await putPromo(env, {
     id: promo.id,
     type: user ? "customer" : "sale",
     user: user ? objectId(user) : null,
@@ -233,6 +236,7 @@ export interface PlusPrice
 
 export interface GetPlusPriceParams {
   context: APIContext;
+  env: KVEnv;
   type?: PlusType;
   user?: User | string | null;
   currency?: string;
@@ -241,6 +245,7 @@ export interface GetPlusPriceParams {
 
 export async function getPlusPrice({
   context,
+  env,
   user,
   type = "personal",
   countryCode = getCountryCode(context.request.headers),
@@ -252,7 +257,7 @@ export async function getPlusPrice({
     getPlusPriceKey({ type, currency }),
     getPlusPriceKey({ type, currency: "USD" }),
   ];
-  const prices = await getPrices(context, keys);
+  const prices = await getPrices(env, keys);
   if (!prices.length) return null;
   const price = findInOrder(prices, "key", keys);
   if (!price) return null;
@@ -269,7 +274,7 @@ export async function getPlusPrice({
 
   const originalAmount = price.amount - credit;
   const promo = await getBestPromo({
-    context,
+    env,
     user: userId,
     product: price.product,
   });
@@ -369,11 +374,13 @@ export async function createCheckout({
 
 export interface ProcessCheckoutParams {
   context: APIContext;
+  env: KVEnv;
   session: Stripe.Checkout.Session | string;
 }
 
 export async function processCheckout({
   context,
+  env,
   session,
 }: ProcessCheckoutParams) {
   const stripe = getStripeClient();
@@ -399,11 +406,11 @@ export async function processCheckout({
   if (!clerkId) {
     return logger.error("No clerk ID in session metadata", session.id);
   }
-  if (await isEventProcessed(context, session.id)) {
+  if (await isEventProcessed(env, session.id)) {
     logger.info("Checkout session already processed", session.id);
     return session;
   }
-  await processEvent(context, session.id);
+  await processEvent(env, session.id);
   if (type === "team") {
     if (Number(creditUsed)) {
       await removePlusFromUser({ context, user: clerkId });

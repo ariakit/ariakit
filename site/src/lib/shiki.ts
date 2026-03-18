@@ -9,8 +9,8 @@
  */
 // @ts-nocheck Revisit this after we merge the site folder into root
 import type { BundledLanguage } from "shiki";
+import { createJavaScriptRegexEngine } from "shiki";
 import { createHighlighterCore } from "shiki/core";
-import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
 export const highlighter = await createHighlighterCore({
   themes: [
@@ -28,7 +28,9 @@ export const highlighter = await createHighlighterCore({
     import("@shikijs/langs/python"),
     import("@shikijs/langs/jsx"),
   ],
-  engine: createOnigurumaEngine(import("shiki/onig.wasm")),
+  // Temporary Astro 6/Cloudflare workaround: the JS regex engine is stable
+  // here while the WASM-based engine breaks the site build.
+  engine: createJavaScriptRegexEngine(),
 });
 
 export function getLangFromFilename(filename: string): BundledLanguage {

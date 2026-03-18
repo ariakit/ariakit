@@ -3,7 +3,7 @@ import type { APIRoute } from "astro";
 import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import type { Registry, RegistryItem } from "shadcn/schema";
-import { z } from "zod/v4";
+import { z } from "zod";
 import {
   getFrameworkByFilename,
   isFrameworkDependency,

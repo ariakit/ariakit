@@ -23,6 +23,8 @@ import {
   processFormRequest,
 } from "./_utils.ts";
 
+const { env } = await import("cloudflare:workers");
+
 export const prerender = false;
 
 if (!(await isAdmin(Astro))) {
@@ -35,7 +37,10 @@ if (formRequest) {
   return formRequest;
 }
 
-const promos = await getAllPromos({ context: Astro, user: "any" });
+const promos = await getAllPromos({
+  env,
+  user: "any",
+});
 const salePromos = promos.filter((promo) => promo.type === "sale");
 const customerPromos = promos.filter((promo) => promo.type === "customer");
 const bestPromo = await getBestPromo(salePromos);

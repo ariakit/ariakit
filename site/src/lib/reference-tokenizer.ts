@@ -10,7 +10,7 @@
 
 import type { CollectionEntry } from "astro:content";
 import { getReferenceItemId } from "#app/lib/reference.ts";
-import type { Framework } from "#app/lib/schemas.ts";
+import type { Framework, ReferenceProp } from "#app/lib/schemas.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 
 // #region Types
@@ -333,9 +333,11 @@ function findComponentPropRanges(
   if (endIndex == null) return result;
 
   const tagText = code.slice(tagStartIndex, endIndex);
-  const propsParam = componentRef.data.params.find((p) => p.name === "props");
+  const propsParam = componentRef.data.params.find(
+    (prop: ReferenceProp) => prop.name === "props",
+  );
   const allowedProps = new Set(
-    (propsParam?.props || []).map((p) => p.name).filter(Boolean),
+    (propsParam?.props || []).map((prop: ReferenceProp) => prop.name),
   );
 
   if (!allowedProps.size) return result;
@@ -1408,7 +1410,9 @@ function processFirstArgProps(
 
   if (!obj || !refForProps || !firstParamProps?.length) return;
 
-  const allowed = new Set(firstParamProps.map((p) => p.name));
+  const allowed = new Set(
+    firstParamProps.map((prop: ReferenceProp) => prop.name),
+  );
   const keys = findTopLevelObjectKeys(code, obj.start, obj.end);
 
   for (const key of keys) {
@@ -1478,7 +1482,8 @@ function processStoreReturnProps(
     let propMatch: RegExpExecArray | null;
 
     const allowedProps = new Set(
-      ref.data.returnValue?.props?.map((p) => p.name) || [],
+      ref.data.returnValue?.props?.map((prop: ReferenceProp) => prop.name) ||
+        [],
     );
 
     while ((propMatch = propAccessRegex.exec(code))) {

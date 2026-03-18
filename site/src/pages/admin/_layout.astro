@@ -15,12 +15,14 @@ import "@fontsource-variable/inter";
 import { actions } from "astro:actions";
 import { formatDistanceToNow } from "date-fns";
 
+const { env } = await import("cloudflare:workers");
+
 function getAriaCurrent(path: string) {
   return Astro.url.pathname.startsWith(path) ? "page" : undefined;
 }
 
 async function getLastSynced() {
-  const lastSynced = await getAdminLastSync(Astro);
+  const lastSynced = await getAdminLastSync(env);
   if (!lastSynced) return "never";
   return formatDistanceToNow(new Date(lastSynced * 1000));
 }
