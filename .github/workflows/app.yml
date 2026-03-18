@@ -156,7 +156,7 @@ jobs:
         id: update-screenshots
         if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
         run: |
-          touch "${{ runner.temp }}/pre-update-marker"
+          touch -t "$(date -u -d '-1 second' '+%Y%m%d%H%M.%S' 2>/dev/null || date -u -v-1S '+%Y%m%d%H%M.%S')" "${{ runner.temp }}/pre-update-marker"
           ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --update-snapshots=changed
 
       - name: Remove stale screenshots

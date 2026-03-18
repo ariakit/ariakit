@@ -146,8 +146,12 @@ function touchScreenshot(testInfo: TestInfo, fileName: string) {
   try {
     const now = new Date();
     utimesSync(screenshotPath, now, now);
-  } catch {
-    // File may not exist yet on the first run.
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error) {
+      // File may not exist yet on the first run.
+      if (error.code === "ENOENT") return;
+    }
+    throw error;
   }
 }
 
