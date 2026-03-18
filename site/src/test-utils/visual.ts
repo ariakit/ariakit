@@ -1,3 +1,4 @@
+import { utimesSync } from "node:fs";
 import path from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import { query } from "@ariakit/test/playwright";
@@ -131,6 +132,23 @@ function getVizzlySnapshotName(params: {
     .filter(Boolean)
     .filter((part) => part !== "__screenshots__");
   return `${slugify([...testFileDir, name].join("-"))}${ext}`;
+}
+
+function touchScreenshot(testInfo: TestInfo, fileName: string) {
+  const testDir =
+    testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
+  const screenshotPath = path.join(
+    testDir,
+    getTestFileDir(testInfo),
+    "__screenshots__",
+    fileName,
+  );
+  try {
+    const now = new Date();
+    utimesSync(screenshotPath, now, now);
+  } catch {
+    // File may not exist yet on the first run.
+  }
 }
 
 function shouldUseVizzly() {
@@ -407,6 +425,10 @@ export async function visual(
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
           });
+          // Touch the screenshot file so the CI stale-detection step
+          // (which deletes files older than a pre-run marker) knows
+          // this screenshot is still expected by a test.
+          touchScreenshot(testInfo, fileSnapshotName);
         });
       }
     });

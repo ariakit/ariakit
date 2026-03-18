@@ -157,10 +157,10 @@ jobs:
         if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
         run: |
           touch "${{ runner.temp }}/pre-update-marker"
-          ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual -u
+          ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --update-snapshots=changed
 
       - name: Remove stale screenshots
-        if: always() && steps.update-screenshots.outcome != 'skipped' && env.USE_VIZZLY != 'true'
+        if: always() && steps.update-screenshots.outcome == 'success' && env.USE_VIZZLY != 'true'
         run: find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
 
       - name: Pack screenshots
