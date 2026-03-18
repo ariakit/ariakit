@@ -3,7 +3,7 @@ name: ariakit-bug-reports
 description: Bug report investigation workflow for this repository. Use when working on bug reports or issues.
 ---
 
-# Bug Reports
+# Ariakit Bug Reports
 
 - Start by reproducing the bug in a sandbox in the `site` workspace and add an automated test that fails for the reported behavior. Most bug reports include a StackBlitz URL with the user's reproduction. You should always open that URL and review the code for reference. At this point, you should commit your changes and create a draft PR so we can see the failed CI checks. Then start working on the workaround.
 - If you need to adjust the tests later because they weren't accurate, make sure they fail without any workaround or library fix applied. Push that so we can validate it in CI, then reapply the workaround or library fix and keep going.
