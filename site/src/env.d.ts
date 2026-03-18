@@ -23,13 +23,9 @@ declare module "#app/styles/styles.json" {
 type PlusType = import("./lib/schemas.ts").PlusType;
 type Framework = import("./lib/schemas.ts").Framework;
 type User = import("@clerk/astro/server").User;
-type KVNamespace = import("@cloudflare/workers-types").KVNamespace;
-
-type Runtime = import("@astrojs/cloudflare").Runtime<{
-  PLUS: KVNamespace;
-  EVENTS: KVNamespace;
-  ADMIN: KVNamespace;
-}>;
+type Runtime = import("@astrojs/cloudflare").Runtime<
+  Pick<Cloudflare.Env, "PLUS" | "EVENTS" | "ADMIN">
+>;
 
 declare namespace App {
   interface Locals extends Runtime {
