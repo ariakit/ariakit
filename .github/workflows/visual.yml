@@ -24,8 +24,8 @@ jobs:
       head_branch: ${{ github.event.workflow_run.head_branch }}
       head_sha: ${{ github.event.workflow_run.head_sha }}
 
-  update-snapshots:
-    name: Update snapshots
+  update-screenshots:
+    name: Update screenshots
     needs: gate
     if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Check for complete snapshot artifacts
+      - name: Check for complete screenshot artifacts
         id: check-artifacts
         uses: actions/github-script@v8
         with:
@@ -85,8 +85,8 @@ jobs:
             };
             const jobs = await listWorkflowRunJobs();
             const artifacts = await listWorkflowRunArtifacts();
-            const snapshotJobs = jobs
-              .filter((job) => job.steps?.some((step) => step.name === "Upload snapshots"))
+            const screenshotJobs = jobs
+              .filter((job) => job.steps?.some((step) => step.name === "Upload screenshots"))
               .map((job) => {
                 const project = job.name.startsWith("Test ")
                   ? job.name.slice(5).toLowerCase()
@@ -96,38 +96,38 @@ jobs:
                   project,
                 };
               });
-            const invalidSnapshotJobs = snapshotJobs.filter((job) => !job.project);
-            const expectedSnapshotArtifacts = snapshotJobs
+            const invalidScreenshotJobs = screenshotJobs.filter((job) => !job.project);
+            const expectedScreenshotArtifacts = screenshotJobs
               .filter((job) => job.project)
               .map((job) => job.project)
               .map((project) => `app-visual-${project}`);
-            const snapshotArtifacts = artifacts
+            const screenshotArtifacts = artifacts
               .map((artifact) => artifact.name)
               .filter((artifact) => artifact.startsWith("app-visual-"));
-            const missingSnapshotArtifacts = expectedSnapshotArtifacts.filter(
-              (artifact) => !snapshotArtifacts.includes(artifact),
+            const missingScreenshotArtifacts = expectedScreenshotArtifacts.filter(
+              (artifact) => !screenshotArtifacts.includes(artifact),
             );
-            const hasCompleteSnapshots =
-              invalidSnapshotJobs.length === 0 &&
-              expectedSnapshotArtifacts.length > 0 &&
-              missingSnapshotArtifacts.length === 0;
-            if (invalidSnapshotJobs.length > 0) {
+            const hasCompleteScreenshots =
+              invalidScreenshotJobs.length === 0 &&
+              expectedScreenshotArtifacts.length > 0 &&
+              missingScreenshotArtifacts.length === 0;
+            if (invalidScreenshotJobs.length > 0) {
               console.log(
-                `Unexpected snapshot job names: ${invalidSnapshotJobs.map((job) => job.name).join(", ")}`,
+                `Unexpected screenshot job names: ${invalidScreenshotJobs.map((job) => job.name).join(", ")}`,
               );
             }
             console.log(
-              `Expected snapshot artifacts: ${expectedSnapshotArtifacts.join(", ") || "(none)"}`,
+              `Expected screenshot artifacts: ${expectedScreenshotArtifacts.join(", ") || "(none)"}`,
             );
             console.log(
-              `Found snapshot artifacts: ${snapshotArtifacts.join(", ") || "(none)"}`,
+              `Found screenshot artifacts: ${screenshotArtifacts.join(", ") || "(none)"}`,
             );
-            if (missingSnapshotArtifacts.length > 0) {
+            if (missingScreenshotArtifacts.length > 0) {
               console.log(
-                `Missing snapshot artifacts: ${missingSnapshotArtifacts.join(", ")}`,
+                `Missing screenshot artifacts: ${missingScreenshotArtifacts.join(", ")}`,
               );
             }
-            core.setOutput("ready", String(hasCompleteSnapshots));
+            core.setOutput("ready", String(hasCompleteScreenshots));
 
       - name: Checkout trusted repository
         if: steps.check-artifacts.outputs.ready == 'true'
@@ -146,7 +146,7 @@ jobs:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
-      - name: Download snapshots
+      - name: Download screenshots
         if: steps.check-artifacts.outputs.ready == 'true'
         uses: actions/download-artifact@v8
         with:
@@ -160,7 +160,7 @@ jobs:
         if: steps.check-artifacts.outputs.ready == 'true'
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
-      - name: Extract snapshots
+      - name: Extract screenshots
         if: steps.check-artifacts.outputs.ready == 'true'
         run: |
           find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
@@ -172,13 +172,13 @@ jobs:
         with:
           working-directory: pr
           event: ${{ github.event.workflow_run.event }}
-          message: Update snapshots
+          message: Update screenshots
           head-branch: ${{ github.event.workflow_run.head_branch }}
-          new-branch: visual/update-snapshots
+          new-branch: visual/update-screenshots
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
 
-  wipe-snapshots:
-    name: Wipe snapshots
+  wipe-screenshots:
+    name: Wipe screenshots
     needs: gate
     if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
     runs-on: ubuntu-latest
@@ -201,7 +201,7 @@ jobs:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
-      - name: Remove visual snapshot directories
+      - name: Remove visual screenshot directories
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Commit or create PR
@@ -209,7 +209,7 @@ jobs:
         with:
           working-directory: pr
           event: ${{ github.event.workflow_run.event }}
-          message: Remove file-based visual snapshots
+          message: Remove file-based visual screenshots
           head-branch: ${{ github.event.workflow_run.head_branch }}
-          new-branch: visual/remove-snapshots
+          new-branch: visual/remove-screenshots
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
