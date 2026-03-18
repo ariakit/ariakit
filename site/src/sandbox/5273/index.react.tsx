@@ -13,21 +13,25 @@ export default function Example() {
       </ak.TabList>
       <ak.TabPanel>
         <ak.Form store={form}>
-          <ak.FormRadioGroup>
-            <ak.FormGroupLabel>Favorite color</ak.FormGroupLabel>
-            <label>
-              <ak.FormRadio name={form.names.color} value="red" />
-              Red
-            </label>
-            <label>
-              <ak.FormRadio name={form.names.color} value="green" />
-              Green
-            </label>
-            <label>
-              <ak.FormRadio name={form.names.color} value="blue" />
-              Blue
-            </label>
-          </ak.FormRadioGroup>
+          {/* TODO: Remove RadioProvider workaround once
+              https://github.com/ariakit/ariakit/issues/5273 is fixed */}
+          <ak.RadioProvider>
+            <ak.FormRadioGroup render={<ak.RadioGroup />}>
+              <ak.FormGroupLabel>Favorite color</ak.FormGroupLabel>
+              <label>
+                <ak.FormRadio name={form.names.color} value="red" />
+                Red
+              </label>
+              <label>
+                <ak.FormRadio name={form.names.color} value="green" />
+                Green
+              </label>
+              <label>
+                <ak.FormRadio name={form.names.color} value="blue" />
+                Blue
+              </label>
+            </ak.FormRadioGroup>
+          </ak.RadioProvider>
           <ak.FormSubmit>Submit</ak.FormSubmit>
         </ak.Form>
       </ak.TabPanel>
