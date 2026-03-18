@@ -32,9 +32,9 @@ description: Workflow instructions for this repository. Always use when planning
 
 ## Visual Tests
 
-- Never run visual tests locally (e.g., `pnpm -F site run test-visual` or any command that sets `VISUAL_TEST=true`). Visual screenshots are OS-dependent and will produce different results on different machines. They must only run on CI.
-- The `visual()` helper in `site/src/test-utils/visual.ts` enforces this by requiring both `VISUAL_TEST=true` and `CI=true` to take screenshots.
-- Tests tagged with `@visual` can still run locally without the `VISUAL_TEST` flag — they simply skip the screenshot step, which is valid for testing non-visual behavior.
+- Never take or update visual screenshots locally. Screenshots are OS-dependent and will differ across machines. The `visual()` helper in `site/src/test-utils/visual.ts` enforces this by requiring both `VISUAL_TEST=true` and `CI=true` to capture screenshots.
+- Do not run visual test scripts (`test-visual*`) or set `VISUAL_TEST=true` locally — those are meant for CI only.
+- Most tests tagged `@visual` can run locally without `VISUAL_TEST` — they just skip the screenshot step. However, some suites (e.g., `previews-browser.ts`) skip execution entirely without `VISUAL_TEST`, so not all `@visual` tests will run locally.
 
 ## Verification
 
