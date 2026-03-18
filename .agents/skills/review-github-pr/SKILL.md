@@ -9,7 +9,7 @@ Process for triaging and resolving review comments left by bots or humans on a G
 
 ## 1. Fetch review threads via GraphQL
 
-Use the GraphQL API to fetch all review threads, including their resolution status and comments. This is the **only reliable way** to check if a thread has been resolved.
+Use the GraphQL API to fetch all review threads, including their resolution status and comments. The REST review-comment endpoints expose individual comments and replies, but not whether a thread is currently resolved, so GraphQL is the reliable source for thread resolution state.
 
 ```sh
 gh api graphql -f query='
@@ -73,16 +73,19 @@ Every top-level comment in an unresolved thread must get a reply, regardless of 
 - **Fixed in follow-up PR:** "Fixed in {commit_sha} via follow-up PR #{pr_number} — {brief description}."
 - **Invalid:** "This is not an issue because {explanation}." Be specific and cite the relevant code behavior.
 
-Use the GitHub REST API to post replies:
-
-```sh
-gh api repos/OWNER/REPO/pulls/NUMBER/comments/COMMENT_ID/replies -f body="..."
-```
+- Keep a short record of the outcome for each thread while replying so you can summarize everything in one top-level PR comment afterward.
 
 ## 5. Push
 
-Push all fix commits at once after all comments have been addressed:
+Push all fix commits at once after all comments have been addressed.
 
-```sh
-git push
-```
+## 6. Post a top-level PR summary comment
+
+After all unresolved threads have replies and any new commits are pushed, post a regular comment on the PR itself summarizing the overall outcome:
+
+- List the fixes that were made, with commit SHAs when relevant.
+- Mention comments that were already resolved in code before you started.
+- Mention comments that were invalid and summarize why they did not require changes.
+- Mention any follow-up PRs if work had to move out of the current PR.
+
+Keep this comment concise and scannable. Prefer a short heading plus bullets for `fixed`, `already resolved`, `invalid`, and `follow-up` when those categories apply.
