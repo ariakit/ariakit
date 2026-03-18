@@ -30,6 +30,12 @@ description: Workflow instructions for this repository. Always use when planning
 - `@types/*` packages are normally `devDependencies`. The exception is when a published package re-exports types from a `@types/*` package in its public API — in that case it must be a prod dependency so consumers get the types.
 - When removing an import, check if the dependency is still used elsewhere in the workspace. Remove it from `package.json` if no longer needed.
 
+## Visual Tests
+
+- Never run visual tests locally (e.g., `pnpm -F site run test-visual` or any command that sets `VISUAL_TEST=true`). Visual screenshots are OS-dependent and will produce different results on different machines. They must only run on CI.
+- The `visual()` helper in `site/src/test-utils/visual.ts` enforces this by requiring both `VISUAL_TEST=true` and `CI=true` to take screenshots.
+- Tests tagged with `@visual` can still run locally without the `VISUAL_TEST` flag — they simply skip the screenshot step, which is valid for testing non-visual behavior.
+
 ## Verification
 
 - If local commands fail because workspace dependencies or CLIs are missing,

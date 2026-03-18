@@ -344,7 +344,7 @@ export async function visual(
     "When running visual tests, the test title should contain @visual",
   ).toContain("@visual");
 
-  if (!process.env.VISUAL_TEST) {
+  if (!process.env.VISUAL_TEST || !process.env.CI) {
     return;
   }
 
