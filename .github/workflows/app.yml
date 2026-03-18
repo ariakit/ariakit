@@ -152,16 +152,18 @@ jobs:
             ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
           fi
 
-      - name: Reset snapshots
+      - name: Update screenshots
+        id: update-screenshots
         if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
-        run: find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" -delete
+        run: |
+          touch "${{ runner.temp }}/pre-update-marker"
+          ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual -u
 
-      - name: Update snapshots
-        id: update-snapshots
-        if: failure() && steps.test-visual.outcome == 'failure' && env.USE_VIZZLY != 'true'
-        run: ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual -u
+      - name: Remove stale screenshots
+        if: always() && steps.update-screenshots.outcome != 'skipped' && env.USE_VIZZLY != 'true'
+        run: find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
 
-      - name: Pack snapshots
+      - name: Pack screenshots
         if: always() && env.USE_VIZZLY != 'true'
         run: |
           mkdir -p "${{ runner.temp }}/artifacts"
@@ -173,15 +175,15 @@ jobs:
           project = "${{ matrix.project }}"
           root = Path("site/src")
           archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
-          snapshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
-          if not snapshots:
+          screenshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
+          if not screenshots:
               sys.exit(0)
           with tarfile.open(archive_path, "w:gz") as tar:
-              for snapshot in snapshots:
-                  tar.add(snapshot, arcname=snapshot.as_posix())
+              for screenshot in screenshots:
+                  tar.add(screenshot, arcname=screenshot.as_posix())
           PY
 
-      - name: Upload snapshots
+      - name: Upload screenshots
         if: always() && env.USE_VIZZLY != 'true'
         uses: actions/upload-artifact@v7
         with:
@@ -191,7 +193,7 @@ jobs:
           retention-days: 1
 
       - name: Upload test results to GitHub
-        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure' || steps.update-snapshots.outcome == 'failure')
+        if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure' || steps.update-screenshots.outcome == 'failure')
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.project }}-test-results

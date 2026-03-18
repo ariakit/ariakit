@@ -47,7 +47,7 @@ interface ScreenshotOptions {
    */
   style?: CSSProperties;
   /**
-   * Additional identifier to disambiguate snapshots (e.g., path slug).
+   * Additional identifier to disambiguate screenshots (e.g., path slug).
    */
   id?: string;
   /**
