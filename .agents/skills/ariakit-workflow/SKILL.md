@@ -33,7 +33,7 @@ description: Workflow instructions for this repository. Always use when planning
 
 ## Visual Tests
 
-- Never take or update visual screenshots locally. Screenshots are OS-dependent and will differ across machines. The `visual()` helper in `site/src/test-utils/visual.ts` enforces this by requiring both `VISUAL_TEST=true` and `CI=true` to capture screenshots.
+- Never take or update visual screenshots locally unless it's for debugging purposes. Screenshots are OS-dependent and will differ across machines. The `visual()` helper in `site/src/test-utils/visual.ts` enforces this by requiring both `VISUAL_TEST=true` and `CI=true` to capture screenshots.
 - Do not run visual test scripts (`test-visual*`) or set `VISUAL_TEST=true` locally — those are meant for CI only.
 - Most tests tagged `@visual` can run locally without `VISUAL_TEST` — they just skip the screenshot step. However, some suites (e.g., `previews-browser.ts`) skip execution entirely without `VISUAL_TEST`, so not all `@visual` tests will run locally.
 
@@ -47,14 +47,17 @@ description: Workflow instructions for this repository. Always use when planning
 - Run `pnpm dev-site` from the repository root to manually test site-impacting changes, even when the changed files live outside the `site` workspace.
 - Run `pnpm -F site test` from the repository root when your changes affect behavior covered by the browser tests in the `site` workspace. Consider this for cross-workspace changes too, not only edits inside `site`.
 - Run `pnpm build` from the repository root when your changes could affect the published packages or their build output.
+- Run `pnpm build-site-lite` from the repository root when your changes might affect the final site build and aren't caught by `pnpm dev-site`. You can use `pnpm preview-site-lite` to run it on a local Cloudflare server.
+- Avoid `pnpm build-site` (the full version) unless you need to debug something that's only triggered by the full site build.
 
 ## Bug Reports
 
+- Start by reproducing the bug in a sandbox in the `site` workspace and add an automated test that fails for the reported behavior. Most bug reports include a StackBlitz URL with the user's reproduction. You should always open that URL and review the code for reference. At this point, you should commit your changes and create a draft PR so we can see the failed CI checks. Then start working on the workaround.
+- If you need to adjust the tests later because they weren't accurate, make sure they fail without any workaround or library fix applied. Push that so we can validate it in CI, then reapply the workaround or library fix and keep going.
 - All bug report investigations should produce a workaround before any library fix is proposed or implemented.
-- Start by reproducing the bug in a sandbox or example and add an automated test that fails for the reported behavior.
-- If the user asks for a checkpoint, commit the failing repro state on a dedicated branch before continuing.
 - Keep the library code unchanged while investigating the workaround. The workaround should be demonstrated first in userland code.
-- Ariakit workarounds should follow the repository pattern: prefer a small consumer-side change that users can apply in their own app, such as an explicit prop override, a local event handler, a store method call, or a more specific callback condition.
+- Workarounds should follow the repository pattern: prefer a small consumer-side change that users can apply in their own app, such as an explicit prop override, a local event handler, a store method call, or a more specific callback condition.
 - A workaround must preserve the user-facing features that motivated the bug report whenever possible. Do not remove components or disable behavior unless that tradeoff is explicitly unavoidable and clearly stated.
 - Validate the workaround in the same repro sandbox by updating the userland code until the previously failing test passes.
-- When applying a workaround in a sandbox or example, add a short `TODO` comment with the GitHub issue URL so it is clear that the code is temporary and can be removed after the fix lands.
+- Once the workaround is in place, push the changes, with the workaround applied to the sandbox, to the PR so we can see the CI checks pass, and update the PR description with a "Workaround" section. The section should explain the problem and the workaround itself. It should also include a code block with the workaround applied. It doesn't need to be the full code, just the necessary snippet so the user can understand it and apply it to their own code before we make a release. Make sure to include a short `TODO` comment in the code block with the GitHub issue URL so it's clear the code is temporary and can be removed once the fix lands.
+- After that, revert the workaround and start working on the proper library fix. Once it's fixed, update the PR description with the final explanation of the problem and the solution. The workaround section must stay. Push the changes and mark the PR ready for review.
