@@ -45,7 +45,7 @@
     "@types/color-string": "1.5.5",
     "color-string": "2.1.4",
     "csstype": "3.2.3",
-    "tailwindcss": "4.2.1"
+    "tailwindcss": "4.2.2"
   },
   "peerDependencies": {
     "tailwindcss": "^4.0.3"

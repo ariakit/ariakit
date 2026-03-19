@@ -16,17 +16,17 @@
   },
   "dependencies": {
     "@ariakit/react": "workspace:*",
-    "next": "16.1.7",
+    "next": "16.2.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@opennextjs/cloudflare": "1.17.1",
-    "@tailwindcss/postcss": "4.2.1",
+    "@tailwindcss/postcss": "4.2.2",
     "@types/node": "25.5.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
-    "tailwindcss": "4.2.1"
+    "tailwindcss": "4.2.2"
   }
 }
