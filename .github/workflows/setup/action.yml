@@ -1,5 +1,5 @@
-name: install-node-modules
-description: Install node modules
+name: setup
+description: Set up environment
 
 runs:
   using: "composite"
