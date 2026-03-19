@@ -433,8 +433,9 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         // See https://github.com/ariakit/ariakit/issues/5047
         const activeElement = element.ownerDocument.activeElement;
         if (
-          activeElement instanceof HTMLInputElement &&
-          activeElement.value &&
+          activeElement &&
+          activeElement.tagName === "INPUT" &&
+          (activeElement as HTMLInputElement).value &&
           activeElement.getAttribute("role") === "combobox"
         ) {
           const dialog = element.closest("[data-dialog]");

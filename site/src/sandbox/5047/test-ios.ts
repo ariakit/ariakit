@@ -6,7 +6,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     await q.combobox("Favorite fruit").tap();
-    await test.expect(q.combobox("Search...")).toBeFocused();
+    await test.expect(q.combobox("Search")).toBeFocused();
     // Type a query that filters out the selected item ("Apple"), then bring it
     // back by deleting a character. The selected item gets reappended to the
     // DOM, which should not steal focus from the combobox input. On iOS Safari,
@@ -16,6 +16,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Apple")).toBeHidden();
     await page.keyboard.press("Backspace");
     await test.expect(q.option("Apple")).toBeVisible();
-    await test.expect(q.combobox("Search...")).toBeFocused();
+    await test.expect(q.combobox("Search")).toBeFocused();
   });
 });
