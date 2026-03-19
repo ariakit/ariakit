@@ -15,8 +15,6 @@ const list = [
 
 export default function Example() {
   const [searchValue, setSearchValue] = useState("");
-  // TODO: Remove when https://github.com/ariakit/ariakit/issues/5047 is fixed
-  const [canAutoFocus, setCanAutoFocus] = useState(true);
 
   const matches = useMemo(() => {
     return matchSorter(list, searchValue, {
@@ -28,17 +26,9 @@ export default function Example() {
     <Ariakit.ComboboxProvider
       resetValueOnHide
       setValue={(value) => {
-        // TODO: Remove when https://github.com/ariakit/ariakit/issues/5047 is fixed
-        setCanAutoFocus(false);
         startTransition(() => {
           setSearchValue(value);
         });
-      }}
-      setOpen={(open) => {
-        if (!open) {
-          // TODO: Remove when https://github.com/ariakit/ariakit/issues/5047 is fixed
-          setCanAutoFocus(true);
-        }
       }}
     >
       <Ariakit.SelectProvider defaultValue="Apple">
@@ -51,8 +41,6 @@ export default function Example() {
               <Ariakit.SelectItem
                 key={value}
                 value={value}
-                // TODO: Remove when https://github.com/ariakit/ariakit/issues/5047 is fixed
-                autoFocus={canAutoFocus ? undefined : false}
                 render={<Ariakit.ComboboxItem />}
               />
             ))}
