@@ -92,14 +92,6 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
           if (state.activeId !== id && store?.item(state.activeId)) {
             return false;
           }
-          // When the combobox has a value, the user is actively filtering items.
-          // In that case, the selected item may get removed and re-added to the
-          // DOM, which would retrigger autoFocus and steal focus from the
-          // combobox input (especially on iOS Safari where element.focus()
-          // dismisses the keyboard). See https://github.com/ariakit/ariakit/issues/5047
-          if (store?.combobox?.getState().value) {
-            return false;
-          }
           if (Array.isArray(state.value)) {
             return state.value[state.value.length - 1] === value;
           }
