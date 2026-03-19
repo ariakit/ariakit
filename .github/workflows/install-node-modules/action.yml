@@ -6,13 +6,14 @@ runs:
   steps:
     - name: Install pnpm
       uses: pnpm/action-setup@v5
+      with:
+        cache: true
 
     - name: Set up Node
       uses: actions/setup-node@v6
       with:
         node-version-file: .nvmrc
-        cache: pnpm
 
     - name: Install dependencies
       shell: bash
-      run: pnpm install --frozen-lockfile
+      run: pnpm install
