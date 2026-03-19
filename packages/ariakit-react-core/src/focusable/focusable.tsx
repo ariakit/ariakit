@@ -425,16 +425,22 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       queueMicrotask(() => {
         if (hasFocus(element)) return;
         if (!isFocusable(element)) return;
-        // Don't steal focus from a combobox input within the same popup. This
-        // prevents select items from refocusing when they reappear after
-        // filtering, which dismisses the keyboard on iOS Safari.
+        // Don't steal focus from a combobox input within the same dialog
+        // when the user is actively filtering (input has a value). On iOS
+        // Safari, where virtualFocus is disabled, this prevents the virtual
+        // keyboard from dismissing when a selected item remounts after
+        // filtering in a select-combobox.
         // See https://github.com/ariakit/ariakit/issues/5047
-        const active = element.ownerDocument.activeElement;
-        if (active?.getAttribute("role") === "combobox") {
-          const popup = element.closest(
-            "[role=dialog],[role=alertdialog],[role=listbox]",
-          );
-          if (popup?.contains(active)) return;
+        const activeElement = element.ownerDocument.activeElement;
+        if (
+          activeElement instanceof HTMLInputElement &&
+          activeElement.value &&
+          activeElement.getAttribute("role") === "combobox"
+        ) {
+          const dialog = element.closest("[data-dialog]");
+          if (dialog?.contains(activeElement)) {
+            return;
+          }
         }
         element.focus();
       });
