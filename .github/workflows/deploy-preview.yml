@@ -67,8 +67,8 @@ jobs:
           SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
           echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Download Next.js app artifact
         id: download-nextjs-artifact

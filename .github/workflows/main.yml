@@ -9,27 +9,16 @@ permissions:
   contents: read
 
 jobs:
-  install:
-    name: Install node modules
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
-
   lint:
     name: Lint
-    needs: install
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Lint
         run: pnpm run lint
@@ -39,37 +28,34 @@ jobs:
 
   typescript:
     name: Type check
-    needs: install
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Type check
         run: pnpm run tsc
 
   build:
     name: Build packages
-    needs: install
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Build
         run: pnpm run build
 
   test:
     name: Test (${{ matrix.shard }})
-    needs: install
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -80,23 +66,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Test
         run: pnpm test --shard ${{ matrix.shard }}
 
   website:
     name: Build website
-    needs: install
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Build website
         run: pnpm run build-website-lite
@@ -132,8 +117,8 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
@@ -174,8 +159,8 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Install playwright
         uses: ./.github/workflows/install-playwright

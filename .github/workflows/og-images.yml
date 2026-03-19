@@ -23,8 +23,8 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright

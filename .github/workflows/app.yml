@@ -17,36 +17,15 @@ env:
   VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
-  install-linux:
-    name: Install node modules (Linux)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
-
-  # install-macos:
-  #   name: Install node modules (macOS)
-  #   runs-on: macos-latest
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v6
-
-  #     - name: Install node modules
-  #       uses: ./.github/workflows/install-node-modules
-
   build:
     name: Build app
-    needs: install-linux
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Build app
         run: pnpm -F site run build-lite
@@ -61,14 +40,13 @@ jobs:
 
   build-nextjs:
     name: Build Next.js app
-    needs: install-linux
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Build Next.js app
         run: pnpm -F nextjs run build-worker
@@ -121,8 +99,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
@@ -210,9 +188,9 @@ jobs:
         if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: actions/checkout@v6
 
-      - name: Install node modules
+      - name: Set up environment
         if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
-        uses: ./.github/workflows/install-node-modules
+        uses: ./.github/workflows/setup
 
       - name: Finalize visual tests
         if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
