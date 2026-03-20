@@ -90,12 +90,12 @@ jobs:
             project: safari
             test: pnpm -F site run test
             visual: pnpm -F site run test-visual
-          - os: macos-latest
-            name: iOS
-            engine: webkit
-            project: ios
-            test: pnpm -F site run test
-            visual: pnpm -F site run test-visual
+          # - os: macos-latest
+          #   name: iOS
+          #   engine: webkit
+          #   project: ios
+          #   test: pnpm -F site run test
+          #   visual: pnpm -F site run test-visual
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

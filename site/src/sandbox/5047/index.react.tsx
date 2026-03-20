@@ -2,16 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import { startTransition, useMemo, useState } from "react";
 
-const list = [
-  "Apple",
-  "Banana",
-  "Cherry",
-  "Grape",
-  "Lemon",
-  "Orange",
-  "Pasta",
-  "Pizza",
-];
+const list = ["Apple", "Banana", "Cherry", "Grape", "Lemon", "Orange"];
 
 export default function Example() {
   const [searchValue, setSearchValue] = useState("");
@@ -31,15 +22,11 @@ export default function Example() {
         });
       }}
     >
-      <Ariakit.SelectProvider defaultValue="Apple">
+      <Ariakit.SelectProvider virtualFocus={false} defaultValue="Apple">
         <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
         <Ariakit.Select />
         <Ariakit.SelectPopover gutter={4} sameWidth>
-          <Ariakit.Combobox
-            autoSelect
-            aria-label="Search"
-            placeholder="Search..."
-          />
+          <Ariakit.Combobox autoSelect placeholder="Search..." />
           <Ariakit.ComboboxList>
             {matches.map((value) => (
               <Ariakit.SelectItem
