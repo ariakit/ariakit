@@ -432,9 +432,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         // filtering in a select-combobox.
         // See https://github.com/ariakit/ariakit/issues/5047
         const activeElement = element.ownerDocument.activeElement;
-        if (activeElement && isTextField(activeElement)) {
-          return;
-        }
+        if (activeElement && isTextField(activeElement)) return;
         element.focus();
       });
     });
