@@ -14,7 +14,7 @@ import {
   useId,
   useWrapElement,
 } from "../utils/hooks.ts";
-import { useStoreStateObject } from "../utils/store.tsx";
+import { useStoreState, useStoreStateObject } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -99,6 +99,8 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
         },
       });
 
+    const virtualFocus = useStoreState(store?.combobox, "virtualFocus");
+
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {
         // When the item is disabled, we don't register its value.
@@ -150,13 +152,21 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       [selected],
     );
 
+    const shouldAutoFocus = props.autoFocus ?? autoFocus;
+
     props = {
       id,
       role: getPopupItemRole(listElement),
       "aria-selected": selected,
       children: value,
       ...props,
-      autoFocus: props.autoFocus ?? autoFocus,
+      // When virtualFocus is false (e.g., iOS Safari), we suppress autoFocus to
+      // prevent a re-mounted selected item from stealing focus from the
+      // combobox input (which dismisses the iOS keyboard). We keep
+      // data-autofocus so the dialog's initial focus effect can still find and
+      // focus this element. See https://github.com/ariakit/ariakit/issues/5047
+      autoFocus: virtualFocus === false ? false : shouldAutoFocus,
+      "data-autofocus": shouldAutoFocus || undefined,
       onClick,
     };
 
