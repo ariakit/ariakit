@@ -26,7 +26,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("popover scroll position is preserved on scrollbar drag", async ({
-    page,
     q,
   }) => {
     const popover = q.listbox();
