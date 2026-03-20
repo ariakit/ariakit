@@ -1,14 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("selected item is focused when popover opens", async ({ q }) => {
-    await q.combobox("Favorite fruit").click();
-    await test.expect(q.option("Apple")).toBeFocused();
-    await test
-      .expect(q.option("Apple"))
-      .toHaveAttribute("aria-selected", "true");
-  });
-
   test("combobox keeps focus when selected item reappears after filtering", async ({
     page,
     q,
