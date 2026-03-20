@@ -53,6 +53,10 @@ export default function Example() {
             autoSelect="always"
             placeholder="Search for fruits..."
             style={{ width: 100 }}
+            // TODO: Remove this when https://github.com/ariakit/ariakit/issues/4825 is fixed
+            onFocusCapture={(event) => {
+              event.target.scrollLeft = event.target.clientWidth;
+            }}
           />
           <Ariakit.ComboboxList>
             {matches.map((item) => (
