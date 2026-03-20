@@ -166,10 +166,10 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     );
 
     props = {
-      id,
       "aria-labelledby": labelId,
       hidden,
       ...props,
+      id,
       ref: useMergeRefs(setElement, props.ref),
       style,
       onKeyDown,

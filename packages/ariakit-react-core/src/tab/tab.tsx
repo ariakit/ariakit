@@ -114,11 +114,11 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   }
 
   props = {
-    id,
     role: "tab",
     "aria-selected": selected,
     "aria-controls": panelId || undefined,
     ...props,
+    id,
     onClick,
   };
 

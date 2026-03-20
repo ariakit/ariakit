@@ -119,11 +119,11 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
   );
 
   props = {
-    id,
     role: !touchDevice ? "option" : "listitem",
     children: value,
     "aria-describedby": removeId,
     ...props,
+    id,
     onKeyDown,
   };
 

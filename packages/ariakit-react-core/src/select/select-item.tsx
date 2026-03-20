@@ -155,11 +155,11 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
     const shouldAutoFocus = props.autoFocus ?? autoFocus;
 
     props = {
-      id,
       role: getPopupItemRole(listElement),
       "aria-selected": selected,
       children: value,
       ...props,
+      id,
       // When virtualFocus is false (e.g., iOS Safari), we suppress autoFocus to
       // prevent a re-mounted selected item from stealing focus from the
       // combobox input (which dismisses the iOS keyboard). We keep

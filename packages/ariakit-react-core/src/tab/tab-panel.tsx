@@ -175,10 +175,10 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     );
 
     props = {
-      id,
       role: "tabpanel",
       "aria-labelledby": tabId || undefined,
       ...props,
+      id,
       children: unmountOnHide && !mounted ? null : props.children,
       ref: useMergeRefs(ref, props.ref),
       onKeyDown,

@@ -70,7 +70,7 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
       [providerValue],
     );
 
-    props = { id, ...props };
+    props = { ...props, id };
 
     return removeUndefinedValues(props);
   },

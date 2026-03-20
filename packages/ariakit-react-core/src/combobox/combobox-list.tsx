@@ -121,9 +121,9 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
         : null;
 
     props = {
-      id,
       hidden,
       ...props,
+      id,
       ref: useMergeRefs(setContentElement, ref, props.ref),
       style,
     };
