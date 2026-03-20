@@ -299,6 +299,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const getAutoSelectIdProp = useEvent(getAutoSelectId);
     const autoSelectIdRef = useRef<string | null | undefined>(null);
     const userScrolledRef = useRef(false);
+    const isAutoScrollingRef = useRef(false);
 
     // Disable the autoSelect behavior when the user scrolls the combobox
     // content. This prevents the focus from moving to the first item on
@@ -316,6 +317,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         userScrolledRef.current = true;
       };
       const onScroll = () => {
+        // Mark any non-programmatic scroll as user-initiated so we don't
+        // reset the scroll position when new items load (e.g., infinite
+        // scroll, scrollbar drag). Programmatic scrolls from scrollIntoView
+        // set isAutoScrollingRef to avoid false positives.
+        if (!isAutoScrollingRef.current) {
+          userScrolledRef.current = true;
+        }
         if (!store) return;
         if (!canAutoSelectRef.current) return;
         // We won't disable the autoSelect behavior if the autoSelect item is
@@ -395,7 +403,14 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // item, such as when `autoSelect` is false.
         const element = store.item(activeId || store.first())?.element;
         if (element && "scrollIntoView" in element) {
+          isAutoScrollingRef.current = true;
           element.scrollIntoView({ block: "nearest", inline: "nearest" });
+          // Clear after the browser dispatches the scroll event. Scroll
+          // events fire during the "scroll steps" of the rendering update,
+          // which run before requestAnimationFrame callbacks.
+          requestAnimationFrame(() => {
+            isAutoScrollingRef.current = false;
+          });
         }
       }
       return;
