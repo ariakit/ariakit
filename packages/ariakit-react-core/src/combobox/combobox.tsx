@@ -344,9 +344,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       };
     }, [open, contentElement, store]);
 
-    // Set the changed flag to true whenever the combobox value changes and is
-    // not empty. We're doing this here in addition to in the onChange handler
-    // because the value may change programmatically.
+    // Reset the user-scrolled flag and set the changed flag to true whenever
+    // the combobox value changes and is not empty. We're doing this here in
+    // addition to in the onChange handler because the value may change
+    // programmatically.
     useSafeLayoutEffect(() => {
       userScrolledRef.current = false;
       if (!storeValue) return;

@@ -25,7 +25,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(scrollTop).toBeGreaterThan(50);
   });
 
-  test("popover scroll position is preserved on scrollbar drag", async ({
+  test("popover scroll position is preserved on non-wheel scroll", async ({
     q,
   }) => {
     const popover = q.listbox();
