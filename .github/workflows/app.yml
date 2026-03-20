@@ -94,7 +94,8 @@ jobs:
           #   name: iOS
           #   engine: webkit
           #   project: ios
-          #   run: pnpm -F site run test-visual
+          #   test: pnpm -F site run test
+          #   visual: pnpm -F site run test-visual
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

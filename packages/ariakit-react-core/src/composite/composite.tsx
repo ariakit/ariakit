@@ -106,6 +106,24 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
   );
 }
 
+// When virtual focus briefly moves DOM focus from a text input to an
+// item and back, browsers reset the input's internal scroll position
+// (e.g., scrollLeft). This helper preserves and restores scroll across
+// such focus transitions. Only applies to text field base elements to
+// avoid undoing intentional scrollIntoView on scrollable containers.
+function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
+  const { virtualFocus, baseElement } = store.getState();
+  if (!virtualFocus || !baseElement || !isTextField(baseElement)) {
+    callback();
+    return;
+  }
+  const savedScrollLeft = baseElement.scrollLeft;
+  const savedScrollTop = baseElement.scrollTop;
+  callback();
+  baseElement.scrollLeft = savedScrollLeft;
+  baseElement.scrollTop = savedScrollTop;
+}
+
 function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
@@ -117,8 +135,10 @@ function useScheduleFocus(store: CompositeStore) {
     if (!scheduled) return;
     if (!activeElement) return;
     setScheduled(false);
-    activeElement.focus({ preventScroll: true });
-  }, [activeItem, scheduled]);
+    withBaseScrollPreserved(store, () => {
+      activeElement.focus({ preventScroll: true });
+    });
+  }, [store, activeItem, scheduled]);
   return schedule;
 }
 
@@ -170,7 +190,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       const { activeId } = store.getState();
       const itemElement = getEnabledItem(store, activeId)?.element;
       if (!itemElement) return;
-      focusIntoView(itemElement);
+      withBaseScrollPreserved(store, () => focusIntoView(itemElement));
     }, [store, moves, composite, focusOnMove]);
 
     // If composite.move(null) has been called, the composite container (this
