@@ -32,9 +32,9 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
     }, [setLabelId, id]);
 
     props = {
-      id,
       "aria-hidden": true,
       ...props,
+      id,
     };
 
     return removeUndefinedValues(props);

@@ -34,8 +34,8 @@ export const useDialogHeading = createHook<TagName, DialogHeadingOptions>(
     }, [setHeadingId, id]);
 
     props = {
-      id,
       ...props,
+      id,
     };
 
     props = useHeading(props);

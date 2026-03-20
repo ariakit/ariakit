@@ -543,13 +543,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   );
 
   props = {
-    id,
     "data-dialog": "",
     role: "dialog",
     tabIndex: focusable ? -1 : undefined,
     "aria-labelledby": headingId,
     "aria-describedby": descriptionId,
     ...props,
+    id,
     ref: useMergeRefs(ref, props.ref),
   };
 

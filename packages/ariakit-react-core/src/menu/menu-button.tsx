@@ -203,10 +203,10 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     const contentElement = useStoreState(store, "contentElement");
 
     props = {
-      id,
       role,
       "aria-haspopup": getPopupRole(contentElement, "menu"),
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
       onFocus,
       onKeyDown,

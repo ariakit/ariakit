@@ -153,11 +153,11 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   });
 
   props = {
-    id,
     role: !nativeRadio ? "radio" : undefined,
     type: nativeRadio ? "radio" : undefined,
     "aria-checked": isChecked,
     ...props,
+    id,
     ref: useMergeRefs(ref, props.ref),
     onChange,
     onClick,

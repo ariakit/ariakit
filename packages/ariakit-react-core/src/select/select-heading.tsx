@@ -31,8 +31,8 @@ export const useSelectHeading = createHook<TagName, SelectHeadingOptions>(
     }, [setHeadingId, id]);
 
     props = {
-      id,
       ...props,
+      id,
     };
 
     props = usePopoverHeading(props);

@@ -156,10 +156,10 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
-      id,
       "aria-labelledby": ariaLabelledBy,
       hidden,
       ...props,
+      id,
       ref: useMergeRefs(id ? store.setContentElement : null, props.ref),
       style,
       onKeyDown,

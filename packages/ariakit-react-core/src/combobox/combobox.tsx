@@ -586,7 +586,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     );
 
     props = {
-      id,
       role: "combobox",
       "aria-autocomplete": ariaAutoComplete,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
@@ -595,6 +594,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       "data-active-item": isActiveItem || undefined,
       value,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
       onChange,
       onCompositionEnd,
