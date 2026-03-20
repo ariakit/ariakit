@@ -46,7 +46,9 @@ for (const label of TAB) {
 
     // Switch back to Branches tab
     await page.keyboard.press("ArrowLeft");
-    await expect(q.option().first()).not.toBeInViewport();
-    await expect(q.option().last()).toBeInViewport();
+    await expect(q.option().first()).toBeInViewport();
+    await expect(q.option().first()).not.toBeFocused();
+    await expect(q.option().last()).not.toBeFocused();
+    await expect(q.option().last()).not.toBeInViewport();
   });
 }

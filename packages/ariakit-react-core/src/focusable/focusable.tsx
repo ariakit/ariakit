@@ -1,4 +1,4 @@
-import { isButton } from "@ariakit/core/utils/dom";
+import { isButton, isTextField } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
   isFocusEventOutside,
@@ -432,16 +432,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         // filtering in a select-combobox.
         // See https://github.com/ariakit/ariakit/issues/5047
         const activeElement = element.ownerDocument.activeElement;
-        if (
-          activeElement &&
-          activeElement.tagName === "INPUT" &&
-          (activeElement as HTMLInputElement).value &&
-          activeElement.getAttribute("role") === "combobox"
-        ) {
-          const dialog = element.closest("[data-dialog]");
-          if (dialog?.contains(activeElement)) {
-            return;
-          }
+        if (activeElement && isTextField(activeElement)) {
+          return;
         }
         element.focus();
       });
