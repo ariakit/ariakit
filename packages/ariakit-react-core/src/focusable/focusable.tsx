@@ -1,4 +1,4 @@
-import { isButton, isTextField } from "@ariakit/core/utils/dom";
+import { isButton } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
   isFocusEventOutside,
@@ -425,14 +425,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       queueMicrotask(() => {
         if (hasFocus(element)) return;
         if (!isFocusable(element)) return;
-        // Don't steal focus from a combobox input within the same dialog
-        // when the user is actively filtering (input has a value). On iOS
-        // Safari, where virtualFocus is disabled, this prevents the virtual
-        // keyboard from dismissing when a selected item remounts after
-        // filtering in a select-combobox.
-        // See https://github.com/ariakit/ariakit/issues/5047
-        const activeElement = element.ownerDocument.activeElement;
-        if (activeElement && isTextField(activeElement)) return;
         element.focus();
       });
     });
