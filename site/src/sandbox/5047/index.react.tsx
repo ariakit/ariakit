@@ -15,6 +15,7 @@ export default function Example() {
 
   return (
     <Ariakit.ComboboxProvider
+      virtualFocus={false}
       resetValueOnHide
       setValue={(value) => {
         startTransition(() => {
@@ -22,7 +23,7 @@ export default function Example() {
         });
       }}
     >
-      <Ariakit.SelectProvider virtualFocus={false} defaultValue="Apple">
+      <Ariakit.SelectProvider defaultValue="Apple">
         <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
         <Ariakit.Select />
         <Ariakit.SelectPopover gutter={4} sameWidth>
