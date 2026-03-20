@@ -106,6 +106,24 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
   );
 }
 
+// When virtual focus briefly moves DOM focus from a text input to an
+// item and back, browsers reset the input's internal scroll position
+// (e.g., scrollLeft). This helper preserves and restores scroll across
+// such focus transitions. Only applies to text field base elements to
+// avoid undoing intentional scrollIntoView on scrollable containers.
+function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
+  const { virtualFocus, baseElement } = store.getState();
+  if (!virtualFocus || !baseElement || !isTextField(baseElement)) {
+    callback();
+    return;
+  }
+  const savedScrollLeft = baseElement.scrollLeft;
+  const savedScrollTop = baseElement.scrollTop;
+  callback();
+  baseElement.scrollLeft = savedScrollLeft;
+  baseElement.scrollTop = savedScrollTop;
+}
+
 function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
@@ -117,18 +135,9 @@ function useScheduleFocus(store: CompositeStore) {
     if (!scheduled) return;
     if (!activeElement) return;
     setScheduled(false);
-    const { virtualFocus, baseElement } = store.getState();
-    // Preserve the base element's scroll position during the virtual focus
-    // dance. See the focusIntoView effect below for details.
-    const savedScrollLeft =
-      virtualFocus && baseElement ? baseElement.scrollLeft : 0;
-    const savedScrollTop =
-      virtualFocus && baseElement ? baseElement.scrollTop : 0;
-    activeElement.focus({ preventScroll: true });
-    if (virtualFocus && baseElement) {
-      baseElement.scrollLeft = savedScrollLeft;
-      baseElement.scrollTop = savedScrollTop;
-    }
+    withBaseScrollPreserved(store, () => {
+      activeElement.focus({ preventScroll: true });
+    });
   }, [store, activeItem, scheduled]);
   return schedule;
 }
@@ -178,22 +187,10 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (!moves) return;
       if (!composite) return;
       if (!focusOnMove) return;
-      const { activeId, virtualFocus, baseElement } = store.getState();
+      const { activeId } = store.getState();
       const itemElement = getEnabledItem(store, activeId)?.element;
       if (!itemElement) return;
-      // When using virtual focus, `focusIntoView` temporarily moves DOM focus
-      // to the item and back to the base element. This focus dance causes
-      // browsers to reset the base element's internal scroll position (e.g.,
-      // `scrollLeft` on a text input). We save and restore it here.
-      const savedScrollLeft =
-        virtualFocus && baseElement ? baseElement.scrollLeft : 0;
-      const savedScrollTop =
-        virtualFocus && baseElement ? baseElement.scrollTop : 0;
-      focusIntoView(itemElement);
-      if (virtualFocus && baseElement) {
-        baseElement.scrollLeft = savedScrollLeft;
-        baseElement.scrollTop = savedScrollTop;
-      }
+      withBaseScrollPreserved(store, () => focusIntoView(itemElement));
     }, [store, moves, composite, focusOnMove]);
 
     // If composite.move(null) has been called, the composite container (this
