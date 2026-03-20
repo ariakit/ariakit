@@ -298,6 +298,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const scrollingElementRef = useRef<Element | null>(null);
     const getAutoSelectIdProp = useEvent(getAutoSelectId);
     const autoSelectIdRef = useRef<string | null | undefined>(null);
+    const userScrolledRef = useRef(false);
 
     // Disable the autoSelect behavior when the user scrolls the combobox
     // content. This prevents the focus from moving to the first item on
@@ -312,6 +313,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // A wheel event is always initiated by the user, so we can disable the
         // autoSelect behavior without any additional checks.
         canAutoSelectRef.current = false;
+        userScrolledRef.current = true;
       };
       const onScroll = () => {
         if (!store) return;
@@ -338,6 +340,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // not empty. We're doing this here in addition to in the onChange handler
     // because the value may change programmatically.
     useSafeLayoutEffect(() => {
+      userScrolledRef.current = false;
       if (!storeValue) return;
       if (composingRef.current) return;
       canAutoSelectRef.current = true;
@@ -359,7 +362,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
       if (!open) return;
-      if (!canAutoSelect && !resetValueOnSelect) return;
+      if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
+        return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribute is an internal state added by the Popover
