@@ -8,36 +8,35 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const combobox = q.combobox();
     await test.expect(combobox).toBeFocused();
 
-    // Type text that overflows the narrow input (width: 100px) and produces
-    // results. The filter uses includes() with trim(), so leading spaces make
-    // the text overflow while still matching items.
-    await page.keyboard.type("                  ber", { delay: 20 });
-    await page.waitForTimeout(200);
+    // Type padding spaces followed by "b" to overflow and match multiple items.
+    // "b" matches Banana and Blueberry. Adding "a" will change results to just
+    // Banana, triggering the async autoSelect effect which causes the virtual
+    // focus dance that resets scrollLeft.
+    await page.keyboard.type("                  b", { delay: 20 });
+    await page.waitForTimeout(300);
 
-    // Verify items are rendered (autoSelect will fire)
+    // Verify items are rendered
+    await test.expect(q.option("Banana")).toBeVisible();
     await test.expect(q.option("Blueberry")).toBeVisible();
 
-    // Scroll position should be > 0 because text overflows the input
     const scrollLeft1 = await combobox.evaluate(
       (el) => (el as HTMLInputElement).scrollLeft,
     );
     test.expect(scrollLeft1).toBeGreaterThan(0);
 
-    // Simulate what the autoSelect effect does when results change: it calls
-    // store.move() which triggers focusIntoView(item) in composite.tsx. This
-    // briefly moves DOM focus to the item and back, resetting scrollLeft.
-    const scrollLeftAfterDance = await combobox.evaluate((el) => {
-      const input = el as HTMLInputElement;
-      const item = document.querySelector("[role='option']") as HTMLElement;
-      if (item) {
-        item.focus({ preventScroll: true });
-        item.scrollIntoView({ block: "nearest", inline: "nearest" });
-        input.focus({ preventScroll: true });
-      }
-      return input.scrollLeft;
-    });
+    // Type "a" to change results from [Banana, Blueberry] to [Banana] only.
+    // This triggers an async item change (via startTransition), which fires the
+    // autoSelect effect and the virtual focus dance.
+    await page.keyboard.type("a", { delay: 20 });
+    await page.waitForTimeout(300);
 
-    // scrollLeft should be preserved after the virtual focus dance
-    test.expect(scrollLeftAfterDance).toBeGreaterThan(0);
+    await test.expect(q.option("Blueberry")).toBeHidden();
+
+    const scrollLeft2 = await combobox.evaluate(
+      (el) => (el as HTMLInputElement).scrollLeft,
+    );
+
+    // scrollLeft should be preserved (not reset to 0)
+    test.expect(scrollLeft2).toBeGreaterThan(0);
   });
 });
