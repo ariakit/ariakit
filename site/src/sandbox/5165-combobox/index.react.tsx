@@ -41,6 +41,8 @@ export default function Example() {
       defaultOpen
       selectedValue={selectedValues}
       setSelectedValue={setSelectedValues}
+      // TODO: Remove when https://github.com/ariakit/ariakit/issues/5165 is fixed
+      resetValueOnSelect={false}
       setValue={(value) => {
         startTransition(() => {
           setSearchValue(value);
