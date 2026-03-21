@@ -127,7 +127,6 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     });
 
     const contentElement = useStoreState(store, (state) => {
-      if (!state) return null;
       if (!isMenuStoreState(state)) return null;
       return state.contentElement;
     });
