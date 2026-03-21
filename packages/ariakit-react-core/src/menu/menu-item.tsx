@@ -53,6 +53,10 @@ function menuHasFocus(
   return !!expandedMenu.querySelector("[role=menuitem][aria-expanded=true]");
 }
 
+function hasHideAll(store: MenubarStore | MenuStoreState): store is MenuStore {
+  return "hideAll" in store;
+}
+
 /**
  * Returns props to create a `MenuItem` component.
  * @see https://ariakit.org/components/menu
@@ -93,10 +97,9 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
 
     const onClickProp = props.onClick;
     const hideOnClickProp = useBooleanEvent(hideOnClick);
-    const hideMenu =
-      "hideAll" in resolvedStore
-        ? (resolvedStore.hideAll as MenuStore["hideAll"])
-        : undefined;
+    const hideMenu = hasHideAll(resolvedStore)
+      ? resolvedStore.hideAll
+      : undefined;
     const isWithinMenu = !!hideMenu;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
