@@ -1,3 +1,4 @@
+// TODO: Add data-attribute to indicate whether it's expanded?
 import { isButton, isTextField } from "@ariakit/core/utils/dom";
 import { isFocusEventOutside, isSelfTarget } from "@ariakit/core/utils/events";
 import {
@@ -20,8 +21,6 @@ import { selectTextField } from "./utils.ts";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-// TODO: Add data-attribute to indicate whether it's expanded?
 function getFirstTabbable(container: HTMLElement) {
   restoreFocusIn(container);
   const tabbable = getFirstTabbableIn(container);

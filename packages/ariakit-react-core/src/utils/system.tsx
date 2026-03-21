@@ -111,7 +111,10 @@ export type StoreContextComponent<T extends Store = Store> =
     [storeContextSymbol]?: StoreContextMetadata<T>;
   };
 
-export type StoreProp<T extends Store = Store> = T | StoreContextComponent<T>;
+export type StoreProp<T extends Store = Store> =
+  | T
+  | StoreContextComponent<T>
+  | null;
 
 function getStoreContextMetadata<T extends Store>(store?: StoreProp<T>) {
   if (typeof store !== "function") return;
@@ -154,22 +157,25 @@ function useStoreContext<T extends Store>(
   const invalidStore = typeof store === "function" && !providerMetadata;
   const explicitStore = providerMetadata
     ? getStoreFromMetadata<T>(providerMetadata, mode)
-    : typeof store !== "function"
-      ? (store as T | undefined)
-      : undefined;
+    : store === null
+      ? null
+      : typeof store !== "function"
+        ? (store as T | undefined)
+        : undefined;
   const implicitStore = getStoreFromMetadata<T>(metadata, mode);
   const implicitSource = getStoreSourceFromMetadata(metadata, mode);
-  const resolvedStore = explicitStore || implicitStore;
+  const resolvedStore =
+    explicitStore === null ? undefined : explicitStore || implicitStore;
   const shouldWarn =
-    !store &&
+    store === undefined &&
     !!resolvedStore &&
     !!implicitSource &&
     implicitSource !== metadata &&
     !!implicitSource.name;
 
   React.useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
     if (invalidStore) {
-      if (process.env.NODE_ENV === "production") return;
       console.warn(
         `Invalid \`store\` prop passed to ${componentName}. ` +
           "Expected a store object or an Ariakit provider component.",
@@ -177,7 +183,6 @@ function useStoreContext<T extends Store>(
       return;
     }
     if (!shouldWarn) return;
-    if (process.env.NODE_ENV === "production") return;
     const providerName = implicitSource.name;
     const key = `${componentName}:${providerName}`;
     if (warnedStoreContexts.has(key)) return;

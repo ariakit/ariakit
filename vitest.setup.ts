@@ -102,7 +102,7 @@ Example/test naming conventions:
 <example name>/
   index.<react|solid>.tsx        - example, the loader is optional and defaults to "react"
   test.ts                        - test, runs for all loaders
-  test.<react|solid>.ts          - test, runs only for the specified loader
+  test.<react|solid>.ts[x]       - test, runs only for the specified loader
 
 Note: test files can also be named `test-<browser target>.` instead of `test.` to run with Playwright. Available targets are:
 
@@ -132,14 +132,9 @@ function parseTest(filename?: string) {
 
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
-const MANUAL_LOAD_TESTS = new Set([
-  "site/src/sandbox/store-provider-deprecated/test.react.tsx",
-  "site/src/sandbox/store-provider-migrated/test.react.tsx",
-]);
 
 beforeEach(async ({ task, skip }) => {
   const filename = task.file?.name;
-  if (filename && MANUAL_LOAD_TESTS.has(filename)) return;
   const parseResult = parseTest(filename);
   if (!parseResult) return;
   const { dir, loader } = parseResult;

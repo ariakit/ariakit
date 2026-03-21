@@ -570,12 +570,10 @@ export function createDialogComponent<T extends DialogOptions>(
   useProviderContextStore?: DialogProviderContextStore<T>,
   componentName = Component.displayName || Component.name || "Dialog",
 ) {
-  const getProviderContextStore =
-    useProviderContextStore ||
-    (useDialogProviderContextStore as DialogProviderContextStore<T>);
-
   return forwardRef(function DialogComponent(props: T) {
-    const store = getProviderContextStore(props.store, componentName);
+    const store = useProviderContextStore
+      ? useProviderContextStore(props.store, componentName)
+      : useDialogProviderContextStore(props.store, componentName);
     const mounted = useStoreState(
       store,
       (state) => !props.unmountOnHide || state?.mounted || !!props.open,

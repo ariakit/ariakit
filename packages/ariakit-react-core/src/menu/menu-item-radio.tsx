@@ -101,7 +101,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
     };
 
     props = useRadio<TagName>({
-      unstable_standalone: true,
+      store: null,
       name,
       value,
       checked: isChecked,

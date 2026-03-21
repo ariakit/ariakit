@@ -74,32 +74,34 @@ function hasHideAll(store: MenubarStore | MenuStoreState): store is MenuStore {
  */
 export const useMenuItem = createHook<TagName, MenuItemOptions>(
   function useMenuItem({
-    store,
+    store: storeProp,
     hideOnClick = true,
     preventScrollOnKeyDown = true,
     focusOnHover,
     blurOnHoverEnd,
     ...props
   }) {
-    const menuStore = store
-      ? useMenuScopedContextStore(store, "MenuItem")
-      : useMenuScopedContext(true);
-    const menubarStore = store
-      ? useMenubarScopedContextStore(store, "MenuItem")
-      : useMenubarScopedContext();
-    const resolvedStore = menuStore || menubarStore;
+    const menuContextStore = useMenuScopedContext(true);
+    const menubarContextStore = useMenubarScopedContext();
+    const menuProviderStore = useMenuScopedContextStore(storeProp, "MenuItem");
+    const menubarProviderStore = useMenubarScopedContextStore(
+      storeProp,
+      "MenuItem",
+    );
+    const store =
+      storeProp !== undefined
+        ? menuProviderStore || menubarProviderStore
+        : menuContextStore || menubarContextStore;
 
     invariant(
-      resolvedStore,
+      store,
       process.env.NODE_ENV !== "production" &&
         "MenuItem must be wrapped in a MenuList, Menu or Menubar component",
     );
 
     const onClickProp = props.onClick;
     const hideOnClickProp = useBooleanEvent(hideOnClick);
-    const hideMenu = hasHideAll(resolvedStore)
-      ? resolvedStore.hideAll
-      : undefined;
+    const hideMenu = hasHideAll(store) ? store.hideAll : undefined;
     const isWithinMenu = !!hideMenu;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
@@ -115,11 +117,11 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       hideMenu();
     });
 
-    const contentElement = useStoreState(resolvedStore, (state) =>
-      "contentElement" in state
-        ? (state.contentElement as MenuStoreState["contentElement"])
-        : null,
-    );
+    const contentElement = useStoreState(store, (state) => {
+      if (!state) return null;
+      if (!("contentElement" in state)) return null;
+      return state.contentElement as Element | null | undefined;
+    });
 
     const role = getPopupItemRole(contentElement, "menuitem");
 
@@ -130,13 +132,13 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     };
 
     props = useCompositeItem<TagName>({
-      store: resolvedStore,
+      store,
       preventScrollOnKeyDown,
       ...props,
     });
 
     props = useCompositeHover({
-      store: resolvedStore,
+      store,
       ...props,
       focusOnHover(event) {
         const getFocusOnHover = () => {
@@ -144,9 +146,8 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
           if (focusOnHover != null) return focusOnHover;
           return true;
         };
-        if (!resolvedStore) return false;
         if (!getFocusOnHover()) return false;
-        const { baseElement, items } = resolvedStore.getState();
+        const { baseElement, items } = store.getState();
         // If the menu item is also a submenu button, we should move actual DOM
         // focus to it so that the submenu will not close when the user moves
         // the cursor back to the menu button.

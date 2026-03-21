@@ -59,20 +59,16 @@ function isNativeRadio(tagName?: string, type?: string) {
  * ```
  */
 export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
-  store,
+  store: storeProp,
   name,
   value,
   checked,
-  unstable_standalone = false,
   ...props
 }) {
-  if (unstable_standalone) {
-    if (typeof store === "function") {
-      store = undefined;
-    }
-  } else {
-    store = useRadioContextStore(store, "Radio");
-  }
+  const standalone = storeProp === null;
+  const store = standalone
+    ? undefined
+    : useRadioContextStore(storeProp, "Radio");
 
   const id = useId(props.id);
 
@@ -171,7 +167,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     onFocus,
   };
 
-  if (!unstable_standalone) {
+  if (!standalone) {
     props = useCompositeItem<TagName>({
       store,
       clickOnEnter: !nativeRadio,
@@ -242,12 +238,6 @@ export interface RadioOptions<
    * Callback function that is called when the radio button state changes.
    */
   onChange?: BivariantCallback<(event: ChangeEvent<HTMLType>) => void>;
-  /**
-   * Internal prop used by composite widgets that need radio semantics without
-   * reading from or registering with a radio store.
-   * @default false
-   */
-  unstable_standalone?: boolean;
 }
 
 export type RadioProps<T extends ElementType = TagName> = Props<
