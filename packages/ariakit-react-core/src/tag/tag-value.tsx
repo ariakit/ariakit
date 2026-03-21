@@ -49,10 +49,14 @@ export function TagValue({ store, children }: TagValueProps = {}) {
 export interface TagValueProps {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.org/reference/use-tag-store)
-   * hook. If not provided, the closest
-   * [`TagProvider`](https://ariakit.org/reference/tag-provider)
-   * component's context will be used.
+   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook.
+   * This prop can also receive the corresponding
+   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
+   * context will be used.
    */
   store?: StoreProp<TagStore>;
   /**

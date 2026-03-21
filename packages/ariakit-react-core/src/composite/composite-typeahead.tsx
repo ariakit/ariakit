@@ -224,10 +224,14 @@ export interface CompositeTypeaheadOptions<
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
-   * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
+   * hook.
+   * This prop can also receive the corresponding
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * component's context will be used.
    */
   store?: StoreProp<CompositeStore>;
   /**

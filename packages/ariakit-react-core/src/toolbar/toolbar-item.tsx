@@ -58,10 +58,15 @@ export interface ToolbarItemOptions<
 > extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.
+   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
    * If not provided, the closest
-   * [`Toolbar`](https://ariakit.org/reference/toolbar) component's context will
-   * be used.
+   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * component's context will be used.
    */
   store?: StoreProp<ToolbarStore>;
 }

@@ -195,7 +195,12 @@ export interface TooltipAnchorOptions<
 > extends HovercardAnchorOptions<T> {
   /**
    * Object returned by the
-   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
+   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
    * If not provided, the closest
    * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
    * component's context will be used.

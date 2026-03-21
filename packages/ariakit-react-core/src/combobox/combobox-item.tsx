@@ -256,10 +256,14 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
-   * components' context will be used.
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)

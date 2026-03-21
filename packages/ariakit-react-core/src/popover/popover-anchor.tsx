@@ -56,7 +56,12 @@ export interface PopoverAnchorOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
    * If not provided, the closest
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
    * component's context will be used.

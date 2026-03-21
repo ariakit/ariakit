@@ -202,11 +202,14 @@ export interface RadioOptions<
 > extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
-   * not provided, the closest
-   * [`RadioGroup`](https://ariakit.org/reference/radio-group) or
-   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) components'
-   * context will be used.
+   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook.
+   * This prop can also receive the corresponding
+   * [`RadioProvider`](https://ariakit.org/reference/radio-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`RadioProvider`](https://ariakit.org/reference/radio-provider)
+   * component's context will be used.
    */
   store?: StoreProp<RadioStore>;
   /**

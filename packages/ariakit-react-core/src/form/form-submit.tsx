@@ -75,10 +75,14 @@ export interface FormSubmitOptions<
 > extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
-   * context will be used.
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook.
+   * This prop can also receive the corresponding
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`FormProvider`](https://ariakit.org/reference/form-provider)
+   * component's context will be used.
    */
   store?: StoreProp<FormStore>;
   /**

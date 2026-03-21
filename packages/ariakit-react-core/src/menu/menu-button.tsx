@@ -289,10 +289,14 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
     CompositeTypeaheadOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
-   * context will be used.
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
+   * This prop can also receive the corresponding
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider)
+   * component's context will be used.
    */
   store?: StoreProp<MenuStore>;
   /**

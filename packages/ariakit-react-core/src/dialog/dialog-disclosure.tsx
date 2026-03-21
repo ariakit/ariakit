@@ -71,8 +71,12 @@ export interface DialogDisclosureOptions<
 > extends DisclosureOptions<T> {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
-   * not provided, the closest
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook.
+   * This prop can also receive the corresponding
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
    * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
    * component's context will be used.
    */

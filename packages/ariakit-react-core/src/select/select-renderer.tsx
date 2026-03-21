@@ -135,11 +135,17 @@ export interface SelectRendererOptions<T extends Item = any> extends Omit<
 > {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the closest [Select](https://ariakit.org/components/select)
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * This prop can also receive the corresponding
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
    * component's context will be used.
    *
-   * The store [`items`](https://ariakit.org/reference/use-select-store#items)
+   * The store
+   * [`items`](https://ariakit.org/reference/use-select-store#items)
    * state will be used to render the items if the
    * [`items`](https://ariakit.org/reference/select-items#items) prop is not
    * provided.

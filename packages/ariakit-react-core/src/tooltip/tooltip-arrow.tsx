@@ -69,11 +69,15 @@ export interface TooltipArrowOptions<
 > extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
-   * If not provided, the closest
-   * [`Tooltip`](https://ariakit.org/reference/tooltip) or
+   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store)
+   * hook.
+   * This prop can also receive the corresponding
    * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * component's context will be used.
    */
   store?: StoreProp<TooltipStore>;
 }

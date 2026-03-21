@@ -220,12 +220,16 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) or
    * [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store)
-   * hooks. If not provided, the closest
-   * [`Menu`](https://ariakit.org/reference/menu),
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider),
-   * [`Menubar`](https://ariakit.org/reference/menubar), or
+   * hooks.
+   * This prop can also receive the corresponding
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) or
    * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) or
+   * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
+   * component's context will be used.
    */
   store?: StoreProp<MenubarStore | MenuStore>;
   /**

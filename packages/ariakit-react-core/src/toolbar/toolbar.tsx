@@ -99,12 +99,16 @@ export interface ToolbarOptions<T extends ElementType = TagName>
     > {
   /**
    * Object returned by the
-   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.
+   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
    * If not provided, the closest
    * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
-   * component context will be used. If the component is not wrapped in a
-   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
-   * component, an internal store will be used.
+   * component's context will be used. If no store can be found, an internal
+   * store will be created.
    */
   store?: StoreProp<ToolbarStore>;
 }

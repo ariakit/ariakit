@@ -102,8 +102,12 @@ export interface TabListOptions<
 > extends CompositeOptions<T> {
   /**
    * Object returned by the
-   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
-   * provided, the closest
+   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook.
+   * This prop can also receive the corresponding
+   * [`TabProvider`](https://ariakit.org/reference/tab-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
    * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
    * context will be used.
    */

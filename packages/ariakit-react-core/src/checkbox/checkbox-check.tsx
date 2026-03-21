@@ -97,6 +97,13 @@ export interface CheckboxCheckOptions<
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
    * hook.
+   * This prop can also receive the corresponding
+   * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider)
+   * component's context will be used.
    */
   store?: StoreProp<CheckboxStore>;
   /**

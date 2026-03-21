@@ -65,10 +65,13 @@ export interface SelectDismissOptions<
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
-   * If not provided, the closest
-   * [`Select`](https://ariakit.org/reference/select) or
+   * This prop can also receive the corresponding
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
   store?: StoreProp<SelectStore>;
 }

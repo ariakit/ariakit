@@ -195,11 +195,15 @@ export interface PopoverArrowOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
-   * If not provided, the closest
-   * [`Popover`](https://ariakit.org/reference/popover) or
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store)
+   * hook.
+   * This prop can also receive the corresponding
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component's context will be used.
    */
   store?: StoreProp<PopoverStore>;
   /**

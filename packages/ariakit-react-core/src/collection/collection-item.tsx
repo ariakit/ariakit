@@ -86,10 +86,14 @@ export interface CollectionItemOptions<
   /**
    * Object returned by the
    * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
-   * hook. If not provided, the closest
-   * [`Collection`](https://ariakit.org/reference/collection) or
+   * hook.
+   * This prop can also receive the corresponding
    * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
+   * component's context will be used.
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)

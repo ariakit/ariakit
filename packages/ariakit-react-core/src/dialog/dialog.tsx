@@ -627,11 +627,15 @@ export interface DialogOptions<T extends ElementType = TagName>
   extends FocusableOptions<T>, PortalOptions<T>, DisclosureContentOptions<T> {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
-   * not provided, the closest
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook.
+   * This prop can also receive the corresponding
    * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
-   * component's context will be used. Otherwise, an internal store will be
-   * created.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * component's context will be used. If no store can be found, an internal
+   * store will be created.
    */
   store?: StoreProp<DialogStore>;
   /**

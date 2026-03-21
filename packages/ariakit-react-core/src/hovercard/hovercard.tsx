@@ -399,7 +399,12 @@ export interface HovercardOptions<
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
    * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
    * component's context will be used.
    */

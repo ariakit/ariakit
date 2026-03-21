@@ -56,10 +56,14 @@ export interface HovercardDescriptionOptions<
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
-   * hook. If not provided, the closest
-   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
+   * hook.
+   * This prop can also receive the corresponding
    * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component's context will be used.
    */
   store?: StoreProp<HovercardStore>;
 }

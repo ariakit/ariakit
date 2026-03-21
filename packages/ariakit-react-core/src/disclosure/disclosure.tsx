@@ -118,7 +118,12 @@ export interface DisclosureOptions<
   /**
    * Object returned by the
    * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
+   * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
    * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
    * component's context will be used.
    */
