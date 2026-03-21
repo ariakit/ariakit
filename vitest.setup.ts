@@ -119,7 +119,7 @@ Note: test files can also be named `test-<browser target>.` instead of `test.` t
 function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
-    /(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
+    /(?<dir>.*)\/test\.((?<loader>react|solid)\.)?tsx?$/,
   );
   if (!match?.groups) return false;
   const { dir, loader } = match.groups;
@@ -133,8 +133,8 @@ function parseTest(filename?: string) {
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 const MANUAL_LOAD_TESTS = new Set([
-  "site/src/sandbox/store-provider-deprecated/test.ts",
-  "site/src/sandbox/store-provider-migrated/test.ts",
+  "site/src/sandbox/store-provider-deprecated/test.react.tsx",
+  "site/src/sandbox/store-provider-migrated/test.react.tsx",
 ]);
 
 beforeEach(async ({ task, skip }) => {
