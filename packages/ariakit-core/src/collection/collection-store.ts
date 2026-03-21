@@ -30,11 +30,13 @@ function getCommonParent(items: CollectionStoreItem[]) {
 }
 
 function getPrivateStore<T extends CollectionStoreItem>(
-  store?: Store & {
-    __unstablePrivateStore?: Store<{
-      renderedItems: T[];
-    }>;
-  },
+  store?:
+    | (Store & {
+        __unstablePrivateStore?: Store<{
+          renderedItems: T[];
+        }>;
+      })
+    | null,
 ) {
   return store?.__unstablePrivateStore;
 }

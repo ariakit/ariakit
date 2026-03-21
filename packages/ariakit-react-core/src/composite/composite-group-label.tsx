@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { GroupLabelOptions } from "../group/group-label.tsx";
 import { useGroupLabel } from "../group/group-label.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { CompositeStore } from "./composite-store.ts";
@@ -59,12 +60,16 @@ export interface CompositeGroupLabelOptions<
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
-   * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
+   * hook.
+   * This prop can also receive the corresponding
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * component's context will be used.
    */
-  store?: CompositeStore;
+  store?: StoreProp<CompositeStore>;
 }
 
 export type CompositeGroupLabelProps<T extends ElementType = TagName> = Props<

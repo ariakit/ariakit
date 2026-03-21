@@ -16,7 +16,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
     return (
       <Ariakit.MenuItem
         ref={ref}
-        store={store || undefined}
+        store={store}
         {...props}
         className={clsx("menu-item", props.className)}
       />

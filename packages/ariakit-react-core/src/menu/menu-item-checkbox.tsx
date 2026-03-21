@@ -6,6 +6,7 @@ import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
 import { useInitialValue } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -13,7 +14,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuScopedContext } from "./menu-context.tsx";
+import { useMenuScopedContextStore } from "./menu-context.tsx";
 import type { MenuItemOptions } from "./menu-item.tsx";
 import { useMenuItem } from "./menu-item.tsx";
 import type { MenuStore, MenuStoreValues } from "./menu-store.ts";
@@ -77,8 +78,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
     hideOnClick = false,
     ...props
   }) {
-    const context = useMenuScopedContext();
-    store = store || context;
+    store = useMenuScopedContextStore(store, "MenuItemCheckbox");
 
     invariant(
       store,
@@ -189,12 +189,16 @@ export interface MenuItemCheckboxOptions<T extends ElementType = TagName>
   extends MenuItemOptions<T>, Omit<CheckboxOptions<T>, "store"> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
-   * context will be used.
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
+   * This prop can also receive the corresponding
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly.
+   * If not provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider)
+   * component's context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
   /**
    * The name of the field in the
    * [`values`](https://ariakit.org/reference/menu-provider#values) state.

@@ -1,6 +1,7 @@
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useContext } from "react";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
@@ -96,8 +97,15 @@ export interface CheckboxCheckOptions<
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
    * hook.
+   * This prop can also receive the corresponding
+   * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider)
+   * component's context will be used.
    */
-  store?: CheckboxStore;
+  store?: StoreProp<CheckboxStore>;
   /**
    * Determines if the checkmark should be rendered. This value is automatically
    * derived from the context when it exists. Manually setting this prop will

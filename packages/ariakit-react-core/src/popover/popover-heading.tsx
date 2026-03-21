@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.tsx";
 import { useDialogHeading } from "../dialog/dialog-heading.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { PopoverStore } from "./popover-store.ts";
@@ -53,13 +54,17 @@ export interface PopoverHeadingOptions<
 > extends DialogHeadingOptions<T> {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
-   * If not provided, the closest
-   * [`Popover`](https://ariakit.org/reference/popover) or
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store)
+   * hook.
+   * This prop can also receive the corresponding
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component's context will be used.
    */
-  store?: PopoverStore;
+  store?: StoreProp<PopoverStore>;
 }
 
 export type PopoverHeadingProps<T extends ElementType = TagName> = Props<

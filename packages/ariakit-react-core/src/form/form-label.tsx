@@ -7,6 +7,7 @@ import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useEvent, useId, useMergeRefs, useTagName } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -14,7 +15,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useFormContext } from "./form-context.tsx";
+import { useFormContextStore } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const TagName = "label" satisfies ElementType;
@@ -55,8 +56,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
     getItem: getItemProp,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
+    store = useFormContextStore(store, "FormLabel");
 
     invariant(
       store,
@@ -165,12 +165,16 @@ export interface FormLabelOptions<
 > extends CollectionItemOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
-   * context will be used.
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook.
+   * This prop can also receive the corresponding
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly.
+   * If not provided, the closest
+   * [`FormProvider`](https://ariakit.org/reference/form-provider)
+   * component's context will be used.
    */
-  store?: FormStore;
+  store?: StoreProp<FormStore>;
   /**
    * Name of the field labeled by this element. This can either be a string or a
    * reference to a field name from the

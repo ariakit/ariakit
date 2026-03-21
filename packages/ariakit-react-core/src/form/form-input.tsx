@@ -10,7 +10,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useFormContext } from "./form-context.tsx";
+import { useFormContextStore } from "./form-context.tsx";
 import type { FormControlOptions } from "./form-control.tsx";
 import { useFormControl } from "./form-control.tsx";
 
@@ -35,8 +35,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useFormInput = createHook<TagName, FormInputOptions>(
   function useFormInput({ store, name: nameProp, ...props }) {
-    const context = useFormContext();
-    store = store || context;
+    store = useFormContextStore(store, "FormInput");
 
     invariant(
       store,

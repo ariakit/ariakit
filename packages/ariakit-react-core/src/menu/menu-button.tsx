@@ -16,11 +16,12 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   MenuContextProvider,
-  useMenuProviderContext,
+  useMenuProviderContextStore,
 } from "./menu-context.tsx";
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
@@ -72,8 +73,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     showOnHover,
     ...props
   }) {
-    const context = useMenuProviderContext();
-    store = store || context;
+    store = useMenuProviderContextStore(store, "MenuButton");
 
     invariant(
       store,
@@ -289,12 +289,16 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
     CompositeTypeaheadOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
-   * context will be used.
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
+   * This prop can also receive the corresponding
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly.
+   * If not provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider)
+   * component's context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
   /**
    * Determines whether pressing a character key while focusing on the
    * [`MenuButton`](https://ariakit.org/reference/menu-button) should move focus

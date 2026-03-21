@@ -6,6 +6,7 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
 const ctx = createStoreContext<PopoverStore>(
+  "PopoverProvider",
   [DialogContextProvider],
   [DialogScopedContextProvider],
 );
@@ -24,11 +25,16 @@ const ctx = createStoreContext<PopoverStore>(
  * }
  */
 export const usePopoverContext = ctx.useContext;
+export const usePopoverContextStore = ctx.useContextStore;
 
 export const usePopoverScopedContext = ctx.useScopedContext;
+export const usePopoverScopedContextStore = ctx.useScopedContextStore;
 
 export const usePopoverProviderContext = ctx.useProviderContext;
+export const usePopoverProviderContextStore = ctx.useProviderContextStore;
 
 export const PopoverContextProvider = ctx.ContextProvider;
 
 export const PopoverScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerPopoverProvider = ctx.registerProvider;

@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { PopoverContextProvider } from "./popover-context.tsx";
+import {
+  PopoverContextProvider,
+  registerPopoverProvider,
+} from "./popover-context.tsx";
 import type { PopoverStoreProps } from "./popover-store.ts";
 import { usePopoverStore } from "./popover-store.ts";
 
@@ -23,6 +26,8 @@ export function PopoverProvider(props: PopoverProviderProps = {}) {
     </PopoverContextProvider>
   );
 }
+
+registerPopoverProvider(PopoverProvider);
 
 export interface PopoverProviderProps extends PopoverStoreProps {
   children?: ReactNode;

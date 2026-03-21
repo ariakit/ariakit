@@ -11,6 +11,7 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.ts";
 import { useStoreStateObject } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -22,7 +23,7 @@ import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
   ComboboxListRoleContext,
-  useComboboxScopedContext,
+  useComboboxScopedContextStore,
 } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -75,8 +76,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     getItem: getItemProp,
     ...props
   }) {
-    const context = useComboboxScopedContext();
-    store = store || context;
+    store = useComboboxScopedContextStore(store, "ComboboxItem");
 
     invariant(
       store,
@@ -256,15 +256,19 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
-   * components' context will be used.
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
   /**
    * The value of the item. This will be rendered as the children by default.
    * - If

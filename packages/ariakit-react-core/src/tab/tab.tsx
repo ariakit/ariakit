@@ -8,6 +8,7 @@ import {
 } from "../composite/composite-item.tsx";
 import { useEvent, useId } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -15,7 +16,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useTabScopedContext } from "./tab-context.tsx";
+import { useTabScopedContextStore } from "./tab-context.tsx";
 import type { TabStore } from "./tab-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -40,8 +41,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   getItem: getItemProp,
   ...props
 }) {
-  const context = useTabScopedContext();
-  store = store || context;
+  store = useTabScopedContextStore(store, "Tab");
 
   invariant(
     store,
@@ -193,11 +193,16 @@ export interface TabOptions<
 > extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
-   * provided, the closest [`TabList`](https://ariakit.org/reference/tab-list)
-   * component's context will be used.
+   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook.
+   * This prop can also receive the corresponding
+   * [`TabProvider`](https://ariakit.org/reference/tab-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly.
+   * If not provided, the closest
+   * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
+   * context will be used.
    */
-  store?: TabStore;
+  store?: StoreProp<TabStore>;
   /**
    * @default true
    */

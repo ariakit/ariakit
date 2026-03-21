@@ -8,10 +8,17 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
-import { useMenubarScopedContext } from "../menubar/menubar-context.tsx";
-import type { MenubarStore } from "../menubar/menubar-store.ts";
+import {
+  useMenubarScopedContext,
+  useMenubarScopedContextStore,
+} from "../menubar/menubar-context.tsx";
+import type {
+  MenubarStore,
+  MenubarStoreState,
+} from "../menubar/menubar-store.ts";
 import { useBooleanEvent, useEvent } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -19,7 +26,10 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuScopedContext } from "./menu-context.tsx";
+import {
+  useMenuScopedContext,
+  useMenuScopedContextStore,
+} from "./menu-context.tsx";
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -46,6 +56,16 @@ function menuHasFocus(
   return !!expandedMenu.querySelector("[role=menuitem][aria-expanded=true]");
 }
 
+function isMenuStore(store: MenuStore | MenubarStore): store is MenuStore {
+  return "hideAll" in store;
+}
+
+function isMenuStoreState(
+  state: MenuStoreState | MenubarStoreState,
+): state is MenuStoreState {
+  return "contentElement" in state;
+}
+
 /**
  * Returns props to create a `MenuItem` component.
  * @see https://ariakit.org/components/menu
@@ -63,16 +83,27 @@ function menuHasFocus(
  */
 export const useMenuItem = createHook<TagName, MenuItemOptions>(
   function useMenuItem({
-    store,
+    store: storeProp,
     hideOnClick = true,
     preventScrollOnKeyDown = true,
     focusOnHover,
     blurOnHoverEnd,
     ...props
   }) {
-    const menuContext = useMenuScopedContext(true);
-    const menubarContext = useMenubarScopedContext();
-    store = store || menuContext || (menubarContext as any);
+    const menuContextStore = useMenuScopedContext(true);
+    const menubarContextStore = useMenubarScopedContext();
+    const menuProviderStore = useMenuScopedContextStore(
+      storeProp as StoreProp<MenuStore> | undefined,
+      "MenuItem",
+    );
+    const menubarProviderStore = useMenubarScopedContextStore(
+      storeProp,
+      "MenuItem",
+    );
+    const store =
+      storeProp === undefined
+        ? menuContextStore || menubarContextStore
+        : menuProviderStore || menubarProviderStore;
 
     invariant(
       store,
@@ -82,7 +113,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
 
     const onClickProp = props.onClick;
     const hideOnClickProp = useBooleanEvent(hideOnClick);
-    const hideMenu = "hideAll" in store ? store.hideAll : undefined;
+    const hideMenu = isMenuStore(store) ? store.hideAll : undefined;
     const isWithinMenu = !!hideMenu;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
@@ -98,9 +129,10 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       hideMenu();
     });
 
-    const contentElement = useStoreState(store, (state) =>
-      "contentElement" in state ? state.contentElement : null,
-    );
+    const contentElement = useStoreState(store, (state) => {
+      if (!isMenuStoreState(state)) return null;
+      return state.contentElement;
+    });
 
     const role = getPopupItemRole(contentElement, "menuitem");
 
@@ -125,7 +157,6 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
           if (focusOnHover != null) return focusOnHover;
           return true;
         };
-        if (!store) return false;
         if (!getFocusOnHover()) return false;
         const { baseElement, items } = store.getState();
         // If the menu item is also a submenu button, we should move actual DOM
@@ -189,14 +220,18 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) or
    * [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store)
-   * hooks. If not provided, the closest
-   * [`Menu`](https://ariakit.org/reference/menu),
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider),
-   * [`Menubar`](https://ariakit.org/reference/menubar), or
+   * hooks.
+   * This prop can also receive the corresponding
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) or
    * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) or
+   * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
+   * component's context will be used.
    */
-  store?: MenubarStore | MenuStore;
+  store?: StoreProp<MenubarStore | MenuStore>;
   /**
    * Determines if the menu should hide when this item is clicked.
    *

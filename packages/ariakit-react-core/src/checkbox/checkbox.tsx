@@ -19,10 +19,11 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
-import { useCheckboxContext } from "./checkbox-context.tsx";
+import { useCheckboxContextStore } from "./checkbox-context.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";
 
 const TagName = "input" satisfies ElementType;
@@ -68,8 +69,7 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
     defaultChecked,
     ...props
   }) {
-    const context = useCheckboxContext();
-    store = store || context;
+    store = useCheckboxContextStore(store, "Checkbox");
 
     const [_checked, setChecked] = useState(defaultChecked ?? false);
 
@@ -213,15 +213,19 @@ export interface CheckboxOptions<
   /**
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
    * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider)
-   * component's context will be used. Otherwise, the component will fall back
-   * to an internal store.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider)
+   * component's context will be used.
    *
    * Live examples:
    * - [Checkbox as button](https://ariakit.org/examples/checkbox-as-button)
    */
-  store?: CheckboxStore;
+  store?: StoreProp<CheckboxStore>;
   /**
    * The native `name` attribute.
    *

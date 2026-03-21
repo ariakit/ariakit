@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { ToolbarContextProvider } from "./toolbar-context.tsx";
+import {
+  registerToolbarProvider,
+  ToolbarContextProvider,
+} from "./toolbar-context.tsx";
 import type { ToolbarStoreProps } from "./toolbar-store.ts";
 import { useToolbarStore } from "./toolbar-store.ts";
 
@@ -26,6 +29,8 @@ export function ToolbarProvider(props: ToolbarProviderProps = {}) {
     </ToolbarContextProvider>
   );
 }
+
+registerToolbarProvider(ToolbarProvider);
 
 export interface ToolbarProviderProps extends ToolbarStoreProps {
   children?: ReactNode;

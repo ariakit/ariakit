@@ -132,12 +132,14 @@ function getNameHandler(
 }
 
 function getStoreCallbacks(
-  store?: Store & {
-    __unstableCallbacks?: Store<{
-      validate: FormStoreCallback[];
-      submit: FormStoreCallback[];
-    }>;
-  },
+  store?:
+    | (Store & {
+        __unstableCallbacks?: Store<{
+          validate: FormStoreCallback[];
+          submit: FormStoreCallback[];
+        }>;
+      })
+    | null,
 ) {
   return store?.__unstableCallbacks;
 }

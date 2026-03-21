@@ -15,6 +15,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState, useStoreStateObject } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -24,7 +25,7 @@ import {
 import type { Props } from "../utils/types.ts";
 import {
   SelectItemCheckedContext,
-  useSelectScopedContext,
+  useSelectScopedContextStore,
 } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
@@ -65,8 +66,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
     focusOnHover = true,
     ...props
   }) {
-    const context = useSelectScopedContext();
-    store = store || context;
+    store = useSelectScopedContextStore(store, "SelectItem");
 
     invariant(
       store,
@@ -233,13 +233,16 @@ export interface SelectItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>, CompositeHoverOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
-   * context will be used.
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * This prop can also receive the corresponding
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
   /**
    * The value of the item. This will be rendered as the children by default.
    * - If

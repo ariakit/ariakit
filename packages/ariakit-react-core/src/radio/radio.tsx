@@ -15,6 +15,7 @@ import {
   useTagName,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -22,7 +23,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useRadioContext } from "./radio-context.tsx";
+import { useRadioContextStore } from "./radio-context.tsx";
 import type { RadioStore, RadioStoreState } from "./radio-store.ts";
 
 const TagName = "input" satisfies ElementType;
@@ -58,17 +59,14 @@ function isNativeRadio(tagName?: string, type?: string) {
  * ```
  */
 export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
-  store,
+  store: storeProp,
   name,
   value,
   checked,
   ...props
 }) {
-  const context = useRadioContext();
-  store = store || context;
-
+  const store = useRadioContextStore(storeProp, "Radio");
   const id = useId(props.id);
-
   const ref = useRef<HTMLType>(null);
   const isChecked = useStoreState(
     store,
@@ -204,13 +202,16 @@ export interface RadioOptions<
 > extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
-   * not provided, the closest
-   * [`RadioGroup`](https://ariakit.org/reference/radio-group) or
-   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) components'
-   * context will be used.
+   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook.
+   * This prop can also receive the corresponding
+   * [`RadioProvider`](https://ariakit.org/reference/radio-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`RadioProvider`](https://ariakit.org/reference/radio-provider)
+   * component's context will be used.
    */
-  store?: RadioStore;
+  store?: StoreProp<RadioStore>;
   /**
    * The value of the radio button.
    *

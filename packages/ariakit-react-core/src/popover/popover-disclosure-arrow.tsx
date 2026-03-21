@@ -2,9 +2,10 @@ import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useMemo } from "react";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { usePopoverContext } from "./popover-context.tsx";
+import { usePopoverContextStore } from "./popover-context.tsx";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.ts";
 
 const TagName = "span" satisfies ElementType;
@@ -35,8 +36,7 @@ export const usePopoverDisclosureArrow = createHook<
   TagName,
   PopoverDisclosureArrowOptions
 >(function usePopoverDisclosureArrow({ store, placement, ...props }) {
-  const context = usePopoverContext();
-  store = store || context;
+  store = usePopoverContextStore(store, "PopoverDisclosureArrow");
 
   invariant(
     store,
@@ -114,13 +114,17 @@ export interface PopoverDisclosureArrowOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
-   * If not provided, the closest
-   * [`PopoverDisclosure`](https://ariakit.org/reference/popover-disclosure) or
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store)
+   * hook.
+   * This prop can also receive the corresponding
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component's context will be used.
    */
-  store?: PopoverStore;
+  store?: StoreProp<PopoverStore>;
   /**
    * Arrow's placement direction. If not provided, it will be inferred from the
    * context.

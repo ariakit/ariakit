@@ -7,9 +7,10 @@ import { useButton } from "../button/button.tsx";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useEvent } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useFormContext } from "./form-context.tsx";
+import { useFormContextStore } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -68,8 +69,7 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
     autoFocusOnClick = true,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
+    store = useFormContextStore(store, "FormPush");
 
     invariant(
       store,
@@ -165,12 +165,16 @@ export interface FormPushOptions<T extends ElementType = TagName>
   extends ButtonOptions<T>, CollectionItemOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
-   * context will be used.
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook.
+   * This prop can also receive the corresponding
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly.
+   * If not provided, the closest
+   * [`FormProvider`](https://ariakit.org/reference/form-provider)
+   * component's context will be used.
    */
-  store?: FormStore;
+  store?: StoreProp<FormStore>;
   /**
    * Name of the array field. This can either be a string or a reference to a
    * field name from the

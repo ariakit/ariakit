@@ -3,9 +3,10 @@ import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useEvent } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useDialogScopedContext } from "./dialog-context.tsx";
+import { useDialogScopedContextStore } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -26,8 +27,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
   function useDialogDismiss({ store, ...props }) {
-    const context = useDialogScopedContext();
-    store = store || context;
+    store = useDialogScopedContextStore(store, "DialogDismiss");
 
     const onClickProp = props.onClick;
 
@@ -96,11 +96,16 @@ export interface DialogDismissOptions<
 > extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
-   * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook.
+   * This prop can also receive the corresponding
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
    * component's context will be used.
    */
-  store?: DialogStore;
+  store?: StoreProp<DialogStore>;
 }
 
 export type DialogDismissProps<T extends ElementType = TagName> = Props<

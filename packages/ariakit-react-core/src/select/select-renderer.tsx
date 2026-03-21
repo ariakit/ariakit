@@ -14,9 +14,10 @@ import {
   useCompositeRenderer,
 } from "../composite/composite-renderer.tsx";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useSelectContext } from "./select-context.tsx";
+import { useSelectContextStore } from "./select-context.tsx";
 import type { SelectStore, SelectStoreValue } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -75,8 +76,7 @@ function useSelectRenderer<T extends Item = any>({
   value: valueProp,
   ...props
 }: SelectRendererProps<T>) {
-  const context = useSelectContext();
-  store = store || context;
+  store = useSelectContextStore(store, "SelectRenderer");
 
   const items = useStoreState(store, (state) => {
     if (!state) return itemsProp;
@@ -135,16 +135,22 @@ export interface SelectRendererOptions<T extends Item = any> extends Omit<
 > {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the closest [Select](https://ariakit.org/components/select)
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * This prop can also receive the corresponding
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
    * component's context will be used.
    *
-   * The store [`items`](https://ariakit.org/reference/use-select-store#items)
+   * The store
+   * [`items`](https://ariakit.org/reference/use-select-store#items)
    * state will be used to render the items if the
    * [`items`](https://ariakit.org/reference/select-items#items) prop is not
    * provided.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
   /**
    * The current value of the select. This will ensure the item with the given
    * value is rendered even if it's not in the viewport, so it can be

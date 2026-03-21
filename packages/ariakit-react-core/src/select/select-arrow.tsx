@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.tsx";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useSelectContext } from "./select-context.tsx";
+import { useSelectContextStore } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const TagName = "span" satisfies ElementType;
@@ -28,8 +29,7 @@ type TagName = typeof TagName;
  */
 export const useSelectArrow = createHook<TagName, SelectArrowOptions>(
   function useSelectArrow({ store, ...props }) {
-    const context = useSelectContext();
-    store = store || context;
+    store = useSelectContextStore(store, "SelectArrow");
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
   },
@@ -66,12 +66,16 @@ export interface SelectArrowOptions<
 > extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the closest [`Select`](https://ariakit.org/reference/select)
-   * or [`SelectProvider`](https://ariakit.org/reference/select-provider)
-   * components' context will be used.
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * This prop can also receive the corresponding
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectArrowProps<T extends ElementType = TagName> = Props<

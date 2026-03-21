@@ -11,9 +11,10 @@ import {
   useIsMouseMoving,
   useMergeRefs,
 } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useHovercardProviderContext } from "./hovercard-context.tsx";
+import { useHovercardProviderContextStore } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "a" satisfies ElementType;
@@ -33,8 +34,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
   function useHovercardAnchor({ store, showOnHover = true, ...props }) {
-    const context = useHovercardProviderContext();
-    store = store || context;
+    store = useHovercardProviderContextStore(store, "HovercardAnchor");
 
     invariant(
       store,
@@ -166,11 +166,16 @@ export interface HovercardAnchorOptions<
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
    * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
    * component's context will be used.
    */
-  store?: HovercardStore;
+  store?: StoreProp<HovercardStore>;
   /**
    * Shows the content element based on the user's _hover intent_ over the
    * anchor element. This behavior purposely ignores mobile touch and

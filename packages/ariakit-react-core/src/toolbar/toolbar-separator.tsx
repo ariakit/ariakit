@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useToolbarContext } from "./toolbar-context.tsx";
+import { useToolbarContextStore } from "./toolbar-context.tsx";
 import type { ToolbarStore } from "./toolbar-store.ts";
 
 const TagName = "hr" satisfies ElementType;
@@ -25,8 +26,7 @@ type TagName = typeof TagName;
  */
 export const useToolbarSeparator = createHook<TagName, ToolbarSeparatorOptions>(
   function useToolbarSeparator({ store, ...props }) {
-    const context = useToolbarContext();
-    store = store || context;
+    store = useToolbarContextStore(store, "ToolbarSeparator");
     props = useCompositeSeparator({ store, ...props });
     return props;
   },
@@ -57,12 +57,17 @@ export interface ToolbarSeparatorOptions<
 > extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
-   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.
+   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
    * If not provided, the closest
-   * [`Toolbar`](https://ariakit.org/reference/toolbar) component's context will
-   * be used.
+   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * component's context will be used.
    */
-  store?: ToolbarStore;
+  store?: StoreProp<ToolbarStore>;
 }
 
 export type ToolbarSeparatorProps<T extends ElementType = TagName> = Props<

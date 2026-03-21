@@ -8,6 +8,7 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 
 const ctx = createStoreContext<DialogStore>(
+  "DialogProvider",
   [DisclosureContextProvider],
   [DisclosureScopedContextProvider],
 );
@@ -26,14 +27,19 @@ const ctx = createStoreContext<DialogStore>(
  * }
  */
 export const useDialogContext = ctx.useContext;
+export const useDialogContextStore = ctx.useContextStore;
 
 export const useDialogScopedContext = ctx.useScopedContext;
+export const useDialogScopedContextStore = ctx.useScopedContextStore;
 
 export const useDialogProviderContext = ctx.useProviderContext;
+export const useDialogProviderContextStore = ctx.useProviderContextStore;
 
 export const DialogContextProvider = ctx.ContextProvider;
 
 export const DialogScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerDialogProvider = ctx.registerProvider;
 
 export const DialogHeadingContext = createContext<
   SetState<string | undefined> | undefined

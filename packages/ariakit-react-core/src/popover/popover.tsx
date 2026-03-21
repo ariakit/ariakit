@@ -20,11 +20,12 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   PopoverScopedContextProvider,
-  usePopoverProviderContext,
+  usePopoverProviderContextStore,
 } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
@@ -238,8 +239,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     updatePosition,
     ...props
   }) {
-    const context = usePopoverProviderContext();
-    store = store || context;
+    store = usePopoverProviderContextStore(store, "Popover");
 
     invariant(
       store,
@@ -496,7 +496,7 @@ export const Popover = createDialogComponent(
     const htmlProps = usePopover(props);
     return createElement(TagName, htmlProps);
   }),
-  usePopoverProviderContext,
+  usePopoverProviderContextStore,
 );
 
 export interface PopoverOptions<
@@ -504,12 +504,17 @@ export interface PopoverOptions<
 > extends DialogOptions<T> {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
    * If not provided, the closest
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
    * component's context will be used.
    */
-  store?: PopoverStore;
+  store?: StoreProp<PopoverStore>;
   /**
    * Props that will be passed to the popover wrapper element. This element will
    * be used to position the popover.

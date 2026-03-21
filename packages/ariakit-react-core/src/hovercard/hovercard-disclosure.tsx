@@ -11,10 +11,11 @@ import { useEffect, useState } from "react";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.tsx";
-import { useHovercardProviderContext } from "./hovercard-context.tsx";
+import { useHovercardProviderContextStore } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -37,8 +38,7 @@ export const useHovercardDisclosure = createHook<
   TagName,
   HovercardDisclosureOptions
 >(function useHovercardDisclosure({ store, ...props }) {
-  const context = useHovercardProviderContext();
-  store = store || context;
+  store = useHovercardProviderContextStore(store, "HovercardDisclosure");
 
   invariant(
     store,
@@ -180,11 +180,16 @@ export interface HovercardDisclosureOptions<
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
    * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
    * component's context will be used.
    */
-  store?: HovercardStore;
+  store?: StoreProp<HovercardStore>;
 }
 
 export type HovercardDisclosureProps<T extends ElementType = TagName> = Props<

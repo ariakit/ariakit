@@ -3,9 +3,10 @@ import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useTagContext } from "./tag-context.tsx";
+import { useTagContextStore } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
 
 const TagName = "label" satisfies ElementType;
@@ -22,8 +23,7 @@ type TagName = typeof TagName;
  */
 export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
   function useTagListLabel({ store, ...props }) {
-    const context = useTagContext();
-    store = store || context;
+    store = useTagContextStore(store, "TagListLabel");
 
     invariant(
       store,
@@ -83,12 +83,16 @@ export interface TagListLabelOptions<
 > extends CompositeOptions<T> {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
-   * provided, the closest
+   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook.
+   * This prop can also receive the corresponding
+   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly.
+   * If not provided, the closest
    * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
    * context will be used.
    */
-  store?: TagStore;
+  store?: StoreProp<TagStore>;
 }
 
 export type TagListLabelProps<T extends ElementType = TagName> = Props<

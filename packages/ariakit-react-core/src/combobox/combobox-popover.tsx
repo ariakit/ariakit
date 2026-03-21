@@ -8,7 +8,7 @@ import { usePopover } from "../popover/popover.tsx";
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import { useComboboxProviderContextStore } from "./combobox-context.tsx";
 import type { ComboboxListOptions } from "./combobox-list.tsx";
 import { useComboboxList } from "./combobox-list.tsx";
 
@@ -55,8 +55,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     hideOnInteractOutside = true,
     ...props
   }) {
-    const context = useComboboxProviderContext();
-    store = store || context;
+    store = useComboboxProviderContextStore(store, "ComboboxPopover");
 
     invariant(
       store,
@@ -168,7 +167,7 @@ export const ComboboxPopover = createDialogComponent(
     const htmlProps = useComboboxPopover(props);
     return createElement(TagName, htmlProps);
   }),
-  useComboboxProviderContext,
+  useComboboxProviderContextStore,
 );
 
 export interface ComboboxPopoverOptions<T extends ElementType = TagName>

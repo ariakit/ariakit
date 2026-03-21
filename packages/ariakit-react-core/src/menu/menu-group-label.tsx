@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.tsx";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { MenuStore } from "./menu-store.ts";
@@ -58,12 +59,16 @@ export interface MenuGroupLabelOptions<
 > extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
-   * context will be used.
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
+   * This prop can also receive the corresponding
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider)
+   * component's context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
 }
 
 export type MenuGroupLabelProps<T extends ElementType = TagName> = Props<

@@ -2,6 +2,7 @@ import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { DialogDescriptionContext } from "./dialog-context.tsx";
@@ -68,11 +69,16 @@ export interface DialogDescriptionOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
-   * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
+   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook.
+   * This prop can also receive the corresponding
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
    * component's context will be used.
    */
-  store?: DialogStore;
+  store?: StoreProp<DialogStore>;
 }
 
 export type DialogDescriptionProps<T extends ElementType = TagName> = Props<

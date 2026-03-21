@@ -3,9 +3,10 @@ import type { ElementType } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useFormContext } from "./form-context.tsx";
+import { useFormContextStore } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -25,8 +26,7 @@ type TagName = typeof TagName;
  */
 export const useFormSubmit = createHook<TagName, FormSubmitOptions>(
   function useFormSubmit({ store, accessibleWhenDisabled = true, ...props }) {
-    const context = useFormContext();
-    store = store || context;
+    store = useFormContextStore(store, "FormSubmit");
 
     invariant(
       store,
@@ -75,12 +75,16 @@ export interface FormSubmitOptions<
 > extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
-   * context will be used.
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook.
+   * This prop can also receive the corresponding
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly.
+   * If not provided, the closest
+   * [`FormProvider`](https://ariakit.org/reference/form-provider)
+   * component's context will be used.
    */
-  store?: FormStore;
+  store?: StoreProp<FormStore>;
   /**
    * @default true
    */

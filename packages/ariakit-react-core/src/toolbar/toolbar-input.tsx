@@ -6,7 +6,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useToolbarContext } from "./toolbar-context.tsx";
+import { useToolbarContextStore } from "./toolbar-context.tsx";
 import type { ToolbarItemOptions } from "./toolbar-item.tsx";
 import { useToolbarItem } from "./toolbar-item.tsx";
 
@@ -28,8 +28,7 @@ type TagName = typeof TagName;
  */
 export const useToolbarInput = createHook<TagName, ToolbarInputOptions>(
   function useToolbarInput({ store, ...props }) {
-    const context = useToolbarContext();
-    store = store || context;
+    store = useToolbarContextStore(store, "ToolbarInput");
     props = useToolbarItem<TagName>({ store, ...props });
     return props;
   },

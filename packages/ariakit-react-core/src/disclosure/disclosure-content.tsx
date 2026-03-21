@@ -10,9 +10,10 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { useDisclosureProviderContext } from "./disclosure-context.tsx";
+import { useDisclosureProviderContextStore } from "./disclosure-context.tsx";
 import type { DisclosureStore } from "./disclosure-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -70,8 +71,7 @@ export const useDisclosureContent = createHook<
   TagName,
   DisclosureContentOptions
 >(function useDisclosureContent({ store, alwaysVisible, ...props }) {
-  const context = useDisclosureProviderContext();
-  store = store || context;
+  store = useDisclosureProviderContextStore(store, "DisclosureContent");
 
   invariant(
     store,
@@ -258,8 +258,10 @@ export const DisclosureContent = forwardRef(function DisclosureContent({
   unmountOnHide,
   ...props
 }: DisclosureContentProps) {
-  const context = useDisclosureProviderContext();
-  const store = props.store || context;
+  const store = useDisclosureProviderContextStore(
+    props.store,
+    "DisclosureContent",
+  );
   const mounted = useStoreState(
     store,
     (state) => !unmountOnHide || state?.mounted,
@@ -274,11 +276,16 @@ export interface DisclosureContentOptions<
   /**
    * Object returned by the
    * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
+   * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
    * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
    * component's context will be used.
    */
-  store?: DisclosureStore;
+  store?: StoreProp<DisclosureStore>;
   /**
    * Determines whether the content element should remain visible even when the
    * [`open`](https://ariakit.org/reference/disclosure-provider#open) state is

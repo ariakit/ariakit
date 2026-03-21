@@ -1,6 +1,9 @@
 import type { PickRequired } from "@ariakit/core/utils/types";
 import type { ReactElement, ReactNode } from "react";
-import { SelectContextProvider } from "./select-context.tsx";
+import {
+  SelectContextProvider,
+  registerSelectProvider,
+} from "./select-context.tsx";
 import type { SelectStoreProps, SelectStoreValue } from "./select-store.ts";
 import { useSelectStore } from "./select-store.ts";
 
@@ -37,6 +40,8 @@ export function SelectProvider(props: SelectProviderProps = {}) {
     </SelectContextProvider>
   );
 }
+
+registerSelectProvider(SelectProvider);
 
 export interface SelectProviderProps<
   T extends Value = Value,

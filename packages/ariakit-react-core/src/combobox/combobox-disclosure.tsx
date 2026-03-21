@@ -4,9 +4,10 @@ import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { useEvent, useSafeLayoutEffect } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import { useComboboxProviderContextStore } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -52,8 +53,7 @@ export const useComboboxDisclosure = createHook<
   TagName,
   ComboboxDisclosureOptions
 >(function useComboboxDisclosure({ store, ...props }) {
-  const context = useComboboxProviderContext();
-  store = store || context;
+  store = useComboboxProviderContextStore(store, "ComboboxDisclosure");
 
   invariant(
     store,
@@ -144,11 +144,16 @@ export interface ComboboxDisclosureOptions<
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
    * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
    * component's context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
 }
 
 export type ComboboxDisclosureProps<T extends ElementType = TagName> = Props<

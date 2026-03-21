@@ -15,9 +15,10 @@ import {
 import type { CollectionStoreItem } from "../collection/collection-store.ts";
 import { useId } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeContextStore } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -101,7 +102,7 @@ function findById<T extends Item>(
 }
 
 export function useCompositeRenderer<T extends Item = any>({
-  store,
+  store: storeProp,
   orientation: orientationProp,
   persistentIndices: persistentIndicesProp,
   children: renderItem,
@@ -109,8 +110,9 @@ export function useCompositeRenderer<T extends Item = any>({
   "aria-posinset": ariaPosInSet = 1,
   ...props
 }: CompositeRendererProps<T>) {
-  const context = useCompositeContext();
-  store = store || (context as typeof store);
+  const store = useCompositeContextStore(storeProp, "CompositeRenderer") as
+    | CompositeStore<T extends CollectionStoreItem ? T : CompositeStoreItem>
+    | undefined;
 
   const orientation = useStoreState(store, (state) =>
     (orientationProp ?? state?.orientation === "both")
@@ -211,18 +213,24 @@ export interface CompositeRendererOptions<T extends Item = any> extends Omit<
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
-   * hook. If not provided, the closest
-   * [Composite](https://ariakit.org/components/composite) component's context
-   * will be used.
+   * hook.
+   * This prop can also receive the corresponding
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * component's context will be used.
    *
    * The store
    * [`items`](https://ariakit.org/reference/use-composite-store#items) state
    * will be used to render the items if the
-   * [`items`](https://ariakit.org/reference/composite-items#items) prop is not
+   * [`items`](https://ariakit.org/reference/composite-items#items) prop is
+   * not
    * provided.
    */
-  store?: CompositeStore<
-    T extends CollectionStoreItem ? T : CompositeStoreItem
+  store?: StoreProp<
+    CompositeStore<T extends CollectionStoreItem ? T : CompositeStoreItem>
   >;
   /**
    * The `children` should be a function that receives item props and returns a

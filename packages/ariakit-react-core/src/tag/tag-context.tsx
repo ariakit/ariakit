@@ -12,6 +12,7 @@ export const TagRemoveIdContext = createContext<((id?: string) => void) | null>(
 );
 
 const ctx = createStoreContext<TagStore>(
+  "TagProvider",
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
 );
@@ -30,11 +31,16 @@ const ctx = createStoreContext<TagStore>(
  * }
  */
 export const useTagContext = ctx.useContext;
+export const useTagContextStore = ctx.useContextStore;
 
 export const useTagScopedContext = ctx.useScopedContext;
+export const useTagScopedContextStore = ctx.useScopedContextStore;
 
 export const useTagProviderContext = ctx.useProviderContext;
+export const useTagProviderContextStore = ctx.useProviderContextStore;
 
 export const TagContextProvider = ctx.ContextProvider;
 
 export const TagScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerTagProvider = ctx.registerProvider;

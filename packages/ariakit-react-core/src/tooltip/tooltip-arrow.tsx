@@ -2,9 +2,10 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
 import { usePopoverArrow } from "../popover/popover-arrow.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useTooltipContext } from "./tooltip-context.tsx";
+import { useTooltipContextStore } from "./tooltip-context.tsx";
 import type { TooltipStore } from "./tooltip-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -28,8 +29,7 @@ export const useTooltipArrow = createHook<TagName, TooltipArrowOptions>(
   function useTooltipArrow({ store, size = 16, ...props }) {
     // We need to get the tooltip store here because Tooltip is not using the
     // Popover component, so PopoverArrow can't access the popover context.
-    const context = useTooltipContext();
-    store = store || context;
+    store = useTooltipContextStore(store, "TooltipArrow");
 
     invariant(
       store,
@@ -69,13 +69,17 @@ export interface TooltipArrowOptions<
 > extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
-   * If not provided, the closest
-   * [`Tooltip`](https://ariakit.org/reference/tooltip) or
+   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store)
+   * hook.
+   * This prop can also receive the corresponding
    * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * component's context will be used.
    */
-  store?: TooltipStore;
+  store?: StoreProp<TooltipStore>;
 }
 
 export type TooltipArrowProps<T extends ElementType = TagName> = Props<

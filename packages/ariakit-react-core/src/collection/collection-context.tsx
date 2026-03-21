@@ -1,7 +1,7 @@
 import { createStoreContext } from "../utils/system.tsx";
 import type { CollectionStore } from "./collection-store.ts";
 
-const ctx = createStoreContext<CollectionStore>();
+const ctx = createStoreContext<CollectionStore>("CollectionProvider");
 
 /**
  * Returns the collection store from the nearest collection container.
@@ -17,11 +17,16 @@ const ctx = createStoreContext<CollectionStore>();
  * }
  */
 export const useCollectionContext = ctx.useContext;
+export const useCollectionContextStore = ctx.useContextStore;
 
 export const useCollectionScopedContext = ctx.useScopedContext;
+export const useCollectionScopedContextStore = ctx.useScopedContextStore;
 
 export const useCollectionProviderContext = ctx.useProviderContext;
+export const useCollectionProviderContextStore = ctx.useProviderContextStore;
 
 export const CollectionContextProvider = ctx.ContextProvider;
 
 export const CollectionScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerCollectionProvider = ctx.registerProvider;

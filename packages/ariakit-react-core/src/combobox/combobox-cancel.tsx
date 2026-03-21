@@ -5,9 +5,10 @@ import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useEvent, useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import { useComboboxProviderContextStore } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -47,8 +48,7 @@ const children = (
  */
 export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
   function useComboboxCancel({ store, hideWhenEmpty, ...props }) {
-    const context = useComboboxProviderContext();
-    store = store || context;
+    store = useComboboxProviderContextStore(store, "ComboboxCancel");
 
     invariant(
       store,
@@ -126,11 +126,16 @@ export interface ComboboxCancelOptions<
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
    * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
    * component's context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
   /**
    * When enabled, the button won't be rendered when the combobox input value is
    * empty.

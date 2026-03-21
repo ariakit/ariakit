@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.tsx";
 import { usePopoverDismiss } from "../popover/popover-dismiss.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useSelectScopedContext } from "./select-context.tsx";
+import { useSelectScopedContextStore } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -20,8 +21,7 @@ type TagName = typeof TagName;
  */
 export const useSelectDismiss = createHook<TagName, SelectDismissOptions>(
   function useSelectDismiss({ store, ...props }) {
-    const context = useSelectScopedContext();
-    store = store || context;
+    store = useSelectScopedContextStore(store, "SelectDismiss");
     props = usePopoverDismiss({ store, ...props });
     return props;
   },
@@ -65,12 +65,15 @@ export interface SelectDismissOptions<
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
-   * If not provided, the closest
-   * [`Select`](https://ariakit.org/reference/select) or
+   * This prop can also receive the corresponding
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectDismissProps<T extends ElementType = TagName> = Props<

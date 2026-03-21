@@ -10,7 +10,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useFormContext } from "./form-context.tsx";
+import { useFormContextStore } from "./form-context.tsx";
 import type { FormControlOptions } from "./form-control.tsx";
 import { useFormControl } from "./form-control.tsx";
 
@@ -41,8 +41,7 @@ export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
     defaultChecked,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
+    store = useFormContextStore(store, "FormCheckbox");
 
     invariant(
       store,

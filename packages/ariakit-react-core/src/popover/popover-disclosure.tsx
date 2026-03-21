@@ -9,7 +9,7 @@ import type { PopoverAnchorOptions } from "./popover-anchor.tsx";
 import { usePopoverAnchor } from "./popover-anchor.tsx";
 import {
   PopoverScopedContextProvider,
-  usePopoverProviderContext,
+  usePopoverProviderContextStore,
 } from "./popover-context.tsx";
 
 const TagName = "button" satisfies ElementType;
@@ -31,8 +31,7 @@ export const usePopoverDisclosure = createHook<
   TagName,
   PopoverDisclosureOptions
 >(function usePopoverDisclosure({ store, ...props }) {
-  const context = usePopoverProviderContext();
-  store = store || context;
+  store = usePopoverProviderContextStore(store, "PopoverDisclosure");
 
   invariant(
     store,

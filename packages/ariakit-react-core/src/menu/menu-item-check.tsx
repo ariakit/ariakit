@@ -2,6 +2,7 @@ import type { ElementType } from "react";
 import { useContext } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.tsx";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { MenuItemCheckedContext } from "./menu-context.tsx";
@@ -69,8 +70,15 @@ export interface MenuItemCheckOptions<
   /**
    * Object returned by the
    * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
+   * This prop can also receive the corresponding
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider)
+   * component's context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
 }
 
 export type MenuItemCheckProps<T extends ElementType = TagName> = Props<

@@ -11,6 +11,7 @@ import {
   useId,
   useWrapElement,
 } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -21,7 +22,7 @@ import type { Props } from "../utils/types.ts";
 import {
   TagRemoveIdContext,
   TagValueContext,
-  useTagContext,
+  useTagContextStore,
 } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
 import { useTouchDevice } from "./utils.ts";
@@ -46,8 +47,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
   removeOnKeyPress = true,
   ...props
 }) {
-  const context = useTagContext();
-  store = store || context;
+  store = useTagContextStore(store, "Tag");
 
   invariant(
     store,
@@ -180,11 +180,16 @@ export interface TagOptions<
 > extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
-   * provided, the closest [`TagList`](https://ariakit.org/reference/tag-list)
-   * component's context will be used.
+   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook.
+   * This prop can also receive the corresponding
+   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly.
+   * If not provided, the closest
+   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
+   * context will be used.
    */
-  store?: TagStore;
+  store?: StoreProp<TagStore>;
   /**
    * The unique value of the tag. This is automatically rendered as the tag's
    * content if no children are provided.

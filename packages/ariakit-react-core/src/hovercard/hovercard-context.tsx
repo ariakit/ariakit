@@ -6,6 +6,7 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 
 const ctx = createStoreContext<HovercardStore>(
+  "HovercardProvider",
   [PopoverContextProvider],
   [PopoverScopedContextProvider],
 );
@@ -24,11 +25,16 @@ const ctx = createStoreContext<HovercardStore>(
  * }
  */
 export const useHovercardContext = ctx.useContext;
+export const useHovercardContextStore = ctx.useContextStore;
 
 export const useHovercardScopedContext = ctx.useScopedContext;
+export const useHovercardScopedContextStore = ctx.useScopedContextStore;
 
 export const useHovercardProviderContext = ctx.useProviderContext;
+export const useHovercardProviderContextStore = ctx.useProviderContextStore;
 
 export const HovercardContextProvider = ctx.ContextProvider;
 
 export const HovercardScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerHovercardProvider = ctx.registerProvider;

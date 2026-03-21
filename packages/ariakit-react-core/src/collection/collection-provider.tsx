@@ -1,6 +1,9 @@
 import type { PickRequired } from "@ariakit/core/utils/types";
 import type { ReactElement, ReactNode } from "react";
-import { CollectionContextProvider } from "./collection-context.tsx";
+import {
+  CollectionContextProvider,
+  registerCollectionProvider,
+} from "./collection-context.tsx";
 import type {
   CollectionStoreItem,
   CollectionStoreProps,
@@ -39,6 +42,8 @@ export function CollectionProvider(props: CollectionProviderProps = {}) {
     </CollectionContextProvider>
   );
 }
+
+registerCollectionProvider(CollectionProvider);
 
 export interface CollectionProviderProps<
   T extends CollectionStoreItem = CollectionStoreItem,

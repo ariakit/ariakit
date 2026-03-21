@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.tsx";
 import { useCompositeGroup } from "../composite/composite-group.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { SelectStore } from "./select-store.ts";
@@ -64,13 +65,16 @@ export interface SelectGroupOptions<
 > extends CompositeGroupOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
-   * context will be used.
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * This prop can also receive the corresponding
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectGroupProps<T extends ElementType = TagName> = Props<

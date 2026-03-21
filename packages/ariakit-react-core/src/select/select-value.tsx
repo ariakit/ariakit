@@ -1,7 +1,8 @@
 import type { PickRequired, ToPrimitive } from "@ariakit/core/utils/types";
 import type { ReactNode } from "react";
 import { useStoreState } from "../utils/store.tsx";
-import { useSelectContext } from "./select-context.tsx";
+import type { StoreProp } from "../utils/system.tsx";
+import { useSelectContextStore } from "./select-context.tsx";
 import type { SelectStore, SelectStoreValue } from "./select-store.ts";
 
 type Value = SelectStoreValue;
@@ -68,8 +69,7 @@ export function SelectValue({
   fallback,
   children,
 }: SelectValueProps = {}) {
-  const context = useSelectContext();
-  store = store || context;
+  store = useSelectContextStore(store, "SelectValue");
 
   const value = useStoreState(store, (state) => {
     if (!state?.value.length) return fallback;
@@ -86,13 +86,16 @@ export function SelectValue({
 export interface SelectValueProps<T extends Value = Value> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
-   * context will be used.
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * This prop can also receive the corresponding
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
-  store?: SelectStore<T>;
+  store?: StoreProp<SelectStore<T>>;
   /**
    * The value to use as a default if the store's
    * [`value`](https://ariakit.org/reference/use-select-store#value) is

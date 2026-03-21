@@ -1,6 +1,7 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import { useEvent, useId, useMergeRefs } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -8,7 +9,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { useSelectProviderContext } from "./select-context.tsx";
+import { useSelectProviderContextStore } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -31,8 +32,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
   function useSelectLabel({ store, ...props }) {
-    const context = useSelectProviderContext();
-    store = store || context;
+    store = useSelectProviderContextStore(store, "SelectLabel");
 
     invariant(
       store,
@@ -101,12 +101,16 @@ export interface SelectLabelOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the closest
+   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * This prop can also receive the corresponding
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
    * component's context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectLabelProps<T extends ElementType = TagName> = Props<

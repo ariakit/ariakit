@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
 import { usePopoverArrow } from "../popover/popover-arrow.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useHovercardContext } from "./hovercard-context.tsx";
+import { useHovercardContextStore } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -24,8 +25,7 @@ type TagName = typeof TagName;
  */
 export const useHovercardArrow = createHook<TagName, HovercardArrowOptions>(
   function useHovercardArrow({ store, ...props }) {
-    const context = useHovercardContext();
-    store = store || context;
+    store = useHovercardContextStore(store, "HovercardArrow");
     props = usePopoverArrow({ store, ...props });
     return props;
   },
@@ -60,12 +60,16 @@ export interface HovercardArrowOptions<
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
-   * hook. If not provided, the closest
-   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
+   * hook.
+   * This prop can also receive the corresponding
    * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * component's context will be used.
    */
-  store?: HovercardStore;
+  store?: StoreProp<HovercardStore>;
 }
 
 export type HovercardArrowProps<T extends ElementType = TagName> = Props<

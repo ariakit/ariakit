@@ -3,11 +3,12 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   ToolbarScopedContextProvider,
-  useToolbarProviderContext,
+  useToolbarProviderContextStore,
 } from "./toolbar-context.tsx";
 import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.ts";
 import { useToolbarStore } from "./toolbar-store.ts";
@@ -37,8 +38,7 @@ export const useToolbar = createHook<TagName, ToolbarOptions>(
     rtl,
     ...props
   }) {
-    const context = useToolbarProviderContext();
-    storeProp = storeProp || context;
+    storeProp = useToolbarProviderContextStore(storeProp, "Toolbar");
 
     const store = useToolbarStore({
       store: storeProp,
@@ -99,14 +99,18 @@ export interface ToolbarOptions<T extends ElementType = TagName>
     > {
   /**
    * Object returned by the
-   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.
+   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
    * If not provided, the closest
    * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
-   * component context will be used. If the component is not wrapped in a
-   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
-   * component, an internal store will be used.
+   * component's context will be used. If no store can be found, an internal
+   * store will be created.
    */
-  store?: ToolbarStore;
+  store?: StoreProp<ToolbarStore>;
 }
 
 export type ToolbarProps<T extends ElementType = TagName> = Props<

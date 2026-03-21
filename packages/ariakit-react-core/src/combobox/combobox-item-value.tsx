@@ -6,11 +6,12 @@ import {
 import type { ElementType, ReactElement } from "react";
 import { useContext, useMemo } from "react";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import {
   ComboboxItemValueContext,
-  useComboboxScopedContext,
+  useComboboxScopedContextStore,
 } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -122,8 +123,7 @@ export const useComboboxItemValue = createHook<
   TagName,
   ComboboxItemValueOptions
 >(function useComboboxItemValue({ store, value, userValue, ...props }) {
-  const context = useComboboxScopedContext();
-  store = store || context;
+  store = useComboboxScopedContextStore(store, "ComboboxItemValue");
 
   const itemContext = useContext(ComboboxItemValueContext);
   const itemValue = value ?? itemContext;
@@ -196,12 +196,16 @@ export interface ComboboxItemValueOptions<
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
-   * components' context will be used.
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
   /**
    * The current combobox item value. If not provided, the parent
    * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) component's

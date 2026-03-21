@@ -8,7 +8,7 @@ import { forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   ComboboxListRoleContext,
-  useComboboxScopedContext,
+  useComboboxScopedContextStore,
 } from "./combobox-context.tsx";
 import * as Base from "./combobox-item.tsx";
 
@@ -30,8 +30,7 @@ export function useComboboxItemOffscreen<
   T extends ElementType,
   P extends ComboboxItemProps<T>,
 >({ store, value, ...props }: P) {
-  const context = useComboboxScopedContext();
-  store = store || context;
+  store = useComboboxScopedContextStore(store, "ComboboxItemOffscreen");
 
   const offscreenProps = useCompositeItemOffscreen({ store, value, ...props });
   const popupRole = useContext(ComboboxListRoleContext);

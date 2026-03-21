@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.tsx";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuContext } from "./menu-context.tsx";
+import { useMenuContextStore } from "./menu-context.tsx";
 import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "span" satisfies ElementType;
@@ -28,8 +29,7 @@ type TagName = typeof TagName;
  */
 export const useMenuButtonArrow = createHook<TagName, MenuButtonArrowOptions>(
   function useMenuButtonArrow({ store, ...props }) {
-    const context = useMenuContext();
-    store = store || context;
+    store = useMenuContextStore(store, "MenuButtonArrow");
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
   },
@@ -70,13 +70,16 @@ export interface MenuButtonArrowOptions<
 > extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest
-   * [`MenuButton`](https://ariakit.org/reference/menu-button) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
-   * context will be used.
+   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
+   * This prop can also receive the corresponding
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`MenuProvider`](https://ariakit.org/reference/menu-provider)
+   * component's context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
 }
 
 export type MenuButtonArrowProps<T extends ElementType = TagName> = Props<

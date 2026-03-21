@@ -4,9 +4,10 @@ import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.tsx";
 import { useCompositeGroup } from "../composite/composite-group.tsx";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useComboboxScopedContext } from "./combobox-context.tsx";
+import { useComboboxScopedContextStore } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -31,8 +32,7 @@ type TagName = typeof TagName;
  */
 export const useComboboxGroup = createHook<TagName, ComboboxGroupOptions>(
   function useComboboxGroup({ store, ...props }) {
-    const context = useComboboxScopedContext();
-    store = store || context;
+    store = useComboboxScopedContextStore(store, "ComboboxGroup");
 
     invariant(
       store,
@@ -87,12 +87,16 @@ export interface ComboboxGroupOptions<
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
-   * components' context will be used.
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component's context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
 }
 
 export type ComboboxGroupProps<T extends ElementType = TagName> = Props<

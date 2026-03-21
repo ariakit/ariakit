@@ -6,11 +6,12 @@ import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   TooltipScopedContextProvider,
-  useTooltipProviderContext,
+  useTooltipProviderContextStore,
 } from "./tooltip-context.tsx";
 import type { TooltipStore } from "./tooltip-store.ts";
 
@@ -38,8 +39,7 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
     hideOnInteractOutside = true,
     ...props
   }) {
-    const context = useTooltipProviderContext();
-    store = store || context;
+    store = useTooltipProviderContextStore(store, "Tooltip");
 
     invariant(
       store,
@@ -120,7 +120,7 @@ export const Tooltip = createDialogComponent(
     const htmlProps = useTooltip(props);
     return createElement(TagName, htmlProps);
   }),
-  useTooltipProviderContext,
+  useTooltipProviderContextStore,
 );
 
 export interface TooltipOptions<
@@ -128,12 +128,17 @@ export interface TooltipOptions<
 > extends HovercardOptions<T> {
   /**
    * Object returned by the
-   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
+   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
    * If not provided, the closest
    * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
    * component's context will be used.
    */
-  store?: TooltipStore;
+  store?: StoreProp<TooltipStore>;
   /**
    * @default true
    */

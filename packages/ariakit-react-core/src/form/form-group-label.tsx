@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { GroupLabelOptions } from "../group/group-label.tsx";
 import { useGroupLabel } from "../group/group-label.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { FormStore } from "./form-store.ts";
@@ -65,12 +66,16 @@ export interface FormGroupLabelOptions<
 > extends GroupLabelOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
-   * context will be used.
+   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook.
+   * This prop can also receive the corresponding
+   * [`FormProvider`](https://ariakit.org/reference/form-provider) component,
+   * which makes the component read the store from that provider's context
+   * explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`FormProvider`](https://ariakit.org/reference/form-provider)
+   * component's context will be used.
    */
-  store?: FormStore;
+  store?: StoreProp<FormStore>;
 }
 
 export type FormGroupLabelProps<T extends ElementType = TagName> = Props<

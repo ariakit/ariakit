@@ -4,6 +4,7 @@ import type { ElementType } from "react";
 import { useMemo, useState } from "react";
 import { useId, useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -12,7 +13,7 @@ import {
 } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.ts";
-import { usePopoverContext } from "./popover-context.tsx";
+import { usePopoverContextStore } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -80,8 +81,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
     borderWidth: borderWidthProp,
     ...props
   }) {
-    const context = usePopoverContext();
-    store = store || context;
+    store = usePopoverContextStore(store, "PopoverArrow");
 
     invariant(
       store,
@@ -195,13 +195,17 @@ export interface PopoverArrowOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
-   * If not provided, the closest
-   * [`Popover`](https://ariakit.org/reference/popover) or
+   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store)
+   * hook.
+   * This prop can also receive the corresponding
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * component's context will be used.
    */
-  store?: PopoverStore;
+  store?: StoreProp<PopoverStore>;
   /**
    * The size of the arrow.
    *

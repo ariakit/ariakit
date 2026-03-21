@@ -14,6 +14,7 @@ import {
   useIsMouseMoving,
   useMergeRefs,
 } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -21,7 +22,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeContextStore } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -76,8 +77,7 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
     blurOnHoverEnd = !!focusOnHover,
     ...props
   }) {
-    const context = useCompositeContext();
-    store = store || context;
+    store = useCompositeContextStore(store, "CompositeHover");
 
     invariant(
       store,
@@ -176,12 +176,16 @@ export interface CompositeHoverOptions<
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
-   * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
+   * hook.
+   * This prop can also receive the corresponding
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * component's context will be used.
    */
-  store?: CompositeStore;
+  store?: StoreProp<CompositeStore>;
   /**
    * Determines if the composite item should be _focused_ when hovered over.
    *

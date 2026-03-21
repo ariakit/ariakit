@@ -3,11 +3,12 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   MenubarScopedContextProvider,
-  useMenubarProviderContext,
+  useMenubarProviderContextStore,
 } from "./menubar-context.tsx";
 import type { MenubarStore, MenubarStoreProps } from "./menubar-store.ts";
 import { useMenubarStore } from "./menubar-store.ts";
@@ -45,8 +46,7 @@ export const useMenubar = createHook<TagName, MenubarOptions>(
     rtl,
     ...props
   }) {
-    const context = useMenubarProviderContext();
-    storeProp = storeProp || context;
+    storeProp = useMenubarProviderContextStore(storeProp, "Menubar");
 
     const store = useMenubarStore({
       store: storeProp,
@@ -125,14 +125,18 @@ export interface MenubarOptions<T extends ElementType = TagName>
     > {
   /**
    * Object returned by the
-   * [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store) hook.
+   * [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store)
+   * hook.
+   * This prop can also receive the corresponding
+   * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
    * If not provided, the closest
    * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
-   * component context will be used. If the component is not wrapped in a
-   * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
-   * component, an internal store will be used.
+   * component's context will be used. If no store can be found, an internal
+   * store will be created.
    */
-  store?: MenubarStore;
+  store?: StoreProp<MenubarStore>;
 }
 
 export type MenubarProps<T extends ElementType = TagName> = Props<

@@ -3,6 +3,7 @@ import { useContext } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { SelectHeadingContext } from "./select-context.tsx";
@@ -79,12 +80,15 @@ export interface SelectHeadingOptions<
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
-   * If not provided, the closest
-   * [`Select`](https://ariakit.org/reference/select) or
+   * This prop can also receive the corresponding
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly, or `null`, which disables context lookup.
+   * If not provided, the closest
+   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * component's context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectHeadingProps<T extends ElementType = TagName> = Props<

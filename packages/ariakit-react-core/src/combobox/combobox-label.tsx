@@ -1,6 +1,7 @@
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -8,7 +9,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import { useComboboxProviderContextStore } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "label" satisfies ElementType;
@@ -27,8 +28,7 @@ type TagName = typeof TagName;
  */
 export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
   function useComboboxLabel({ store, ...props }) {
-    const context = useComboboxProviderContext();
-    store = store || context;
+    store = useComboboxProviderContextStore(store, "ComboboxLabel");
 
     invariant(
       store,
@@ -76,11 +76,16 @@ export interface ComboboxLabelOptions<
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
-   * hook. If not provided, the closest
+   * hook.
+   * This prop can also receive the corresponding
+   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
    * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
    * component's context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
 }
 
 export type ComboboxLabelProps<T extends ElementType = TagName> = Props<

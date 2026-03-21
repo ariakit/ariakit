@@ -12,6 +12,7 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const ctx = createStoreContext<SelectStore>(
+  "SelectProvider",
   [PopoverContextProvider, CompositeContextProvider],
   [PopoverScopedContextProvider, CompositeScopedContextProvider],
 );
@@ -30,14 +31,19 @@ const ctx = createStoreContext<SelectStore>(
  * }
  */
 export const useSelectContext = ctx.useContext;
+export const useSelectContextStore = ctx.useContextStore;
 
 export const useSelectScopedContext = ctx.useScopedContext;
+export const useSelectScopedContextStore = ctx.useScopedContextStore;
 
 export const useSelectProviderContext = ctx.useProviderContext;
+export const useSelectProviderContextStore = ctx.useProviderContextStore;
 
 export const SelectContextProvider = ctx.ContextProvider;
 
 export const SelectScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerSelectProvider = ctx.registerProvider;
 
 export const SelectItemCheckedContext = createContext(false);
 

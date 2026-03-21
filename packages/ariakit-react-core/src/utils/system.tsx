@@ -79,27 +79,167 @@ export function createHook<
 }
 
 type StoreProvider<T extends Store> = React.ComponentType<{
-  value: T | undefined;
+  value: T | null | undefined;
   children?: React.ReactNode;
 }>;
+
+type InternalStoreProvider<T extends Store> = React.ComponentType<{
+  value: T | null | undefined;
+  children?: React.ReactNode;
+  __ariakitContext?: StoreContextMetadata | undefined;
+}>;
+
+type StoreContextMode = "context" | "scoped" | "provider";
+
+interface StoreContextMetadata<T extends Store = Store> {
+  name: string;
+  useContext: () => T | undefined;
+  useScopedContext: (onlyScoped?: boolean) => T | undefined;
+  useProviderContext: () => T | undefined;
+  useContextSource: () => StoreContextMetadata | undefined;
+  useScopedContextSource: (
+    onlyScoped?: boolean,
+  ) => StoreContextMetadata | undefined;
+  useProviderContextSource: () => StoreContextMetadata | undefined;
+}
+
+const storeContextSymbol = Symbol("ariakitStoreContext");
+const warnedStoreContexts = new Set<string>();
+
+export type StoreContextComponent<T extends Store = Store> =
+  React.ComponentType<any> & {
+    [storeContextSymbol]?: StoreContextMetadata<T>;
+  };
+
+export type StoreProp<T extends Store = Store> =
+  | T
+  | StoreContextComponent<T>
+  | null;
+
+function getStoreContextMetadata<T extends Store>(store?: StoreProp<T>) {
+  if (typeof store !== "function") return;
+  return store[storeContextSymbol];
+}
+
+function getStoreFromMetadata<T extends Store>(
+  metadata: StoreContextMetadata,
+  mode: StoreContextMode,
+) {
+  if (mode === "scoped") {
+    return metadata.useScopedContext() as T | null | undefined;
+  }
+  if (mode === "provider") {
+    return metadata.useProviderContext() as T | null | undefined;
+  }
+  return metadata.useContext() as T | null | undefined;
+}
+
+function getStoreSourceFromMetadata(
+  metadata: StoreContextMetadata,
+  mode: StoreContextMode,
+) {
+  if (mode === "scoped") {
+    return metadata.useScopedContextSource();
+  }
+  if (mode === "provider") {
+    return metadata.useProviderContextSource();
+  }
+  return metadata.useContextSource();
+}
+
+function useStoreContext<T extends Store>(
+  store: StoreProp<T> | undefined,
+  metadata: StoreContextMetadata<T>,
+  componentName: string,
+  mode: StoreContextMode,
+) {
+  const providerMetadata = getStoreContextMetadata(store);
+  const invalidStore = typeof store === "function" && !providerMetadata;
+  const explicitStore = providerMetadata
+    ? getStoreFromMetadata<T>(providerMetadata, mode)
+    : store === null
+      ? null
+      : typeof store !== "function"
+        ? store
+        : undefined;
+  const implicitStore = getStoreFromMetadata<T>(metadata, mode);
+  const implicitSource = getStoreSourceFromMetadata(metadata, mode);
+  const resolvedStore =
+    explicitStore === null ? null : explicitStore || implicitStore;
+  const shouldWarn =
+    store === undefined &&
+    !!resolvedStore &&
+    !!implicitSource &&
+    implicitSource !== metadata &&
+    !!implicitSource.name;
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    if (invalidStore) {
+      console.warn(
+        `Invalid \`store\` prop passed to ${componentName}. ` +
+          "Expected a store object or an Ariakit provider component.",
+      );
+      return;
+    }
+    if (!shouldWarn) return;
+    const providerName = implicitSource.name;
+    const key = `${componentName}:${providerName}`;
+    if (warnedStoreContexts.has(key)) return;
+    warnedStoreContexts.add(key);
+    console.warn(
+      `${componentName} is reading its store from ${providerName} implicitly. ` +
+        "This is deprecated and will stop working in a future version. " +
+        `Pass \`store={${providerName}}\` to keep the current behavior.`,
+    );
+  }, [componentName, implicitSource, invalidStore, shouldWarn]);
+
+  return resolvedStore;
+}
 
 /**
  * Creates an Ariakit store context with hooks and provider components.
  */
 export function createStoreContext<T extends Store>(
-  providers: StoreProvider<T>[] = [],
-  scopedProviders: StoreProvider<T>[] = [],
+  nameOrProviders: string | StoreProvider<any>[] = [],
+  providersOrScopedProviders: StoreProvider<any>[] = [],
+  scopedProvidersProp: StoreProvider<any>[] = [],
 ) {
+  const name =
+    typeof nameOrProviders === "string" ? nameOrProviders : "Provider";
+  const providers =
+    typeof nameOrProviders === "string"
+      ? providersOrScopedProviders
+      : nameOrProviders;
+  const scopedProviders =
+    typeof nameOrProviders === "string"
+      ? scopedProvidersProp
+      : providersOrScopedProviders;
   const context = React.createContext<T | undefined>(undefined);
   const scopedContext = React.createContext<T | undefined>(undefined);
+  const contextSource = React.createContext<StoreContextMetadata | undefined>(
+    undefined,
+  );
+  const scopedContextSource = React.createContext<
+    StoreContextMetadata | undefined
+  >(undefined);
 
   const useContext = () => React.useContext(context);
+  const useContextSource = () => React.useContext(contextSource);
 
   const useScopedContext = (onlyScoped = false) => {
     const scoped = React.useContext(scopedContext);
     const store = useContext();
     if (onlyScoped) return scoped;
     return scoped || store;
+  };
+
+  const useScopedContextSource = (onlyScoped = false) => {
+    const scoped = React.useContext(scopedContext);
+    const scopedSource = React.useContext(scopedContextSource);
+    const source = useContextSource();
+    if (onlyScoped) return scopedSource;
+    return scoped ? scopedSource : source;
   };
 
   const useProviderContext = () => {
@@ -109,37 +249,125 @@ export function createStoreContext<T extends Store>(
     return store;
   };
 
-  const ContextProvider = (
-    props: React.ComponentPropsWithoutRef<typeof context.Provider>,
+  const useProviderContextSource = () => {
+    const scoped = React.useContext(scopedContext);
+    const store = useContext();
+    const source = useContextSource();
+    if (scoped && scoped === store) return;
+    return source;
+  };
+
+  const metadata: StoreContextMetadata<T> = {
+    name,
+    useContext,
+    useScopedContext,
+    useProviderContext,
+    useContextSource,
+    useScopedContextSource,
+    useProviderContextSource,
+  };
+
+  const ContextProviderImpl = (
+    props: React.ComponentPropsWithoutRef<typeof context.Provider> & {
+      __ariakitContext?: StoreContextMetadata | undefined;
+    },
   ) => {
+    const { __ariakitContext = metadata, ...providerProps } = props;
     return providers.reduceRight(
-      (children, Provider) => <Provider {...props}>{children}</Provider>,
-      <context.Provider {...props} />,
+      (children, Provider) => {
+        const InternalProvider = Provider as InternalStoreProvider<T>;
+        return (
+          <InternalProvider
+            {...providerProps}
+            __ariakitContext={__ariakitContext}
+          >
+            {children}
+          </InternalProvider>
+        );
+      },
+      <contextSource.Provider value={__ariakitContext}>
+        <context.Provider {...providerProps} />
+      </contextSource.Provider>,
     );
   };
 
-  const ScopedContextProvider = (
-    props: React.ComponentPropsWithoutRef<typeof scopedContext.Provider>,
+  const ScopedContextProviderImpl = (
+    props: React.ComponentPropsWithoutRef<typeof scopedContext.Provider> & {
+      __ariakitContext?: StoreContextMetadata | undefined;
+    },
   ) => {
+    const { __ariakitContext = metadata, ...providerProps } = props;
     return (
-      <ContextProvider {...props}>
+      <ContextProviderImpl
+        {...providerProps}
+        __ariakitContext={__ariakitContext}
+      >
         {scopedProviders.reduceRight(
-          (children, Provider) => (
-            <Provider {...props}>{children}</Provider>
-          ),
-          <scopedContext.Provider {...props} />,
+          (children, Provider) => {
+            const InternalProvider = Provider as InternalStoreProvider<T>;
+            return (
+              <InternalProvider
+                {...providerProps}
+                __ariakitContext={__ariakitContext}
+              >
+                {children}
+              </InternalProvider>
+            );
+          },
+          <scopedContextSource.Provider value={__ariakitContext}>
+            <scopedContext.Provider {...providerProps} />
+          </scopedContextSource.Provider>,
         )}
-      </ContextProvider>
+      </ContextProviderImpl>
     );
+  };
+
+  const ContextProvider = ContextProviderImpl as StoreProvider<T>;
+
+  const ScopedContextProvider = ScopedContextProviderImpl as StoreProvider<T>;
+
+  const registerProvider = <C extends StoreContextComponent<T>>(
+    component: C,
+  ) => {
+    component[storeContextSymbol] = metadata;
+    return component;
+  };
+
+  const useContextStore = (
+    store: StoreProp<T> | undefined,
+    componentName: string,
+  ) => {
+    return useStoreContext(store, metadata, componentName, "context");
+  };
+
+  const useScopedContextStore = (
+    store: StoreProp<T> | undefined,
+    componentName: string,
+  ) => {
+    return useStoreContext(store, metadata, componentName, "scoped");
+  };
+
+  const useProviderContextStore = (
+    store: StoreProp<T> | undefined,
+    componentName: string,
+  ) => {
+    return useStoreContext(store, metadata, componentName, "provider");
   };
 
   return {
     context,
     scopedContext,
     useContext,
+    useContextSource,
     useScopedContext,
+    useScopedContextSource,
     useProviderContext,
+    useProviderContextSource,
+    useContextStore,
+    useScopedContextStore,
+    useProviderContextStore,
     ContextProvider,
     ScopedContextProvider,
+    registerProvider,
   };
 }

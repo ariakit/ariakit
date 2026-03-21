@@ -3,11 +3,12 @@ import type { ElementType } from "react";
 import { useMemo } from "react";
 import { useId, useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import {
   CompositeRowContext,
-  useCompositeContext,
+  useCompositeContextStore,
 } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 
@@ -39,8 +40,7 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
     "aria-posinset": ariaPosInSet,
     ...props
   }) {
-    const context = useCompositeContext();
-    store = store || context;
+    store = useCompositeContextStore(store, "CompositeRow");
 
     invariant(
       store,
@@ -114,12 +114,16 @@ export interface CompositeRowOptions<
   /**
    * Object returned by the
    * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
-   * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
+   * hook.
+   * This prop can also receive the corresponding
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
-   * components' context will be used.
+   * component, which makes the component read the store from that provider's
+   * context explicitly.
+   * If not provided, the closest
+   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * component's context will be used.
    */
-  store?: CompositeStore;
+  store?: StoreProp<CompositeStore>;
 }
 
 export type CompositeRowProps<T extends ElementType = TagName> = Props<
