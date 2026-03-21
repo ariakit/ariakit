@@ -40,3 +40,4 @@ yarn-error.log*
 
 # generated types
 .astro/
+worker-configuration.d.ts

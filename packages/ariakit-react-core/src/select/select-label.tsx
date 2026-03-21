@@ -57,8 +57,8 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
     });
 
     props = {
-      id,
       ...props,
+      id,
       ref: useMergeRefs(store.setLabelElement, props.ref),
       onClick,
       style: {

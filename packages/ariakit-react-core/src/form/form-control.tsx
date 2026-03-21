@@ -139,10 +139,10 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
     );
 
     props = {
-      id,
       "aria-labelledby": label?.id,
       "aria-invalid": invalid,
       ...props,
+      id,
       "aria-describedby": describedBy || undefined,
       ref: useMergeRefs(ref, props.ref),
       onBlur,

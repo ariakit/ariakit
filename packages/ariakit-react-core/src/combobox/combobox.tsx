@@ -298,6 +298,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const scrollingElementRef = useRef<Element | null>(null);
     const getAutoSelectIdProp = useEvent(getAutoSelectId);
     const autoSelectIdRef = useRef<string | null | undefined>(null);
+    const userScrolledRef = useRef(false);
+    const isAutoScrollingRef = useRef(false);
 
     // Disable the autoSelect behavior when the user scrolls the combobox
     // content. This prevents the focus from moving to the first item on
@@ -312,8 +314,16 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // A wheel event is always initiated by the user, so we can disable the
         // autoSelect behavior without any additional checks.
         canAutoSelectRef.current = false;
+        userScrolledRef.current = true;
       };
       const onScroll = () => {
+        // Mark any non-programmatic scroll as user-initiated so we don't
+        // reset the scroll position when new items load (e.g., infinite
+        // scroll, scrollbar drag). Programmatic scrolls from scrollIntoView
+        // set isAutoScrollingRef to avoid false positives.
+        if (!isAutoScrollingRef.current) {
+          userScrolledRef.current = true;
+        }
         if (!store) return;
         if (!canAutoSelectRef.current) return;
         // We won't disable the autoSelect behavior if the autoSelect item is
@@ -334,10 +344,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       };
     }, [open, contentElement, store]);
 
-    // Set the changed flag to true whenever the combobox value changes and is
-    // not empty. We're doing this here in addition to in the onChange handler
-    // because the value may change programmatically.
+    // Reset the user-scrolled flag and set the changed flag to true whenever
+    // the combobox value changes and is not empty. We're doing this here in
+    // addition to in the onChange handler because the value may change
+    // programmatically.
     useSafeLayoutEffect(() => {
+      userScrolledRef.current = false;
       if (!storeValue) return;
       if (composingRef.current) return;
       canAutoSelectRef.current = true;
@@ -359,7 +371,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
       if (!open) return;
-      if (!canAutoSelect && !resetValueOnSelect) return;
+      if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
+        return;
       const { baseElement, contentElement, activeId } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribute is an internal state added by the Popover
@@ -391,7 +404,14 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // item, such as when `autoSelect` is false.
         const element = store.item(activeId || store.first())?.element;
         if (element && "scrollIntoView" in element) {
+          isAutoScrollingRef.current = true;
           element.scrollIntoView({ block: "nearest", inline: "nearest" });
+          // Clear after the browser dispatches the scroll event. Scroll
+          // events fire during the "scroll steps" of the rendering update,
+          // which run before requestAnimationFrame callbacks.
+          requestAnimationFrame(() => {
+            isAutoScrollingRef.current = false;
+          });
         }
       }
       return;
@@ -586,7 +606,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     );
 
     props = {
-      id,
       role: "combobox",
       "aria-autocomplete": ariaAutoComplete,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
@@ -595,6 +614,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       "data-active-item": isActiveItem || undefined,
       value,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
       onChange,
       onCompositionEnd,

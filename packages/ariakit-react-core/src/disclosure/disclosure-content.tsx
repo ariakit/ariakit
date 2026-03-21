@@ -222,12 +222,12 @@ export const useDisclosureContent = createHook<
   }, [hidden, styleProp]);
 
   props = {
-    id,
     "data-open": open || undefined,
     "data-enter": transition === "enter" || undefined,
     "data-leave": transition === "leave" || undefined,
     hidden,
     ...props,
+    id,
     ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
     style,
   };

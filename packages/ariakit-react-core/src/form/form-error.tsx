@@ -80,10 +80,10 @@ export const useFormError = createHook<TagName, FormErrorOptions>(
     });
 
     props = {
-      id,
       role: "alert",
       children,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
     };
 

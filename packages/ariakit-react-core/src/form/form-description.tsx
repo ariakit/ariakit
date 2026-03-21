@@ -70,8 +70,8 @@ export const useFormDescription = createHook<TagName, FormDescriptionOptions>(
     );
 
     props = {
-      id,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
     };
 

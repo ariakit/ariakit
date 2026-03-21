@@ -105,10 +105,10 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
     });
 
     props = {
-      id,
       render: isNativeLabel ? <label /> : <span />,
       htmlFor: isNativeLabel ? field?.id : undefined,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
       onClick,
     };

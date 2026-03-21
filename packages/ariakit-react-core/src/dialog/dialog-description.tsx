@@ -35,8 +35,8 @@ export const useDialogDescription = createHook<
   }, [setDescriptionId, id]);
 
   props = {
-    id,
     ...props,
+    id,
   };
 
   return removeUndefinedValues(props);

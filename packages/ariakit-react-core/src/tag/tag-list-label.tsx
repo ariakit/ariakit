@@ -35,9 +35,9 @@ export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
     const htmlFor = useStoreState(store, (state) => state.inputElement?.id);
 
     props = {
-      id,
       htmlFor,
       ...props,
+      id,
       ref: useMergeRefs(store.setLabelElement, props.ref),
     };
 

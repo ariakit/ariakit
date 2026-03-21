@@ -414,9 +414,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     );
 
     props = {
-      id,
       "data-active-item": isActiveItem || undefined,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,
       onFocus,
