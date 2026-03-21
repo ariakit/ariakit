@@ -1,6 +1,7 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useEffect } from "react";
+import { useRadioStore } from "../radio/radio-store.ts";
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
 import { useInitialValue, useWrapElement } from "../utils/hooks.ts";
@@ -84,6 +85,16 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
       store,
       (state) => state.values[name] === value,
     );
+    const radioValue = useStoreState(store, (state) => {
+      const nextValue = state.values[name];
+      if (typeof nextValue === "string" || typeof nextValue === "number") {
+        return nextValue;
+      }
+      return undefined;
+    });
+    const radioStore = useRadioStore({
+      value: radioValue,
+    });
 
     props = useWrapElement(
       props,
@@ -101,6 +112,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
     };
 
     props = useRadio<TagName>({
+      store: radioStore,
       name,
       value,
       checked: isChecked,

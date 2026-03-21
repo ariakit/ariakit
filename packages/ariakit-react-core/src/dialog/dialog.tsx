@@ -567,11 +567,25 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
 export function createDialogComponent<T extends DialogOptions>(
   Component: FC<T>,
-  useProviderContextStore = useDialogProviderContextStore,
+  useProviderContextStore?: (
+    store: T["store"],
+    componentName: string,
+  ) => NonNullable<T["store"]> extends StoreProp<infer S>
+    ? S | undefined
+    : never,
   componentName = Component.displayName || Component.name || "Dialog",
 ) {
+  const getProviderContextStore =
+    useProviderContextStore ||
+    (useDialogProviderContextStore as (
+      store: T["store"],
+      componentName: string,
+    ) => NonNullable<T["store"]> extends StoreProp<infer S>
+      ? S | undefined
+      : never);
+
   return forwardRef(function DialogComponent(props: T) {
-    const store = useProviderContextStore(props.store, componentName);
+    const store = getProviderContextStore(props.store, componentName);
     const mounted = useStoreState(
       store,
       (state) => !props.unmountOnHide || state?.mounted || !!props.open,

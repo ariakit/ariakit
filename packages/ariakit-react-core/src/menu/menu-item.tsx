@@ -8,7 +8,10 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
-import { useMenubarScopedContextStore } from "../menubar/menubar-context.tsx";
+import {
+  useMenubarScopedContext,
+  useMenubarScopedContextStore,
+} from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
 import { useBooleanEvent, useEvent } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
@@ -20,7 +23,10 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuScopedContextStore } from "./menu-context.tsx";
+import {
+  useMenuScopedContext,
+  useMenuScopedContextStore,
+} from "./menu-context.tsx";
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -71,14 +77,18 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     blurOnHoverEnd,
     ...props
   }) {
-    const menuStore = useMenuScopedContextStore(
-      store as StoreProp<MenuStore> | undefined,
-      "MenuItem",
-    );
-    const menubarStore = useMenubarScopedContextStore(
-      store as StoreProp<MenubarStore> | undefined,
-      "MenuItem",
-    );
+    const menuStore = store
+      ? useMenuScopedContextStore(
+          store as StoreProp<MenuStore> | undefined,
+          "MenuItem",
+        )
+      : useMenuScopedContext(true);
+    const menubarStore = store
+      ? useMenubarScopedContextStore(
+          store as StoreProp<MenubarStore> | undefined,
+          "MenuItem",
+        )
+      : useMenubarScopedContext();
     const resolvedStore = menuStore || menubarStore;
 
     invariant(

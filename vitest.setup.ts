@@ -10,7 +10,17 @@ import {
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";
 
-failOnConsole();
+const skipConsoleGuardPaths = [
+  "examples/store-provider-deprecated/test.ts",
+  "site/src/sandbox/store-provider-deprecated/test.ts",
+];
+
+failOnConsole({
+  skipTest({ testPath }: { testPath?: string }) {
+    if (!testPath) return false;
+    return skipConsoleGuardPaths.some((path) => testPath.endsWith(path));
+  },
+});
 
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {

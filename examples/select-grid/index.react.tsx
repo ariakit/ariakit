@@ -37,7 +37,10 @@ export default function Example() {
           <Ariakit.SelectArrow />
         </Ariakit.Select>
         <Ariakit.SelectPopover role="grid" className="popover">
-          <Ariakit.PopoverArrow className="arrow" />
+          <Ariakit.PopoverArrow
+            store={Ariakit.SelectProvider}
+            className="arrow"
+          />
           <Ariakit.SelectRow className="row">
             {renderItem("Top Left")}
             {renderItem("Top Center")}
