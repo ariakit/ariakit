@@ -5,11 +5,18 @@ const message =
   "This is deprecated and will stop working in a future version. " +
   "Pass `store={ComboboxProvider}` to keep the current behavior.";
 
+let warn: ReturnType<typeof vi.spyOn>;
+
+beforeEach(() => {
+  warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  return () => {
+    warn.mockRestore();
+  };
+});
+
 test("warns on implicit compatible provider context", async () => {
-  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
   await click(q.button("Show combobox"));
   await waitFor(() => expect(q.button("Apple")).toBeVisible());
   await sleep(0);
   expect(warn).toHaveBeenCalledWith(message);
-  warn.mockRestore();
 });
