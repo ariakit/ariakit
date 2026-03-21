@@ -148,7 +148,7 @@ export interface ComboboxDisclosureOptions<
    * This prop can also receive the corresponding
    * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
    * component's context will be used.

@@ -200,7 +200,7 @@ export interface PopoverArrowOptions<
    * This prop can also receive the corresponding
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
    * component's context will be used.

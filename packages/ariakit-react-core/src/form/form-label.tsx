@@ -169,7 +169,7 @@ export interface FormLabelOptions<
    * This prop can also receive the corresponding
    * [`FormProvider`](https://ariakit.org/reference/form-provider) component,
    * which makes the component read the store from that provider's context
-   * explicitly, or `null`, which disables context lookup.
+   * explicitly.
    * If not provided, the closest
    * [`FormProvider`](https://ariakit.org/reference/form-provider)
    * component's context will be used.

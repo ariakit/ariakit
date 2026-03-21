@@ -225,7 +225,7 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider) or
    * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider) or
    * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)

@@ -191,7 +191,7 @@ export interface TagListOptions<
    * This prop can also receive the corresponding
    * [`TagProvider`](https://ariakit.org/reference/tag-provider) component,
    * which makes the component read the store from that provider's context
-   * explicitly, or `null`, which disables context lookup.
+   * explicitly.
    * If not provided, the closest
    * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
    * context will be used.

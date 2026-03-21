@@ -197,7 +197,7 @@ export interface TabOptions<
    * This prop can also receive the corresponding
    * [`TabProvider`](https://ariakit.org/reference/tab-provider) component,
    * which makes the component read the store from that provider's context
-   * explicitly, or `null`, which disables context lookup.
+   * explicitly.
    * If not provided, the closest
    * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
    * context will be used.

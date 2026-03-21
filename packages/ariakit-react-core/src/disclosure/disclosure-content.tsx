@@ -280,7 +280,7 @@ export interface DisclosureContentOptions<
    * This prop can also receive the corresponding
    * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
    * component's context will be used.

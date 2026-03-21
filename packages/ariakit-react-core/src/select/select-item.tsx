@@ -237,7 +237,7 @@ export interface SelectItemOptions<T extends ElementType = TagName>
    * This prop can also receive the corresponding
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
    * component's context will be used.

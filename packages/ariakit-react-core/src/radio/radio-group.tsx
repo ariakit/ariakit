@@ -89,7 +89,7 @@ export interface RadioGroupOptions<
    * This prop can also receive the corresponding
    * [`RadioProvider`](https://ariakit.org/reference/radio-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`RadioProvider`](https://ariakit.org/reference/radio-provider)
    * component's context will be used.

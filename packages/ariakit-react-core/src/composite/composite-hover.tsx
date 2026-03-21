@@ -180,7 +180,7 @@ export interface CompositeHoverOptions<
    * This prop can also receive the corresponding
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
    * component's context will be used.

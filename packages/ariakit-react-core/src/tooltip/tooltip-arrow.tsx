@@ -74,7 +74,7 @@ export interface TooltipArrowOptions<
    * This prop can also receive the corresponding
    * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
    * component's context will be used.

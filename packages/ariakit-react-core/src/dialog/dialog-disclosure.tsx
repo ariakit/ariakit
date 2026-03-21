@@ -75,7 +75,7 @@ export interface DialogDisclosureOptions<
    * This prop can also receive the corresponding
    * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
    * component, which makes the component read the store from that provider's
-   * context explicitly, or `null`, which disables context lookup.
+   * context explicitly.
    * If not provided, the closest
    * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
    * component's context will be used.
