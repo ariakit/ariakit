@@ -10,26 +10,7 @@ import {
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";
 
-const allowedConsoleMessages: string[] = [];
-
-(
-  globalThis as { __allowedConsoleMessages?: string[] }
-).__allowedConsoleMessages = allowedConsoleMessages;
-
-failOnConsole({
-  allowMessage(message: string, method: string) {
-    if (method !== "warn") return false;
-    const allowed =
-      message ===
-      "CompositeItem is reading its store from ComboboxProvider implicitly. " +
-        "This is deprecated and will stop working in a future version. " +
-        "Pass `store={ComboboxProvider}` to keep the current behavior.";
-    if (allowed) {
-      allowedConsoleMessages.push(message);
-    }
-    return allowed;
-  },
-});
+failOnConsole();
 
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {
@@ -151,10 +132,15 @@ function parseTest(filename?: string) {
 
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
+const MANUAL_LOAD_TESTS = new Set([
+  "site/src/sandbox/store-provider-deprecated/test.ts",
+  "site/src/sandbox/store-provider-migrated/test.ts",
+]);
 
 beforeEach(async ({ task, skip }) => {
-  allowedConsoleMessages.length = 0;
-  const parseResult = parseTest(task.file?.name);
+  const filename = task.file?.name;
+  if (filename && MANUAL_LOAD_TESTS.has(filename)) return;
+  const parseResult = parseTest(filename);
   if (!parseResult) return;
   const { dir, loader } = parseResult;
   if (loader !== "all" && loader !== LOADER) skip();

@@ -28,26 +28,25 @@ type Value = ComboboxStoreSelectedValue;
  * </ComboboxProvider>
  * ```
  */
-interface ComboboxProviderComponent {
-  <T extends Value = Value>(
-    props: PickRequired<
-      ComboboxProviderProps<T>,
-      "selectedValue" | "defaultSelectedValue"
-    >,
-  ): ReactElement;
-  (props?: ComboboxProviderProps): ReactElement;
+export function ComboboxProvider<T extends Value = Value>(
+  props: PickRequired<
+    ComboboxProviderProps<T>,
+    "selectedValue" | "defaultSelectedValue"
+  >,
+): ReactElement;
+
+export function ComboboxProvider(props?: ComboboxProviderProps): ReactElement;
+
+export function ComboboxProvider(props: ComboboxProviderProps = {}) {
+  const store = useComboboxStore(props);
+  return (
+    <ComboboxContextProvider value={store}>
+      {props.children}
+    </ComboboxContextProvider>
+  );
 }
 
-export const ComboboxProvider = registerComboboxProvider(
-  function ComboboxProvider(props: ComboboxProviderProps = {}) {
-    const store = useComboboxStore(props);
-    return (
-      <ComboboxContextProvider value={store}>
-        {props.children}
-      </ComboboxContextProvider>
-    );
-  },
-) as ComboboxProviderComponent;
+registerComboboxProvider(ComboboxProvider);
 
 export interface ComboboxProviderProps<
   T extends Value = Value,
