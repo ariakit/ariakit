@@ -12,7 +12,10 @@ import {
   useMenubarScopedContext,
   useMenubarScopedContextStore,
 } from "../menubar/menubar-context.tsx";
-import type { MenubarStore } from "../menubar/menubar-store.ts";
+import type {
+  MenubarStore,
+  MenubarStoreState,
+} from "../menubar/menubar-store.ts";
 import { useBooleanEvent, useEvent } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import type { StoreProp } from "../utils/system.tsx";
@@ -53,8 +56,14 @@ function menuHasFocus(
   return !!expandedMenu.querySelector("[role=menuitem][aria-expanded=true]");
 }
 
-function hasHideAll(store: MenubarStore | MenuStoreState): store is MenuStore {
+function isMenuStore(store: MenuStore | MenubarStore): store is MenuStore {
   return "hideAll" in store;
+}
+
+function isMenuStoreState(
+  state: MenuStoreState | MenubarStoreState,
+): state is MenuStoreState {
+  return "contentElement" in state;
 }
 
 /**
@@ -89,9 +98,9 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       "MenuItem",
     );
     const store =
-      storeProp !== undefined
-        ? menuProviderStore || menubarProviderStore
-        : menuContextStore || menubarContextStore;
+      storeProp === undefined
+        ? menuContextStore || menubarContextStore
+        : menuProviderStore || menubarProviderStore;
 
     invariant(
       store,
@@ -101,7 +110,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
 
     const onClickProp = props.onClick;
     const hideOnClickProp = useBooleanEvent(hideOnClick);
-    const hideMenu = hasHideAll(store) ? store.hideAll : undefined;
+    const hideMenu = isMenuStore(store) ? store.hideAll : undefined;
     const isWithinMenu = !!hideMenu;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
@@ -119,8 +128,8 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
 
     const contentElement = useStoreState(store, (state) => {
       if (!state) return null;
-      if (!("contentElement" in state)) return null;
-      return state.contentElement as Element | null | undefined;
+      if (!isMenuStoreState(state)) return null;
+      return state.contentElement;
     });
 
     const role = getPopupItemRole(contentElement, "menuitem");
