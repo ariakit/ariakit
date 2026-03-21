@@ -1,5 +1,63 @@
 # @ariakit/react
 
+## 0.4.24
+
+This release improves React combobox and form reliability, including preserved combobox input and popover scroll position during result updates, more predictable focus behavior after filtering selects on iOS Safari, proper isolation of [`FormRadio`](https://ariakit.org/reference/form-radio) groups inside nested composite widgets, safer handling of explicitly undefined [`id`](https://ariakit.org/reference/select-item#id) props, and better generic typing for [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) wrappers.
+
+### Improved `CheckboxProvider` generic typing
+
+This fixes TypeScript errors when wrapping [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) in generic React components. Controlled and uncontrolled checkbox group wrappers now type-check correctly without requiring non-null assertions on values such as `defaultValue`.
+
+Before, generic wrappers often needed a non-null assertion to satisfy the provider props:
+
+```tsx {15}
+interface CheckboxCardGridProps<T extends string | number> extends Pick<
+  Ariakit.CheckboxProviderProps<T>,
+  "value" | "setValue" | "defaultValue"
+> {}
+
+function CheckboxCardGrid<T extends string | number>({
+  value,
+  setValue,
+  defaultValue,
+}: CheckboxCardGridProps<T>) {
+  return (
+    <CheckboxProvider
+      value={value}
+      setValue={setValue}
+      defaultValue={defaultValue!}
+    />
+  );
+}
+```
+
+Now the same wrapper can type-check without the workaround:
+
+```tsx {4}
+<CheckboxProvider
+  value={value}
+  setValue={setValue}
+  defaultValue={defaultValue}
+/>
+```
+
+### Fixed `Combobox` input scroll position resetting
+
+When a [`Combobox`](https://ariakit.org/reference/combobox) input's text overflowed its width, the input's horizontal scroll position reset to the beginning each time the results changed. This happened because the virtual focus mechanism briefly moved DOM focus to the active item and back when [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) was enabled, causing browsers to reset the input's internal `scrollLeft`.
+
+The scroll position is now preserved across these focus transitions.
+
+### Fixed `FormRadio` registering to ancestor composite stores
+
+[`FormRadio`](https://ariakit.org/reference/form-radio) items nested inside components like [`TabPanel`](https://ariakit.org/reference/tab-panel) were incorrectly registering to the tab store, causing arrow keys in the tab list to navigate to radio items instead of other tabs. [`FormRadioGroup`](https://ariakit.org/reference/form-radio-group) now resets the composite context for its children, preventing form radio items from being picked up by unrelated parent stores.
+
+### Other updates
+
+- Fixed [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) scroll position resetting when items change in multi-select mode (e.g., during infinite scroll).
+- Fixed [`SelectItem`](https://ariakit.org/reference/select-item) stealing focus from the combobox input when the selected item reappears after filtering, which dismissed the keyboard on iOS Safari.
+- Fixed components crashing with "Maximum call stack size exceeded" when the [`id`](https://ariakit.org/reference/select-item#id) prop is explicitly passed as `undefined`.
+- Updated dependencies: `@ariakit/react-core@0.4.24`
+
 ## 0.4.23
 
 - Fixed [`ComboboxDisclosure`](https://ariakit.org/reference/combobox-disclosure) so pressing Escape closes [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) when the popover starts open and the [`Combobox`](https://ariakit.org/reference/combobox) input is auto-focused.
