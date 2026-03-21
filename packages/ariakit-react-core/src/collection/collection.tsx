@@ -1,11 +1,12 @@
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useWrapElement } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import {
   CollectionScopedContextProvider,
-  useCollectionProviderContext,
+  useCollectionProviderContextStore,
 } from "./collection-context.tsx";
 import type { CollectionStore } from "./collection-store.ts";
 
@@ -30,8 +31,7 @@ type TagName = typeof TagName;
  */
 export const useCollection = createHook<TagName, CollectionOptions>(
   function useCollection({ store, ...props }) {
-    const context = useCollectionProviderContext();
-    store = store || context;
+    store = useCollectionProviderContextStore(store, "Collection");
 
     props = useWrapElement(
       props,
@@ -80,7 +80,7 @@ export interface CollectionOptions<
    * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
    * component's context will be used.
    */
-  store?: CollectionStore;
+  store?: StoreProp<CollectionStore>;
 }
 
 export type CollectionProps<T extends ElementType = TagName> = Props<

@@ -5,7 +5,7 @@ import { Role } from "../role/role.tsx";
 import { useMergeRefs } from "../utils/hooks.ts";
 import { forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useSelectScopedContext } from "./select-context.tsx";
+import { useSelectScopedContextStore } from "./select-context.tsx";
 import * as Base from "./select-item.tsx";
 
 const TagName = "div" satisfies ElementType;
@@ -15,8 +15,7 @@ export function useSelectItemOffscreen<
   T extends ElementType,
   P extends SelectItemProps<T>,
 >({ store, value, ...props }: P) {
-  const context = useSelectScopedContext();
-  store = store || context;
+  store = useSelectScopedContextStore(store, "SelectItemOffscreen");
   return useCompositeItemOffscreen({ store, value, ...props });
 }
 

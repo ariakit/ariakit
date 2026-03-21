@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.tsx";
 import { usePopoverDismiss } from "../popover/popover-dismiss.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useHovercardScopedContext } from "./hovercard-context.tsx";
+import { useHovercardScopedContextStore } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -23,8 +24,7 @@ type TagName = typeof TagName;
  */
 export const useHovercardDismiss = createHook<TagName, HovercardDismissOptions>(
   function useHovercardDismiss({ store, ...props }) {
-    const context = useHovercardScopedContext();
-    store = store || context;
+    store = useHovercardScopedContextStore(store, "HovercardDismiss");
     props = usePopoverDismiss({ store, ...props });
     return props;
   },
@@ -61,7 +61,7 @@ export interface HovercardDismissOptions<
    * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
    * components' context will be used.
    */
-  store?: HovercardStore;
+  store?: StoreProp<HovercardStore>;
 }
 
 export type HovercardDismissProps<T extends ElementType = TagName> = Props<

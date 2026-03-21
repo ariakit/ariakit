@@ -31,11 +31,12 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   HovercardScopedContextProvider,
-  useHovercardProviderContext,
+  useHovercardProviderContextStore,
 } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 import type { Point } from "./utils/polygon.ts";
@@ -137,8 +138,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     disablePointerEventsOnApproach = !!hideOnHoverOutside,
     ...props
   }) {
-    const context = useHovercardProviderContext();
-    store = store || context;
+    store = useHovercardProviderContextStore(store, "Hovercard");
 
     invariant(
       store,
@@ -390,7 +390,7 @@ export const Hovercard = createDialogComponent(
     const htmlProps = useHovercard(props);
     return createElement(TagName, htmlProps);
   }),
-  useHovercardProviderContext,
+  useHovercardProviderContextStore,
 );
 
 export interface HovercardOptions<
@@ -403,7 +403,7 @@ export interface HovercardOptions<
    * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
    * component's context will be used.
    */
-  store?: HovercardStore;
+  store?: StoreProp<HovercardStore>;
   /**
    * Determines whether the popover should hide when the mouse leaves the
    * popover or the anchor element and there's no _hover intent_, meaning, the

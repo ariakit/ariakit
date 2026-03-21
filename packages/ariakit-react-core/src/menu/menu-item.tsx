@@ -8,10 +8,11 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
-import { useMenubarScopedContext } from "../menubar/menubar-context.tsx";
+import { useMenubarScopedContextStore } from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
 import { useBooleanEvent, useEvent } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -19,7 +20,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuScopedContext } from "./menu-context.tsx";
+import { useMenuScopedContextStore } from "./menu-context.tsx";
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -70,19 +71,28 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     blurOnHoverEnd,
     ...props
   }) {
-    const menuContext = useMenuScopedContext(true);
-    const menubarContext = useMenubarScopedContext();
-    store = store || menuContext || (menubarContext as any);
+    const menuStore = useMenuScopedContextStore(
+      store as StoreProp<MenuStore> | undefined,
+      "MenuItem",
+    );
+    const menubarStore = useMenubarScopedContextStore(
+      store as StoreProp<MenubarStore> | undefined,
+      "MenuItem",
+    );
+    const resolvedStore = menuStore || menubarStore;
 
     invariant(
-      store,
+      resolvedStore,
       process.env.NODE_ENV !== "production" &&
         "MenuItem must be wrapped in a MenuList, Menu or Menubar component",
     );
 
     const onClickProp = props.onClick;
     const hideOnClickProp = useBooleanEvent(hideOnClick);
-    const hideMenu = "hideAll" in store ? store.hideAll : undefined;
+    const hideMenu =
+      "hideAll" in resolvedStore
+        ? (resolvedStore.hideAll as MenuStore["hideAll"])
+        : undefined;
     const isWithinMenu = !!hideMenu;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
@@ -98,8 +108,10 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       hideMenu();
     });
 
-    const contentElement = useStoreState(store, (state) =>
-      "contentElement" in state ? state.contentElement : null,
+    const contentElement = useStoreState(resolvedStore, (state) =>
+      "contentElement" in state
+        ? (state.contentElement as MenuStoreState["contentElement"])
+        : null,
     );
 
     const role = getPopupItemRole(contentElement, "menuitem");
@@ -111,13 +123,13 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     };
 
     props = useCompositeItem<TagName>({
-      store,
+      store: resolvedStore,
       preventScrollOnKeyDown,
       ...props,
     });
 
     props = useCompositeHover({
-      store,
+      store: resolvedStore,
       ...props,
       focusOnHover(event) {
         const getFocusOnHover = () => {
@@ -125,9 +137,9 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
           if (focusOnHover != null) return focusOnHover;
           return true;
         };
-        if (!store) return false;
+        if (!resolvedStore) return false;
         if (!getFocusOnHover()) return false;
-        const { baseElement, items } = store.getState();
+        const { baseElement, items } = resolvedStore.getState();
         // If the menu item is also a submenu button, we should move actual DOM
         // focus to it so that the submenu will not close when the user moves
         // the cursor back to the menu button.
@@ -196,7 +208,7 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
    * components' context will be used.
    */
-  store?: MenubarStore | MenuStore;
+  store?: StoreProp<MenubarStore | MenuStore>;
   /**
    * Determines if the menu should hide when this item is clicked.
    *

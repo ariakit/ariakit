@@ -31,9 +31,10 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { useCollectionContext } from "./collection-context.tsx";
+import { useCollectionContextStore } from "./collection-context.tsx";
 import type {
   CollectionStore,
   CollectionStoreItem,
@@ -407,7 +408,7 @@ function getData<T extends Item>(props: {
 }
 
 export function useCollectionRenderer<T extends Item = any>({
-  store,
+  store: storeProp,
   items: itemsProp,
   initialItems = 0,
   gap = 0,
@@ -424,8 +425,9 @@ export function useCollectionRenderer<T extends Item = any>({
   children: renderItem,
   ...props
 }: CollectionRendererProps<T>) {
-  const context = useCollectionContext();
-  store = store || (context as typeof store);
+  const store = useCollectionContextStore(storeProp, "CollectionRenderer") as
+    | CollectionStore<T extends CollectionStoreItem ? T : CollectionStoreItem>
+    | undefined;
 
   const items = useStoreState(
     store,
@@ -877,8 +879,8 @@ export interface CollectionRendererOptions<
    * [`items`](https://ariakit.org/reference/collection-items#items) prop is not
    * provided.
    */
-  store?: CollectionStore<
-    T extends CollectionStoreItem ? T : CollectionStoreItem
+  store?: StoreProp<
+    CollectionStore<T extends CollectionStoreItem ? T : CollectionStoreItem>
   >;
   /**
    * All items to be rendered. This prop can be either a memoized array of items

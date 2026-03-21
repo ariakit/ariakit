@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { RadioContextProvider } from "./radio-context.tsx";
+import {
+  RadioContextProvider,
+  registerRadioProvider,
+} from "./radio-context.tsx";
 import type { RadioStoreProps } from "./radio-store.ts";
 import { useRadioStore } from "./radio-store.ts";
 
@@ -23,6 +26,8 @@ export function RadioProvider(props: RadioProviderProps = {}) {
     <RadioContextProvider value={store}>{props.children}</RadioContextProvider>
   );
 }
+
+registerRadioProvider(RadioProvider);
 
 export interface RadioProviderProps extends RadioStoreProps {
   children?: ReactNode;

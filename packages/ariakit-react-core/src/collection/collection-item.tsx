@@ -3,9 +3,10 @@ import { identity, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useEffect, useRef } from "react";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { useCollectionContext } from "./collection-context.tsx";
+import { useCollectionContextStore } from "./collection-context.tsx";
 import type { CollectionStore } from "./collection-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -34,8 +35,7 @@ export const useCollectionItem = createHook<TagName, CollectionItemOptions>(
     element,
     ...props
   }) {
-    const context = useCollectionContext();
-    store = store || context;
+    store = useCollectionContextStore(store, "CollectionItem");
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(element);
@@ -94,7 +94,7 @@ export interface CollectionItemOptions<
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
-  store?: CollectionStore;
+  store?: StoreProp<CollectionStore>;
   /**
    * The unique ID of the item. This will be used to register the item in the
    * store and for the element's `id` attribute. If not provided, a unique ID

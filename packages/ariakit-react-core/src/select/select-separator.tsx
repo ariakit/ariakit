@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useSelectContext } from "./select-context.tsx";
+import { useSelectContextStore } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const TagName = "hr" satisfies ElementType;
@@ -27,8 +28,7 @@ type TagName = typeof TagName;
  */
 export const useSelectSeparator = createHook<TagName, SelectSeparatorOptions>(
   function useSelectSeparator({ store, ...props }) {
-    const context = useSelectContext();
-    store = store || context;
+    store = useSelectContextStore(store, "SelectSeparator");
     props = useCompositeSeparator({ store, ...props });
     return props;
   },
@@ -71,7 +71,7 @@ export interface SelectSeparatorOptions<
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
    * context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectSeparatorProps<T extends ElementType = TagName> = Props<

@@ -1,7 +1,7 @@
 import { createStoreContext } from "../utils/system.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";
 
-const ctx = createStoreContext<CheckboxStore>();
+const ctx = createStoreContext<CheckboxStore>([], [], "CheckboxProvider");
 
 /**
  * Returns the checkbox store from the nearest checkbox container.
@@ -17,11 +17,16 @@ const ctx = createStoreContext<CheckboxStore>();
  * }
  */
 export const useCheckboxContext = ctx.useContext;
+export const useCheckboxContextStore = ctx.useContextStore;
 
 export const useCheckboxScopedContext = ctx.useScopedContext;
+export const useCheckboxScopedContextStore = ctx.useScopedContextStore;
 
 export const useCheckboxProviderContext = ctx.useProviderContext;
+export const useCheckboxProviderContextStore = ctx.useProviderContextStore;
 
 export const CheckboxContextProvider = ctx.ContextProvider;
 
 export const CheckboxScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerCheckboxProvider = ctx.registerProvider;

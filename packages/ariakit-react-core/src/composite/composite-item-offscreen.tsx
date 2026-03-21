@@ -9,7 +9,7 @@ import { useId, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreStateObject } from "../utils/store.tsx";
 import { forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeContextStore } from "./composite-context.tsx";
 import * as Base from "./composite-item.tsx";
 import type { CompositeStoreState } from "./composite-store.ts";
 
@@ -20,8 +20,7 @@ export function useCompositeItemOffscreen<
   T extends ElementType,
   P extends CompositeItemProps<T>,
 >({ store, offscreenBehavior = "active", disabled, value, ...props }: P) {
-  const context = useCompositeContext();
-  store = store || context;
+  store = useCompositeContextStore(store, "CompositeItemOffscreen");
 
   const id = useId(props.id);
 

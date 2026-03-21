@@ -4,12 +4,13 @@ import type { ElementType, MouseEvent } from "react";
 import { useContext, useEffect } from "react";
 import { Role } from "../role/role.tsx";
 import { useBooleanEvent, useEvent, useId } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import {
   TagRemoveIdContext,
   TagValueContext,
-  useTagContext,
+  useTagContextStore,
 } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
 import { useTouchDevice } from "./utils.ts";
@@ -34,8 +35,7 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
     removeOnClick = true,
     ...props
   }) {
-    const context = useTagContext();
-    store = store || context;
+    store = useTagContextStore(store, "TagRemove");
 
     invariant(
       store,
@@ -147,7 +147,7 @@ export interface TagRemoveOptions<
    * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
    * context will be used.
    */
-  store?: TagStore;
+  store?: StoreProp<TagStore>;
   /**
    * The value of the tag to remove. If not provided, the value will be inferred
    * from the parent [`Tag`](https://ariakit.org/reference/tag) component.

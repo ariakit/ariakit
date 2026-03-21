@@ -3,6 +3,7 @@ import { useContext } from "react";
 import type { HeadingOptions } from "../heading/heading.tsx";
 import { useHeading } from "../heading/heading.tsx";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { DialogHeadingContext } from "./dialog-context.tsx";
@@ -74,7 +75,7 @@ export interface DialogHeadingOptions<
    * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
    * component's context will be used.
    */
-  store?: DialogStore;
+  store?: StoreProp<DialogStore>;
 }
 
 export type DialogHeadingProps<T extends ElementType = TagName> = Props<

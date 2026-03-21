@@ -8,6 +8,7 @@ import type { TabStore } from "./tab-store.ts";
 const ctx = createStoreContext<TabStore>(
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
+  "TabProvider",
 );
 
 /**
@@ -24,11 +25,16 @@ const ctx = createStoreContext<TabStore>(
  * }
  */
 export const useTabContext = ctx.useContext;
+export const useTabContextStore = ctx.useContextStore;
 
 export const useTabScopedContext = ctx.useScopedContext;
+export const useTabScopedContextStore = ctx.useScopedContextStore;
 
 export const useTabProviderContext = ctx.useProviderContext;
+export const useTabProviderContextStore = ctx.useProviderContextStore;
 
 export const TabContextProvider = ctx.ContextProvider;
 
 export const TabScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerTabProvider = ctx.registerProvider;

@@ -4,7 +4,7 @@ import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useSelectProviderContext } from "./select-context.tsx";
+import { useSelectProviderContextStore } from "./select-context.tsx";
 import type { SelectListOptions } from "./select-list.tsx";
 import { useSelectList } from "./select-list.tsx";
 
@@ -26,8 +26,7 @@ type TagName = typeof TagName;
  */
 export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
   function useSelectPopover({ store, alwaysVisible, ...props }) {
-    const context = useSelectProviderContext();
-    store = store || context;
+    store = useSelectProviderContextStore(store, "SelectPopover");
     props = useSelectList({ store, alwaysVisible, ...props });
     props = usePopover({ store, alwaysVisible, ...props });
     return props;
@@ -55,7 +54,7 @@ export const SelectPopover = createDialogComponent(
     const htmlProps = useSelectPopover(props);
     return createElement(TagName, htmlProps);
   }),
-  useSelectProviderContext,
+  useSelectProviderContextStore,
 );
 
 export interface SelectPopoverOptions<T extends ElementType = TagName>

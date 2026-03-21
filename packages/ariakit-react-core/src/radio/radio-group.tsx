@@ -3,11 +3,12 @@ import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   RadioScopedContextProvider,
-  useRadioProviderContext,
+  useRadioProviderContextStore,
 } from "./radio-context.tsx";
 import type { RadioStore } from "./radio-store.ts";
 
@@ -29,8 +30,7 @@ type TagName = typeof TagName;
  */
 export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
   function useRadioGroup({ store, ...props }) {
-    const context = useRadioProviderContext();
-    store = store || context;
+    store = useRadioProviderContextStore(store, "RadioGroup");
 
     invariant(
       store,
@@ -90,7 +90,7 @@ export interface RadioGroupOptions<
    * [`RadioProvider`](https://ariakit.org/reference/radio-provider) component's
    * context will be used.
    */
-  store?: RadioStore;
+  store?: StoreProp<RadioStore>;
 }
 
 export type RadioGroupProps<T extends ElementType = TagName> = Props<

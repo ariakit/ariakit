@@ -19,12 +19,13 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   SelectHeadingContext,
   SelectScopedContextProvider,
-  useSelectContext,
+  useSelectContextStore,
 } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
@@ -59,8 +60,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     alwaysVisible,
     ...props
   }) {
-    const context = useSelectContext();
-    store = store || context;
+    store = useSelectContextStore(store, "SelectList");
 
     invariant(
       store,
@@ -225,7 +225,7 @@ export interface SelectListOptions<T extends ElementType = TagName>
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
    * component's context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
   /**
    * Whether the select value should be reset to the value before the list got
    * shown when Escape is pressed. This has effect only when

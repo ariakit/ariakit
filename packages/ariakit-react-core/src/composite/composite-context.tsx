@@ -9,6 +9,7 @@ import type { CompositeStore } from "./composite-store.ts";
 const ctx = createStoreContext<CompositeStore>(
   [CollectionContextProvider],
   [CollectionScopedContextProvider],
+  "CompositeProvider",
 );
 
 /**
@@ -25,14 +26,19 @@ const ctx = createStoreContext<CompositeStore>(
  * }
  */
 export const useCompositeContext = ctx.useContext;
+export const useCompositeContextStore = ctx.useContextStore;
 
 export const useCompositeScopedContext = ctx.useScopedContext;
+export const useCompositeScopedContextStore = ctx.useScopedContextStore;
 
 export const useCompositeProviderContext = ctx.useProviderContext;
+export const useCompositeProviderContextStore = ctx.useProviderContextStore;
 
 export const CompositeContextProvider = ctx.ContextProvider;
 
 export const CompositeScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerCompositeProvider = ctx.registerProvider;
 
 interface ItemContext {
   baseElement?: HTMLElement;

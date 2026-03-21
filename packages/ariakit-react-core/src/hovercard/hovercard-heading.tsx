@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { HovercardStore } from "./hovercard-store.ts";
@@ -59,7 +60,7 @@ export interface HovercardHeadingOptions<
    * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
    * components' context will be used.
    */
-  store?: HovercardStore;
+  store?: StoreProp<HovercardStore>;
 }
 
 export type HovercardHeadingProps<T extends ElementType = TagName> = Props<

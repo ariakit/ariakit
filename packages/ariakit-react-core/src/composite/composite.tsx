@@ -27,11 +27,12 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   CompositeContextProvider,
-  useCompositeProviderContext,
+  useCompositeProviderContextStore,
 } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import {
@@ -163,8 +164,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     moveOnKeyPress = true,
     ...props
   }) {
-    const context = useCompositeProviderContext();
-    store = store || context;
+    store = useCompositeProviderContextStore(store, "Composite");
 
     invariant(
       store,
@@ -504,7 +504,7 @@ export interface CompositeOptions<
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
    * component's context will be used.
    */
-  store?: CompositeStore;
+  store?: StoreProp<CompositeStore>;
   /**
    * Determines if the component should act as a composite widget. This prop
    * needs to be set to `false` when merging various composite widgets where

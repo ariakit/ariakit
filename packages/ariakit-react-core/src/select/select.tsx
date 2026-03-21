@@ -21,12 +21,13 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { SelectArrow } from "./select-arrow.tsx";
 import {
   SelectScopedContextProvider,
-  useSelectProviderContext,
+  useSelectProviderContextStore,
 } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
@@ -80,8 +81,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   toggleOnClick = toggleOnPress,
   ...props
 }) {
-  const context = useSelectProviderContext();
-  store = store || context;
+  store = useSelectProviderContextStore(store, "Select");
 
   invariant(
     store,
@@ -325,7 +325,7 @@ export interface SelectOptions<T extends ElementType = TagName>
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
    * component's context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
   /**
    * Determines if the
    * [`SelectList`](https://ariakit.org/reference/select-list) or

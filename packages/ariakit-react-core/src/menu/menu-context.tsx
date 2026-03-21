@@ -20,6 +20,7 @@ import type { MenuStore } from "./menu-store.ts";
 const menu = createStoreContext<MenuStore>(
   [CompositeContextProvider, HovercardContextProvider],
   [CompositeScopedContextProvider, HovercardScopedContextProvider],
+  "MenuProvider",
 );
 
 /**
@@ -36,14 +37,19 @@ const menu = createStoreContext<MenuStore>(
  * }
  */
 export const useMenuContext = menu.useContext;
+export const useMenuContextStore = menu.useContextStore;
 
 export const useMenuScopedContext = menu.useScopedContext;
+export const useMenuScopedContextStore = menu.useScopedContextStore;
 
 export const useMenuProviderContext = menu.useProviderContext;
+export const useMenuProviderContextStore = menu.useProviderContextStore;
 
 export const MenuContextProvider = menu.ContextProvider;
 
 export const MenuScopedContextProvider = menu.ScopedContextProvider;
+
+export const registerMenuProvider = menu.registerProvider;
 
 /**
  * Returns the menuBar store from the nearest menuBar container.

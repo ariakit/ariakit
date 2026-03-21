@@ -3,11 +3,12 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   ToolbarScopedContextProvider,
-  useToolbarProviderContext,
+  useToolbarProviderContextStore,
 } from "./toolbar-context.tsx";
 import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.ts";
 import { useToolbarStore } from "./toolbar-store.ts";
@@ -37,8 +38,7 @@ export const useToolbar = createHook<TagName, ToolbarOptions>(
     rtl,
     ...props
   }) {
-    const context = useToolbarProviderContext();
-    storeProp = storeProp || context;
+    storeProp = useToolbarProviderContextStore(storeProp, "Toolbar");
 
     const store = useToolbarStore({
       store: storeProp,
@@ -106,7 +106,7 @@ export interface ToolbarOptions<T extends ElementType = TagName>
    * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
    * component, an internal store will be used.
    */
-  store?: ToolbarStore;
+  store?: StoreProp<ToolbarStore>;
 }
 
 export type ToolbarProps<T extends ElementType = TagName> = Props<

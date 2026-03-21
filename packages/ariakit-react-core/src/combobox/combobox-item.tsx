@@ -11,6 +11,7 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.ts";
 import { useStoreStateObject } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -22,7 +23,7 @@ import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
   ComboboxListRoleContext,
-  useComboboxScopedContext,
+  useComboboxScopedContextStore,
 } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -75,8 +76,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     getItem: getItemProp,
     ...props
   }) {
-    const context = useComboboxScopedContext();
-    store = store || context;
+    store = useComboboxScopedContextStore(store, "ComboboxItem");
 
     invariant(
       store,
@@ -264,7 +264,7 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
   /**
    * The value of the item. This will be rendered as the children by default.
    * - If

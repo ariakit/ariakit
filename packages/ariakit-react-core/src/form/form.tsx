@@ -11,9 +11,13 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { FormScopedContextProvider, useFormContext } from "./form-context.tsx";
+import {
+  FormScopedContextProvider,
+  useFormContextStore,
+} from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
 
 const TagName = "form" satisfies ElementType;
@@ -53,8 +57,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
   autoFocusOnSubmit = true,
   ...props
 }) {
-  const context = useFormContext();
-  store = store || context;
+  store = useFormContextStore(store, "Form");
 
   invariant(
     store,
@@ -201,7 +204,7 @@ export interface FormOptions<_T extends ElementType = TagName> extends Options {
    * [`FormProvider`](https://ariakit.org/reference/form-provider) component's
    * context will be used.
    */
-  store?: FormStore;
+  store?: StoreProp<FormStore>;
   /**
    * Determines if the form should invoke the validation callbacks registered
    * with

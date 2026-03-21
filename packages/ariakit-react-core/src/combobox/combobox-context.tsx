@@ -17,6 +17,7 @@ export const ComboboxListRoleContext = createContext<string | undefined>(
 const ctx = createStoreContext<ComboboxStore>(
   [PopoverContextProvider, CompositeContextProvider],
   [PopoverScopedContextProvider, CompositeScopedContextProvider],
+  "ComboboxProvider",
 );
 
 /**
@@ -33,14 +34,19 @@ const ctx = createStoreContext<ComboboxStore>(
  * }
  */
 export const useComboboxContext = ctx.useContext;
+export const useComboboxContextStore = ctx.useContextStore;
 
 export const useComboboxScopedContext = ctx.useScopedContext;
+export const useComboboxScopedContextStore = ctx.useScopedContextStore;
 
 export const useComboboxProviderContext = ctx.useProviderContext;
+export const useComboboxProviderContextStore = ctx.useProviderContextStore;
 
 export const ComboboxContextProvider = ctx.ContextProvider;
 
 export const ComboboxScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerComboboxProvider = ctx.registerProvider;
 
 export const ComboboxItemValueContext = createContext<string | undefined>(
   undefined,

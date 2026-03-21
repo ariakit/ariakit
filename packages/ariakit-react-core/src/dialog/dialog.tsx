@@ -48,6 +48,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { DialogBackdrop } from "./dialog-backdrop.tsx";
@@ -55,7 +56,7 @@ import {
   DialogDescriptionContext,
   DialogHeadingContext,
   DialogScopedContextProvider,
-  useDialogProviderContext,
+  useDialogProviderContextStore,
 } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";
@@ -123,11 +124,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   unstable_treeSnapshotKey,
   ...props
 }) {
-  const context = useDialogProviderContext();
+  storeProp = useDialogProviderContextStore(storeProp, "Dialog");
   const ref = useRef<HTMLType>(null);
 
   const store = useDialogStore({
-    store: storeProp || context,
+    store: storeProp,
     open: openProp,
     setOpen(open) {
       if (open) return;
@@ -566,11 +567,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
 export function createDialogComponent<T extends DialogOptions>(
   Component: FC<T>,
-  useProviderContext = useDialogProviderContext,
+  useProviderContextStore = useDialogProviderContextStore,
+  componentName = Component.displayName || Component.name || "Dialog",
 ) {
   return forwardRef(function DialogComponent(props: T) {
-    const context = useProviderContext();
-    const store = props.store || context;
+    const store = useProviderContextStore(props.store, componentName);
     const mounted = useStoreState(
       store,
       (state) => !props.unmountOnHide || state?.mounted || !!props.open,
@@ -605,7 +606,8 @@ export const Dialog = createDialogComponent(
     const htmlProps = useDialog(props);
     return createElement(TagName, htmlProps);
   }),
-  useDialogProviderContext,
+  useDialogProviderContextStore,
+  "Dialog",
 );
 
 export interface DialogOptions<T extends ElementType = TagName>
@@ -618,7 +620,7 @@ export interface DialogOptions<T extends ElementType = TagName>
    * component's context will be used. Otherwise, an internal store will be
    * created.
    */
-  store?: DialogStore;
+  store?: StoreProp<DialogStore>;
   /**
    * Controls the open state of the dialog. This is similar to the
    * [`open`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/open)

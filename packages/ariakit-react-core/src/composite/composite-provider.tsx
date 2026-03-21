@@ -1,6 +1,9 @@
 import type { PickRequired } from "@ariakit/core/utils/types";
 import type { ReactElement, ReactNode } from "react";
-import { CompositeContextProvider } from "./composite-context.tsx";
+import {
+  CompositeContextProvider,
+  registerCompositeProvider,
+} from "./composite-context.tsx";
 import type {
   CompositeStoreItem,
   CompositeStoreProps,
@@ -39,6 +42,8 @@ export function CompositeProvider(props: CompositeProviderProps = {}) {
     </CompositeContextProvider>
   );
 }
+
+registerCompositeProvider(CompositeProvider);
 
 export interface CompositeProviderProps<
   T extends CompositeStoreItem = CompositeStoreItem,

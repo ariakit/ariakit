@@ -3,9 +3,10 @@ import type { ElementType } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useFormContext } from "./form-context.tsx";
+import { useFormContextStore } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -25,8 +26,7 @@ type TagName = typeof TagName;
  */
 export const useFormReset = createHook<TagName, FormResetOptions>(
   function useFormReset({ store, ...props }) {
-    const context = useFormContext();
-    store = store || context;
+    store = useFormContextStore(store, "FormReset");
 
     invariant(
       store,
@@ -76,7 +76,7 @@ export interface FormResetOptions<
    * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
    * context will be used.
    */
-  store?: FormStore;
+  store?: StoreProp<FormStore>;
 }
 
 export type FormResetProps<T extends ElementType = TagName> = Props<

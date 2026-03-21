@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { DialogContextProvider } from "./dialog-context.tsx";
+import {
+  DialogContextProvider,
+  registerDialogProvider,
+} from "./dialog-context.tsx";
 import type { DialogStoreProps } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";
 
@@ -22,6 +25,8 @@ export function DialogProvider(props: DialogProviderProps = {}) {
     </DialogContextProvider>
   );
 }
+
+registerDialogProvider(DialogProvider);
 
 export interface DialogProviderProps extends DialogStoreProps {
   children?: ReactNode;

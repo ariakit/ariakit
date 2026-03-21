@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuContext } from "./menu-context.tsx";
+import { useMenuContextStore } from "./menu-context.tsx";
 import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "hr" satisfies ElementType;
@@ -27,8 +28,7 @@ type TagName = typeof TagName;
  */
 export const useMenuSeparator = createHook<TagName, MenuSeparatorOptions>(
   function useMenuSeparator({ store, ...props }) {
-    const context = useMenuContext();
-    store = store || context;
+    store = useMenuContextStore(store, "MenuSeparator");
     props = useCompositeSeparator({ store, ...props });
     return props;
   },
@@ -70,7 +70,7 @@ export interface MenuSeparatorOptions<
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
    * context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
 }
 
 export type MenuSeparatorProps<T extends ElementType = TagName> = Props<

@@ -3,9 +3,10 @@ import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useEvent } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useDialogScopedContext } from "./dialog-context.tsx";
+import { useDialogScopedContextStore } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -26,8 +27,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
   function useDialogDismiss({ store, ...props }) {
-    const context = useDialogScopedContext();
-    store = store || context;
+    store = useDialogScopedContextStore(store, "DialogDismiss");
 
     const onClickProp = props.onClick;
 
@@ -100,7 +100,7 @@ export interface DialogDismissOptions<
    * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
    * component's context will be used.
    */
-  store?: DialogStore;
+  store?: StoreProp<DialogStore>;
 }
 
 export type DialogDismissProps<T extends ElementType = TagName> = Props<

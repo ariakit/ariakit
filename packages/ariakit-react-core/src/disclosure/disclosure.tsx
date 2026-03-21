@@ -11,9 +11,10 @@ import {
   useMetadataProps,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useDisclosureProviderContext } from "./disclosure-context.tsx";
+import { useDisclosureProviderContextStore } from "./disclosure-context.tsx";
 import type { DisclosureStore } from "./disclosure-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -35,8 +36,7 @@ const symbol = Symbol("disclosure");
  */
 export const useDisclosure = createHook<TagName, DisclosureOptions>(
   function useDisclosure({ store, toggleOnClick = true, ...props }) {
-    const context = useDisclosureProviderContext();
-    store = store || context;
+    store = useDisclosureProviderContextStore(store, "Disclosure");
 
     invariant(
       store,
@@ -122,7 +122,7 @@ export interface DisclosureOptions<
    * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
    * component's context will be used.
    */
-  store?: DisclosureStore;
+  store?: StoreProp<DisclosureStore>;
   /**
    * Determines whether
    * [`toggle`](https://ariakit.org/reference/use-disclosure-store#toggle) will

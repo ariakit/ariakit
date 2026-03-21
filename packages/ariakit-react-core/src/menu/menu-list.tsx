@@ -14,11 +14,12 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   MenuScopedContextProvider,
-  useMenuProviderContext,
+  useMenuProviderContextStore,
 } from "./menu-context.tsx";
 import type { MenuStore } from "./menu-store.ts";
 
@@ -27,7 +28,10 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 type BasePlacement = "top" | "bottom" | "left" | "right";
 
-function useAriaLabelledBy({ store, ...props }: MenuListProps) {
+function useAriaLabelledBy({
+  store,
+  ...props
+}: Omit<MenuListProps, "store"> & { store: MenuStore }) {
   const [id, setId] = useState<string | undefined>(undefined);
   const label = props["aria-label"];
 
@@ -66,8 +70,7 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
  */
 export const useMenuList = createHook<TagName, MenuListOptions>(
   function useMenuList({ store, alwaysVisible, composite, ...props }) {
-    const context = useMenuProviderContext();
-    store = store || context;
+    store = useMenuProviderContextStore(store, "MenuList");
 
     invariant(
       store,
@@ -219,7 +222,7 @@ export interface MenuListOptions<T extends ElementType = TagName>
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
    * context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
 }
 
 export type MenuListProps<T extends ElementType = TagName> = Props<

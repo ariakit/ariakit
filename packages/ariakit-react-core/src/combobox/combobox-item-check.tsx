@@ -2,6 +2,7 @@ import type { ElementType } from "react";
 import { useContext } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.tsx";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { ComboboxItemCheckedContext } from "./combobox-context.tsx";
@@ -74,7 +75,7 @@ export interface ComboboxItemCheckOptions<
    * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
    * hook.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
 }
 
 export type ComboboxItemCheckProps<T extends ElementType = TagName> = Props<

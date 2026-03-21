@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { TagContextProvider } from "./tag-context.tsx";
+import { registerTagProvider, TagContextProvider } from "./tag-context.tsx";
 import type { TagStoreProps } from "./tag-store.ts";
 import { useTagStore } from "./tag-store.ts";
 
@@ -32,6 +32,8 @@ export function TagProvider(props: TagProviderProps = {}) {
     <TagContextProvider value={store}>{props.children}</TagContextProvider>
   );
 }
+
+registerTagProvider(TagProvider);
 
 export interface TagProviderProps extends TagStoreProps {
   children?: ReactNode;

@@ -8,11 +8,12 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useEvent, useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   TagScopedContextProvider,
-  useTagProviderContext,
+  useTagProviderContextStore,
 } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
 import { useTouchDevice } from "./utils.ts";
@@ -32,8 +33,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useTagList = createHook<TagName, TagListOptions>(
   function useTagList({ store, ...props }) {
-    const context = useTagProviderContext();
-    store = store || context;
+    store = useTagProviderContextStore(store, "TagList");
 
     invariant(
       store,
@@ -192,7 +192,7 @@ export interface TagListOptions<
    * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
    * context will be used.
    */
-  store?: TagStore;
+  store?: StoreProp<TagStore>;
 }
 
 export type TagListProps<T extends ElementType = TagName> = Props<

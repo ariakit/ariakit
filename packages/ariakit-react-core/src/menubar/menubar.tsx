@@ -3,11 +3,12 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   MenubarScopedContextProvider,
-  useMenubarProviderContext,
+  useMenubarProviderContextStore,
 } from "./menubar-context.tsx";
 import type { MenubarStore, MenubarStoreProps } from "./menubar-store.ts";
 import { useMenubarStore } from "./menubar-store.ts";
@@ -45,8 +46,7 @@ export const useMenubar = createHook<TagName, MenubarOptions>(
     rtl,
     ...props
   }) {
-    const context = useMenubarProviderContext();
-    storeProp = storeProp || context;
+    storeProp = useMenubarProviderContextStore(storeProp, "Menubar");
 
     const store = useMenubarStore({
       store: storeProp,
@@ -132,7 +132,7 @@ export interface MenubarOptions<T extends ElementType = TagName>
    * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
    * component, an internal store will be used.
    */
-  store?: MenubarStore;
+  store?: StoreProp<MenubarStore>;
 }
 
 export type MenubarProps<T extends ElementType = TagName> = Props<

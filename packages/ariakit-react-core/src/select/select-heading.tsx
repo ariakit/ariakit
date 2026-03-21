@@ -3,6 +3,7 @@ import { useContext } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { SelectHeadingContext } from "./select-context.tsx";
@@ -84,7 +85,7 @@ export interface SelectHeadingOptions<
    * [`SelectProvider`](https://ariakit.org/reference/select-provider)
    * components' context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectHeadingProps<T extends ElementType = TagName> = Props<

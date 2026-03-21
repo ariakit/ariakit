@@ -3,9 +3,10 @@ import type { ElementType } from "react";
 import type { SeparatorOptions } from "../separator/separator.tsx";
 import { useSeparator } from "../separator/separator.tsx";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeContextStore } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 
 const TagName = "hr" satisfies ElementType;
@@ -29,8 +30,7 @@ export const useCompositeSeparator = createHook<
   TagName,
   CompositeSeparatorOptions
 >(function useCompositeSeparator({ store, ...props }) {
-  const context = useCompositeContext();
-  store = store || context;
+  store = useCompositeContextStore(store, "CompositeSeparator");
 
   invariant(
     store,
@@ -80,7 +80,7 @@ export interface CompositeSeparatorOptions<
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
    * components' context will be used.
    */
-  store?: CompositeStore;
+  store?: StoreProp<CompositeStore>;
   /**
    * The orientation of the separator. By default, this is the opposite of the
    * [`orientation`](https://ariakit.org/reference/composite-provider#orientation)

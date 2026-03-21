@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.tsx";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { SelectStore } from "./select-store.ts";
@@ -69,7 +70,7 @@ export interface SelectGroupLabelOptions<
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
    * context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectGroupLabelProps<T extends ElementType = TagName> = Props<

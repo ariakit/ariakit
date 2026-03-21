@@ -18,9 +18,10 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useTagContext } from "./tag-context.tsx";
+import { useTagContextStore } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
 
 const TagName = "input" satisfies ElementType;
@@ -76,8 +77,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
     removeOnBackspace = true,
     ...props
   }) {
-    const context = useTagContext();
-    store = store || context;
+    store = useTagContextStore(store, "TagInput");
 
     invariant(
       store,
@@ -245,7 +245,7 @@ export interface TagInputOptions<
    * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
    * context will be used.
    */
-  store?: TagStore;
+  store?: StoreProp<TagStore>;
   /**
    * The string or pattern employed to break the input value into multiple tags.
    * This could be a string, a regular expression, an array of strings and

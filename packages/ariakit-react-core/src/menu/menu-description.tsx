@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.tsx";
 import { useHovercardDescription } from "../hovercard/hovercard-description.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { MenuStore } from "./menu-store.ts";
@@ -58,7 +59,7 @@ export interface MenuDescriptionOptions<
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
    * context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
 }
 
 export type MenuDescriptionProps<T extends ElementType = TagName> = Props<

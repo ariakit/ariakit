@@ -6,11 +6,12 @@ import {
 import type { ElementType, ReactElement } from "react";
 import { useContext, useMemo } from "react";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import {
   ComboboxItemValueContext,
-  useComboboxScopedContext,
+  useComboboxScopedContextStore,
 } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -122,8 +123,7 @@ export const useComboboxItemValue = createHook<
   TagName,
   ComboboxItemValueOptions
 >(function useComboboxItemValue({ store, value, userValue, ...props }) {
-  const context = useComboboxScopedContext();
-  store = store || context;
+  store = useComboboxScopedContextStore(store, "ComboboxItemValue");
 
   const itemContext = useContext(ComboboxItemValueContext);
   const itemValue = value ?? itemContext;
@@ -201,7 +201,7 @@ export interface ComboboxItemValueOptions<
    * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
    * components' context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
   /**
    * The current combobox item value. If not provided, the parent
    * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) component's

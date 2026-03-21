@@ -8,6 +8,7 @@ import type { FormStore } from "./form-store.ts";
 const ctx = createStoreContext<FormStore>(
   [CollectionContextProvider],
   [CollectionScopedContextProvider],
+  "FormProvider",
 );
 
 /**
@@ -24,11 +25,16 @@ const ctx = createStoreContext<FormStore>(
  * }
  */
 export const useFormContext = ctx.useContext;
+export const useFormContextStore = ctx.useContextStore;
 
 export const useFormScopedContext = ctx.useScopedContext;
+export const useFormScopedContextStore = ctx.useScopedContextStore;
 
 export const useFormProviderContext = ctx.useProviderContext;
+export const useFormProviderContextStore = ctx.useProviderContextStore;
 
 export const FormContextProvider = ctx.ContextProvider;
 
 export const FormScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerFormProvider = ctx.registerProvider;

@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -8,7 +9,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useToolbarContext } from "./toolbar-context.tsx";
+import { useToolbarContextStore } from "./toolbar-context.tsx";
 import type { ToolbarStore } from "./toolbar-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -28,8 +29,7 @@ type TagName = typeof TagName;
  */
 export const useToolbarItem = createHook<TagName, ToolbarItemOptions>(
   function useToolbarItem({ store, ...props }) {
-    const context = useToolbarContext();
-    store = store || context;
+    store = useToolbarContextStore(store, "ToolbarItem");
     props = useCompositeItem({ store, ...props });
     return props;
   },
@@ -63,7 +63,7 @@ export interface ToolbarItemOptions<
    * [`Toolbar`](https://ariakit.org/reference/toolbar) component's context will
    * be used.
    */
-  store?: ToolbarStore;
+  store?: StoreProp<ToolbarStore>;
 }
 
 export type ToolbarItemProps<T extends ElementType = TagName> = Props<

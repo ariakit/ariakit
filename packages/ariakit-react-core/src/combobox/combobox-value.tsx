@@ -1,7 +1,8 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ReactNode } from "react";
 import { useStoreState } from "../utils/store.tsx";
-import { useComboboxContext } from "./combobox-context.tsx";
+import type { StoreProp } from "../utils/system.tsx";
+import { useComboboxContextStore } from "./combobox-context.tsx";
 import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
 
 /**
@@ -28,8 +29,7 @@ import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
  * ```
  */
 export function ComboboxValue({ store, children }: ComboboxValueProps = {}) {
-  const context = useComboboxContext();
-  store = store || context;
+  store = useComboboxContextStore(store, "ComboboxValue");
 
   invariant(
     store,
@@ -54,7 +54,7 @@ export interface ComboboxValueProps {
    * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
    * component's context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
   /**
    * A function that gets called with the current value as an argument. It can
    * be used to render the combobox value in a custom way.

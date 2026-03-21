@@ -7,6 +7,7 @@ import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType, FocusEvent, KeyboardEvent } from "react";
 import { useEffect } from "react";
 import { useEvent } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -14,6 +15,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
+import { useCompositeContextStore } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 import { selectTextField } from "./utils.ts";
 
@@ -49,6 +51,7 @@ function getValueLength(element: HTMLElement) {
  */
 export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
   function useCompositeInput({ store, ...props }) {
+    store = useCompositeContextStore(store, "CompositeInput");
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
     if (process.env.NODE_ENV !== "production") {
@@ -138,7 +141,7 @@ export interface CompositeInputOptions<
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
    * components' context will be used.
    */
-  store?: CompositeStore;
+  store?: StoreProp<CompositeStore>;
 }
 
 export type CompositeInputProps<T extends ElementType = TagName> = Props<

@@ -32,6 +32,7 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreStateObject } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -42,7 +43,7 @@ import type { Props } from "../utils/types.ts";
 import {
   CompositeItemContext,
   CompositeRowContext,
-  useCompositeContext,
+  useCompositeContextStore,
 } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 import {
@@ -158,8 +159,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     "aria-posinset": ariaPosInSetProp,
     ...props
   }) {
-    const context = useCompositeContext();
-    store = store || context;
+    store = useCompositeContextStore(store, "CompositeItem");
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
@@ -481,7 +481,7 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
    * components' context will be used.
    */
-  store?: CompositeStore;
+  store?: StoreProp<CompositeStore>;
   /**
    * Determines if the item should be registered as part of the collection. If
    * this is set to `false`, the item won't be accessible via arrow keys.

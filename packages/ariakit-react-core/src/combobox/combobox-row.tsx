@@ -4,9 +4,10 @@ import type { ElementType } from "react";
 import type { CompositeRowOptions } from "../composite/composite-row.tsx";
 import { useCompositeRow } from "../composite/composite-row.tsx";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useComboboxScopedContext } from "./combobox-context.tsx";
+import { useComboboxScopedContextStore } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -30,8 +31,7 @@ type TagName = typeof TagName;
  */
 export const useComboboxRow = createHook<TagName, ComboboxRowOptions>(
   function useComboboxRow({ store, ...props }) {
-    const context = useComboboxScopedContext();
-    store = store || context;
+    store = useComboboxScopedContextStore(store, "ComboboxRow");
 
     invariant(
       store,
@@ -94,7 +94,7 @@ export interface ComboboxRowOptions<
    * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
    * components' context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
 }
 
 export type ComboboxRowProps<T extends ElementType = TagName> = Props<

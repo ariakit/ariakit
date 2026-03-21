@@ -2,6 +2,7 @@ import type { ElementType } from "react";
 import { useContext } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.tsx";
 import { useCheckboxCheck } from "../checkbox/checkbox-check.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { SelectItemCheckedContext } from "./select-context.tsx";
@@ -71,7 +72,7 @@ export interface SelectItemCheckOptions<
    * Object returned by the
    * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectItemCheckProps<T extends ElementType = TagName> = Props<

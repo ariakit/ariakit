@@ -8,6 +8,7 @@ import type { ToolbarStore } from "./toolbar-store.ts";
 const ctx = createStoreContext<ToolbarStore>(
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
+  "ToolbarProvider",
 );
 
 /**
@@ -24,11 +25,16 @@ const ctx = createStoreContext<ToolbarStore>(
  * }
  */
 export const useToolbarContext = ctx.useContext;
+export const useToolbarContextStore = ctx.useContextStore;
 
 export const useToolbarScopedContext = ctx.useScopedContext;
+export const useToolbarScopedContextStore = ctx.useScopedContextStore;
 
 export const useToolbarProviderContext = ctx.useProviderContext;
+export const useToolbarProviderContextStore = ctx.useProviderContextStore;
 
 export const ToolbarContextProvider = ctx.ContextProvider;
 
 export const ToolbarScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerToolbarProvider = ctx.registerProvider;

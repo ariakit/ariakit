@@ -4,11 +4,12 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import { useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   TabScopedContextProvider,
-  useTabProviderContext,
+  useTabProviderContextStore,
 } from "./tab-context.tsx";
 import type { TabStore } from "./tab-store.ts";
 
@@ -32,8 +33,7 @@ type TagName = typeof TagName;
  */
 export const useTabList = createHook<TagName, TabListOptions>(
   function useTabList({ store, ...props }) {
-    const context = useTabProviderContext();
-    store = store || context;
+    store = useTabProviderContextStore(store, "TabList");
 
     invariant(
       store,
@@ -107,7 +107,7 @@ export interface TabListOptions<
    * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
    * context will be used.
    */
-  store?: TabStore;
+  store?: StoreProp<TabStore>;
 }
 
 export type TabListProps<T extends ElementType = TagName> = Props<

@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { CompositeGroupLabelOptions } from "../composite/composite-group-label.tsx";
 import { useCompositeGroupLabel } from "../composite/composite-group-label.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { ComboboxStore } from "./combobox-store.ts";
@@ -65,7 +66,7 @@ export interface ComboboxGroupLabelOptions<
    * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
    * components' context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
 }
 
 export type ComboboxGroupLabelProps<T extends ElementType = TagName> = Props<

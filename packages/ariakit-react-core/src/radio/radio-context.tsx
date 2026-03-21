@@ -8,6 +8,7 @@ import type { RadioStore } from "./radio-store.ts";
 const ctx = createStoreContext<RadioStore>(
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
+  "RadioProvider",
 );
 
 /**
@@ -24,11 +25,16 @@ const ctx = createStoreContext<RadioStore>(
  * }
  */
 export const useRadioContext = ctx.useContext;
+export const useRadioContextStore = ctx.useContextStore;
 
 export const useRadioScopedContext = ctx.useScopedContext;
+export const useRadioScopedContextStore = ctx.useScopedContextStore;
 
 export const useRadioProviderContext = ctx.useProviderContext;
+export const useRadioProviderContextStore = ctx.useProviderContextStore;
 
 export const RadioContextProvider = ctx.ContextProvider;
 
 export const RadioScopedContextProvider = ctx.ScopedContextProvider;
+
+export const registerRadioProvider = ctx.registerProvider;

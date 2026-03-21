@@ -4,9 +4,10 @@ import type { ElementType } from "react";
 import type { CompositeRowOptions } from "../composite/composite-row.tsx";
 import { useCompositeRow } from "../composite/composite-row.tsx";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useSelectContext } from "./select-context.tsx";
+import { useSelectContextStore } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -29,8 +30,7 @@ type TagName = typeof TagName;
  */
 export const useSelectRow = createHook<TagName, SelectRowOptions>(
   function useSelectRow({ store, ...props }) {
-    const context = useSelectContext();
-    store = store || context;
+    store = useSelectContextStore(store, "SelectRow");
 
     invariant(
       store,
@@ -89,7 +89,7 @@ export interface SelectRowOptions<
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
    * context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectRowProps<T extends ElementType = TagName> = Props<

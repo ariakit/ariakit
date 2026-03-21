@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.tsx";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { usePopoverScopedContext } from "./popover-context.tsx";
+import { usePopoverScopedContextStore } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -23,8 +24,7 @@ type TagName = typeof TagName;
  */
 export const usePopoverDismiss = createHook<TagName, PopoverDismissOptions>(
   function usePopoverDismiss({ store, ...props }) {
-    const context = usePopoverScopedContext();
-    store = store || context;
+    store = usePopoverScopedContextStore(store, "PopoverDismiss");
     props = useDialogDismiss({ store, ...props });
     return props;
   },
@@ -61,7 +61,7 @@ export interface PopoverDismissOptions<
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
    * components' context will be used.
    */
-  store?: PopoverStore;
+  store?: StoreProp<PopoverStore>;
 }
 
 export type PopoverDismissProps<T extends ElementType = TagName> = Props<

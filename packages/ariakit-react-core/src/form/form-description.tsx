@@ -5,6 +5,7 @@ import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useId, useMergeRefs } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -12,7 +13,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useFormContext } from "./form-context.tsx";
+import { useFormContextStore } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -40,8 +41,7 @@ export const useFormDescription = createHook<TagName, FormDescriptionOptions>(
     getItem: getItemProp,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
+    store = useFormContextStore(store, "FormDescription");
 
     invariant(
       store,
@@ -119,7 +119,7 @@ export interface FormDescriptionOptions<
    * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
    * context will be used.
    */
-  store?: FormStore;
+  store?: StoreProp<FormStore>;
   /**
    * Name of the field described by this element. This can either be a string or
    * a reference to a field name from the

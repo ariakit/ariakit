@@ -16,11 +16,12 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import {
   TabScopedContextProvider,
-  useTabProviderContext,
+  useTabProviderContextStore,
 } from "./tab-context.tsx";
 import type { TabStore } from "./tab-store.ts";
 
@@ -51,8 +52,7 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     scrollElement,
     ...props
   }) {
-    const context = useTabProviderContext();
-    store = store || context;
+    store = useTabProviderContextStore(store, "TabPanel");
 
     invariant(
       store,
@@ -237,7 +237,7 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
    * context will be used.
    */
-  store?: TabStore;
+  store?: StoreProp<TabStore>;
   /**
    * The [`id`](https://ariakit.org/reference/tab#id) of the tab controlling
    * this panel. This connection is used to assign the `aria-labelledby`

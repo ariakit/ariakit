@@ -11,12 +11,13 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import {
   ComboboxListRoleContext,
   ComboboxScopedContextProvider,
-  useComboboxContext,
+  useComboboxContextStore,
   useComboboxScopedContext,
 } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
@@ -42,8 +43,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useComboboxList = createHook<TagName, ComboboxListOptions>(
   function useComboboxList({ store, alwaysVisible, ...props }) {
     const scopedContext = useComboboxScopedContext(true);
-    const context = useComboboxContext();
-    store = store || context;
+    store = useComboboxContextStore(store, "ComboboxList");
     const scopedContextSameStore = !!store && store === scopedContext;
 
     invariant(
@@ -165,7 +165,7 @@ export interface ComboboxListOptions<T extends ElementType = TagName>
    * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
    * component's context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
 }
 
 export type ComboboxListProps<T extends ElementType = TagName> = Props<

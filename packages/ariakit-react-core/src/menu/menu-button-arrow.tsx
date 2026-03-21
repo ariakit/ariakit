@@ -1,9 +1,10 @@
 import type { ElementType } from "react";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.tsx";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuContext } from "./menu-context.tsx";
+import { useMenuContextStore } from "./menu-context.tsx";
 import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "span" satisfies ElementType;
@@ -28,8 +29,7 @@ type TagName = typeof TagName;
  */
 export const useMenuButtonArrow = createHook<TagName, MenuButtonArrowOptions>(
   function useMenuButtonArrow({ store, ...props }) {
-    const context = useMenuContext();
-    store = store || context;
+    store = useMenuContextStore(store, "MenuButtonArrow");
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
   },
@@ -76,7 +76,7 @@ export interface MenuButtonArrowOptions<
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
    * context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
 }
 
 export type MenuButtonArrowProps<T extends ElementType = TagName> = Props<

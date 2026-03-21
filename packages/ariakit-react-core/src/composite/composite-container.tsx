@@ -1,4 +1,3 @@
-// TODO: Add data-attribute to indicate whether it's expanded?
 import { isButton, isTextField } from "@ariakit/core/utils/dom";
 import { isFocusEventOutside, isSelfTarget } from "@ariakit/core/utils/events";
 import {
@@ -11,9 +10,11 @@ import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+// TODO: Add data-attribute to indicate whether it's expanded?
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeContextStore } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 import { selectTextField } from "./utils.ts";
 
@@ -49,8 +50,7 @@ export const useCompositeContainer = createHook<
   TagName,
   CompositeContainerOptions
 >(function useCompositeContainer({ store, ...props }) {
-  const context = useCompositeContext();
-  store = store || context;
+  store = useCompositeContextStore(store, "CompositeContainer");
 
   const ref = useRef<HTMLType>(null);
   const isOpenRef = useRef(false);
@@ -262,7 +262,7 @@ export interface CompositeContainerOptions<
    * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
    * components' context will be used.
    */
-  store?: CompositeStore;
+  store?: StoreProp<CompositeStore>;
 }
 
 export type CompositeContainerProps<T extends ElementType = TagName> = Props<

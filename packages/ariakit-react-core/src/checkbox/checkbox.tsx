@@ -19,10 +19,11 @@ import {
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
-import { useCheckboxContext } from "./checkbox-context.tsx";
+import { useCheckboxContextStore } from "./checkbox-context.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";
 
 const TagName = "input" satisfies ElementType;
@@ -68,8 +69,7 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
     defaultChecked,
     ...props
   }) {
-    const context = useCheckboxContext();
-    store = store || context;
+    store = useCheckboxContextStore(store, "Checkbox");
 
     const [_checked, setChecked] = useState(defaultChecked ?? false);
 
@@ -221,7 +221,7 @@ export interface CheckboxOptions<
    * Live examples:
    * - [Checkbox as button](https://ariakit.org/examples/checkbox-as-button)
    */
-  store?: CheckboxStore;
+  store?: StoreProp<CheckboxStore>;
   /**
    * The native `name` attribute.
    *

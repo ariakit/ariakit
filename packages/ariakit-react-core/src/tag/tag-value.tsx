@@ -1,7 +1,8 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ReactNode } from "react";
 import { useStoreState } from "../utils/store.tsx";
-import { useTagContext } from "./tag-context.tsx";
+import type { StoreProp } from "../utils/system.tsx";
+import { useTagContextStore } from "./tag-context.tsx";
 import type { TagStore, TagStoreState } from "./tag-store.ts";
 
 /**
@@ -28,8 +29,7 @@ import type { TagStore, TagStoreState } from "./tag-store.ts";
  * ```
  */
 export function TagValue({ store, children }: TagValueProps = {}) {
-  const context = useTagContext();
-  store = store || context;
+  store = useTagContextStore(store, "TagValue");
 
   invariant(
     store,
@@ -54,7 +54,7 @@ export interface TagValueProps {
    * [`TagProvider`](https://ariakit.org/reference/tag-provider)
    * component's context will be used.
    */
-  store?: TagStore;
+  store?: StoreProp<TagStore>;
   /**
    * A function that gets called with the current value as an argument. It can
    * be used to render the tag value in a custom way.

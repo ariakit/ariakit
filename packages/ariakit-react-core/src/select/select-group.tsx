@@ -1,6 +1,7 @@
 import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.tsx";
 import { useCompositeGroup } from "../composite/composite-group.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { SelectStore } from "./select-store.ts";
@@ -70,7 +71,7 @@ export interface SelectGroupOptions<
    * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
    * context will be used.
    */
-  store?: SelectStore;
+  store?: StoreProp<SelectStore>;
 }
 
 export type SelectGroupProps<T extends ElementType = TagName> = Props<

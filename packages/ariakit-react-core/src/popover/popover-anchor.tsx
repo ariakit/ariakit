@@ -1,8 +1,9 @@
 import type { ElementType } from "react";
 import { useMergeRefs } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
-import { usePopoverProviderContext } from "./popover-context.tsx";
+import { usePopoverProviderContextStore } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -21,8 +22,7 @@ type TagName = typeof TagName;
  */
 export const usePopoverAnchor = createHook<TagName, PopoverAnchorOptions>(
   function usePopoverAnchor({ store, ...props }) {
-    const context = usePopoverProviderContext();
-    store = store || context;
+    store = usePopoverProviderContextStore(store, "PopoverAnchor");
     props = {
       ...props,
       ref: useMergeRefs(store?.setAnchorElement, props.ref),
@@ -61,7 +61,7 @@ export interface PopoverAnchorOptions<
    * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
    * component's context will be used.
    */
-  store?: PopoverStore;
+  store?: StoreProp<PopoverStore>;
 }
 
 export type PopoverAnchorProps<T extends ElementType = TagName> = Props<

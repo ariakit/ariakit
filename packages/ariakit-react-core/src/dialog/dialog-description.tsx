@@ -2,6 +2,7 @@ import { removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { DialogDescriptionContext } from "./dialog-context.tsx";
@@ -72,7 +73,7 @@ export interface DialogDescriptionOptions<
    * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
    * component's context will be used.
    */
-  store?: DialogStore;
+  store?: StoreProp<DialogStore>;
 }
 
 export type DialogDescriptionProps<T extends ElementType = TagName> = Props<

@@ -10,9 +10,10 @@ import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import { useEvent } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useTooltipProviderContext } from "./tooltip-context.tsx";
+import { useTooltipProviderContextStore } from "./tooltip-context.tsx";
 import type { TooltipStore } from "./tooltip-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -46,8 +47,7 @@ function createRemoveStoreCallback(store: TooltipStore) {
  */
 export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
   function useTooltipAnchor({ store, showOnHover = true, ...props }) {
-    const context = useTooltipProviderContext();
-    store = store || context;
+    store = useTooltipProviderContextStore(store, "TooltipAnchor");
 
     invariant(
       store,
@@ -200,7 +200,7 @@ export interface TooltipAnchorOptions<
    * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
    * component's context will be used.
    */
-  store?: TooltipStore;
+  store?: StoreProp<TooltipStore>;
 }
 
 export type TooltipAnchorProps<T extends ElementType = TagName> = Props<

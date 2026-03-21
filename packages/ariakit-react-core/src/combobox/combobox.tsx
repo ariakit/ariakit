@@ -46,9 +46,10 @@ import {
   useUpdateLayoutEffect,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import { useComboboxProviderContextStore } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
   ComboboxStoreSelectedValue,
@@ -138,8 +139,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     autoComplete = "list",
     ...props
   }) {
-    const context = useComboboxProviderContext();
-    store = store || context;
+    store = useComboboxProviderContextStore(store, "Combobox");
 
     invariant(
       store,
@@ -671,7 +671,7 @@ export interface ComboboxOptions<T extends ElementType = TagName>
    * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
    * component's context will be used.
    */
-  store?: ComboboxStore;
+  store?: StoreProp<ComboboxStore>;
   /**
    * Determines if the first enabled item will be automatically focused when the
    * combobox input value changes. If set to `true` or `"always"`, the exact

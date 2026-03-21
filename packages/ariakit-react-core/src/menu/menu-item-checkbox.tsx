@@ -6,6 +6,7 @@ import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
 import { useInitialValue } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -13,7 +14,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useMenuScopedContext } from "./menu-context.tsx";
+import { useMenuScopedContextStore } from "./menu-context.tsx";
 import type { MenuItemOptions } from "./menu-item.tsx";
 import { useMenuItem } from "./menu-item.tsx";
 import type { MenuStore, MenuStoreValues } from "./menu-store.ts";
@@ -77,8 +78,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
     hideOnClick = false,
     ...props
   }) {
-    const context = useMenuScopedContext();
-    store = store || context;
+    store = useMenuScopedContextStore(store, "MenuItemCheckbox");
 
     invariant(
       store,
@@ -194,7 +194,7 @@ export interface MenuItemCheckboxOptions<T extends ElementType = TagName>
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
    * context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
   /**
    * The name of the field in the
    * [`values`](https://ariakit.org/reference/menu-provider#values) state.

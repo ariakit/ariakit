@@ -15,6 +15,7 @@ import {
   useTagName,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -22,7 +23,7 @@ import {
   memo,
 } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
-import { useRadioContext } from "./radio-context.tsx";
+import { useRadioContextStore } from "./radio-context.tsx";
 import type { RadioStore, RadioStoreState } from "./radio-store.ts";
 
 const TagName = "input" satisfies ElementType;
@@ -64,8 +65,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   checked,
   ...props
 }) {
-  const context = useRadioContext();
-  store = store || context;
+  store = useRadioContextStore(store, "Radio");
 
   const id = useId(props.id);
 
@@ -210,7 +210,7 @@ export interface RadioOptions<
    * [`RadioProvider`](https://ariakit.org/reference/radio-provider) components'
    * context will be used.
    */
-  store?: RadioStore;
+  store?: StoreProp<RadioStore>;
   /**
    * The value of the radio button.
    *

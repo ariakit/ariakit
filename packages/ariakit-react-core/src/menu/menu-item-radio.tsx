@@ -5,6 +5,7 @@ import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
 import { useInitialValue, useWrapElement } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
+import type { StoreProp } from "../utils/system.tsx";
 import {
   createElement,
   createHook,
@@ -14,7 +15,7 @@ import {
 import type { Props } from "../utils/types.ts";
 import {
   MenuItemCheckedContext,
-  useMenuScopedContext,
+  useMenuScopedContextStore,
 } from "./menu-context.tsx";
 import type { MenuItemOptions } from "./menu-item.tsx";
 import { useMenuItem } from "./menu-item.tsx";
@@ -54,8 +55,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
     hideOnClick = false,
     ...props
   }) {
-    const context = useMenuScopedContext();
-    store = store || context;
+    store = useMenuScopedContextStore(store, "MenuItemRadio");
 
     invariant(
       store,
@@ -164,7 +164,7 @@ export interface MenuItemRadioOptions<T extends ElementType = TagName>
    * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
    * context will be used.
    */
-  store?: MenuStore;
+  store?: StoreProp<MenuStore>;
   /**
    * The name of the field in the
    * [`values`](https://ariakit.org/reference/menu-provider#values) state.
