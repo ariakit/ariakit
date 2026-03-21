@@ -93,9 +93,9 @@ type StoreContextMode = "context" | "scoped" | "provider";
 
 interface StoreContextMetadata<T extends Store = Store> {
   name: string;
-  useContext: () => T | null | undefined;
-  useScopedContext: (onlyScoped?: boolean) => T | null | undefined;
-  useProviderContext: () => T | null | undefined;
+  useContext: () => T | undefined;
+  useScopedContext: (onlyScoped?: boolean) => T | undefined;
+  useProviderContext: () => T | undefined;
   useContextSource: () => StoreContextMetadata | undefined;
   useScopedContextSource: (
     onlyScoped?: boolean,
@@ -215,8 +215,8 @@ export function createStoreContext<T extends Store>(
     typeof nameOrProviders === "string"
       ? scopedProvidersProp
       : providersOrScopedProviders;
-  const context = React.createContext<T | null | undefined>(undefined);
-  const scopedContext = React.createContext<T | null | undefined>(undefined);
+  const context = React.createContext<T | undefined>(undefined);
+  const scopedContext = React.createContext<T | undefined>(undefined);
   const contextSource = React.createContext<StoreContextMetadata | undefined>(
     undefined,
   );

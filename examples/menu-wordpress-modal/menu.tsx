@@ -16,7 +16,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
     return (
       <Ariakit.MenuItem
         ref={ref}
-        store={store || undefined}
+        store={store}
         {...props}
         className={clsx("menu-item", props.className)}
       />
@@ -110,10 +110,7 @@ export function createMenuSlot(name: string, bubblesVirtually = false) {
     // Provide the menu store to the fills
     const menu = Ariakit.useMenuContext();
     return (
-      <SlotFill.Slot
-        bubblesVirtually={bubblesVirtually}
-        fillProps={menu || undefined}
-      />
+      <SlotFill.Slot bubblesVirtually={bubblesVirtually} fillProps={menu} />
     );
   };
 
