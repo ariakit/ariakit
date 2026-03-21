@@ -10,15 +10,24 @@ import {
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";
 
-const skipConsoleGuardPaths = [
-  "examples/store-provider-deprecated/test.ts",
-  "site/src/sandbox/store-provider-deprecated/test.ts",
-];
+const allowedConsoleMessages: string[] = [];
+
+(
+  globalThis as { __allowedConsoleMessages?: string[] }
+).__allowedConsoleMessages = allowedConsoleMessages;
 
 failOnConsole({
-  skipTest({ testPath }: { testPath?: string }) {
-    if (!testPath) return false;
-    return skipConsoleGuardPaths.some((path) => testPath.endsWith(path));
+  allowMessage(message: string, method: string) {
+    if (method !== "warn") return false;
+    const allowed =
+      message ===
+      "CompositeItem is reading its store from ComboboxProvider implicitly. " +
+        "This is deprecated and will stop working in a future version. " +
+        "Pass `store={ComboboxProvider}` to keep the current behavior.";
+    if (allowed) {
+      allowedConsoleMessages.push(message);
+    }
+    return allowed;
   },
 });
 
@@ -144,6 +153,7 @@ const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
 
 beforeEach(async ({ task, skip }) => {
+  allowedConsoleMessages.length = 0;
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
   const { dir, loader } = parseResult;

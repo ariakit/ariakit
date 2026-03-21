@@ -10,7 +10,6 @@ import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
 import { useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
-// TODO: Add data-attribute to indicate whether it's expanded?
 import type { StoreProp } from "../utils/system.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
@@ -22,6 +21,7 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+// TODO: Add data-attribute to indicate whether it's expanded?
 function getFirstTabbable(container: HTMLElement) {
   restoreFocusIn(container);
   const tabbable = getFirstTabbableIn(container);

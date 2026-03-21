@@ -5,22 +5,11 @@ const message =
   "This is deprecated and will stop working in a future version. " +
   "Pass `store={ComboboxProvider}` to keep the current behavior.";
 
-const originalWarn = console.warn;
-const warn = vi.fn<typeof console.warn>();
-
-console.warn = warn;
-
-afterEach(() => {
-  warn.mockClear();
-});
-
-afterAll(() => {
-  console.warn = originalWarn;
-});
-
 test("warns on implicit compatible provider context", async () => {
   await click(q.button("Show combobox"));
   await waitFor(() => expect(q.button("Apple")).toBeVisible());
   await sleep(0);
-  expect(warn.mock.calls.flat()).toContain(message);
+  const warnings = (globalThis as { __allowedConsoleMessages?: string[] })
+    .__allowedConsoleMessages;
+  expect(warnings).toContain(message);
 });

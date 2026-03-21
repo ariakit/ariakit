@@ -92,6 +92,8 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
       }
       return undefined;
     });
+    // MenuItemRadio manages a menu store, but useRadio expects a radio store
+    // for its checked state logic and keyboard behavior.
     const radioStore = useRadioStore({
       value: radioValue,
     });

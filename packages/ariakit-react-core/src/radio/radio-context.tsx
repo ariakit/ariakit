@@ -6,9 +6,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { RadioStore } from "./radio-store.ts";
 
 const ctx = createStoreContext<RadioStore>(
+  "RadioProvider",
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
-  "RadioProvider",
 );
 
 /**

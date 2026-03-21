@@ -18,9 +18,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { MenuStore } from "./menu-store.ts";
 
 const menu = createStoreContext<MenuStore>(
+  "MenuProvider",
   [CompositeContextProvider, HovercardContextProvider],
   [CompositeScopedContextProvider, HovercardScopedContextProvider],
-  "MenuProvider",
 );
 
 /**

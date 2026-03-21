@@ -6,9 +6,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { TooltipStore } from "./tooltip-store.ts";
 
 const ctx = createStoreContext<TooltipStore>(
+  "TooltipProvider",
   [HovercardContextProvider],
   [HovercardScopedContextProvider],
-  "TooltipProvider",
 );
 
 /**

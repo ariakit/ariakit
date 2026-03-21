@@ -6,9 +6,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { TabStore } from "./tab-store.ts";
 
 const ctx = createStoreContext<TabStore>(
+  "TabProvider",
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
-  "TabProvider",
 );
 
 /**

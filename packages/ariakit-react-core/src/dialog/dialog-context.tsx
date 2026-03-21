@@ -8,9 +8,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 
 const ctx = createStoreContext<DialogStore>(
+  "DialogProvider",
   [DisclosureContextProvider],
   [DisclosureScopedContextProvider],
-  "DialogProvider",
 );
 
 /**

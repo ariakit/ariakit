@@ -15,9 +15,9 @@ export const ComboboxListRoleContext = createContext<string | undefined>(
 );
 
 const ctx = createStoreContext<ComboboxStore>(
+  "ComboboxProvider",
   [PopoverContextProvider, CompositeContextProvider],
   [PopoverScopedContextProvider, CompositeScopedContextProvider],
-  "ComboboxProvider",
 );
 
 /**

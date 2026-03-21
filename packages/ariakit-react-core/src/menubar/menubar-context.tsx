@@ -7,9 +7,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { MenubarStore } from "./menubar-store.ts";
 
 const menubar = createStoreContext<MenubarStore>(
+  "MenubarProvider",
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
-  "MenubarProvider",
 );
 
 /**

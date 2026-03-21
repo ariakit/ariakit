@@ -1,7 +1,7 @@
 import { createStoreContext } from "../utils/system.tsx";
 import type { CollectionStore } from "./collection-store.ts";
 
-const ctx = createStoreContext<CollectionStore>([], [], "CollectionProvider");
+const ctx = createStoreContext<CollectionStore>("CollectionProvider");
 
 /**
  * Returns the collection store from the nearest collection container.

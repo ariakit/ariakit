@@ -567,22 +567,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
 export function createDialogComponent<T extends DialogOptions>(
   Component: FC<T>,
-  useProviderContextStore?: (
-    store: T["store"],
-    componentName: string,
-  ) => NonNullable<T["store"]> extends StoreProp<infer S>
-    ? S | undefined
-    : never,
+  useProviderContextStore?: DialogProviderContextStore<T>,
   componentName = Component.displayName || Component.name || "Dialog",
 ) {
   const getProviderContextStore =
     useProviderContextStore ||
-    (useDialogProviderContextStore as (
-      store: T["store"],
-      componentName: string,
-    ) => NonNullable<T["store"]> extends StoreProp<infer S>
-      ? S | undefined
-      : never);
+    (useDialogProviderContextStore as DialogProviderContextStore<T>);
 
   return forwardRef(function DialogComponent(props: T) {
     const store = getProviderContextStore(props.store, componentName);
@@ -594,6 +584,14 @@ export function createDialogComponent<T extends DialogOptions>(
     return <Component {...props} />;
   });
 }
+
+type DialogComponentStore<T extends DialogOptions> =
+  NonNullable<T["store"]> extends StoreProp<infer S> ? S | undefined : never;
+
+type DialogProviderContextStore<T extends DialogOptions> = (
+  store: T["store"],
+  componentName: string,
+) => DialogComponentStore<T>;
 
 /**
  * Renders a dialog similar to the native `dialog` element that's rendered in a

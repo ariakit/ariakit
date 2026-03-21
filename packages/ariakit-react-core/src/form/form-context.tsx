@@ -6,9 +6,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const ctx = createStoreContext<FormStore>(
+  "FormProvider",
   [CollectionContextProvider],
   [CollectionScopedContextProvider],
-  "FormProvider",
 );
 
 /**

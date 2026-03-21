@@ -7,9 +7,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 
 const ctx = createStoreContext<CompositeStore>(
+  "CompositeProvider",
   [CollectionContextProvider],
   [CollectionScopedContextProvider],
-  "CompositeProvider",
 );
 
 /**

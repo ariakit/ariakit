@@ -1,7 +1,7 @@
 import { createStoreContext } from "../utils/system.tsx";
 import type { DisclosureStore } from "./disclosure-store.ts";
 
-const ctx = createStoreContext<DisclosureStore>([], [], "DisclosureProvider");
+const ctx = createStoreContext<DisclosureStore>("DisclosureProvider");
 
 /**
  * Returns the disclosure store from the nearest disclosure container.

@@ -6,9 +6,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
 const ctx = createStoreContext<PopoverStore>(
+  "PopoverProvider",
   [DialogContextProvider],
   [DialogScopedContextProvider],
-  "PopoverProvider",
 );
 
 /**

@@ -6,9 +6,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { ToolbarStore } from "./toolbar-store.ts";
 
 const ctx = createStoreContext<ToolbarStore>(
+  "ToolbarProvider",
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
-  "ToolbarProvider",
 );
 
 /**

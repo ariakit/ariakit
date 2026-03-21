@@ -12,9 +12,9 @@ import { createStoreContext } from "../utils/system.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const ctx = createStoreContext<SelectStore>(
+  "SelectProvider",
   [PopoverContextProvider, CompositeContextProvider],
   [PopoverScopedContextProvider, CompositeScopedContextProvider],
-  "SelectProvider",
 );
 
 /**

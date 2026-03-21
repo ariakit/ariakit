@@ -145,15 +145,18 @@ function getStoreSourceFromMetadata(
 }
 
 function useStoreContext<T extends Store>(
-  store: StoreProp<T> | undefined,
+  store: StoreProp | undefined,
   metadata: StoreContextMetadata<T>,
   componentName: string,
   mode: StoreContextMode,
 ) {
   const providerMetadata = getStoreContextMetadata(store);
+  const invalidStore = typeof store === "function" && !providerMetadata;
   const explicitStore = providerMetadata
     ? getStoreFromMetadata<T>(providerMetadata, mode)
-    : (store as T | undefined);
+    : typeof store !== "function"
+      ? (store as T | undefined)
+      : undefined;
   const implicitStore = getStoreFromMetadata<T>(metadata, mode);
   const implicitSource = getStoreSourceFromMetadata(metadata, mode);
   const resolvedStore = explicitStore || implicitStore;
@@ -165,6 +168,13 @@ function useStoreContext<T extends Store>(
     !!implicitSource.name;
 
   React.useEffect(() => {
+    if (invalidStore) {
+      console.warn(
+        `Invalid \`store\` prop passed to ${componentName}. ` +
+          "Expected a store object or an Ariakit provider component.",
+      );
+      return;
+    }
     if (!shouldWarn) return;
     if (process.env.NODE_ENV === "production") return;
     const providerName = implicitSource.name;
@@ -176,7 +186,7 @@ function useStoreContext<T extends Store>(
         "This is deprecated and will stop working in a future version. " +
         `Pass \`store={${providerName}}\` to keep the current behavior.`,
     );
-  }, [componentName, implicitSource, shouldWarn]);
+  }, [componentName, implicitSource, invalidStore, shouldWarn]);
 
   return resolvedStore;
 }
@@ -185,10 +195,20 @@ function useStoreContext<T extends Store>(
  * Creates an Ariakit store context with hooks and provider components.
  */
 export function createStoreContext<T extends Store>(
-  providers: StoreProvider<any>[] = [],
-  scopedProviders: StoreProvider<any>[] = [],
-  name = "Provider",
+  nameOrProviders: string | StoreProvider<any>[] = [],
+  providersOrScopedProviders: StoreProvider<any>[] = [],
+  scopedProvidersProp: StoreProvider<any>[] = [],
 ) {
+  const name =
+    typeof nameOrProviders === "string" ? nameOrProviders : "Provider";
+  const providers =
+    typeof nameOrProviders === "string"
+      ? providersOrScopedProviders
+      : nameOrProviders;
+  const scopedProviders =
+    typeof nameOrProviders === "string"
+      ? scopedProvidersProp
+      : providersOrScopedProviders;
   const context = React.createContext<T | undefined>(undefined);
   const scopedContext = React.createContext<T | undefined>(undefined);
   const contextSource = React.createContext<StoreContextMetadata | undefined>(
@@ -300,26 +320,29 @@ export function createStoreContext<T extends Store>(
 
   const ScopedContextProvider = ScopedContextProviderImpl as StoreProvider<T>;
 
-  const registerProvider = (component: StoreContextComponent<T>) => {
+  const registerProvider = <C extends StoreContextComponent<T>>(
+    component: C,
+  ) => {
     component[storeContextSymbol] = metadata;
+    return component;
   };
 
   const useContextStore = (
-    store: StoreProp<T> | undefined,
+    store: StoreProp | undefined,
     componentName: string,
   ) => {
     return useStoreContext(store, metadata, componentName, "context");
   };
 
   const useScopedContextStore = (
-    store: StoreProp<T> | undefined,
+    store: StoreProp | undefined,
     componentName: string,
   ) => {
     return useStoreContext(store, metadata, componentName, "scoped");
   };
 
   const useProviderContextStore = (
-    store: StoreProp<T> | undefined,
+    store: StoreProp | undefined,
     componentName: string,
   ) => {
     return useStoreContext(store, metadata, componentName, "provider");

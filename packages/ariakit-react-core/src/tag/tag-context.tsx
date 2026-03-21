@@ -12,9 +12,9 @@ export const TagRemoveIdContext = createContext<((id?: string) => void) | null>(
 );
 
 const ctx = createStoreContext<TagStore>(
+  "TagProvider",
   [CompositeContextProvider],
   [CompositeScopedContextProvider],
-  "TagProvider",
 );
 
 /**

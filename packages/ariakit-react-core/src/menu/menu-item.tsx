@@ -78,16 +78,10 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     ...props
   }) {
     const menuStore = store
-      ? useMenuScopedContextStore(
-          store as StoreProp<MenuStore> | undefined,
-          "MenuItem",
-        )
+      ? useMenuScopedContextStore(store, "MenuItem")
       : useMenuScopedContext(true);
     const menubarStore = store
-      ? useMenubarScopedContextStore(
-          store as StoreProp<MenubarStore> | undefined,
-          "MenuItem",
-        )
+      ? useMenubarScopedContextStore(store, "MenuItem")
       : useMenubarScopedContext();
     const resolvedStore = menuStore || menubarStore;
 
