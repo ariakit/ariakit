@@ -169,6 +169,7 @@ function useStoreContext<T extends Store>(
 
   React.useEffect(() => {
     if (invalidStore) {
+      if (process.env.NODE_ENV === "production") return;
       console.warn(
         `Invalid \`store\` prop passed to ${componentName}. ` +
           "Expected a store object or an Ariakit provider component.",
