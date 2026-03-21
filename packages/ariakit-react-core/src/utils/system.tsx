@@ -79,12 +79,12 @@ export function createHook<
 }
 
 type StoreProvider<T extends Store> = React.ComponentType<{
-  value: T | undefined;
+  value: T | null | undefined;
   children?: React.ReactNode;
 }>;
 
 type InternalStoreProvider<T extends Store> = React.ComponentType<{
-  value: T | undefined;
+  value: T | null | undefined;
   children?: React.ReactNode;
   __ariakitContext?: StoreContextMetadata | undefined;
 }>;
@@ -93,9 +93,9 @@ type StoreContextMode = "context" | "scoped" | "provider";
 
 interface StoreContextMetadata<T extends Store = Store> {
   name: string;
-  useContext: () => T | undefined;
-  useScopedContext: (onlyScoped?: boolean) => T | undefined;
-  useProviderContext: () => T | undefined;
+  useContext: () => T | null | undefined;
+  useScopedContext: (onlyScoped?: boolean) => T | null | undefined;
+  useProviderContext: () => T | null | undefined;
   useContextSource: () => StoreContextMetadata | undefined;
   useScopedContextSource: (
     onlyScoped?: boolean,
@@ -126,12 +126,12 @@ function getStoreFromMetadata<T extends Store>(
   mode: StoreContextMode,
 ) {
   if (mode === "scoped") {
-    return metadata.useScopedContext() as T | undefined;
+    return metadata.useScopedContext() as T | null | undefined;
   }
   if (mode === "provider") {
-    return metadata.useProviderContext() as T | undefined;
+    return metadata.useProviderContext() as T | null | undefined;
   }
-  return metadata.useContext() as T | undefined;
+  return metadata.useContext() as T | null | undefined;
 }
 
 function getStoreSourceFromMetadata(
@@ -148,7 +148,7 @@ function getStoreSourceFromMetadata(
 }
 
 function useStoreContext<T extends Store>(
-  store: StoreProp | undefined,
+  store: StoreProp<T> | undefined,
   metadata: StoreContextMetadata<T>,
   componentName: string,
   mode: StoreContextMode,
@@ -160,12 +160,12 @@ function useStoreContext<T extends Store>(
     : store === null
       ? null
       : typeof store !== "function"
-        ? (store as T | undefined)
+        ? store
         : undefined;
   const implicitStore = getStoreFromMetadata<T>(metadata, mode);
   const implicitSource = getStoreSourceFromMetadata(metadata, mode);
   const resolvedStore =
-    explicitStore === null ? undefined : explicitStore || implicitStore;
+    explicitStore === null ? null : explicitStore || implicitStore;
   const shouldWarn =
     store === undefined &&
     !!resolvedStore &&
@@ -215,8 +215,8 @@ export function createStoreContext<T extends Store>(
     typeof nameOrProviders === "string"
       ? scopedProvidersProp
       : providersOrScopedProviders;
-  const context = React.createContext<T | undefined>(undefined);
-  const scopedContext = React.createContext<T | undefined>(undefined);
+  const context = React.createContext<T | null | undefined>(undefined);
+  const scopedContext = React.createContext<T | null | undefined>(undefined);
   const contextSource = React.createContext<StoreContextMetadata | undefined>(
     undefined,
   );
@@ -334,21 +334,21 @@ export function createStoreContext<T extends Store>(
   };
 
   const useContextStore = (
-    store: StoreProp | undefined,
+    store: StoreProp<T> | undefined,
     componentName: string,
   ) => {
     return useStoreContext(store, metadata, componentName, "context");
   };
 
   const useScopedContextStore = (
-    store: StoreProp | undefined,
+    store: StoreProp<T> | undefined,
     componentName: string,
   ) => {
     return useStoreContext(store, metadata, componentName, "scoped");
   };
 
   const useProviderContextStore = (
-    store: StoreProp | undefined,
+    store: StoreProp<T> | undefined,
     componentName: string,
   ) => {
     return useStoreContext(store, metadata, componentName, "provider");

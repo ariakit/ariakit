@@ -92,7 +92,10 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
   }) {
     const menuContextStore = useMenuScopedContext(true);
     const menubarContextStore = useMenubarScopedContext();
-    const menuProviderStore = useMenuScopedContextStore(storeProp, "MenuItem");
+    const menuProviderStore = useMenuScopedContextStore(
+      storeProp as StoreProp<MenuStore> | undefined,
+      "MenuItem",
+    );
     const menubarProviderStore = useMenubarScopedContextStore(
       storeProp,
       "MenuItem",

@@ -110,7 +110,10 @@ export function createMenuSlot(name: string, bubblesVirtually = false) {
     // Provide the menu store to the fills
     const menu = Ariakit.useMenuContext();
     return (
-      <SlotFill.Slot bubblesVirtually={bubblesVirtually} fillProps={menu} />
+      <SlotFill.Slot
+        bubblesVirtually={bubblesVirtually}
+        fillProps={menu || undefined}
+      />
     );
   };
 

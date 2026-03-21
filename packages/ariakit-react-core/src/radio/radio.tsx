@@ -65,13 +65,8 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   checked,
   ...props
 }) {
-  const standalone = storeProp === null;
-  const store = standalone
-    ? undefined
-    : useRadioContextStore(storeProp, "Radio");
-
+  const store = useRadioContextStore(storeProp, "Radio");
   const id = useId(props.id);
-
   const ref = useRef<HTMLType>(null);
   const isChecked = useStoreState(
     store,
@@ -167,13 +162,11 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     onFocus,
   };
 
-  if (!standalone) {
-    props = useCompositeItem<TagName>({
-      store,
-      clickOnEnter: !nativeRadio,
-      ...props,
-    });
-  }
+  props = useCompositeItem<TagName>({
+    store,
+    clickOnEnter: !nativeRadio,
+    ...props,
+  });
 
   return removeUndefinedValues({
     name: nativeRadio ? name : undefined,

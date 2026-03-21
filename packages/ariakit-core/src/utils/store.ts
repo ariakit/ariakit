@@ -57,7 +57,7 @@ function getInternal<K extends keyof StoreInternals>(
  */
 export function createStore<S extends State>(
   initialState: S,
-  ...stores: Array<Store<Partial<S>> | undefined>
+  ...stores: Array<Store<Partial<S>> | null | undefined>
 ): Store<S> {
   let state = initialState;
   let prevStateBatch = state;
@@ -332,7 +332,7 @@ export function pick(store: Store, ...args: Parameters<StorePick>) {
  * Merges multiple stores into a single store.
  */
 export function mergeStore<S extends State>(
-  ...stores: Array<Store<S> | undefined>
+  ...stores: Array<Store<S> | null | undefined>
 ): Store<S> {
   const initialState = {} as S;
   for (const store of stores) {
@@ -348,7 +348,10 @@ export function mergeStore<S extends State>(
 /**
  * Throws when a store prop is passed in conjunction with a default state.
  */
-export function throwOnConflictingProps(props: AnyObject, store?: Store) {
+export function throwOnConflictingProps(
+  props: AnyObject,
+  store?: Store | null,
+) {
   if (process.env.NODE_ENV === "production") return;
   if (!store) return;
   const defaultKeys = Object.entries(props)
@@ -407,7 +410,7 @@ export interface StoreProps<S extends State = State> {
    * Live examples:
    * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
    */
-  store?: Store<Partial<S>>;
+  store?: Store<Partial<S>> | null;
 }
 
 /**

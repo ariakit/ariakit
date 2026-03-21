@@ -583,8 +583,11 @@ export function createDialogComponent<T extends DialogOptions>(
   });
 }
 
-type DialogComponentStore<T extends DialogOptions> =
-  NonNullable<T["store"]> extends StoreProp<infer S> ? S | undefined : never;
+type DialogComponentStore<T extends DialogOptions> = T["store"] extends
+  | StoreProp<infer S>
+  | undefined
+  ? S | null | undefined
+  : never;
 
 type DialogProviderContextStore<T extends DialogOptions> = (
   store: T["store"],
