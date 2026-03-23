@@ -13,7 +13,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `CompositeSeparator` component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -49,8 +49,8 @@ export const useCompositeSeparator = createHook<
 
 /**
  * Renders a divider between
- * [`CompositeItem`](https://ariakit.org/reference/composite-item) elements.
- * @see https://ariakit.org/components/composite
+ * [`CompositeItem`](https://ariakit.com/reference/composite-item) elements.
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx {4}
  * <CompositeProvider>
@@ -74,16 +74,16 @@ export interface CompositeSeparatorOptions<
 > extends SeparatorOptions<T> {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`Composite`](https://ariakit.com/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
   store?: CompositeStore;
   /**
    * The orientation of the separator. By default, this is the opposite of the
-   * [`orientation`](https://ariakit.org/reference/composite-provider#orientation)
+   * [`orientation`](https://ariakit.com/reference/composite-provider#orientation)
    * state of the composite widget. Which means it doesn't need to be explicitly
    * set in most cases.
    */

@@ -14,7 +14,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectRow` component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -52,10 +52,10 @@ export const useSelectRow = createHook<TagName, SelectRowOptions>(
 
 /**
  * Renders a select row that allows two-dimensional arrow key navigation.
- * [`SelectItem`](https://ariakit.org/reference/select-item) elements wrapped
+ * [`SelectItem`](https://ariakit.com/reference/select-item) elements wrapped
  * within this component will automatically receive a
- * [`rowId`](https://ariakit.org/reference/select-item#rowid) prop.
- * @see https://ariakit.org/components/select
+ * [`rowId`](https://ariakit.com/reference/select-item#rowid) prop.
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4-11}
  * <SelectProvider>
@@ -83,10 +83,10 @@ export interface SelectRowOptions<
 > extends CompositeRowOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components'
    * context will be used.
    */
   store?: SelectStore;

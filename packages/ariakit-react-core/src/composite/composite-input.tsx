@@ -36,7 +36,7 @@ function getValueLength(element: HTMLElement) {
  * Returns props to create a `CompositeInput` component. This should be used in
  * conjunction with the `CompositeItem` component, the `useCompositeItem` hook,
  * or any other component/hook that uses `CompositeItem` underneath.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @deprecated Use `useCompositeItem` instead.
  * @example
  * ```jsx
@@ -106,10 +106,10 @@ export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
 
 /**
  * Renders an input as a composite item. This should be used in conjunction with
- * the [`CompositeItem`](https://ariakit.org/reference/composite-item) component
+ * the [`CompositeItem`](https://ariakit.com/reference/composite-item) component
  * or a component that uses
- * [`CompositeItem`](https://ariakit.org/reference/composite-item) underneath.
- * @see https://ariakit.org/components/composite
+ * [`CompositeItem`](https://ariakit.com/reference/composite-item) underneath.
+ * @see https://ariakit.com/components/composite
  * @deprecated Use `<CompositeItem render={<input />}>` instead.
  * @example
  * ```jsx {3}
@@ -132,10 +132,10 @@ export interface CompositeInputOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`Composite`](https://ariakit.com/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
   store?: CompositeStore;

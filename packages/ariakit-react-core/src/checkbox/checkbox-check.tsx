@@ -38,7 +38,7 @@ function getChildren(props: Pick<CheckboxCheckProps, "checked" | "children">) {
 /**
  * Returns props to create a `CheckboxCheck` component, that's usually rendered
  * inside a `Checkbox` component.
- * @see https://ariakit.org/components/checkbox
+ * @see https://ariakit.com/components/checkbox
  * @example
  * ```jsx
  * const props = useCheckboxCheck({ checked: true });
@@ -69,14 +69,14 @@ export const useCheckboxCheck = createHook<TagName, CheckboxCheckOptions>(
 
 /**
  * Renders a checkmark icon when the
- * [`checked`](https://ariakit.org/reference/checkbox-check#checked) prop is
+ * [`checked`](https://ariakit.com/reference/checkbox-check#checked) prop is
  * `true`. The icon can be overridden by providing a different one as children.
  *
- * When rendered inside a [`Checkbox`](https://ariakit.org/reference/checkbox)
+ * When rendered inside a [`Checkbox`](https://ariakit.com/reference/checkbox)
  * component, the
- * [`checked`](https://ariakit.org/reference/checkbox-check#checked) prop is
+ * [`checked`](https://ariakit.com/reference/checkbox-check#checked) prop is
  * automatically derived from the context.
- * @see https://ariakit.org/components/checkbox
+ * @see https://ariakit.com/components/checkbox
  * @example
  * ```jsx
  * <CheckboxCheck checked />
@@ -94,7 +94,7 @@ export interface CheckboxCheckOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
+   * [`useCheckboxStore`](https://ariakit.com/reference/use-checkbox-store)
    * hook.
    */
   store?: CheckboxStore;
@@ -105,7 +105,7 @@ export interface CheckboxCheckOptions<
    *
    * Live examples:
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    */
   checked?: boolean;
 }

@@ -10,7 +10,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `PopoverAnchor` component.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * const store = usePopoverStore();
@@ -33,9 +33,9 @@ export const usePopoverAnchor = createHook<TagName, PopoverAnchorOptions>(
 
 /**
  * Renders an element that acts as the anchor for the popover. The
- * [`Popover`](https://ariakit.org/reference/popover) component will be
+ * [`Popover`](https://ariakit.com/reference/popover) component will be
  * positioned in relation to this element.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx {2}
  * <PopoverProvider>
@@ -56,9 +56,9 @@ export interface PopoverAnchorOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * [`usePopoverStore`](https://ariakit.com/reference/use-popover-store) hook.
    * If not provided, the closest
-   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * component's context will be used.
    */
   store?: PopoverStore;

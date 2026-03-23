@@ -9,8 +9,8 @@ import { useCompositeStore } from "./composite-store.ts";
 
 /**
  * Provides a composite store to
- * [`CompositeItem`](https://ariakit.org/reference/composite-item) components.
- * @see https://ariakit.org/components/composite
+ * [`CompositeItem`](https://ariakit.com/reference/composite-item) components.
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * <CompositeProvider>

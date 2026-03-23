@@ -44,7 +44,7 @@ async function getSubstackUpdates() {
   }
   try {
     const response = await fetch(
-      "https://newsletter.ariakit.org/api/v1/archive?limit=50&sort=new",
+      "https://diegohaz.substack.com/api/v1/archive?limit=50&sort=new",
     );
     const data: AnyObject[] = await response.json();
     const items = data.map<UpdateItem>((item) => ({

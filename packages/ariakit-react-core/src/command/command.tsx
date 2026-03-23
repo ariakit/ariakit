@@ -46,7 +46,7 @@ const symbol = Symbol("command");
  * Returns props to create a `Command` component. If the element is not a native
  * clickable element (like a button), this hook will return additional props to
  * make sure it's accessible.
- * @see https://ariakit.org/components/command
+ * @see https://ariakit.com/components/command
  * @example
  * ```jsx
  * const props = useCommand({ render: <div /> });
@@ -161,16 +161,16 @@ export const useCommand = createHook<TagName, CommandOptions>(
 
 /**
  * Renders a clickable element, which is a `button` by default, and inherits
- * features from the [`Focusable`](https://ariakit.org/reference/focusable)
+ * features from the [`Focusable`](https://ariakit.com/reference/focusable)
  * component.
  *
  * If the base element isn't a native clickable one, this component will provide
  * extra attributes and event handlers to ensure accessibility. It can be
  * activated with the keyboard using the
- * [`clickOnEnter`](https://ariakit.org/reference/command#clickonenter) and
- * [`clickOnSpace`](https://ariakit.org/reference/command#clickonspace)
+ * [`clickOnEnter`](https://ariakit.com/reference/command#clickonenter) and
+ * [`clickOnSpace`](https://ariakit.com/reference/command#clickonspace)
  * props. Both are set to `true` by default.
- * @see https://ariakit.org/components/command
+ * @see https://ariakit.com/components/command
  * @example
  * ```jsx
  * <Command>Button</Command>

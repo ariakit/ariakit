@@ -1,6 +1,6 @@
 import { click, hover, press, q } from "@ariakit/test";
 
-const tooltip = "https://ariakit.org/components/tooltip";
+const tooltip = "https://ariakit.com/components/tooltip";
 
 const hoverOutside = async () => {
   await hover(document.body);

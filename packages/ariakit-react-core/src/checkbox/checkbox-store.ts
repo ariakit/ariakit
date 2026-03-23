@@ -20,7 +20,7 @@ export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
 /**
  * Creates a checkbox store to conveniently manage a checkbox value,
  * whether it's a string, number, boolean, or an array of strings or numbers.
- * @see https://ariakit.org/components/checkbox
+ * @see https://ariakit.com/components/checkbox
  * @example
  * ```jsx
  * const checkbox = useCheckboxStore({ defaultValue: true });
@@ -58,7 +58,7 @@ export interface CheckboxStoreOptions<
 > extends Core.CheckboxStoreOptions<T> {
   /**
    * A callback that gets called when the
-   * [`value`](https://ariakit.org/reference/checkbox-provider#value) state
+   * [`value`](https://ariakit.com/reference/checkbox-provider#value) state
    * changes.
    * @example
    * function MyCheckbox({ value, onChange }) {

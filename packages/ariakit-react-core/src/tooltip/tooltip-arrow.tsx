@@ -12,7 +12,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `TooltipArrow` component.
- * @see https://ariakit.org/components/tooltip
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx
  * const store = useToolTipStore();
@@ -43,9 +43,9 @@ export const useTooltipArrow = createHook<TagName, TooltipArrowOptions>(
 );
 
 /**
- * Renders an arrow inside a [`Tooltip`](https://ariakit.org/reference/tooltip)
+ * Renders an arrow inside a [`Tooltip`](https://ariakit.com/reference/tooltip)
  * pointing to the anchor element.
- * @see https://ariakit.org/components/tooltip
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx {4}
  * <TooltipProvider>
@@ -69,10 +69,10 @@ export interface TooltipArrowOptions<
 > extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
+   * [`useTooltipStore`](https://ariakit.com/reference/use-tooltip-store) hook.
    * If not provided, the closest
-   * [`Tooltip`](https://ariakit.org/reference/tooltip) or
-   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * [`Tooltip`](https://ariakit.com/reference/tooltip) or
+   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)
    * components' context will be used.
    */
   store?: TooltipStore;

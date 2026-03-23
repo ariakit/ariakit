@@ -36,8 +36,8 @@ export function useCompositeStoreProps<T extends Core.CompositeStore>(
 
 /**
  * Creates a composite store to control the state of
- * [Composite](https://ariakit.org/components/composite) components.
- * @see https://ariakit.org/components/composite
+ * [Composite](https://ariakit.com/components/composite) components.
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();
@@ -84,7 +84,7 @@ export interface CompositeStoreOptions<
   extends Core.CompositeStoreOptions<T>, CollectionStoreOptions<T> {
   /**
    * A callback that gets called when the
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    * state changes.
    */
   setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;

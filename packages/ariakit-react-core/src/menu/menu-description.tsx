@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `MenuDescription` component. This hook must be used
  * in a component that's wrapped with `Menu` so the `aria-describedby` prop is
  * properly set on the menu element.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * // This component must be wrapped with Menu
@@ -29,9 +29,9 @@ export const useMenuDescription = createHook<TagName, MenuDescriptionOptions>(
 
 /**
  * Renders a description in a menu. This component must be wrapped with a
- * [`Menu`](https://ariakit.org/reference/menu) component so the
+ * [`Menu`](https://ariakit.com/reference/menu) component so the
  * `aria-describedby` prop is properly set on the menu element.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {3}
  * <MenuProvider>
@@ -53,9 +53,9 @@ export interface MenuDescriptionOptions<
 > extends HovercardDescriptionOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;

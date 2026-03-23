@@ -22,7 +22,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * Returns props to create a `FormInput` component. Unlike `useFormControl`, this
  * hook returns the `value` and `onChange` props that can be passed to a native
  * input, select or textarea elements.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { email: "" } });
@@ -70,10 +70,10 @@ export const useFormInput = createHook<TagName, FormInputOptions>(
 
 /**
  * Renders a form input. Unlike
- * [`FormControl`](https://ariakit.org/reference/form-control), this component
+ * [`FormControl`](https://ariakit.com/reference/form-control), this component
  * passes the `value` and `onChange` props down to the underlying element that
  * can be native input, select or textarea elements.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {9}
  * const form = useFormStore({

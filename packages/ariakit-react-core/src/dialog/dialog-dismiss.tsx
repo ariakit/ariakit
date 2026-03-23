@@ -14,7 +14,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `DialogDismiss` component.
- * @see https://ariakit.org/components/dialog
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx
  * const store = useDialogStore();
@@ -73,8 +73,8 @@ export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
 
 /**
  * Renders a button that hides a
- * [`Dialog`](https://ariakit.org/reference/dialog) when clicked.
- * @see https://ariakit.org/components/dialog
+ * [`Dialog`](https://ariakit.com/reference/dialog) when clicked.
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx {4}
  * const [open, setOpen] = useState(false);
@@ -96,8 +96,8 @@ export interface DialogDismissOptions<
 > extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
-   * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
+   * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook. If
+   * not provided, the closest [`Dialog`](https://ariakit.com/reference/dialog)
    * component's context will be used.
    */
   store?: DialogStore;

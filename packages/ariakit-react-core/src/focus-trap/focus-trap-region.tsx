@@ -13,7 +13,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `FocusTrapRegion` component.
- * @see https://ariakit.org/components/focus-trap-region
+ * @see https://ariakit.com/components/focus-trap-region
  * @example
  * ```jsx
  * const props = useFocusTrapRegion();
@@ -73,9 +73,9 @@ export const useFocusTrapRegion = createHook<TagName, FocusTrapRegionOptions>(
 
 /**
  * Renders a wrapper element that traps the focus inside it when the
- * [`enabled`](https://ariakit.org/reference/focus-trap-region#enabled) prop is
+ * [`enabled`](https://ariakit.com/reference/focus-trap-region#enabled) prop is
  * `true`.
- * @see https://ariakit.org/components/focus-trap
+ * @see https://ariakit.com/components/focus-trap
  * @example
  * ```jsx
  * <FocusTrapRegion>

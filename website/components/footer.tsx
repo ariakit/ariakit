@@ -23,13 +23,13 @@ const links = [
       // { title: "Blog", href: "/blog" },
       { title: "All updates", href: "/updates" },
       { title: "Changelog", href: "/changelog" },
-      { title: "Newsletter", href: "https://newsletter.ariakit.org" },
+      { title: "Newsletter", href: "https://diegohaz.substack.com" },
     ],
   },
   {
     title: "Community",
     links: [
-      { title: "Bluesky", href: "https://bsky.app/profile/ariakit.org" },
+      { title: "Bluesky", href: "https://bsky.app/profile/ariakit.com" },
       { title: "Discord", href: "https://discord.gg/WyHvnXsvMs" },
       { title: "GitHub", href: "https://github.com/ariakit/ariakit" },
       {

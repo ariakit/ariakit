@@ -16,7 +16,7 @@ export function useCompositeOverflowStoreProps<
 
 /**
  * Creates a composite overflow store.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();

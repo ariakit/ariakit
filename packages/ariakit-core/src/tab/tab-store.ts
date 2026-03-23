@@ -222,12 +222,12 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
    * will be automatically set to the first enabled tab.
    *
    * Live examples:
-   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Tab with React Router](https://ariakit.com/examples/tab-react-router)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * - [Select with Combobox and
-   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   selectedId: TabStoreState["activeId"];
   /**
@@ -236,9 +236,9 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
    * keys to shift focus.
    *
    * Live examples:
-   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
+   * - [Tab with React Router](https://ariakit.com/examples/tab-react-router)
    * - [Select with Combobox and
-   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    * @default true
    */
   selectOnMove?: boolean;
@@ -247,9 +247,9 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
 export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem> {
   /**
    * Sets the
-   * [`selectedId`](https://ariakit.org/reference/tab-provider#selectedid) state
+   * [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid) state
    * without moving focus. If you want to move focus, use the
-   * [`select`](https://ariakit.org/reference/use-tab-store#select) function
+   * [`select`](https://ariakit.com/reference/use-tab-store#select) function
    * instead.
    * @example
    * // Selects the tab with id "tab-1"
@@ -266,14 +266,14 @@ export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem>
    * A collection store containing the tab panels.
    *
    * Live examples:
-   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
    */
   panels: CollectionStore<TabStorePanel>;
   /**
    * Selects the tab for the given id and moves focus to it. If you want to set
-   * the [`selectedId`](https://ariakit.org/reference/tab-provider#selectedid)
+   * the [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid)
    * state without moving focus, use the
-   * [`setSelectedId`](https://ariakit.org/reference/use-tab-store#setselectedid-1)
+   * [`setSelectedId`](https://ariakit.com/reference/use-tab-store#setselectedid-1)
    * function instead.
    * @example
    * // Selects the tab with id "tab-1"
@@ -295,18 +295,18 @@ export interface TabStoreOptions
     CompositeStoreOptions<TabStoreItem> {
   /**
    * A reference to another [composite
-   * store](https://ariakit.org/reference/use-composite-store). This is used when
+   * store](https://ariakit.com/reference/use-composite-store). This is used when
    * rendering tabs as part of another composite widget such as
-   * [Combobox](https://ariakit.org/components/combobox) or
-   * [Select](https://ariakit.org/components/select). The stores will share the
+   * [Combobox](https://ariakit.com/components/combobox) or
+   * [Select](https://ariakit.com/components/select). The stores will share the
    * same state.
    */
   composite?: CompositeStore | SelectStore | null;
   /**
    * A reference to a [combobox
-   * store](https://ariakit.org/reference/use-combobox-store). This is used when
+   * store](https://ariakit.com/reference/use-combobox-store). This is used when
    * rendering tabs inside a
-   * [Combobox](https://ariakit.org/components/combobox).
+   * [Combobox](https://ariakit.com/components/combobox).
    */
   combobox?: ComboboxStore | null;
   /**
@@ -314,12 +314,12 @@ export interface TabStoreOptions
    * will be automatically set to the first enabled tab.
    *
    * Live examples:
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
    * - [Select with Combobox and
-   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   defaultSelectedId?: TabStoreState["selectedId"];
 }

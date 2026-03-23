@@ -54,7 +54,7 @@ function getItemRole(popupRole?: string) {
 
 /**
  * Returns props to create a `ComboboxItem` component.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -225,13 +225,13 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
 
 /**
  * Renders a combobox item inside
- * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
- * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+ * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
+ * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
  * components.
  *
- * By default, the [`value`](https://ariakit.org/reference/combobox-item#value)
+ * By default, the [`value`](https://ariakit.com/reference/combobox-item#value)
  * prop will be rendered as the children, but this can be overriden.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {4-6}
  * <ComboboxProvider>
@@ -255,84 +255,84 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>, CompositeHoverOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components' context will be used.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   store?: ComboboxStore;
   /**
    * The value of the item. This will be rendered as the children by default.
    * - If
-   *   [`setValueOnClick`](https://ariakit.org/reference/combobox-item#setvalueonclick)
+   *   [`setValueOnClick`](https://ariakit.com/reference/combobox-item#setvalueonclick)
    *   is set to `true`, this will be the value of the combobox input when the
    *   user clicks on this item.
    * - If
-   *   [`selectValueOnClick`](https://ariakit.org/reference/combobox-item#selectvalueonclick)
+   *   [`selectValueOnClick`](https://ariakit.com/reference/combobox-item#selectvalueonclick)
    *   is set to `true`, this will be the value of the
-   *   [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   *   [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    *   state.
    * - If the
-   *   [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete)
-   *   prop on the [`Combobox`](https://ariakit.org/reference/combobox)
+   *   [`autoComplete`](https://ariakit.com/reference/combobox#autocomplete)
+   *   prop on the [`Combobox`](https://ariakit.com/reference/combobox)
    *   component is set to `both` or `inline`, this will be the value of the
    *   combobox input when the combobox loses focus.
    *
    * Live examples:
-   * - [Animated Combobox](https://ariakit.org/examples/combobox-animated)
-   * - [ComboboxCancel](https://ariakit.org/examples/combobox-cancel)
-   * - [ComboboxDisclosure](https://ariakit.org/examples/combobox-disclosure)
-   * - [Combobox filtering](https://ariakit.org/examples/combobox-filtering)
-   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
+   * - [Animated Combobox](https://ariakit.com/examples/combobox-animated)
+   * - [ComboboxCancel](https://ariakit.com/examples/combobox-cancel)
+   * - [ComboboxDisclosure](https://ariakit.com/examples/combobox-disclosure)
+   * - [Combobox filtering](https://ariakit.com/examples/combobox-filtering)
+   * - [ComboboxGroup](https://ariakit.com/examples/combobox-group)
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
    */
   value?: string;
   /**
    * Whether to hide the combobox when this item is clicked. By default, the
    * combobox will be hidden when the user clicks on an item with a
-   * [`value`](https://ariakit.org/reference/combobox-item#value) prop, unless
+   * [`value`](https://ariakit.com/reference/combobox-item#value) prop, unless
    * the combobox is
-   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
+   * [multi-selectable](https://ariakit.com/examples/combobox-multiple).
    *
    * Live examples:
-   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   * - [Combobox with links](https://ariakit.com/examples/combobox-links)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
+   * - [Command Menu](https://ariakit.com/examples/dialog-combobox-command-menu)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
    * Whether to set the combobox
-   * [`value`](https://ariakit.org/reference/combobox-provider#value) state
+   * [`value`](https://ariakit.com/reference/combobox-provider#value) state
    * using this item's
-   * [`value`](https://ariakit.org/reference/combobox-item#value) when the item
+   * [`value`](https://ariakit.com/reference/combobox-item#value) when the item
    * is clicked. The default is `true`, unless the combobox is
-   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
+   * [multi-selectable](https://ariakit.com/examples/combobox-multiple).
    *
    * Live examples:
-   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
+   * - [Menu with Combobox](https://ariakit.com/examples/menu-combobox)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
    * Whether to set the
-   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * state using this item's
-   * [`value`](https://ariakit.org/reference/combobox-item#value) when the item
+   * [`value`](https://ariakit.com/reference/combobox-item#value) when the item
    * is clicked. If a callback is provided, it will only be invoked if the item
    * has a value.
    *
    * Live examples:
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    * @default true
    */
   selectValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
@@ -340,9 +340,9 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * Whether to reset the the combobox input value when this item is selected or
    * unselected by click. This prop is set to `true` by default if
    * the combobox supports multiple selections. In other words, if the
-   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * or
-   * [`defaultSelectedValue`](https://ariakit.org/reference/combobox-provider#defaultselectedvalue)
+   * [`defaultSelectedValue`](https://ariakit.com/reference/combobox-provider#defaultselectedvalue)
    * props are arrays.
    */
   resetValueOnSelect?: BooleanOrCallback<MouseEvent<HTMLElement>>;

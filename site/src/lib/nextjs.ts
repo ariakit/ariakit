@@ -14,7 +14,7 @@ import { basename, dirname, join } from "node:path";
 // Cloudflare Workers domain for Next.js app
 const NEXTJS_WORKERS_DOMAIN = "ariakit-nextjs.workers.dev";
 // Production domain for Next.js app
-const NEXTJS_PRODUCTION_DOMAIN = "nextjs.ariakit.org";
+const NEXTJS_PRODUCTION_DOMAIN = "nextjs.ariakit.com";
 // Development URL for Next.js app
 const NEXTJS_DEV_URL = "http://localhost:3000";
 
@@ -49,8 +49,8 @@ type NextjsConventionFile = (typeof NEXTJS_CONVENTION_FILES)[number];
  * - localhost:* → http://localhost:3000
  * - {alias}.ariakit-preview.workers.dev → {alias}.ariakit-nextjs.workers.dev
  * - ariakit-preview.workers.dev → ariakit-nextjs.workers.dev
- * - next.ariakit.org → nextjs.ariakit.org
- * - *.ariakit.org → nextjs.ariakit.org
+ * - next.ariakit.com → nextjs.ariakit.com
+ * - *.ariakit.com → nextjs.ariakit.com
  *
  * @param requestUrl - The current request URL (e.g., from Astro context)
  * @param path - The path within the Next.js app (e.g., "/tab-nextjs")
@@ -83,8 +83,13 @@ export function getNextjsUrlFromRequest(
       // No alias, use main workers domain
       return `${protocol}//${NEXTJS_WORKERS_DOMAIN}${normalizedPath}`;
     }
-    // Production or custom domain on ariakit.org
-    if (hostname.endsWith(".ariakit.org") || hostname === "ariakit.org") {
+    // Production or custom domain on ariakit.com (or legacy ariakit.org)
+    if (
+      hostname.endsWith(".ariakit.com") ||
+      hostname === "ariakit.com" ||
+      hostname.endsWith(".ariakit.org") ||
+      hostname === "ariakit.org"
+    ) {
       return `${protocol}//${NEXTJS_PRODUCTION_DOMAIN}${normalizedPath}`;
     }
     // Fallback: replace hostname with production Next.js domain

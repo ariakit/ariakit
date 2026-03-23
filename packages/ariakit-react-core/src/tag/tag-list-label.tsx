@@ -13,7 +13,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `TagListLabel` component.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx
  * const props = useTagListLabel();
@@ -47,10 +47,10 @@ export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
 
 /**
  * Renders a label element for the
- * [`TagInput`](https://ariakit.org/reference/tag-input) and also acts as the
+ * [`TagInput`](https://ariakit.com/reference/tag-input) and also acts as the
  * accessible name for the listbox element rendered by
- * [`TagList`](https://ariakit.org/reference/tag-list).
- * @see https://ariakit.org/components/tag
+ * [`TagList`](https://ariakit.com/reference/tag-list).
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx {2}
  * <TagProvider>
@@ -83,9 +83,9 @@ export interface TagListLabelOptions<
 > extends CompositeOptions<T> {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
+   * [`useTagStore`](https://ariakit.com/reference/use-tag-store) hook. If not
    * provided, the closest
-   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider) component's
    * context will be used.
    */
   store?: TagStore;

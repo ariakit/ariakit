@@ -13,7 +13,7 @@ type TagName = typeof TagName;
  * Returns props to create a `GroupLabel` component. This hook must be used in a
  * component that's wrapped with `Group` so the `aria-labelledby` prop is
  * properly set on the group element.
- * @see https://solid.ariakit.org/components/group
+ * @see https://solid.ariakit.com/components/group
  * @example
  * ```jsx
  * // This component must be wrapped with Group
@@ -47,9 +47,9 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
 
 /**
  * Renders a label in a group. This component should be wrapped with a
- * [`Group`](https://solid.ariakit.org/reference/group) so the `aria-labelledby`
+ * [`Group`](https://solid.ariakit.com/reference/group) so the `aria-labelledby`
  * prop is correctly set on the group element.
- * @see https://solid.ariakit.org/components/group
+ * @see https://solid.ariakit.com/components/group
  * @example
  * ```jsx
  * <Group>

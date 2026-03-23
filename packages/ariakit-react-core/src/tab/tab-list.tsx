@@ -17,7 +17,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `TabList` component.
- * @see https://ariakit.org/components/tab
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx
  * const store = useTabStore();
@@ -78,8 +78,8 @@ export const useTabList = createHook<TagName, TabListOptions>(
 
 /**
  * Renders a composite tab list wrapper for
- * [`Tab`](https://ariakit.org/reference/tab) elements.
- * @see https://ariakit.org/components/tab
+ * [`Tab`](https://ariakit.com/reference/tab) elements.
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx {2-5}
  * <TabProvider>
@@ -102,9 +102,9 @@ export interface TabListOptions<
 > extends CompositeOptions<T> {
   /**
    * Object returned by the
-   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
+   * [`useTabStore`](https://ariakit.com/reference/use-tab-store) hook. If not
    * provided, the closest
-   * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
+   * [`TabProvider`](https://ariakit.com/reference/tab-provider) component's
    * context will be used.
    */
   store?: TabStore;

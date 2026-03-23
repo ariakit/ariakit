@@ -405,7 +405,7 @@ export interface StoreProps<S extends State = State> {
    * Another store object that will be kept in sync with the original store.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   store?: Store<Partial<S>>;
 }

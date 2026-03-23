@@ -37,7 +37,7 @@ const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 export default defineConfig({
   site:
     process.env.NODE_ENV === "production"
-      ? "https://next.ariakit.org"
+      ? "https://next.ariakit.com"
       : "http://localhost:4321",
 
   srcDir: "src",

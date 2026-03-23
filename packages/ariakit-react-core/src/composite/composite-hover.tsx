@@ -61,7 +61,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
  * composite base element on mouse leave. This should be combined with the
  * `CompositeItem` component, the `useCompositeItem` hook or any component/hook
  * that uses them underneath.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -145,13 +145,13 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
  * and loses focus to the composite base element on mouse leave.
  *
  * This should be combined with the
- * [`CompositeItem`](https://ariakit.org/reference/composite-item) component.
+ * [`CompositeItem`](https://ariakit.com/reference/composite-item) component.
  * The
- * [`focusOnHover`](https://ariakit.org/reference/composite-hover#focusonhover)
+ * [`focusOnHover`](https://ariakit.com/reference/composite-hover#focusonhover)
  * and
- * [`blurOnHoverEnd`](https://ariakit.org/reference/composite-hover#bluronhoverend)
+ * [`blurOnHoverEnd`](https://ariakit.com/reference/composite-hover#bluronhoverend)
  * props can be used to customize the behavior.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx {3-5}
  * <CompositeProvider>
@@ -175,10 +175,10 @@ export interface CompositeHoverOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`Composite`](https://ariakit.com/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
   store?: CompositeStore;
@@ -187,40 +187,40 @@ export interface CompositeHoverOptions<
    *
    * Note that the actual DOM focus will stay on the composite element. This
    * item will get the
-   * [`data-active-item`](https://ariakit.org/guide/styling#data-active-item)
+   * [`data-active-item`](https://ariakit.com/guide/styling#data-active-item)
    * attribute so it can be styled as if it's focused.
    *
    * Live examples:
    * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   *   Combobox](https://ariakit.com/examples/combobox-multiple)
    * - [Combobox with integrated
-   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
+   *   filter](https://ariakit.com/examples/combobox-filtering-integrated)
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * @default true
    */
   focusOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
   /**
    * Determines if the composite item should lose focus when the mouse leaves.
    * By default, this is set to `true` if
-   * [`focusOnHover`](https://ariakit.org/reference/composite-hover#focusonhover)
+   * [`focusOnHover`](https://ariakit.com/reference/composite-hover#focusonhover)
    * is `true`.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    * - [Combobox with integrated
-   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
+   *   filter](https://ariakit.com/examples/combobox-filtering-integrated)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * - [Select with Combobox and
-   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    */
   blurOnHoverEnd?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }

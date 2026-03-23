@@ -47,8 +47,8 @@ export function useMenuStoreProps<T extends Core.MenuStore>(
 
 /**
  * Creates a menu store to control the state of
- * [Menu](https://ariakit.org/components/menu) components.
- * @see https://ariakit.org/components/menu
+ * [Menu](https://ariakit.com/components/menu) components.
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const menu = useMenuStore({ placement: "top" });
@@ -102,20 +102,20 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
     HovercardStoreOptions {
   /**
    * A callback that gets called when the
-   * [`values`](https://ariakit.org/reference/menu-provider#values) state
+   * [`values`](https://ariakit.com/reference/menu-provider#values) state
    * changes.
    *
    * Live examples:
-   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
+   * - [MenuItemCheckbox](https://ariakit.com/examples/menu-item-checkbox)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    */
   setValues?: BivariantCallback<(values: MenuStoreState<T>["values"]) => void>;
   /**
    * A reference to a [combobox
-   * store](https://ariakit.org/reference/use-combobox-store). It's
+   * store](https://ariakit.com/reference/use-combobox-store). It's
    * automatically set when composing [Menu with
-   * Combobox](https://ariakit.org/examples/menu-combobox).
+   * Combobox](https://ariakit.com/examples/menu-combobox).
    */
   combobox?: ComboboxStore | null;
   /**
@@ -124,19 +124,19 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
    * nested in the React tree.
    *
    * Live examples:
-   * - [Menubar](https://ariakit.org/components/menubar)
-   * - [Submenu](https://ariakit.org/examples/menu-nested)
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Menubar](https://ariakit.com/components/menubar)
+   * - [Submenu](https://ariakit.com/examples/menu-nested)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   parent?: MenuStore | null;
   /**
    * A reference to a [menubar
-   * store](https://ariakit.org/reference/use-menubar-store). It's automatically
+   * store](https://ariakit.com/reference/use-menubar-store). It's automatically
    * set when rendering menus inside a
-   * [`Menubar`](https://ariakit.org/reference/menubar) in the React tree.
+   * [`Menubar`](https://ariakit.com/reference/menubar) in the React tree.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   menubar?: MenubarStore | null;
 }

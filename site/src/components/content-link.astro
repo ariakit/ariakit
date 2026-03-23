@@ -68,7 +68,7 @@ async function getReferenceText() {
   // Extract inner HTML if the slot is a single <code>...</code> element
   const rawSlotHtml = (await Astro.slots.render("default"))?.trim() ?? "";
   const codeMatch = rawSlotHtml.match(
-    /^<code(?:\s[^>]*)?>([\s\S]*?)<\/code>\s*$/i
+    /^<code(?:\s[^>]*)?>([\s\S]*?)<\/code>\s*$/i,
   );
   const slotLabelHtml = codeMatch?.[1] ?? rawSlotHtml;
   // Remove any surrounding whitespace in the textual label
@@ -80,7 +80,7 @@ async function getReferenceText() {
 
 async function getReferenceKind(
   convertedHref: string | undefined,
-  references: CollectionEntry<"references">[]
+  references: CollectionEntry<"references">[],
 ) {
   if (!reference) return null;
   const parsed = convertedHref

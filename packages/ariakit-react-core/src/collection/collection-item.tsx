@@ -17,7 +17,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * the item in the collection store. If this hook is used in a component that is
  * wrapped by `Collection` or a component that implements `useCollection`,
  * there's no need to explicitly pass the `store` prop.
- * @see https://ariakit.org/components/collection
+ * @see https://ariakit.com/components/collection
  * @example
  * ```jsx
  * const store = useCollectionStore();
@@ -61,10 +61,10 @@ export const useCollectionItem = createHook<TagName, CollectionItemOptions>(
 /**
  * Renders an item in a collection. The collection store can be passed
  * explicitly through the
- * [`store`](https://ariakit.org/reference/collection-item#store) prop or
+ * [`store`](https://ariakit.com/reference/collection-item#store) prop or
  * implicitly through the parent
- * [`Collection`](https://ariakit.org/reference/collection) component.
- * @see https://ariakit.org/components/collection
+ * [`Collection`](https://ariakit.com/reference/collection) component.
+ * @see https://ariakit.com/components/collection
  * @example
  * ```jsx
  * const store = useCollectionStore();
@@ -85,14 +85,14 @@ export interface CollectionItemOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
+   * [`useCollectionStore`](https://ariakit.com/reference/use-collection-store)
    * hook. If not provided, the closest
-   * [`Collection`](https://ariakit.org/reference/collection) or
-   * [`CollectionProvider`](https://ariakit.org/reference/collection-provider)
+   * [`Collection`](https://ariakit.com/reference/collection) or
+   * [`CollectionProvider`](https://ariakit.com/reference/collection-provider)
    * components' context will be used.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   store?: CollectionStore;
   /**
@@ -101,11 +101,11 @@ export interface CollectionItemOptions<
    * will be automatically generated.
    *
    * Live examples:
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
-   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Tab with React Router](https://ariakit.com/examples/tab-react-router)
+   * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
    * - [Select with Combobox and
-   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    */
   id?: string;
   /**

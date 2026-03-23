@@ -6,10 +6,10 @@ export default function Example() {
     <div className="wrapper">
       <Ariakit.HovercardProvider>
         <Ariakit.HovercardAnchor
-          href="https://bsky.app/profile/ariakit.org"
+          href="https://bsky.app/profile/ariakit.com"
           className="anchor"
         >
-          @ariakit.org
+          @ariakit.com
         </Ariakit.HovercardAnchor>
         <Ariakit.Hovercard gutter={16} className="hovercard">
           <img
@@ -25,7 +25,7 @@ export default function Example() {
             next web app.
           </p>
           <a
-            href="https://bsky.app/profile/ariakit.org"
+            href="https://bsky.app/profile/ariakit.com"
             className="button primary flat"
           >
             Follow

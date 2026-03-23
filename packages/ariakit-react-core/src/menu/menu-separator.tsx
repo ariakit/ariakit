@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuSeparator` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -36,10 +36,10 @@ export const useMenuSeparator = createHook<TagName, MenuSeparatorOptions>(
 
 /**
  * Renders a divider between
- * [`MenuItem`](https://ariakit.org/reference/menu-item),
- * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox), and
- * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio) elements.
- * @see https://ariakit.org/components/menu
+ * [`MenuItem`](https://ariakit.com/reference/menu-item),
+ * [`MenuItemCheckbox`](https://ariakit.com/reference/menu-item-checkbox), and
+ * [`MenuItemRadio`](https://ariakit.com/reference/menu-item-radio) elements.
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {6}
  * <MenuProvider>
@@ -65,9 +65,9 @@ export interface MenuSeparatorOptions<
 > extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;
