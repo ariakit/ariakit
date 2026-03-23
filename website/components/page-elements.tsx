@@ -620,7 +620,7 @@ export function PageA({
       />
     );
   }
-  href = href?.replace(/^https:\/\/(www\.)?ariakit.com/, "");
+  href = href?.replace(/^https:\/\/(www\.)?ariakit\.(com|org)/, "");
   if (href?.startsWith("http")) {
     return (
       <InlineLink

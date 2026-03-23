@@ -51,6 +51,7 @@ type NextjsConventionFile = (typeof NEXTJS_CONVENTION_FILES)[number];
  * - ariakit-preview.workers.dev → ariakit-nextjs.workers.dev
  * - next.ariakit.com → nextjs.ariakit.com
  * - *.ariakit.com → nextjs.ariakit.com
+ * - *.ariakit.org → nextjs.ariakit.com (legacy, redirected during migration)
  *
  * @param requestUrl - The current request URL (e.g., from Astro context)
  * @param path - The path within the Next.js app (e.g., "/tab-nextjs")
