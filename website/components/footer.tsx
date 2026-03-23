@@ -23,7 +23,7 @@ const links = [
       // { title: "Blog", href: "/blog" },
       { title: "All updates", href: "/updates" },
       { title: "Changelog", href: "/changelog" },
-      { title: "Newsletter", href: "https://diegohaz.substack.com" },
+      { title: "Newsletter", href: "https://newsletter.ariakit.com" },
     ],
   },
   {
