@@ -7,7 +7,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Separator` component.
- * @see https://ariakit.org/components/separator
+ * @see https://ariakit.com/components/separator
  * @example
  * ```jsx
  * const props = useSeparator({ orientation: "horizontal" });
@@ -27,7 +27,7 @@ export const useSeparator = createHook<TagName, SeparatorOptions>(
 
 /**
  * Renders a separator element.
- * @see https://ariakit.org/components/separator
+ * @see https://ariakit.com/components/separator
  * @example
  * ```jsx
  * <Separator orientation="horizontal" />

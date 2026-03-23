@@ -6,12 +6,12 @@ export default function Example() {
     <Ariakit.TooltipProvider>
       <Ariakit.TooltipAnchor
         className="link"
-        render={<a href="https://ariakit.org/components/tooltip" />}
+        render={<a href="https://ariakit.com/components/tooltip" />}
       >
         Tooltip
       </Ariakit.TooltipAnchor>
       <Ariakit.Tooltip className="tooltip">
-        https://ariakit.org/components/tooltip
+        https://ariakit.com/components/tooltip
       </Ariakit.Tooltip>
     </Ariakit.TooltipProvider>
   );

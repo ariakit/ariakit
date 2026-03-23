@@ -62,7 +62,7 @@ function getBorderColor(dir: BasePlacement, style?: CSSStyleDeclaration) {
 
 /**
  * Returns props to create a `PopoverArrow` component.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * const store = usePopoverStore();
@@ -169,9 +169,9 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
 );
 
 /**
- * Renders an arrow inside a [`Popover`](https://ariakit.org/reference/popover)
+ * Renders an arrow inside a [`Popover`](https://ariakit.com/reference/popover)
  * component pointing to the anchor element.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx {4}
  * <PopoverProvider>
@@ -195,10 +195,10 @@ export interface PopoverArrowOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * [`usePopoverStore`](https://ariakit.com/reference/use-popover-store) hook.
    * If not provided, the closest
-   * [`Popover`](https://ariakit.org/reference/popover) or
-   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * [`Popover`](https://ariakit.com/reference/popover) or
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * components' context will be used.
    */
   store?: PopoverStore;
@@ -206,7 +206,7 @@ export interface PopoverArrowOptions<
    * The size of the arrow.
    *
    * Live examples:
-   * - [Selection Popover](https://ariakit.org/examples/popover-selection)
+   * - [Selection Popover](https://ariakit.com/examples/popover-selection)
    * @default 30
    */
   size?: number;

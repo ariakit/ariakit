@@ -597,7 +597,7 @@ export function HeaderNav() {
         <HeaderMenuItem href="https://github.com/ariakit/ariakit/discussions">
           Discussions
         </HeaderMenuItem>
-        <HeaderMenuItem href="https://newsletter.ariakit.org">
+        <HeaderMenuItem href="https://newsletter.ariakit.com">
           Newsletter
         </HeaderMenuItem>
       </>

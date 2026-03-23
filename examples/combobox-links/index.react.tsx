@@ -6,7 +6,7 @@ import "./style.css";
 
 const links = [
   {
-    href: "https://bsky.app/profile/ariakit.org",
+    href: "https://bsky.app/profile/ariakit.com",
     children: "Bluesky",
     target: "_blank",
   },
@@ -25,7 +25,7 @@ const links = [
     children: "Discord",
     target: "_blank",
   },
-  { href: "https://ariakit.org", children: "Ariakit.org" },
+  { href: "https://ariakit.com", children: "Ariakit.com" },
 ];
 
 export default function Example() {

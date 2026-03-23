@@ -18,7 +18,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `PopoverDisclosure` component.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * const store = usePopoverStore();
@@ -70,8 +70,8 @@ export const usePopoverDisclosure = createHook<
 
 /**
  * Renders a button that controls the visibility of the
- * [`Popover`](https://ariakit.org/reference/popover) component when clicked.
- * @see https://ariakit.org/components/popover
+ * [`Popover`](https://ariakit.com/reference/popover) component when clicked.
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx {2}
  * <PopoverProvider>

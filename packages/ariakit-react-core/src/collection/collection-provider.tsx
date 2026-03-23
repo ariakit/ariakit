@@ -9,8 +9,8 @@ import { useCollectionStore } from "./collection-store.ts";
 
 /**
  * Provides a collection store to
- * [`CollectionItem`](https://ariakit.org/reference/collection-item) components.
- * @see https://ariakit.org/components/collection
+ * [`CollectionItem`](https://ariakit.com/reference/collection-item) components.
+ * @see https://ariakit.com/components/collection
  * @example
  * ```jsx
  * <CollectionProvider>

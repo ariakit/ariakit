@@ -34,7 +34,7 @@ export interface Options {
    * takes in the original component props and gives back a Solid component
    * instance with the props merged.
    *
-   * Check out the [Composition](https://solid.ariakit.org/guide/composition) guide
+   * Check out the [Composition](https://solid.ariakit.com/guide/composition) guide
    * for more details.
    */
   render?: RenderValue<JSX.HTMLAttributes<any>>;

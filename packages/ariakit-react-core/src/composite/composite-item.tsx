@@ -138,7 +138,7 @@ function targetIsAnotherItem(event: SyntheticEvent, store: CompositeStore) {
 
 /**
  * Returns props to create a `CompositeItem` component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -443,16 +443,16 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 /**
  * Renders a focusable item as part of a composite widget. The `tabindex`
  * attribute is automatically managed by this component based on the
- * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+ * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
  * option.
  *
  * When this component receives DOM focus or is virtually focused (when the
- * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+ * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
  * option is set to `true`), the element will automatically receive the
- * [`data-active-item`](https://ariakit.org/guide/styling#data-active-item)
+ * [`data-active-item`](https://ariakit.com/guide/styling#data-active-item)
  * attribute. This can be used to style the focused item, no matter the focus
  * approach employed.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx {3-5}
  * <CompositeProvider>
@@ -475,10 +475,10 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
   extends CommandOptions<T>, CollectionItemOptions<T> {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`Composite`](https://ariakit.com/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
   store?: CompositeStore;
@@ -490,12 +490,12 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
   /**
    * The id that will be used to group items in the same row. This is usually
    * retrieved by the
-   * [`CompositeRow`](https://ariakit.org/reference/composite-row) component
+   * [`CompositeRow`](https://ariakit.com/reference/composite-row) component
    * through context so in most cases you don't need to set it manually.
    *
    * Live examples:
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   rowId?: string;
   /**
@@ -513,10 +513,10 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    *
    * **Note**: To entirely disable focus moving within a composite widget, you
    * can use the
-   * [`focusOnMove`](https://ariakit.org/reference/composite#focusonmove) prop
+   * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) prop
    * on the composite component instead. If you want to control the behavior
    * _only when arrow keys are pressed_, where
-   * [`focusOnMove`](https://ariakit.org/reference/composite#focusonmove) may
+   * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) may
    * not be applicable, this prop must be set on all composite items because
    * they each manage their own key presses, as well as on the composite
    * component itself.
@@ -555,11 +555,11 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * implications of using this prop.
    *
    * **Note**: This prop has no effect when the
-   * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+   * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
    * option is enabled.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   tabbable?: boolean;
 }

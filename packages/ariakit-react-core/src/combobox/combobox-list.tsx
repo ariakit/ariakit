@@ -27,7 +27,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `ComboboxList` component.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -136,7 +136,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
  * Renders a combobox list. The `role` prop is set to `listbox` by default, but
  * can be overriden by any other valid combobox popup role (`listbox`, `menu`,
  * `tree`, `grid` or `dialog`).
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3-7}
  * <ComboboxProvider>
@@ -160,9 +160,9 @@ export interface ComboboxListOptions<T extends ElementType = TagName>
   extends Options, Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
    */
   store?: ComboboxStore;

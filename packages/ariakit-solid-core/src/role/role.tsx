@@ -41,7 +41,7 @@ type RoleElements = {
 
 /**
  * Returns props to create a `Role` component.
- * @see https://solid.ariakit.org/components/role
+ * @see https://solid.ariakit.com/components/role
  * @example
  * ```jsx
  * const props = useRole();
@@ -59,7 +59,7 @@ export const useRole = createHook<TagName, RoleOptions>(
  * Renders an abstract element that supports the `render` prop and a
  * `wrapInstance` prop that can be used to wrap the underlying component
  * instance with Solid Portal, Context or other component types.
- * @see https://solid.ariakit.org/components/role
+ * @see https://solid.ariakit.com/components/role
  * @example
  * ```jsx
  * <Role render={<As.div />} />

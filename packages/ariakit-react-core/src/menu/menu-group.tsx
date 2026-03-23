@@ -10,7 +10,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuGroup` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -33,11 +33,11 @@ export const useMenuGroup = createHook<TagName, MenuGroupOptions>(
 );
 
 /**
- * Renders a group for [`MenuItem`](https://ariakit.org/reference/menu-item)
+ * Renders a group for [`MenuItem`](https://ariakit.com/reference/menu-item)
  * elements. Optionally, a
- * [`MenuGroupLabel`](https://ariakit.org/reference/menu-group-label) can be
+ * [`MenuGroupLabel`](https://ariakit.com/reference/menu-group-label) can be
  * rendered as a child to provide a label for the group.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {4-8}
  * <MenuProvider>
@@ -62,9 +62,9 @@ export interface MenuGroupOptions<
 > extends CompositeGroupOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;

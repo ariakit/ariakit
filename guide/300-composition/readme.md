@@ -92,12 +92,12 @@ This also applies to the `children` prop. You don't need to nest children within
 
 - Children passed directly to the rendered element will override the original component children:
 
-  ```jsx "Ariakit.org"
-  <ComboboxItem render={<a>Ariakit.org</a>}>Ariakit</ComboboxItem>
+  ```jsx "Ariakit.com"
+  <ComboboxItem render={<a>Ariakit.com</a>}>Ariakit</ComboboxItem>
   ```
 
-  ```html "Ariakit.org"
-  <a>Ariakit.org</a>
+  ```html "Ariakit.com"
+  <a>Ariakit.com</a>
   ```
 
 <aside data-type="note" title="Flat is better than nested">

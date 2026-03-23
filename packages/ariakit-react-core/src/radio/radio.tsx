@@ -46,7 +46,7 @@ function isNativeRadio(tagName?: string, type?: string) {
 
 /**
  * Returns props to create a `Radio` component.
- * @see https://ariakit.org/components/radio
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx
  * const store = useRadioStore();
@@ -180,8 +180,8 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
 
 /**
  * Renders a radio button element that's typically wrapped in a
- * [`RadioGroup`](https://ariakit.org/reference/radio-group) component.
- * @see https://ariakit.org/components/radio
+ * [`RadioGroup`](https://ariakit.com/reference/radio-group) component.
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx {3-4}
  * <RadioProvider>
@@ -204,10 +204,10 @@ export interface RadioOptions<
 > extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
+   * [`useRadioStore`](https://ariakit.com/reference/use-radio-store) hook. If
    * not provided, the closest
-   * [`RadioGroup`](https://ariakit.org/reference/radio-group) or
-   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) components'
+   * [`RadioGroup`](https://ariakit.com/reference/radio-group) or
+   * [`RadioProvider`](https://ariakit.com/reference/radio-provider) components'
    * context will be used.
    */
   store?: RadioStore;
@@ -215,8 +215,8 @@ export interface RadioOptions<
    * The value of the radio button.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
-   * - [MenuItemRadio](https://ariakit.org/examples/menu-item-radio)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
+   * - [MenuItemRadio](https://ariakit.com/examples/menu-item-radio)
    */
   value: string | number;
   /**
@@ -226,7 +226,7 @@ export interface RadioOptions<
   /**
    * Determines if the radio button is checked. Using this prop will make the
    * radio button controlled and override the
-   * [`value`](https://ariakit.org/reference/radio-provider#value) state.
+   * [`value`](https://ariakit.com/reference/radio-provider#value) state.
    */
   checked?: boolean;
   /**

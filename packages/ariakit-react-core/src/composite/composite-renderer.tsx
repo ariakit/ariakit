@@ -210,15 +210,15 @@ export interface CompositeRendererOptions<T extends Item = any> extends Omit<
 > {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [Composite](https://ariakit.org/components/composite) component's context
+   * [Composite](https://ariakit.com/components/composite) component's context
    * will be used.
    *
    * The store
-   * [`items`](https://ariakit.org/reference/use-composite-store#items) state
+   * [`items`](https://ariakit.com/reference/use-composite-store#items) state
    * will be used to render the items if the
-   * [`items`](https://ariakit.org/reference/composite-items#items) prop is not
+   * [`items`](https://ariakit.com/reference/composite-items#items) prop is not
    * provided.
    */
   store?: CompositeStore<

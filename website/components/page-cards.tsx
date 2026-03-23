@@ -40,7 +40,7 @@ export function PageCards({
   const links = findCardLinks(children);
 
   const pages = links.flatMap((link) => {
-    const url = new URL(link, "https://ariakit.org");
+    const url = new URL(link, "https://ariakit.com");
     const [, category, slug] = url.pathname.split("/");
     if (!category || !slug) return [];
     const page = pageIndex[category]?.find((item) => item.slug === slug);

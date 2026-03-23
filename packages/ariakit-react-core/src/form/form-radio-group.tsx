@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormRadioGroup` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { color: "red" } });
@@ -50,11 +50,11 @@ export const useFormRadioGroup = createHook<TagName, FormRadioGroupOptions>(
 
 /**
  * Renders a group element for
- * [`FormRadio`](https://ariakit.org/reference/form-radio) elements. The
- * [`FormGroupLabel`](https://ariakit.org/reference/form-group-label) component
+ * [`FormRadio`](https://ariakit.com/reference/form-radio) elements. The
+ * [`FormGroupLabel`](https://ariakit.com/reference/form-group-label) component
  * can be used inside this component so the `aria-labelledby` prop is properly
  * set on the group element.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {8-13}
  * const form = useFormStore({

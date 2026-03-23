@@ -19,7 +19,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Tooltip` component.
- * @see https://ariakit.org/components/tooltip
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx
  * const store = useToolTipStore();
@@ -99,14 +99,14 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
 
 /**
  * Renders a tooltip element that visually describes a
- * [`TooltipAnchor`](https://ariakit.org/reference/tooltip-anchor) when it
+ * [`TooltipAnchor`](https://ariakit.com/reference/tooltip-anchor) when it
  * receives focus or is hovered.
  *
  * The tooltip is strictly for visual purposes. It's your responsibility to
  * ensure the anchor element has an accessible name. See [Tooltip anchors must
  * have accessible
- * names](https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names)
- * @see https://ariakit.org/components/tooltip
+ * names](https://ariakit.com/components/tooltip#tooltip-anchors-must-have-accessible-names)
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx {3}
  * <TooltipProvider>
@@ -128,9 +128,9 @@ export interface TooltipOptions<
 > extends HovercardOptions<T> {
   /**
    * Object returned by the
-   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
+   * [`useTooltipStore`](https://ariakit.com/reference/use-tooltip-store) hook.
    * If not provided, the closest
-   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)
    * component's context will be used.
    */
   store?: TooltipStore;

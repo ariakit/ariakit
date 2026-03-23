@@ -55,8 +55,8 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
 
 /**
  * Creates a select store to control the state of
- * [Select](https://ariakit.org/components/select) components.
- * @see https://ariakit.org/components/select
+ * [Select](https://ariakit.com/components/select) components.
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const select = useSelectStore({ defaultValue: "Apple" });
@@ -108,25 +108,25 @@ export interface SelectStoreOptions<
     PopoverStoreOptions {
   /**
    * Function that will be called when the
-   * [`value`](https://ariakit.org/reference/select-provider#value) state
+   * [`value`](https://ariakit.com/reference/select-provider#value) state
    * changes.
    *
    * Live examples:
-   * - [Form with Select](https://ariakit.org/examples/form-select)
-   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   * - [Select Grid](https://ariakit.com/examples/select-grid)
    * - [Select with custom
-   *   items](https://ariakit.org/examples/select-item-custom)
-   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
-   * - [Toolbar with Select](https://ariakit.org/examples/toolbar-select)
+   *   items](https://ariakit.com/examples/select-item-custom)
+   * - [Multi-Select](https://ariakit.com/examples/select-multiple)
+   * - [Toolbar with Select](https://ariakit.com/examples/toolbar-select)
    * - [Select with Next.js App
-   *   Router](https://ariakit.org/examples/select-next-router)
+   *   Router](https://ariakit.com/examples/select-next-router)
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
   /**
    * A reference to a [combobox
-   * store](https://ariakit.org/reference/use-combobox-store). It's
+   * store](https://ariakit.com/reference/use-combobox-store). It's
    * automatically set when composing [Select with
-   * Combobox](https://ariakit.org/examples/select-combobox).
+   * Combobox](https://ariakit.com/examples/select-combobox).
    */
   combobox?: ComboboxStore | null;
 }

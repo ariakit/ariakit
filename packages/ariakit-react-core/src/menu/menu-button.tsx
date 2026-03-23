@@ -52,7 +52,7 @@ function hasActiveItem(
 
 /**
  * Returns props to create a `MenuButton` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -261,9 +261,9 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 
 /**
  * Renders a menu button that toggles the visibility of a
- * [`Menu`](https://ariakit.org/reference/menu) component when clicked or when
+ * [`Menu`](https://ariakit.com/reference/menu) component when clicked or when
  * using arrow keys.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {2}
  * <MenuProvider>
@@ -289,20 +289,20 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
     CompositeTypeaheadOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
    * provided, the closest
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) component's
    * context will be used.
    */
   store?: MenuStore;
   /**
    * Determines whether pressing a character key while focusing on the
-   * [`MenuButton`](https://ariakit.org/reference/menu-button) should move focus
-   * to the [`MenuItem`](https://ariakit.org/reference/menu-item) starting with
+   * [`MenuButton`](https://ariakit.com/reference/menu-button) should move focus
+   * to the [`MenuItem`](https://ariakit.com/reference/menu-item) starting with
    * that character.
    *
    * By default, it's `true` for menu buttons in a
-   * [`Menubar`](https://ariakit.org/reference/menubar), but `false` for other
+   * [`Menubar`](https://ariakit.com/reference/menubar), but `false` for other
    * menu buttons.
    */
   typeahead?: boolean;

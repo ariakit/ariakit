@@ -1,4 +1,4 @@
-# Ariakit.org Proprietary License
+# Ariakit.com Proprietary License
 
 Copyright (c) 2025-present Ariakit FZ-LLC. All Rights Reserved.
 

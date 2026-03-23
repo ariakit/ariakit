@@ -26,6 +26,6 @@ SOFTWARE.
 
 ## Note on Ariakit Plus Examples
 
-Please note that while the examples in this directory are generally available under the MIT License, some folders may contain examples that are part of [Ariakit Plus](https://ariakit.org/plus) and are subject to the [Ariakit Plus License](https://ariakit.org/plus/license). See the list of [Ariakit Plus Examples](https://ariakit.org/react/examples/plus/#tags).
+Please note that while the examples in this directory are generally available under the MIT License, some folders may contain examples that are part of [Ariakit Plus](https://ariakit.com/plus) and are subject to the [Ariakit Plus License](https://ariakit.com/plus/license). See the list of [Ariakit Plus Examples](https://ariakit.com/react/examples/plus/#tags).
 
 Each of these folders will contain its own license file with the full terms. Always refer to the most specific license file that applies to the code you are using.

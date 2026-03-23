@@ -14,7 +14,7 @@ type TagName = typeof TagName;
  * Returns props to create a `SelectItemCheck` component. This hook must be used
  * in a component that's wrapped with `SelectItem` or the `checked` prop must be
  * explicitly passed to the component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const props = useSelectItemCheck({ checked: true });
@@ -32,14 +32,14 @@ export const useSelectItemCheck = createHook<TagName, SelectItemCheckOptions>(
 
 /**
  * Renders a checkmark icon when the
- * [`checked`](https://ariakit.org/reference/select-item-check#checked) prop is
+ * [`checked`](https://ariakit.com/reference/select-item-check#checked) prop is
  * `true`. The icon can be overridden by providing a different one as children.
  *
  * When rendered inside a
- * [`SelectItem`](https://ariakit.org/reference/select-item) component, the
- * [`checked`](https://ariakit.org/reference/select-item-check#checked) prop is
+ * [`SelectItem`](https://ariakit.com/reference/select-item) component, the
+ * [`checked`](https://ariakit.com/reference/select-item-check#checked) prop is
  * automatically derived from the context.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5,9}
  * <SelectProvider>
@@ -69,7 +69,7 @@ export interface SelectItemCheckOptions<
 > extends CheckboxCheckOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook.
    */
   store?: SelectStore;
 }

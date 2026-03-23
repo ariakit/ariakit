@@ -234,15 +234,15 @@ export interface ComboboxStoreState<
    *
    * Live examples:
    * - [Combobox with integrated
-   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
-   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
-   * - [Combobox filtering](https://ariakit.org/examples/combobox-filtering)
+   *   filter](https://ariakit.com/examples/combobox-filtering-integrated)
+   * - [Combobox with links](https://ariakit.com/examples/combobox-links)
+   * - [Combobox filtering](https://ariakit.com/examples/combobox-filtering)
    * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   *   Combobox](https://ariakit.com/examples/combobox-multiple)
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   value: string;
   /**
@@ -254,46 +254,46 @@ export interface ComboboxStoreState<
   /**
    * The value(s) of the currently selected item(s). This can be a string or an
    * array of strings. If it's an array, the combobox is considered
-   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
+   * [multi-selectable](https://ariakit.com/examples/combobox-multiple).
    *
    * Live examples:
    * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   *   Combobox](https://ariakit.com/examples/combobox-multiple)
    */
   selectedValue: MutableValue<T>;
   /**
    * Whether to reset the value when the combobox popover closes. This prop is
    * automatically set to `true` by default if the combobox supports multiple
    * selections. In other words, if the
-   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * or
-   * [`defaultSelectedValue`](https://ariakit.org/reference/combobox-provider#defaultselectedvalue)
+   * [`defaultSelectedValue`](https://ariakit.com/reference/combobox-provider#defaultselectedvalue)
    * props are arrays.
    *
    * Live examples:
    * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
-   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
-   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
+   *   Combobox](https://ariakit.com/examples/combobox-multiple)
+   * - [Menu with Combobox](https://ariakit.com/examples/menu-combobox)
+   * - [Select with Combobox](https://ariakit.com/examples/select-combobox)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * - [Select with Combobox and
-   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    */
   resetValueOnHide: boolean;
   /**
    * Whether to reset the value when an item is selected. This prop is
    * automatically set to `true` by default if the combobox supports multiple
    * selections. In other words, if the
-   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * or
-   * [`defaultSelectedValue`](https://ariakit.org/reference/combobox-provider#defaultselectedvalue)
+   * [`defaultSelectedValue`](https://ariakit.com/reference/combobox-provider#defaultselectedvalue)
    * props are arrays.
    * @deprecated Use the
-   * [`resetValueOnSelect`](https://ariakit.org/reference/combobox-item#resetvalueonselect)
-   * prop on [`ComboboxItem`](https://ariakit.org/reference/combobox-item)
+   * [`resetValueOnSelect`](https://ariakit.com/reference/combobox-item#resetvalueonselect)
+   * prop on [`ComboboxItem`](https://ariakit.com/reference/combobox-item)
    * instead.
    */
   resetValueOnSelect: boolean;
@@ -307,25 +307,25 @@ export interface ComboboxStoreFunctions<
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {
   /**
-   * Sets the [`value`](https://ariakit.org/reference/combobox-provider#value)
+   * Sets the [`value`](https://ariakit.com/reference/combobox-provider#value)
    * state.
    *
    * Live examples:
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
    * @example
    * store.setValue("Hello world");
    * store.setValue((value) => value + "!");
    */
   setValue: SetState<ComboboxStoreState<T>["value"]>;
   /**
-   * Resets the [`value`](https://ariakit.org/reference/combobox-provider#value)
+   * Resets the [`value`](https://ariakit.com/reference/combobox-provider#value)
    * state to its initial value.
    */
   resetValue: () => void;
   /**
    * Sets the
-   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * state.
    */
   setSelectedValue: SetState<ComboboxStoreState<T>["selectedValue"]>;
@@ -358,10 +358,10 @@ export interface ComboboxStoreOptions<
   defaultValue?: ComboboxStoreState<T>["value"];
   /**
    * The initial value of the
-   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * state. This can be a string or an array of strings. If it's an array, the
    * combobox is considered
-   * [multi-selectable](https://ariakit.org/examples/combobox-multiple).
+   * [multi-selectable](https://ariakit.com/examples/combobox-multiple).
    * @default ""
    */
   defaultSelectedValue?: ComboboxStoreState<T>["selectedValue"];

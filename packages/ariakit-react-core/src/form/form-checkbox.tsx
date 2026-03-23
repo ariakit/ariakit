@@ -19,7 +19,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormCheckbox` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { acceptTerms: false } });
@@ -73,7 +73,7 @@ export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
 /**
  * Renders a checkbox input as a form control, representing a boolean, string,
  * number, or array value.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {9}
  * const form = useFormStore({

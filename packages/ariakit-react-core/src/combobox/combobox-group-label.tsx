@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `ComboboxGroupLabel` component. This hook should be
  * used in a component that's wrapped with `ComboboxGroup` so the
  * `aria-labelledby` is correctly set on the combobox group element.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * // This component should be wrapped with ComboboxGroup
@@ -30,9 +30,9 @@ export const useComboboxGroupLabel = createHook<
 
 /**
  * Renders a label in a combobox group. This component should be wrapped with
- * [`ComboboxGroup`](https://ariakit.org/reference/combobox-group) so the
+ * [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) so the
  * `aria-labelledby` is correctly set on the group element.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {5}
  * <ComboboxProvider>
@@ -59,10 +59,10 @@ export interface ComboboxGroupLabelOptions<
 > extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components' context will be used.
    */
   store?: ComboboxStore;

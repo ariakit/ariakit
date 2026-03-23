@@ -57,7 +57,7 @@ export function isHidden(
 
 /**
  * Returns props to create a `DislosureContent` component.
- * @see https://ariakit.org/components/disclosure
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx
  * const store = useDisclosureStore();
@@ -244,8 +244,8 @@ const DisclosureContentImpl = forwardRef(function DisclosureContentImpl(
 
 /**
  * Renders an element that can be shown or hidden by a
- * [`Disclosure`](https://ariakit.org/components/disclosure) component.
- * @see https://ariakit.org/components/disclosure
+ * [`Disclosure`](https://ariakit.com/components/disclosure) component.
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx {3}
  * <DisclosureProvider>
@@ -273,15 +273,15 @@ export interface DisclosureContentOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)
+   * [`useDisclosureStore`](https://ariakit.com/reference/use-disclosure-store)
    * hook. If not provided, the closest
-   * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
+   * [`DisclosureProvider`](https://ariakit.com/reference/disclosure-provider)
    * component's context will be used.
    */
   store?: DisclosureStore;
   /**
    * Determines whether the content element should remain visible even when the
-   * [`open`](https://ariakit.org/reference/disclosure-provider#open) state is
+   * [`open`](https://ariakit.com/reference/disclosure-provider#open) state is
    * `false`. If this prop is set to `true`, the `hidden` prop and the `display:
    * none` style will not be applied, unless explicitly set otherwise.
    *
@@ -291,13 +291,13 @@ export interface DisclosureContentOptions<
    *
    * Live examples:
    * - [Dialog with Framer
-   *   Motion](https://ariakit.org/examples/dialog-framer-motion)
+   *   Motion](https://ariakit.com/examples/dialog-framer-motion)
    * - [Menu with Framer
-   *   Motion](https://ariakit.org/examples/menu-framer-motion)
+   *   Motion](https://ariakit.com/examples/menu-framer-motion)
    * - [Tooltip with Framer
-   *   Motion](https://ariakit.org/examples/tooltip-framer-motion)
+   *   Motion](https://ariakit.com/examples/tooltip-framer-motion)
    * - [Dialog with details &
-   *   summary](https://ariakit.org/examples/dialog-details)
+   *   summary](https://ariakit.com/examples/dialog-details)
    * @default false
    */
   alwaysVisible?: boolean;
@@ -306,14 +306,14 @@ export interface DisclosureContentOptions<
    * the DOM when it's hidden.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    * - [Combobox with integrated
-   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
+   *   filter](https://ariakit.com/examples/combobox-filtering-integrated)
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
-   * - [Animated Select](https://ariakit.org/examples/select-animated)
-   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
+   * - [Standalone Popover](https://ariakit.com/examples/popover-standalone)
+   * - [Animated Select](https://ariakit.com/examples/select-animated)
+   * - [Multi-Select](https://ariakit.com/examples/select-multiple)
    * @default false
    */
   unmountOnHide?: boolean;

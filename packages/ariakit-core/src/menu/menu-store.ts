@@ -166,14 +166,14 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   initialFocus: "container" | "first" | "last";
   /**
    * A map of names and values that will be used by the
-   * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox) and
-   * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio)
+   * [`MenuItemCheckbox`](https://ariakit.com/reference/menu-item-checkbox) and
+   * [`MenuItemRadio`](https://ariakit.com/reference/menu-item-radio)
    * components.
    *
    * Live examples:
-   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
+   * - [MenuItemCheckbox](https://ariakit.com/examples/menu-item-checkbox)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    */
   values: T;
 }
@@ -188,7 +188,7 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
    *
    * Live examples:
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    */
   hideAll: () => void;
   /**
@@ -196,7 +196,7 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
    */
   setInitialFocus: SetState<MenuStoreState<T>["initialFocus"]>;
   /**
-   * Sets the [`values`](https://ariakit.org/reference/menu-provider#values)
+   * Sets the [`values`](https://ariakit.com/reference/menu-provider#values)
    * state.
    * @example
    * store.setValues({ watching: ["issues"] });
@@ -208,7 +208,7 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
    *
    * Live examples:
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    * @example
    * store.setValue("watching", ["issues"]);
    * store.setValue("watching", (value) => [...value, "issues"]);
@@ -246,11 +246,11 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
   menubar?: MenuBarStore | null;
   /**
    * The default values for the
-   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+   * [`values`](https://ariakit.com/reference/menu-provider#values) state.
    *
    * Live examples:
-   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
-   * - [MenuItemRadio](https://ariakit.org/examples/menu-item-radio)
+   * - [MenuItemCheckbox](https://ariakit.com/examples/menu-item-checkbox)
+   * - [MenuItemRadio](https://ariakit.com/examples/menu-item-radio)
    * @default {}
    */
   defaultValues?: MenuStoreState<T>["values"];

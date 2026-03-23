@@ -13,7 +13,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormReset` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore();
@@ -49,9 +49,9 @@ export const useFormReset = createHook<TagName, FormResetOptions>(
 /**
  * Renders a button that resets the form to its initial values, as defined by
  * the
- * [`defaultValues`](https://ariakit.org/reference/use-form-store#defaultvalues)
+ * [`defaultValues`](https://ariakit.com/reference/use-form-store#defaultvalues)
  * prop given to the form store.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {4}
  * const form = useFormStore();
@@ -71,9 +71,9 @@ export interface FormResetOptions<
 > extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.com/reference/form) or
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
   store?: FormStore;

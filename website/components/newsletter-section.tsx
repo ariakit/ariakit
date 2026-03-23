@@ -23,7 +23,7 @@ export function NewsletterSection() {
           <p>
             No spam. Unsubscribe anytime.{" "}
             <InlineLink
-              href="https://newsletter.ariakit.org/latest"
+              href="https://newsletter.ariakit.com/latest"
               target="_blank"
               rel="noreferrer"
             >

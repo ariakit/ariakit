@@ -53,7 +53,7 @@ export interface RadioStoreState extends CompositeStoreState {
 
 export interface RadioStoreFunctions extends CompositeStoreFunctions {
   /**
-   * Sets the [`value`](https://ariakit.org/reference/radio-provider#value)
+   * Sets the [`value`](https://ariakit.com/reference/radio-provider#value)
    * state.
    * @example
    * store.setValue("apple");
