@@ -534,7 +534,7 @@ importers:
       react-dom:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
-      read-pkg-up:
+      read-package-up:
         specifier: 11.0.0
         version: 11.0.0
       rehype-autolink-headings:
@@ -836,7 +836,7 @@ importers:
       react-markdown:
         specifier: 8.0.7
         version: 8.0.7(@types/react@18.3.28)(react@18.3.1)
-      read-pkg-up:
+      read-package-up:
         specifier: 11.0.0
         version: 11.0.0
       recast:
@@ -9303,10 +9303,9 @@ packages:
   read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
 
-  read-pkg-up@11.0.0:
-    resolution: {integrity: sha512-LOVbvF1Q0SZdjClSefZ0Nz5z8u+tIE7mV5NibzmE9VYmDe9CaBbAVtz1veOSZbofrdsilxuDAYnFenukZVp8/Q==}
+  read-package-up@11.0.0:
+    resolution: {integrity: sha512-MbgfoNPANMdb4oRBNg5eqLbB2t2r+o5Ua1pNt8BqGp4I0FJZhuVSOj3PaBPni4azWuSzEdNn2evevzVmEk1ohQ==}
     engines: {node: '>=18'}
-    deprecated: Renamed to read-package-up
 
   read-pkg@9.0.1:
     resolution: {integrity: sha512-9viLL4/n1BJUCT1NXVTdS1jtm80yDEgR5T4yCelII49Mbj0v1rZdKqj7zCiYdbB0CuCgdrvHcNogAKTFPBocFA==}
@@ -21138,7 +21137,7 @@ snapshots:
     dependencies:
       pify: 2.3.0
 
-  read-pkg-up@11.0.0:
+  read-package-up@11.0.0:
     dependencies:
       find-up-simple: 1.0.1
       read-pkg: 9.0.1

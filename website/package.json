@@ -65,7 +65,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-markdown": "8.0.7",
-    "read-pkg-up": "11.0.0",
+    "read-package-up": "11.0.0",
     "recast": "0.23.11",
     "rehype-parse": "8.0.5",
     "rehype-raw": "6.1.1",

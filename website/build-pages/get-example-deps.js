@@ -9,7 +9,7 @@ import * as presetReact from "@babel/preset-react";
 import * as presetTypescript from "@babel/preset-typescript";
 import * as t from "@babel/types";
 import { globSync } from "glob";
-import { readPackageUpSync } from "read-pkg-up";
+import { readPackageUpSync } from "read-package-up";
 import resolveFrom from "resolve-from";
 import ts from "typescript";
 
@@ -37,7 +37,7 @@ function getSourceValue(nodePath) {
   return source.node.value;
 }
 
-/** @type {Map<string, import("read-pkg-up").NormalizedReadResult>}} */
+/** @type {Map<string, import("read-package-up").NormalizedReadResult>}} */
 const packageCache = new Map();
 
 /** @param {string} source */

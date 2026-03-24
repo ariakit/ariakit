@@ -14,7 +14,7 @@ import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { resolve as resolveImportMeta } from "import-meta-resolve";
 import * as prettier from "prettier";
-import { readPackageUpSync } from "read-pkg-up";
+import { readPackageUpSync } from "read-package-up";
 import ts from "typescript";
 import type { HookHandler, Plugin } from "vite";
 import {
