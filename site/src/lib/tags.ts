@@ -20,7 +20,7 @@ const customTags = {
   nextjs: { label: "Next.js", frameworks: ["react"] },
   "no-ui-library": { label: "No UI Library" },
   "nextjs-app-router": { label: "Next.js App Router", frameworks: ["react"] },
-  "framer-motion": { label: "Framer Motion" },
+  motion: { label: "Motion" },
   "ariakit-react": { label: "Ariakit React", frameworks: ["react"] },
   "ariakit-solid": { label: "Ariakit Solid", frameworks: ["solid"] },
   "base-ui": { label: "Base UI", frameworks: ["react"] },

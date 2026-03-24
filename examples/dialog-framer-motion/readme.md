@@ -3,14 +3,14 @@ tags:
   - Dialog
   - Button
   - Animated
-  - Framer Motion
+  - Motion
 ---
 
-# Dialog with Framer Motion
+# Dialog with Motion
 
 <div data-description>
 
-Using <a href="https://www.framer.com/motion/">Framer Motion</a> to add initial and exit animations to a modal <a href="/components/dialog">Dialog</a> and its <a href="/reference/dialog#backdrop"><code>backdrop</code></a> element.
+Using <a href="https://motion.dev">Motion</a> to add initial and exit animations to a modal <a href="/components/dialog">Dialog</a> and its <a href="/reference/dialog#backdrop"><code>backdrop</code></a> element.
 
 </div>
 
@@ -29,7 +29,7 @@ Using <a href="https://www.framer.com/motion/">Framer Motion</a> to add initial 
 
 ## AnimatePresence
 
-We use the [AnimatePresence](https://www.framer.com/motion/animate-presence/) component from Framer Motion to animate the Ariakit [Dialog](/components/dialog) component when it gets mounted and unmounted from the DOM.
+We use the [AnimatePresence](https://motion.dev/docs/react-animate-presence) component from Motion to animate the Ariakit [Dialog](/components/dialog) component when it gets mounted and unmounted from the DOM.
 
 ```jsx
 <AnimatePresence>
