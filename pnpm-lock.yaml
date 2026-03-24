@@ -791,9 +791,6 @@ importers:
       match-sorter:
         specifier: 8.2.0
         version: 8.2.0
-      motion:
-        specifier: 12.38.0
-        version: 12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next:
         specifier: 14.2.35
         version: 14.2.35(@babel/core@7.29.0)(@playwright/test@1.58.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
