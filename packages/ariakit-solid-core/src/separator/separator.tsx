@@ -8,7 +8,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Separator` component.
- * @see https://solid.ariakit.org/components/separator
+ * @see https://solid.ariakit.com/components/separator
  * @example
  * ```jsx
  * const props = useSeparator({ orientation: "horizontal" });
@@ -35,7 +35,7 @@ export const useSeparator = createHook<TagName, SeparatorOptions>(
 
 /**
  * Renders a separator element.
- * @see https://solid.ariakit.org/components/separator
+ * @see https://solid.ariakit.com/components/separator
  * @example
  * ```jsx
  * <Separator orientation="horizontal" />

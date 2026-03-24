@@ -20,7 +20,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `Menu` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -229,13 +229,13 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
 
 /**
  * Renders a dropdown menu element that's controlled by a
- * [`MenuButton`](https://ariakit.org/reference/menu-button) component.
+ * [`MenuButton`](https://ariakit.com/reference/menu-button) component.
  *
  * This component uses the primitive
- * [`MenuList`](https://ariakit.org/reference/menu-list) component under the
+ * [`MenuList`](https://ariakit.com/reference/menu-list) component under the
  * hood. It renders a popover and automatically focuses on items when the menu
  * is shown.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {3-6}
  * <MenuProvider>

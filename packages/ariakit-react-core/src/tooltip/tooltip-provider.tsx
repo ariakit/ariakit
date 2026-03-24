@@ -4,9 +4,9 @@ import type { TooltipStoreProps } from "./tooltip-store.ts";
 import { useTooltipStore } from "./tooltip-store.ts";
 
 /**
- * Provides a tooltip store to [Tooltip](https://ariakit.org/components/tooltip)
+ * Provides a tooltip store to [Tooltip](https://ariakit.com/components/tooltip)
  * components.
- * @see https://ariakit.org/components/tooltip
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx
  * <TooltipProvider timeout={250}>

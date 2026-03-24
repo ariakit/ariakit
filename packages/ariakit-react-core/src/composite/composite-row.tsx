@@ -18,7 +18,7 @@ type TagName = typeof TagName;
  * Returns props to create a `CompositeRow` component. Wrapping `CompositeItem`
  * elements within rows will create a two-dimensional composite widget, such as
  * a grid.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -79,10 +79,10 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
 /**
  * Renders a row element for composite items that allows two-dimensional arrow
  * key navigation.
- * [`CompositeItem`](https://ariakit.org/reference/composite-item) elements
+ * [`CompositeItem`](https://ariakit.com/reference/composite-item) elements
  * wrapped within this component will automatically receive a
- * [`rowId`](https://ariakit.org/reference/composite-item#rowid) prop.
- * @see https://ariakit.org/components/composite
+ * [`rowId`](https://ariakit.com/reference/composite-item#rowid) prop.
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx {3-12}
  * <CompositeProvider>
@@ -113,10 +113,10 @@ export interface CompositeRowOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`Composite`](https://ariakit.com/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
   store?: CompositeStore;

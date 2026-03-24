@@ -13,7 +13,7 @@ test("combobox should not throw when input type=email", async ({ page }) => {
 
   await q.combobox("Email").fill("e");
   await page.keyboard.press("ArrowDown");
-  await expect(q.option("email1@ariakit.org")).toHaveAttribute(
+  await expect(q.option("email1@ariakit.com")).toHaveAttribute(
     "data-active-item",
   );
 });

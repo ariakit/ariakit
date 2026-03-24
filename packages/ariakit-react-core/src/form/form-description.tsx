@@ -21,7 +21,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `FormDescription` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { password: "" } });
@@ -84,7 +84,7 @@ export const useFormDescription = createHook<TagName, FormDescriptionOptions>(
 /**
  * Renders a description element for a form field, which will automatically
  * receive an `aria-describedby` attribute pointing to this element.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {10-12}
  * const form = useFormStore({
@@ -114,16 +114,16 @@ export interface FormDescriptionOptions<
 > extends CollectionItemOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.com/reference/form) or
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
   store?: FormStore;
   /**
    * Name of the field described by this element. This can either be a string or
    * a reference to a field name from the
-   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * [`names`](https://ariakit.com/reference/use-form-store#names) object in the
    * store, for type safety.
    * @example
    * ```jsx

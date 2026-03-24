@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `HovercardDismiss` component.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const store = useHovercardStore();
@@ -32,8 +32,8 @@ export const useHovercardDismiss = createHook<TagName, HovercardDismissOptions>(
 
 /**
  * Renders a button that hides a
- * [`Hovercard`](https://ariakit.org/reference/hovercard) when clicked.
- * @see https://ariakit.org/components/hovercard
+ * [`Hovercard`](https://ariakit.com/reference/hovercard) when clicked.
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx {3}
  * <HovercardProvider>
@@ -55,10 +55,10 @@ export interface HovercardDismissOptions<
 > extends PopoverDismissOptions<T> {
   /**
    * Object returned by the
-   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
    * hook. If not provided, the closest
-   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
-   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * [`Hovercard`](https://ariakit.com/reference/hovercard) or
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * components' context will be used.
    */
   store?: HovercardStore;

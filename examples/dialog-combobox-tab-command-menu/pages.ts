@@ -42,7 +42,7 @@ export const pages = {
     { label: "Radix Dialog", path: "/examples/dialog-radix" },
     { label: "Form with Select", path: "/examples/form-select" },
     { label: "Menu with Combobox", path: "/examples/menu-combobox" },
-    { label: "Menu with Framer Motion", path: "/examples/menu-framer-motion" },
+    { label: "Menu with Motion", path: "/examples/menu-framer-motion" },
     { label: "MenuItemCheckbox", path: "/examples/menu-item-checkbox" },
     { label: "Submenu", path: "/examples/menu-nested" },
     { label: "Submenu with Combobox", path: "/examples/menu-nested-combobox" },

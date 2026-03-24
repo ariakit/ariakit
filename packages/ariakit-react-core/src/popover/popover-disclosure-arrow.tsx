@@ -20,7 +20,7 @@ const pointsMap = {
 
 /**
  * Returns props to create a `PopoverDisclosureArrow` component.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * const store = usePopoverStore();
@@ -88,9 +88,9 @@ export const usePopoverDisclosureArrow = createHook<
 /**
  * Renders an arrow pointing to the popover position. It's usually rendered
  * inside the
- * [`PopoverDisclosure`](https://ariakit.org/reference/popover-disclosure)
+ * [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure)
  * component.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx {4}
  * <PopoverProvider>
@@ -114,10 +114,10 @@ export interface PopoverDisclosureArrowOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * [`usePopoverStore`](https://ariakit.com/reference/use-popover-store) hook.
    * If not provided, the closest
-   * [`PopoverDisclosure`](https://ariakit.org/reference/popover-disclosure) or
-   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure) or
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * components' context will be used.
    */
   store?: PopoverStore;
@@ -126,7 +126,7 @@ export interface PopoverDisclosureArrowOptions<
    * context.
    *
    * Live examples:
-   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    */
   placement?: PopoverStoreState["placement"];
 }

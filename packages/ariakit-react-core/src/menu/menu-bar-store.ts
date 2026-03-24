@@ -23,7 +23,7 @@ export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
 /**
  * Creates a menu bar store.
  * @deprecated
- * Use [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store)
+ * Use [`useMenubarStore`](https://ariakit.com/reference/use-menubar-store)
  * instead.
  * @example
  * ```jsx
@@ -36,7 +36,7 @@ export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
     if (process.env.NODE_ENV !== "production") {
       console.warn(
         "useMenuBarStore is deprecated. Use useMenubarStore instead.",
-        "See https://ariakit.org/reference/use-menubar-store",
+        "See https://ariakit.com/reference/use-menubar-store",
       );
     }
   }, []);

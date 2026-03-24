@@ -48,7 +48,7 @@ function menuHasFocus(
 
 /**
  * Returns props to create a `MenuItem` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -161,10 +161,10 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
 
 /**
  * Renders a menu item inside
- * [`MenuList`](https://ariakit.org/reference/menu-list) or
- * [`Menu`](https://ariakit.org/reference/menu)
+ * [`MenuList`](https://ariakit.com/reference/menu-list) or
+ * [`Menu`](https://ariakit.com/reference/menu)
  * components.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {4-5}
  * <MenuProvider>
@@ -187,13 +187,13 @@ export interface MenuItemOptions<T extends ElementType = TagName>
   extends CompositeItemOptions<T>, CompositeHoverOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) or
-   * [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store)
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) or
+   * [`useMenubarStore`](https://ariakit.com/reference/use-menubar-store)
    * hooks. If not provided, the closest
-   * [`Menu`](https://ariakit.org/reference/menu),
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider),
-   * [`Menubar`](https://ariakit.org/reference/menubar), or
-   * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
+   * [`Menu`](https://ariakit.com/reference/menu),
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider),
+   * [`Menubar`](https://ariakit.com/reference/menubar), or
+   * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
    * components' context will be used.
    */
   store?: MenubarStore | MenuStore;
@@ -205,7 +205,7 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    * download it.
    *
    * Live examples:
-   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    * @default true
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

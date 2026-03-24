@@ -35,7 +35,7 @@ function createRemoveStoreCallback(store: TooltipStore) {
 
 /**
  * Returns props to create a `TooltipAnchor` component.
- * @see https://ariakit.org/components/tooltip
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx
  * const store = useToolTipStore();
@@ -167,14 +167,14 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
 
 /**
  * Renders a reference element for a
- * [`Tooltip`](https://ariakit.org/reference/tooltip), which is triggered by
+ * [`Tooltip`](https://ariakit.com/reference/tooltip), which is triggered by
  * focusing or hovering over the anchor.
  *
  * The tooltip is strictly for visual purposes. It's your responsibility to
  * ensure the anchor element has an accessible name. See [Tooltip anchors must
  * have accessible
- * names](https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names)
- * @see https://ariakit.org/components/tooltip
+ * names](https://ariakit.com/components/tooltip#tooltip-anchors-must-have-accessible-names)
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx {2}
  * <TooltipProvider>
@@ -195,9 +195,9 @@ export interface TooltipAnchorOptions<
 > extends HovercardAnchorOptions<T> {
   /**
    * Object returned by the
-   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
+   * [`useTooltipStore`](https://ariakit.com/reference/use-tooltip-store) hook.
    * If not provided, the closest
-   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)
    * component's context will be used.
    */
   store?: TooltipStore;

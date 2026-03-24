@@ -9,7 +9,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FocusTrap` component.
- * @see https://ariakit.org/components/focus-trap
+ * @see https://ariakit.com/components/focus-trap
  * @example
  * ```jsx
  * const props = useFocusTrap();
@@ -40,7 +40,7 @@ export const useFocusTrap = createHook<TagName, FocusTrapOptions>(
 
 /**
  * Renders a focus trap element.
- * @see https://ariakit.org/components/focus-trap
+ * @see https://ariakit.com/components/focus-trap
  * @example
  * ```jsx
  * <FocusTrap onFocus={focusSomethingElse} />

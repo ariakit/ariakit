@@ -118,7 +118,7 @@ const NestedHovercardContext = createContext<
 
 /**
  * Returns props to create a `Hovercard` component.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const store = useHovercardStore();
@@ -375,8 +375,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
 /**
  * Renders a hovercard element, which is a popover that's usually made visible
  * by hovering the mouse cursor over a
- * [`HovercardAnchor`](https://ariakit.org/reference/hovercard-anchor).
- * @see https://ariakit.org/components/hovercard
+ * [`HovercardAnchor`](https://ariakit.com/reference/hovercard-anchor).
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx {3}
  * <HovercardProvider>
@@ -398,9 +398,9 @@ export interface HovercardOptions<
 > extends PopoverOptions<T> {
   /**
    * Object returned by the
-   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
    * hook. If not provided, the closest
-   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * component's context will be used.
    */
   store?: HovercardStore;

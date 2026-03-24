@@ -18,8 +18,8 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
 
 /**
  * Creates a disclosure store to control the state of
- * [Disclosure](https://ariakit.org/components/disclosure) components.
- * @see https://ariakit.org/components/disclosure
+ * [Disclosure](https://ariakit.com/components/disclosure) components.
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx
  * const disclosure = useDisclosureStore();
@@ -45,7 +45,7 @@ export interface DisclosureStoreFunctions
 export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
   /**
    * A callback that gets called when the
-   * [`open`](https://ariakit.org/reference/disclosure-provider#open) state
+   * [`open`](https://ariakit.com/reference/disclosure-provider#open) state
    * changes.
    * @example
    * const [open, setOpen] = useState(false);
@@ -63,13 +63,13 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
    * A reference to another disclosure store that controls another disclosure
    * component to keep them in sync. Element states like `contentElement` and
    * `disclosureElement` won't be synced. For that, use the
-   * [`store`](https://ariakit.org/reference/disclosure-provider#store) prop
+   * [`store`](https://ariakit.com/reference/disclosure-provider#store) prop
    * instead.
    *
    * Live examples:
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu](https://ariakit.com/examples/dialog-combobox-command-menu)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   disclosure?: DisclosureStore | null;
 }

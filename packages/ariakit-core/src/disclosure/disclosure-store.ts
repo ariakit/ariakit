@@ -86,25 +86,25 @@ export interface DisclosureStoreState {
    * Whether the content is visible.
    *
    * Live examples:
-   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   * - [Combobox with links](https://ariakit.com/examples/combobox-links)
    * - [Dialog with React
-   *   Router](https://ariakit.org/examples/dialog-react-router)
-   * - [Menu with Framer
-   *   Motion](https://ariakit.org/examples/menu-framer-motion)
-   * - [Lazy Popover](https://ariakit.org/examples/popover-lazy)
+   *   Router](https://ariakit.com/examples/dialog-react-router)
+   * - [Menu with
+   *   Motion](https://ariakit.com/examples/menu-framer-motion)
+   * - [Lazy Popover](https://ariakit.com/examples/popover-lazy)
    * @default false
    */
   open: boolean;
   /**
    * The mounted state usually matches the
-   * [`open`](https://ariakit.org/reference/disclosure-provider#open) value.
+   * [`open`](https://ariakit.com/reference/disclosure-provider#open) value.
    * However, if the content element is animated, it waits for the animation to
    * finish before turning `false`. This ensures the content element doesn't get
    * unmounted during the animation.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
-   * - [Responsive Popover](https://ariakit.org/examples/popover-responsive)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * - [Responsive Popover](https://ariakit.com/examples/popover-responsive)
    */
   mounted: boolean;
   /**
@@ -136,43 +136,43 @@ export interface DisclosureStoreFunctions extends Pick<
   "disclosure"
 > {
   /**
-   * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
+   * Sets the [`open`](https://ariakit.com/reference/disclosure-provider#open)
    * state.
    *
    * Live examples:
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
    * @example
    * store.setOpen(true);
    * store.setOpen((open) => !open);
    */
   setOpen: SetState<DisclosureStoreState["open"]>;
   /**
-   * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
+   * Sets the [`open`](https://ariakit.com/reference/disclosure-provider#open)
    * state to `true`.
    *
    * Live examples:
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Dialog with Framer
-   *   Motion](https://ariakit.org/examples/dialog-framer-motion)
-   * - [Context Menu](https://ariakit.org/examples/menu-context-menu)
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
+   * - [Dialog with
+   *   Motion](https://ariakit.com/examples/dialog-framer-motion)
+   * - [Context Menu](https://ariakit.com/examples/menu-context-menu)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   show: () => void;
   /**
-   * Sets the [`open`](https://ariakit.org/reference/disclosure-provider#open)
+   * Sets the [`open`](https://ariakit.com/reference/disclosure-provider#open)
    * state to `false`.
    *
    * Live examples:
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    */
   hide: () => void;
   /**
    * Toggles the
-   * [`open`](https://ariakit.org/reference/disclosure-provider#open) state.
+   * [`open`](https://ariakit.com/reference/disclosure-provider#open) state.
    */
   toggle: () => void;
   /**
@@ -190,7 +190,7 @@ export interface DisclosureStoreFunctions extends Pick<
    * Sets the `disclosureElement` state.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   setDisclosureElement: SetState<DisclosureStoreState["disclosureElement"]>;
 }
@@ -213,7 +213,7 @@ export interface DisclosureStoreOptions extends StoreOptions<
    * A reference to another disclosure store that controls another disclosure
    * component to keep them in sync. Element states like `contentElement` and
    * `disclosureElement` won't be synced. For that, use the
-   * [`store`](https://ariakit.org/reference/disclosure-provider#store) prop
+   * [`store`](https://ariakit.com/reference/disclosure-provider#store) prop
    * instead.
    */
   disclosure?: DisclosureStore | null;

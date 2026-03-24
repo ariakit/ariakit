@@ -13,7 +13,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectPopover` component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -38,7 +38,7 @@ export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
  * Renders a select popover. The `role` attribute is set to `listbox` by
  * default, but can be overriden by any other valid select popup role
  * (`listbox`, `menu`, `tree`, `grid` or `dialog`).
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {3-6}
  * <SelectProvider>

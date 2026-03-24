@@ -191,7 +191,7 @@ function onGlobalKeyDown(event: KeyboardEvent) {
 
 /**
  * Returns props to create a `Focusable` component.
- * @see https://ariakit.org/components/focusable
+ * @see https://ariakit.com/components/focusable
  * @example
  * ```jsx
  * const props = useFocusable();
@@ -474,19 +474,19 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
 /**
  * Renders a focusable element. When this element gains keyboard focus, it gets
  * a
- * [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible)
+ * [`data-focus-visible`](https://ariakit.com/guide/styling#data-focus-visible)
  * attribute and triggers the
- * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible)
+ * [`onFocusVisible`](https://ariakit.com/reference/focusable#onfocusvisible)
  * prop.
  *
  * The `Focusable` component supports the
- * [`disabled`](https://ariakit.org/reference/focusable#disabled) prop for all
+ * [`disabled`](https://ariakit.com/reference/focusable#disabled) prop for all
  * elements, even those not supporting the native `disabled` attribute. Disabled
  * elements using the `Focusable` component may be still accessible via keyboard
  * by using the the
- * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled)
+ * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled)
  * prop.
- * @see https://ariakit.org/components/focusable
+ * @see https://ariakit.com/components/focusable
  * @example
  * ```jsx
  * <Focusable>Focusable</Focusable>
@@ -506,17 +506,17 @@ export interface FocusableOptions<
    * that don't support the native `disabled` attribute.
    *
    * This feature can be combined with the
-   * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled)
+   * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled)
    * prop to make disabled elements still accessible via keyboard.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://ariakit.com/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
-   * - [Submenu](https://ariakit.org/examples/menu-nested)
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Context Menu](https://ariakit.org/examples/menu-context-menu)
+   * - [Submenu](https://ariakit.com/examples/menu-nested)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Context Menu](https://ariakit.com/examples/menu-context-menu)
    * @default false
    */
   disabled?: boolean;
@@ -527,42 +527,42 @@ export interface FocusableOptions<
    * executed.
    *
    * The `autoFocus` prop can also be used with
-   * [Focusable](https://ariakit.org/components/focusable) elements within a
-   * [Dialog](https://ariakit.org/components/dialog) component, establishing the
+   * [Focusable](https://ariakit.com/components/focusable) elements within a
+   * [Dialog](https://ariakit.com/components/dialog) component, establishing the
    * initial focus as the dialog opens.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://ariakit.com/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
    * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   *   hide](https://ariakit.com/examples/dialog-hide-warning)
    * - [Dialog with React
-   *   Router](https://ariakit.org/examples/dialog-react-router)
-   * - [Nested Dialog](https://ariakit.org/examples/dialog-nested)
+   *   Router](https://ariakit.com/examples/dialog-react-router)
+   * - [Nested Dialog](https://ariakit.com/examples/dialog-nested)
    * @default false
    */
   autoFocus?: boolean;
   /**
-   * Determines if [Focusable](https://ariakit.org/components/focusable)
+   * Determines if [Focusable](https://ariakit.com/components/focusable)
    * features should be active on non-native focusable elements.
    *
    * **Note**: This prop only turns off the additional features provided by the
-   * [`Focusable`](https://ariakit.org/reference/focusable) component.
+   * [`Focusable`](https://ariakit.com/reference/focusable) component.
    * Non-native focusable elements will lose their focusability entirely.
    * However, native focusable elements will retain their inherent focusability,
    * but without added features such as improved
-   * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus),
-   * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled),
-   * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible),
+   * [`autoFocus`](https://ariakit.com/reference/focusable#autofocus),
+   * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled),
+   * [`onFocusVisible`](https://ariakit.com/reference/focusable#onfocusvisible),
    * etc.
    * @default true
    */
   focusable?: boolean;
   /**
    * Indicates whether the element should be focusable even when it is
-   * [`disabled`](https://ariakit.org/reference/focusable#disabled).
+   * [`disabled`](https://ariakit.com/reference/focusable#disabled).
    *
    * This is important when discoverability is a concern. For example:
    *
@@ -576,25 +576,25 @@ export interface FocusableOptions<
    * controls](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#focusabilityofdisabledcontrols).
    *
    * Live examples:
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   accessibleWhenDisabled?: boolean;
   /**
    * Custom event handler invoked when the element gains focus through keyboard
    * interaction or a key press occurs while the element is in focus. This is
    * the programmatic equivalent of the
-   * [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible)
+   * [`data-focus-visible`](https://ariakit.com/guide/styling#data-focus-visible)
    * attribute.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://ariakit.com/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
-   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * - [Custom Checkbox](https://ariakit.com/examples/checkbox-custom)
    */
   onFocusVisible?: BivariantCallback<
     (event: SyntheticEvent<HTMLElement>) => void

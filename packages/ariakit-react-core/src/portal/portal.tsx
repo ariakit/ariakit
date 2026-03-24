@@ -55,7 +55,7 @@ function queueFocus(element?: HTMLElement | null) {
 
 /**
  * Returns props to create a `Portal` component.
- * @see https://ariakit.org/components/portal
+ * @see https://ariakit.com/components/portal
  * @example
  * ```jsx
  * const props = usePortal();
@@ -322,17 +322,17 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
  *
  * By default, the portal element is a `div` element appended to the
  * `document.body` element. You can customize this with the
- * [`portalElement`](https://ariakit.org/reference/portal#portalelement) prop.
+ * [`portalElement`](https://ariakit.com/reference/portal#portalelement) prop.
  *
  * The
- * [`preserveTabOrder`](https://ariakit.org/reference/portal#preservetaborder)
+ * [`preserveTabOrder`](https://ariakit.com/reference/portal#preservetaborder)
  * prop allows this component to manage the tab order of the elements. It
  * ensures the tab order remains consistent with the original location where the
  * portal was rendered in the React tree, instead of the final location in the
  * DOM. The
- * [`preserveTabOrderAnchor`](https://ariakit.org/reference/portal#preservetaborderanchor)
+ * [`preserveTabOrderAnchor`](https://ariakit.com/reference/portal#preservetaborderanchor)
  * prop can specify a different location from which the tab order is preserved.
- * @see https://ariakit.org/components/portal
+ * @see https://ariakit.com/components/portal
  * @example
  * ```jsx
  * <Portal>Content</Portal>
@@ -349,23 +349,23 @@ export interface PortalOptions<
   /**
    * When enabled, `preserveTabOrder` will keep the DOM element's tab order the
    * same as the order in which the underlying
-   * [`Portal`](https://ariakit.org/reference/portal) component was mounted in
+   * [`Portal`](https://ariakit.com/reference/portal) component was mounted in
    * the React tree.
    *
    * If the
-   * [`preserveTabOrderAnchor`](https://ariakit.org/reference/portal#preservetaborderanchor)
+   * [`preserveTabOrderAnchor`](https://ariakit.com/reference/portal#preservetaborderanchor)
    * prop is provided, the tab order will be preserved relative to that element.
    * @default false
    */
   preserveTabOrder?: boolean;
   /**
    * An anchor element for maintaining the tab order when
-   * [`preserveTabOrder`](https://ariakit.org/reference/portal#preservetaborder)
+   * [`preserveTabOrder`](https://ariakit.com/reference/portal#preservetaborder)
    * prop is enabled. The tab order will be kept relative to this element.
    *
    * By default, the tab order is kept relative to the original location in the
    * React tree where the underlying
-   * [`Portal`](https://ariakit.org/reference/portal) component was mounted.
+   * [`Portal`](https://ariakit.com/reference/portal) component was mounted.
    * @example
    * ```jsx {18-20}
    * const [anchor, setAnchor] = useState(null);
@@ -399,7 +399,7 @@ export interface PortalOptions<
    * the DOM or removed from the DOM.
    *
    * Live examples:
-   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
    * @example
    * ```jsx
    * const [portalElement, setPortalElement] = useState(null);
@@ -413,13 +413,13 @@ export interface PortalOptions<
    *
    * Live examples:
    * - [Combobox with integrated
-   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
-   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
+   *   filter](https://ariakit.com/examples/combobox-filtering-integrated)
+   * - [Dialog with Menu](https://ariakit.com/examples/dialog-menu)
    * - [Hovercard with keyboard
-   *   support](https://ariakit.org/examples/hovercard-disclosure)
-   * - [Menubar](https://ariakit.org/components/menubar)
-   * - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
-   * - [Animated Select](https://ariakit.org/examples/select-animated)
+   *   support](https://ariakit.com/examples/hovercard-disclosure)
+   * - [Menubar](https://ariakit.com/components/menubar)
+   * - [Standalone Popover](https://ariakit.com/examples/popover-standalone)
+   * - [Animated Select](https://ariakit.com/examples/select-animated)
    * @default true
    */
   portal?: boolean;
@@ -429,7 +429,7 @@ export interface PortalOptions<
    * will be a `div` element appended to the `document.body`.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    * @example
    * ```jsx
    * const [portal, setPortal] = useState(null);

@@ -44,14 +44,14 @@ export const useFormField = createHook<TagName, FormFieldOptions>(
 
 /**
  * Abstract component that renders a form field. Unlike
- * [`FormInput`](https://ariakit.org/reference/form-input), this component
+ * [`FormInput`](https://ariakit.com/reference/form-input), this component
  * doesn't automatically pass the `value` and `onChange` props down to the
  * underlying element. This is so we can use it not only for native form
  * elements but also for custom components whose value is not controlled by the
  * native `value` and `onChange` props.
  * @deprecated
  * This component has been renamed to
- * [`FormControl`](https://ariakit.org/reference/form-control). The API remains
+ * [`FormControl`](https://ariakit.com/reference/form-control). The API remains
  * the same.
  * @example
  * ```jsx {11-19}

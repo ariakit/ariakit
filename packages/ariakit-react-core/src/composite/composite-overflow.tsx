@@ -20,7 +20,7 @@ const hiddenStyle: CSSProperties = {
 
 /**
  * Returns props to create a `CompositeOverflow` component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const store = useCompositeOverflowStore();
@@ -79,7 +79,7 @@ export const useCompositeOverflow = createHook<
 /**
  * Renders a popover that will contain the overflow items in a composite
  * collection.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();

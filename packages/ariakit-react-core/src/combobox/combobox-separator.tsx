@@ -13,7 +13,7 @@ type TagName = typeof TagName;
 /**
  * Returns props a `ComboboxSeparator` component for combobox items.
  * @deprecated Use `useComboboxGroup` with CSS borders instead.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -45,11 +45,11 @@ export const useComboboxSeparator = createHook<
 
 /**
  * Renders a divider between
- * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) elements.
+ * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) elements.
  * @deprecated Use
- * [`ComboboxGroup`](https://ariakit.org/reference/combobox-group) with CSS
+ * [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) with CSS
  * borders instead.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {5}
  * <ComboboxProvider>
@@ -75,10 +75,10 @@ export interface ComboboxSeparatorOptions<
 > extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components' context will be used.
    */
   store?: ComboboxStore;

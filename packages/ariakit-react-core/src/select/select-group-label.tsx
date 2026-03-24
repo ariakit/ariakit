@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `SelectGroupLabel` component. This hook must be
  * used in a component that's wrapped with `SelectGroup` so the
  * `aria-labelledby` prop is properly set on the select group element.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * // This component must be wrapped with SelectGroup
@@ -29,9 +29,9 @@ export const useSelectGroupLabel = createHook<TagName, SelectGroupLabelOptions>(
 
 /**
  * Renders a label in a select group. This component must be wrapped with
- * [`SelectGroup`](https://ariakit.org/reference/select-group) so the
+ * [`SelectGroup`](https://ariakit.com/reference/select-group) so the
  * `aria-labelledby` prop is properly set on the select group element.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5,10}
  * <SelectProvider>
@@ -63,10 +63,10 @@ export interface SelectGroupLabelOptions<
 > extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components'
    * context will be used.
    */
   store?: SelectStore;

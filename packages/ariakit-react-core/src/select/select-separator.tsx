@@ -12,7 +12,7 @@ type TagName = typeof TagName;
 /**
  * Returns props to create a `SelectSeparator` component.
  * @deprecated Use `useSelectGroup` with CSS borders instead.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -36,10 +36,10 @@ export const useSelectSeparator = createHook<TagName, SelectSeparatorOptions>(
 
 /**
  * Renders a divider between
- * [`SelectItem`](https://ariakit.org/reference/select-item) elements.
- * @deprecated Use [`SelectGroup`](https://ariakit.org/reference/select-group)
+ * [`SelectItem`](https://ariakit.com/reference/select-item) elements.
+ * @deprecated Use [`SelectGroup`](https://ariakit.com/reference/select-group)
  * with CSS borders instead.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5}
  * <SelectProvider>
@@ -65,10 +65,10 @@ export interface SelectSeparatorOptions<
 > extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components'
    * context will be used.
    */
   store?: SelectStore;

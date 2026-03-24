@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `HovercardHeading` component. This hook must be
  * used in a component that's wrapped with `Hovercard` so the `aria-labelledby`
  * prop is properly set on the hovercard element.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * // This component must be wrapped with Hovercard
@@ -29,9 +29,9 @@ export const useHovercardHeading = createHook<TagName, HovercardHeadingOptions>(
 
 /**
  * Renders a heading in a hovercard. This component must be wrapped within
- * [`Hovercard`](https://ariakit.org/reference/hovercard) so the
+ * [`Hovercard`](https://ariakit.com/reference/hovercard) so the
  * `aria-labelledby` prop is properly set on the content element.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx {3}
  * <HovercardProvider>
@@ -53,10 +53,10 @@ export interface HovercardHeadingOptions<
 > extends PopoverHeadingOptions<T> {
   /**
    * Object returned by the
-   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
    * hook. If not provided, the closest
-   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
-   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * [`Hovercard`](https://ariakit.com/reference/hovercard) or
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * components' context will be used.
    */
   store?: HovercardStore;

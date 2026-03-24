@@ -16,14 +16,14 @@ export default function Example() {
     <span className="hovercard-wrapper">
       <Ariakit.HovercardProvider>
         <Ariakit.HovercardAnchor
-          href="https://bsky.app/profile/ariakit.org"
+          href="https://bsky.app/profile/ariakit.com"
           className="anchor"
         >
-          @ariakit.org
+          @ariakit.com
         </Ariakit.HovercardAnchor>
         <Ariakit.HovercardDisclosure className="disclosure">
           <Ariakit.VisuallyHidden>
-            More details about @ariakit.org
+            More details about @ariakit.com
           </Ariakit.VisuallyHidden>
           {chevronDown}
         </Ariakit.HovercardDisclosure>
@@ -41,7 +41,7 @@ export default function Example() {
             next web app.
           </p>
           <a
-            href="https://bsky.app/profile/ariakit.org"
+            href="https://bsky.app/profile/ariakit.com"
             className="button primary flat"
           >
             Follow

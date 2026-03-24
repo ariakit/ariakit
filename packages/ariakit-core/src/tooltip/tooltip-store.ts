@@ -19,7 +19,7 @@ export function createTooltipStore(
       console.warn(
         "The `type` option on the tooltip store is deprecated.",
         "Render a visually hidden label or use the `aria-label` or `aria-labelledby` attributes on the anchor element instead.",
-        "See https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names",
+        "See https://ariakit.com/components/tooltip#tooltip-anchors-must-have-accessible-names",
       );
     }
   }

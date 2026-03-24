@@ -124,7 +124,7 @@ type TagName = typeof TagName;
 
 /**
  * Description for my component hook.
- * @see https://ariakit.org/components/my-component
+ * @see https://ariakit.com/components/my-component
  * @example
  * ```jsx
  * const props = useMyComponent();
@@ -140,7 +140,7 @@ export const useMyComponent = createHook<TagName, MyComponentOptions>(
 
 /**
  * Description for my component.
- * @see https://ariakit.org/components/my-component
+ * @see https://ariakit.com/components/my-component
  * @example
  * ```jsx
  * <MyComponent />

@@ -424,7 +424,7 @@ function NextAppRouter() {
     >
       <span className="h-full w-full">
         <Input className="-ml-44 mt-10 w-max gap-0 rounded-full pr-12 text-black/60 dark:text-white/60">
-          https://ariakit.org/?
+          https://ariakit.com/?
           <span className="font-medium text-black dark:text-white">lang</span>=
           <span className="-mx-[1px] rounded bg-blue-50/50 px-[2px] font-medium text-blue-700 dark:bg-blue-900/15 dark:font-normal dark:text-blue-300">
             en

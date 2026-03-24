@@ -12,17 +12,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
   );
   const tags = getTags().map((tag) => `tags/${getTagSlug(tag)}`);
   return [
-    { url: "https://ariakit.org", lastModified: date },
+    { url: "https://ariakit.com", lastModified: date },
     ...categories.map((category) => ({
-      url: `https://ariakit.org/${category}`,
+      url: `https://ariakit.com/${category}`,
       lastModified: date,
     })),
     ...pages.map((page) => ({
-      url: `https://ariakit.org/${page}`,
+      url: `https://ariakit.com/${page}`,
       lastModified: date,
     })),
     ...tags.map((tag) => ({
-      url: `https://ariakit.org/${tag}`,
+      url: `https://ariakit.com/${tag}`,
       lastModified: date,
     })),
   ];

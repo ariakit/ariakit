@@ -20,8 +20,8 @@ export function useTagStoreProps<T extends Core.TagStore>(
 
 /**
  * Creates a tag store to control the state of
- * [Tag](https://ariakit.org/components/tag) components.
- * @see https://ariakit.org/components/tag
+ * [Tag](https://ariakit.com/components/tag) components.
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx
  * const tag = useTagStore({ defaultValues: ["Apple", "Banana"]});
@@ -55,13 +55,13 @@ export interface TagStoreOptions
   extends Core.TagStoreOptions, CompositeStoreOptions<TagStoreItem> {
   /**
    * A callback that gets called when the
-   * [`value`](https://ariakit.org/reference/tag-provider#value) state
+   * [`value`](https://ariakit.com/reference/tag-provider#value) state
    * changes.
    */
   setValue?: (value: TagStoreState["value"]) => void;
   /**
    * A callback that gets called when the
-   * [`values`](https://ariakit.org/reference/tag-provider#values) state
+   * [`values`](https://ariakit.com/reference/tag-provider#values) state
    * changes.
    */
   setValues?: (values: TagStoreState["values"]) => void;

@@ -5,7 +5,7 @@ import { MenubarProvider } from "../menubar/menubar-provider.tsx";
 /**
  * Provides a menubar store to MenuBar components.
  * @deprecated
- * Use [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
+ * Use [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
  * instead.
  * @example
  * ```jsx
@@ -34,7 +34,7 @@ export function MenuBarProvider(props: MenuBarProviderProps = {}) {
     if (process.env.NODE_ENV !== "production") {
       console.warn(
         "MenuBarProvider is deprecated. Use MenubarProvider instead.",
-        "See https://ariakit.org/reference/menubar-provider",
+        "See https://ariakit.com/reference/menubar-provider",
       );
     }
   }, []);

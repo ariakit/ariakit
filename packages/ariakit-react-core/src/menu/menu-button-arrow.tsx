@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuButtonArrow` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -37,13 +37,13 @@ export const useMenuButtonArrow = createHook<TagName, MenuButtonArrowOptions>(
 
 /**
  * Displays an arrow within a
- * [`MenuButton`](https://ariakit.org/reference/menu-button), pointing to the
- * [`Menu`](https://ariakit.org/reference/menu) position. It's typically based
- * on the [`placement`](https://ariakit.org/reference/menu-provider#placement)
+ * [`MenuButton`](https://ariakit.com/reference/menu-button), pointing to the
+ * [`Menu`](https://ariakit.com/reference/menu) position. It's typically based
+ * on the [`placement`](https://ariakit.com/reference/menu-provider#placement)
  * state from the menu store, but this can be overridden with the
- * [`placement`](https://ariakit.org/reference/menu-button-arrow#placement)
+ * [`placement`](https://ariakit.com/reference/menu-button-arrow#placement)
  * prop.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {4}
  * <MenuProvider placement="bottom-start">
@@ -70,10 +70,10 @@ export interface MenuButtonArrowOptions<
 > extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
    * provided, the closest
-   * [`MenuButton`](https://ariakit.org/reference/menu-button) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`MenuButton`](https://ariakit.com/reference/menu-button) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;

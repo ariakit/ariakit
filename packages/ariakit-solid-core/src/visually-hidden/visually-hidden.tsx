@@ -10,7 +10,7 @@ type TagName = typeof TagName;
  * Returns props to create a `VisuallyHidden` component. When applying the props
  * returned by this hook to a component, the component will be visually hidden,
  * but still accessible to screen readers.
- * @see https://solid.ariakit.org/components/visually-hidden
+ * @see https://solid.ariakit.com/components/visually-hidden
  * @example
  * ```jsx
  * const props = useVisuallyHidden();
@@ -44,7 +44,7 @@ export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
 /**
  * Renders an element that's visually hidden, but still accessible to screen
  * readers.
- * @see https://solid.ariakit.org/components/visually-hidden
+ * @see https://solid.ariakit.com/components/visually-hidden
  * @example
  * ```jsx
  * <a href="#">

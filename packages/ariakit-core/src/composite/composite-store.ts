@@ -374,7 +374,7 @@ export interface CompositeStoreItem extends CollectionStoreItem {
   /**
    * The row id of the item. This is only used on two-dimensional composite
    * widgets (when using
-   * [`CompositeRow`](https://ariakit.org/reference/composite-row)).
+   * [`CompositeRow`](https://ariakit.com/reference/composite-row)).
    */
   rowId?: string;
   /**
@@ -402,7 +402,7 @@ export interface CompositeStoreState<
    * contains composite items. However, in a combobox, it's the input element.
    *
    * Live examples:
-   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    */
   baseElement: HTMLElement | null;
   /**
@@ -414,12 +414,12 @@ export interface CompositeStoreState<
    * virtual focus.
    *
    * In both scenarios, the item in focus will carry the
-   * [`data-active-item`](https://ariakit.org/guide/styling#data-active-item)
+   * [`data-active-item`](https://ariakit.com/guide/styling#data-active-item)
    * attribute.
    *
    * Live examples:
    * - [Select with Combobox and
-   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    * @default false
    */
   virtualFocus: boolean;
@@ -437,8 +437,8 @@ export interface CompositeStoreState<
   orientation: Orientation;
   /**
    * Determines how the
-   * [`next`](https://ariakit.org/reference/use-composite-store#next) and
-   * [`previous`](https://ariakit.org/reference/use-composite-store#previous)
+   * [`next`](https://ariakit.com/reference/use-composite-store#next) and
+   * [`previous`](https://ariakit.com/reference/use-composite-store#previous)
    * functions will behave. If `rtl` is set to `true`, they will be inverted.
    *
    * This only affects the composite widget behavior. You still need to set
@@ -453,21 +453,21 @@ export interface CompositeStoreState<
    * On one-dimensional composite widgets:
    * - `true` loops from the last item to the first item and vice-versa.
    * - `horizontal` loops only if
-   *   [`orientation`](https://ariakit.org/reference/composite-provider#orientation)
+   *   [`orientation`](https://ariakit.com/reference/composite-provider#orientation)
    *   is `horizontal` or not set.
    * - `vertical` loops only if
-   *   [`orientation`](https://ariakit.org/reference/composite-provider#orientation)
+   *   [`orientation`](https://ariakit.com/reference/composite-provider#orientation)
    *   is `vertical` or not set.
    * - If
-   *   [`includesBaseElement`](https://ariakit.org/reference/composite-provider#includesbaseelement)
+   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
    *   is set to `true` (or
-   *   [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   *   [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    *   is initially set to `null`), the composite element will be focused in
    *   between the last and first items.
    *
    * On two-dimensional composite widgets (when using
-   * [`CompositeRow`](https://ariakit.org/reference/composite-row) or explicitly
-   * passing a [`rowId`](https://ariakit.org/reference/composite-item#rowid)
+   * [`CompositeRow`](https://ariakit.com/reference/composite-row) or explicitly
+   * passing a [`rowId`](https://ariakit.com/reference/composite-item#rowid)
    * prop to composite items):
    * - `true` loops from the last row/column item to the first item in the same
    *   row/column and vice-versa. If it's the last item in the last row, it
@@ -477,22 +477,22 @@ export interface CompositeStoreState<
    * - `vertical` loops only from the last column item to the first item in the
    *   column row.
    * - If
-   *   [`includesBaseElement`](https://ariakit.org/reference/composite-provider#includesbaseelement)
+   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
    *   is set to `true` (or
-   *   [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   *   [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    *   is initially set to `null`), vertical loop will have no effect as moving
    *   down from the last row or up from the first row will focus on the
    *   composite element.
    * - If
-   *   [`focusWrap`](https://ariakit.org/reference/composite-provider#focuswrap)
+   *   [`focusWrap`](https://ariakit.com/reference/composite-provider#focuswrap)
    *   matches the value of `focusLoop`, it'll wrap between the last item in the
    *   last row or column and the first item in the first row or column and
    *   vice-versa.
    *
    * Live examples:
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu](https://ariakit.com/examples/dialog-combobox-command-menu)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusLoop: boolean | Orientation;
@@ -505,14 +505,14 @@ export interface CompositeStoreState<
    * - `horizontal` wraps only between rows.
    * - `vertical` wraps only between columns.
    * - If
-   *   [`focusLoop`](https://ariakit.org/reference/composite-provider#focusloop)
+   *   [`focusLoop`](https://ariakit.com/reference/composite-provider#focusloop)
    *   matches the value of `focusWrap`, it'll wrap between the last item in the
    *   last row or column and the first item in the first row or column and
    *   vice-versa.
    *
    * Live examples:
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusWrap: boolean | Orientation;
@@ -524,13 +524,13 @@ export interface CompositeStoreState<
    *
    * Live examples:
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusShift: boolean;
   /**
    * The number of times the
-   * [`move`](https://ariakit.org/reference/use-composite-store#move) function
+   * [`move`](https://ariakit.com/reference/use-composite-store#move) function
    * has been called.
    */
   moves: number;
@@ -544,27 +544,27 @@ export interface CompositeStoreState<
    *
    * Live examples:
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
+   * - [Command Menu](https://ariakit.com/examples/dialog-combobox-command-menu)
    * @default false
    */
   includesBaseElement: boolean;
   /**
    * The current active item `id`. The active item is the element within the
    * composite widget that has either DOM or virtual focus (in case
-   * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+   * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
    * is enabled).
    * - `null` represents the base composite element (the one with a [composite
    *   role](https://w3c.github.io/aria/#composite)). Users will be able to
    *   navigate out of it using arrow keys.
    * - If `activeId` is initially set to `null`, the
-   *   [`includesBaseElement`](https://ariakit.org/reference/composite-provider#includesbaseelement)
+   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
    *   prop will also default to `true`, which means the base composite element
    *   itself will have focus and users will be able to navigate to it using
    *   arrow keys.
    *
    * Live examples:
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    */
   activeId: string | null | undefined;
 }
@@ -578,9 +578,9 @@ export interface CompositeStoreFunctions<
   setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
   /**
    * Sets the
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    * state _without moving focus_. If you want to move focus, use the
-   * [`move`](https://ariakit.org/reference/use-composite-store#move) function
+   * [`move`](https://ariakit.com/reference/use-composite-store#move) function
    * instead.
    * @example
    * // Sets the composite element as the active item
@@ -597,11 +597,11 @@ export interface CompositeStoreFunctions<
    *   [composite role](https://w3c.github.io/aria/#composite)). Users will be
    *   able to navigate out of it using arrow keys.
    * - If you want to set the active item id _without moving focus_, use the
-   *   [`setActiveId`](https://ariakit.org/reference/use-composite-store#setactiveid)
+   *   [`setActiveId`](https://ariakit.com/reference/use-composite-store#setactiveid)
    *   function instead.
    *
    * Live examples:
-   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select Grid](https://ariakit.com/examples/select-grid)
    * @example
    * // Moves focus to the composite element
    * store.move(null);
@@ -613,7 +613,7 @@ export interface CompositeStoreFunctions<
   move: (id?: string | null) => void;
   /**
    * Returns the id of the next enabled item based on the current
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    * state. You can pass additional options to override the current state.
    * @example
    * const nextId = store.next();
@@ -627,7 +627,7 @@ export interface CompositeStoreFunctions<
   };
   /**
    * Returns the id of the previous enabled item based on the current
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    * state. You can pass additional options to override the current state.
    * @example
    * const previousId = store.previous();
@@ -641,7 +641,7 @@ export interface CompositeStoreFunctions<
   };
   /**
    * Returns the id of the enabled item above based on the current
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    * state. You can pass additional options to override the current state.
    * @example
    * const upId = store.up();
@@ -655,7 +655,7 @@ export interface CompositeStoreFunctions<
   };
   /**
    * Returns the id of the enabled item below based on the current
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    * state. You can pass additional options to override the current state.
    * @example
    * const downId = store.down();

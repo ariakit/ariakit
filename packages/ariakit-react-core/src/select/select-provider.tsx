@@ -7,9 +7,9 @@ import { useSelectStore } from "./select-store.ts";
 type Value = SelectStoreValue;
 
 /**
- * Provides a select store to [Select](https://ariakit.org/components/select)
+ * Provides a select store to [Select](https://ariakit.com/components/select)
  * components.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * <SelectProvider defaultValue="Apple">

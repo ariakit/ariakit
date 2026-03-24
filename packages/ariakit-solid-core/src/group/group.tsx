@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Group` component.
- * @see https://solid.ariakit.org/components/group
+ * @see https://solid.ariakit.com/components/group
  * @example
  * ```jsx
  * const props = useGroup();
@@ -43,9 +43,9 @@ export const useGroup = createHook<TagName, GroupOptions>(
 
 /**
  * Renders a group element. Optionally, a
- * [`GroupLabel`](https://solid.ariakit.org/reference/group-label) can be rendered as
+ * [`GroupLabel`](https://solid.ariakit.com/reference/group-label) can be rendered as
  * a child to provide a label for the group.
- * @see https://solid.ariakit.org/components/group
+ * @see https://solid.ariakit.com/components/group
  * @example
  * ```jsx
  * <Group>Group</Group>

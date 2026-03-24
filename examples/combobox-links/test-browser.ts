@@ -11,8 +11,8 @@ test("click on link with mouse", async ({ page }) => {
   const q = query(page);
   await q.combobox("Links").click();
   await expect(q.listbox()).toBeVisible();
-  await q.option("Ariakit.org").click();
-  await expect(page).toHaveURL(/https:\/\/ariakit\.org/);
+  await q.option("Ariakit.com").click();
+  await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
 });
 
 test("click on link with middle button", async ({
@@ -25,16 +25,16 @@ test("click on link with middle button", async ({
   await expect(q.listbox()).toBeVisible();
   await expect(q.combobox("Links")).toHaveValue("");
   if (browserName === "webkit") {
-    await q.option("Ariakit.org").click({ button: "middle" });
-    await expect(page).toHaveURL(/https:\/\/ariakit\.org/);
+    await q.option("Ariakit.com").click({ button: "middle" });
+    await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
   } else {
     const [newPage] = await Promise.all([
       context.waitForEvent("page"),
-      q.option("Ariakit.org").click({ button: "middle" }),
+      q.option("Ariakit.com").click({ button: "middle" }),
     ]);
     await expect(q.listbox()).toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");
-    await expect(newPage).toHaveURL(/https:\/\/ariakit\.org/);
+    await expect(newPage).toHaveURL(/https:\/\/ariakit\.com/);
   }
 });
 
@@ -45,11 +45,11 @@ test("click on link with cmd/ctrl", async ({ page, context }) => {
   const modifier = await getClickModifier(page);
   const [newPage] = await Promise.all([
     context.waitForEvent("page"),
-    q.option("Ariakit.org").click({ modifiers: [modifier] }),
+    q.option("Ariakit.com").click({ modifiers: [modifier] }),
   ]);
   await expect(q.listbox()).toBeVisible();
   await expect(q.combobox("Links")).toHaveValue("");
-  await expect(newPage).toHaveURL(/https:\/\/ariakit\.org/);
+  await expect(newPage).toHaveURL(/https:\/\/ariakit\.com/);
 });
 
 test("click on link with cmd/ctrl + enter", async ({
@@ -67,7 +67,7 @@ test("click on link with cmd/ctrl + enter", async ({
     // programmatically.
     await expect(async () => {
       await page.keyboard.press(`${modifier}+Enter`);
-      await expect(page).toHaveURL(/https:\/\/ariakit\.org/);
+      await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
     }).toPass();
   } else {
     const [newPage] = await Promise.all([
@@ -76,7 +76,7 @@ test("click on link with cmd/ctrl + enter", async ({
     ]);
     await expect(q.listbox()).toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");
-    await expect(newPage).toHaveURL(/https:\/\/ariakit\.org/);
+    await expect(newPage).toHaveURL(/https:\/\/ariakit\.com/);
   }
 });
 
@@ -99,9 +99,9 @@ test("https://github.com/ariakit/ariakit/issues/2056", async ({ page }) => {
   await q.combobox("Links").click();
   await expect(q.listbox()).toBeVisible();
   // Hover here is important to reproduce the issue.
-  await q.option("Ariakit.org").hover();
+  await q.option("Ariakit.com").hover();
   // Position the page so that the link is not fully visible.
   await page.evaluate(() => window.scrollTo({ top: 440 }));
-  await q.option("Ariakit.org").click();
-  await expect(page).toHaveURL(/https:\/\/ariakit\.org/);
+  await q.option("Ariakit.com").click();
+  await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
 });

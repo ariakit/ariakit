@@ -24,7 +24,7 @@ const symbol = Symbol("disclosure");
 
 /**
  * Returns props to create a `Disclosure` component.
- * @see https://ariakit.org/components/disclosure
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx
  * const store = useDisclosureStore();
@@ -94,9 +94,9 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
 
 /**
  * Renders an element that controls the visibility of a
- * [`DisclosureContent`](https://ariakit.org/reference/disclosure-content)
+ * [`DisclosureContent`](https://ariakit.com/reference/disclosure-content)
  * element.
- * @see https://ariakit.org/components/disclosure
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx {2}
  * <DisclosureProvider>
@@ -117,20 +117,20 @@ export interface DisclosureOptions<
 > extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)
+   * [`useDisclosureStore`](https://ariakit.com/reference/use-disclosure-store)
    * hook. If not provided, the closest
-   * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
+   * [`DisclosureProvider`](https://ariakit.com/reference/disclosure-provider)
    * component's context will be used.
    */
   store?: DisclosureStore;
   /**
    * Determines whether
-   * [`toggle`](https://ariakit.org/reference/use-disclosure-store#toggle) will
+   * [`toggle`](https://ariakit.com/reference/use-disclosure-store#toggle) will
    * be called on click. This is useful if you want to handle the toggle logic
    * yourself.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    * @default true
    */
   toggleOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

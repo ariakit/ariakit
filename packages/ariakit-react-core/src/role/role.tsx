@@ -41,7 +41,7 @@ type RoleElements = {
 
 /**
  * Returns props to create a `Role` component.
- * @see https://ariakit.org/components/role
+ * @see https://ariakit.com/components/role
  * @example
  * ```jsx
  * const props = useRole();
@@ -58,7 +58,7 @@ export const useRole = createHook<TagName, RoleOptions>(
  * Renders an abstract element that supports the `render` prop and a
  * `wrapElement` prop that can be used to wrap the underlying element with React
  * Portal, Context or other component types.
- * @see https://ariakit.org/components/role
+ * @see https://ariakit.com/components/role
  * @example
  * ```jsx
  * <Role render={<div />} />

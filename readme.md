@@ -5,7 +5,7 @@
 <p align="center">
   Toolkit with accessible components, styles, and examples for your next web app.
   <br>
-  <a href="https://ariakit.org"><strong>Explore website »</strong></a>
+  <a href="https://ariakit.com"><strong>Explore website »</strong></a>
 </p>
 
 <br>
@@ -16,7 +16,7 @@
 <a href="https://github.com/ariakit/ariakit/releases"><img alt="GitHub Release Date" src="https://img.shields.io/github/release-date/ariakit/ariakit?logo=github&color=007acc"></a>&nbsp;
 <a href="https://npmjs.org/package/@ariakit/react"><img alt="NPM version" src="https://img.shields.io/npm/v/@ariakit/react.svg?logo=npm&color=007acc" /></a>&nbsp;
 <a href="https://npmjs.org/package/@ariakit/react"><img alt="NPM downloads" src="https://img.shields.io/npm/dm/@ariakit/react.svg?logo=npm"></a>&nbsp;
-<a href="https://bsky.app/profile/ariakit.org"><img alt="Follow Ariakit on Bluesky" src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff"></a>&nbsp;
+<a href="https://bsky.app/profile/ariakit.com"><img alt="Follow Ariakit on Bluesky" src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff"></a>&nbsp;
 <a href="https://discord.gg/WyHvnXsvMs"><img alt="Join the Ariakit Discord server" src="https://img.shields.io/badge/Discord-%235865F2.svg?logo=discord&logoColor=white"></a>&nbsp;
 <a href="https://github.com/ariakit/ariakit"><img alt="GitHub stars" src="https://img.shields.io/github/stars/ariakit/ariakit?logo=github"></a>
 
@@ -26,9 +26,9 @@
 
 ## Docs
 
-- [Ariakit.org](https://ariakit.org)
-- [Components](https://ariakit.org/components)
-- [Examples](https://ariakit.org/examples)
+- [Ariakit.com](https://ariakit.com)
+- [Components](https://ariakit.com/components)
+- [Examples](https://ariakit.com/examples)
 
 ## Packages
 
@@ -50,7 +50,7 @@
 | :----------------------- | :----------------------------------------------------------- | :------------------------------------------------------------------------- |
 | `packages`               | [**MIT License**](packages/ariakit-react/license)            | Permissive open-source.                                                    |
 | `examples` (except Plus) | [**MIT License**](site/src/examples/license.md)              | Permissive open-source.                                                    |
-| `examples` (Plus)        | [**Ariakit Plus License**](https://ariakit.org/plus/license) | License granted to [**Ariakit Plus**](https://ariakit.org/plus) customers. |
+| `examples` (Plus)        | [**Ariakit Plus License**](https://ariakit.com/plus/license) | License granted to [**Ariakit Plus**](https://ariakit.com/plus) customers. |
 | `site`                   | [**Proprietary**](site/license.md)                           | No license granted.                                                        |
 
 Each of these directories contains its own license file with the full terms. Always refer to the most specific license file that applies to the code you are using.

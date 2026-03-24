@@ -5,8 +5,8 @@ import { useHovercardStore } from "./hovercard-store.ts";
 
 /**
  * Provides a hovercard store to
- * [Hovercard](https://ariakit.org/components/hovercard) components.
- * @see https://ariakit.org/components/hovercard
+ * [Hovercard](https://ariakit.com/components/hovercard) components.
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * <HovercardProvider timeout={250}>

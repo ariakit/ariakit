@@ -24,7 +24,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `Tab` component.
- * @see https://ariakit.org/components/tab
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx
  * const store = useTabStore();
@@ -167,8 +167,8 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
 
 /**
  * Renders a tab element inside a
- * [`TabList`](https://ariakit.org/reference/tab-list) wrapper.
- * @see https://ariakit.org/components/tab
+ * [`TabList`](https://ariakit.com/reference/tab-list) wrapper.
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx {3,4}
  * <TabProvider>
@@ -193,8 +193,8 @@ export interface TabOptions<
 > extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
-   * provided, the closest [`TabList`](https://ariakit.org/reference/tab-list)
+   * [`useTabStore`](https://ariakit.com/reference/use-tab-store) hook. If not
+   * provided, the closest [`TabList`](https://ariakit.com/reference/tab-list)
    * component's context will be used.
    */
   store?: TabStore;

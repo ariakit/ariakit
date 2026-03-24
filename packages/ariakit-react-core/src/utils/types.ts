@@ -27,7 +27,7 @@ export interface Options {
    * original component props and gives back a React element with the props
    * merged.
    *
-   * Check out the [Composition](https://ariakit.org/guide/composition) guide
+   * Check out the [Composition](https://ariakit.com/guide/composition) guide
    * for more details.
    */
   render?: RenderProp | React.ReactElement;

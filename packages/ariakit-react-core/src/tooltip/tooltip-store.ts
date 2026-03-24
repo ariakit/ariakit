@@ -20,8 +20,8 @@ export function useTooltipStoreProps<T extends Core.TooltipStore>(
 
 /**
  * Creates a tooltip store to control the state of
- * [Tooltip](https://ariakit.org/components/tooltip) components.
- * @see https://ariakit.org/components/tooltip
+ * [Tooltip](https://ariakit.com/components/tooltip) components.
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx
  * const tooltip = useTooltipStore();

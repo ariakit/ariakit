@@ -21,8 +21,8 @@ export function useHovercardStoreProps<T extends Core.HovercardStore>(
 
 /**
  * Creates a hovercard store to control the state of
- * [Hovercard](https://ariakit.org/reference/hovercard) components.
- * @see https://ariakit.org/components/hovercard
+ * [Hovercard](https://ariakit.com/reference/hovercard) components.
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const hovercard = useHovercardStore({ placement: "top" });

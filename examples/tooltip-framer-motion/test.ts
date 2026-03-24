@@ -1,6 +1,6 @@
 import { click, hover, press, q, waitFor } from "@ariakit/test";
 
-const tooltip = "https://ariakit.org/examples/tooltip-framer-motion";
+const tooltip = "https://ariakit.com/examples/tooltip-framer-motion";
 
 const hoverOutside = async () => {
   await hover(document.body);

@@ -11,14 +11,14 @@ const expectDisclosureToBeVisible = () =>
 
 test("show hovercard on hover after timeout", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   expect(q.dialog()).not.toBeInTheDocument();
   await waitForHovercardToShow();
 });
 
 test("do not show disclosure when focusing on anchor with mouse", async () => {
   await click(document.body);
-  await focus(q.link("@ariakit.org"));
+  await focus(q.link("@ariakit.com"));
   expectDisclosureToBeHidden();
 });
 
@@ -78,7 +78,7 @@ test("hide hovercard on escape", async () => {
   expect(q.dialog()).toBeVisible();
   await press.Escape();
   expect(q.dialog()).not.toBeInTheDocument();
-  expect(q.link("@ariakit.org")).toHaveFocus();
+  expect(q.link("@ariakit.com")).toHaveFocus();
 });
 
 test("do not autofocus hovercard on anchor hover after showing and hiding it using the disclosure button", async () => {
@@ -86,9 +86,9 @@ test("do not autofocus hovercard on anchor hover after showing and hiding it usi
   await press.Tab();
   await press.Enter();
   await press.Escape();
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   await waitFor(() => expect(q.dialog()).toBeVisible());
-  expect(q.link("@ariakit.org")).toHaveFocus();
+  expect(q.link("@ariakit.com")).toHaveFocus();
 });
 
 test("hide hovercard on blur", async () => {

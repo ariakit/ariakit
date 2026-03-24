@@ -866,15 +866,15 @@ export interface CollectionRendererOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
+   * [`useCollectionStore`](https://ariakit.com/reference/use-collection-store)
    * hook. If not provided, the closest
-   * [Collection](https://ariakit.org/components/collection) component's
+   * [Collection](https://ariakit.com/components/collection) component's
    * context will be used.
    *
    * The store
-   * [`items`](https://ariakit.org/reference/use-collection-store#items) state
+   * [`items`](https://ariakit.com/reference/use-collection-store#items) state
    * will be used to render the items if the
-   * [`items`](https://ariakit.org/reference/collection-items#items) prop is not
+   * [`items`](https://ariakit.com/reference/collection-items#items) prop is not
    * provided.
    */
   store?: CollectionStore<

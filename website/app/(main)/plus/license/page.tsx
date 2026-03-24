@@ -102,8 +102,8 @@ export default function Page() {
         <PageSection>
           <PageParagraph>
             For any further questions, please contact us at{" "}
-            <InlineLink href="mailto:support@ariakit.org">
-              support@ariakit.org
+            <InlineLink href="mailto:contact@ariakit.com">
+              contact@ariakit.com
             </InlineLink>
             .
           </PageParagraph>

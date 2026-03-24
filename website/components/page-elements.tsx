@@ -620,7 +620,7 @@ export function PageA({
       />
     );
   }
-  href = href?.replace(/^https:\/\/(www\.)?ariakit.org/, "");
+  href = href?.replace(/^https:\/\/(www\.)?ariakit\.(com|org)/, "");
   if (href?.startsWith("http")) {
     return (
       <InlineLink
@@ -655,7 +655,7 @@ export function PageA({
     if (!isValidHref(href, pageLinks)) {
       throw new Error(`Invalid link: ${href}`);
     }
-    const url = new URL(href, "https://ariakit.org");
+    const url = new URL(href, "https://ariakit.com");
     const [, category, page] = url.pathname.split("/");
     if (category === "reference" && page && node) {
       if (

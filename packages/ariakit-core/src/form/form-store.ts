@@ -371,8 +371,8 @@ export interface FormStoreState<
    * Form values.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
-   * - [FormSelect](https://ariakit.org/examples/form-select)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
+   * - [FormSelect](https://ariakit.com/examples/form-select)
    * @default {}
    */
   values: T;
@@ -398,13 +398,13 @@ export interface FormStoreState<
   submitting: boolean;
   /**
    * The number of times
-   * [`submit`](https://ariakit.org/reference/use-form-store#submit) has been
+   * [`submit`](https://ariakit.com/reference/use-form-store#submit) has been
    * called with a successful response.
    */
   submitSucceed: number;
   /**
    * The number of times
-   * [`submit`](https://ariakit.org/reference/use-form-store#submit) has been
+   * [`submit`](https://ariakit.com/reference/use-form-store#submit) has been
    * called with an error response.
    */
   submitFailed: number;
@@ -417,8 +417,8 @@ export interface FormStoreFunctions<
    * An object containing the names of the form fields for type safety.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
-   * - [FormSelect](https://ariakit.org/examples/form-select)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
+   * - [FormSelect](https://ariakit.com/examples/form-select)
    * @example
    * store.names.name; // "name"
    * store.names.name.first; // "name.first"
@@ -426,7 +426,7 @@ export interface FormStoreFunctions<
    */
   names: Names<T>;
   /**
-   * Sets the [`values`](https://ariakit.org/reference/form-provider#values)
+   * Sets the [`values`](https://ariakit.com/reference/form-provider#values)
    * state.
    * @example
    * store.setValues({ name: "John" });
@@ -437,7 +437,7 @@ export interface FormStoreFunctions<
    * Retrieves a field value.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
    * @example
    * const nameValue = store.getValue("name");
    * // Can also use store.names for type-safety.
@@ -448,7 +448,7 @@ export interface FormStoreFunctions<
    * Sets a field value.
    *
    * Live examples:
-   * - [FormSelect](https://ariakit.org/examples/form-select)
+   * - [FormSelect](https://ariakit.com/examples/form-select)
    * @example
    * store.setValue("name", "John");
    * store.setValue("name", (value) => value + " Doe");
@@ -475,7 +475,7 @@ export interface FormStoreFunctions<
    */
   removeValue: (name: StringLike, index: number) => void;
   /**
-   * Sets the [`errors`](https://ariakit.org/reference/form-provider#errors)
+   * Sets the [`errors`](https://ariakit.com/reference/form-provider#errors)
    * state.
    * @example
    * store.setErrors({ name: "Name is required" });
@@ -494,7 +494,7 @@ export interface FormStoreFunctions<
    * Sets a field error.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
    * @example
    * store.setError("name", "Name is required");
    * store.setError("name", (error) => error + "!");
@@ -503,7 +503,7 @@ export interface FormStoreFunctions<
    */
   setError: (name: StringLike, error: SetStateAction<ErrorMessage>) => void;
   /**
-   * Sets the [`touched`](https://ariakit.org/reference/form-provider#touched)
+   * Sets the [`touched`](https://ariakit.com/reference/form-provider#touched)
    * state.
    * @example
    * store.setTouched({ name: true });
@@ -529,7 +529,7 @@ export interface FormStoreFunctions<
   setFieldTouched: (name: StringLike, value: SetStateAction<boolean>) => void;
   /**
    * Function that accepts a callback that will be used to validate the form
-   * when [`validate`](https://ariakit.org/reference/use-form-store#validate) is
+   * when [`validate`](https://ariakit.com/reference/use-form-store#validate) is
    * called. It returns a cleanup function that will remove the callback.
    * @example
    * const cleanup = store.onValidate(async (state) => {
@@ -542,7 +542,7 @@ export interface FormStoreFunctions<
   onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => () => void;
   /**
    * Function that accepts a callback that will be used to submit the form when
-   * [`submit`](https://ariakit.org/reference/use-form-store#submit) is called.
+   * [`submit`](https://ariakit.com/reference/use-form-store#submit) is called.
    * It returns a cleanup function that will remove the callback.
    * @param callback The callback function.
    * @example

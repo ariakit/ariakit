@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuArrow` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -32,9 +32,9 @@ export const useMenuArrow = createHook<TagName, MenuArrowOptions>(
 
 /**
  * Renders an arrow element inside a
- * [`Menu`](https://ariakit.org/reference/menu) component that points to its
- * [`MenuButton`](https://ariakit.org/reference/menu-button).
- * @see https://ariakit.org/components/menu
+ * [`Menu`](https://ariakit.com/reference/menu) component that points to its
+ * [`MenuButton`](https://ariakit.com/reference/menu-button).
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {4}
  * <MenuProvider>
@@ -55,9 +55,9 @@ export interface MenuArrowOptions<
 > extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;
