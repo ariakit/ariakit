@@ -37,7 +37,7 @@ function getSourceValue(nodePath) {
   return source.node.value;
 }
 
-/** @type {Map<string, import("read-package-up").NormalizedReadResult>}} */
+/** @type {Map<string, import("read-package-up").NormalizedReadResult>} */
 const packageCache = new Map();
 
 /** @param {string} source */
