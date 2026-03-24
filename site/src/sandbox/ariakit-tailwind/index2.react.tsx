@@ -20,7 +20,7 @@ const layer = cv({
       90: "ak-layer-90",
       100: "ak-layer-100",
     },
-    $state: {
+    $layerState: {
       0: "ak-state-0",
       10: "ak-state-10",
       20: "ak-state-20",
@@ -638,64 +638,20 @@ function Layers({
   );
 }
 
-function LayersState({ maxLevel = 100, children, ...props }: LayersProps) {
+function LayersState({ maxLevel = 100, ...props }: LayersProps) {
   return (
     <>
-      {maxLevel >= 0 && (
-        <Layer {...props} $state={0}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 10 && (
-        <Layer {...props} $state={10}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 20 && (
-        <Layer {...props} $state={20}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 30 && (
-        <Layer {...props} $state={30}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 40 && (
-        <Layer {...props} $state={40}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 50 && (
-        <Layer {...props} $state={50}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 60 && (
-        <Layer {...props} $state={60}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 70 && (
-        <Layer {...props} $state={70}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 80 && (
-        <Layer {...props} $state={80}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 90 && (
-        <Layer {...props} $state={90}>
-          {children}
-        </Layer>
-      )}
-      {maxLevel >= 100 && (
-        <Layer {...props} $state={100}>
-          {children}
-        </Layer>
-      )}
+      {maxLevel >= 0 && <Layer {...props} $layerState={0} />}
+      {maxLevel >= 10 && <Layer {...props} $layerState={10} />}
+      {maxLevel >= 20 && <Layer {...props} $layerState={20} />}
+      {maxLevel >= 30 && <Layer {...props} $layerState={30} />}
+      {maxLevel >= 40 && <Layer {...props} $layerState={40} />}
+      {maxLevel >= 50 && <Layer {...props} $layerState={50} />}
+      {maxLevel >= 60 && <Layer {...props} $layerState={60} />}
+      {maxLevel >= 70 && <Layer {...props} $layerState={70} />}
+      {maxLevel >= 80 && <Layer {...props} $layerState={80} />}
+      {maxLevel >= 90 && <Layer {...props} $layerState={90} />}
+      {maxLevel >= 100 && <Layer {...props} $layerState={100} />}
     </>
   );
 }

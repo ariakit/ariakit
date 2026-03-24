@@ -582,6 +582,7 @@
   scroll-padding: var(--ak-frame-padding);
   border-width: var(--ak-frame-border);
   border-radius: var(--ak-frame-radius);
+  margin: var(--ak-frame-margin);
   @apply ring-[length:var(--ak-frame-ring)];
   @container style(--_context-1: even) {
     --_context-1: odd;

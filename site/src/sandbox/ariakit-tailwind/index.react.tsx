@@ -19,7 +19,7 @@ const layer = cv({
       90: "ak-layer-90",
       100: "ak-layer-100",
     },
-    $state: {
+    $layerState: {
       0: "ak-state-0",
       10: "ak-state-10",
       20: "ak-state-20",
@@ -116,6 +116,7 @@ const layer = cv({
       3: "ak-frame-m-3",
       4: "ak-frame-m-4",
       5: "ak-frame-m-5",
+      "-0.5": "-ak-frame-m-0.5",
       "-1": "-ak-frame-m-1",
       "-2": "-ak-frame-m-2",
       "-3": "-ak-frame-m-3",
@@ -128,7 +129,8 @@ const layer = cv({
     },
     $flow: {
       unset: "",
-      row: "ak-frame-row flex-wrap",
+      wrap: "ak-frame-row flex-wrap items-start",
+      row: "ak-frame-row flex-row",
       col: "ak-frame-col flex-col",
     },
     $position: {
@@ -144,8 +146,8 @@ const layer = cv({
     },
     $borderColor: {
       false: "",
-      blue: "ak-edge-blue-500 ak-edge-100",
-      blueRel: "ak-edge-red ak-edge-vivid ak-edge-40 ak-edge-contrast-60",
+      blue: "ak-edge-blue-500",
+      blueRel: "ak-edge-blue ak-edge-vivid ak-edge-40 ak-edge-contrast-60",
       red: "ak-edge-red-500",
       green: "ak-edge-green-500",
       yellow: "ak-edge-yellow-500",
@@ -179,7 +181,7 @@ const layer = cv({
     $p: 1,
     $m: "unset",
     $stretch: false,
-    $flow: "row",
+    $flow: "wrap",
     $position: "unset",
     $border: "bordering",
     $borderWidth: 1,
@@ -187,8 +189,11 @@ const layer = cv({
 });
 
 interface LayerProps
-  extends ComponentProps<"section">, VariantProps<typeof layer> {
+  extends
+    Omit<ComponentProps<"section">, "children">,
+    VariantProps<typeof layer> {
   label?: ReactNode | ((props: VariantProps<typeof layer>) => ReactNode);
+  children?: ReactNode | ((props: VariantProps<typeof layer>) => ReactNode);
   getVariants?: (
     props: VariantProps<typeof layer>,
   ) => VariantProps<typeof layer>;
@@ -208,7 +213,9 @@ function Layer({ label, children, getVariants, ...props }: LayerProps) {
       )}
     >
       {labelElement && <div id={id}>{labelElement}</div>}
-      {children}
+      {typeof children === "function"
+        ? children(layer.getVariants(layerProps))
+        : children}
     </section>
   );
 }
@@ -235,11 +242,11 @@ function Layers(props: LayersProps) {
 }
 
 function getFrom<K extends keyof any, T>(
-  keyObject: K | undefined,
-  valueObject: T,
+  key: K | undefined,
+  value: T,
   map: NoInfer<{ [key in K]?: T }>,
 ) {
-  return keyObject != null ? (map[keyObject] ?? valueObject) : valueObject;
+  return key != null ? (map[key] ?? value) : value;
 }
 
 export default function Example() {
@@ -248,24 +255,54 @@ export default function Example() {
       <Layer label="ak-layer-<number>" $flow="col">
         <Layer $stretch="overflow">
           <Layers $flow="col">
-            <Layer $borderWidth={2} $borderColor="blueRel">
-              <Layers
-                label={(props) => props.$layer}
+            {(root) => (
+              <Layer
+                $flow="row"
                 getVariants={(props) => ({
                   ...props,
-                  $textLevel: getFrom(props.$layer, props.$textLevel, {
-                    20: 0,
-                    70: 0,
-                    100: 0,
+                  $borderWidth: getFrom(root.$layer, props.$borderWidth, {
+                    20: 2,
+                    30: 2,
+                    40: 2,
+                    70: 2,
+                    80: 2,
                   }),
-                  $stretch: getFrom(props.$layer, props.$stretch, {
-                    0: "overflow",
-                    50: true,
-                    100: "overflow",
+                  $stretch: getFrom(root.$layer, props.$stretch, {
+                    20: "overflow",
+                    30: true,
+                    70: true,
+                    90: "overflow",
+                  }),
+                  $borderColor: getFrom(root.$layer, props.$borderColor, {
+                    20: "blueRel",
+                    50: "blue",
+                    70: "blueRel",
+                    80: "blueRel",
                   }),
                 })}
-              />
-            </Layer>
+              >
+                <Layers
+                  label={(props) => props.$layer}
+                  getVariants={(props) => ({
+                    ...props,
+                    $textLevel: getFrom(props.$layer, props.$textLevel, {
+                      20: 0,
+                      70: 0,
+                      100: 0,
+                    }),
+                    $stretch: getFrom(props.$layer, props.$stretch, {
+                      0: "overflow",
+                      50: true,
+                      100: "overflow",
+                    }),
+                    $m: getFrom(props.$layer, props.$m, {
+                      20: "-0.5",
+                      80: "-2",
+                    }),
+                  })}
+                />
+              </Layer>
+            )}
           </Layers>
         </Layer>
       </Layer>

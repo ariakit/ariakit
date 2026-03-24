@@ -1594,6 +1594,7 @@ utility(
   set.scrollPadding(vars.framePadding),
   set.borderWidth(vars.frameBorder),
   set.borderRadius(vars.frameRadius),
+  set.margin(vars.frameMargin),
   at.apply`ring-[length:${vars.frameRing}]`,
   frameContext(({ provide, inherit }) => {
     const parentRadius = inherit(
