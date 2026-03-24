@@ -9,7 +9,7 @@ export default function Example() {
       description={href}
       render={<a href={href} />}
     >
-      Tooltip with Framer Motion
+      Tooltip with Motion
     </TooltipAnchor>
   );
 }

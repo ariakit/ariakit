@@ -1,4 +1,4 @@
-import type { MotionProps, Variants } from "framer-motion";
+import type { MotionProps, Variants } from "motion/react";
 import { useState } from "react";
 import { Menu, MenuItem } from "./menu.tsx";
 import "./style.css";

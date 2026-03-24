@@ -698,7 +698,7 @@ export interface DialogOptions<T extends ElementType = TagName>
    * - [Animated Dialog](https://ariakit.com/examples/dialog-animated)
    * - [Dialog with scrollable
    *   backdrop](https://ariakit.com/examples/dialog-backdrop-scrollable)
-   * - [Dialog with Framer
+   * - [Dialog with
    *   Motion](https://ariakit.com/examples/dialog-framer-motion)
    * - [Dialog with Menu](https://ariakit.com/examples/dialog-menu)
    * - [Nested Dialog](https://ariakit.com/examples/dialog-nested)

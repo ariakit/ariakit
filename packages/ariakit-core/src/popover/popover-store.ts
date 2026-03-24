@@ -99,7 +99,7 @@ export interface PopoverStoreState extends DialogStoreState {
    * state if the popover has had to adjust its position dynamically.
    *
    * Live examples:
-   * - [Tooltip with Framer
+   * - [Tooltip with
    *   Motion](https://ariakit.com/examples/tooltip-framer-motion)
    */
   currentPlacement: Placement;

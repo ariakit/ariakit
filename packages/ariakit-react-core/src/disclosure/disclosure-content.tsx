@@ -286,15 +286,15 @@ export interface DisclosureContentOptions<
    * none` style will not be applied, unless explicitly set otherwise.
    *
    * This prop is particularly useful when using third-party animation libraries
-   * such as Framer Motion or React Spring, where the element needs to be
+   * such as Motion or React Spring, where the element needs to be
    * visible for exit animations to work.
    *
    * Live examples:
-   * - [Dialog with Framer
+   * - [Dialog with
    *   Motion](https://ariakit.com/examples/dialog-framer-motion)
-   * - [Menu with Framer
+   * - [Menu with
    *   Motion](https://ariakit.com/examples/menu-framer-motion)
-   * - [Tooltip with Framer
+   * - [Tooltip with
    *   Motion](https://ariakit.com/examples/tooltip-framer-motion)
    * - [Dialog with details &
    *   summary](https://ariakit.com/examples/dialog-details)

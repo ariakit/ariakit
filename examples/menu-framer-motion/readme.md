@@ -2,16 +2,16 @@
 tags:
   - Menu
   - Animated
-  - Framer Motion
+  - Motion
   - Dropdowns
   - Abstracted examples
 ---
 
-# Menu with Framer Motion
+# Menu with Motion
 
 <div data-description>
 
-Abstracting [Menu](/components/menu) into a reusable dropdown menu component that uses [Framer Motion](https://www.framer.com/motion/) to create smooth initial and exit animations.
+Abstracting [Menu](/components/menu) into a reusable dropdown menu component that uses [Motion](https://motion.dev/) to create smooth initial and exit animations.
 
 </div>
 
@@ -43,7 +43,7 @@ You can learn more about controlled state on the [Component stores](/guide/compo
 
 ## AnimatePresence
 
-We use the [AnimatePresence](https://www.framer.com/motion/animate-presence/) component from Framer Motion to animate the Ariakit [Menu](/components/menu) component when it gets mounted and unmounted from the DOM.
+We use the [AnimatePresence](https://motion.dev/docs/react-animate-presence) component from Motion to animate the Ariakit [Menu](/components/menu) component when it gets mounted and unmounted from the DOM.
 
 ```jsx
 <AnimatePresence>
