@@ -89,7 +89,7 @@ export interface DisclosureStoreState {
    * - [Combobox with links](https://ariakit.com/examples/combobox-links)
    * - [Dialog with React
    *   Router](https://ariakit.com/examples/dialog-react-router)
-   * - [Menu with Framer
+   * - [Menu with
    *   Motion](https://ariakit.com/examples/menu-framer-motion)
    * - [Lazy Popover](https://ariakit.com/examples/popover-lazy)
    * @default false
@@ -154,7 +154,7 @@ export interface DisclosureStoreFunctions extends Pick<
    * Live examples:
    * - [Textarea with inline
    *   Combobox](https://ariakit.com/examples/combobox-textarea)
-   * - [Dialog with Framer
+   * - [Dialog with
    *   Motion](https://ariakit.com/examples/dialog-framer-motion)
    * - [Context Menu](https://ariakit.com/examples/menu-context-menu)
    * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)

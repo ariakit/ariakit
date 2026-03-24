@@ -84,7 +84,7 @@
         "cross-env",
         "cross-spawn",
         "dotenv",
-        "framer-motion",
+        "motion",
         "fs-extra",
         "glob",
         "jsdom",

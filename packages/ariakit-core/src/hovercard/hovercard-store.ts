@@ -75,7 +75,7 @@ export interface HovercardStoreState extends PopoverStoreState {
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
-   * - [Tooltip with Framer
+   * - [Tooltip with
    *   Motion](https://ariakit.com/examples/tooltip-framer-motion)
    */
   hideTimeout?: number;

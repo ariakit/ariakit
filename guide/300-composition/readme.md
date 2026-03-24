@@ -42,7 +42,7 @@ When rendering custom components using the `render` prop, be aware that [custom 
 
 Besides changing the underlying HTML element, the `render` prop can be used to render a custom component.
 
-In the [Menu with Framer Motion](/examples/menu-framer-motion) example, the `render` prop is used to render the [Menu](/components/menu) component as a `motion.div` element:
+In the [Menu with Motion](/examples/menu-framer-motion) example, the `render` prop is used to render the [Menu](/components/menu) component as a `motion.div` element:
 
 ```jsx "Menu" "motion.div"
 <Menu render={<motion.div animate={{ y: 100 }} />} />

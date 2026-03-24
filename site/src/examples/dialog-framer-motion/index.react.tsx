@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 
 export default function Example() {
   const dialog = Ariakit.useDialogStore();
