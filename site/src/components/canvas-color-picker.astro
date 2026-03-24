@@ -23,7 +23,7 @@ const id = generateId();
 
     &::-webkit-slider-thumb {
       appearance: none;
-      @apply ak-layer-hover-vivid ak-edge/90 size-8 rounded-full border;
+      /* @apply ak-layer-hover-vivid ak-edge/90 size-8 rounded-full border; */
     }
   }
   .test {
@@ -113,7 +113,7 @@ const id = generateId();
     if (property === "--lightness" || property === "--hue") {
       document.body.style.setProperty(
         "--color-canvas",
-        `oklch(var(--lightness, 0.15) var(--chroma, 0.01) var(--hue, 0))`
+        `oklch(var(--lightness, 0.15) var(--chroma, 0.01) var(--hue, 0))`,
       );
     }
   }

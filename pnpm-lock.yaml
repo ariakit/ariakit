@@ -37,6 +37,9 @@ importers:
       '@ariakit/test':
         specifier: workspace:*
         version: link:packages/ariakit-test
+      '@axe-core/playwright':
+        specifier: 4.11.1
+        version: 4.11.1(playwright-core@1.58.2)
       '@changesets/apply-release-plan':
         specifier: 7.1.0
         version: 7.1.0(patch_hash=6775a2568bb9d97a114bc21bb3b7034e7c5fb7c2e1d1291e830e5630d33209e4)
@@ -82,6 +85,9 @@ importers:
       chokidar:
         specifier: 5.0.0
         version: 5.0.0
+      clava:
+        specifier: 0.2.0
+        version: 0.2.0
       concurrently:
         specifier: 9.2.1
         version: 9.2.1
@@ -91,6 +97,9 @@ importers:
       cross-spawn:
         specifier: 7.0.6
         version: 7.0.6
+      csstype:
+        specifier: 3.2.3
+        version: 3.2.3
       esbuild-plugin-solid:
         specifier: 0.6.0
         version: 0.6.0(esbuild@0.27.4)(solid-js@1.9.11)
@@ -380,9 +389,15 @@ importers:
         specifier: ^2.0.0
         version: 2.1.4
     devDependencies:
+      '@ariakit/core':
+        specifier: 0.4.18
+        version: 0.4.18
       '@types/color-string':
         specifier: 1.5.5
         version: 1.5.5
+      csstype:
+        specifier: 3.2.3
+        version: 3.2.3
       tailwindcss:
         specifier: 4.2.2
         version: 4.2.2
@@ -959,6 +974,9 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
+  '@ariakit/core@0.4.18':
+    resolution: {integrity: sha512-9urEa+GbZTSyredq3B/3thQjTcSZSUC68XctwCkJNH/xNfKN5O+VThiem2rcJxpsGw8sRUQenhagZi0yB4foyg==}
+
   '@asamuzakjp/css-color@5.0.1':
     resolution: {integrity: sha512-2SZFvqMyvboVV1d15lMf7XiI3m7SDqXUuKaTymJYLN6dSGadqp+fVojqJlVoMlbZnlTmu3S0TLwLTJpvBMO1Aw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0}
@@ -1307,6 +1325,11 @@ packages:
   '@aws/lambda-invoke-store@0.2.4':
     resolution: {integrity: sha512-iY8yvjE0y651BixKNPgmv1WrQc+GZ142sb0z4gYnChDDY2YqI4P/jsSopBWrKfAt7LOJAkOXt7rC/hms+WclQQ==}
     engines: {node: '>=18.0.0'}
+
+  '@axe-core/playwright@4.11.1':
+    resolution: {integrity: sha512-mKEfoUIB1MkVTht0BGZFXtSAEKXMJoDkyV5YZ9jbBmZCcWDz71tegNsdTkIN8zc/yMi5Gm2kx7Z5YQ9PfWNAWw==}
+    peerDependencies:
+      playwright-core: '>= 1.0.0'
 
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
@@ -6164,6 +6187,10 @@ packages:
   aws4fetch@1.0.20:
     resolution: {integrity: sha512-/djoAN709iY65ETD6LKCtyyEI04XIBP5xVvfmNxsEP0uJB5tyaGBztSryRr4HqMStr9R06PisQE7m9zDTXKu6g==}
 
+  axe-core@4.11.1:
+    resolution: {integrity: sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A==}
+    engines: {node: '>=4'}
+
   axobject-query@4.1.0:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
     engines: {node: '>= 0.4'}
@@ -6418,6 +6445,9 @@ packages:
   ci-info@4.4.0:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
+
+  clava@0.2.0:
+    resolution: {integrity: sha512-J+HuKjs2L86TL3nnrkZlH2VYIIew+dV4gL3Qt3mxmlvhi2pOkH1nzofcBYdnGeR6MGBLc/VfnIcLYXHRo1Hz0A==}
 
   cli-boxes@3.0.0:
     resolution: {integrity: sha512-/lzGpEWL/8PfI0BmBOPRwp0c/wFNX1RdUML3jK/RcSBA9T8mZDdQpqYBKtCFTOfQbwPqWEOpjqW+Fnayc0969g==}
@@ -11013,6 +11043,8 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
+  '@ariakit/core@0.4.18': {}
+
   '@asamuzakjp/css-color@5.0.1':
     dependencies:
       '@csstools/css-calc': 3.1.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
@@ -11948,6 +11980,11 @@ snapshots:
       tslib: 2.8.1
 
   '@aws/lambda-invoke-store@0.2.4': {}
+
+  '@axe-core/playwright@4.11.1(playwright-core@1.58.2)':
+    dependencies:
+      axe-core: 4.11.1
+      playwright-core: 1.58.2
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -17301,6 +17338,8 @@ snapshots:
 
   aws4fetch@1.0.20: {}
 
+  axe-core@4.11.1: {}
+
   axobject-query@4.1.0: {}
 
   babel-loader@10.1.1(@babel/core@7.29.0)(webpack@5.105.4(esbuild@0.27.4)):
@@ -17581,6 +17620,11 @@ snapshots:
   chrome-trace-event@1.0.4: {}
 
   ci-info@4.4.0: {}
+
+  clava@0.2.0:
+    dependencies:
+      clsx: 2.1.1
+      csstype: 3.2.3
 
   cli-boxes@3.0.0: {}
 
