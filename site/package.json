@@ -16,7 +16,7 @@
     "listen-stripe": "stripe listen --forward-to http://localhost:4321/api/stripe-webhook",
     "dev-stripe": "concurrently -k -r 'pnpm:dev' 'pnpm:listen-*'",
     "dev-stripe-lite": "concurrently -k -r 'pnpm:dev-lite' 'pnpm:listen-*'",
-    "tsc": "tsc -b",
+    "check": "astro check",
     "build": "astro build",
     "build-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run build",
     "build-min": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true pnpm run build-lite",
