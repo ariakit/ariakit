@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -16,7 +17,6 @@ import {
   scanAkTokens,
   styleDefToCss,
 } from "./styles.ts";
-import { expect, test } from "vitest";
 
 test("scanAkTokensInFiles finds ak-* tokens including bracketed", () => {
   const tokens = scanAkTokens(`

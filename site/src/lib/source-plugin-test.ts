@@ -8,8 +8,8 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { join } from "node:path";
-import disclosure from "#app/examples/disclosure/index.react.tsx?source";
 import { expect, test } from "vitest";
+import disclosure from "#app/examples/disclosure/index.react.tsx?source";
 
 const EXAMPLES_DIR = join(import.meta.dirname, "../examples/");
 
