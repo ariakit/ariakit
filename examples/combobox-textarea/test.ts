@@ -1,4 +1,5 @@
 import { press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("@ at the beginning", async () => {
   await press.Tab();

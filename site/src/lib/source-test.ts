@@ -16,6 +16,7 @@ import {
   replaceImportPaths,
 } from "./source.ts";
 import type { StyleDependency } from "./styles.ts";
+import { expect, test } from "vitest";
 
 test("getImportPaths extracts from import/export and dynamic imports", () => {
   const code = [

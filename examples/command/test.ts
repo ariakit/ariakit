@@ -1,4 +1,5 @@
 import { press, q } from "@ariakit/test";
+import { expect, test, vi } from "vitest";
 
 test("markup", () => {
   expect(q.button()).toMatchInlineSnapshot(`

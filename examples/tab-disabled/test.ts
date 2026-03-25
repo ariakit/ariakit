@@ -1,4 +1,5 @@
 import { press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("navigate through tabs with keyboard", async () => {
   await press.Tab();

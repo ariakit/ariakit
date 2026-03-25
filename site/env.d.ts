@@ -18,17 +18,17 @@ declare module "cloudflare:workers" {
 declare module "@fontsource-variable/inter";
 
 declare module "*?source" {
-  const source: import("./lib/source.ts").Source;
+  const source: import("./src/lib/source.ts").Source;
   export default source;
 }
 
 declare module "#app/styles/styles.json" {
-  const styles: import("./lib/styles.ts").StylesJson;
+  const styles: import("./src/lib/styles.ts").StylesJson;
   export default styles;
 }
 
-type PlusType = import("./lib/schemas.ts").PlusType;
-type Framework = import("./lib/schemas.ts").Framework;
+type PlusType = import("./src/lib/schemas.ts").PlusType;
+type Framework = import("./src/lib/schemas.ts").Framework;
 type User = import("@clerk/astro/server").User;
 
 declare namespace App {

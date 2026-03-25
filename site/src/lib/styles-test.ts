@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-
 import {
   findStyleDependency,
   getStyleDefinition,
@@ -17,6 +16,7 @@ import {
   scanAkTokens,
   styleDefToCss,
 } from "./styles.ts";
+import { expect, test } from "vitest";
 
 test("scanAkTokensInFiles finds ak-* tokens including bracketed", () => {
   const tokens = scanAkTokens(`

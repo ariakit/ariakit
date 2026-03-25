@@ -1,9 +1,11 @@
 {
-  "extends": "./tsconfig.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "jsx": "preserve",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "jsxImportSource": "solid-js"
   },
-  "include": ["packages/*solid*/**/*"],
-  "exclude": []
+  "files": [],
+  "include": ["**/*.solid.tsx"],
+  "exclude": ["website", "site", "examples", "**/*test.solid.tsx"]
 }

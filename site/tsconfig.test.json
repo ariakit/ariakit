@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "../tsconfig.test.json",
+  "include": [
+    ".astro/types.d.ts",
+    "**/*test.ts",
+    "env.d.ts",
+    "../worker-configuration.d.ts"
+  ],
+  "exclude": []
+}

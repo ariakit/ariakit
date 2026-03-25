@@ -9,6 +9,7 @@
  */
 import { join } from "node:path";
 import disclosure from "#app/examples/disclosure/index.react.tsx?source";
+import { expect, test } from "vitest";
 
 const EXAMPLES_DIR = join(import.meta.dirname, "../examples/");
 

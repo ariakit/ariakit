@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import type { Polygon } from "../polygon.ts";
 import { isPointInPolygon } from "../polygon.ts";
 

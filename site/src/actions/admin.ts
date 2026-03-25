@@ -381,12 +381,7 @@ async function setPrice(env: CloudflareEnv, input: SetPriceInput) {
   logger.info("Set price %s to %s", key, formattedAmount);
 }
 
-// Workaround: Astro v6 doesn't export ErrorInferenceObject from a public
-// module path, causing TS2883 during declaration emit. Wrapping each action
-// with an opaque return type avoids the type inference chain.
-type Action = ReturnType<typeof defineAction<unknown, undefined, undefined>>;
-
-export const admin: Record<string, Action> = {
+export const admin = {
   sync: defineAction({
     accept: "form",
     async handler(_, action) {

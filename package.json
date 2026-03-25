@@ -49,7 +49,7 @@
     "lint-fix": "oxlint --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "wrangler-types": "wrangler types --include-runtime=false",
-    "tsc": "pnpm run wrangler-types && conc -r 'tsc' 'pnpm -F site run tsc' 'pnpm -F nextjs run tsc' 'pnpm -F \"./templates/*\" run tsc' 'tsc -p tsconfig.solid.json'",
+    "tsc": "pnpm run wrangler-types && tsc -b",
     "tsc-clean": "tsc --build --clean",
     "build": "pnpm -F \"@ariakit/*\" run build",
     "build-website": "pnpm -F website run build",

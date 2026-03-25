@@ -1,4 +1,5 @@
 import { click, hover, press, q, sleep, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 const waitForHovercardToShow = (timeout = 600) =>
   waitFor(() => expect(q.dialog()).toBeVisible(), { timeout });

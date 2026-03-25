@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "files": [],
+  "include": ["**/*.react.tsx"],
+  "exclude": ["website", "site", "examples", "**/*test.react.tsx"]
+}

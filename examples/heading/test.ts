@@ -1,3 +1,5 @@
+import { expect, test } from "vitest";
+
 test("markup", () => {
   expect(document.body).toMatchInlineSnapshot(`
     <body>

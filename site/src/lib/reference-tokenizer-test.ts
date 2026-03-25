@@ -10,6 +10,7 @@
 
 import type { CollectionEntry } from "astro:content";
 import { findCodeReferenceAnchors } from "./reference-tokenizer.ts";
+import { expect, test } from "vitest";
 
 interface RefProp {
   name: string;

@@ -1,4 +1,5 @@
 import { click, dispatch, press, q, sleep, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("clear input with mouse", async () => {
   await click(q.combobox());

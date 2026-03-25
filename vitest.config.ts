@@ -52,7 +52,7 @@ export default defineConfig({
     dedupe: ["react", "react-dom"],
   },
   test: {
-    globals: true,
+
     watch: false,
     testTimeout: 10_000,
     environment: "jsdom",

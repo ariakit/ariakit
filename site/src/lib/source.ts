@@ -830,7 +830,7 @@ function parseNamespaceValueImport(stmt: string): [string, string] | null {
   const match = stmt.match(
     /^import\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
   );
-  return match ? [match[1]!, match[2]!] : null;
+  return match ? [match[1], match[2]] : null;
 }
 
 /**
@@ -841,7 +841,7 @@ function parseNamespaceTypeImport(stmt: string): [string, string] | null {
   const match = stmt.match(
     /^import\s+type\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
   );
-  return match ? [match[1]!, match[2]!] : null;
+  return match ? [match[1], match[2]] : null;
 }
 
 /**

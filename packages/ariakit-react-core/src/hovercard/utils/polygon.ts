@@ -11,8 +11,8 @@ export function isPointInPolygon(point: Point, polygon: Polygon) {
   let inside = false;
   const length = polygon.length;
   for (let l = length, i = 0, j = l - 1; i < l; j = i++) {
-    const [xi, yi] = polygon[i] as Point;
-    const [xj, yj] = polygon[j] as Point;
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
     const [, vy] = polygon[j === 0 ? l - 1 : j - 1] || [0, 0];
     const where = (yi - yj) * (x - xi) - (xi - xj) * (y - yi);
     if (yj < yi) {

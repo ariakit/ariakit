@@ -1,4 +1,5 @@
 import { click, press, q, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function getBackdrop(name: string) {
   const dialog = q.dialog.includesHidden(name);

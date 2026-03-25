@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("show on disclosure click", async () => {
   expect(q.dialog()).not.toBeInTheDocument();

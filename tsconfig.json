@@ -1,46 +1,16 @@
 {
-  "compilerOptions": {
-    "target": "ES2018",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "jsx": "react-jsx",
-    "types": ["node", "vitest/globals", "@testing-library/jest-dom/vitest"],
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "noEmit": true,
-    "skipLibCheck": true,
-    "allowJs": true,
-    "checkJs": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowImportingTsExtensions": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "stripInternal": true,
-    "noUncheckedIndexedAccess": true,
-    "verbatimModuleSyntax": true
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mts",
-    "**/*.cts",
-    "**/*.js",
-    "**/*.cjs",
-    "**/*.mjs"
-  ],
-  "exclude": [
-    "node_modules",
-    "coverage",
-    "website",
-    "nextjs",
-    "site",
-    "templates",
-    "packages/*solid*",
-    "examples/**/*.solid.tsx"
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "files": [],
+  "references": [
+    { "path": "tsconfig.node.json" },
+    { "path": "tsconfig.react.json" },
+    { "path": "tsconfig.solid.json" },
+    { "path": "tsconfig.test.json" },
+    { "path": "tsconfig.test.react.json" },
+    { "path": "tsconfig.test.solid.json" },
+    { "path": "packages/ariakit-solid-core/tsconfig.json" },
+    { "path": "examples/tsconfig.react.json" },
+    { "path": "examples/tsconfig.solid.json" },
+    { "path": "site/tsconfig.test.json" }
   ]
 }
