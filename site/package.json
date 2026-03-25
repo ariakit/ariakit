@@ -95,7 +95,7 @@
     "stripe": "20.4.1",
     "tailwindcss": "4.2.2",
     "ts-morph": "27.0.2",
-    "typescript": "5.9.3",
+    "typescript": "6.0.2",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
     "use-local-storage-state": "19.5.0",

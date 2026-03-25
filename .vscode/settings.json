@@ -1,11 +1,13 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "js/ts.preferences.preferTypeOnlyAutoImports": true,
   "tailwindCSS.classFunctions": ["clsx", "twMerge", "twJoin"],
   "tailwindCSS.experimental.configFile": {
     "site/src/styles/global.css": ["site/**", "nextjs/**"],
