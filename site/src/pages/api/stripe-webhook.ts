@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { APIRoute } from "astro";
+import { env } from "cloudflare:workers";
 import type { Stripe } from "stripe";
 import { getUser } from "#app/lib/auth.ts";
 import {
@@ -101,7 +102,7 @@ export const POST: APIRoute = async (context) => {
     event.type === EVENTS.CheckoutSessionAsyncPaymentSucceeded
   ) {
     const session = event.data.object;
-    await processCheckout({ context, session });
+    await processCheckout({ context, env, session });
     return ok();
   }
 
@@ -121,14 +122,14 @@ export const POST: APIRoute = async (context) => {
       return ok();
     }
     if (price.deleted || !price.active) {
-      await deletePrice(context, key);
+      await deletePrice(env, key);
       return ok();
     }
     if (!price.unit_amount) {
       logger.error("Price has no unit amount", price.id);
       return ok();
     }
-    await putPrice(context, {
+    await putPrice(env, {
       id: price.id,
       type,
       key,
@@ -143,13 +144,13 @@ export const POST: APIRoute = async (context) => {
 
   if (event.type === EVENTS.PriceDeleted) {
     const price = event.data.object;
-    const prices = await getPrices(context);
+    const prices = await getPrices(env);
     const key = prices.find((p) => p.id === price.id)?.key;
     if (!key) {
       logger.info("Price not found in KV store", price.id);
       return ok();
     }
-    await deletePrice(context, key);
+    await deletePrice(env, key);
     logger.info("Price deleted from KV store", key);
     return ok();
   }
@@ -164,7 +165,7 @@ export const POST: APIRoute = async (context) => {
     if (!coupon) {
       const couponId = promo.promotion.coupon;
       if (!couponId || typeof couponId !== "string") {
-        await deletePromo(context, promo.id);
+        await deletePromo(env, promo.id);
         logger.error("Promotion code has no coupon", promo.id);
         return ok();
       }
@@ -172,29 +173,29 @@ export const POST: APIRoute = async (context) => {
     }
     const isSale = isSalePromo(coupon);
     if (!isSale && !promo.customer) {
-      await deletePromo(context, promo.id);
+      await deletePromo(env, promo.id);
       logger.info("Promotion code not a plus sale", promo.id);
       return ok();
     }
     if (promo.customer) {
       const user = await getUserFromCustomer(promo.customer);
       if (user instanceof Response) {
-        await deletePromo(context, promo.id);
+        await deletePromo(env, promo.id);
         return user;
       }
       userId = objectId(user);
     }
     if (!promo.active || coupon.deleted || !coupon.valid) {
-      await deletePromo(context, promo.id);
+      await deletePromo(env, promo.id);
       logger.info("Promotion code not valid anymore", promo.id);
       return ok();
     }
     if (!coupon.percent_off) {
-      await deletePromo(context, promo.id);
+      await deletePromo(env, promo.id);
       logger.error("Promotion code has no percent off", promo.id);
       return ok();
     }
-    await putPromo(context, {
+    await putPromo(env, {
       id: promo.id,
       type: promo.customer ? "customer" : "sale",
       user: userId,

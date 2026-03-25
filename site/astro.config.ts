@@ -53,7 +53,11 @@ export default defineConfig({
 
   adapter: cloudflare({
     imageService: "compile",
-    platformProxy: { enabled: true },
+    // Workaround: The workerd prerender environment doesn't resolve
+    // node:path even with nodejs_compat enabled. Using "node" for
+    // prerendering avoids this. The cloudflare:workers import is lazy
+    // (only used in SSR pages) so it doesn't break Node-based prerendering.
+    prerenderEnvironment: "node",
   }),
 
   vite: {

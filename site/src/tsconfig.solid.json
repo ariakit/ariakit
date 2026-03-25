@@ -11,6 +11,7 @@
   },
   "include": [
     "../.astro/types.d.ts",
+    "../../worker-configuration.d.ts",
     "env.d.ts",
     "**/*.solid.tsx",
     "**/*.ts",
