@@ -10,6 +10,8 @@
 /// <reference types="astro/client" />
 /// <reference types="@clerk/astro/env" />
 
+declare module "@fontsource-variable/inter";
+
 declare module "*?source" {
   const source: import("./lib/source.ts").Source;
   export default source;
