@@ -1,7 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": "./site/dist/server/entry.mjs",
+  "no_bundle": true,
+  "rules": [{ "type": "ESModule", "globs": ["**/*.js", "**/*.mjs"] }],
   "preview_urls": false,
   "compatibility_date": "2025-11-27",
   "compatibility_flags": ["nodejs_compat"],
@@ -17,7 +19,7 @@
   },
   "assets": {
     "binding": "ASSETS",
-    "directory": "./site/dist",
+    "directory": "./site/dist/client",
   },
   "kv_namespaces": [
     {
