@@ -1,4 +1,3 @@
-import { expect, test } from "vitest";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -8,6 +7,7 @@ import { expect, test } from "vitest";
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { expect, test } from "vitest";
 import {
   findStyleDependency,
   getStyleDefinition,
