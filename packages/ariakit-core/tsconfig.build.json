@@ -1,6 +1,7 @@
 {
-  "extends": "../../tsconfig.solid.json",
+  "extends": "../../tsconfig.node.json",
   "compilerOptions": {
+    "target": "es2018",
     "declaration": true,
     "rootDir": "src"
   },
