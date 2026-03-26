@@ -1,5 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*.astro", "../worker-configuration.d.ts"]
+  "include": [
+    ".astro/types.d.ts",
+    "**/*.astro",
+    "env.d.ts",
+    "../worker-configuration.d.ts"
+  ]
 }
