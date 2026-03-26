@@ -1,8 +1,5 @@
 {
   "extends": "../../tsconfig.node.json",
-  "compilerOptions": {
-    "target": "es2022"
-  },
   "include": ["src"],
-  "exclude": []
+  "exclude": ["**/*test.ts", "**/*test.react.tsx"]
 }

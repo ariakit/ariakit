@@ -1,5 +1,11 @@
 {
-  "extends": "../../tsconfig.react.json",
-  "include": ["src"],
-  "exclude": ["**/*test.react.tsx"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    // { "path": "./tsconfig.test.json" },
+    { "path": "./tsconfig.react.json" },
+    // { "path": "./tsconfig.solid.json" },
+    { "path": "./tsconfig.test.react.json" }
+    // { "path": "./tsconfig.test.solid.json" }
+  ]
 }

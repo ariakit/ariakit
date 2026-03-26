@@ -40,7 +40,7 @@ spawn.sync(
   [
     "--emitDeclarationOnly",
     "--project",
-    "tsconfig.build.json",
+    "tsconfig.json",
     "--noEmit",
     "false",
     "--outDir",
