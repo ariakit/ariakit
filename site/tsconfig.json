@@ -1,8 +1,6 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "files": [],
   "references": [
-    { "path": "./tsconfig.astro.json" },
     { "path": "./tsconfig.node.json" },
     { "path": "./tsconfig.react.json" },
     { "path": "./tsconfig.solid.json" },

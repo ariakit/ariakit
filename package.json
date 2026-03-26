@@ -50,7 +50,7 @@
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "wrangler-types": "wrangler types --include-runtime=false",
     "tsc": "pnpm run wrangler-types && pnpm -F site run check && tsc -b",
-    "tsc-clean": "tsc --build --clean",
+    "tsc-clean": "tsc -b --clean",
     "build": "pnpm -F \"@ariakit/*\" run build",
     "build-website": "pnpm -F website run build",
     "build-website-lite": "cross-env DISABLE_SHIKI=true pnpm run build-website",

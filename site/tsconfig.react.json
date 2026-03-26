@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../tsconfig.react.json",
   "compilerOptions": {
     "target": "es2022"
@@ -10,5 +9,5 @@
     "**/*.react.tsx",
     "../worker-configuration.d.ts"
   ],
-  "exclude": ["website", "site", "examples", "**/*test.react.tsx"]
+  "exclude": ["dist", "**/*test.react.tsx"]
 }

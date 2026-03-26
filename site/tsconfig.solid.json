@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../tsconfig.solid.json",
   "compilerOptions": {
     "target": "es2022"
@@ -10,5 +9,5 @@
     "**/*.solid.tsx",
     "../worker-configuration.d.ts"
   ],
-  "exclude": ["website", "site", "examples", "**/*test.solid.tsx"]
+  "exclude": ["dist", "**/*test.solid.tsx"]
 }
