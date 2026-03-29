@@ -9,11 +9,7 @@
       "react/*": ["./node_modules/@types/react/*"],
       "react-dom/*": ["./node_modules/@types/react-dom/*"]
     },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "plugins": [{ "name": "next" }]
   },
   "include": [
     "next-env.d.ts",

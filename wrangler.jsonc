@@ -1,11 +1,11 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
-  "main": "./site/dist/server/entry.mjs",
+  "main": "@astrojs/cloudflare/entrypoints/server",
   "no_bundle": true,
   "rules": [{ "type": "ESModule", "globs": ["**/*.js", "**/*.mjs"] }],
   "preview_urls": false,
-  "compatibility_date": "2025-11-27",
+  "compatibility_date": "2026-03-27",
   "compatibility_flags": ["nodejs_compat"],
   "placement": {
     "mode": "smart",
