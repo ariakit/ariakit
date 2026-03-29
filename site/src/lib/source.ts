@@ -345,7 +345,7 @@ export function replaceImportPaths(
 
   const replacePathsForPattern = (pattern: RegExp, type: ImportPathType) => {
     result = result.replace(pattern, (match, ...args) => {
-      const groups = args.at(-1) as RegExpExecArray["groups"];
+      const groups = args[args.length - 1] as RegExpExecArray["groups"];
       const path = getPathFromGroups(groups);
       if (!path) return match;
 
@@ -544,7 +544,7 @@ export function mergeImports(
 
   const replaceImportDeclarations = (pattern: RegExp, isTypeOnly: boolean) => {
     body = body.replace(pattern, (match, ...args) => {
-      const groups = args.at(-1) as RegExpExecArray["groups"];
+      const groups = args[args.length - 1] as RegExpExecArray["groups"];
       const path = getPathFromGroups(groups);
       if (!path) return match;
 
@@ -738,7 +738,7 @@ function stripInternalImports(
 
   const removeMatchingImports = (pattern: RegExp) => {
     body = body.replace(pattern, (match, ...args) => {
-      const groups = args.at(-1) as RegExpExecArray["groups"];
+      const groups = args[args.length - 1] as RegExpExecArray["groups"];
       const specifier = getPathFromGroups(groups);
       if (!specifier) return match;
 
@@ -830,7 +830,10 @@ function parseNamespaceValueImport(stmt: string): [string, string] | null {
   const match = stmt.match(
     /^import\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
   );
-  return match ? [match[1]!, match[2]!] : null;
+  if (match == null) return null;
+  if (match[1] == null) return null;
+  if (match[2] == null) return null;
+  return [match[1], match[2]];
 }
 
 /**
@@ -841,7 +844,10 @@ function parseNamespaceTypeImport(stmt: string): [string, string] | null {
   const match = stmt.match(
     /^import\s+type\s+\*\s+as\s+([\w$]+)\s+from\s+['"`](.*?)['"`]/,
   );
-  return match ? [match[1]!, match[2]!] : null;
+  if (match == null) return null;
+  if (match[1] == null) return null;
+  if (match[2] == null) return null;
+  return [match[1], match[2]];
 }
 
 /**
@@ -855,8 +861,8 @@ export function hoistImports(content: string): string {
 
   const extractImports = (pattern: RegExp) => {
     body = body.replace(pattern, (match, ...args) => {
-      const offset = (args.at(-3) as number) ?? 0;
-      const fullText = (args.at(-2) as string) ?? body;
+      const offset = (args[args.length - 3] as number) ?? 0;
+      const fullText = (args[args.length - 2] as string) ?? body;
 
       let statement = match;
       // Include trailing semicolon if present

@@ -43,7 +43,7 @@ function getPackageName(source: string) {
   if (maybeScope?.startsWith("@")) {
     return `${maybeScope}/${maybeName ?? ""}`;
   }
-  return `${maybeScope}`;
+  return maybeScope ?? "";
 }
 
 function normalizeDeps(deps: Record<string, string> = {}) {
