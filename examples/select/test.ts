@@ -1,4 +1,5 @@
 import { click, hover, press, q, sleep, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("default value", () => {
   expect(q.combobox()).toHaveTextContent("Apple");

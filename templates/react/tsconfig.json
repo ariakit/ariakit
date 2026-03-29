@@ -1,10 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2018",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "target": "es2018",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "jsx": "react-jsx",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "strict": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,

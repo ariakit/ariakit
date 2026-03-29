@@ -32,13 +32,13 @@
   "dependencies": {
     "@ariakit/core": "workspace:*",
     "@floating-ui/dom": "^1.0.0",
-    "use-sync-external-store": "^1.2.0"
+    "use-sync-external-store": "^1.6.0"
   },
   "devDependencies": {
-    "@types/use-sync-external-store": "0.0.6",
-    "oxfmt": "0.41.0",
-    "oxlint": "1.56.0",
-    "oxlint-tsgolint": "0.17.0",
+    "@types/use-sync-external-store": "1.5.0",
+    "oxfmt": "0.42.0",
+    "oxlint": "1.57.0",
+    "oxlint-tsgolint": "0.18.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },

@@ -64,12 +64,9 @@ export const useRole = createHook<TagName, RoleOptions>(
  * <Role render={<div />} />
  * ```
  */
-export const Role = forwardRef(
-  // @ts-expect-error
-  function Role(props: RoleProps) {
-    return createElement(TagName, props);
-  },
-) as FC<RoleProps> & RoleElements;
+export const Role = forwardRef(function Role(props: RoleProps) {
+  return createElement(TagName, props);
+}) as FC<RoleProps> & RoleElements;
 
 Object.assign(
   Role,

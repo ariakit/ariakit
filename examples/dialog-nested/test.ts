@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function backdrop(name: string) {
   const dialog = q.dialog.ensure(name);

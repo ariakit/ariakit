@@ -1,4 +1,5 @@
 import { click, hover, press, q, type, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 async function hoverOutside() {
   await hover(document.body);

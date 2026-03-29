@@ -1,6 +1,6 @@
 {
-  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "typescript.tsdk": "node_modules/typescript/lib",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "files.eol": "\n",
@@ -32,5 +32,8 @@
     "https://json.schemastore.org/github-action.json": [
       ".github/workflows/*/action.y*ml"
     ]
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   }
 }

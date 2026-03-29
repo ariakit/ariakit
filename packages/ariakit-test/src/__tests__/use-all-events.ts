@@ -103,7 +103,10 @@ function getIdentifier(element: HTMLElement) {
   );
 }
 
-export function useAllEvents(ref: React.RefObject<Element>, stack: string[]) {
+export function useAllEvents(
+  ref: React.RefObject<Element | null>,
+  stack: string[],
+) {
   useEffect(() => {
     const element = ref.current;
     if (!element) return undefined;

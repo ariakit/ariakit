@@ -1,4 +1,5 @@
 import { click, press, q, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("show/hide on click", async () => {
   expect(q.dialog()).not.toBeInTheDocument();

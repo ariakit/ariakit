@@ -1,4 +1,5 @@
 import { press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("show highlighted text", async () => {
   await press.Tab();

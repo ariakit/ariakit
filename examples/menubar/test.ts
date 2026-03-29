@@ -1,4 +1,5 @@
 import { click, hover, press, q, sleep, type, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("show/hide on click", async () => {
   expect(q.menu("File")).not.toBeInTheDocument();

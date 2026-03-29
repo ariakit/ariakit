@@ -7,6 +7,7 @@ import {
   render as renderSolid,
   Suspense as SolidSuspense,
 } from "solid-js/web";
+import { expect, beforeEach } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";
 

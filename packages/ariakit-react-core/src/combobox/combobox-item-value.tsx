@@ -77,7 +77,7 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
     return parts;
   }
 
-  const [firstOffset] = offsets[0]!;
+  const [firstOffset] = offsets[0];
 
   const values = [
     itemValue.slice(0, firstOffset),

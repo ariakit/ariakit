@@ -3,7 +3,7 @@
   "name": "ariakit",
   "main": "./site/dist/_worker.js/index.js",
   "preview_urls": false,
-  "compatibility_date": "2025-11-27",
+  "compatibility_date": "2026-03-27",
   "compatibility_flags": ["nodejs_compat"],
   "placement": {
     "mode": "smart",
