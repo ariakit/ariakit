@@ -3,18 +3,8 @@
   "semanticCommits": "disabled",
   "packageRules": [
     {
-      "matchFileNames": ["package.json"],
-      "matchPackageNames": ["next"],
-      "enabled": false
-    },
-    {
       "matchFileNames": ["website/package.json"],
       "enabled": false
-    },
-    {
-      "matchPackageNames": ["shiki"],
-      "matchCurrentVersion": "/^1\\./",
-      "allowedVersions": "/^1\\./"
     },
     {
       "matchPackageNames": ["tailwindcss"],
@@ -33,56 +23,28 @@
       ]
     },
     {
-      "matchFileNames": ["website/package.json"],
-      "matchPackageNames": ["/^@clerk\\//"],
-      "enabled": false
-    },
-    {
       "groupName": "clerk",
       "matchPackageNames": ["/^@clerk\\//"]
     },
     {
-      "matchFileNames": ["website/package.json"],
-      "matchPackageNames": ["stripe", "/^@stripe\\//"],
-      "enabled": false
-    },
-    {
       "groupName": "stripe",
-      "matchPackageNames": ["stripe", "/^@stripe\\//"]
-    },
-    {
-      "groupName": "monaco",
-      "matchPackageNames": ["/monaco/"]
+      "matchPackageNames": ["stripe", "/^@stripe/"]
     },
     {
       "groupName": "testing-library",
-      "matchPackageNames": ["/@testing-library//"]
+      "matchPackageNames": ["/^@testing-library/"]
     },
     {
       "groupName": "radix",
-      "matchPackageNames": ["/@radix-ui//"]
+      "matchPackageNames": ["/^@radix-ui/"]
     },
     {
       "groupName": "vite",
-      "matchPackageNames": ["vite", "/^@vitejs\\//"]
-    },
-    {
-      "matchPackageNames": ["vite", "/^@vitejs\\//"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true,
-      "automergeType": "pr",
-      "platformAutomerge": true
+      "matchPackageNames": ["vite", "/^@vitejs/"]
     },
     {
       "groupName": "oxc",
       "matchPackageNames": ["/^oxlint/", "/^oxfmt/"]
-    },
-    {
-      "matchPackageNames": ["lint-staged"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true,
-      "automergeType": "pr",
-      "platformAutomerge": true
     },
     {
       "matchPackageNames": ["astro"],
@@ -93,6 +55,13 @@
       "matchPackageNames": ["@astrojs/cloudflare"],
       "matchCurrentVersion": "/^12\\./",
       "allowedVersions": "/^12\\./"
+    },
+    {
+      "matchPackageNames": ["lint-staged", "vite", "/^@vitejs/"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
     },
     {
       "matchPackageNames": [
