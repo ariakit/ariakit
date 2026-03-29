@@ -1,5 +1,6 @@
 import { getTextboxSelection } from "@ariakit/core/utils/dom";
 import { press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
   if (!element) return null;

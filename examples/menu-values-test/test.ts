@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { beforeEach, expect, test, vi } from "vitest";
 
 const spyOnLog = () => vi.spyOn(console, "log").mockImplementation(() => {});
 

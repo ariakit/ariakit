@@ -1,4 +1,5 @@
 import { click, hover, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("hover on item", async () => {
   await click(q.combobox("Favorite food"));

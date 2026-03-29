@@ -1,4 +1,5 @@
 import { click, dispatch, press, q, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("show context menu and hide it with escape", async () => {
   expect(q.menu()).not.toBeInTheDocument();

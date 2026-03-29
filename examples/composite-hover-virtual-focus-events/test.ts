@@ -1,4 +1,5 @@
 import { click, hover, press, q } from "@ariakit/test";
+import { expect, test, vi } from "vitest";
 import type { MockInstance } from "vitest";
 
 function expectCalls(mock: MockInstance) {

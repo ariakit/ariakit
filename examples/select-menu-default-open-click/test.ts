@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("no filters", () => {
   expect(q.button("Filters (0)")).toBeVisible();

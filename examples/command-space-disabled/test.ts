@@ -1,4 +1,5 @@
 import { press, q } from "@ariakit/test";
+import { expect, test, vi } from "vitest";
 
 test("enter does trigger the alert", async () => {
   const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
