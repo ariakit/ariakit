@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.react.json",
   "compilerOptions": {
-    "target": "es2018",
     "declaration": true,
     "rootDir": "src"
   },

@@ -1,8 +1,5 @@
 {
   "extends": "../tsconfig.react.json",
-  "compilerOptions": {
-    "target": "es2022"
-  },
   "include": [
     ".astro/types.d.ts",
     "env.d.ts",
