@@ -1,9 +1,7 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "esnext",
-    "types": ["node", "@testing-library/jest-dom/vitest"],
-    "lib": ["DOM", "DOM.Iterable", "ESNext"]
+    "types": ["node", "@testing-library/jest-dom"]
   },
   "include": ["**/*test.ts"],
   "exclude": ["site"]

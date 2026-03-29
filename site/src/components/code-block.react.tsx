@@ -866,7 +866,9 @@ export function CodeBlockTabs({
                   );
                 }}
               >
-                {selectedSlot}
+                <React.Fragment key={selectedTabId}>
+                  {selectedSlot}
+                </React.Fragment>
               </CodeBlock>
               {preview && (
                 <div

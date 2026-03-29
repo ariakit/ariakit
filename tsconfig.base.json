@@ -4,6 +4,7 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "types": ["node"],
+    "lib": ["DOM", "ESNext"],
     "outDir": ".typescript",
     "rootDir": ".",
     "noEmit": true,

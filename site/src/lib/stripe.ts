@@ -346,7 +346,7 @@ export async function createCheckout({
     customer,
     line_items: [lineItem],
     mode: "payment",
-    ui_mode: "embedded",
+    ui_mode: "embedded_page",
     invoice_creation: { enabled: true },
     automatic_tax: { enabled: true },
     tax_id_collection: { enabled: true },

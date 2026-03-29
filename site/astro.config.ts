@@ -62,7 +62,9 @@ export default defineConfig({
 
   vite: {
     plugins: [
+      // @ts-expect-error Vite version mismatch (Astro 5 ships Vite 6)
       tailwindcss(),
+      // @ts-expect-error Vite version mismatch (Astro 5 ships Vite 6)
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
     // Workaround: Vite's dependency scan fails because esbuild can't
