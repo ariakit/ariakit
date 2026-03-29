@@ -13,7 +13,7 @@ export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
 
     // We move the tooltip up or down depending on the current placement.
     const y = Ariakit.useStoreState(tooltip, (state) => {
-      const dir = state.currentPlacement.split("-")[0]!;
+      const dir = state.currentPlacement.split("-")[0];
       return dir === "top" ? -8 : 8;
     });
 

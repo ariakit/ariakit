@@ -1,13 +1,9 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [
-    ".astro/types.d.ts",
-    "src/env.d.ts",
-    "../worker-configuration.d.ts",
-    "**/*.astro"
-  ],
-  "exclude": ["dist", "node_modules", ".types"],
-  "compilerOptions": {
-    "noUncheckedIndexedAccess": true
-  }
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.react.json" },
+    { "path": "./tsconfig.solid.json" },
+    { "path": "./tsconfig.test.json" }
+  ]
 }
