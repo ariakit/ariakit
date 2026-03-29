@@ -10,7 +10,7 @@
 // @ts-nocheck Revisit this after we merge the site folder into root
 import type { BundledLanguage } from "shiki";
 import { createHighlighterCore } from "shiki/core";
-import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
+import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
 export const highlighter = await createHighlighterCore({
   themes: [
@@ -28,10 +28,7 @@ export const highlighter = await createHighlighterCore({
     import("@shikijs/langs/python"),
     import("@shikijs/langs/jsx"),
   ],
-  // The Oniguruma WASM engine is not compatible with Vite 7 (Astro v6) which
-  // dropped the ESM integration proposal for Wasm. The JavaScript engine is a
-  // drop-in replacement that doesn't require WASM.
-  engine: createJavaScriptRegexEngine(),
+  engine: createOnigurumaEngine(import("shiki/wasm")),
 });
 
 export function getLangFromFilename(filename: string): BundledLanguage {
