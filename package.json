@@ -49,8 +49,8 @@
     "lint-fix": "oxlint --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "wrangler-types": "wrangler types --include-runtime=false",
-    "tsc": "pnpm run wrangler-types && conc -r 'tsc' 'pnpm -F site run tsc' 'pnpm -F nextjs run tsc' 'pnpm -F \"./templates/*\" run tsc' 'tsc -p tsconfig.solid.json'",
-    "tsc-clean": "tsc --build --clean",
+    "tsc": "pnpm run wrangler-types && pnpm -F site run check && tsc -b",
+    "tsc-clean": "tsc -b --clean",
     "build": "pnpm -F \"@ariakit/*\" run build",
     "build-website": "pnpm -F website run build",
     "build-website-lite": "cross-env DISABLE_SHIKI=true pnpm run build-website",
@@ -115,7 +115,7 @@
     "vite-plugin-solid": "2.11.11",
     "vitest": "4.1.1",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.77.0"
+    "wrangler": "4.78.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",

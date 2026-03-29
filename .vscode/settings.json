@@ -32,5 +32,8 @@
     "https://json.schemastore.org/github-action.json": [
       ".github/workflows/*/action.y*ml"
     ]
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   }
 }

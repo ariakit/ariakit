@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-
+import { expect, test } from "vitest";
 import {
   findStyleDependency,
   getStyleDefinition,

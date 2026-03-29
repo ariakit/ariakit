@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("default checked menu item", async () => {
   await click(q.button("Sort"));

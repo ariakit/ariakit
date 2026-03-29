@@ -1,4 +1,5 @@
 import { click, hover, press, q, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 const tooltip = "https://ariakit.com/examples/tooltip-framer-motion";
 

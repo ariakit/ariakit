@@ -1,4 +1,10 @@
 {
   "extends": "../../tsconfig.solid.json",
-  "include": ["src"]
+  "compilerOptions": {
+    "target": "es2018",
+    "declaration": true,
+    "rootDir": "src"
+  },
+  "include": ["src"],
+  "exclude": []
 }

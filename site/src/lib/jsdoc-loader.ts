@@ -12,7 +12,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { LoaderContext } from "astro/loaders";
-import type { z } from "astro:content";
+import type { z } from "astro/zod";
 import type { FunctionLikeDeclaration } from "ts-morph";
 import { Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";
@@ -635,7 +635,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
  */
 function createProject() {
   return new Project({
-    tsConfigFilePath: resolve(process.cwd(), "../tsconfig.json"),
+    tsConfigFilePath: resolve(import.meta.dirname, "../../tsconfig.react.json"),
   });
 }
 

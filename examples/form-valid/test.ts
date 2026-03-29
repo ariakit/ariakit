@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("submit button is disabled by default", async () => {
   expect(q.button("Add")).toHaveAttribute("aria-disabled", "true");

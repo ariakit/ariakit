@@ -28,6 +28,7 @@ import { capitalize } from "#app/lib/string.ts";
 import { getPlusPrice, processCheckout } from "#app/lib/stripe.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
 import { SignUp } from "@clerk/astro/components";
+import { env } from "cloudflare:workers";
 import { formatDistanceToNow } from "date-fns";
 import { z } from "zod";
 import Layout from "./_layout.astro";
@@ -85,6 +86,7 @@ if (isLoginStep) {
   if (sessionId) {
     const session = await processCheckout({
       context: Astro,
+      env,
       session: sessionId,
     });
     const url = new URL(Astro.url);
@@ -107,7 +109,7 @@ async function getPriceData() {
   const currentUserPlus = await getCurrentUserPlus(Astro);
   return Promise.all(
     PLUS_TYPES.map(async (type) => {
-      const price = await getPlusPrice({ context: Astro, type });
+      const price = await getPlusPrice({ context: Astro, env, type });
       if (!price) return null;
       return {
         ...price,

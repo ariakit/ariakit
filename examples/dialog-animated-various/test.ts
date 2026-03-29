@@ -1,4 +1,5 @@
 import { click, press, q, sleep, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test.each([
   "Transition",

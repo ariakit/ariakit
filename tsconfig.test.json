@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "types": ["node", "@testing-library/jest-dom/vitest"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"]
+  },
+  "include": ["**/*test.ts"],
+  "exclude": ["site"]
+}

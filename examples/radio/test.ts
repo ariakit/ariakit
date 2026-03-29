@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("check radio button on click", async () => {
   expect(q.labeled("apple")).toHaveAttribute("aria-checked", "false");
