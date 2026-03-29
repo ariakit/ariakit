@@ -7,8 +7,9 @@ const date = new Date();
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const categories = pagesConfig.pages.map((page) => page.slug);
-  const pages = categories.flatMap((category) =>
-    index[category]!.map((page) => `${category}/${page.slug}`),
+  const pages = categories.flatMap(
+    (category) =>
+      index[category]?.map((page) => `${category}/${page.slug}`) ?? [],
   );
   const tags = getTags().map((tag) => `tags/${getTagSlug(tag)}`);
   return [

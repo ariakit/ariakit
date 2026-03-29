@@ -10,27 +10,29 @@
 /// <reference types="astro/client" />
 /// <reference types="@clerk/astro/env" />
 
+declare module "cloudflare:workers" {
+  const env: Cloudflare.Env;
+  export { env };
+}
+
 declare module "@fontsource-variable/inter";
 
 declare module "*?source" {
-  const source: import("./lib/source.ts").Source;
+  const source: import("./src/lib/source.ts").Source;
   export default source;
 }
 
 declare module "#app/styles/styles.json" {
-  const styles: import("./lib/styles.ts").StylesJson;
+  const styles: import("./src/lib/styles.ts").StylesJson;
   export default styles;
 }
 
-type PlusType = import("./lib/schemas.ts").PlusType;
-type Framework = import("./lib/schemas.ts").Framework;
+type PlusType = import("./src/lib/schemas.ts").PlusType;
+type Framework = import("./src/lib/schemas.ts").Framework;
 type User = import("@clerk/astro/server").User;
-type Runtime = import("@astrojs/cloudflare").Runtime<
-  Pick<Cloudflare.Env, "PLUS" | "EVENTS" | "ADMIN">
->;
 
 declare namespace App {
-  interface Locals extends Runtime {
+  interface Locals {
     user?: User | null;
     framework?: Framework;
     reference?: string;
