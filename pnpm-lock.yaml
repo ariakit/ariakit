@@ -273,8 +273,8 @@ importers:
         version: 19.2.4(react@19.2.4)
     devDependencies:
       '@opennextjs/cloudflare':
-        specifier: 1.17.3
-        version: 1.17.3(encoding@0.1.13)(next@16.2.1(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.78.0)
+        specifier: 1.18.0
+        version: 1.18.0(encoding@0.1.13)(next@16.2.1(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.78.0)
       '@tailwindcss/postcss':
         specifier: 4.2.2
         version: 4.2.2
@@ -3532,8 +3532,8 @@ packages:
     peerDependencies:
       next: ~15.0.8 || ~15.1.12 || ~15.2.9 || ~15.3.9 || ~15.4.11 || ~15.5.10 || ~16.0.11 || ^16.1.5
 
-  '@opennextjs/cloudflare@1.17.3':
-    resolution: {integrity: sha512-BQT8R/CEqrZS2sYydJ6uqv3U+yZAxbTeDUfgqQIlOnhu3wDPsB/QuuUBBseWOZiOdZ8gLegK6F2SLKia74Nv6g==}
+  '@opennextjs/cloudflare@1.18.0':
+    resolution: {integrity: sha512-JM236YHnKzroFAZqst1t28ZGOShvnkVUDtjrp7TJ/W2P3RLo4b6npJ8VEXOn6frs6lsUfR5rvsKYLYb7h1GIJQ==}
     hasBin: true
     peerDependencies:
       next: ~15.0.8 || ~15.1.12 || ~15.2.9 || ~15.3.9 || ~15.4.11 || ~15.5.10 || ~16.0.11 || ^16.1.5
@@ -14123,7 +14123,7 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.17.3(encoding@0.1.13)(next@16.2.1(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.78.0)':
+  '@opennextjs/cloudflare@1.18.0(encoding@0.1.13)(next@16.2.1(@babel/core@7.29.0)(@playwright/test@1.58.2)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(wrangler@4.78.0)':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
