@@ -13,7 +13,6 @@
     { "path": "./packages/ariakit-tailwind/tsconfig.json" },
     { "path": "./packages/ariakit-test/tsconfig.json" },
     { "path": "./examples/tsconfig.react.json" },
-    { "path": "./examples/tsconfig.solid.json" },
-    { "path": "./site/tsconfig.json" }
+    { "path": "./examples/tsconfig.solid.json" }
   ]
 }

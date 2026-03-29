@@ -38,7 +38,7 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Type check
-        run: pnpm run tsc -v
+        run: pnpm run tsc
 
   build:
     name: Build packages
