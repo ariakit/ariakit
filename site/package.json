@@ -20,7 +20,7 @@
     "build": "astro build",
     "build-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run build",
     "build-min": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true pnpm run build-lite",
-    "preview": "astro preview",
+    "preview": "wrangler dev",
     "preview-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run preview",
     "preview-stripe": "concurrently -k -r 'pnpm:preview' 'pnpm:listen-*'",
     "preview-stripe-lite": "concurrently -k -r 'pnpm:preview-lite' 'pnpm:listen-*'",

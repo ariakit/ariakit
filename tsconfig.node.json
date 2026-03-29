@@ -1,4 +1,4 @@
 {
   "extends": "./tsconfig.base.json",
-  "exclude": ["website", "site", "examples", "packages", "nextjs"]
+  "exclude": ["website", "site", "examples", "packages", "nextjs", "coverage"]
 }
