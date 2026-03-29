@@ -64,7 +64,11 @@
     },
     {
       "groupName": "vite",
-      "matchPackageNames": ["vite", "/^@vitejs\\//"]
+      "matchPackageNames": ["vite", "/^@vitejs\\//"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
     },
     {
       "groupName": "oxc",
@@ -76,6 +80,16 @@
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "matchPackageNames": ["astro"],
+      "matchCurrentVersion": "/^5\\./",
+      "allowedVersions": "/^5\\./"
+    },
+    {
+      "matchPackageNames": ["@astrojs/cloudflare"],
+      "matchCurrentVersion": "/^12\\./",
+      "allowedVersions": "/^12\\./"
     },
     {
       "matchPackageNames": [
@@ -110,6 +124,8 @@
         "/^@testing-library//",
         "/^@types//",
         "/^@vitest//",
+        "/^oxlint/",
+        "/^oxfmt/",
         "/^prettier/",
         "/^vitest/",
         "/^stylelint/"
