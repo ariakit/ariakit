@@ -2,9 +2,9 @@
   "extends": "../tsconfig.node.json",
   "include": [
     ".astro/types.d.ts",
-    "astro.config.ts",
-    "playwright.config.ts",
+    "**/*.ts",
+    "**/*.astro",
     "../worker-configuration.d.ts"
   ],
-  "exclude": ["dist"]
+  "exclude": ["**/*test.ts", "dist"]
 }
