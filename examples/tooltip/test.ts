@@ -1,4 +1,5 @@
 import { click, hover, press, q } from "@ariakit/test";
+import { afterEach, expect, test } from "vitest";
 
 const tooltip = "https://ariakit.com/components/tooltip";
 

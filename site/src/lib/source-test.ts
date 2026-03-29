@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
+import { expect, test } from "vitest";
 import {
   getImportPaths,
   hoistImports,

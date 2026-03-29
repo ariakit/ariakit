@@ -1,4 +1,5 @@
 import { click, hover, q } from "@ariakit/test";
+import { afterEach, expect, test } from "vitest";
 
 const hoverOutside = async () => {
   await hover(document.body);
