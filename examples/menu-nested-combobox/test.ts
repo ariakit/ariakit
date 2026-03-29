@@ -1,4 +1,5 @@
 import { click, hover, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("open/hide menu", async () => {
   await click(q.button("Actions"));

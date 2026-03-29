@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("popover is not shown on click when combobox is pristine", async () => {
   expect(q.listbox()).not.toBeInTheDocument();

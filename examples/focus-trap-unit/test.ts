@@ -1,4 +1,5 @@
 import { focus, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("correctly traps focus", async () => {
   const qq = q.within(q.group("trap"));
