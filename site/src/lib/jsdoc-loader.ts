@@ -635,7 +635,10 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
  */
 function createProject() {
   return new Project({
-    tsConfigFilePath: resolve(import.meta.dirname, "../../tsconfig.react.json"),
+    tsConfigFilePath: resolve(
+      import.meta.dirname,
+      "../../../tsconfig.base.json",
+    ),
   });
 }
 
