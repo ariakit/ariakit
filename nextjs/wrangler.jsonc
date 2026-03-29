@@ -3,7 +3,7 @@
   "name": "ariakit-nextjs",
   "main": ".open-next/worker.js",
   "preview_urls": true,
-  "compatibility_date": "2025-11-27",
+  "compatibility_date": "2026-03-27",
   "compatibility_flags": ["nodejs_compat"],
   "placement": {
     "mode": "smart",
