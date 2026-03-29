@@ -65,6 +65,19 @@ export default defineConfig({
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
+    // Workaround: Vite's dependency scan fails because esbuild can't
+    // process .astro files imported by React components, causing ALL
+    // client-side pre-bundling to be skipped. Without pre-bundling, CJS
+    // modules like react-dom/client can't be imported as ESM in the
+    // browser. Disabling discovery for the client environment prevents
+    // the scan and relies on explicit includes from @astrojs/react.
+    environments: {
+      client: {
+        optimizeDeps: {
+          noDiscovery: true,
+        },
+      },
+    },
   },
 
   markdown: {
