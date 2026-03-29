@@ -11,9 +11,15 @@ export function isPointInPolygon(point: Point, polygon: Polygon) {
   let inside = false;
   const length = polygon.length;
   for (let l = length, i = 0, j = l - 1; i < l; j = i++) {
-    const [xi, yi] = polygon[i] || [0, 0];
-    const [xj, yj] = polygon[j] || [0, 0];
-    const [, vy] = polygon[j === 0 ? l - 1 : j - 1] || [0, 0];
+    const currentPoint = polygon[i];
+    const previousPoint = polygon[j];
+    const vertexPoint = polygon[j === 0 ? l - 1 : j - 1];
+    if (currentPoint == null) return false;
+    if (previousPoint == null) return false;
+    if (vertexPoint == null) return false;
+    const [xi, yi] = currentPoint;
+    const [xj, yj] = previousPoint;
+    const [, vy] = vertexPoint;
     const where = (yi - yj) * (x - xi) - (xi - xj) * (y - yi);
     if (yj < yi) {
       if (y >= yj && y < yi) {
