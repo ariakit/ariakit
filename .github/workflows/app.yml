@@ -151,9 +151,9 @@ jobs:
 
       - name: Pack screenshots
         if: always() && env.USE_VIZZLY != 'true'
+        # The follow-up job applies screenshots from artifacts instead of
+        # mutating the branch directly from each matrix shard.
         run: |
-          # The follow-up job applies screenshots from artifacts instead of
-          # mutating the branch directly from each matrix shard.
           mkdir -p "${{ runner.temp }}/artifacts"
           python <<'PY'
           import sys
