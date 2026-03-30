@@ -37,6 +37,8 @@ runs:
       if: inputs.event == 'push'
       uses: peter-evans/create-pull-request@v8
       with:
+        # Push workflows should not write directly to `main`; they publish
+        # generated changes through a dedicated maintenance PR instead.
         path: ${{ inputs.working-directory }}
         commit-message: ${{ inputs.message }}
         title: ${{ inputs.message }}
@@ -70,6 +72,8 @@ runs:
       env:
         HEAD_REF: ${{ inputs.head-branch }}
         GH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
+      # Rebase onto the latest branch tip so generated-file commits do not
+      # fail just because another commit landed while the workflow was running.
       run: |
         cd "${{ inputs.working-directory }}"
         set +e

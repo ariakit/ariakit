@@ -14,7 +14,6 @@ jobs:
     name: Generate OG images
     runs-on: macos-latest
     permissions:
-      actions: read
       contents: write
       pull-requests: write
     steps:
@@ -33,6 +32,8 @@ jobs:
 
       - name: Run app dev server
         shell: bash
+        # OG image generation renders the local app endpoint, so keep the dev
+        # server alive in the background and block until the API is responsive.
         run: |
           set -euo pipefail
           pnpm -F site run dev &
@@ -55,11 +56,28 @@ jobs:
       - name: Generate OG images
         run: pnpm -F site run og-image-generate
 
-      - name: Generate patch or commit
-        uses: ./.github/workflows/patch-or-commit
+      - name: Detect changes
+        id: patch
+        # `commit-or-pr` handles the actual write path. This only decides
+        # whether the generator produced any file changes worth publishing.
+        run: |
+          git add -A
+          if git diff --cached --quiet --exit-code; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit or create PR
+        if: steps.patch.outputs.has_changes == 'true'
+        uses: ./.github/workflows/commit-or-pr
         with:
+          # This write-back step intentionally assumes PRs come from branches
+          # on this repository instead of forks.
+          # Pull requests update their own branch; pushes create or refresh the
+          # dedicated bot PR that carries generated OG image updates.
+          event: ${{ github.event_name }}
           message: Update OG images
+          head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-og-images
-          patch-file: og-images.patch
-          patch-name: og-images-diff
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
