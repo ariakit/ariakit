@@ -213,13 +213,13 @@ jobs:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
 
       - name: Remove visual screenshot directories
-        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
+        if: steps.gate.outputs.is_latest == 'true' && env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         # Once Vizzly is authoritative, remove any file-based baselines that
         # would otherwise drift out of sync with the external service.
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Commit or create PR
-        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
+        if: steps.gate.outputs.is_latest == 'true' && env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
