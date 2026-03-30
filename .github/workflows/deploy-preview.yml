@@ -138,15 +138,16 @@ jobs:
           if [ -n "$alias_slug" ] && [ -n "$version_url" ]; then
             alias_url=$(printf '%s' "$version_url" | sed -E "s#^(https?://)[^-]+#\\1${alias_slug}#")
           fi
-          branch_url="${alias_url:-$deploy_url}"
           echo "commit_url=$version_url" >> "$GITHUB_OUTPUT"
-          echo "branch_url=$branch_url" >> "$GITHUB_OUTPUT"
+          echo "alias_url=$alias_url" >> "$GITHUB_OUTPUT"
+          echo "deploy_url=$deploy_url" >> "$GITHUB_OUTPUT"
 
       - name: Set commit status (result)
         if: always()
         # "Preview (commit)" points at the immutable version URL.
-        # "Preview (branch)" prefers the stable alias URL and falls back to
-        # the main-branch deployment URL when no alias exists.
+        # "Preview (branch)" keeps the old success signal: PRs only go green
+        # when both version uploads succeeded, and main only goes green when
+        # both deploy steps succeeded.
         uses: actions/github-script@v8
         env:
           SERVER_URL: ${{ github.server_url }}
@@ -154,20 +155,34 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           VERSIONS_SUCCESS: ${{ steps.versions.outcome == 'success' && steps.versions-nextjs.outcome == 'success' }}
+          DEPLOY_SUCCESS: ${{ steps.deploy.outcome == 'success' && steps.deploy-nextjs.outcome == 'success' }}
           COMMIT_URL: ${{ steps.preview-url.outputs.commit_url }}
-          BRANCH_URL: ${{ steps.preview-url.outputs.branch_url }}
+          ALIAS_URL: ${{ steps.preview-url.outputs.alias_url }}
+          DEPLOY_URL: ${{ steps.preview-url.outputs.deploy_url }}
         with:
           script: |
-            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, VERSIONS_SUCCESS, COMMIT_URL, BRANCH_URL } = process.env;
+            const {
+              SERVER_URL,
+              REPO,
+              RUN_ID,
+              HEAD_SHA,
+              VERSIONS_SUCCESS,
+              DEPLOY_SUCCESS,
+              COMMIT_URL,
+              ALIAS_URL,
+              DEPLOY_URL,
+            } = process.env;
             const versionsSuccess = VERSIONS_SUCCESS === 'true';
+            const deploySuccess = DEPLOY_SUCCESS === 'true';
             const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
             const commitTarget = versionsSuccess && COMMIT_URL
               ? COMMIT_URL
               : '';
-            const branchTarget = BRANCH_URL || '';
-            const branchState = branchTarget
-              ? 'success'
-              : 'failure';
+            const branchTarget = versionsSuccess && ALIAS_URL
+              ? ALIAS_URL
+              : deploySuccess && DEPLOY_URL
+                ? DEPLOY_URL
+                : '';
             const commitState = commitTarget
               ? 'success'
               : 'failure';
@@ -184,7 +199,7 @@ jobs:
             });
             await github.rest.repos.createCommitStatus({
               ...args,
-              state: branchState,
+              state: branchTarget ? 'success' : 'failure',
               target_url: branchTarget || runUrl,
               context: 'Preview (branch)',
             });

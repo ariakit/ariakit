@@ -37,17 +37,13 @@ This guide covers more advanced topics. Pick the topics based on your needs.
 
 ## Cloning the repository
 
-To start contributing to the project, you have to fork this repository and clone it to your local machine:
-
-```bash
-git clone https://github.com/YOUR_USERNAME/ariakit.git
-```
-
-If you are already part of the organization on GitHub, clone the repository directly:
+Pull requests are expected to come from branches on `ariakit/ariakit`, so clone the repository directly:
 
 ```bash
 git clone https://github.com/ariakit/ariakit.git
 ```
+
+If you don't have write access yet, reach out to a maintainer before preparing a pull request. The GitHub workflows currently assume same-repository branches.
 
 Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit) and skip to [Creating a component](#creating-a-component).
 
@@ -210,9 +206,7 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 ```css
 .my-component {
-  @apply bg-red-600
-    text-white
-    dark:bg-red-800;
+  @apply bg-red-600 text-white dark:bg-red-800;
 }
 ```
 
@@ -434,7 +428,7 @@ When you're ready to submit a pull request, you can follow these naming conventi
 - Pull request titles use the [Imperative Mood](https://en.wikipedia.org/wiki/Imperative_mood) (e.g., `Add something`, `Fix something`).
 - [Changesets](#versioning) use past tense verbs (e.g., `Added something`, `Fixed something`).
 
-When you submit a pull request, GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause.
+Open the pull request from a branch on `ariakit/ariakit`. GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
