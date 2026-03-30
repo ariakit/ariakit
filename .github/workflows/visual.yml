@@ -1,0 +1,225 @@
+name: visual
+
+on:
+  workflow_call:
+    inputs:
+      test-result:
+        description: Result of the caller's visual test matrix
+        required: true
+        type: string
+
+env:
+  # Vizzly is an alternative visual baseline backend. When disabled, this
+  # workflow falls back to file-based screenshots committed in the repo.
+  USE_VIZZLY: ${{ vars.USE_VIZZLY || 'false' }}
+  VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
+  VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+  VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
+  VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
+  VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
+
+jobs:
+  finalize:
+    name: Finalize visual tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Set up environment
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
+        uses: ./.github/workflows/setup
+
+      - name: Finalize visual tests
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
+        run: pnpm exec vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
+
+      - name: Read tip SHA on branch
+        id: tip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REPO: ${{ github.repository }}
+          HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
+        # Only the latest commit on a branch should update screenshots.
+        # Older runs still finish, but they must not overwrite newer baselines.
+        run: |
+          set -euo pipefail
+          tip_sha=$(gh api repos/$HEAD_REPO/commits/$HEAD_BRANCH --jq .sha)
+          echo "tip_sha=$tip_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Compare with current SHA
+        id: gate
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TIP_SHA: ${{ steps.tip.outputs.tip_sha }}
+        run: |
+          if [ "$HEAD_SHA" = "$TIP_SHA" ]; then
+            echo "is_latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_latest=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for complete screenshot artifacts
+        id: check-artifacts
+        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && inputs.test-result == 'failure'
+        # Only update committed screenshots when every browser shard that
+        # uploads screenshots has produced its artifact for this run.
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const perPage = 100;
+            // 20 pages is enough for 2,000 jobs/artifacts, which is far beyond
+            // the size of this workflow run while still bounding API retries.
+            const maxPages = 20;
+            const listWorkflowRunJobs = async () => {
+              const jobs = [];
+              for (let page = 1; page <= maxPages; page += 1) {
+                const response = await github.rest.actions.listJobsForWorkflowRun({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: ${{ github.run_id }},
+                  per_page: perPage,
+                  page,
+                });
+                const pageJobs = response.data.jobs;
+                jobs.push(...pageJobs);
+                if (pageJobs.length < perPage) {
+                  return jobs;
+                }
+              }
+              throw new Error(
+                `Exceeded workflow job pagination limit of ${maxPages} pages (${maxPages * perPage} jobs)`,
+              );
+            };
+            const listWorkflowRunArtifacts = async () => {
+              const artifacts = [];
+              for (let page = 1; page <= maxPages; page += 1) {
+                const response = await github.rest.actions.listWorkflowRunArtifacts({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: ${{ github.run_id }},
+                  per_page: perPage,
+                  page,
+                });
+                const pageArtifacts = response.data.artifacts;
+                artifacts.push(...pageArtifacts);
+                if (pageArtifacts.length < perPage) {
+                  return artifacts;
+                }
+              }
+              throw new Error(
+                `Exceeded workflow artifact pagination limit of ${maxPages} pages (${maxPages * perPage} artifacts)`,
+              );
+            };
+            const jobs = await listWorkflowRunJobs();
+            const artifacts = await listWorkflowRunArtifacts();
+            const screenshotJobs = jobs
+              .filter((job) => job.steps?.some((step) => step.name === "Upload screenshots"))
+              .map((job) => {
+                const project = job.name.startsWith("Test ")
+                  ? job.name.slice(5).toLowerCase()
+                  : undefined;
+                return {
+                  name: job.name,
+                  project,
+                };
+              });
+            const invalidScreenshotJobs = screenshotJobs.filter((job) => !job.project);
+            const expectedScreenshotArtifacts = screenshotJobs
+              .filter((job) => job.project)
+              .map((job) => job.project)
+              .map((project) => `app-visual-${project}`);
+            const screenshotArtifacts = artifacts
+              .map((artifact) => artifact.name)
+              .filter((artifact) => artifact.startsWith("app-visual-"));
+            const missingScreenshotArtifacts = expectedScreenshotArtifacts.filter(
+              (artifact) => !screenshotArtifacts.includes(artifact),
+            );
+            const hasCompleteScreenshots =
+              invalidScreenshotJobs.length === 0 &&
+              expectedScreenshotArtifacts.length > 0 &&
+              missingScreenshotArtifacts.length === 0;
+            if (invalidScreenshotJobs.length > 0) {
+              console.log(
+                `Unexpected screenshot job names: ${invalidScreenshotJobs.map((job) => job.name).join(", ")}`,
+              );
+            }
+            console.log(
+              `Expected screenshot artifacts: ${expectedScreenshotArtifacts.join(", ") || "(none)"}`,
+            );
+            console.log(
+              `Found screenshot artifacts: ${screenshotArtifacts.join(", ") || "(none)"}`,
+            );
+            if (missingScreenshotArtifacts.length > 0) {
+              console.log(
+                `Missing screenshot artifacts: ${missingScreenshotArtifacts.join(", ")}`,
+              );
+            }
+            core.setOutput("ready", String(hasCompleteScreenshots));
+
+      - name: Checkout branch
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          (
+            vars.USE_VIZZLY == 'true' ||
+            steps.check-artifacts.outputs.ready == 'true'
+          )
+        uses: actions/checkout@v6
+        with:
+          # Keep the workflow files from the trusted checkout above and apply
+          # generated changes in a separate worktree we can commit from.
+          path: pr
+          ref: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Download screenshots
+        if: steps.check-artifacts.outputs.ready == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          pattern: app-visual-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/artifacts
+
+      - name: Prepare screenshots
+        if: steps.check-artifacts.outputs.ready == 'true'
+        # Replace the full screenshot tree so deletions and renames are handled
+        # the same way as a clean checkout after `-u`.
+        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
+
+      - name: Extract screenshots
+        if: steps.check-artifacts.outputs.ready == 'true'
+        run: |
+          find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
+            -exec tar -xzf {} -C pr \;
+
+      - name: Commit or create PR
+        if: steps.check-artifacts.outputs.ready == 'true'
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          working-directory: pr
+          event: ${{ github.event_name }}
+          message: Update screenshots
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: visual/update-screenshots
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+
+      - name: Remove visual screenshot directories
+        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
+        # Once Vizzly is authoritative, remove any file-based baselines that
+        # would otherwise drift out of sync with the external service.
+        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
+
+      - name: Commit or create PR
+        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          working-directory: pr
+          event: ${{ github.event_name }}
+          message: Remove file-based visual screenshots
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: visual/remove-screenshots
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
