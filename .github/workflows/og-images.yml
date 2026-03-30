@@ -56,7 +56,7 @@ jobs:
       - name: Generate OG images
         run: pnpm -F site run og-image-generate
 
-      - name: Generate patch
+      - name: Detect changes
         id: patch
         # `commit-or-pr` handles the actual write path. This only decides
         # whether the generator produced any file changes worth publishing.

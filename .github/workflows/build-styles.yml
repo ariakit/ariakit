@@ -27,7 +27,7 @@ jobs:
       - name: Build styles
         run: pnpm -F site run build-styles
 
-      - name: Generate patch
+      - name: Detect changes
         id: patch
         # `commit-or-pr` already stages and writes the diff. This step only
         # detects whether the generator changed anything so no-op runs stay green.

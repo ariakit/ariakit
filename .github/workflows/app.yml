@@ -200,6 +200,7 @@ jobs:
       pull-requests: write
     uses: ./.github/workflows/visual.yml
     with:
+      event: ${{ github.event_name }}
       test-result: ${{ needs.test.result }}
     secrets: inherit
 

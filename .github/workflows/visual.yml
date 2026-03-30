@@ -3,6 +3,10 @@ name: visual
 on:
   workflow_call:
     inputs:
+      event:
+        description: Original event name from the caller workflow
+        required: true
+        type: string
       test-result:
         description: Result of the caller's visual test matrix
         required: true
@@ -47,7 +51,8 @@ jobs:
         # Older runs still finish, but they must not overwrite newer baselines.
         run: |
           set -euo pipefail
-          tip_sha=$(gh api repos/$HEAD_REPO/commits/$HEAD_BRANCH --jq .sha)
+          tip_ref=${HEAD_BRANCH//\//%2F}
+          tip_sha=$(gh api "repos/$HEAD_REPO/commits/$tip_ref" --jq .sha)
           echo "tip_sha=$tip_sha" >> "$GITHUB_OUTPUT"
 
       - name: Compare with current SHA
@@ -201,7 +206,7 @@ jobs:
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
-          event: ${{ github.event_name }}
+          event: ${{ inputs.event }}
           message: Update screenshots
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: visual/update-screenshots
@@ -218,7 +223,7 @@ jobs:
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
-          event: ${{ github.event_name }}
+          event: ${{ inputs.event }}
           message: Remove file-based visual screenshots
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: visual/remove-screenshots

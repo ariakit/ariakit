@@ -53,6 +53,9 @@ jobs:
         # the branch status can point at a stable branch URL.
         run: |
           SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
+          if [ -z "$SAFE" ]; then
+            SAFE="branch-$(printf "%s" "$HEAD_BRANCH" | shasum | cut -c1-12)"
+          fi
           echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
 
       - name: Set up environment
