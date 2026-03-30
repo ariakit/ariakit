@@ -13,8 +13,9 @@ jobs:
   generate:
     name: Generate OG images
     runs-on: macos-latest
-    outputs:
-      has_changes: ${{ steps.patch.outputs.has_changes }}
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -61,30 +62,14 @@ jobs:
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git diff --cached --binary > og-images.patch
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
-      - name: Upload patch artifact
+      - name: Commit or create PR
         if: steps.patch.outputs.has_changes == 'true'
-        uses: actions/upload-artifact@v7
+        uses: ./.github/workflows/commit-or-pr
         with:
-          name: og-images-diff
-          path: og-images.patch
-
-  update:
-    name: Update OG images
-    needs: generate
-    if: needs.generate.outputs.has_changes == 'true'
-    permissions:
-      actions: read
-      contents: write
-      pull-requests: write
-    uses: ./.github/workflows/apply-generated-patch.yml
-    with:
-      artifact-name: og-images-diff
-      patch-file: og-images.patch
-      message: Update OG images
-      event: ${{ github.event_name }}
-      head-branch: ${{ github.head_ref || github.ref_name }}
-      new-branch: chore/update-og-images
-    secrets: inherit
+          event: ${{ github.event_name }}
+          message: Update OG images
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: chore/update-og-images
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}

@@ -184,10 +184,16 @@ jobs:
     needs: test
     if: always() && needs.test.result != 'cancelled'
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout repository
-        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
 
       - name: Set up environment
         if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
@@ -197,28 +203,32 @@ jobs:
         if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         run: pnpm exec vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
 
-  gate:
-    name: Ignore stale commits
-    permissions:
-      contents: read
-    uses: ./.github/workflows/ignore-stale-commits.yml
-    with:
-      head_repository: ${{ github.repository }}
-      head_branch: ${{ github.head_ref || github.ref_name }}
-      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Read tip SHA on branch
+        id: tip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REPO: ${{ github.repository }}
+          HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          tip_sha=$(gh api repos/$HEAD_REPO/commits/$HEAD_BRANCH --jq .sha)
+          echo "tip_sha=$tip_sha" >> "$GITHUB_OUTPUT"
 
-  update-screenshots:
-    name: Update screenshots
-    needs: [test, gate]
-    if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && needs.test.result == 'failure'
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: write
-      pull-requests: write
-    steps:
+      - name: Compare with current SHA
+        id: gate
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TIP_SHA: ${{ steps.tip.outputs.tip_sha }}
+        run: |
+          if [ "$HEAD_SHA" = "$TIP_SHA" ]; then
+            echo "is_latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_latest=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Check for complete screenshot artifacts
         id: check-artifacts
+        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && needs.test.result == 'failure'
         uses: actions/github-script@v8
         with:
           script: |
@@ -312,15 +322,13 @@ jobs:
             }
             core.setOutput("ready", String(hasCompleteScreenshots));
 
-      - name: Checkout trusted repository
-        if: steps.check-artifacts.outputs.ready == 'true'
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          persist-credentials: false
-
       - name: Checkout branch
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          (
+            vars.USE_VIZZLY == 'true' ||
+            steps.check-artifacts.outputs.ready == 'true'
+          )
         uses: actions/checkout@v6
         with:
           path: pr
@@ -357,33 +365,12 @@ jobs:
           new-branch: visual/update-screenshots
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
 
-  wipe-screenshots:
-    name: Wipe screenshots
-    needs: [test, gate]
-    if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Checkout trusted repository
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          persist-credentials: false
-
-      - name: Checkout branch
-        uses: actions/checkout@v6
-        with:
-          path: pr
-          ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          persist-credentials: false
-
       - name: Remove visual screenshot directories
+        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Commit or create PR
+        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
