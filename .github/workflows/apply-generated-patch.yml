@@ -1,10 +1,32 @@
 name: apply-generated-patch
 
 on:
-  workflow_run:
-    workflows: ["og-images", "build-styles"]
-    types:
-      - completed
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: Name of the patch artifact to download
+        required: true
+        type: string
+      patch-file:
+        description: Name of the patch file inside the artifact
+        required: true
+        type: string
+      message:
+        description: Commit message and PR title
+        required: true
+        type: string
+      event:
+        description: Event type (push or pull_request)
+        required: true
+        type: string
+      head-branch:
+        description: Branch name when committing to an existing PR
+        required: true
+        type: string
+      new-branch:
+        description: Branch name when creating a new PR
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -13,61 +35,30 @@ permissions:
 
 jobs:
   update:
-    name: Update PR
+    name: Update generated files
     runs-on: ubuntu-latest
-    if: >
-      github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_repository.full_name != github.repository
     steps:
-      - name: Create artifact temp directory
-        run: mkdir -p "${{ runner.temp }}/artifacts"
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.head-branch }}
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
 
-      - name: Download artifact
+      - name: Download patch artifact
         uses: actions/download-artifact@v8
         with:
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: ${{ inputs.artifact-name }}
           path: ${{ runner.temp }}/artifacts
 
-      - name: Determine patch file
-        id: patch
-        run: |
-          ARTIFACTS_DIR="${{ runner.temp }}/artifacts"
-          if [ -f "$ARTIFACTS_DIR/og-images-diff/og-images.patch" ]; then
-            echo "file=$ARTIFACTS_DIR/og-images-diff/og-images.patch" >> $GITHUB_OUTPUT
-            echo "message=Update OG images" >> $GITHUB_OUTPUT
-          elif [ -f "$ARTIFACTS_DIR/build-styles-diff/build-styles.patch" ]; then
-            echo "file=$ARTIFACTS_DIR/build-styles-diff/build-styles.patch" >> $GITHUB_OUTPUT
-            echo "message=Update styles" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Checkout trusted repository
-        if: steps.patch.outputs.file
-        uses: actions/checkout@v6
-
-      - name: Checkout PR
-        if: steps.patch.outputs.file
-        uses: actions/checkout@v6
-        with:
-          path: pr
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_branch }}
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
-
       - name: Apply patch
-        if: steps.patch.outputs.file
-        run: |
-          cd pr
-          git apply "${{ steps.patch.outputs.file }}"
+        run: git apply "${{ runner.temp }}/artifacts/${{ inputs.patch-file }}"
 
-      - name: Commit changes
-        if: steps.patch.outputs.file
+      - name: Commit or create PR
         uses: ./.github/workflows/commit-or-pr
         with:
-          working-directory: pr
-          event: pull_request
-          message: ${{ steps.patch.outputs.message }}
-          head-branch: ${{ github.event.workflow_run.head_branch }}
-          new-branch: ignore
+          event: ${{ inputs.event }}
+          message: ${{ inputs.message }}
+          head-branch: ${{ inputs.head-branch }}
+          new-branch: ${{ inputs.new-branch }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}

@@ -12,10 +12,8 @@ jobs:
   generate:
     name: Build styles
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: write
-      pull-requests: write
+    outputs:
+      has_changes: ${{ steps.patch.outputs.has_changes }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -28,11 +26,38 @@ jobs:
       - name: Build styles
         run: pnpm -F site run build-styles
 
-      - name: Generate patch or commit
-        uses: ./.github/workflows/patch-or-commit
+      - name: Generate patch
+        id: patch
+        run: |
+          git add -A
+          if git diff --cached --quiet --exit-code; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git diff --cached --binary > build-styles.patch
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Upload patch artifact
+        if: steps.patch.outputs.has_changes == 'true'
+        uses: actions/upload-artifact@v7
         with:
-          message: Update styles
-          new-branch: chore/update-styles
-          patch-file: build-styles.patch
-          patch-name: build-styles-diff
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          name: build-styles-diff
+          path: build-styles.patch
+
+  update:
+    name: Update styles
+    needs: generate
+    if: needs.generate.outputs.has_changes == 'true'
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    uses: ./.github/workflows/apply-generated-patch.yml
+    with:
+      artifact-name: build-styles-diff
+      patch-file: build-styles.patch
+      message: Update styles
+      event: ${{ github.event_name }}
+      head-branch: ${{ github.head_ref || github.ref_name }}
+      new-branch: chore/update-styles
+    secrets: inherit

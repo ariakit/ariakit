@@ -196,3 +196,363 @@ jobs:
       - name: Finalize visual tests
         if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         run: pnpm exec vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
+
+  gate:
+    name: Ignore stale commits
+    permissions:
+      contents: read
+    uses: ./.github/workflows/ignore-stale-commits.yml
+    with:
+      head_repository: ${{ github.repository }}
+      head_branch: ${{ github.head_ref || github.ref_name }}
+      head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+
+  update-screenshots:
+    name: Update screenshots
+    needs: [test, gate]
+    if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && needs.test.result == 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Check for complete screenshot artifacts
+        id: check-artifacts
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const perPage = 100;
+            // 20 pages is enough for 2,000 jobs/artifacts, which is far beyond
+            // the size of this workflow run while still bounding API retries.
+            const maxPages = 20;
+            const listWorkflowRunJobs = async () => {
+              const jobs = [];
+              for (let page = 1; page <= maxPages; page += 1) {
+                const response = await github.rest.actions.listJobsForWorkflowRun({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: ${{ github.run_id }},
+                  per_page: perPage,
+                  page,
+                });
+                const pageJobs = response.data.jobs;
+                jobs.push(...pageJobs);
+                if (pageJobs.length < perPage) {
+                  return jobs;
+                }
+              }
+              throw new Error(
+                `Exceeded workflow job pagination limit of ${maxPages} pages (${maxPages * perPage} jobs)`,
+              );
+            };
+            const listWorkflowRunArtifacts = async () => {
+              const artifacts = [];
+              for (let page = 1; page <= maxPages; page += 1) {
+                const response = await github.rest.actions.listWorkflowRunArtifacts({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  run_id: ${{ github.run_id }},
+                  per_page: perPage,
+                  page,
+                });
+                const pageArtifacts = response.data.artifacts;
+                artifacts.push(...pageArtifacts);
+                if (pageArtifacts.length < perPage) {
+                  return artifacts;
+                }
+              }
+              throw new Error(
+                `Exceeded workflow artifact pagination limit of ${maxPages} pages (${maxPages * perPage} artifacts)`,
+              );
+            };
+            const jobs = await listWorkflowRunJobs();
+            const artifacts = await listWorkflowRunArtifacts();
+            const screenshotJobs = jobs
+              .filter((job) => job.steps?.some((step) => step.name === "Upload screenshots"))
+              .map((job) => {
+                const project = job.name.startsWith("Test ")
+                  ? job.name.slice(5).toLowerCase()
+                  : undefined;
+                return {
+                  name: job.name,
+                  project,
+                };
+              });
+            const invalidScreenshotJobs = screenshotJobs.filter((job) => !job.project);
+            const expectedScreenshotArtifacts = screenshotJobs
+              .filter((job) => job.project)
+              .map((job) => job.project)
+              .map((project) => `app-visual-${project}`);
+            const screenshotArtifacts = artifacts
+              .map((artifact) => artifact.name)
+              .filter((artifact) => artifact.startsWith("app-visual-"));
+            const missingScreenshotArtifacts = expectedScreenshotArtifacts.filter(
+              (artifact) => !screenshotArtifacts.includes(artifact),
+            );
+            const hasCompleteScreenshots =
+              invalidScreenshotJobs.length === 0 &&
+              expectedScreenshotArtifacts.length > 0 &&
+              missingScreenshotArtifacts.length === 0;
+            if (invalidScreenshotJobs.length > 0) {
+              console.log(
+                `Unexpected screenshot job names: ${invalidScreenshotJobs.map((job) => job.name).join(", ")}`,
+              );
+            }
+            console.log(
+              `Expected screenshot artifacts: ${expectedScreenshotArtifacts.join(", ") || "(none)"}`,
+            );
+            console.log(
+              `Found screenshot artifacts: ${screenshotArtifacts.join(", ") || "(none)"}`,
+            );
+            if (missingScreenshotArtifacts.length > 0) {
+              console.log(
+                `Missing screenshot artifacts: ${missingScreenshotArtifacts.join(", ")}`,
+              );
+            }
+            core.setOutput("ready", String(hasCompleteScreenshots));
+
+      - name: Checkout trusted repository
+        if: steps.check-artifacts.outputs.ready == 'true'
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Checkout branch
+        if: steps.check-artifacts.outputs.ready == 'true'
+        uses: actions/checkout@v6
+        with:
+          path: pr
+          ref: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Download screenshots
+        if: steps.check-artifacts.outputs.ready == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          pattern: app-visual-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/artifacts
+
+      - name: Prepare screenshots
+        if: steps.check-artifacts.outputs.ready == 'true'
+        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
+
+      - name: Extract screenshots
+        if: steps.check-artifacts.outputs.ready == 'true'
+        run: |
+          find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
+            -exec tar -xzf {} -C pr \;
+
+      - name: Commit or create PR
+        if: steps.check-artifacts.outputs.ready == 'true'
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          working-directory: pr
+          event: ${{ github.event_name }}
+          message: Update screenshots
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: visual/update-screenshots
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+
+  wipe-screenshots:
+    name: Wipe screenshots
+    needs: [test, gate]
+    if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout trusted repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Checkout branch
+        uses: actions/checkout@v6
+        with:
+          path: pr
+          ref: ${{ github.head_ref || github.ref_name }}
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Remove visual screenshot directories
+        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
+
+      - name: Commit or create PR
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          working-directory: pr
+          event: ${{ github.event_name }}
+          message: Remove file-based visual screenshots
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: visual/remove-screenshots
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+
+  deploy-preview:
+    name: Deploy preview
+    needs: [build, build-nextjs]
+    if: always()
+    runs-on: ubuntu-latest
+    environment: Preview
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+    permissions:
+      actions: read
+      contents: read
+      deployments: write
+      statuses: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set commit status (pending)
+        uses: actions/github-script@v8
+        env:
+          SERVER_URL: ${{ github.server_url }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        with:
+          script: |
+            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA } = process.env;
+            const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
+            const args = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: HEAD_SHA,
+              state: 'pending',
+              target_url: runUrl,
+            };
+            await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (commit)' });
+            await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (branch)' });
+
+      - name: Generate preview alias
+        id: alias
+        if: (github.head_ref || github.ref_name) != 'main'
+        env:
+          HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
+          echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Download Next.js app artifact
+        id: download-nextjs-artifact
+        uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
+
+      - name: Download app artifact
+        id: download-app-artifact
+        uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: app-dist
+          path: site/dist
+
+      - name: Upload Next.js app version
+        id: versions-nextjs
+        if: steps.download-nextjs-artifact.outcome == 'success'
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: nextjs
+          command: >-
+            versions upload
+            ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
+
+      - name: Upload app version
+        id: versions
+        if: steps.download-app-artifact.outcome == 'success'
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: >-
+            versions upload --env preview
+            ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
+
+      - name: Deploy Next.js app version
+        if: steps.download-nextjs-artifact.outcome == 'success' && (github.head_ref || github.ref_name) == 'main'
+        id: deploy-nextjs
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: nextjs
+          command: deploy
+
+      - name: Deploy app version
+        if: steps.download-app-artifact.outcome == 'success' && (github.head_ref || github.ref_name) == 'main'
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        continue-on-error: true
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: deploy --env preview
+
+      - name: Set commit status (result)
+        if: always()
+        uses: actions/github-script@v8
+        env:
+          SERVER_URL: ${{ github.server_url }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          VERSIONS_SUCCESS: ${{ steps.versions.outcome == 'success' && steps.versions-nextjs.outcome == 'success' }}
+          DEPLOY_SUCCESS: ${{ steps.deploy.outcome == 'success' && steps.deploy-nextjs.outcome == 'success' }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
+          VERSION_URL: ${{ steps.versions.outputs.deployment-url }}
+          ALIAS_URL: ${{ steps.alias.outputs.slug }}
+        with:
+          script: |
+            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, VERSIONS_SUCCESS, DEPLOY_SUCCESS, DEPLOY_URL, VERSION_URL, ALIAS_URL } = process.env;
+            const versionsSuccess = VERSIONS_SUCCESS === 'true';
+            const deploySuccess = DEPLOY_SUCCESS === 'true';
+            const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
+            const deployUrl = DEPLOY_URL;
+            const versionUrl = VERSION_URL;
+            const aliasUrl = ALIAS_URL && versionUrl
+              ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${ALIAS_URL}`)
+              : '';
+            const commitTarget = versionsSuccess && versionUrl
+              ? versionUrl
+              : '';
+            const branchTarget = versionsSuccess && aliasUrl
+              ? aliasUrl
+              : deploySuccess && deployUrl ? deployUrl : '';
+            const args = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: HEAD_SHA,
+            };
+            await github.rest.repos.createCommitStatus({
+              ...args,
+              state: commitTarget ? 'success' : 'failure',
+              target_url: commitTarget || runUrl,
+              context: 'Preview (commit)',
+            });
+            await github.rest.repos.createCommitStatus({
+              ...args,
+              state: branchTarget ? 'success' : 'failure',
+              target_url: branchTarget || runUrl,
+              context: 'Preview (branch)',
+            });

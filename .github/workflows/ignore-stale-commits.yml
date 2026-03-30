@@ -14,7 +14,7 @@ on:
         required: true
         type: string
       head_sha:
-        description: The head SHA from the triggering workflow_run
+        description: The head SHA for the branch to check
         required: true
         type: string
     outputs:
