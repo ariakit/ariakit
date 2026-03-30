@@ -7,7 +7,9 @@ jobs:
   deploy:
     name: Deploy preview
     runs-on: ubuntu-latest
-    environment: Preview
+    environment:
+      name: Preview
+      url: ${{ steps.preview-url.outputs.environment_url }}
     concurrency:
       group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
     permissions:
@@ -122,6 +124,26 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: deploy --env preview
 
+      - name: Compute preview URLs
+        id: preview-url
+        env:
+          VERSION_URL: ${{ steps.versions.outputs.deployment-url }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
+          ALIAS_SLUG: ${{ steps.alias.outputs.slug }}
+        run: |
+          version_url="${VERSION_URL:-}"
+          deploy_url="${DEPLOY_URL:-}"
+          alias_slug="${ALIAS_SLUG:-}"
+          alias_url=""
+          if [ -n "$alias_slug" ] && [ -n "$version_url" ]; then
+            alias_url=$(printf '%s' "$version_url" | sed -E "s#^(https?://)[^-]+#\\1${alias_slug}#")
+          fi
+          branch_url="${alias_url:-$deploy_url}"
+          environment_url="${branch_url:-$version_url}"
+          echo "commit_url=$version_url" >> "$GITHUB_OUTPUT"
+          echo "branch_url=$branch_url" >> "$GITHUB_OUTPUT"
+          echo "environment_url=$environment_url" >> "$GITHUB_OUTPUT"
+
       - name: Set commit status (result)
         if: always()
         # "Preview (commit)" points at the immutable version URL.
@@ -134,27 +156,23 @@ jobs:
           RUN_ID: ${{ github.run_id }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           VERSIONS_SUCCESS: ${{ steps.versions.outcome == 'success' && steps.versions-nextjs.outcome == 'success' }}
-          DEPLOY_SUCCESS: ${{ steps.deploy.outcome == 'success' && steps.deploy-nextjs.outcome == 'success' }}
-          DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
-          VERSION_URL: ${{ steps.versions.outputs.deployment-url }}
-          ALIAS_URL: ${{ steps.alias.outputs.slug }}
+          COMMIT_URL: ${{ steps.preview-url.outputs.commit_url }}
+          BRANCH_URL: ${{ steps.preview-url.outputs.branch_url }}
         with:
           script: |
-            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, VERSIONS_SUCCESS, DEPLOY_SUCCESS, DEPLOY_URL, VERSION_URL, ALIAS_URL } = process.env;
+            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, VERSIONS_SUCCESS, COMMIT_URL, BRANCH_URL } = process.env;
             const versionsSuccess = VERSIONS_SUCCESS === 'true';
-            const deploySuccess = DEPLOY_SUCCESS === 'true';
             const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
-            const deployUrl = DEPLOY_URL;
-            const versionUrl = VERSION_URL;
-            const aliasUrl = ALIAS_URL && versionUrl
-              ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${ALIAS_URL}`)
+            const commitTarget = versionsSuccess && COMMIT_URL
+              ? COMMIT_URL
               : '';
-            const commitTarget = versionsSuccess && versionUrl
-              ? versionUrl
-              : '';
-            const branchTarget = versionsSuccess && aliasUrl
-              ? aliasUrl
-              : deploySuccess && deployUrl ? deployUrl : '';
+            const branchTarget = BRANCH_URL || '';
+            const branchState = branchTarget
+              ? 'success'
+              : 'failure';
+            const commitState = commitTarget
+              ? 'success'
+              : 'failure';
             const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -162,13 +180,13 @@ jobs:
             };
             await github.rest.repos.createCommitStatus({
               ...args,
-              state: commitTarget ? 'success' : 'failure',
+              state: commitState,
               target_url: commitTarget || runUrl,
               context: 'Preview (commit)',
             });
             await github.rest.repos.createCommitStatus({
               ...args,
-              state: branchTarget ? 'success' : 'failure',
+              state: branchState,
               target_url: branchTarget || runUrl,
               context: 'Preview (branch)',
             });
