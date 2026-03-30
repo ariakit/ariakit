@@ -43,6 +43,8 @@ jobs:
         if: steps.patch.outputs.has_changes == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
+          # This write-back step intentionally assumes PRs come from branches
+          # on this repository instead of forks.
           # On pull requests we push back to the branch; on pushes to `main`
           # this opens or updates the long-lived bot PR for generated styles.
           event: ${{ github.event_name }}

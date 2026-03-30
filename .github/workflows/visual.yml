@@ -170,7 +170,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           # Keep the workflow files from the trusted checkout above and apply
-          # generated changes in a separate worktree we can commit from.
+          # generated changes in a separate checkout directory we can commit from.
           path: pr
           ref: ${{ github.head_ref || github.ref_name }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}

@@ -72,6 +72,8 @@ jobs:
         if: steps.patch.outputs.has_changes == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
+          # This write-back step intentionally assumes PRs come from branches
+          # on this repository instead of forks.
           # Pull requests update their own branch; pushes create or refresh the
           # dedicated bot PR that carries generated OG image updates.
           event: ${{ github.event_name }}

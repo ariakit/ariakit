@@ -189,6 +189,8 @@ jobs:
           retention-days: 7
 
   test-finalize:
+    # This job intentionally assumes PRs come from branches on this repository.
+    # Fork-safe write-back logic was removed with the member-only PR model.
     name: Visual
     needs: test
     if: always() && needs.test.result != 'cancelled'
@@ -202,6 +204,8 @@ jobs:
     secrets: inherit
 
   deploy-preview:
+    # Preview deployments and commit statuses intentionally run only under the
+    # same-repo PR model adopted by this repository.
     name: Preview
     needs: [build, build-nextjs]
     if: always()
