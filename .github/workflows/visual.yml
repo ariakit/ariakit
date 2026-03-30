@@ -51,7 +51,7 @@ jobs:
         # Older runs still finish, but they must not overwrite newer baselines.
         run: |
           set -euo pipefail
-          tip_ref=${HEAD_BRANCH//\//%2F}
+          tip_ref=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$HEAD_BRANCH")
           tip_sha=$(gh api "repos/$HEAD_REPO/commits/$tip_ref" --jq .sha)
           echo "tip_sha=$tip_sha" >> "$GITHUB_OUTPUT"
 
