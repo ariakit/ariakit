@@ -20,7 +20,7 @@ env:
 
 jobs:
   finalize:
-    name: Finalize visual tests
+    name: Finalize
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

@@ -189,7 +189,7 @@ jobs:
           retention-days: 7
 
   test-finalize:
-    name: Finalize visual tests
+    name: Visual
     needs: test
     if: always() && needs.test.result != 'cancelled'
     permissions:
@@ -202,7 +202,7 @@ jobs:
     secrets: inherit
 
   deploy-preview:
-    name: Deploy preview
+    name: Preview
     needs: [build, build-nextjs]
     if: always()
     permissions:

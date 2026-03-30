@@ -5,11 +5,11 @@ on:
 
 jobs:
   deploy:
-    name: Deploy preview
+    name: Deploy
     runs-on: ubuntu-latest
     environment:
       name: Preview
-      url: ${{ steps.preview-url.outputs.environment_url }}
+      url: ${{ steps.preview-url.outputs.commit_url }}
     concurrency:
       group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
     permissions:
@@ -139,10 +139,8 @@ jobs:
             alias_url=$(printf '%s' "$version_url" | sed -E "s#^(https?://)[^-]+#\\1${alias_slug}#")
           fi
           branch_url="${alias_url:-$deploy_url}"
-          environment_url="${branch_url:-$version_url}"
           echo "commit_url=$version_url" >> "$GITHUB_OUTPUT"
           echo "branch_url=$branch_url" >> "$GITHUB_OUTPUT"
-          echo "environment_url=$environment_url" >> "$GITHUB_OUTPUT"
 
       - name: Set commit status (result)
         if: always()
