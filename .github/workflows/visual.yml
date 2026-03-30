@@ -33,6 +33,12 @@ jobs:
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
+      - name: Validate Vizzly configuration
+        if: env.USE_VIZZLY == 'true' && env.VIZZLY_TOKEN == ''
+        run: |
+          echo "::error title=Missing VIZZLY_TOKEN::USE_VIZZLY is true, but VIZZLY_TOKEN is not configured."
+          exit 1
+
       - name: Set up environment
         if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: ./.github/workflows/setup
