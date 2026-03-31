@@ -7,7 +7,7 @@ packages:
   - website
   - site
 
-minimumReleaseAge: 10080
+minimumReleaseAge: 4320
 
 publicHoistPattern:
   - "*react*"
