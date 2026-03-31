@@ -7,6 +7,8 @@ packages:
   - website
   - site
 
+minimumReleaseAge: 4320
+
 publicHoistPattern:
   - "*react*"
   - "*testing-library*"
