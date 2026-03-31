@@ -36,8 +36,8 @@
   },
   "devDependencies": {
     "@types/use-sync-external-store": "1.5.0",
-    "oxfmt": "0.42.0",
-    "oxlint": "1.57.0",
+    "oxfmt": "0.43.0",
+    "oxlint": "1.58.0",
     "oxlint-tsgolint": "0.18.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
