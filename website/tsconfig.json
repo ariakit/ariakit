@@ -1,6 +1,10 @@
 {
   "compilerOptions": {
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "baseUrl": ".",
     "jsx": "preserve",
     "incremental": true,

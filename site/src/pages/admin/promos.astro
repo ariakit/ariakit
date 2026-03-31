@@ -15,6 +15,7 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import { isAdmin } from "#app/lib/auth.ts";
 import { getAllPromos, getBestPromo } from "#app/lib/kv.ts";
 import { actions } from "astro:actions";
+import { env } from "cloudflare:workers";
 import { formatDistanceToNow } from "date-fns";
 import Layout from "./_layout.astro";
 import {
@@ -35,7 +36,7 @@ if (formRequest) {
   return formRequest;
 }
 
-const promos = await getAllPromos({ context: Astro, user: "any" });
+const promos = await getAllPromos({ env, user: "any" });
 const salePromos = promos.filter((promo) => promo.type === "sale");
 const customerPromos = promos.filter((promo) => promo.type === "customer");
 const bestPromo = await getBestPromo(salePromos);

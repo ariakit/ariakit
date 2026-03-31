@@ -39,6 +39,7 @@ const sourcePluginInstance = sourcePlugin(
 const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
   // @ts-expect-error Plugin type mismatch between vite and vitest
   react: [reactPlugin(), sourcePluginInstance],
+  // @ts-expect-error Plugin type mismatch between vite and vitest
   solid: [solidPlugin(), sourcePluginInstance],
 };
 

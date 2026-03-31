@@ -53,16 +53,39 @@ export default defineConfig({
 
   adapter: cloudflare({
     imageService: "compile",
-    platformProxy: { enabled: true },
+    // Workaround: The workerd prerender environment doesn't resolve
+    // node:path even with nodejs_compat enabled. Using "node" for
+    // prerendering avoids this. The cloudflare:workers import is lazy
+    // (only used in SSR pages) so it doesn't break Node-based prerendering.
+    prerenderEnvironment: "node",
   }),
 
   vite: {
     plugins: [
-      // @ts-expect-error Vite version mismatch (Astro 5 ships Vite 6)
       tailwindcss(),
-      // @ts-expect-error Vite version mismatch (Astro 5 ships Vite 6)
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
+    // Workaround: Astro v6's Vite dependency scan fails because esbuild
+    // can't process .astro files, causing ALL client-side pre-bundling to
+    // be skipped. This breaks CJS modules (use-sync-external-store,
+    // react-dom/client) that need pre-bundling to work as ESM in the
+    // browser. Disabling discovery avoids the scan failure; explicit
+    // includes ensure needed CJS deps are still pre-bundled.
+    environments: {
+      client: {
+        optimizeDeps: {
+          noDiscovery: true,
+          include: [
+            "react",
+            "react-dom",
+            "react-dom/client",
+            "react/jsx-runtime",
+            "react/jsx-dev-runtime",
+            "use-sync-external-store/shim",
+          ],
+        },
+      },
+    },
   },
 
   markdown: {
