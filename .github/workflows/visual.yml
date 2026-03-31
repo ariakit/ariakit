@@ -26,6 +26,9 @@ jobs:
   finalize:
     name: Finalize
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
