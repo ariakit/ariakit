@@ -45,6 +45,9 @@ const layer = cv({
       90: "ak-layer-contrast-90",
       100: "ak-layer-contrast-100",
     },
+    $bg: {
+      blue: "ak-layer-blue-500",
+    },
     $mix: {
       0: "ak-layer-mix-0",
       10: "ak-layer-mix-10",
@@ -173,6 +176,11 @@ const layer = cv({
       90: "ak-text-90",
       100: "ak-text-100",
     },
+    $textColor: {
+      red: "*:ak-text *:ak-text-red-500",
+      green: "*:ak-text *:ak-text-green-500",
+      blue: "*:ak-text *:ak-text-blue-500",
+    },
   },
   defaultVariants: {
     $frame: true,
@@ -241,6 +249,64 @@ function Layers(props: LayersProps) {
   );
 }
 
+function LayersContrast(props: LayersProps) {
+  const label =
+    props.label ?? ((props) => `ak-layer-contrast-${props.$contrast}`);
+  return (
+    <>
+      <Layer {...props} $contrast={0} label={label} />
+      <Layer {...props} $contrast={10} label={label} />
+      <Layer {...props} $contrast={20} label={label} />
+      <Layer {...props} $contrast={30} label={label} />
+      <Layer {...props} $contrast={40} label={label} />
+      <Layer {...props} $contrast={50} label={label} />
+      <Layer {...props} $contrast={60} label={label} />
+      <Layer {...props} $contrast={70} label={label} />
+      <Layer {...props} $contrast={80} label={label} />
+      <Layer {...props} $contrast={90} label={label} />
+      <Layer {...props} $contrast={100} label={label} />
+    </>
+  );
+}
+
+function LayersColor(props: LayersProps) {
+  const label = props.label ?? ((props) => `ak-layer-${props.$layer}`);
+  return (
+    <>
+      <Layer {...props} $bg="blue" $layer={0} label={label} />
+      <Layer {...props} $bg="blue" $layer={10} label={label} />
+      <Layer {...props} $bg="blue" $layer={20} label={label} />
+      <Layer {...props} $bg="blue" $layer={30} label={label} />
+      <Layer {...props} $bg="blue" $layer={40} label={label} />
+      <Layer {...props} $bg="blue" $layer={50} label={label} />
+      <Layer {...props} $bg="blue" $layer={60} label={label} />
+      <Layer {...props} $bg="blue" $layer={70} label={label} />
+      <Layer {...props} $bg="blue" $layer={80} label={label} />
+      <Layer {...props} $bg="blue" $layer={90} label={label} />
+      <Layer {...props} $bg="blue" $layer={100} label={label} />
+    </>
+  );
+}
+
+function LayersMix(props: LayersProps) {
+  const label = props.label ?? ((props) => `ak-layer-mix-${props.$mixColor}`);
+  return (
+    <>
+      <Layer {...props} $mixColor="red" $mix={0} label={label} />
+      <Layer {...props} $mixColor="red" $mix={10} label={label} />
+      <Layer {...props} $mixColor="red" $mix={20} label={label} />
+      <Layer {...props} $mixColor="red" $mix={30} label={label} />
+      <Layer {...props} $mixColor="red" $mix={40} label={label} />
+      <Layer {...props} $mixColor="red" $mix={50} label={label} />
+      <Layer {...props} $mixColor="red" $mix={60} label={label} />
+      <Layer {...props} $mixColor="red" $mix={70} label={label} />
+      <Layer {...props} $mixColor="red" $mix={80} label={label} />
+      <Layer {...props} $mixColor="red" $mix={90} label={label} />
+      <Layer {...props} $mixColor="red" $mix={100} label={label} />
+    </>
+  );
+}
+
 function getFrom<K extends keyof any, T>(
   key: K | undefined,
   value: T,
@@ -261,6 +327,7 @@ export default function Example() {
                 getVariants={(props) => ({
                   ...props,
                   $borderWidth: getFrom(root.$layer, props.$borderWidth, {
+                    10: 4,
                     20: 2,
                     30: 2,
                     40: 2,
@@ -274,6 +341,7 @@ export default function Example() {
                     90: "overflow",
                   }),
                   $borderColor: getFrom(root.$layer, props.$borderColor, {
+                    10: "red",
                     20: "blueRel",
                     50: "blue",
                     70: "blueRel",
@@ -285,6 +353,11 @@ export default function Example() {
                   label={(props) => props.$layer}
                   getVariants={(props) => ({
                     ...props,
+                    $textColor: getFrom(props.$layer, props.$textColor, {
+                      20: "blue",
+                      50: "red",
+                      90: "green",
+                    }),
                     $textLevel: getFrom(props.$layer, props.$textLevel, {
                       20: 0,
                       70: 0,
@@ -304,6 +377,114 @@ export default function Example() {
               </Layer>
             )}
           </Layers>
+        </Layer>
+      </Layer>
+      <Layer label="ak-layer-contrast-<number>" $flow="col">
+        <Layer $stretch="overflow">
+          <LayersContrast $flow="col">
+            {(root) => (
+              <Layer
+                $flow="row"
+                getVariants={(props) => ({
+                  ...props,
+                  $borderWidth: getFrom(root.$contrast, props.$borderWidth, {
+                    10: 4,
+                    20: 2,
+                    30: 2,
+                    40: 2,
+                    70: 2,
+                    80: 2,
+                  }),
+                  $stretch: getFrom(root.$contrast, props.$stretch, {
+                    20: "overflow",
+                    30: true,
+                    70: true,
+                    90: "overflow",
+                  }),
+                  $borderColor: getFrom(root.$contrast, props.$borderColor, {
+                    10: "red",
+                    20: "blueRel",
+                    50: "blue",
+                    70: "blueRel",
+                    80: "blueRel",
+                  }),
+                })}
+              >
+                <LayersContrast
+                  label={(props) => props.$contrast}
+                  getVariants={(props) => ({
+                    ...props,
+                    $textLevel: getFrom(props.$contrast, props.$textLevel, {
+                      20: 0,
+                      70: 0,
+                      100: 0,
+                    }),
+                    $stretch: getFrom(props.$contrast, props.$stretch, {
+                      0: "overflow",
+                      50: true,
+                      100: "overflow",
+                    }),
+                    $m: getFrom(props.$contrast, props.$m, {
+                      20: "-0.5",
+                      80: "-2",
+                    }),
+                  })}
+                />
+              </Layer>
+            )}
+          </LayersContrast>
+        </Layer>
+      </Layer>
+      <Layer label="ak-layer-blue" $flow="col">
+        <Layer $stretch="overflow">
+          <LayersColor $flow="col">
+            {(root) => (
+              <>
+                <Layer
+                  $flow="row"
+                  getVariants={(props) => ({
+                    ...props,
+                    $borderWidth: getFrom(root.$layer, props.$borderWidth, {
+                      10: 4,
+                      20: 2,
+                      30: 2,
+                      40: 2,
+                      70: 2,
+                      80: 2,
+                    }),
+                    $stretch: getFrom(root.$layer, props.$stretch, {
+                      20: "overflow",
+                      30: true,
+                      70: true,
+                      90: "overflow",
+                    }),
+                    $borderColor: getFrom(root.$layer, props.$borderColor, {
+                      10: "red",
+                      20: "blueRel",
+                      50: "blue",
+                      70: "blueRel",
+                      80: "blueRel",
+                    }),
+                  })}
+                >
+                  <Layers label={(props) => props.$layer} />
+                </Layer>
+                <Layer $flow="row">
+                  <LayersMix
+                    label={(props) => props.$mix}
+                    getVariants={(props) => ({
+                      ...props,
+                      $textColor: getFrom(props.$mix, props.$textColor, {
+                        20: "blue",
+                        70: "red",
+                        90: "green",
+                      }),
+                    })}
+                  />
+                </Layer>
+              </>
+            )}
+          </LayersColor>
         </Layer>
       </Layer>
     </div>
