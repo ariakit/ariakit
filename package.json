@@ -132,10 +132,10 @@
     "patchedDependencies": {
       "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
     },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp",
-      "workerd"
-    ]
+    "allowBuilds": {
+      "esbuild": true,
+      "sharp": true,
+      "workerd": true
+    }
   }
 }
