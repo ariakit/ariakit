@@ -124,18 +124,5 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@10.33.0",
-  "pnpm": {
-    "overrides": {
-      "@wordpress/components>@ariakit/react": "workspace:*"
-    },
-    "patchedDependencies": {
-      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
-    },
-    "allowBuilds": {
-      "esbuild": true,
-      "sharp": true,
-      "workerd": true
-    }
-  }
+  "packageManager": "pnpm@10.33.0"
 }
