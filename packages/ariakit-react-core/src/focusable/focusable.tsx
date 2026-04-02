@@ -1,17 +1,10 @@
-import { isButton } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
   isFocusEventOutside,
-  isPortalEvent,
   isSelfTarget,
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
-import {
-  focusIfNeeded,
-  getClosestFocusable,
-  hasFocus,
-  isFocusable,
-} from "@ariakit/core/utils/focus";
+import { hasFocus, isFocusable } from "@ariakit/core/utils/focus";
 import {
   disabledFromProps,
   removeUndefinedValues,
@@ -54,22 +47,6 @@ const alwaysFocusVisibleInputTypes = [
   "datetime-local",
 ];
 
-const safariFocusAncestorSymbol = Symbol("safariFocusAncestor");
-type SafariFocusAncestor = Element & { [safariFocusAncestorSymbol]?: boolean };
-
-export function isSafariFocusAncestor(element: SafariFocusAncestor | null) {
-  if (!element) return false;
-  return !!element[safariFocusAncestorSymbol];
-}
-
-function markSafariFocusAncestor(
-  element: SafariFocusAncestor | null,
-  value: boolean,
-) {
-  if (!element) return;
-  element[safariFocusAncestorSymbol] = value;
-}
-
 function isAlwaysFocusVisible(element: HTMLElement) {
   const { tagName, readOnly, type } = element as HTMLInputElement;
   if (tagName === "TEXTAREA" && !readOnly) return true;
@@ -86,19 +63,10 @@ function isAlwaysFocusVisible(element: HTMLElement) {
   return false;
 }
 
-function getLabels(element: HTMLElement | HTMLInputElement) {
-  if ("labels" in element) {
-    return element.labels;
-  }
-  return null;
-}
-
-function isNativeCheckboxOrRadio(element: { tagName: string; type?: string }) {
-  const tagName = element.tagName.toLowerCase();
-  if (tagName === "input" && element.type) {
-    return element.type === "radio" || element.type === "checkbox";
-  }
-  return false;
+function isSafariFocusableNativeControl(tagName?: string, type?: string) {
+  if (tagName === "button") return true;
+  if (tagName !== "input") return false;
+  return type === "radio" || type === "checkbox";
 }
 
 function isNativeTabbable(tagName?: string) {
@@ -128,6 +96,7 @@ function getTabIndex(
   trulyDisabled: boolean,
   nativeTabbable: boolean,
   supportsDisabled: boolean,
+  shouldAddSafariTabIndex: boolean,
   tabIndexProp?: number,
 ) {
   if (!focusable) {
@@ -143,13 +112,17 @@ function getTabIndex(
     return;
   }
   if (nativeTabbable) {
+    // Safari now focuses some native controls on click when tabIndex is
+    // explicitly set, so we normalize that behavior here.
+    if (tabIndexProp != null) return tabIndexProp;
+    if (shouldAddSafariTabIndex) return 0;
     // If the element is enabled and it's natively tabbable, we don't need to
     // specify a tabIndex attribute unless it's explicitly set by the user.
-    return tabIndexProp;
+    return;
   }
   // If the element is enabled and is not natively tabbable, we have to fallback
   // tabIndex={0}.
-  return tabIndexProp || 0;
+  return tabIndexProp ?? 0;
 }
 
 function useDisableEvent(
@@ -218,29 +191,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       hasInstalledGlobalEventListeners = true;
     }, [focusable]);
 
-    // Safari and Firefox on Apple devices don't focus on checkboxes or radio
-    // buttons when their labels are clicked. This effect will make sure the
-    // focusable element is focused on label click.
-    if (isSafariBrowser) {
-      useEffect(() => {
-        if (!focusable) return;
-        const element = ref.current;
-        if (!element) return;
-        if (!isNativeCheckboxOrRadio(element)) return;
-        const labels = getLabels(element);
-        if (!labels) return;
-        const onMouseUp = () => queueMicrotask(() => element.focus());
-        for (const label of labels) {
-          label.addEventListener("mouseup", onMouseUp);
-        }
-        return () => {
-          for (const label of labels) {
-            label.removeEventListener("mouseup", onMouseUp);
-          }
-        };
-      }, [focusable]);
-    }
-
     const disabled = focusable && disabledFromProps(props);
     const trulyDisabled = !!disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
@@ -291,44 +241,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       onMouseDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!focusable) return;
-      const element = event.currentTarget;
-      // Safari doesn't focus on buttons on mouse down like other
-      // browsers/platforms. Instead, it focuses on the closest focusable ancestor
-      // element, which is ultimately the body element. So we make sure to give
-      // focus to this Focusable element on mouse down so it works consistently
-      // across browsers.
-      if (!isSafariBrowser) return;
-      if (isPortalEvent(event)) return;
-      if (!isButton(element) && !isNativeCheckboxOrRadio(element)) return;
-      // In future versions of Safari, it may change this behavior and start
-      // focusing on buttons on mouse down. To account for that, we must check if
-      // the element has received focus before.
-      let receivedFocus = false;
-      const onFocus = () => {
-        receivedFocus = true;
-      };
-      const options = { capture: true, once: true };
-      element.addEventListener("focusin", onFocus, options);
-
-      const focusableContainer = getClosestFocusable(element.parentElement);
-      // Since Safari focuses on the nearest focusable ancestor and we're not
-      // preventing it (see below), popups may close on mousedown on their
-      // disclosure buttons. Therefore, we mark the focusable container here to
-      // check for that in use-hide-on-interact-outside.ts. See the dialog-menu
-      // "open/close menu by clicking on menu button" test.
-      markSafariFocusAncestor(focusableContainer, true);
-      // We can't focus right away after on mouse down, otherwise it would prevent
-      // drag events from happening. So we queue the focus to the next animation
-      // frame, but always before the next mouseup event. The mouseup event might
-      // happen before the next animation frame on touch devices or by tapping on
-      // a MacBook's trackpad, for example. We can't use pointerup otherwise it
-      // breaks on mobile Safari. See dialog-menu/test-mobile test.
-      queueBeforeEvent(element, "mouseup", () => {
-        element.removeEventListener("focusin", onFocus, true);
-        markSafariFocusAncestor(focusableContainer, false);
-        if (receivedFocus) return;
-        focusIfNeeded(element);
-      });
     });
 
     const handleFocusVisible = (
@@ -432,6 +344,13 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const tagName = useTagName(ref);
     const nativeTabbable = focusable && isNativeTabbable(tagName);
     const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
+    const inputType =
+      ref.current?.getAttribute("type") ||
+      ("type" in props ? String(props.type) : undefined);
+    const shouldAddSafariTabIndex =
+      isSafariBrowser &&
+      props.tabIndex == null &&
+      isSafariFocusableNativeControl(tagName, inputType);
 
     const styleProp = props.style;
     const style = useMemo(() => {
@@ -453,6 +372,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         trulyDisabled,
         nativeTabbable,
         supportsDisabled,
+        shouldAddSafariTabIndex,
         props.tabIndex,
       ),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,
