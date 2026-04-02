@@ -3,17 +3,9 @@ import {
   getActiveElement,
   getDocument,
   getWindow,
-  isButton,
 } from "@ariakit/core/utils/dom";
-import {
-  addGlobalEventListener,
-  queueBeforeEvent,
-} from "@ariakit/core/utils/events";
-import {
-  focusIfNeeded,
-  getFirstTabbableIn,
-  isFocusable,
-} from "@ariakit/core/utils/focus";
+import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { getFirstTabbableIn, isFocusable } from "@ariakit/core/utils/focus";
 import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
@@ -178,36 +170,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (dialog && contains(dialog, activeElement)) return;
     store.setDisclosureElement(activeElement);
   }, [store, open]);
-
-  // Safari does not focus on native buttons on mousedown. The DialogDisclosure
-  // component normalizes this behavior using the useFocusable hook, but the
-  // disclosure button may use a custom component, and not DialogDisclosure. In
-  // this case, we need to make sure the disclosure button gets focused here.
-  if (isSafariBrowser) {
-    useEffect(() => {
-      if (!mounted) return;
-      const { disclosureElement } = store.getState();
-      if (!disclosureElement) return;
-      if (!isButton(disclosureElement)) return;
-      const onMouseDown = () => {
-        let receivedFocus = false;
-        const onFocus = () => {
-          receivedFocus = true;
-        };
-        const options = { capture: true, once: true };
-        disclosureElement.addEventListener("focusin", onFocus, options);
-        queueBeforeEvent(disclosureElement, "mouseup", () => {
-          disclosureElement.removeEventListener("focusin", onFocus, true);
-          if (receivedFocus) return;
-          focusIfNeeded(disclosureElement);
-        });
-      };
-      disclosureElement.addEventListener("mousedown", onMouseDown);
-      return () => {
-        disclosureElement.removeEventListener("mousedown", onMouseDown);
-      };
-    }, [store, mounted]);
-  }
 
   // Sets --dialog-viewport-height CSS variable to the height of the visual
   // viewport. This allows the dialog to be positioned correctly when the
