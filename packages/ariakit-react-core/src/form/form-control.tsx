@@ -139,7 +139,7 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
     );
 
     props = {
-      "aria-labelledby": label?.id,
+      "aria-labelledby": props["aria-label"] ? undefined : label?.id,
       "aria-invalid": invalid,
       ...props,
       id,
