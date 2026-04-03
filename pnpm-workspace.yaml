@@ -17,6 +17,7 @@ saveExact: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
   - tailwindcss@3.4.18
+  - tailwind-merge@2.6.1
 
 overrides:
   "@wordpress/components>@ariakit/react": "workspace:*"
