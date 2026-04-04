@@ -129,7 +129,9 @@ export const useTagList = createHook<TagName, TagListOptions>(
           aria-live="polite"
           aria-relevant="all"
           aria-atomic
-          aria-labelledby={labelId}
+          aria-labelledby={
+            listboxProps["aria-label"] != null ? undefined : labelId
+          }
           aria-orientation={orientation}
           aria-owns={itemIds.join(" ")}
           {...listboxProps}

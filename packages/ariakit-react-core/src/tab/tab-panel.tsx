@@ -176,7 +176,8 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     props = {
       role: "tabpanel",
-      "aria-labelledby": tabId || undefined,
+      "aria-labelledby":
+        props["aria-label"] != null ? undefined : tabId || undefined,
       ...props,
       id,
       children: unmountOnHide && !mounted ? null : props.children,
