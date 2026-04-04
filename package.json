@@ -94,8 +94,8 @@
     "lint-staged": "16.4.0",
     "next": "14.2.35",
     "open-cli": "9.0.0",
-    "oxfmt": "0.42.0",
-    "oxlint": "1.57.0",
+    "oxfmt": "0.43.0",
+    "oxlint": "1.58.0",
     "oxlint-tsgolint": "0.18.1",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
@@ -115,7 +115,7 @@
     "vite-plugin-solid": "2.11.11",
     "vitest": "4.1.2",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.78.0"
+    "wrangler": "4.79.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
@@ -124,18 +124,5 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@10.33.0",
-  "pnpm": {
-    "overrides": {
-      "@wordpress/components>@ariakit/react": "workspace:*"
-    },
-    "patchedDependencies": {
-      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp",
-      "workerd"
-    ]
-  }
+  "packageManager": "pnpm@10.33.0"
 }

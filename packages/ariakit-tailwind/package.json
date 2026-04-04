@@ -33,8 +33,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "",
-    "lint": "oxlint . && oxfmt --check ."
+    "build": ""
   },
   "dependencies": {
     "color-string": "^2.0.0"
