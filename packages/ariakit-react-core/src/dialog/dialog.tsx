@@ -166,14 +166,18 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   if (isSafariBrowser) {
     useEffect(() => {
+      if (!domReady) return;
+      const dialog = ref.current;
+      if (!dialog) return;
+      const doc = getDocument(dialog);
       const onMousedown = (event: MouseEvent) => {
         lastMousedownRef.current = event.target as Element;
       };
-      document.addEventListener("mousedown", onMousedown, true);
+      doc.addEventListener("mousedown", onMousedown, true);
       return () => {
-        document.removeEventListener("mousedown", onMousedown, true);
+        doc.removeEventListener("mousedown", onMousedown, true);
       };
-    }, []);
+    }, [domReady]);
   }
 
   // Sets disclosure element using the current active element right after the
@@ -187,7 +191,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // Safari fallback: use the last mousedown target when activeElement is
       // BODY (happens with native buttons that lack an explicit tabIndex).
       const fallback = lastMousedownRef.current;
-      if (fallback && isFocusable(fallback)) {
+      lastMousedownRef.current = null;
+      if (fallback && fallback.isConnected && isFocusable(fallback)) {
         if (!dialog || !contains(dialog, fallback)) {
           store.setDisclosureElement(fallback as HTMLElement);
         }
