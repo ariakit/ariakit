@@ -8,27 +8,6 @@
       "enabled": false
     },
     {
-      "matchFileNames": ["website/package.json"],
-      "matchPackageNames": [
-        "chalk",
-        "cross-spawn",
-        "fs-extra",
-        "glob",
-        "next",
-        "postcss",
-        "postcss-import",
-        "prettier",
-        "react",
-        "react-dom",
-        "solid-js",
-        "typescript",
-        "/^@playwright//",
-        "/^@types//",
-        "/^@vitejs//"
-      ],
-      "enabled": true
-    },
-    {
       "matchPackageNames": ["tailwindcss"],
       "matchCurrentVersion": "/^3\\./",
       "enabled": false
