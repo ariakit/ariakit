@@ -96,8 +96,10 @@ export async function screenshot({
     Promise.all(
       document.body
         .getAnimations({ subtree: true })
-        .map(
-          (animation) => animation.playState === "paused" || animation.finished,
+        .map((animation) =>
+          animation.playState === "paused"
+            ? Promise.resolve()
+            : animation.finished,
         ),
     ),
   );

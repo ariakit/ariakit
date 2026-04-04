@@ -88,7 +88,6 @@
   },
   "devDependencies": {
     "@ariakit/test": "workspace:*",
-    "@playwright/test": "1.58.2",
     "@types/babel__core": "7.20.5",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",
