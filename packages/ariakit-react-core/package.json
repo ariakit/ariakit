@@ -25,7 +25,6 @@
   "module": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "lint": "oxlint . && oxfmt --check .",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
@@ -36,9 +35,6 @@
   },
   "devDependencies": {
     "@types/use-sync-external-store": "1.5.0",
-    "oxfmt": "0.43.0",
-    "oxlint": "1.58.0",
-    "oxlint-tsgolint": "0.18.1",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
