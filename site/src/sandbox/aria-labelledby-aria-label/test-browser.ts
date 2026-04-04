@@ -29,6 +29,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).not.toHaveAttribute("aria-labelledby");
   });
 
+  test("select list with aria-label has no aria-labelledby", async ({ q }) => {
+    await q.combobox("Custom select label").click();
+    const listbox = q.listbox("Custom list label");
+    await test.expect(listbox).toBeVisible();
+    await test
+      .expect(listbox)
+      .toHaveAttribute("aria-label", "Custom list label");
+    await test.expect(listbox).not.toHaveAttribute("aria-labelledby");
+  });
+
   test("form input with aria-label has no aria-labelledby", async ({ q }) => {
     const input = q.textbox("Custom input label");
     await test.expect(input).toBeVisible();
@@ -56,5 +66,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(anchor)
       .toHaveAttribute("aria-label", "Custom anchor label");
     await test.expect(anchor).not.toHaveAttribute("aria-labelledby");
+  });
+
+  test("tag list with aria-label has no aria-labelledby", async ({ page }) => {
+    const listbox = page.getByRole("listbox", {
+      name: "Custom tag list label",
+    });
+    await test.expect(listbox).toBeAttached();
+    await test
+      .expect(listbox)
+      .toHaveAttribute("aria-label", "Custom tag list label");
+    await test.expect(listbox).not.toHaveAttribute("aria-labelledby");
   });
 });
