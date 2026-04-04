@@ -1,5 +1,11 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import type { ComponentProps } from "react";
+import { forwardRef, useState } from "react";
+
+const CustomCheckbox = forwardRef<
+  HTMLInputElement,
+  ComponentProps<"input"> & { type?: string }
+>((props, ref) => <input ref={ref} type="checkbox" {...props} />);
 
 export default function Example() {
   const [checked, setChecked] = useState(false);
@@ -22,6 +28,14 @@ export default function Example() {
         </label>
       </Ariakit.RadioProvider>
       <Ariakit.Button render={<input type="submit" value="Submit" />} />
+      <label>
+        <Ariakit.Checkbox
+          checked={checked}
+          onChange={() => setChecked((c) => !c)}
+          render={<CustomCheckbox />}
+        />{" "}
+        Wrapped
+      </label>
     </div>
   );
 }
