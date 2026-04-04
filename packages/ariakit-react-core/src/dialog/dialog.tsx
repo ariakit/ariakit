@@ -158,6 +158,24 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const { wrapElement, nestedDialogs } = useNestedDialogs(store);
   props = useWrapElement(props, wrapElement, [wrapElement]);
 
+  // On Safari, buttons don't receive focus on mousedown unless they have an
+  // explicit tabIndex. Non-Ariakit buttons (which don't go through
+  // useFocusable) won't have this, so activeElement may still be BODY when the
+  // dialog opens. We track the last mousedown target as a fallback.
+  const lastMousedownRef = useRef<Element | null>(null);
+
+  if (isSafariBrowser) {
+    useEffect(() => {
+      const onMousedown = (event: MouseEvent) => {
+        lastMousedownRef.current = event.target as Element;
+      };
+      document.addEventListener("mousedown", onMousedown, true);
+      return () => {
+        document.removeEventListener("mousedown", onMousedown, true);
+      };
+    }, []);
+  }
+
   // Sets disclosure element using the current active element right after the
   // dialog is opened.
   useSafeLayoutEffect(() => {
@@ -165,7 +183,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const dialog = ref.current;
     const activeElement = getActiveElement(dialog, true);
     if (!activeElement) return;
-    if (activeElement.tagName === "BODY") return;
+    if (activeElement.tagName === "BODY") {
+      // Safari fallback: use the last mousedown target when activeElement is
+      // BODY (happens with native buttons that lack an explicit tabIndex).
+      const fallback = lastMousedownRef.current;
+      if (fallback && isFocusable(fallback)) {
+        if (!dialog || !contains(dialog, fallback)) {
+          store.setDisclosureElement(fallback as HTMLElement);
+        }
+      }
+      return;
+    }
     // The disclosure element can't be inside the dialog.
     if (dialog && contains(dialog, activeElement)) return;
     store.setDisclosureElement(activeElement);
