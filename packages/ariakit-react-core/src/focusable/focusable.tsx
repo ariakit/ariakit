@@ -96,7 +96,16 @@ interface GetTabIndexParams {
 
 function getInputType(props: Record<string, unknown>) {
   if ("type" in props && typeof props.type === "string") {
-    return props.type;
+    return props.type.toLowerCase();
+  }
+  // When using render={<input type="submit" />}, the type prop is on the
+  // render element, not on the hook's props.
+  const render = props.render;
+  if (render && typeof render === "object" && "props" in render) {
+    const renderProps = render.props as Record<string, unknown> | undefined;
+    if (renderProps && typeof renderProps.type === "string") {
+      return renderProps.type.toLowerCase();
+    }
   }
   return undefined;
 }
