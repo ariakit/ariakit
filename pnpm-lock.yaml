@@ -900,6 +900,9 @@ importers:
       '@ariakit/test':
         specifier: workspace:*
         version: link:../packages/ariakit-test
+      '@playwright/test':
+        specifier: 1.59.0
+        version: 1.59.0
       '@types/babel__core':
         specifier: 7.20.5
         version: 7.20.5
