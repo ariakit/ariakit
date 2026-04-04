@@ -74,6 +74,11 @@ export default function Example() {
         <TagListLabel>Tag label</TagListLabel>
         <TagList aria-label="Custom tag list label" />
       </TagProvider>
+
+      <ak.Group aria-labelledby="explicit-labelledby">
+        <ak.GroupLabel>Group heading 2</ak.GroupLabel>
+        <span id="explicit-labelledby">Explicit label</span>
+      </ak.Group>
     </div>
   );
 }

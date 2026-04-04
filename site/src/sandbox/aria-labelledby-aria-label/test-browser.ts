@@ -68,14 +68,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(anchor).not.toHaveAttribute("aria-labelledby");
   });
 
-  test("tag list with aria-label has no aria-labelledby", async ({ page }) => {
-    const listbox = page.getByRole("listbox", {
-      name: "Custom tag list label",
-    });
+  test("tag list with aria-label has no aria-labelledby", async ({ q }) => {
+    const listbox = q.listbox("Custom tag list label");
     await test.expect(listbox).toBeAttached();
     await test
       .expect(listbox)
       .toHaveAttribute("aria-label", "Custom tag list label");
     await test.expect(listbox).not.toHaveAttribute("aria-labelledby");
+  });
+
+  test("tab panel without aria-label preserves aria-labelledby", async ({
+    q,
+  }) => {
+    await q.tab("Tab 2").click();
+    const panel = q.tabpanel("Tab 2");
+    await test.expect(panel).toBeVisible();
+    await test.expect(panel).not.toHaveAttribute("aria-label");
+    await test.expect(panel).toHaveAttribute("aria-labelledby");
+  });
+
+  test("group with explicit aria-labelledby preserves user value", async ({
+    q,
+  }) => {
+    const group = q.group("Explicit label");
+    await test.expect(group).toBeVisible();
+    await test
+      .expect(group)
+      .toHaveAttribute("aria-labelledby", "explicit-labelledby");
   });
 });
