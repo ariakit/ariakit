@@ -199,7 +199,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
             tabIndex={-1}
             aria-hidden
             aria-label={label}
-            aria-labelledby={label ? undefined : labelledBy}
+            aria-labelledby={label != null ? undefined : labelledBy}
             name={name}
             form={form}
             required={required}
@@ -267,7 +267,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   props = {
     role: "combobox",
     "aria-autocomplete": "none",
-    "aria-labelledby": props["aria-label"] ? undefined : labelId,
+    "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
     "aria-haspopup": getPopupRole(contentElement, "listbox"),
     "data-autofill": autofill || undefined,
     "data-name": name,

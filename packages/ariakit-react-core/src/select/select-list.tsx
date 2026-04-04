@@ -166,7 +166,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     );
 
     props = {
-      "aria-labelledby": props["aria-label"] ? undefined : labelId,
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       hidden,
       ...props,
       id,

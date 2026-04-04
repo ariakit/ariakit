@@ -140,7 +140,7 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
 
     props = {
       "aria-labelledby":
-        type === "label" && !props["aria-label"] ? contentId : undefined,
+        type === "label" && props["aria-label"] == null ? contentId : undefined,
       ...props,
       onMouseEnter,
       onFocusVisible,

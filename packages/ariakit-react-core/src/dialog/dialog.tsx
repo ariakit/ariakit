@@ -546,7 +546,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     "data-dialog": "",
     role: "dialog",
     tabIndex: focusable ? -1 : undefined,
-    "aria-labelledby": props["aria-label"] ? undefined : headingId,
+    "aria-labelledby": props["aria-label"] != null ? undefined : headingId,
     "aria-describedby": descriptionId,
     ...props,
     id,
