@@ -294,17 +294,7 @@ importers:
         specifier: 4.2.2
         version: 4.2.2
 
-  packages/ariakit-core:
-    devDependencies:
-      oxfmt:
-        specifier: 0.43.0
-        version: 0.43.0
-      oxlint:
-        specifier: 1.58.0
-        version: 1.58.0(oxlint-tsgolint@0.18.1)
-      oxlint-tsgolint:
-        specifier: 0.18.1
-        version: 0.18.1
+  packages/ariakit-core: {}
 
   packages/ariakit-react:
     dependencies:
@@ -334,15 +324,6 @@ importers:
       '@types/use-sync-external-store':
         specifier: 1.5.0
         version: 1.5.0
-      oxfmt:
-        specifier: 0.43.0
-        version: 0.43.0
-      oxlint:
-        specifier: 1.58.0
-        version: 1.58.0(oxlint-tsgolint@0.18.1)
-      oxlint-tsgolint:
-        specifier: 0.18.1
-        version: 0.18.1
       react:
         specifier: 18.3.1
         version: 18.3.1
