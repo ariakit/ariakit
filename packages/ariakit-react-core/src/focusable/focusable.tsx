@@ -89,25 +89,8 @@ interface GetTabIndexParams {
   trulyDisabled: boolean;
   nativeTabbable: boolean;
   supportsDisabled: boolean;
-  tagName?: string;
-  inputType?: string;
+  safariTabIndex: boolean;
   tabIndexProp?: number;
-}
-
-function getInputType(props: Record<string, unknown>) {
-  if ("type" in props && typeof props.type === "string") {
-    return props.type.toLowerCase();
-  }
-  // When using render={<input type="submit" />}, the type prop is on the
-  // render element, not on the hook's props.
-  const render = props.render;
-  if (render && typeof render === "object" && "props" in render) {
-    const renderProps = render.props as Record<string, unknown> | undefined;
-    if (renderProps && typeof renderProps.type === "string") {
-      return renderProps.type.toLowerCase();
-    }
-  }
-  return undefined;
 }
 
 const buttonInputTypes = [
@@ -133,8 +116,7 @@ function getTabIndex({
   trulyDisabled,
   nativeTabbable,
   supportsDisabled,
-  tagName,
-  inputType,
+  safariTabIndex,
   tabIndexProp,
 }: GetTabIndexParams) {
   if (!focusable) return tabIndexProp;
@@ -150,11 +132,7 @@ function getTabIndex({
   if (nativeTabbable) {
     // On Safari, buttons and button-like inputs (checkboxes, radios, submit,
     // reset, etc.) require an explicit tabIndex to receive focus on mousedown.
-    if (
-      isSafariBrowser &&
-      tabIndexProp == null &&
-      needsSafariTabIndex(tagName, inputType)
-    ) {
+    if (safariTabIndex && tabIndexProp == null) {
       return 0;
     }
     return tabIndexProp;
@@ -376,6 +354,22 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const nativeTabbable = focusable && isNativeTabbable(tagName);
     const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
 
+    // On Safari, buttons and button-like inputs don't receive focus on
+    // mousedown. We detect this from the DOM element (not props) so it works
+    // with render={<input type="submit" />} and custom components.
+    const [safariTabIndex, setSafariTabIndex] = useState(false);
+
+    if (isSafariBrowser) {
+      useEffect(() => {
+        if (!focusable) return;
+        const element = ref.current;
+        if (!element) return;
+        const tag = element.tagName.toLowerCase();
+        const type = (element as HTMLInputElement).type;
+        setSafariTabIndex(needsSafariTabIndex(tag, type));
+      }, [focusable]);
+    }
+
     const styleProp = props.style;
     const style = useMemo(() => {
       if (trulyDisabled) {
@@ -396,8 +390,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         trulyDisabled,
         nativeTabbable,
         supportsDisabled,
-        tagName,
-        inputType: getInputType(props),
+        safariTabIndex,
         tabIndexProp: props.tabIndex,
       }),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,

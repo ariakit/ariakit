@@ -192,11 +192,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // BODY (happens with native buttons that lack an explicit tabIndex).
       const fallback = lastMousedownRef.current;
       lastMousedownRef.current = null;
-      if (fallback && fallback.isConnected && isFocusable(fallback)) {
-        if (!dialog || !contains(dialog, fallback)) {
-          store.setDisclosureElement(fallback as HTMLElement);
-        }
-      }
+      if (!fallback?.isConnected) return;
+      if (!isFocusable(fallback)) return;
+      if (dialog && contains(dialog, fallback)) return;
+      store.setDisclosureElement(fallback as HTMLElement);
       return;
     }
     // The disclosure element can't be inside the dialog.

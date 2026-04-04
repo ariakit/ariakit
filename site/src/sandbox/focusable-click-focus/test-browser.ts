@@ -19,15 +19,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(radio).toBeFocused();
   });
 
-  test("checkbox receives focus on label click", async ({ page, q }) => {
+  test("checkbox receives focus on label click", async ({ q }) => {
     const checkbox = q.checkbox("Checkbox");
-    await page.getByText("Checkbox").click();
+    await q.text("Checkbox").click();
     await test.expect(checkbox).toBeFocused();
   });
 
-  test("radio receives focus on label click", async ({ page, q }) => {
+  test("radio receives focus on label click", async ({ q }) => {
     const radio = q.radio("Radio A");
-    await page.getByText("Radio A").click();
+    await q.text("Radio A").click();
     await test.expect(radio).toBeFocused();
   });
 
