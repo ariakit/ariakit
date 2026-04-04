@@ -30,4 +30,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.getByText("Radio A").click();
     await test.expect(radio).toBeFocused();
   });
+
+  test("submit input receives focus on click", async ({ q }) => {
+    const submit = q.button("Submit");
+    await submit.click();
+    await test.expect(submit).toBeFocused();
+  });
 });

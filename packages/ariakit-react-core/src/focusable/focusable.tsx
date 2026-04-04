@@ -101,10 +101,20 @@ function getInputType(props: Record<string, unknown>) {
   return undefined;
 }
 
+const buttonInputTypes = [
+  "button",
+  "color",
+  "file",
+  "image",
+  "reset",
+  "submit",
+];
+
 function needsSafariTabIndex(tagName?: string, inputType?: string) {
   if (tagName === "button") return true;
-  if (tagName === "input") {
-    return inputType === "checkbox" || inputType === "radio";
+  if (tagName === "input" && inputType) {
+    if (inputType === "checkbox" || inputType === "radio") return true;
+    return buttonInputTypes.includes(inputType);
   }
   return false;
 }
@@ -129,8 +139,8 @@ function getTabIndex({
     return;
   }
   if (nativeTabbable) {
-    // On Safari, buttons and native checkboxes/radios require an explicit
-    // tabIndex to receive focus on mousedown.
+    // On Safari, buttons and button-like inputs (checkboxes, radios, submit,
+    // reset, etc.) require an explicit tabIndex to receive focus on mousedown.
     if (
       isSafariBrowser &&
       tabIndexProp == null &&

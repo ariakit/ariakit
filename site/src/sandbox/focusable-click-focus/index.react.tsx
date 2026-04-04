@@ -21,6 +21,7 @@ export default function Example() {
           <Ariakit.Radio value="b" /> Radio B
         </label>
       </Ariakit.RadioProvider>
+      <Ariakit.Button render={<input type="submit" value="Submit" />} />
     </div>
   );
 }
