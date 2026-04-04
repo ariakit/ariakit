@@ -23,6 +23,7 @@ export default defineConfig({
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   testDir: "src",
+  snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
   webServer: {
     command: `pnpm run preview-lite --log-level warn --port ${port}`,
     reuseExistingServer: !CI,

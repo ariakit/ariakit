@@ -6,9 +6,14 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-@import "./ariakit.css";
+/* @import "./ariakit.css"; */
+@import "tailwindcss";
+@import "@ariakit/tailwind/output";
 
 @theme {
+  --color-canvas: oklch(99.33% 0.0011 197.14);
+  --color-brand: oklch(56.7% 0.1546 248.5156);
+
   --container-wider: 92rem;
   --container-wide: 84rem;
   --container-default: 72rem;
@@ -17,6 +22,12 @@
   --container-overlap: 100.05rem;
 
   --leading-loose: 1.85;
+}
+
+:root {
+  @variant dark {
+    --color-canvas: oklch(16.34% 0.0091 264.28);
+  }
 }
 
 @theme inline {
@@ -66,6 +77,10 @@ body {
   @apply font-sans min-h-dvh antialiased;
 }
 
+body {
+  @apply ak-layer ak-layer-canvas;
+}
+
 body > * {
-  @apply ak-dark:scheme-dark;
+  /* @apply ak-dark:scheme-dark; */
 }

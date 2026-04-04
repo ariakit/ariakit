@@ -21,7 +21,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   test("click select @visual", async ({ q, visual }) => {
     const qq = query(q.button("Lina Park"));
-    await qq.combobox("Order Status").click();
+    await qq.combobox("Order status").click();
     await visual();
   });
 });

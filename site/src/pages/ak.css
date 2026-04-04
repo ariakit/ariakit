@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@import "@ariakit/tailwind/output";
+
+@theme {
+  --ak-contrast: 0;
+  --color-canvas: oklch(0.9933 0.0011 197.14);
+  --color-primary: oklch(0.567 0.154556 248.5156);
+}
+
+:root {
+  @variant dark {
+    /* --color-canvas: oklch(16.52% 0.0062 285.7); */
+    /* --color-canvas: theme(--color-slate-950); */
+    --color-canvas: oklch(0.1634 0.0091 264.28);
+  }
+}
