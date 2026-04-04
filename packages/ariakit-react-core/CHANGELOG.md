@@ -1,5 +1,15 @@
 # @ariakit/react-core
 
+## 0.4.25
+
+### Improved Safari focus behavior for buttons, checkboxes, and radio buttons
+
+On Safari, buttons, checkboxes, and radio buttons don't receive focus on mousedown like other browsers. Previously, this was handled by manually focusing the element in a `mousedown` handler. Now, an explicit `tabIndex` attribute is set on these elements in Safari, which causes the browser to focus them natively. This results in more predictable focus behavior and fewer timing-sensitive workarounds.
+
+### Other updates
+
+- Fixed components not dropping their internal `aria-labelledby` when `aria-label` is passed.
+
 ## 0.4.24
 
 This release improves React combobox and form reliability, including preserved combobox input and popover scroll position during result updates, more predictable focus behavior after filtering selects on iOS Safari, proper isolation of [`FormRadio`](https://ariakit.org/reference/form-radio) groups inside nested composite widgets, safer handling of explicitly undefined [`id`](https://ariakit.org/reference/select-item#id) props, and better generic typing for [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) wrappers.
