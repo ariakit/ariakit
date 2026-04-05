@@ -1,4 +1,4 @@
-import type { Value, VarProperty } from "./lib.ts";
+import type { Value, VarProperty, WithContextParams } from "./lib.ts";
 import {
   at,
   createContext,
@@ -399,6 +399,10 @@ const frameVars = {
   frameParentBorderContext: _ak.var("fpbc"),
   frameParentRingContext: _ak.var("fpgc"),
   frameParentRowContext: _ak.var("fpwc"),
+  frameParentCornerTLContext: _ak.var("fpctl"),
+  frameParentCornerTRContext: _ak.var("fpctr"),
+  frameParentCornerBLContext: _ak.var("fpcbl"),
+  frameParentCornerBRContext: _ak.var("fpcbr"),
 };
 
 const vars = {
@@ -1512,17 +1516,48 @@ function getFrameStretchDeclarations({
   childPadding,
   parentRadius,
   parentRow,
+  inherit,
+  provide,
 }: {
   stretchInset: string;
   radiusInset: string;
   childPadding: string;
   parentRadius: string;
   parentRow: string;
+  inherit: WithContextParams["inherit"];
+  provide: WithContextParams["provide"];
 }) {
   const isCol = fn.sub(1, parentRow);
   const isRow = parentRow;
   const negStretchInset = fn.neg(stretchInset);
   const childRadius = fn.max(fn.sub(parentRadius, radiusInset), "0px");
+
+  // Inherit per-corner flags from the parent stretch element (default: 1 = all
+  // corners rounded, provided by the frame utility for non-stretch parents).
+  const parentCornerTL = inherit(vars.frameParentCornerTLContext, 1);
+  const parentCornerTR = inherit(vars.frameParentCornerTRContext, 1);
+  const parentCornerBL = inherit(vars.frameParentCornerBLContext, 1);
+  const parentCornerBR = inherit(vars.frameParentCornerBRContext, 1);
+
+  // Own corner factors based on edge position and parent layout direction.
+  const ownCornerTL = inputs.frameStart;
+  const ownCornerTR = fn.max(
+    fn.mul(isCol, inputs.frameStart),
+    fn.mul(isRow, inputs.frameEnd),
+  );
+  const ownCornerBL = fn.max(
+    fn.mul(isCol, inputs.frameEnd),
+    fn.mul(isRow, inputs.frameStart),
+  );
+  const ownCornerBR = inputs.frameEnd;
+
+  // Effective corner factors: only round a corner when both this element AND
+  // the parent have a rounded corner at the same position.
+  const cornerTL = fn.mul(ownCornerTL, parentCornerTL);
+  const cornerTR = fn.mul(ownCornerTR, parentCornerTR);
+  const cornerBL = fn.mul(ownCornerBL, parentCornerBL);
+  const cornerBR = fn.mul(ownCornerBR, parentCornerBR);
+
   return [
     rule("&:first-child", set(inputs.frameStart, 1)),
     rule(LAST_VISIBLE_SELECTOR, set(inputs.frameEnd, 1)),
@@ -1532,6 +1567,14 @@ function getFrameStretchDeclarations({
     set(inputs.frameRadius, childRadius),
     set(inputs.framePadding, childPadding),
     set(inputs.frameMargin, negStretchInset),
+    // Override the frame utility's computed radius so the context propagates
+    // the stretch-derived value rather than the frame-* hint radius.
+    set(vars.frameRadius, childRadius),
+    // Propagate per-corner flags to children.
+    set(provide(vars.frameParentCornerTLContext), cornerTL),
+    set(provide(vars.frameParentCornerTRContext), cornerTR),
+    set(provide(vars.frameParentCornerBLContext), cornerBL),
+    set(provide(vars.frameParentCornerBRContext), cornerBR),
     // Cross-axis margins always applied; main-axis margins only at edges
     // Col: inline = cross, block = main
     // Row: block = cross, inline = main
@@ -1548,39 +1591,11 @@ function getFrameStretchDeclarations({
       fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameEnd)), negStretchInset),
     ),
     set.borderRadius(fn.important(childRadius)),
-    // Corner radii: each corner is rounded when its edge conditions are met
-    // start-start: start in either axis
-    set.borderTopLeftRadius(
-      fn.important(fn.mul(inputs.frameStart, childRadius)),
-    ),
-    // start-end: (col AND start) OR (row AND end)
-    set.borderTopRightRadius(
-      fn.important(
-        fn.mul(
-          fn.max(
-            fn.mul(isCol, inputs.frameStart),
-            fn.mul(isRow, inputs.frameEnd),
-          ),
-          childRadius,
-        ),
-      ),
-    ),
-    // end-start: (col AND end) OR (row AND start)
-    set.borderBottomLeftRadius(
-      fn.important(
-        fn.mul(
-          fn.max(
-            fn.mul(isCol, inputs.frameEnd),
-            fn.mul(isRow, inputs.frameStart),
-          ),
-          childRadius,
-        ),
-      ),
-    ),
-    // end-end: end in either axis
-    set.borderBottomRightRadius(
-      fn.important(fn.mul(inputs.frameEnd, childRadius)),
-    ),
+    // Corner radii: each corner inherits its parent's corner state.
+    set.borderTopLeftRadius(fn.important(fn.mul(cornerTL, childRadius))),
+    set.borderTopRightRadius(fn.important(fn.mul(cornerTR, childRadius))),
+    set.borderBottomLeftRadius(fn.important(fn.mul(cornerBL, childRadius))),
+    set.borderBottomRightRadius(fn.important(fn.mul(cornerBR, childRadius))),
   ];
 }
 
@@ -1630,6 +1645,11 @@ utility(
       set(provide(vars.frameParentBorderContext), vars.frameBorder),
       set(provide(vars.frameParentRingContext), vars.frameRing),
       set(provide(vars.frameParentRowContext), inputs.frameRow),
+      // Default: all corners rounded (non-stretch parents).
+      set(provide(vars.frameParentCornerTLContext), 1),
+      set(provide(vars.frameParentCornerTRContext), 1),
+      set(provide(vars.frameParentCornerBLContext), 1),
+      set(provide(vars.frameParentCornerBRContext), 1),
     ];
   }),
 );
@@ -1661,7 +1681,7 @@ utility("-frame-m-*", getNegatedDeclarations(frameMargin));
 
 utility(
   "frame-cover",
-  frameContext(({ inherit }) => {
+  frameContext(({ inherit, provide }) => {
     const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
     const parentBorder = inherit(vars.frameParentBorderContext, "0px");
     const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
@@ -1672,13 +1692,15 @@ utility(
       childPadding: parentPadding,
       parentRadius,
       parentRow,
+      inherit,
+      provide,
     });
   }),
 );
 
 utility(
   "frame-overflow",
-  frameContext(({ inherit }) => {
+  frameContext(({ inherit, provide }) => {
     const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
     const parentBorder = inherit(vars.frameParentBorderContext, "0px");
     const parentRing = inherit(vars.frameParentRingContext, "0px");
@@ -1696,6 +1718,8 @@ utility(
       childPadding: parentPadding,
       parentRadius,
       parentRow,
+      inherit,
+      provide,
     });
   }),
 );

@@ -240,7 +240,7 @@ function createPropertyObj(ns?: DashedIdentObject | DashedIdent) {
 
 type ContextParity = "even" | "odd";
 
-interface WithContextParams {
+export interface WithContextParams {
   opposite: (property: VarProperty) => VarProperty;
   provide: (property: VarProperty) => VarProperty;
   inherit: typeof fn.var;
