@@ -35,14 +35,14 @@ interface ComboboxProps
   extends
     Pick<Ariakit.ComboboxProps, "autoSelect">,
     Pick<Ariakit.ComboboxPopoverProps, "unmountOnHide">,
-    Pick<ComboboxItemProps, "offscreenBehavior"> {
+    Pick<ComboboxItemProps, "offscreenMode"> {
   group?: boolean;
 }
 
 function Combobox({
   group,
   autoSelect,
-  offscreenBehavior,
+  offscreenMode,
   unmountOnHide = true,
 }: ComboboxProps) {
   const [searchValue, setSearchValue] = useState("");
@@ -68,7 +68,7 @@ function Combobox({
         }}
       >
         <Ariakit.ComboboxLabel className="block px-3 py-2">
-          {offscreenBehavior} {!unmountOnHide ? "mounted " : ""}
+          {offscreenMode} {!unmountOnHide ? "mounted " : ""}
           {autoSelect === "always"
             ? "autoSelect always "
             : autoSelect
@@ -103,8 +103,8 @@ function Combobox({
                         value={item.value}
                         focusOnHover
                         blurOnHoverEnd={false}
-                        offscreenBehavior={
-                          i + j === 0 ? "active" : offscreenBehavior
+                        offscreenMode={
+                          i + j === 0 ? "active" : offscreenMode
                         }
                         offscreenRoot={ref}
                         className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
@@ -121,7 +121,7 @@ function Combobox({
                 value={item.value}
                 focusOnHover
                 blurOnHoverEnd={false}
-                offscreenBehavior={i === 0 ? "active" : offscreenBehavior}
+                offscreenMode={i === 0 ? "active" : offscreenMode}
                 className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
               />
             ))
@@ -134,7 +134,7 @@ function Combobox({
 
 interface SelectProps
   extends
-    Pick<SelectItemProps, "offscreenBehavior">,
+    Pick<SelectItemProps, "offscreenMode">,
     Pick<Ariakit.SelectProviderProps, "defaultValue">,
     Pick<Ariakit.SelectPopoverProps, "unmountOnHide"> {
   group?: boolean;
@@ -142,7 +142,7 @@ interface SelectProps
 
 function Select({
   group,
-  offscreenBehavior,
+  offscreenMode,
   unmountOnHide = true,
   defaultValue = "Select...",
 }: SelectProps) {
@@ -151,7 +151,7 @@ function Select({
     <div>
       <Ariakit.SelectProvider placement="bottom" defaultValue={defaultValue}>
         <Ariakit.SelectLabel className="block px-3 py-2">
-          select {offscreenBehavior} {!unmountOnHide ? "mounted " : ""}
+          select {offscreenMode} {!unmountOnHide ? "mounted " : ""}
           {defaultValue !== "Select..." ? "defaultValue " : ""}
           {group ? "group " : ""}
         </Ariakit.SelectLabel>
@@ -177,7 +177,7 @@ function Select({
                         key={item.value}
                         value={item.value}
                         blurOnHoverEnd={false}
-                        offscreenBehavior={offscreenBehavior}
+                        offscreenMode={offscreenMode}
                         offscreenRoot={ref}
                         className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                       />
@@ -193,7 +193,7 @@ function Select({
                 value={item.value}
                 focusOnHover
                 blurOnHoverEnd={false}
-                offscreenBehavior="lazy"
+                offscreenMode="lazy"
                 className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
               />
             ))
@@ -207,7 +207,7 @@ function Select({
 interface SelectComboboxProps
   extends
     Pick<Ariakit.ComboboxProps, "autoSelect">,
-    Pick<SelectItemProps, "offscreenBehavior">,
+    Pick<SelectItemProps, "offscreenMode">,
     Pick<Ariakit.SelectProviderProps, "defaultValue">,
     Pick<Ariakit.SelectPopoverProps, "unmountOnHide"> {
   group?: boolean;
@@ -216,7 +216,7 @@ interface SelectComboboxProps
 function SelectCombobox({
   group,
   autoSelect,
-  offscreenBehavior,
+  offscreenMode,
   unmountOnHide = true,
   defaultValue = "Select...",
 }: SelectComboboxProps) {
@@ -245,7 +245,7 @@ function SelectCombobox({
       >
         <Ariakit.SelectProvider placement="bottom" defaultValue={defaultValue}>
           <Ariakit.SelectLabel className="block px-3 py-2">
-            searchable {offscreenBehavior} {!unmountOnHide ? "mounted " : ""}
+            searchable {offscreenMode} {!unmountOnHide ? "mounted " : ""}
             {defaultValue !== "Select..." ? "defaultValue " : ""}
             {autoSelect === "always"
               ? "autoSelect always "
@@ -285,8 +285,8 @@ function SelectCombobox({
                             value={item.value}
                             blurOnHoverEnd={false}
                             offscreenRoot={ref}
-                            offscreenBehavior={
-                              i + j === 0 ? "active" : offscreenBehavior
+                            offscreenMode={
+                              i + j === 0 ? "active" : offscreenMode
                             }
                             className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                             render={(props) => {
@@ -312,7 +312,7 @@ function SelectCombobox({
                       value={item.value}
                       blurOnHoverEnd={false}
                       offscreenRoot={ref}
-                      offscreenBehavior={i === 0 ? "active" : offscreenBehavior}
+                      offscreenMode={i === 0 ? "active" : offscreenMode}
                       className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                       render={(props) => {
                         if ("data-offscreen" in props) {
@@ -336,16 +336,16 @@ function SelectCombobox({
   );
 }
 
-const offscreenBehaviors = ["lazy", "passive"] as const;
+const offscreenModes = ["lazy", "passive"] as const;
 const autoSelects = [false, true, "always"] as const;
 const unmountOnHides = [true, false] as const;
 const groups = [false, true] as const;
 
-const comboboxExamples = offscreenBehaviors.flatMap((offscreenBehavior) =>
+const comboboxExamples = offscreenModes.flatMap((offscreenMode) =>
   autoSelects.flatMap((autoSelect) =>
     unmountOnHides.flatMap((unmountOnHide) =>
       groups.map((group) => ({
-        offscreenBehavior,
+        offscreenMode,
         autoSelect,
         unmountOnHide,
         group,
@@ -356,11 +356,11 @@ const comboboxExamples = offscreenBehaviors.flatMap((offscreenBehavior) =>
 
 const defaultValues = ["Select...", "Dominica"] as const;
 
-const selectExamples = offscreenBehaviors.flatMap((offscreenBehavior) =>
+const selectExamples = offscreenModes.flatMap((offscreenMode) =>
   defaultValues.flatMap((defaultValue) =>
     unmountOnHides.flatMap((unmountOnHide) =>
       groups.map((group) => ({
-        offscreenBehavior,
+        offscreenMode,
         unmountOnHide,
         group,
         defaultValue,
@@ -369,12 +369,12 @@ const selectExamples = offscreenBehaviors.flatMap((offscreenBehavior) =>
   ),
 );
 
-const selectComboboxExamples = offscreenBehaviors.flatMap((offscreenBehavior) =>
+const selectComboboxExamples = offscreenModes.flatMap((offscreenMode) =>
   defaultValues.flatMap((defaultValue) =>
     autoSelects.flatMap((autoSelect) =>
       unmountOnHides.flatMap((unmountOnHide) =>
         groups.map((group) => ({
-          offscreenBehavior,
+          offscreenMode,
           defaultValue,
           autoSelect,
           unmountOnHide,
