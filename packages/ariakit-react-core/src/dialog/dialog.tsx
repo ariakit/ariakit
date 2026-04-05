@@ -51,6 +51,10 @@ import {
 } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";
+import {
+  acquireCloseWatcherBridge,
+  releaseCloseWatcherBridge,
+} from "./utils/close-watcher-bridge.ts";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
@@ -453,43 +457,21 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
-  // Hide on Escape or close request (e.g., Android back gesture). Uses the
-  // CloseWatcher API when supported for broader platform integration, falling
-  // back to a keydown listener.
+  // When CloseWatcher is supported, a single shared watcher bridges close
+  // signals (Escape key, Android back gesture, screen reader back gesture) to
+  // synthetic keydown events so the existing handler below can process them.
   useEffect(() => {
     if (!domReady) return;
     if (!mounted) return;
+    if (!supportsCloseWatcher()) return;
+    acquireCloseWatcherBridge();
+    return releaseCloseWatcherBridge;
+  }, [domReady, mounted]);
 
-    if (supportsCloseWatcher()) {
-      const watcher = new CloseWatcher!();
-
-      watcher.addEventListener("cancel", (event) => {
-        const dialog = ref.current;
-        if (!dialog) return;
-        if (isElementMarked(dialog)) {
-          event.preventDefault();
-          return;
-        }
-        // Create a synthetic KeyboardEvent so that hideOnEscape callbacks
-        // that inspect the event still work.
-        const escapeEvent = new KeyboardEvent("keydown", {
-          key: "Escape",
-          bubbles: true,
-          cancelable: true,
-        });
-        if (!hideOnEscapeProp(escapeEvent)) {
-          event.preventDefault();
-        }
-      });
-
-      watcher.addEventListener("close", () => {
-        store.hide();
-      });
-
-      return () => watcher.destroy();
-    }
-
-    // Fallback for browsers that don't support CloseWatcher.
+  // Hide on Escape.
+  useEffect(() => {
+    if (!domReady) return;
+    if (!mounted) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       if (event.defaultPrevented) return;
