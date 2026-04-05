@@ -79,7 +79,7 @@ function Combobox({
         <Ariakit.Combobox
           autoSelect={autoSelect}
           placeholder="Search..."
-          className="ak-combobox h-10 px-3 w-64"
+          className="ak-combobox h-10 w-64 px-3"
         />
         <Ariakit.ComboboxPopover
           gutter={8}
@@ -103,11 +103,9 @@ function Combobox({
                         value={item.value}
                         focusOnHover
                         blurOnHoverEnd={false}
-                        offscreenMode={
-                          i + j === 0 ? "active" : offscreenMode
-                        }
+                        offscreenMode={i + j === 0 ? "active" : offscreenMode}
                         offscreenRoot={ref}
-                        className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                        className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                       />
                     ))}
                   </div>
@@ -122,7 +120,7 @@ function Combobox({
                 focusOnHover
                 blurOnHoverEnd={false}
                 offscreenMode={i === 0 ? "active" : offscreenMode}
-                className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
               />
             ))
           )}
@@ -155,7 +153,7 @@ function Select({
           {defaultValue !== "Select..." ? "defaultValue " : ""}
           {group ? "group " : ""}
         </Ariakit.SelectLabel>
-        <Ariakit.Select className="ak-button ak-button-default justify-between h-10 px-3 w-64" />
+        <Ariakit.Select className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
         <Ariakit.SelectPopover
           gutter={8}
           unmountOnHide
@@ -179,7 +177,7 @@ function Select({
                         blurOnHoverEnd={false}
                         offscreenMode={offscreenMode}
                         offscreenRoot={ref}
-                        className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                        className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                       />
                     ))}
                   </div>
@@ -194,7 +192,7 @@ function Select({
                 focusOnHover
                 blurOnHoverEnd={false}
                 offscreenMode="lazy"
-                className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
               />
             ))
           )}
@@ -254,7 +252,7 @@ function SelectCombobox({
                 : ""}
             {group ? "group " : ""}
           </Ariakit.SelectLabel>
-          <Ariakit.Select className="ak-button ak-button-default justify-between h-10 px-3 w-64" />
+          <Ariakit.Select className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
           <Ariakit.SelectPopover
             gutter={8}
             unmountOnHide
@@ -266,7 +264,7 @@ function SelectCombobox({
             <Ariakit.Combobox
               autoSelect={autoSelect}
               placeholder="Search..."
-              className="ak-combobox h-10 px-3 w-64 z-20"
+              className="ak-combobox z-20 h-10 w-64 px-3"
             />
             <Ariakit.ComboboxList
               ref={ref}
@@ -288,7 +286,7 @@ function SelectCombobox({
                             offscreenMode={
                               i + j === 0 ? "active" : offscreenMode
                             }
-                            className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                            className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                             render={(props) => {
                               if ("data-offscreen" in props) {
                                 return <div {...props} />;
@@ -313,7 +311,7 @@ function SelectCombobox({
                       blurOnHoverEnd={false}
                       offscreenRoot={ref}
                       offscreenMode={i === 0 ? "active" : offscreenMode}
-                      className="ak-option truncate block [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                      className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                       render={(props) => {
                         if ("data-offscreen" in props) {
                           return <div {...props} />;
@@ -387,7 +385,7 @@ const selectComboboxExamples = offscreenModes.flatMap((offscreenMode) =>
 
 export default function Example() {
   return (
-    <div className="wrapper ak-rounded-container gap-4 w-full p-4 grid grid-cols-[repeat(auto-fit,minmax(420px,1fr))]">
+    <div className="wrapper ak-rounded-container grid w-full grid-cols-[repeat(auto-fit,minmax(420px,1fr))] gap-4 p-4">
       {comboboxExamples.map((props, index) => (
         <Combobox key={index} {...props} />
       ))}
