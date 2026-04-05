@@ -143,7 +143,7 @@ The behavior is now consistent with the [`autoSelect`](https://ariakit.org/refer
 
 - Fixed the [`item`](https://ariakit.org/reference/use-collection-store#item) method to prevent it from returning items that have been removed from the collection store.
 - Fixed the [`item`](https://ariakit.org/reference/use-menu-store#item) method when keeping different menu stores in sync.
-- Added experimental `offscreenMode` prop to collection and composite item components.
+- Added experimental `offscreenBehavior` prop to collection and composite item components.
 - Added [`id`](https://ariakit.org/reference/use-composite-store#id) prop to composite stores.
 - Fixed composite typeahead functionality when rendering virtualized lists.
 - Added `useStoreStateObject` function.
