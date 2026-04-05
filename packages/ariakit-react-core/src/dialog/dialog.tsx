@@ -54,6 +54,7 @@ import { useDialogStore } from "./dialog-store.ts";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
+import { supportsCloseWatcher } from "./utils/supports-close-watcher.ts";
 import { supportsInert } from "./utils/supports-inert.ts";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.tsx";
@@ -452,10 +453,43 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
-  // Hide on Escape.
+  // Hide on Escape or close request (e.g., Android back gesture). Uses the
+  // CloseWatcher API when supported for broader platform integration, falling
+  // back to a keydown listener.
   useEffect(() => {
     if (!domReady) return;
     if (!mounted) return;
+
+    if (supportsCloseWatcher()) {
+      const watcher = new CloseWatcher!();
+
+      watcher.addEventListener("cancel", (event) => {
+        const dialog = ref.current;
+        if (!dialog) return;
+        if (isElementMarked(dialog)) {
+          event.preventDefault();
+          return;
+        }
+        // Create a synthetic KeyboardEvent so that hideOnEscape callbacks
+        // that inspect the event still work.
+        const escapeEvent = new KeyboardEvent("keydown", {
+          key: "Escape",
+          bubbles: true,
+          cancelable: true,
+        });
+        if (!hideOnEscapeProp(escapeEvent)) {
+          event.preventDefault();
+        }
+      });
+
+      watcher.addEventListener("close", () => {
+        store.hide();
+      });
+
+      return () => watcher.destroy();
+    }
+
+    // Fallback for browsers that don't support CloseWatcher.
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       if (event.defaultPrevented) return;
@@ -467,8 +501,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       const target = event.target as Element | null;
       if (!target) return;
       const { disclosureElement } = store.getState();
-      // This considers valid targets only the disclosure element or descendants
-      // of the dialog element.
+      // This considers valid targets only the disclosure element or
+      // descendants of the dialog element.
       const isValidTarget = () => {
         if (target.tagName === "BODY") return true;
         if (contains(dialog, target)) return true;
@@ -480,10 +514,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (!hideOnEscapeProp(event)) return;
       store.hide();
     };
-    // We're attatching the listener to the document instead of the dialog
-    // element so we can listen to the Escape key anywhere in the document, even
-    // when the dialog is not focused. By using the capture phase, users can
-    // call `event.stopPropagation()` on the `hideOnEscape` function prop.
+    // We're attaching the listener to the document instead of the dialog
+    // element so we can listen to the Escape key anywhere in the document,
+    // even when the dialog is not focused. By using the capture phase, users
+    // can call `event.stopPropagation()` on the `hideOnEscape` function
+    // prop.
     return addGlobalEventListener("keydown", onKeyDown, true);
   }, [store, domReady, mounted, hideOnEscapeProp]);
 
@@ -708,7 +743,13 @@ export interface DialogOptions<T extends ElementType = TagName>
     | ReactElement<ComponentPropsWithRef<"div">>
     | ElementType<ComponentPropsWithRef<"div">>;
   /**
-   * Determines if the dialog will hide when the user presses the Escape key.
+   * Determines if the dialog will hide when the user presses the Escape key or
+   * triggers a platform close request (e.g., the back gesture on Android).
+   *
+   * When supported, this uses the
+   * [`CloseWatcher`](https://developer.mozilla.org/en-US/docs/Web/API/CloseWatcher)
+   * API for broader platform integration. In browsers without CloseWatcher
+   * support, it falls back to a keyboard event listener.
    *
    * This prop can be either a boolean or a function that accepts an event as an
    * argument and returns a boolean. The event object represents the keydown
