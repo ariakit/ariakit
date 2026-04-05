@@ -3,7 +3,7 @@ import { expect, query } from "@ariakit/test/playwright";
 import { test } from "../test-utils.ts";
 
 const types = ["", "select", "searchable"] as const;
-const offscreenBehaviors = ["lazy", "passive"] as const;
+const offscreenModes = ["lazy", "passive"] as const;
 const unmountOnHides = ["", "mounted"] as const;
 const defaultValues = ["", "defaultValue"] as const;
 const autoSelects = ["", "autoSelect", "autoSelect always"] as const;
@@ -11,7 +11,7 @@ const groups = ["", "group"] as const;
 
 const labels = [
   types,
-  offscreenBehaviors,
+  offscreenModes,
   unmountOnHides,
   defaultValues,
   autoSelects,
