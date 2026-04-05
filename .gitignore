@@ -42,3 +42,6 @@ yarn-error.log*
 # generated types
 .astro/
 worker-configuration.d.ts
+
+# claude code
+.claude/worktrees
