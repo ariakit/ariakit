@@ -193,6 +193,13 @@ export function useDeferredValue<T>(value: T): T {
   return deferredValue;
 }
 
+// [react-notes]:
+// - `type` argument:
+//   - `ComponentType` seems useless
+//   - so does `stringOrUndefined`
+//   - should be renamed "fallback"
+//   - should be `keyof JSX.IntrinsicElements` instead of `string`
+
 /**
  * Returns the tag name by parsing an element ref.
  * @example
