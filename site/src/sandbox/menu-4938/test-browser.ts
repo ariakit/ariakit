@@ -58,7 +58,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await page.mouse.click(10, 5);
     await test.expect(q.menu()).not.toBeVisible();
-    await test.expect(menuButton).not.toBeFocused();
+    await test.expect(menuButton).toBeFocused();
 
     await test.expect
       .poll(() => page.evaluate(() => window.scrollY))

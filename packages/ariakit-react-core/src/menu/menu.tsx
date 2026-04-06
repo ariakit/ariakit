@@ -1,12 +1,12 @@
 import { fireEvent } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
-import type { ElementType, MutableRefObject } from "react";
+import type { ElementType, FocusEvent, MutableRefObject } from "react";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
-import { useMergeRefs } from "../utils/hooks.ts";
+import { useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
@@ -54,7 +54,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   );
 
   const ref = useRef<HTMLType>(null);
-  const skipAutoFocusOnHideRef = useRef(false);
+  const preventScrollOnHideRef = useRef(false);
 
   const parentMenu = store.parent;
   const parentMenubar = store.menubar;
@@ -86,11 +86,18 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const baseElement = useStoreState(store, "baseElement");
   const items = useStoreState(store, "renderedItems");
   const open = useStoreState(store, "open");
+  const mounted = useStoreState(store, "mounted");
+  const [autoFocusOnHideState, setAutoFocusOnHideState] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    skipAutoFocusOnHideRef.current = false;
+    preventScrollOnHideRef.current = false;
   }, [open]);
+
+  useEffect(() => {
+    if (mounted) return;
+    setAutoFocusOnHideState(false);
+  }, [mounted]);
 
   // Sets the initial focus ref.
   useEffect(() => {
@@ -135,6 +142,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // focus on the dialog container when no initialFocusRef is set.
   const canAutoFocusOnShow =
     !!initialFocusRef || !!props.initialFocus || !!modal;
+  const canAutoFocusOnHide = autoFocusOnHide ?? autoFocusOnHideState;
 
   const contentElement = useStoreState(
     store.combobox || store,
@@ -170,6 +178,13 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     };
   }
 
+  const onFocusProp = props.onFocus;
+  const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
+    onFocusProp?.(event);
+    if (event.defaultPrevented) return;
+    setAutoFocusOnHideState(true);
+  });
+
   props = useHovercard({
     store,
     alwaysVisible,
@@ -177,15 +192,17 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     autoFocusOnShow: mayAutoFocusOnShow
       ? canAutoFocusOnShow && autoFocusOnShow
       : autoFocusOnShowState || !!modal,
-    autoFocusOnHide(element) {
-      const skipAutoFocus = skipAutoFocusOnHideRef.current;
-      skipAutoFocusOnHideRef.current = false;
-      if (skipAutoFocus && autoFocusOnHide == null) return false;
-      if (isFalsyBooleanCallback(autoFocusOnHide, element)) return false;
-      element?.focus();
-      return false;
-    },
+    autoFocusOnHide:
+      canAutoFocusOnHide &&
+      ((element) => {
+        const preventScroll = preventScrollOnHideRef.current;
+        preventScrollOnHideRef.current = false;
+        if (isFalsyBooleanCallback(autoFocusOnHide, element)) return false;
+        element?.focus({ preventScroll });
+        return false;
+      }),
     ...props,
+    onFocus,
     hideOnEscape(event) {
       if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
       store?.hideAll();
@@ -193,7 +210,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     },
     hideOnInteractOutside(event) {
       if (isFalsyBooleanCallback(hideOnInteractOutside, event)) return false;
-      skipAutoFocusOnHideRef.current = event.type === "click";
+      preventScrollOnHideRef.current = true;
       return true;
     },
     hideOnHoverOutside(event) {
