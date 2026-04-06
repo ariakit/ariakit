@@ -17,11 +17,22 @@ export default function Example() {
         </Ariakit.Menu>
       </Ariakit.MenuProvider>
 
-      <Ariakit.MenuProvider>
+      <Ariakit.MenuProvider timeout={0}>
         <Ariakit.MenuButton
+          showOnHover
           render={<Ariakit.Button accessibleWhenDisabled disabled />}
         >
           Render props
+        </Ariakit.MenuButton>
+        <Ariakit.Menu>
+          <Ariakit.MenuItem>Item 1</Ariakit.MenuItem>
+          <Ariakit.MenuItem>Item 2</Ariakit.MenuItem>
+        </Ariakit.Menu>
+      </Ariakit.MenuProvider>
+
+      <Ariakit.MenuProvider timeout={0}>
+        <Ariakit.MenuButton showOnHover render={<Ariakit.Button />}>
+          Enabled hover
         </Ariakit.MenuButton>
         <Ariakit.Menu>
           <Ariakit.MenuItem>Item 1</Ariakit.MenuItem>

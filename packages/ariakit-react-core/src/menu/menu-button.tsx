@@ -225,6 +225,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       accessibleWhenDisabled,
       ...props,
       showOnHover: (event) => {
+        if (isDisabled(event.currentTarget)) return false;
         const getShowOnHover = () => {
           if (typeof showOnHover === "function") return showOnHover(event);
           if (showOnHover != null) return showOnHover;

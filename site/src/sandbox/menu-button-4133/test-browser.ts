@@ -32,4 +32,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("ArrowDown");
     await test.expect(q.menu("Render props")).not.toBeVisible();
   });
+
+  test("disabled rendered button does not open menu on hover", async ({
+    page,
+    q,
+  }) => {
+    const menuButton = q.button("Render props");
+
+    await page.mouse.move(0, 0);
+    await menuButton.hover();
+    await test.expect(q.menu("Render props")).not.toBeVisible();
+  });
+
+  test("enabled rendered button opens menu on hover", async ({ page, q }) => {
+    const menuButton = q.button("Enabled hover");
+
+    await page.mouse.move(0, 0);
+    await menuButton.hover();
+    await test.expect(q.menu("Enabled hover")).toBeVisible();
+  });
 });
