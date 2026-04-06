@@ -9,6 +9,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await menuButton.click();
     await test.expect(q.menu()).toBeVisible();
+    await test.expect(q.menu()).toBeFocused();
 
     await page.keyboard.press("Shift+Tab");
 
