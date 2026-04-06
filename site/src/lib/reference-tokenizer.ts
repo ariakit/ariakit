@@ -116,7 +116,7 @@ function findMatchingClose(
   let index = openIndex + 1;
 
   while (index < code.length && depth > 0) {
-    const char = code[index];
+    const char = code[index] ?? "";
     if (isQuoteChar(char)) {
       index = skipStringLiteral(code, index);
       continue;
@@ -189,7 +189,7 @@ function extractNamedImports(clause: string, imports: Map<string, string>) {
     let specMatch: RegExpExecArray | null;
 
     while ((specMatch = specRegex.exec(inside))) {
-      const exported = specMatch[1];
+      const exported = specMatch[1] ?? "";
       const local = specMatch[2] || exported;
       imports.set(local, exported);
     }
@@ -240,7 +240,7 @@ function parseLocalImports(code: string): Map<string, string> {
       );
       let specMatch: RegExpExecArray | null;
       while ((specMatch = specRegex.exec(inside))) {
-        const local = specMatch[2] || specMatch[1];
+        const local = specMatch[2] || specMatch[1] || "";
         localToSource.set(local, source);
       }
     }
@@ -348,7 +348,7 @@ function findComponentPropRanges(
   let match: RegExpExecArray | null;
 
   while ((match = propRegex.exec(tagText))) {
-    const propName = match[2];
+    const propName = match[2] ?? "";
     if (!allowedProps.has(propName)) continue;
 
     const leadingWhitespace = match[1] ? match[1].length : 0;
@@ -383,7 +383,7 @@ function findObjectLiteralAtFirstArg(
   let inString: false | QuoteChar = false;
 
   while (index < code.length) {
-    const char = code[index];
+    const char = code[index] ?? "";
 
     if (inString) {
       if (char === inString) {
@@ -436,7 +436,7 @@ function findTopLevelObjectKeys(
   let inString: false | QuoteChar = false;
 
   while (index < text.length) {
-    const char = text[index];
+    const char = text[index] ?? "";
 
     if (inString) {
       if (char === inString) {
@@ -463,7 +463,7 @@ function findTopLevelObjectKeys(
       idRegex.lastIndex = index;
       const match = idRegex.exec(text);
       if (match) {
-        const name = match[1];
+        const name = match[1] ?? "";
         const start = objStart + match.index;
         const end = start + name.length;
         keys.push({ start, end, name });
@@ -496,8 +496,8 @@ function findUseStoreStateStateRanges(
   const stringMatch = stringRegex.exec(callText);
   if (stringMatch) {
     const matchIndex = (stringMatch.index || 0) + callStartIndex;
-    const quote = stringMatch[1];
-    const name = stringMatch[2];
+    const quote = stringMatch[1] ?? "";
+    const name = stringMatch[2] ?? "";
     const quotePosition = stringMatch[0].lastIndexOf(quote + name + quote);
     const absoluteStart = matchIndex + quotePosition + 1;
     ranges.push({
@@ -514,7 +514,7 @@ function findUseStoreStateStateRanges(
   const arrowMatch = arrowRegex.exec(callText);
   if (arrowMatch) {
     const matchIndex = (arrowMatch.index || 0) + callStartIndex;
-    const name = arrowMatch[2];
+    const name = arrowMatch[2] ?? "";
     const absoluteStart = matchIndex + arrowMatch[0].lastIndexOf(name);
     ranges.push({
       start: absoluteStart,
@@ -687,7 +687,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
     let inString: false | QuoteChar = false;
 
     while (index < code.length) {
-      const char = code[index];
+      const char = code[index] ?? "";
 
       if (inString) {
         if (inString === '"' || inString === "'") {
@@ -764,7 +764,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
   let quotedMatch: RegExpExecArray | null;
 
   while ((quotedMatch = quotedAttrRegex.exec(code))) {
-    const afterEquals = quotedMatch[2];
+    const afterEquals = quotedMatch[2] ?? "";
     const isWrapped = afterEquals.startsWith("{");
     const quote = afterEquals[isWrapped ? 1 : 0] as QuoteChar;
     const contentStart = quotedAttrRegex.lastIndex;
@@ -807,7 +807,7 @@ function findClassTokenRanges(code: string): TokenRange[] {
     let templateExprDepth = 0;
 
     while (index < code.length && depth > 0) {
-      const char = code[index];
+      const char = code[index] ?? "";
 
       if (inString) {
         if (char === "\\") {
@@ -1115,7 +1115,7 @@ function processNamedImports(
       let specMatch: RegExpExecArray | null;
 
       while ((specMatch = specRegex.exec(inside))) {
-        const exported = specMatch[1];
+        const exported = specMatch[1] ?? "";
         const local = specMatch[2] || exported;
         const ref = nameToRef[exported];
         if (!ref) continue;
@@ -1183,8 +1183,8 @@ function processComponentTags(
 
   while ((nsMatch = nsCompRegex.exec(code))) {
     const fullMatch = nsMatch[0];
-    const namespace = nsMatch[1];
-    const componentName = nsMatch[2];
+    const namespace = nsMatch[1] ?? "";
+    const componentName = nsMatch[2] ?? "";
 
     // Avoid matching generics like Foo<T>
     const charBeforeLt = code[(nsMatch.index || 0) - 1] || "";
@@ -1208,7 +1208,7 @@ function processComponentTags(
   let compMatch: RegExpExecArray | null;
 
   while ((compMatch = compRegex.exec(code))) {
-    const componentName = compMatch[1];
+    const componentName = compMatch[1] ?? "";
 
     // Avoid matching TypeScript generics
     const charBeforeLt = code[(compMatch.index || 0) - 1] || "";
@@ -1252,8 +1252,8 @@ function processNamespacedCalls(
   let callMatch: RegExpExecArray | null;
 
   while ((callMatch = nsCallRegex.exec(code))) {
-    const namespace = callMatch[1];
-    const funcName = callMatch[2];
+    const namespace = callMatch[1] ?? "";
+    const funcName = callMatch[2] ?? "";
 
     const nsSource = localImports.get(namespace);
     const isAllowedNs = nsSource?.startsWith("@ariakit/") || !hasAnyImport;
@@ -1319,7 +1319,7 @@ function processPlainCalls(
   let callMatch: RegExpExecArray | null;
 
   while ((callMatch = plainCallRegex.exec(code))) {
-    const localName = callMatch[1];
+    const localName = callMatch[1] ?? "";
     const callIndex = callMatch.index || 0;
 
     // Skip function declarations
@@ -1378,7 +1378,7 @@ function trackStoreAssignment(
   );
 
   if (assignMatch) {
-    const varName = assignMatch[2];
+    const varName = assignMatch[2] ?? "";
     const refForVar =
       storeRef || (ref?.data.kind === "store" ? ref : undefined);
     if (refForVar) {
@@ -1482,7 +1482,7 @@ function processStoreReturnProps(
     );
 
     while ((propMatch = propAccessRegex.exec(code))) {
-      const propName = propMatch[1];
+      const propName = propMatch[1] ?? "";
       if (!allowedProps.has(propName)) continue;
 
       const matchText = propMatch[0] || "";
@@ -1524,8 +1524,8 @@ function buildPerLineAnchors(
 
     while (low <= high) {
       const mid = (low + high) >> 1;
-      const start = lineStarts[mid];
-      const next = mid + 1 < lineStarts.length ? lineStarts[mid + 1] : Infinity;
+      const start = lineStarts[mid] ?? 0;
+      const next = mid + 1 < lineStarts.length ? (lineStarts[mid + 1] ?? Infinity) : Infinity;
 
       if (position < start) {
         high = mid - 1;
@@ -1542,7 +1542,7 @@ function buildPerLineAnchors(
   // Assign anchors to lines with relative positions
   for (const anchor of anchors) {
     const lineIndex = findLineIndex(anchor.start);
-    const lineStart = lineStarts[lineIndex];
+    const lineStart = lineStarts[lineIndex] ?? 0;
     const line = lines[lineIndex];
     if (line == null) continue;
 
@@ -1569,6 +1569,7 @@ function buildPerLineAnchors(
     for (let i = 1; i < lineAnchors.length; i++) {
       const prev = lineAnchors[i - 1];
       const current = lineAnchors[i];
+      if (!prev || !current) continue;
 
       if (
         current.start <= prev.end &&
