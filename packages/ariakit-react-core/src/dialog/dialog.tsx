@@ -470,9 +470,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   useEffect(() => {
     if (!domReady) return;
     if (!mounted) return;
-    if (!supportsCloseWatcher()) return;
-    acquireCloseWatcherBridge();
-    return releaseCloseWatcherBridge;
+    const dialog = ref.current;
+    if (!dialog) return;
+    if (!supportsCloseWatcher(dialog)) return;
+    acquireCloseWatcherBridge(dialog);
+    return () => releaseCloseWatcherBridge(dialog);
   }, [domReady, mounted]);
 
   // Hide on Escape.
@@ -482,16 +484,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       if (event.defaultPrevented) return;
+      const dialog = ref.current;
+      if (!dialog) return;
       // When CloseWatcher is active, only process synthetic events from the
       // bridge. The browser may also dispatch real keydown events for the
       // same Escape press that triggered the CloseWatcher. Stop propagation
       // so non-Ariakit handlers (e.g., third-party modals) don't see it.
-      if (supportsCloseWatcher() && !isBridgeEvent(event)) {
+      if (supportsCloseWatcher(dialog) && !isBridgeEvent(event)) {
         event.stopPropagation();
         return;
       }
-      const dialog = ref.current;
-      if (!dialog) return;
       // Ignore the event if the current dialog is marked by another dialog.
       // This guarantees that only the topmost dialog will close on Escape.
       if (isElementMarked(dialog)) return;
