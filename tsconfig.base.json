@@ -22,7 +22,6 @@
     "stripInternal": true,
     "verbatimModuleSyntax": true,
     "jsx": "preserve",
-    // TODO: Turn this on and fix all the errors
-    "noUncheckedIndexedAccess": false
+    "noUncheckedIndexedAccess": true
   }
 }

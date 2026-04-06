@@ -141,7 +141,7 @@ export const useCompositeTypeahead = createHook<
     let enabledItems = getEnabledItems(
       items.length > renderedItems.length ? items : renderedItems,
     );
-    // When the composite widget contains items with the `offscreenBehavior`
+    // When the composite widget contains items with the `offscreenMode`
     // prop, we need to consider them as well.
     const document = getDocument(event.currentTarget);
     const selector = `[data-offscreen-id="${id}"]`;

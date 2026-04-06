@@ -47,12 +47,12 @@ export function useComboboxItemOffscreen<
 }
 
 export const ComboboxItem = forwardRef(function ComboboxItem({
-  offscreenBehavior,
+  offscreenMode,
   offscreenRoot,
   ...props
 }: ComboboxItemProps) {
   const { active, ref, ...rest } = useComboboxItemOffscreen({
-    offscreenBehavior,
+    offscreenMode,
     offscreenRoot,
     ...props,
   });

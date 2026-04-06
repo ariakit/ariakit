@@ -348,6 +348,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
     setAutoFocusEnabled(true);
     queueMicrotask(() => {
+      // If the dialog was closed between scheduling and executing this
+      // microtask, skip the focus call. Otherwise, focusing a now-hidden
+      // element could steal focus from the disclosure that focusOnHide already
+      // restored.
+      if (!store.getState().open) return;
       element.focus();
       // Safari doesn't scroll to the element on focus, so we have to do it
       // manually here.
@@ -363,6 +368,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     initialFocus,
     portal,
     preserveTabOrder,
+    store,
     autoFocusOnShowProp,
   ]);
 

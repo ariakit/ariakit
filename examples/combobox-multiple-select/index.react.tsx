@@ -6,7 +6,7 @@ import "./style.css";
 
 export default function Example() {
   const [value, setValue] = useState("");
-  const [values, setValues] = useState<string[]>(["Bacon"]);
+  const [values, setValues] = useState(["Bacon"]);
   const deferredValue = useDeferredValue(value);
 
   const matches = useMemo(
