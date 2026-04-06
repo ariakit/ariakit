@@ -39,7 +39,7 @@ importers:
         version: link:packages/ariakit-test
       '@axe-core/playwright':
         specifier: 4.11.1
-        version: 4.11.1(playwright-core@1.58.2)
+        version: 4.11.1(playwright-core@1.59.0)
       '@changesets/apply-release-plan':
         specifier: 7.1.0
         version: 7.1.0(patch_hash=6775a2568bb9d97a114bc21bb3b7034e7c5fb7c2e1d1291e830e5630d33209e4)
@@ -12056,10 +12056,10 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.2.4': {}
 
-  '@axe-core/playwright@4.11.1(playwright-core@1.58.2)':
+  '@axe-core/playwright@4.11.1(playwright-core@1.59.0)':
     dependencies:
       axe-core: 4.11.1
-      playwright-core: 1.58.2
+      playwright-core: 1.59.0
 
   '@babel/code-frame@7.29.0':
     dependencies:

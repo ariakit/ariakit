@@ -69,9 +69,9 @@ function extractComputedCSS() {
       return null;
     }
     const [l, c, h] = rgbToOklch(
-      normalizeChannel(match[1]),
-      normalizeChannel(match[2]),
-      normalizeChannel(match[3]),
+      normalizeChannel(match[1] ?? ""),
+      normalizeChannel(match[2] ?? ""),
+      normalizeChannel(match[3] ?? ""),
     );
     return formatOklch(l, c, h, alpha !== 1 ? alpha : undefined);
   };
