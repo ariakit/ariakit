@@ -21,12 +21,12 @@ export function useSelectItemOffscreen<
 }
 
 export const SelectItem = forwardRef(function SelectItem({
-  offscreenBehavior,
+  offscreenMode,
   offscreenRoot,
   ...props
 }: SelectItemProps) {
   const { active, ref, ...rest } = useSelectItemOffscreen({
-    offscreenBehavior,
+    offscreenMode,
     offscreenRoot,
     ...props,
   });

@@ -6,6 +6,7 @@ if (process.argv.includes("--headed")) {
 
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
+const port = Number(process.env.SITE_PORT) || 4321;
 
 function testMatchersFor(...kinds: string[]): RegExp[] {
   return kinds.flatMap((kind) => [
@@ -24,10 +25,10 @@ export default defineConfig({
   testDir: "src",
   snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
   webServer: {
-    command: "pnpm run preview-lite --log-level warn",
+    command: `pnpm run preview-lite --log-level warn --port ${port}`,
     reuseExistingServer: !CI,
     stdout: CI ? "pipe" : "ignore",
-    port: 4321,
+    port,
   },
   use: {
     screenshot: "only-on-failure",

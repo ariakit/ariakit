@@ -45,8 +45,8 @@
     "test-android-debug": "playwright test --project=android --ui",
     "coverage": "pnpm test --coverage",
     "postcoverage": "open-cli coverage/index.html",
-    "lint": "oxlint && oxfmt --check",
-    "lint-fix": "oxlint --fix && oxfmt",
+    "lint": "oxlint --disable-nested-config && oxfmt --check",
+    "lint-fix": "oxlint --disable-nested-config --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "wrangler-types": "wrangler types --include-runtime=false",
     "tsc": "pnpm run wrangler-types && pnpm -F site run check && tsc -b",
@@ -71,7 +71,7 @@
     "@axe-core/playwright": "4.11.1",
     "@changesets/apply-release-plan": "7.1.0",
     "@changesets/cli": "2.30.0",
-    "@playwright/test": "1.58.2",
+    "@playwright/test": "1.59.0",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@types/cross-spawn": "6.0.6",
@@ -97,9 +97,9 @@
     "lint-staged": "16.4.0",
     "next": "14.2.35",
     "open-cli": "9.0.0",
-    "oxfmt": "0.42.0",
-    "oxlint": "1.57.0",
-    "oxlint-tsgolint": "0.18.1",
+    "oxfmt": "0.43.0",
+    "oxlint": "1.58.0",
+    "oxlint-tsgolint": "0.19.0",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
     "prettier": "3.8.1",
@@ -118,27 +118,14 @@
     "vite-plugin-solid": "2.11.11",
     "vitest": "4.1.2",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.78.0"
+    "wrangler": "4.79.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
     "*.{js,ts,tsx,md,mdx,json}": [
-      "oxlint --fix",
+      "oxlint --disable-nested-config --fix",
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@10.33.0",
-  "pnpm": {
-    "overrides": {
-      "@wordpress/components>@ariakit/react": "workspace:*"
-    },
-    "patchedDependencies": {
-      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp",
-      "workerd"
-    ]
-  }
+  "packageManager": "pnpm@10.33.0"
 }

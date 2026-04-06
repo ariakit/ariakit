@@ -31,6 +31,7 @@ try {
   loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
 } catch (_error) {}
 
+const port = Number(process.env.SITE_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // https://astro.build/config
@@ -38,11 +39,12 @@ export default defineConfig({
   site:
     process.env.NODE_ENV === "production"
       ? "https://next.ariakit.com"
-      : "http://localhost:4321",
+      : `http://localhost:${port}`,
 
   srcDir: "src",
 
   server: {
+    port,
     host: true,
     allowedHosts: true,
   },

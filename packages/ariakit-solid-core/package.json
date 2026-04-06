@@ -32,7 +32,6 @@
   "module": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "lint": "oxlint . && oxfmt --check .",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
