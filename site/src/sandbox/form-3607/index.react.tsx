@@ -14,13 +14,24 @@ export default function Example() {
 
   form.useValidate(() => {
     const items = form.getValue(form.names.items);
+    // TODO: Remove workaround once fixed
+    // https://github.com/ariakit/ariakit/issues/3607
+    // Workaround: use setErrors() with the full nested structure instead of
+    // setError() for individual nested fields, because setError() doesn't
+    // create intermediate objects/arrays.
+    const errors: { items: Array<{ name?: string }> } = {
+      items: items.map(() => ({})),
+    };
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       if (!item) continue;
+      const itemError = errors.items[i];
+      if (!itemError) continue;
       if (!item.name) {
-        form.setError(form.names.items[i].name, "Name is required");
+        itemError.name = "Name is required";
       }
     }
+    form.setErrors(errors);
   });
 
   form.useSubmit(async (state) => {
