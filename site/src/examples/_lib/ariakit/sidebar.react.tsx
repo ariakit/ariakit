@@ -11,9 +11,7 @@ const defaultSidebarContext: SidebarContextType = {
   side: "start",
 };
 
-const SidebarContext = React.createContext<SidebarContextType>(
-  defaultSidebarContext,
-);
+const SidebarContext = React.createContext(defaultSidebarContext);
 
 export interface SidebarProps
   extends ak.RoleProps, Partial<SidebarContextType> {

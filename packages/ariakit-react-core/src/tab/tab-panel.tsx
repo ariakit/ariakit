@@ -78,8 +78,8 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     // Store the scroll position for each tabId. The component may receive
     // different tab ids if it's a single tab panel with dynamic tab id and
     // content.
-    const scrollPositionRef = useRef<Map<string, { x: number; y: number }>>(
-      new Map(),
+    const scrollPositionRef = useRef(
+      new Map<string, { x: number; y: number }>(),
     );
 
     const getScrollElement = useEvent(() => {
