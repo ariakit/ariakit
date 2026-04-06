@@ -12,15 +12,20 @@ import type { CloseWatcherInstance } from "./supports-close-watcher.ts";
 let watcher: CloseWatcherInstance | null = null;
 let refCount = 0;
 
+// Tracks synthetic keydown events dispatched by the bridge. Dialog handlers
+// use this to distinguish bridge events from real keydown events that the
+// browser may also dispatch for the same Escape key press.
+const bridgeEvents = new WeakSet<Event>();
+
 function handleClose() {
   const target = document.activeElement || document.body;
-  target.dispatchEvent(
-    new KeyboardEvent("keydown", {
-      key: "Escape",
-      bubbles: true,
-      cancelable: true,
-    }),
-  );
+  const event = new KeyboardEvent("keydown", {
+    key: "Escape",
+    bubbles: true,
+    cancelable: true,
+  });
+  bridgeEvents.add(event);
+  target.dispatchEvent(event);
   // The watcher is destroyed after the close event fires. Recreate it if
   // there are still mounted dialogs.
   if (refCount > 0) {
@@ -33,6 +38,10 @@ function handleClose() {
 function createWatcher() {
   watcher = new CloseWatcher!();
   watcher.addEventListener("close", handleClose);
+}
+
+export function isBridgeEvent(event: Event) {
+  return bridgeEvents.has(event);
 }
 
 export function acquireCloseWatcherBridge() {

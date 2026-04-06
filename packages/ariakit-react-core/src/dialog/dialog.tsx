@@ -53,6 +53,7 @@ import type { DialogStore } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";
 import {
   acquireCloseWatcherBridge,
+  isBridgeEvent,
   releaseCloseWatcherBridge,
 } from "./utils/close-watcher-bridge.ts";
 import { disableTree, disableTreeOutside } from "./utils/disable-tree.ts";
@@ -475,6 +476,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       if (event.defaultPrevented) return;
+      // When CloseWatcher is active, only process synthetic events from the
+      // bridge. The browser may also dispatch real keydown events for the
+      // same Escape press that triggered the CloseWatcher.
+      if (supportsCloseWatcher() && !isBridgeEvent(event)) return;
       const dialog = ref.current;
       if (!dialog) return;
       // Ignore the event if the current dialog is marked by another dialog.
