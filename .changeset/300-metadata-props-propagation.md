@@ -1,6 +1,5 @@
 ---
 "@ariakit/react-core": patch
-"@ariakit/react": patch
 ---
 
-Fixed [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled) not propagating through composed components when not explicitly set.
+Fixed `useMetadataProps` overwriting parent metadata with `undefined` when the child doesn't provide an explicit value.
