@@ -68,9 +68,21 @@ function set<T extends FormStoreValues | unknown[]>(
   const isIntegerKey = isInteger(key);
   const nextValues = isIntegerKey ? values || [] : values || {};
   const nestedValues = nextValues[key];
+  const nextKey = rest[0];
+  // When there are remaining path segments but no intermediate
+  // object/array exists yet, create one based on whether the next key is
+  // an integer (array) or not (object).
   const result =
-    rest.length && (Array.isArray(nestedValues) || isObject(nestedValues))
-      ? set(nestedValues, rest, value)
+    rest.length && nextKey != null
+      ? set(
+          Array.isArray(nestedValues) || isObject(nestedValues)
+            ? nestedValues
+            : isInteger(nextKey)
+              ? []
+              : {},
+          rest,
+          value,
+        )
       : value;
   if (isIntegerKey) {
     const index = Number(key);

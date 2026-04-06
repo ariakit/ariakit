@@ -1,10 +1,7 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("show validation errors for nested array fields", async ({
-    page,
-    q,
-  }) => {
+  test("show validation errors for nested array fields", async ({ q }) => {
     // Both fields are empty, submit should show errors
     await q.button("Submit").click();
 
