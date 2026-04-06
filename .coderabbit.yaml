@@ -4,3 +4,6 @@ reviews:
   in_progress_fortune: false
   poem: false
   high_level_summary_in_walkthrough: true
+  auto_review:
+    ignore_title_keywords:
+      - Publish
