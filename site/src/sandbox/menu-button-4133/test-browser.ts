@@ -8,7 +8,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const menuButton = q.button("MenuButton props");
 
     await test.expect(menuButton).toHaveAttribute("aria-disabled", "true");
-    await test.expect(menuButton).not.toHaveAttribute("disabled", "");
+    await test.expect(menuButton).not.toHaveAttribute("disabled");
 
     await menuButton.focus();
     await test.expect(menuButton).toBeFocused();
@@ -24,7 +24,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const menuButton = q.button("Render props");
 
     await test.expect(menuButton).toHaveAttribute("aria-disabled", "true");
-    await test.expect(menuButton).not.toHaveAttribute("disabled", "");
+    await test.expect(menuButton).not.toHaveAttribute("disabled");
 
     await menuButton.focus();
     await test.expect(menuButton).toBeFocused();

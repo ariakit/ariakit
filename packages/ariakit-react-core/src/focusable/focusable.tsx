@@ -395,8 +395,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       "data-focus-visible": (focusable && focusVisible) || undefined,
       "data-autofocus": autoFocus || undefined,
       "aria-disabled": disabled || undefined,
-      ...metadataProps,
       ...props,
+      ...metadataProps,
       ref: useMergeRefs(ref, autoFocusRef, props.ref),
       style,
       tabIndex: getTabIndex({

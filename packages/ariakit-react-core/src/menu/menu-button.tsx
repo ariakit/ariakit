@@ -237,7 +237,6 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
         };
         const canShowOnHover = getShowOnHover();
         if (!canShowOnHover) return false;
-        if (isDisabled(event.currentTarget)) return false;
         const parent = parentIsMenubar ? parentMenubar : parentMenu;
         if (!parent) return true;
         // When hovering over a menu button shows a menu and the menu button is
