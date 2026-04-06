@@ -5,9 +5,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Both fields are empty, submit should show errors
     await q.button("Submit").click();
 
-    // Both error messages should be visible
-    await test.expect(q.text("Name is required").first()).toBeVisible();
-    await test.expect(q.text("Name is required").last()).toBeVisible();
+    await test.expect(q.text("Name is required")).toHaveCount(2);
+    await test
+      .expect(q.textbox("Item 1 name"))
+      .toHaveAccessibleDescription("Name is required");
+    await test
+      .expect(q.textbox("Item 2 name"))
+      .toHaveAccessibleDescription("Name is required");
   });
 
   test("clear error when nested field is filled", async ({ page, q }) => {
