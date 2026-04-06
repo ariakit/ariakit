@@ -214,7 +214,8 @@ function getItemSize(
     if (hasSameOrientation && itemObject.itemSize) {
       return initialSize + itemObject.itemSize * items.length;
     }
-    const totalSize = items.reduce(
+    // oxlint-disable-next-line no-unnecessary-type-arguments
+    const totalSize = items.reduce<number>(
       (sum, item) => sum + getItemSize(item, horizontal),
       initialSize,
     );
@@ -345,7 +346,8 @@ function getItemsEnd<T extends Item>(props: {
   const lastItemData = props.data.get(lastItemId);
   if (lastItemData?.end) return lastItemData.end + props.paddingEnd;
   if (!Array.isArray(props.items)) return defaultEnd;
-  const end = props.items.reduce(
+  // oxlint-disable-next-line no-unnecessary-type-arguments
+  const end = props.items.reduce<number>(
     (sum, item) => sum + getItemSize(item, props.horizontal, false),
     0,
   );
