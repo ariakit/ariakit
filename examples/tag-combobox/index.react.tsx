@@ -6,7 +6,8 @@ import "./style.css";
 
 export default function Example() {
   const [users, setUsers] = useState(defaultUsers);
-  const [invitees, setInvitees] = useState([users[0].email]);
+  const firstUser = users[0];
+  const [invitees, setInvitees] = useState(firstUser ? [firstUser.email] : []);
   const [value, setValue] = useState("");
   const searchTerm = useDeferredValue(value);
 

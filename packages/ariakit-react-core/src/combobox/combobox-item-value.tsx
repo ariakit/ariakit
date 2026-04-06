@@ -72,12 +72,14 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
     ),
   );
 
-  if (!offsets.length) {
+  const firstEntry = offsets[0];
+
+  if (!firstEntry) {
     parts.push(span(itemValue, true));
     return parts;
   }
 
-  const [firstOffset] = offsets[0];
+  const [firstOffset] = firstEntry;
 
   const values = [
     itemValue.slice(0, firstOffset),
