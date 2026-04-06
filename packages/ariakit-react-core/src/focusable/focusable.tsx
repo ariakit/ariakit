@@ -204,19 +204,12 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     ...props
   }) {
     const ref = useRef<HTMLType>(null);
-    const parentAccessibleWhenDisabled = (
-      props.onLoadedMetadataCapture as
-        | (EventHandler<SyntheticEvent> & {
-            [accessibleWhenDisabledSymbol]?: boolean;
-          })
-        | undefined
-    )?.[accessibleWhenDisabledSymbol];
-    accessibleWhenDisabled ??= parentAccessibleWhenDisabled;
-    const [, metadataProps] = useMetadataProps(
+    const [parentAccessibleWhenDisabled, metadataProps] = useMetadataProps(
       props,
       accessibleWhenDisabledSymbol,
       accessibleWhenDisabled,
     );
+    accessibleWhenDisabled ??= parentAccessibleWhenDisabled;
 
     // Add global event listeners to determine whether the user is using a
     // keyboard to navigate the site or not.

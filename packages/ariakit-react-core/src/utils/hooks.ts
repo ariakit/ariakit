@@ -381,7 +381,11 @@ export function useMetadataProps<T, K extends keyof any>(
 ) {
   const parent = props.onLoadedMetadataCapture;
   const onLoadedMetadataCapture = useMemo(() => {
-    return Object.assign(() => {}, parent, { [key]: value });
+    return Object.assign(
+      () => {},
+      parent,
+      ...(value !== undefined ? [{ [key]: value }] : []),
+    );
   }, [parent, key, value]);
 
   return [parent?.[key], { onLoadedMetadataCapture }] as const;
