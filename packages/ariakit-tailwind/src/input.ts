@@ -1714,7 +1714,7 @@ utility(
     );
     return getFrameStretchDeclarations({
       stretchInset,
-      radiusInset: parentBorder,
+      radiusInset: "0px",
       childPadding: parentPadding,
       parentRadius,
       parentRow,
