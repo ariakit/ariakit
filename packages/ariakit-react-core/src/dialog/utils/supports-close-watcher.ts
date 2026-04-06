@@ -1,6 +1,5 @@
 // CloseWatcher is not yet in TypeScript's DOM lib types.
 declare global {
-  // biome-ignore lint/style/noVar: global ambient declarations require var
   var CloseWatcher:
     | {
         new (): CloseWatcherInstance;
