@@ -14,9 +14,7 @@ export default function Example() {
 
   form.useValidate(() => {
     const items = form.getValue(form.names.items);
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      if (!item) continue;
+    for (const [i, item] of items.entries()) {
       const name = form.names.items[i]?.name;
       if (!name) continue;
       if (!item.name) {
@@ -29,7 +27,7 @@ export default function Example() {
     alert(JSON.stringify(state.values));
   });
 
-  const items = form.useState("values").items;
+  const items = ak.useStoreState(form, (state) => state.values.items);
 
   return (
     <ak.Form store={form}>
