@@ -57,6 +57,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const parentMenubar = store.menubar;
   const hasParentMenu = !!parentMenu;
   const parentIsMenubar = !!parentMenubar && !hasParentMenu;
+  // If it's a submenu, it shouldn't behave like a modal dialog.
+  const modal = hasParentMenu ? false : modalProp;
 
   props = {
     ...props,
@@ -88,7 +90,9 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     let cleaning = false;
     setInitialFocusRef((prevInitialFocusRef) => {
       if (cleaning) return;
-      if (prevInitialFocusRef?.current?.isConnected) return prevInitialFocusRef;
+      if (modal && prevInitialFocusRef?.current?.isConnected) {
+        return prevInitialFocusRef;
+      }
       if (!autoFocusOnShowState) return;
       const ref = createRef() as MutableRefObject<HTMLElement | null>;
       switch (initialFocus) {
@@ -111,10 +115,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     return () => {
       cleaning = true;
     };
-  }, [store, autoFocusOnShowState, initialFocus, items, baseElement]);
-
-  // If it's a submenu, it shouldn't behave like a modal dialog.
-  const modal = hasParentMenu ? false : modalProp;
+  }, [store, modal, autoFocusOnShowState, initialFocus, items, baseElement]);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;
   // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
