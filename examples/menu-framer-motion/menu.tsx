@@ -81,7 +81,7 @@ export interface MenuItemProps extends React.ComponentPropsWithoutRef<
 // `Ariakit.MenuItem`.
 const MotionMenuItem = motion.create(Ariakit.MenuItem);
 
-export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
+export const MenuItem = React.forwardRef<HTMLDivElement>(
   function MenuItem(props, ref) {
     return (
       <MotionMenuItem

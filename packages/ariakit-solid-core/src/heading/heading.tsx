@@ -30,7 +30,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
     const Element = () => `h${level()}` as const;
     const tagName = extractTagName(ref.get);
     const isNativeHeading = createMemo(
-      () => !!tagName() && /^h\d$/.test(tagName()!),
+      () => !!tagName() && /^h\d$/.test(tagName()),
     );
 
     props = mergeProps(
