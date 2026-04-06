@@ -1,5 +1,9 @@
 import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
-import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
+import {
+  disabledFromElement,
+  disabledFromProps,
+  invariant,
+} from "@ariakit/core/utils/misc";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useRef } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
@@ -48,12 +52,6 @@ function hasActiveItem(
     if (item.element === excludeElement) return false;
     return item.element.getAttribute("aria-expanded") === "true";
   });
-}
-
-function disabledFromElement(element: Element) {
-  if (element.getAttribute("aria-disabled") === "true") return true;
-  if ("disabled" in element && element.disabled === true) return true;
-  return false;
 }
 
 /**
