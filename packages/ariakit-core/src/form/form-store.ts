@@ -85,11 +85,9 @@ function set<T extends FormStoreValues | unknown[]>(
   if (isIntegerKey) {
     const index = Number(key);
     if (values && Array.isArray(values)) {
-      return [
-        ...values.slice(0, index),
-        result,
-        ...values.slice(index + 1),
-      ] as T;
+      const copy = [...values];
+      copy[index] = result;
+      return copy as T;
     }
     const nextValues = [] as unknown as T;
     nextValues[index as keyof T] = result as T[keyof T];
