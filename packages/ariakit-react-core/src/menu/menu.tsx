@@ -38,6 +38,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   portal = !!modalProp,
   hideOnEscape = true,
   autoFocusOnShow = true,
+  autoFocusOnHide,
+  hideOnInteractOutside,
   hideOnHoverOutside,
   alwaysVisible,
   ...props
@@ -52,6 +54,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   );
 
   const ref = useRef<HTMLType>(null);
+  const skipAutoFocusOnHideRef = useRef(false);
 
   const parentMenu = store.parent;
   const parentMenubar = store.menubar;
@@ -82,6 +85,12 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const initialFocus = useStoreState(store, "initialFocus");
   const baseElement = useStoreState(store, "baseElement");
   const items = useStoreState(store, "renderedItems");
+  const open = useStoreState(store, "open");
+
+  useEffect(() => {
+    if (!open) return;
+    skipAutoFocusOnHideRef.current = false;
+  }, [open]);
 
   // Sets the initial focus ref.
   useEffect(() => {
@@ -168,10 +177,23 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     autoFocusOnShow: mayAutoFocusOnShow
       ? canAutoFocusOnShow && autoFocusOnShow
       : autoFocusOnShowState || !!modal,
+    autoFocusOnHide(element) {
+      const skipAutoFocus = skipAutoFocusOnHideRef.current;
+      skipAutoFocusOnHideRef.current = false;
+      if (skipAutoFocus && autoFocusOnHide == null) return false;
+      if (isFalsyBooleanCallback(autoFocusOnHide, element)) return false;
+      element?.focus();
+      return false;
+    },
     ...props,
     hideOnEscape(event) {
       if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
       store?.hideAll();
+      return true;
+    },
+    hideOnInteractOutside(event) {
+      if (isFalsyBooleanCallback(hideOnInteractOutside, event)) return false;
+      skipAutoFocusOnHideRef.current = event.type === "click";
       return true;
     },
     hideOnHoverOutside(event) {

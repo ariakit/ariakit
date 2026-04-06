@@ -22,12 +22,6 @@ export default function Example() {
             <Ariakit.MenuButtonArrow />
           </Ariakit.MenuButton>
           <Ariakit.Menu
-            autoFocusOnHide={(element) => {
-              // TODO: Remove once https://github.com/ariakit/ariakit/issues/4938
-              // is fixed.
-              element?.focus();
-              return false;
-            }}
             gutter={8}
             preventBodyScroll={false}
             style={{
