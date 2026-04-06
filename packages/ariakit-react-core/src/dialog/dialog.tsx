@@ -478,8 +478,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (event.defaultPrevented) return;
       // When CloseWatcher is active, only process synthetic events from the
       // bridge. The browser may also dispatch real keydown events for the
-      // same Escape press that triggered the CloseWatcher.
-      if (supportsCloseWatcher() && !isBridgeEvent(event)) return;
+      // same Escape press that triggered the CloseWatcher. Stop propagation
+      // so non-Ariakit handlers (e.g., third-party modals) don't see it.
+      if (supportsCloseWatcher() && !isBridgeEvent(event)) {
+        event.stopPropagation();
+        return;
+      }
       const dialog = ref.current;
       if (!dialog) return;
       // Ignore the event if the current dialog is marked by another dialog.
