@@ -1525,7 +1525,10 @@ function buildPerLineAnchors(
     while (low <= high) {
       const mid = (low + high) >> 1;
       const start = lineStarts[mid] ?? 0;
-      const next = mid + 1 < lineStarts.length ? (lineStarts[mid + 1] ?? Infinity) : Infinity;
+      const next =
+        mid + 1 < lineStarts.length
+          ? (lineStarts[mid + 1] ?? Infinity)
+          : Infinity;
 
       if (position < start) {
         high = mid - 1;
