@@ -22,5 +22,5 @@ export type { CloseWatcherInstance };
 export function supportsCloseWatcher() {
   // Debug
   // return false;
-  return typeof CloseWatcher !== "undefined";
+  return typeof CloseWatcher === "function";
 }

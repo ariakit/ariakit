@@ -21,6 +21,7 @@ function handleClose() {
   const target = document.activeElement || document.body;
   const event = new KeyboardEvent("keydown", {
     key: "Escape",
+    code: "Escape",
     bubbles: true,
     cancelable: true,
   });
