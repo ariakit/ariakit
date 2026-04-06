@@ -43,7 +43,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("F2");
     await test.expect(q.dialog()).toBeVisible();
     // Wait for auto-focus to move inside the dialog before closing.
-    await test.expect(q.dialog()).toBeFocused();
+    await test.expect(q.button("Menu")).toBeFocused();
 
     // Close dialog
     await page.keyboard.press("Escape");

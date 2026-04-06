@@ -362,6 +362,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     initialFocus,
     portal,
     preserveTabOrder,
+    store,
     autoFocusOnShowProp,
   ]);
 
