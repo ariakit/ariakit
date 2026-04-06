@@ -4,4 +4,4 @@
 "@ariakit/react": patch
 ---
 
-Fixed [`MenuButton`](https://ariakit.com/reference/menu-button) to preserve [`accessibleWhenDisabled`](https://ariakit.com/reference/menu-button#accessiblewhendisabled) behavior when composed with a rendered [`Button`](https://ariakit.com/reference/button).
+Fixed [`MenuButton`](https://ariakit.org/reference/menu-button) to preserve [`accessibleWhenDisabled`](https://ariakit.org/reference/menu-button#accessiblewhendisabled) behavior when composed with a rendered [`Button`](https://ariakit.org/reference/button).
