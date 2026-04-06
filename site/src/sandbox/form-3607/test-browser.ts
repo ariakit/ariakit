@@ -21,5 +21,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Submit again - first error should be gone, second should remain
     await q.button("Submit").click();
     await test.expect(q.text("Name is required")).toHaveCount(1);
+    await test
+      .expect(q.textbox("Item 1 name"))
+      .not.toHaveAccessibleDescription("Name is required");
+    await test
+      .expect(q.textbox("Item 2 name"))
+      .toHaveAccessibleDescription("Name is required");
   });
 });
