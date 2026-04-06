@@ -7,7 +7,7 @@ export default function Example() {
         <Ariakit.MenuButton
           accessibleWhenDisabled
           disabled
-          render={<Ariakit.Button accessibleWhenDisabled disabled />}
+          render={<Ariakit.Button />}
         >
           MenuButton props
         </Ariakit.MenuButton>
@@ -19,8 +19,6 @@ export default function Example() {
 
       <Ariakit.MenuProvider>
         <Ariakit.MenuButton
-          accessibleWhenDisabled
-          disabled
           render={<Ariakit.Button accessibleWhenDisabled disabled />}
         >
           Render props

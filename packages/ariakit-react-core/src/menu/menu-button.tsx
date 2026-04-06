@@ -50,6 +50,12 @@ function hasActiveItem(
   });
 }
 
+function disabledFromElement(element: Element) {
+  if (element.getAttribute("aria-disabled") === "true") return true;
+  if ("disabled" in element && element.disabled === true) return true;
+  return false;
+}
+
 /**
  * Returns props to create a `MenuButton` component.
  * @see https://ariakit.com/components/menu
@@ -87,6 +93,8 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenubar = !!parentMenubar && !hasParentMenu;
     const disabled = disabledFromProps(props);
+    const isDisabled = (element: Element) =>
+      disabled || disabledFromElement(element);
 
     const showMenu = () => {
       const trigger = ref.current;
@@ -100,7 +108,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event as any);
-      if (disabled) return;
+      if (isDisabled(event.currentTarget)) return;
       if (event.defaultPrevented) return;
       // Reset the autoFocusOnShow state so we can focus the menu button while
       // the menu is open and press arrow keys to move focus to the menu items.
@@ -129,7 +137,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event as any);
-      if (disabled) return;
+      if (isDisabled(event.currentTarget)) return;
       if (event.defaultPrevented) return;
       const initialFocus = getInitialFocus(event, dir);
       if (initialFocus) {
@@ -229,6 +237,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
         };
         const canShowOnHover = getShowOnHover();
         if (!canShowOnHover) return false;
+        if (isDisabled(event.currentTarget)) return false;
         const parent = parentIsMenubar ? parentMenubar : parentMenu;
         if (!parent) return true;
         // When hovering over a menu button shows a menu and the menu button is
