@@ -17,13 +17,26 @@ let refCount = 0;
 // browser may also dispatch for the same Escape key press.
 const bridgeEvents = new WeakSet<Event>();
 
+// Traverses shadow roots to find the innermost focused element.
+// `document.activeElement` stops at the shadow host, so without this
+// the synthetic Escape event would never reach handlers inside shadow
+// trees (e.g., web component editors embedded in a dialog).
+function getDeepActiveElement(): Element {
+  let active = document.activeElement;
+  while (active?.shadowRoot?.activeElement) {
+    active = active.shadowRoot.activeElement;
+  }
+  return active || document.body;
+}
+
 function handleClose() {
-  const target = document.activeElement || document.body;
+  const target = getDeepActiveElement();
   const event = new KeyboardEvent("keydown", {
     key: "Escape",
     code: "Escape",
     bubbles: true,
     cancelable: true,
+    composed: true,
   });
   bridgeEvents.add(event);
   target.dispatchEvent(event);
