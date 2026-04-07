@@ -1,5 +1,6 @@
 import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
 import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.ts";
 import { useStoreState } from "../../utils/store.tsx";
@@ -115,6 +116,7 @@ export function useHideOnInteractOutside(
   store: DialogStore,
   hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
   domReady?: boolean | HTMLElement | null,
+  interactedOutsideRef?: MutableRefObject<boolean>,
 ) {
   const open = useStoreState(store, "open");
   const previousMouseDownRef = usePreviousMouseDownRef(open);
@@ -139,7 +141,16 @@ export function useHideOnInteractOutside(
       // - https://github.com/ariakit/ariakit/issues/2330
       if (!isElementMarked(previousMouseDown, contentElement?.id)) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
+      if (interactedOutsideRef) {
+        interactedOutsideRef.current = true;
+      }
       store.hide();
+      // Reset if the hide was prevented (e.g., by an onClose handler that
+      // calls event.preventDefault). Otherwise the stale flag would
+      // incorrectly suppress focus restoration on a later close.
+      if (interactedOutsideRef && store.getState().open) {
+        interactedOutsideRef.current = false;
+      }
     },
   });
 
@@ -161,7 +172,13 @@ export function useHideOnInteractOutside(
     type: "contextmenu",
     listener: (event) => {
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
+      if (interactedOutsideRef) {
+        interactedOutsideRef.current = true;
+      }
       store.hide();
+      if (interactedOutsideRef && store.getState().open) {
+        interactedOutsideRef.current = false;
+      }
     },
   });
 }
