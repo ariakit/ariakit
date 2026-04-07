@@ -13,6 +13,7 @@ import {
   useEvent,
   useId,
   useMergeRefs,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
@@ -127,15 +128,14 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     // Observe DOM mutations to keep hasTabbableChildren in sync with
     // dynamic content (e.g., lazy-loaded children, disabled buttons).
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
+      if (!mounted) return;
       const element = ref.current;
       if (!element) return;
 
       const check = () => {
         setHasTabbableChildren(!!getAllTabbableIn(element).length);
       };
-
-      check();
 
       const observer = new MutationObserver(check);
       observer.observe(element, {
@@ -151,8 +151,9 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
           "href",
         ],
       });
+      check();
       return () => observer.disconnect();
-    }, []);
+    }, [mounted]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
