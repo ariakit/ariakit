@@ -94,7 +94,7 @@ for (const menuitem of [
 
     await page.mouse.click(10, 10);
     await expect(getMenu(page, "Options")).not.toBeVisible();
-    await expect(getButton(page, "Options")).toBeFocused();
+    await expect(getButton(page, "Options")).not.toBeFocused();
   });
 
   test(`interact with modal by clicking on the ${menuitem} menu item with the keyboard`, async ({
