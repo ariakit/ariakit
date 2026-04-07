@@ -115,12 +115,13 @@ describe.each(TAB)("Tab tests - %s", (label) => {
     await click(q.tab("Tags"));
     await click(document.body);
     expect(q.dialog()).not.toBeInTheDocument();
-    await click(q.combobox(label));
+    await press.Enter();
     await sleep(1000);
     expect(q.dialog()).toBeInTheDocument();
     expect(q.tabpanel("Branches")).toBeInTheDocument();
     expect(q.option("main")).toHaveFocus();
     expect(q.option("main")).toHaveAttribute("data-active-item", "true");
+    expect(q.option("main")).toHaveAttribute("data-focus-visible", "true");
   });
 
   test("switch tabs with arrow keys", async () => {

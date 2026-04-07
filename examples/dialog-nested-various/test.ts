@@ -218,7 +218,7 @@ test.each(["nested", "sibling"])(
     expectModalStyle(true);
     await click(document.body);
     expect(q.dialog.includesHidden("Dialog")).not.toBeInTheDocument();
-    expect(q.button("Open dialog")).not.toHaveFocus();
+    expect(q.button("Open dialog")).toHaveFocus();
     expect(q.dialog(`${name} no backdrop ${name}`)).not.toBeInTheDocument();
     expect(q.dialog(`${name} no backdrop`)).not.toBeInTheDocument();
     expectModalStyle(false);

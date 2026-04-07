@@ -25,7 +25,7 @@ test("open dialog with click and hide by clicking outside", async () => {
   expect(q.combobox("Search for apps and commands...")).toHaveFocus();
   await click(document.body);
   expect(q.option("Search Contacts")).not.toHaveAttribute("data-active-item");
-  expect(q.button("Open Command Menu")).not.toHaveFocus();
+  expect(q.button("Open Command Menu")).toHaveFocus();
   await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
 });
 

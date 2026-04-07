@@ -31,7 +31,7 @@ test("hide cart dialog by clicking outside", async () => {
   expect(q.button("Dismiss popup")).toHaveFocus();
   await click(backdrop("Your Shopping Cart"));
   expect(q.dialog("Your Shopping Cart")).not.toBeInTheDocument();
-  expect(q.button("View Cart")).not.toHaveFocus();
+  expect(q.button("View Cart")).toHaveFocus();
 });
 
 test("show confirm dialog", async () => {
@@ -65,5 +65,5 @@ test("hide confirm dialog by clicking outside", async () => {
   await click(backdrop("Remove product"));
   expect(q.dialog("Remove product")).not.toBeInTheDocument();
   expect(q.dialog("Your Shopping Cart")).toBeVisible();
-  expect(q.button("Remove Warm Jacket")).not.toHaveFocus();
+  expect(q.button("Remove Warm Jacket")).toHaveFocus();
 });
