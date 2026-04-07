@@ -126,33 +126,13 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
-    // Observe DOM mutations to keep hasTabbableChildren in sync with
-    // dynamic content (e.g., lazy-loaded children, disabled buttons).
+    // Re-check tabbable children each time the panel becomes visible so
+    // content rendered conditionally on tab selection is accounted for.
     useSafeLayoutEffect(() => {
       if (!mounted) return;
       const element = ref.current;
       if (!element) return;
-
-      const check = () => {
-        setHasTabbableChildren(!!getAllTabbableIn(element).length);
-      };
-
-      const observer = new MutationObserver(check);
-      observer.observe(element, {
-        subtree: true,
-        childList: true,
-        attributeFilter: [
-          "disabled",
-          "hidden",
-          "tabindex",
-          "inert",
-          "contenteditable",
-          "type",
-          "href",
-        ],
-      });
-      check();
-      return () => observer.disconnect();
+      setHasTabbableChildren(!!getAllTabbableIn(element).length);
     }, [mounted]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
