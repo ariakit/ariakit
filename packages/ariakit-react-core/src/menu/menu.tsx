@@ -57,6 +57,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const parentMenubar = store.menubar;
   const hasParentMenu = !!parentMenu;
   const parentIsMenubar = !!parentMenubar && !hasParentMenu;
+  // If it's a submenu, it shouldn't behave like a modal dialog.
+  const modal = hasParentMenu ? false : modalProp;
 
   props = {
     ...props,
@@ -88,34 +90,37 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     let cleaning = false;
     setInitialFocusRef((prevInitialFocusRef) => {
       if (cleaning) return;
-      // TODO: Fix
+      if (modal && prevInitialFocusRef?.current?.isConnected) {
+        return prevInitialFocusRef;
+      }
       if (!autoFocusOnShowState) return;
-      if (prevInitialFocusRef?.current?.isConnected) return prevInitialFocusRef;
-      const ref = createRef() as MutableRefObject<HTMLElement | null>;
+      let element: HTMLElement | null;
       switch (initialFocus) {
         // TODO: Refactor
         case "first":
-          ref.current =
+          element =
             items.find((item) => !item.disabled && item.element)?.element ||
             null;
           break;
         case "last":
-          ref.current =
+          element =
             [...items].reverse().find((item) => !item.disabled && item.element)
               ?.element || null;
           break;
         default:
-          ref.current = baseElement;
+          element = baseElement;
       }
+      if (element && element === prevInitialFocusRef?.current) {
+        return prevInitialFocusRef;
+      }
+      const ref = createRef() as MutableRefObject<HTMLElement | null>;
+      ref.current = element;
       return ref;
     });
     return () => {
       cleaning = true;
     };
-  }, [store, autoFocusOnShowState, initialFocus, items, baseElement]);
-
-  // If it's a submenu, it shouldn't behave like a modal dialog.
-  const modal = hasParentMenu ? false : modalProp;
+  }, [store, modal, autoFocusOnShowState, initialFocus, items, baseElement]);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;
   // When the `autoFocusOnShow` prop is set to `true` (default), we'll only

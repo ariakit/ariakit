@@ -268,6 +268,15 @@ export function disabledFromProps(props: {
 }
 
 /**
+ * Checks whether something is disabled or not based on its DOM attributes.
+ */
+export function disabledFromElement(element: Element) {
+  if (element.getAttribute("aria-disabled") === "true") return true;
+  if ("disabled" in element && element.disabled === true) return true;
+  return false;
+}
+
+/**
  * Removes undefined values from an object.
  */
 export function removeUndefinedValues<T extends AnyObject>(obj: T) {

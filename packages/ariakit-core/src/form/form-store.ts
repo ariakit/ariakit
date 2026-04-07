@@ -57,6 +57,15 @@ export function get<T>(
   return get(values[key], rest, defaultValue);
 }
 
+// Returns the existing nested value if it is an array or object, otherwise
+// creates a new container based on whether the next key is an integer.
+function getOrCreateNested(nestedValues: unknown, nextKey: string) {
+  if (Array.isArray(nestedValues) || isObject(nestedValues)) {
+    return nestedValues;
+  }
+  return isInteger(nextKey) ? [] : {};
+}
+
 function set<T extends FormStoreValues | unknown[]>(
   values: T,
   path: StringLike | string[],
@@ -68,18 +77,17 @@ function set<T extends FormStoreValues | unknown[]>(
   const isIntegerKey = isInteger(key);
   const nextValues = isIntegerKey ? values || [] : values || {};
   const nestedValues = nextValues[key];
+  const nextKey = rest[0];
   const result =
-    rest.length && (Array.isArray(nestedValues) || isObject(nestedValues))
-      ? set(nestedValues, rest, value)
+    rest.length && nextKey != null
+      ? set(getOrCreateNested(nestedValues, nextKey), rest, value)
       : value;
   if (isIntegerKey) {
     const index = Number(key);
     if (values && Array.isArray(values)) {
-      return [
-        ...values.slice(0, index),
-        result,
-        ...values.slice(index + 1),
-      ] as T;
+      const copy = [...values];
+      copy[index] = result;
+      return copy as T;
     }
     const nextValues = [] as unknown as T;
     nextValues[index as keyof T] = result as T[keyof T];

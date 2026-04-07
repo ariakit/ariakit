@@ -19,7 +19,12 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.ts";
+import {
+  useEvent,
+  useMergeRefs,
+  useMetadataProps,
+  useTagName,
+} from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusableContext } from "./focusable-context.tsx";
@@ -27,6 +32,8 @@ import { FocusableContext } from "./focusable-context.tsx";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
 
 const isSafariBrowser = isSafari();
 
@@ -197,6 +204,12 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     ...props
   }) {
     const ref = useRef<HTMLType>(null);
+    const [parentAccessibleWhenDisabled, metadataProps] = useMetadataProps(
+      props,
+      accessibleWhenDisabledSymbol,
+      accessibleWhenDisabled,
+    );
+    accessibleWhenDisabled ??= parentAccessibleWhenDisabled;
 
     // Add global event listeners to determine whether the user is using a
     // keyboard to navigate the site or not.
@@ -383,6 +396,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       "data-autofocus": autoFocus || undefined,
       "aria-disabled": disabled || undefined,
       ...props,
+      ...metadataProps,
       ref: useMergeRefs(ref, autoFocusRef, props.ref),
       style,
       tabIndex: getTabIndex({

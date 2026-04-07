@@ -13,6 +13,7 @@ import {
   useEvent,
   useId,
   useMergeRefs,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
@@ -125,12 +126,14 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
-    useEffect(() => {
+    // Re-check tabbable children each time the panel becomes visible so
+    // content rendered conditionally on tab selection is accounted for.
+    useSafeLayoutEffect(() => {
+      if (!mounted) return;
       const element = ref.current;
       if (!element) return;
-      const tabbable = getAllTabbableIn(element);
-      setHasTabbableChildren(!!tabbable.length);
-    }, []);
+      setHasTabbableChildren(!!getAllTabbableIn(element).length);
+    }, [mounted]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
