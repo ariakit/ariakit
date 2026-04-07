@@ -125,11 +125,33 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
+    // Observe DOM mutations to keep hasTabbableChildren in sync with
+    // dynamic content (e.g., lazy-loaded children, disabled buttons).
     useEffect(() => {
       const element = ref.current;
       if (!element) return;
-      const tabbable = getAllTabbableIn(element);
-      setHasTabbableChildren(!!tabbable.length);
+
+      const check = () => {
+        setHasTabbableChildren(!!getAllTabbableIn(element).length);
+      };
+
+      check();
+
+      const observer = new MutationObserver(check);
+      observer.observe(element, {
+        subtree: true,
+        childList: true,
+        attributeFilter: [
+          "disabled",
+          "hidden",
+          "tabindex",
+          "inert",
+          "contenteditable",
+          "type",
+          "href",
+        ],
+      });
+      return () => observer.disconnect();
     }, []);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
