@@ -391,12 +391,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const focusOnHide = useCallback(
     (dialog: HTMLElement | null, retry = true) => {
-      // When the dialog was closed by clicking or right-clicking outside,
-      // we use preventScroll to avoid scrolling the disclosure element into
-      // view. This matches native HTML behavior where clicking outside a
-      // dialog/popover doesn't scroll the trigger into view.
-      const preventScroll = interactedOutsideRef.current;
-      interactedOutsideRef.current = false;
+      // Hide was triggered by clicking or right-clicking outside the dialog.
+      // Native HTML dialogs and popovers don't restore focus to the trigger
+      // in this case, so we skip focus restoration entirely.
+      if (interactedOutsideRef.current) {
+        interactedOutsideRef.current = false;
+        return;
+      }
       const { disclosureElement } = store.getState();
       // Hide was triggered by a click/focus on a tabbable element outside the
       // dialog. We won't change focus then.
@@ -439,7 +440,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       }
       if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
       if (!isElementFocusable) return;
-      element?.focus({ preventScroll });
+      element?.focus();
     },
     [store, finalFocus, autoFocusOnHideProp],
   );
