@@ -34,6 +34,7 @@ import {
   useBooleanEvent,
   useEvent,
   useId,
+  useLiveRef,
   useMergeRefs,
   usePortalRef,
   useSafeLayoutEffect,
@@ -166,8 +167,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   );
 
   const { wrapElement, nestedDialogs } = useNestedDialogs(store);
-  const nestedDialogsRef = useRef(nestedDialogs);
-  nestedDialogsRef.current = nestedDialogs;
+  const nestedDialogsRef = useLiveRef(nestedDialogs);
   props = useWrapElement(props, wrapElement, [wrapElement]);
 
   // On Safari, buttons don't receive focus on mousedown unless they have an
@@ -399,8 +399,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (interactedOutsideRef.current) {
         interactedOutsideRef.current = false;
         // Close nested dialogs (e.g., portaled menus) that would otherwise
-        // remain open because they relied on the focusin event from focus
-        // restoration to detect the outside interaction.
+        // remain open. Their own click handler is blocked because the
+        // mousedown target (e.g., backdrop) becomes invisible after the
+        // parent dialog closes.
         for (const nestedDialog of nestedDialogsRef.current) {
           nestedDialog.hide();
         }
@@ -450,7 +451,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (!isElementFocusable) return;
       element?.focus();
     },
-    [store, finalFocus, autoFocusOnHideProp],
+    [store, finalFocus, autoFocusOnHideProp, nestedDialogsRef],
   );
 
   const focusedOnHideRef = useRef(false);

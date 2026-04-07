@@ -92,8 +92,12 @@ function useEventOutside({
       // We need to check if the content element has been focused at least once
       // before checking if it's marked. This is so hovercards and tooltips
       // don't stay open when new nodes are added to the DOM and focused.
+      // Ancestor elements (like body) are never marked by the tree snapshot,
+      // but clicking on them is still an outside interaction.
       const focused = focusedRef.current;
-      if (focused && !isElementMarked(target, contentElement.id)) return;
+      if (focused && !isElementMarked(target, contentElement.id)) {
+        if (!contains(target, contentElement)) return;
+      }
       // Finally, if the target has been marked as "outside" or is an ancestor
       // of the content element, we call the listener.
       callListener(event);
