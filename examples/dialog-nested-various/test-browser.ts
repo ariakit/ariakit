@@ -125,7 +125,7 @@ for (const { name, type } of [
     await expectAccessibleDialog(page, "Dialog", true);
     await expect(canScrollBody(page)).resolves.toBe(false);
     await page.mouse.click(1, 1);
-    await expect(q.button("Open dialog")).toBeFocused();
+    await expect(q.button("Open dialog")).not.toBeFocused();
     await expect(q.dialog("Dialog")).not.toBeVisible();
     await expect(canScrollBody(page)).resolves.toBe(true);
   });
