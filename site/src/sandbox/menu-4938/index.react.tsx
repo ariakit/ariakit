@@ -1,6 +1,11 @@
 import * as Ariakit from "@ariakit/react";
+import { useRef } from "react";
 
 export default function Example() {
+  // TODO: Remove once https://github.com/ariakit/ariakit/issues/4938
+  // is fixed.
+  const interactedOutsideRef = useRef(false);
+
   return (
     <>
       <p>Please scroll down to partially see the menu button.</p>
@@ -24,6 +29,22 @@ export default function Example() {
           <Ariakit.Menu
             gutter={8}
             preventBodyScroll={false}
+            autoFocusOnHide={(element) => {
+              // TODO: Remove once
+              // https://github.com/ariakit/ariakit/issues/4938 is fixed.
+              if (interactedOutsideRef.current) {
+                interactedOutsideRef.current = false;
+                return false;
+              }
+              element?.focus();
+              return false;
+            }}
+            hideOnInteractOutside={(event) => {
+              // TODO: Remove once
+              // https://github.com/ariakit/ariakit/issues/4938 is fixed.
+              interactedOutsideRef.current = true;
+              return true;
+            }}
             style={{
               display: "flex",
               minWidth: 180,
