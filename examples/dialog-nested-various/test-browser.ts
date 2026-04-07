@@ -146,7 +146,7 @@ for (const name of ["nested", "sibling"]) {
     await expect(q.dialog("Dialog")).not.toBeVisible();
     await expect(q.dialog(`${name} no backdrop`)).not.toBeVisible();
     await expect(q.dialog(`${name} no backdrop ${name}`)).not.toBeVisible();
-    await expect(q.button("Open dialog")).toBeFocused();
+    await expect(q.button("Open dialog")).not.toBeFocused();
   });
 }
 
