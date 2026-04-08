@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.4.14
+
+- Updated dependencies: `@ariakit/core@0.4.19`
+
 ## 0.4.13
 
 - Added `q.text()` query to `@ariakit/test/playwright`.

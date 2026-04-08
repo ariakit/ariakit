@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react",
-  "version": "0.4.24",
+  "version": "0.4.25",
   "description": "Toolkit for building accessible web apps with React",
   "keywords": [
     "a11y",

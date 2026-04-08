@@ -1,5 +1,47 @@
 # @ariakit/react-core
 
+## 0.4.25
+
+### Renamed `offscreenBehavior` to `offscreenMode`
+
+**BREAKING** if you're using the `offscreenBehavior` prop on collection or composite item offscreen components.
+
+The `offscreenBehavior` prop has been renamed to `offscreenMode` for consistency.
+
+Before:
+
+```tsx
+<ComboboxItem offscreenBehavior="lazy" />
+```
+
+After:
+
+```tsx
+<ComboboxItem offscreenMode="lazy" />
+```
+
+### Clicking outside no longer restores focus to the disclosure element
+
+[`Dialog`](https://ariakit.com/reference/dialog) and components that extend it (such as [`Menu`](https://ariakit.com/reference/menu) and [`Popover`](https://ariakit.com/reference/popover)) no longer restore focus to the disclosure element when the dialog is closed by clicking or right-clicking outside. This aligns with native HTML `<dialog>` and `popover` behavior where trigger buttons don't receive focus when you interact outside.
+
+Focus is still restored normally when the dialog is closed by other means, such as pressing Escape, selecting a menu item, or calling `store.hide()` programmatically. In these cases the disclosure element is now focused with default browser scrolling instead of `preventScroll`.
+
+### Improved Safari focus behavior for buttons, checkboxes, and radio buttons
+
+On Safari, buttons, checkboxes, and radio buttons don't receive focus on mousedown like other browsers. Previously, this was handled by manually focusing the element in a `mousedown` handler. Now, an explicit `tabIndex` attribute is set on these elements in Safari, which causes the browser to focus them natively. This results in more predictable focus behavior and fewer timing-sensitive workarounds.
+
+### Other updates
+
+- Fixed a race condition in [`Dialog`](https://ariakit.org/reference/dialog) where the deferred auto-focus could steal focus from the disclosure element after the dialog was closed.
+- Fixed [`formStore.setError()`](https://ariakit.org/reference/use-form-store#seterror) and [`formStore.setFieldTouched()`](https://ariakit.org/reference/use-form-store#setfieldtouched) failing to set values on nested array field paths such as `items.0.name`.
+- Fixed [`SelectItem`](https://ariakit.com/reference/select-item) store item `children` property reflecting the [`value`](https://ariakit.com/reference/select-item#value) prop instead of the actual rendered text content.
+- Fixed [`MenuButton`](https://ariakit.com/reference/menu-button) to preserve [`accessibleWhenDisabled`](https://ariakit.com/reference/menu-button#accessiblewhendisabled) behavior when composed with a rendered [`Button`](https://ariakit.com/reference/button).
+- Fixed [`Menu`](https://ariakit.org/reference/menu) with [`modal`](https://ariakit.org/reference/menu#modal) and [`getPersistentElements`](https://ariakit.org/reference/menu#getpersistentelements) so focusing a persistent [`MenuButton`](https://ariakit.org/reference/menu-button) doesn't immediately move focus back to the menu.
+- Fixed `useMetadataProps` overwriting parent metadata with `undefined` when the child doesn't provide an explicit value.
+- Fixed [`TabPanel`](https://ariakit.com/reference/tab-panel) not re-evaluating tabbable children when the panel becomes visible.
+- Fixed components not dropping their internal `aria-labelledby` when `aria-label` is passed.
+- Updated dependencies: `@ariakit/core@0.4.19`
+
 ## 0.4.24
 
 This release improves React combobox and form reliability, including preserved combobox input and popover scroll position during result updates, more predictable focus behavior after filtering selects on iOS Safari, proper isolation of [`FormRadio`](https://ariakit.org/reference/form-radio) groups inside nested composite widgets, safer handling of explicitly undefined [`id`](https://ariakit.org/reference/select-item#id) props, and better generic typing for [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) wrappers.
