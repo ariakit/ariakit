@@ -1,4 +1,4 @@
-import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
+import { contains, getDocument } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
@@ -133,7 +133,6 @@ export function useHideOnInteractOutside(
       // was dispatched outside of the dialog. See form-select example. We just
       // ignore this.
       if (!previousMouseDown) return;
-      if (!isVisible(previousMouseDown)) return;
       // This prevents the dialog from closing by dragging the cursor (for
       // example, selecting some text inside the dialog and releasing the mouse
       // outside of it). See:
