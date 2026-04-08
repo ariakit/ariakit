@@ -46,7 +46,7 @@ test("hide on click outside", async () => {
   expect(q.dialog()).toBeVisible();
   await click(document.body);
   expect(q.dialog()).not.toBeInTheDocument();
-  expect(q.button("Show modal")).toHaveFocus();
+  expect(q.button("Show modal")).not.toHaveFocus();
 });
 
 test("hide on dismiss button click", async () => {

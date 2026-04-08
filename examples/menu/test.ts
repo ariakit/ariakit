@@ -99,7 +99,7 @@ test("hide on click outside", async () => {
   expect(q.menu()).toBeVisible();
   await click(document.body);
   expect(q.menu()).not.toBeInTheDocument();
-  expect(q.button("Actions")).toHaveFocus();
+  expect(q.button("Actions")).not.toHaveFocus();
 });
 
 test("hide on click on outside element", async () => {

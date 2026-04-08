@@ -51,7 +51,7 @@ test("hide on click outside", async () => {
   expect(q.menu()).not.toBeInTheDocument();
   await click(q.button("Options"));
   await click(document.body);
-  expect(q.button("Options")).toHaveFocus();
+  expect(q.button("Options")).not.toHaveFocus();
   expect(q.menu.includesHidden()).toBeVisible();
   await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
 });
