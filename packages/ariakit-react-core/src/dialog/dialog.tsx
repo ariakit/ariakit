@@ -8,6 +8,7 @@ import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { getFirstTabbableIn, isFocusable } from "@ariakit/core/utils/focus";
 import { chain } from "@ariakit/core/utils/misc";
 import { isSafari } from "@ariakit/core/utils/platform";
+import { sync } from "@ariakit/core/utils/store";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type {
   ComponentPropsWithRef,
@@ -157,7 +158,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // Tracks whether the dialog was hidden by an outside click or context menu.
   // When true, focusOnHide skips focus restoration to match native HTML
   // behavior where trigger buttons don't receive focus when you click outside.
+  // Reset when the dialog opens to avoid stale flags from prevented closes
+  // (e.g., onClose calling event.preventDefault), async closes with
+  // animations, or when autoFocusOnHide is disabled.
   const interactedOutsideRef = useRef(false);
+  useSafeLayoutEffect(() => {
+    return sync(store, ["open"], (state) => {
+      if (!state.open) return;
+      interactedOutsideRef.current = false;
+    });
+  }, [store]);
   useHideOnInteractOutside(
     store,
     hideOnInteractOutside,
@@ -394,10 +404,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // Hide was triggered by clicking or right-clicking outside the dialog.
       // Native HTML dialogs and popovers don't restore focus to the trigger
       // in this case, so we skip focus restoration entirely.
-      if (interactedOutsideRef.current) {
-        interactedOutsideRef.current = false;
-        return;
-      }
+      if (interactedOutsideRef.current) return;
       const { disclosureElement } = store.getState();
       // Hide was triggered by a click/focus on a tabbable element outside the
       // dialog. We won't change focus then.

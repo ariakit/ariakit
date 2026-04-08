@@ -144,12 +144,6 @@ export function useHideOnInteractOutside(
         interactedOutsideRef.current = true;
       }
       store.hide();
-      // Reset if the hide was prevented (e.g., by an onClose handler that
-      // calls event.preventDefault). Otherwise the stale flag would
-      // incorrectly suppress focus restoration on a later close.
-      if (interactedOutsideRef && store.getState().open) {
-        interactedOutsideRef.current = false;
-      }
     },
   });
 
@@ -175,9 +169,6 @@ export function useHideOnInteractOutside(
         interactedOutsideRef.current = true;
       }
       store.hide();
-      if (interactedOutsideRef && store.getState().open) {
-        interactedOutsideRef.current = false;
-      }
     },
   });
 }
