@@ -45,3 +45,4 @@ worker-configuration.d.ts
 
 # claude code
 .claude/worktrees
+.claude/scheduled_tasks.lock
