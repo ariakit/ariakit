@@ -354,22 +354,22 @@
   @container style(--_ak-ll: oklch(0 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0;
-    --_ak-tcc: 0.2;
+    --_ak-tcc: 0.25;
   }
   @container style(--_ak-ll: oklch(0.125 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0.125;
-    --_ak-tcc: 0.0906;
+    --_ak-tcc: 0.1064;
   }
   @container style(--_ak-ll: oklch(0.25 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0.25;
-    --_ak-tcc: 0.0499;
+    --_ak-tcc: 0.053;
   }
   @container style(--_ak-ll: oklch(0.375 0 0)) {
     --_ak-tcd: 1;
     --_ak-tpl: 0.375;
-    --_ak-tcc: 0.0405;
+    --_ak-tcc: 0.0407;
   }
   @container style(--_ak-ll: oklch(0.5 0 0)) {
     --_ak-tcd: 1;

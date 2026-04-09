@@ -40,6 +40,7 @@ const LAYER_CONTAINER = "ak-layer";
 
 const CHILD_TEXT_MIN_CONTRAST = 0.521;
 const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
+const CHILD_TEXT_CHROMA_CAP_DARK_MAX = 0.25;
 const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
 const CHILD_TEXT_CHROMA_CAP_RAMP_START_L = 0.5;
 const OUTLINE_MIN_CONTRAST = 0.5;
@@ -745,7 +746,7 @@ function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
   const darknessWeight =
     darknessRatio * darknessRatio * darknessRatio * darknessRatio;
   const darkChromaRange =
-    CHILD_TEXT_CHROMA_CAP_LIGHT - CHILD_TEXT_CHROMA_CAP_DARK_MIN;
+    CHILD_TEXT_CHROMA_CAP_DARK_MAX - CHILD_TEXT_CHROMA_CAP_DARK_MIN;
   return roundToDecimals(
     CHILD_TEXT_CHROMA_CAP_DARK_MIN + darknessWeight * darkChromaRange,
     4,
