@@ -384,12 +384,12 @@
   @container style(--_ak-ll: oklch(0.75 0 0)) {
     --_ak-tcd: -1;
     --_ak-tpl: 0.75;
-    --_ak-tcc: 0.16;
+    --_ak-tcc: 0.2;
   }
   @container style(--_ak-ll: oklch(0.875 0 0)) {
     --_ak-tcd: -1;
     --_ak-tpl: 0.875;
-    --_ak-tcc: 0.17;
+    --_ak-tcc: 0.2;
   }
   @container style(--_ak-ll: oklch(1 0 0)) {
     --_ak-tcd: -1;

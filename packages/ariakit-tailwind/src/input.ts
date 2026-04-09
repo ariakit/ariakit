@@ -43,10 +43,8 @@ const CHILD_TEXT_MIN_CONTRAST = 0.521;
 // mid-tone backgrounds, where the WCAG margin is tighter.
 const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
 const CHILD_TEXT_CHROMA_CAP_DARK_MAX = 0.25;
-const CHILD_TEXT_CHROMA_CAP_LIGHT_MIN = 0.16;
-const CHILD_TEXT_CHROMA_CAP_LIGHT_MAX = 0.2;
+const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
 const CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L = 0.5;
-const CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L = 0.75;
 const OUTLINE_MIN_CONTRAST = 0.5;
 
 const CONTRAST_SCALE = 0.3334;
@@ -745,10 +743,6 @@ function mapAncestorLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
   );
 }
 
-function getQuadraticRampWeight(progress: number) {
-  return progress * progress;
-}
-
 function getQuarticRampWeight(progress: number) {
   return progress * progress * progress * progress;
 }
@@ -759,19 +753,7 @@ function interpolateRoundedValue(min: number, max: number, weight: number) {
 
 function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
   if (!isDark) {
-    // Light parents stay conservative until they get close to white, then we
-    // ease up toward the brightest-safe cap.
-    if (parentLightness <= CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L) {
-      return CHILD_TEXT_CHROMA_CAP_LIGHT_MIN;
-    }
-    const brightnessRatio =
-      (parentLightness - CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L) /
-      (1 - CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L);
-    return interpolateRoundedValue(
-      CHILD_TEXT_CHROMA_CAP_LIGHT_MIN,
-      CHILD_TEXT_CHROMA_CAP_LIGHT_MAX,
-      getQuadraticRampWeight(brightnessRatio),
-    );
+    return CHILD_TEXT_CHROMA_CAP_LIGHT;
   }
   // Dark parents mirror the same idea, but ramp faster as they approach black.
   if (parentLightness >= CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L) {
