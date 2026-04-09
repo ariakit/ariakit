@@ -153,7 +153,7 @@ function getForbiddenRangeMask(
   upperBoundary: Value,
 ) {
   return fn.binary(
-    fn.mul(
+    fn.min(
       fn.sub(currentLightness, lowerBoundary),
       fn.sub(upperBoundary, currentLightness),
     ),
@@ -193,15 +193,13 @@ function getSafeLightness(
     lowerBoundary,
     upperBoundary,
   );
+  const forbiddenBoundary = fn.add(
+    lowerBoundary,
+    fn.mul(forbiddenBoundaryDirection, fn.sub(upperBoundary, lowerBoundary)),
+  );
   return fn.add(
-    fn.mul(currentLightness, fn.invert(forbiddenRangeMask)),
-    fn.mul(
-      fn.add(
-        fn.mul(lowerBoundary, fn.invert(forbiddenBoundaryDirection)),
-        fn.mul(upperBoundary, forbiddenBoundaryDirection),
-      ),
-      forbiddenRangeMask,
-    ),
+    currentLightness,
+    fn.mul(forbiddenRangeMask, fn.sub(forbiddenBoundary, currentLightness)),
   );
 }
 
