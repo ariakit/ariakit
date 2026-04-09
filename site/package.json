@@ -25,6 +25,7 @@
     "preview-stripe": "concurrently -k -r 'pnpm:preview' 'pnpm:listen-*'",
     "preview-stripe-lite": "concurrently -k -r 'pnpm:preview-lite' 'pnpm:listen-*'",
     "test": "playwright test",
+    "test-tailwind-perf": "playwright test src/sandbox/ariakit-tailwind/test-perf-chrome.ts --project=chrome --workers=1 --retries=0 --reporter=html",
     "test-chrome": "playwright test --project=chrome",
     "test-firefox": "playwright test --project=firefox",
     "test-safari": "playwright test --project=safari",
