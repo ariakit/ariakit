@@ -41,8 +41,10 @@ const LAYER_CONTAINER = "ak-layer";
 const CHILD_TEXT_MIN_CONTRAST = 0.521;
 const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
 const CHILD_TEXT_CHROMA_CAP_DARK_MAX = 0.25;
-const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
-const CHILD_TEXT_CHROMA_CAP_RAMP_START_L = 0.5;
+const CHILD_TEXT_CHROMA_CAP_LIGHT_MIN = 0.16;
+const CHILD_TEXT_CHROMA_CAP_LIGHT_MAX = 0.2;
+const CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L = 0.5;
+const CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L = 0.75;
 const OUTLINE_MIN_CONTRAST = 0.5;
 
 const CONTRAST_SCALE = 0.3334;
@@ -735,14 +737,26 @@ function mapAncestorLayerLightnessSteps(
 
 function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
   if (!isDark) {
-    return CHILD_TEXT_CHROMA_CAP_LIGHT;
+    if (parentLightness <= CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L) {
+      return CHILD_TEXT_CHROMA_CAP_LIGHT_MIN;
+    }
+    const brightnessRatio =
+      (parentLightness - CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L) /
+      (1 - CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L);
+    const brightnessWeight = brightnessRatio * brightnessRatio;
+    const lightChromaRange =
+      CHILD_TEXT_CHROMA_CAP_LIGHT_MAX - CHILD_TEXT_CHROMA_CAP_LIGHT_MIN;
+    return roundToDecimals(
+      CHILD_TEXT_CHROMA_CAP_LIGHT_MIN + brightnessWeight * lightChromaRange,
+      4,
+    );
   }
-  if (parentLightness >= CHILD_TEXT_CHROMA_CAP_RAMP_START_L) {
+  if (parentLightness >= CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L) {
     return CHILD_TEXT_CHROMA_CAP_DARK_MIN;
   }
   const darknessRatio =
-    (CHILD_TEXT_CHROMA_CAP_RAMP_START_L - parentLightness) /
-    CHILD_TEXT_CHROMA_CAP_RAMP_START_L;
+    (CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L - parentLightness) /
+    CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L;
   const darknessWeight =
     darknessRatio * darknessRatio * darknessRatio * darknessRatio;
   const darkChromaRange =
