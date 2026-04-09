@@ -382,6 +382,14 @@ const outlineMathVars = {
   outlineParentL: _ak.prop("opl", { initial: 0 }),
 };
 
+const textMathVars = {
+  textContrastDirection: _ak.prop.number("tcd", { initial: 1 }),
+  textParentL: _ak.prop.number("tpl", { initial: 0 }),
+  textChromaCap: _ak.prop.number("tcc", {
+    initial: CHILD_TEXT_CHROMA_CAP_DARK,
+  }),
+};
+
 const frameVars = {
   frameRadius: ak.prop.len("frame-radius", {
     inherits: true,
@@ -412,6 +420,7 @@ const vars = {
   ...themeTokenVars,
   ...layerColorVars,
   ...outlineMathVars,
+  ...textMathVars,
   ...frameVars,
 };
 
@@ -1206,11 +1215,7 @@ const textColorAdjusted = fn.oklch(textBaseColor, {
   h: textAdjustedHue,
 });
 
-function getTextDirectional(parentL: number, isDark: boolean) {
-  const textContrastDirection = isDark ? 1 : -1;
-  const textChromaCap = isDark
-    ? CHILD_TEXT_CHROMA_CAP_DARK
-    : CHILD_TEXT_CHROMA_CAP_LIGHT;
+function getTextDirectional() {
   // Text contrast utilities always keep at least a half-step delta so plain
   // `ak-text` still separates from the parent layer in both schemes.
   const textContrastShift = fn.mul(
@@ -1218,14 +1223,14 @@ function getTextDirectional(parentL: number, isDark: boolean) {
       fn.max(CHILD_TEXT_MIN_CONTRAST, inputs.textContrastL),
       fn.mul(vars.contrastT, CONTRAST_SCALE),
     ),
-    textContrastDirection,
+    vars.textContrastDirection,
   );
-  const textComputedL = fn.add(parentL, textContrastShift);
+  const textComputedL = fn.add(vars.textParentL, textContrastShift);
   const textUserLightness = fn.clamp(inputs.textLMin, l, inputs.textLMax);
   const textAccessibleLightness = fn.clamp01(textComputedL);
   // `textContrastDirection` is `1` on dark parents and `-1` on light parents.
   // Clamp it to a mask so CSS math can switch between max() and min().
-  const textDarkDirectionMask = fn.clamp01(textContrastDirection);
+  const textDarkDirectionMask = fn.clamp01(vars.textContrastDirection);
   const textDirectedLightness = fn.add(
     fn.mul(
       fn.max(textUserLightness, textAccessibleLightness),
@@ -1238,7 +1243,7 @@ function getTextDirectional(parentL: number, isDark: boolean) {
   );
   const textChroma = fn.min(
     fn.clamp(inputs.textCMin, c, inputs.textCMax),
-    textChromaCap,
+    vars.textChromaCap,
   );
   // Child text utilities can push lightness around, but they must still land on
   // the accessible side of the parent layer's forbidden range.
@@ -1258,8 +1263,14 @@ utility(
   getBaseDeclarations(vars.layer),
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
+  at.container(fn.style(vars.layerL), set.color(getTextDirectional())),
   ...mapAncestorLayerLightnessSteps((parentL, isDark) => [
-    set.color(getTextDirectional(parentL, isDark)),
+    set(vars.textContrastDirection, isDark ? 1 : -1),
+    set(vars.textParentL, parentL),
+    set(
+      vars.textChromaCap,
+      isDark ? CHILD_TEXT_CHROMA_CAP_DARK : CHILD_TEXT_CHROMA_CAP_LIGHT,
+    ),
   ]),
 );
 
