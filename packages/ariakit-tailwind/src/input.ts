@@ -39,6 +39,8 @@ const BAND_LEVEL_LIGHT_HIGH = 1;
 const LAYER_CONTAINER = "ak-layer";
 
 const CHILD_TEXT_MIN_CONTRAST = 0.521;
+// Child colored text can be more vivid on extreme backgrounds than on
+// mid-tone backgrounds, where the WCAG margin is tighter.
 const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
 const CHILD_TEXT_CHROMA_CAP_DARK_MAX = 0.25;
 const CHILD_TEXT_CHROMA_CAP_LIGHT_MIN = 0.16;
@@ -737,6 +739,8 @@ function mapAncestorLayerLightnessSteps(
 
 function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
   if (!isDark) {
+    // Light parents stay conservative until they get close to white, then we
+    // ease up toward the brightest-safe cap.
     if (parentLightness <= CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L) {
       return CHILD_TEXT_CHROMA_CAP_LIGHT_MIN;
     }
@@ -751,6 +755,7 @@ function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
       4,
     );
   }
+  // Dark parents mirror the same idea, but ramp faster as they approach black.
   if (parentLightness >= CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L) {
     return CHILD_TEXT_CHROMA_CAP_DARK_MIN;
   }
