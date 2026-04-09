@@ -59,6 +59,16 @@ const LB_SPREAD_CONTRAST_SCALE = roundToDecimals(
   (FORBIDDEN_RANGE_LB_MAX - LB_BASE) / LB_SPREAD,
   4,
 );
+const LA_CONTRAST_SPREAD = roundToDecimals(
+  LA_SPREAD * LA_SPREAD_CONTRAST_SCALE,
+  4,
+);
+const LB_CONTRAST_SPREAD = roundToDecimals(
+  LB_SPREAD * LB_SPREAD_CONTRAST_SCALE,
+  4,
+);
+const LA_CHROMA_SPREAD = LA_SPREAD / CHROMA_MAX;
+const LB_CHROMA_SPREAD = LB_SPREAD / CHROMA_MAX;
 
 const CHROMA_TOKEN_OPTIONS = { max: 40 };
 const HUE_TOKEN_OPTIONS = { max: 360, step: 15 };
@@ -301,7 +311,6 @@ const radius = createNamespace("radius");
 
 const contrast = createVar("--contrast", 0);
 const globalContrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
-const normalizedChroma = fn.div(fn.min(c, CHROMA_MAX), CHROMA_MAX);
 
 // Band membership expressions — depend only on `l` and fixed constants.
 const bandDarkHigh = getRangeMask(l, 0, DARK_HIGH_MAX_L);
@@ -314,10 +323,10 @@ const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
 const constantMathVars = {
   textContrastL: _ak.prop("tcl", { initial: TEXT_CONTRAST_L }),
   forbiddenLaBase: _ak.prop("flab", {
-    initial: fn.sub(LA_BASE, fn.mul(normalizedChroma, LA_SPREAD)),
+    initial: fn.sub(LA_BASE, fn.mul(fn.min(c, CHROMA_MAX), LA_CHROMA_SPREAD)),
   }),
   forbiddenLbBase: _ak.prop("flbb", {
-    initial: fn.add(LB_BASE, fn.mul(normalizedChroma, LB_SPREAD)),
+    initial: fn.add(LB_BASE, fn.mul(fn.min(c, CHROMA_MAX), LB_CHROMA_SPREAD)),
   }),
   autoLDirection: _ak.prop("ald", { initial: fn.sub(DARK_L, LIGHT_L) }),
   darkL: _ak.prop("dal", { initial: DARK_L }),
@@ -736,47 +745,33 @@ const stateLayerChannels = {
 
 const forbiddenLa = fn.max(
   FORBIDDEN_RANGE_LA_MIN,
-  fn.sub(
-    vars.forbiddenLaBase,
-    fn.mul(vars.contrastT, LA_SPREAD, LA_SPREAD_CONTRAST_SCALE),
-  ),
+  fn.sub(vars.forbiddenLaBase, fn.mul(vars.contrastT, LA_CONTRAST_SPREAD)),
 );
 
 function getForbiddenLaValue(chromaValue: string | VarProperty) {
-  const normalizedTextChroma = fn.div(
-    fn.min(chromaValue, CHROMA_MAX),
-    CHROMA_MAX,
-  );
   return fn.max(
     FORBIDDEN_RANGE_LA_MIN,
     fn.sub(
       LA_BASE,
-      fn.mul(normalizedTextChroma, LA_SPREAD),
-      fn.mul(vars.contrastT, LA_SPREAD, LA_SPREAD_CONTRAST_SCALE),
+      fn.mul(fn.min(chromaValue, CHROMA_MAX), LA_CHROMA_SPREAD),
+      fn.mul(vars.contrastT, LA_CONTRAST_SPREAD),
     ),
   );
 }
 
 function getForbiddenLbValue(chromaValue: string | VarProperty) {
-  const normalizedTextChroma = fn.div(
-    fn.min(chromaValue, CHROMA_MAX),
-    CHROMA_MAX,
-  );
   return fn.min(
     FORBIDDEN_RANGE_LB_MAX,
     fn.add(
       LB_BASE,
-      fn.mul(normalizedTextChroma, LB_SPREAD),
-      fn.mul(vars.contrastT, LB_SPREAD, LB_SPREAD_CONTRAST_SCALE),
+      fn.mul(fn.min(chromaValue, CHROMA_MAX), LB_CHROMA_SPREAD),
+      fn.mul(vars.contrastT, LB_CONTRAST_SPREAD),
     ),
   );
 }
 const forbiddenLb = fn.min(
   FORBIDDEN_RANGE_LB_MAX,
-  fn.add(
-    vars.forbiddenLbBase,
-    fn.mul(vars.contrastT, LB_SPREAD, LB_SPREAD_CONTRAST_SCALE),
-  ),
+  fn.add(vars.forbiddenLbBase, fn.mul(vars.contrastT, LB_CONTRAST_SPREAD)),
 );
 
 const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
