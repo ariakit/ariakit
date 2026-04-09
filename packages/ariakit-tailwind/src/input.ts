@@ -616,7 +616,7 @@ function getContrastL(contrastValue: Value) {
   const bandWidth = fn.sub(upperBoundary, lowerBoundary);
   const valueEnabled = fn.binary(contrastValue);
   const normalDelta = fn.mul(contrastValue, direction);
-  const startLightness = getLayerL(0);
+  const startLightness = l;
   const baseLightness = getLayerL(normalDelta);
   const crossedFromDarkSide = fn.mul(
     fn.binary(fn.sub(lowerBoundary, startLightness)),
