@@ -1,3 +1,6 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { CDPSession, TestInfo } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
@@ -47,6 +50,11 @@ interface PerfBudget {
   recalcStyleDurationMs?: number;
 }
 
+const PERF_SUMMARY_URL = new URL(
+  "../../../test-results/ariakit-tailwind-perf.json",
+  import.meta.url,
+);
+const PERF_SUMMARY_PATH = fileURLToPath(PERF_SUMMARY_URL);
 const DEFAULT_ITERATIONS = 24;
 const DEFAULT_REPLICAS = 1;
 const DEFAULT_SAMPLE_COUNT = 3;
@@ -169,6 +177,12 @@ async function attachPerfSummary(testInfo: TestInfo, summary: PerfSummary) {
     body: Buffer.from(JSON.stringify(summary, null, 2)),
     contentType: "application/json",
   });
+}
+
+async function writePerfSummaryFile(summary: PerfSummary) {
+  await mkdir(dirname(PERF_SUMMARY_PATH), { recursive: true });
+  await writeFile(PERF_SUMMARY_URL, `${JSON.stringify(summary, null, 2)}\n`);
+  console.info(`Ariakit Tailwind perf summary: ${PERF_SUMMARY_PATH}`);
 }
 
 function assertPerfBudget(summary: PerfSummary, budget: PerfBudget) {
@@ -333,6 +347,7 @@ withFramework(import.meta.dirname, async ({ framework, test }) => {
     };
 
     await attachPerfSummary(testInfo, summary);
+    await writePerfSummaryFile(summary);
     expect(summary.totalSectionCount).toBeGreaterThan(0);
     expect(summary.targetSectionCount).toBeGreaterThan(0);
     assertPerfBudget(summary, getBudget());

@@ -6,6 +6,7 @@ dist
 test-results
 playwright-report
 .playwright
+.playwright-browsers
 .playwright-cli
 
 # dependencies
