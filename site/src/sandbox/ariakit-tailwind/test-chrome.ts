@@ -256,6 +256,27 @@ function extractComputedCSS() {
       classes.push(`text-[${text}]`);
     }
 
+    const childTextColors = new Set<string>();
+    for (const child of Array.from(el.children)) {
+      if (child.tagName === "SECTION") {
+        continue;
+      }
+      if (!child.textContent?.trim()) {
+        continue;
+      }
+      const childText = formatColor(window.getComputedStyle(child).color);
+      if (!childText || childText === text) {
+        continue;
+      }
+      childTextColors.add(childText);
+    }
+    if (childTextColors.size === 1) {
+      const [childText] = childTextColors;
+      if (childText) {
+        classes.push(`*:text-[${childText}]`);
+      }
+    }
+
     classes.push(
       ...compactCorners(
         style.borderTopLeftRadius,
