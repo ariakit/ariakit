@@ -518,6 +518,26 @@ function cleanCalc(value: string) {
   return value.replaceAll("calc(", "(");
 }
 
+function isZeroValue(value: Value | undefined) {
+  if (typeof value === "number") {
+    return value === 0;
+  }
+  if (typeof value === "string") {
+    return /^-?0(?:\.0+)?(?:[a-z%]+)?$/i.test(value);
+  }
+  return false;
+}
+
+function isOneValue(value: Value | undefined) {
+  if (typeof value === "number") {
+    return value === 1;
+  }
+  if (typeof value === "string") {
+    return /^1(?:\.0+)?$/i.test(value);
+  }
+  return false;
+}
+
 export const fn = {
   /** Interpolates values into a CSS expression string. */
   exp,
@@ -526,10 +546,53 @@ export const fn = {
 
   calc: (...args: Parameters<typeof exp>) =>
     `calc(${cleanCalc(fn.exp(...args))})`,
-  add: (...args: Value[]) => fn.calc(join(args, " + ")),
-  sub: (...args: Value[]) => fn.calc(join(args, " - ")),
-  mul: (...args: Value[]) => fn.calc(join(args, " * ")),
-  div: (...args: Value[]) => fn.calc(join(args, " / ")),
+  add: (...args: Value[]) => {
+    const values = args.filter((value) => !isZeroValue(value));
+    if (!values.length) {
+      return "0";
+    }
+    if (values.length === 1) {
+      const [value] = values;
+      return value == null ? "0" : fn.exp(value);
+    }
+    return fn.calc(join(values, " + "));
+  },
+  sub: (...args: Value[]) => {
+    const [firstValue, ...restValues] = args;
+    if (firstValue == null) {
+      return "0";
+    }
+    const values = restValues.filter((value) => !isZeroValue(value));
+    if (!values.length) {
+      return fn.exp(firstValue);
+    }
+    return fn.calc(join([firstValue, ...values], " - "));
+  },
+  mul: (...args: Value[]) => {
+    if (args.some((value) => isZeroValue(value))) {
+      return "0";
+    }
+    const values = args.filter((value) => !isOneValue(value));
+    if (!values.length) {
+      return "1";
+    }
+    if (values.length === 1) {
+      const [value] = values;
+      return value == null ? "1" : fn.exp(value);
+    }
+    return fn.calc(join(values, " * "));
+  },
+  div: (...args: Value[]) => {
+    const [firstValue, ...restValues] = args;
+    if (firstValue == null || isZeroValue(firstValue)) {
+      return "0";
+    }
+    const values = restValues.filter((value) => !isOneValue(value));
+    if (!values.length) {
+      return fn.exp(firstValue);
+    }
+    return fn.calc(join([firstValue, ...values], " / "));
+  },
   min: (a: Value, b: Value) => cleanCalc(fn.exp`min(${a}, ${b})`),
   max: (a: Value, b: Value) => cleanCalc(fn.exp`max(${a}, ${b})`),
   mod: (a: Value, b: Value) => cleanCalc(fn.exp`mod(${a}, ${b})`),

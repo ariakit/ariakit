@@ -127,8 +127,8 @@
   --_ak-adtl: clamp(0, var(--_ak-ald), 1);
   --_ak-adtd: clamp(0, (var(--_ak-ald) * -1), 1);
   --_ak-sl: calc(l + (clamp(0, (min((l - var(--_ak-fla)), (var(--_ak-flb) - l)) * 1000000), 1) * ((var(--_ak-fla) + (clamp(0, ((l - ((var(--_ak-fla) + var(--_ak-flb)) / 2)) * 1000000), 1) * (var(--_ak-flb) - var(--_ak-fla)))) - l)));
-  --_ak-liad: calc((var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald)) + (clamp(0, (min(((l + (var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald))) - var(--_ak-fla)), (var(--_ak-flb) - (l + (var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald))))) * 1000000), 1) * (((((var(--_ak-fla) * var(--_ak-adtl)) + (var(--_ak-flb) * (1 - var(--_ak-adtl)))) - l) + (clamp(0, ((((l - clamp(0, (l + ((var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald)) * -1)), 1)) * var(--_ak-ald)) - ((((var(--_ak-fla) * var(--_ak-adtl)) + (var(--_ak-flb) * (1 - var(--_ak-adtl)))) - l) * var(--_ak-ald))) * 1000000), 1) * (((var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald)) * -1) - (((var(--_ak-fla) * var(--_ak-adtl)) + (var(--_ak-flb) * (1 - var(--_ak-adtl)))) - l)))) - (var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald)))));
-  --_ak-lad: calc((var(--_ak-layer-auto-lightness) * var(--_ak-ald)) + (clamp(0, (min(((l + (var(--_ak-layer-auto-lightness) * var(--_ak-ald))) - var(--_ak-fla)), (var(--_ak-flb) - (l + (var(--_ak-layer-auto-lightness) * var(--_ak-ald))))) * 1000000), 1) * (((((var(--_ak-fla) * var(--_ak-adtl)) + (var(--_ak-flb) * (1 - var(--_ak-adtl)))) - l) + (clamp(0, ((((l - clamp(0, (l + ((var(--_ak-layer-auto-lightness) * var(--_ak-ald)) * -1)), 1)) * var(--_ak-ald)) - ((((var(--_ak-fla) * var(--_ak-adtl)) + (var(--_ak-flb) * (1 - var(--_ak-adtl)))) - l) * var(--_ak-ald))) * 1000000), 1) * (((var(--_ak-layer-auto-lightness) * var(--_ak-ald)) * -1) - (((var(--_ak-fla) * var(--_ak-adtl)) + (var(--_ak-flb) * (1 - var(--_ak-adtl)))) - l)))) - (var(--_ak-layer-auto-lightness) * var(--_ak-ald)))));
+  --_ak-liad: calc((var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald)) + (clamp(0, (min(((l + (var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald))) - var(--_ak-fla)), (var(--_ak-flb) - (l + (var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald))))) * 1000000), 1) * ((((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l) + (clamp(0, ((((l - clamp(0, (l + ((var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald)) * -1)), 1)) * var(--_ak-ald)) - (((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l) * var(--_ak-ald))) * 1000000), 1) * (((var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald)) * -1) - ((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l)))) - (var(--_ak-layer-idle-auto-lightness) * var(--_ak-ald)))));
+  --_ak-lad: calc((var(--_ak-layer-auto-lightness) * var(--_ak-ald)) + (clamp(0, (min(((l + (var(--_ak-layer-auto-lightness) * var(--_ak-ald))) - var(--_ak-fla)), (var(--_ak-flb) - (l + (var(--_ak-layer-auto-lightness) * var(--_ak-ald))))) * 1000000), 1) * ((((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l) + (clamp(0, ((((l - clamp(0, (l + ((var(--_ak-layer-auto-lightness) * var(--_ak-ald)) * -1)), 1)) * var(--_ak-ald)) - (((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l) * var(--_ak-ald))) * 1000000), 1) * (((var(--_ak-layer-auto-lightness) * var(--_ak-ald)) * -1) - ((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l)))) - (var(--_ak-layer-auto-lightness) * var(--_ak-ald)))));
   --_ak-licv: calc(var(--_ak-layer-idle-contrast-lightness) + (var(--_ak-layer-idle-contrast-lightness) * var(--_ak-ct) * 3.334));
   --_ak-lcv: calc(var(--_ak-layer-contrast-lightness) + (var(--_ak-layer-contrast-lightness) * var(--_ak-ct) * 3.334));
   --_ak-lib: oklch(from var(--_ak-layer-color, var(--ak-layer-parent, canvas)) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-idle-relative-lightness))) + var(--_ak-layer-idle-relative-lightness))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue))));
@@ -773,10 +773,10 @@
       --_ak-frame-end: 1;
     }
     --_ak-frame-force: 1;
-    --_ak-frame-radius: max((var(--_ak-fprc-even, 0px) - 0px), 0px);
+    --_ak-frame-radius: max(var(--_ak-fprc-even, 0px), 0px);
     --_ak-frame-padding: var(--_ak-fppc-even, 0px);
     --_ak-frame-margin: calc(((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1);
-    --ak-frame-radius: max((var(--_ak-fprc-even, 0px) - 0px), 0px);
+    --ak-frame-radius: max(var(--_ak-fprc-even, 0px), 0px);
     --_ak-fpctl-odd: calc(var(--_ak-frame-start) * var(--_ak-fpctl-even, 1));
     --_ak-fpctr-odd: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-even, 1));
     --_ak-fpcbl-odd: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-even, 1));
@@ -785,11 +785,11 @@
     margin-inline-end: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
     margin-block-start: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
     margin-block-end: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
-    border-radius: max((var(--_ak-fprc-even, 0px) - 0px), 0px) !important;
-    border-top-left-radius: calc((var(--_ak-frame-start) * var(--_ak-fpctl-even, 1)) * max((var(--_ak-fprc-even, 0px) - 0px), 0px)) !important;
-    border-top-right-radius: calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-even, 1)) * max((var(--_ak-fprc-even, 0px) - 0px), 0px)) !important;
-    border-bottom-left-radius: calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-even, 1)) * max((var(--_ak-fprc-even, 0px) - 0px), 0px)) !important;
-    border-bottom-right-radius: calc((var(--_ak-frame-end) * var(--_ak-fpcbr-even, 1)) * max((var(--_ak-fprc-even, 0px) - 0px), 0px)) !important;
+    border-radius: max(var(--_ak-fprc-even, 0px), 0px) !important;
+    border-top-left-radius: calc((var(--_ak-frame-start) * var(--_ak-fpctl-even, 1)) * max(var(--_ak-fprc-even, 0px), 0px)) !important;
+    border-top-right-radius: calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-even, 1)) * max(var(--_ak-fprc-even, 0px), 0px)) !important;
+    border-bottom-left-radius: calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-even, 1)) * max(var(--_ak-fprc-even, 0px), 0px)) !important;
+    border-bottom-right-radius: calc((var(--_ak-frame-end) * var(--_ak-fpcbr-even, 1)) * max(var(--_ak-fprc-even, 0px), 0px)) !important;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
@@ -800,10 +800,10 @@
       --_ak-frame-end: 1;
     }
     --_ak-frame-force: 1;
-    --_ak-frame-radius: max((var(--_ak-fprc-odd, 0px) - 0px), 0px);
+    --_ak-frame-radius: max(var(--_ak-fprc-odd, 0px), 0px);
     --_ak-frame-padding: var(--_ak-fppc-odd, 0px);
     --_ak-frame-margin: calc(((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1);
-    --ak-frame-radius: max((var(--_ak-fprc-odd, 0px) - 0px), 0px);
+    --ak-frame-radius: max(var(--_ak-fprc-odd, 0px), 0px);
     --_ak-fpctl-even: calc(var(--_ak-frame-start) * var(--_ak-fpctl-odd, 1));
     --_ak-fpctr-even: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-odd, 1));
     --_ak-fpcbl-even: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-odd, 1));
@@ -812,11 +812,11 @@
     margin-inline-end: calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * (((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1));
     margin-block-start: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start))) * (((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1));
     margin-block-end: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end))) * (((var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--_ak-fpgc-odd, 0px)) - var(--_ak-frame-ring)) * -1));
-    border-radius: max((var(--_ak-fprc-odd, 0px) - 0px), 0px) !important;
-    border-top-left-radius: calc((var(--_ak-frame-start) * var(--_ak-fpctl-odd, 1)) * max((var(--_ak-fprc-odd, 0px) - 0px), 0px)) !important;
-    border-top-right-radius: calc((max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-odd, 1)) * max((var(--_ak-fprc-odd, 0px) - 0px), 0px)) !important;
-    border-bottom-left-radius: calc((max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-odd, 1)) * max((var(--_ak-fprc-odd, 0px) - 0px), 0px)) !important;
-    border-bottom-right-radius: calc((var(--_ak-frame-end) * var(--_ak-fpcbr-odd, 1)) * max((var(--_ak-fprc-odd, 0px) - 0px), 0px)) !important;
+    border-radius: max(var(--_ak-fprc-odd, 0px), 0px) !important;
+    border-top-left-radius: calc((var(--_ak-frame-start) * var(--_ak-fpctl-odd, 1)) * max(var(--_ak-fprc-odd, 0px), 0px)) !important;
+    border-top-right-radius: calc((max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-odd, 1)) * max(var(--_ak-fprc-odd, 0px), 0px)) !important;
+    border-bottom-left-radius: calc((max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-odd, 1)) * max(var(--_ak-fprc-odd, 0px), 0px)) !important;
+    border-bottom-right-radius: calc((var(--_ak-frame-end) * var(--_ak-fpcbr-odd, 1)) * max(var(--_ak-fprc-odd, 0px), 0px)) !important;
   }
   @container not style(--_context-1) {
     --_context-1: odd;
@@ -827,10 +827,10 @@
       --_ak-frame-end: 1;
     }
     --_ak-frame-force: 1;
-    --_ak-frame-radius: max((var(--_ak-fprc-even, 0px) - 0px), 0px);
+    --_ak-frame-radius: max(var(--_ak-fprc-even, 0px), 0px);
     --_ak-frame-padding: var(--_ak-fppc-even, 0px);
     --_ak-frame-margin: calc(((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1);
-    --ak-frame-radius: max((var(--_ak-fprc-even, 0px) - 0px), 0px);
+    --ak-frame-radius: max(var(--_ak-fprc-even, 0px), 0px);
     --_ak-fpctl-odd: calc(var(--_ak-frame-start) * var(--_ak-fpctl-even, 1));
     --_ak-fpctr-odd: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-even, 1));
     --_ak-fpcbl-odd: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-even, 1));
@@ -839,11 +839,11 @@
     margin-inline-end: calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
     margin-block-start: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
     margin-block-end: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * (((var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--_ak-fpgc-even, 0px)) - var(--_ak-frame-ring)) * -1));
-    border-radius: max((var(--_ak-fprc-even, 0px) - 0px), 0px) !important;
-    border-top-left-radius: calc((var(--_ak-frame-start) * var(--_ak-fpctl-even, 1)) * max((var(--_ak-fprc-even, 0px) - 0px), 0px)) !important;
-    border-top-right-radius: calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-even, 1)) * max((var(--_ak-fprc-even, 0px) - 0px), 0px)) !important;
-    border-bottom-left-radius: calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-even, 1)) * max((var(--_ak-fprc-even, 0px) - 0px), 0px)) !important;
-    border-bottom-right-radius: calc((var(--_ak-frame-end) * var(--_ak-fpcbr-even, 1)) * max((var(--_ak-fprc-even, 0px) - 0px), 0px)) !important;
+    border-radius: max(var(--_ak-fprc-even, 0px), 0px) !important;
+    border-top-left-radius: calc((var(--_ak-frame-start) * var(--_ak-fpctl-even, 1)) * max(var(--_ak-fprc-even, 0px), 0px)) !important;
+    border-top-right-radius: calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-even, 1)) * max(var(--_ak-fprc-even, 0px), 0px)) !important;
+    border-bottom-left-radius: calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-even, 1)) * max(var(--_ak-fprc-even, 0px), 0px)) !important;
+    border-bottom-right-radius: calc((var(--_ak-frame-end) * var(--_ak-fpcbr-even, 1)) * max(var(--_ak-fprc-even, 0px), 0px)) !important;
   }
 }
 

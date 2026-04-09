@@ -234,8 +234,8 @@ function getAutoLightness(
   // travel direction. Going lighter hits lowerBoundary first; going darker
   // hits upperBoundary first.
   const entryBoundary = fn.add(
-    fn.mul(lowerBoundary, toLight),
-    fn.mul(upperBoundary, fn.invert(toLight)),
+    upperBoundary,
+    fn.mul(toLight, fn.sub(lowerBoundary, upperBoundary)),
   );
   const boundaryDelta = fn.sub(entryBoundary, l);
   const boundaryDist = fn.mul(boundaryDelta, direction);
