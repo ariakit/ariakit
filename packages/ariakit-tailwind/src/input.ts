@@ -39,8 +39,9 @@ const BAND_LEVEL_LIGHT_HIGH = 1;
 const LAYER_CONTAINER = "ak-layer";
 
 const CHILD_TEXT_MIN_CONTRAST = 0.521;
-const CHILD_TEXT_CHROMA_CAP_DARK = 0.0399;
+const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
 const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
+const CHILD_TEXT_CHROMA_CAP_RAMP_START_L = 0.5;
 const OUTLINE_MIN_CONTRAST = 0.5;
 
 const CONTRAST_SCALE = 0.3334;
@@ -393,7 +394,7 @@ const textMathVars = {
   textContrastDirection: _ak.prop.number("tcd", { initial: 1 }),
   textParentL: _ak.prop.number("tpl", { initial: 0 }),
   textChromaCap: _ak.prop.number("tcc", {
-    initial: CHILD_TEXT_CHROMA_CAP_DARK,
+    initial: CHILD_TEXT_CHROMA_CAP_DARK_MIN,
   }),
 };
 
@@ -729,6 +730,26 @@ function mapAncestorLayerLightnessSteps(
       ...children,
     );
   });
+}
+
+function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
+  if (!isDark) {
+    return CHILD_TEXT_CHROMA_CAP_LIGHT;
+  }
+  if (parentLightness >= CHILD_TEXT_CHROMA_CAP_RAMP_START_L) {
+    return CHILD_TEXT_CHROMA_CAP_DARK_MIN;
+  }
+  const darknessRatio =
+    (CHILD_TEXT_CHROMA_CAP_RAMP_START_L - parentLightness) /
+    CHILD_TEXT_CHROMA_CAP_RAMP_START_L;
+  const darknessWeight =
+    darknessRatio * darknessRatio * darknessRatio * darknessRatio;
+  const darkChromaRange =
+    CHILD_TEXT_CHROMA_CAP_LIGHT - CHILD_TEXT_CHROMA_CAP_DARK_MIN;
+  return roundToDecimals(
+    CHILD_TEXT_CHROMA_CAP_DARK_MIN + darknessWeight * darkChromaRange,
+    4,
+  );
 }
 
 const idleLayerChannels = {
@@ -1260,10 +1281,7 @@ utility(
   ...mapAncestorLayerLightnessSteps((parentL, isDark) => [
     set(vars.textContrastDirection, isDark ? 1 : -1),
     set(vars.textParentL, parentL),
-    set(
-      vars.textChromaCap,
-      isDark ? CHILD_TEXT_CHROMA_CAP_DARK : CHILD_TEXT_CHROMA_CAP_LIGHT,
-    ),
+    set(vars.textChromaCap, getChildTextChromaCap(parentL, isDark)),
   ]),
 );
 
