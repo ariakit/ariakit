@@ -755,7 +755,8 @@ function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
   if (!isDark) {
     return CHILD_TEXT_CHROMA_CAP_LIGHT;
   }
-  // Dark parents mirror the same idea, but ramp faster as they approach black.
+  // Dark parents stay at the conservative minimum near the midpoint, then
+  // ramp toward the black-background cap as the parent approaches black.
   if (parentLightness >= CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L) {
     return CHILD_TEXT_CHROMA_CAP_DARK_MIN;
   }
