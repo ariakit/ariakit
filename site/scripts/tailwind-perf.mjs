@@ -17,7 +17,7 @@ function getPlaywrightArgs(mode) {
       "exec",
       "playwright",
       "test",
-      "src/sandbox/ariakit-tailwind/test-perf-chrome.ts",
+      "--config=playwright.perf.config.ts",
       "--project=chrome",
       "--workers=1",
       "--retries=0",
