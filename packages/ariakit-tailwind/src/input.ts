@@ -695,46 +695,66 @@ function getLayerH(relativeHue: Value, absoluteHue?: VarProperty) {
  * Container queries compare exact values, so layer lightness is quantized into
  * fixed buckets before descendants derive text direction from it.
  */
-function mapLayerLightnessSteps(
-  callback: (
-    parentL: number,
+interface LayerLightnessStepsCallback {
+  (
+    parentLightness: number,
     isDark: boolean,
-  ) => (ReturnType<typeof set> | undefined)[],
-) {
+  ): (ReturnType<typeof set> | undefined)[];
+}
+
+function getQuantizedLayerLightnessSteps() {
   return Array.from({ length: QUANTIZED_LIGHTNESS_STEPS + 1 }, (_, index) =>
     roundToDecimals(index / QUANTIZED_LIGHTNESS_STEPS, 4),
-  ).flatMap((parentL) => {
-    const isDark = parentL < DARK_THRESHOLD_L;
-    const children = callback(parentL, isDark).filter((child) => child != null);
+  );
+}
+
+function mapLightnessSteps(
+  getContainerQuery: (parentLightness: number) => string,
+  callback: LayerLightnessStepsCallback,
+) {
+  return getQuantizedLayerLightnessSteps().flatMap((parentLightness) => {
+    const isDark = parentLightness < DARK_THRESHOLD_L;
+    const children = callback(parentLightness, isDark).filter(
+      (child) => child != null,
+    );
     if (children.length === 0) {
       return [];
     }
-    return at.container(
-      `${LAYER_CONTAINER} ${fn.style(vars.layerL, fn.oklch({ l: parentL }))}`,
-      ...children,
-    );
+    return at.container(getContainerQuery(parentLightness), ...children);
   });
 }
 
-function mapAncestorLayerLightnessSteps(
-  callback: (
-    parentL: number,
-    isDark: boolean,
-  ) => (ReturnType<typeof set> | undefined)[],
-) {
-  return Array.from({ length: QUANTIZED_LIGHTNESS_STEPS + 1 }, (_, index) =>
-    roundToDecimals(index / QUANTIZED_LIGHTNESS_STEPS, 4),
-  ).flatMap((parentL) => {
-    const isDark = parentL < DARK_THRESHOLD_L;
-    const children = callback(parentL, isDark).filter((child) => child != null);
-    if (children.length === 0) {
-      return [];
-    }
-    return at.container(
-      fn.style(vars.layerL, fn.oklch({ l: parentL })),
-      ...children,
-    );
-  });
+function mapLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
+  return mapLightnessSteps(
+    (parentLightness) =>
+      `${LAYER_CONTAINER} ${fn.style(
+        vars.layerL,
+        fn.oklch({
+          l: parentLightness,
+        }),
+      )}`,
+    callback,
+  );
+}
+
+function mapAncestorLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
+  return mapLightnessSteps(
+    (parentLightness) =>
+      fn.style(vars.layerL, fn.oklch({ l: parentLightness })),
+    callback,
+  );
+}
+
+function getQuadraticRampWeight(progress: number) {
+  return progress * progress;
+}
+
+function getQuarticRampWeight(progress: number) {
+  return progress * progress * progress * progress;
+}
+
+function interpolateRoundedValue(min: number, max: number, weight: number) {
+  return roundToDecimals(min + weight * (max - min), 4);
 }
 
 function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
@@ -747,12 +767,10 @@ function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
     const brightnessRatio =
       (parentLightness - CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L) /
       (1 - CHILD_TEXT_CHROMA_CAP_LIGHT_RAMP_START_L);
-    const brightnessWeight = brightnessRatio * brightnessRatio;
-    const lightChromaRange =
-      CHILD_TEXT_CHROMA_CAP_LIGHT_MAX - CHILD_TEXT_CHROMA_CAP_LIGHT_MIN;
-    return roundToDecimals(
-      CHILD_TEXT_CHROMA_CAP_LIGHT_MIN + brightnessWeight * lightChromaRange,
-      4,
+    return interpolateRoundedValue(
+      CHILD_TEXT_CHROMA_CAP_LIGHT_MIN,
+      CHILD_TEXT_CHROMA_CAP_LIGHT_MAX,
+      getQuadraticRampWeight(brightnessRatio),
     );
   }
   // Dark parents mirror the same idea, but ramp faster as they approach black.
@@ -762,13 +780,10 @@ function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
   const darknessRatio =
     (CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L - parentLightness) /
     CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L;
-  const darknessWeight =
-    darknessRatio * darknessRatio * darknessRatio * darknessRatio;
-  const darkChromaRange =
-    CHILD_TEXT_CHROMA_CAP_DARK_MAX - CHILD_TEXT_CHROMA_CAP_DARK_MIN;
-  return roundToDecimals(
-    CHILD_TEXT_CHROMA_CAP_DARK_MIN + darknessWeight * darkChromaRange,
-    4,
+  return interpolateRoundedValue(
+    CHILD_TEXT_CHROMA_CAP_DARK_MIN,
+    CHILD_TEXT_CHROMA_CAP_DARK_MAX,
+    getQuarticRampWeight(darknessRatio),
   );
 }
 
