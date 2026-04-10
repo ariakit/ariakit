@@ -115,7 +115,7 @@
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.2",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.79.0"
+    "wrangler": "4.80.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
