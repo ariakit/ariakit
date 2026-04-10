@@ -35,7 +35,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   store,
   modal: modalProp = false,
-  portal = !!modalProp,
+  portal = modalProp,
   hideOnEscape = true,
   autoFocusOnShow = true,
   hideOnHoverOutside,
@@ -129,8 +129,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // store.setAutoFocusOnShow(true) every time they want to open the menu.
   // This differs from the usual dialog behavior that would automatically
   // focus on the dialog container when no initialFocusRef is set.
-  const canAutoFocusOnShow =
-    !!initialFocusRef || !!props.initialFocus || !!modal;
+  const canAutoFocusOnShow = !!initialFocusRef || !!props.initialFocus || modal;
 
   const contentElement = useStoreState(
     store.combobox || store,
@@ -172,7 +171,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     initialFocus: initialFocusRef,
     autoFocusOnShow: mayAutoFocusOnShow
       ? canAutoFocusOnShow && autoFocusOnShow
-      : autoFocusOnShowState || !!modal,
+      : autoFocusOnShowState || modal,
     ...props,
     hideOnEscape(event) {
       if (isFalsyBooleanCallback(hideOnEscape, event)) return false;

@@ -186,8 +186,8 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       // closed by clicking on an item.
       focusOnHover(event) {
         if (!focusOnHoverProp(event)) return false;
-        const state = store?.getState();
-        return !!state?.open;
+        const state = store.getState();
+        return state.open;
       },
     });
 

@@ -131,7 +131,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
   function useHovercard({
     store,
     modal = false,
-    portal = !!modal,
+    portal = modal,
     hideOnEscape = true,
     hideOnHoverOutside = true,
     disablePointerEventsOnApproach = !!hideOnHoverOutside,

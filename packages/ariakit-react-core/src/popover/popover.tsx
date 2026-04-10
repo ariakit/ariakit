@@ -220,7 +220,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
   function usePopover({
     store,
     modal = false,
-    portal = !!modal,
+    portal = modal,
     preserveTabOrder = true,
     autoFocusOnShow = true,
     wrapperProps,

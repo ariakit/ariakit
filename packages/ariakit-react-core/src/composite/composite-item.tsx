@@ -230,7 +230,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           ...item,
           id: id || item.id,
           rowId,
-          disabled: !!trulyDisabled,
+          disabled: trulyDisabled,
           children: item.element?.textContent,
         };
         if (getItemProp) {

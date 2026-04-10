@@ -721,7 +721,7 @@ function getDescription(node: Node) {
   // Get description from first JSDoc block
   const firstJsDoc = jsDocs[0];
   const description = firstJsDoc?.getDescription();
-  return description ? String(description).trim() : "";
+  return description ? description.trim() : "";
 }
 
 /**
