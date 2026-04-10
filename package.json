@@ -111,7 +111,7 @@
     "tailwindcss-animate": "1.0.7",
     "tsup": "8.5.1",
     "typescript": "6.0.2",
-    "vite": "8.0.3",
+    "vite": "8.0.5",
     "vite-plugin-solid": "2.11.11",
     "vitest": "4.1.2",
     "vitest-fail-on-console": "0.10.1",
