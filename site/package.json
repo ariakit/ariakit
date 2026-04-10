@@ -92,7 +92,7 @@
     "rehype-parse": "9.0.1",
     "shiki": "4.0.2",
     "solid-js": "1.9.12",
-    "stripe": "21.0.1",
+    "stripe": "22.0.0",
     "tailwindcss": "4.2.2",
     "ts-morph": "27.0.2",
     "typescript": "6.0.2",
