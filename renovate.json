@@ -4,7 +4,7 @@
   "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
   "toolSettings": {
-    "nodeMaxMemory": 1024
+    "nodeMaxMemory": 2048
   },
   "packageRules": [
     {
