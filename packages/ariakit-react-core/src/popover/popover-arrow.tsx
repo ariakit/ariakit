@@ -107,7 +107,9 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
       const borderWidth = style.getPropertyValue(`border-${dir}-width`);
       if (borderWidth) {
         const parsed = Number.parseFloat(borderWidth);
-        if (!Number.isNaN(parsed)) return [Math.ceil(parsed), false];
+        if (!Number.isNaN(parsed)) {
+          return [Math.ceil(parsed), false];
+        }
       }
       return [0, false];
     }, [borderWidthProp, style, dir]);
