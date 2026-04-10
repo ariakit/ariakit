@@ -3,9 +3,6 @@
   "extends": ["config:recommended"],
   "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
-  "toolSettings": {
-    "nodeMaxMemory": 1536
-  },
   "packageRules": [
     {
       "matchFileNames": ["website/package.json"],
