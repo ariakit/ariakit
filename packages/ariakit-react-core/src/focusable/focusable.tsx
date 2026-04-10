@@ -222,7 +222,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     }, [focusable]);
 
     const disabled = focusable && disabledFromProps(props);
-    const trulyDisabled = !!disabled && !accessibleWhenDisabled;
+    const trulyDisabled = disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 
     // When the focusable element is disabled, it doesn't trigger a blur event

@@ -17,6 +17,8 @@ export default defineConfig({
     "react-in-jsx-scope": "off",
     "no-shadow": "off",
     "iframe-missing-sandbox": "off",
+    "consistent-return": "off",
+    "no-unnecessary-type-arguments": "off",
     "consistent-type-imports": ["error", { fixStyle: "separate-type-imports" }],
     "no-unused-vars": [
       "error",

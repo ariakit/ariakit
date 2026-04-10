@@ -88,7 +88,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <MenuItemCheckedContext.Provider value={!!isChecked}>
+        <MenuItemCheckedContext.Provider value={isChecked}>
           {element}
         </MenuItemCheckedContext.Provider>
       ),

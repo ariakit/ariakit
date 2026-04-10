@@ -532,7 +532,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const onMouseDownProp = props.onMouseDown;
     const blurActiveItemOnClickProp = useBooleanEvent(
-      blurActiveItemOnClick ?? (() => !!store?.getState().includesBaseElement),
+      blurActiveItemOnClick ?? (() => store?.getState().includesBaseElement),
     );
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const showOnClickProp = useBooleanEvent(showOnClick ?? canShow);
