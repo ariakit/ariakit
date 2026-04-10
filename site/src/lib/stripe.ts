@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { APIContext } from "astro";
-import { Stripe } from "stripe";
+import Stripe from "stripe";
 import { findInOrder } from "./array.ts";
 import type { User } from "./auth.ts";
 import {
@@ -325,7 +325,7 @@ export async function createCheckout({
     price.taxBehavior === stripePrice.tax_behavior &&
     compareCurrency(price.currency, stripePrice.currency);
 
-  const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = isSamePrice
+  const lineItem = isSamePrice
     ? { price: price.id, quantity: 1 }
     : {
         quantity: 1,
