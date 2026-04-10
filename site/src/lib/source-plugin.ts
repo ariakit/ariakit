@@ -239,7 +239,7 @@ function collectDependencyFromResolved(
     }
   }
   const typesPackageId = resolved.resolvedModule?.packageId?.name;
-  const hasTypes = typesPackageId && !!typesPackageId.startsWith("@types/");
+  const hasTypes = typesPackageId && typesPackageId.startsWith("@types/");
   const resolvedTypesPath = resolved.resolvedModule?.resolvedFileName;
   if (hasTypes && resolvedTypesPath) {
     file.devDependencies ??= {};

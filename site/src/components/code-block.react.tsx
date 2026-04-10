@@ -689,7 +689,7 @@ export function CodeBlockTabs({
     showControlsOnHover &&
       "transition-[opacity,width] transition-discrete [interpolate-size:allow-keywords] supports-hover:w-0 group-hocus-within/code-block-tabs:w-auto supports-hover:opacity-0 group-hocus-within/code-block-tabs:opacity-100",
   );
-  const hasCodeToolbar = !!edit && !preview;
+  const hasCodeToolbar = edit && !preview;
   const exampleId = title ? `example-${slugify(title)}` : undefined;
 
   return (

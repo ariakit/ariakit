@@ -36,7 +36,7 @@ function assignProps<T extends object>(
 }
 
 function sanitizeNumber(n: number | undefined) {
-  return Number(n ?? 0);
+  return n ?? 0;
 }
 
 function initClipboardEvent(
@@ -174,7 +174,7 @@ function initPointerEvent(
     tiltY: sanitizeNumber(tiltY),
     twist: sanitizeNumber(twist),
     isPrimary: !!isPrimary,
-    pointerType: String(pointerType),
+    pointerType: pointerType,
   });
 }
 
