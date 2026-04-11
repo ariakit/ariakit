@@ -69,7 +69,7 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
       onChange,
     };
 
-    props = useRadio({ value, ...props });
+    props = useRadio({ name, value, ...props });
 
     props = useFormControl({
       store,
