@@ -33,15 +33,11 @@ export default function Example() {
   return (
     <div>
       <h1>mergeProps Test</h1>
-      <div data-testid="result1">className null: {result1.className}</div>
-      <div data-testid="result2">className undefined: {result2.className}</div>
-      <div data-testid="result3">className empty: {result3.className}</div>
-      <div data-testid="result4">
-        onClick null exists: {result4.onClick ? "yes" : "no"}
-      </div>
-      <div data-testid="result5">
-        onClick undefined exists: {result5.onClick ? "yes" : "no"}
-      </div>
+      <div data-testid="result1">{result1.className}</div>
+      <div data-testid="result2">{result2.className}</div>
+      <div data-testid="result3">{result3.className}</div>
+      <div data-testid="result4">{result4.onClick ? "yes" : "no"}</div>
+      <div data-testid="result5">{result5.onClick ? "yes" : "no"}</div>
     </div>
   );
 }
