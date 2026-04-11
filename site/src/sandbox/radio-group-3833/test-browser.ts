@@ -44,14 +44,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("form submission serializes values per group", async ({ page, q }) => {
-    const alertPromise = page.waitForEvent("dialog");
+    let alertMessage = "";
+    page.on("dialog", async (dialog) => {
+      alertMessage = dialog.message();
+      await dialog.accept();
+    });
 
     await q.radio("Orange").click();
     await q.radio("Carrot").click();
     await q.button("Submit").click();
 
-    const dialog = await alertPromise;
-    const data = JSON.parse(dialog.message());
+    // Wait for the alert to be captured
+    await test.expect(() => test.expect(alertMessage).toBeTruthy()).toPass();
+
+    const data = JSON.parse(alertMessage);
 
     // Each group should submit under its own name key
     const keys = Object.keys(data);
@@ -60,7 +66,5 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Values should match the selected radios
     test.expect(Object.values(data)).toContain("orange");
     test.expect(Object.values(data)).toContain("carrot");
-
-    await dialog.accept();
   });
 });
