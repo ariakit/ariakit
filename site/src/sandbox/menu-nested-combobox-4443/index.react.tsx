@@ -15,11 +15,7 @@ export default function Example() {
       setValue={setValue}
     >
       <Ariakit.MenuProvider>
-        {/* TODO: Remove aria-haspopup workaround once
-            https://github.com/ariakit/ariakit/issues/4443 is fixed */}
-        <Ariakit.MenuButton aria-haspopup="dialog">
-          Open menu
-        </Ariakit.MenuButton>
+        <Ariakit.MenuButton>Open menu</Ariakit.MenuButton>
         <Ariakit.Menu portal overlap unmountOnHide gutter={4}>
           <Ariakit.Combobox
             placeholder="Search..."
