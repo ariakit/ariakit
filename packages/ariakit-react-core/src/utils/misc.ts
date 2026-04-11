@@ -80,7 +80,7 @@ export function mergeProps<T extends HTMLAttributes<any>>(
 
     if (key.startsWith("on")) {
       if (typeof overrideValue !== "function") {
-        // Skip nullish event handler overrides to preserve base handlers.
+        // Skip non-function event handler overrides to preserve base handlers.
         continue;
       }
       const baseValue = base[key];
