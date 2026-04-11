@@ -161,11 +161,9 @@ export function createCompositeStore<
 
   const initialState: CompositeStoreState<T> = {
     ...collection.getState(),
-    id: defaultValue(
-      props.id,
-      syncState?.id,
+    id:
+      defaultValue(props.id, syncState?.id) ??
       `id-${Math.random().toString(36).slice(2, 8)}`,
-    ),
     activeId,
     baseElement: defaultValue(syncState?.baseElement, null),
     includesBaseElement: defaultValue(
