@@ -4,7 +4,10 @@ import type {
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
-import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 import type { Store } from "../utils/store.tsx";
 import { useStore, useStoreProps } from "../utils/store.tsx";
 
@@ -33,6 +36,7 @@ export function useRadioStoreProps<T extends Core.RadioStore>(
  * ```
  */
 export function useRadioStore(props: RadioStoreProps = {}): RadioStore {
+  props = useCompositeStoreOptions(props);
   const [store, update] = useStore(Core.createRadioStore, props);
   return useRadioStoreProps(store, update, props);
 }
