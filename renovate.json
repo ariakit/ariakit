@@ -9,6 +9,10 @@
       "enabled": false
     },
     {
+      "matchPackageNames": ["postcss"],
+      "enabled": false
+    },
+    {
       "matchPackageNames": ["tailwindcss"],
       "matchCurrentVersion": "/^3\\./",
       "enabled": false
