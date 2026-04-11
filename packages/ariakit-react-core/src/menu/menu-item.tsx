@@ -91,9 +91,10 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       if (isDownloading(event)) return;
       if (isOpeningInNewTab(event)) return;
       if (!hideMenu) return;
-      // If this item is also a menu button, we don't want to hide the menu.
+      // If this item is also a submenu button or any other disclosure, we
+      // don't want to hide the menu.
       const popupType = event.currentTarget.getAttribute("aria-haspopup");
-      if (popupType === "menu") return;
+      if (popupType && popupType !== "false") return;
       if (!hideOnClickProp(event)) return;
       hideMenu();
     });
