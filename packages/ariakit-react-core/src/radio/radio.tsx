@@ -59,7 +59,7 @@ function isNativeRadio(tagName?: string, type?: string) {
  */
 export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   store,
-  name,
+  name: nameProp,
   value,
   checked,
   ...props
@@ -74,6 +74,12 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     store,
     (state) => checked ?? getIsChecked(value, state?.value),
   );
+
+  // Use the store's id as the default name to ensure radios in different
+  // groups have unique names. This prevents the browser from treating all
+  // radios as a single group. See https://github.com/ariakit/ariakit/issues/3833
+  const storeId = useStoreState(store, (state) => state?.id);
+  const name = nameProp ?? storeId;
 
   // When the radio store has a default value, we need to update the active id
   // to point to the checked element, otherwise it'll be the first item in the
