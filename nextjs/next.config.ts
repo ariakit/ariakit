@@ -7,7 +7,7 @@ const config: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // cacheComponents: true,
+  cacheComponents: true,
 
   // Allow cross-origin iframe embedding from the Astro site
   async headers() {
