@@ -7,8 +7,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const menuButton = q.button("Open menu");
 
     // Get initial aria-haspopup value - should be "dialog" since menu has combobox
-    const initialAriaHaspopup = await menuButton.getAttribute("aria-haspopup");
-    test.expect(initialAriaHaspopup).toBe("dialog");
+    const initialAriaHasPopup = await menuButton.getAttribute("aria-haspopup");
+    test.expect(initialAriaHasPopup).toBe("dialog");
 
     // Open the menu
     await menuButton.click();
@@ -17,11 +17,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.combobox("Search...")).toBeVisible();
 
     // Get aria-haspopup after opening - should remain "dialog"
-    const afterOpenAriaHaspopup =
+    const afterOpenAriaHasPopup =
       await menuButton.getAttribute("aria-haspopup");
-    test.expect(afterOpenAriaHaspopup).toBe("dialog");
+    test.expect(afterOpenAriaHasPopup).toBe("dialog");
 
     // Verify stability: value should not change when menu opens
-    test.expect(afterOpenAriaHaspopup).toBe(initialAriaHaspopup);
+    test.expect(afterOpenAriaHasPopup).toBe(initialAriaHasPopup);
   });
 });
