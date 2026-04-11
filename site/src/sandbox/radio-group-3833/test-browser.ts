@@ -30,15 +30,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("Tab moves focus between groups", async ({ page, q }) => {
-    // Focus the first radio in the Fruits group
-    await q.radio("Apple").focus();
-    await test.expect(q.radio("Apple")).toBeFocused();
+    // Check a radio so the group has a selection — Tab behavior differs when
+    // a radio is checked vs. when none is checked.
+    await q.radio("Apple").click();
+    await test.expect(q.radio("Apple")).toBeChecked();
 
     // Tab should move focus out of the Fruits group into the Vegetables group
     await page.keyboard.press("Tab");
     await test.expect(q.radio("Potato")).toBeFocused();
 
-    // Shift+Tab should move focus back to the Fruits group
+    // Shift+Tab should move focus back to the checked radio in Fruits
     await page.keyboard.press("Shift+Tab");
     await test.expect(q.radio("Apple")).toBeFocused();
   });
