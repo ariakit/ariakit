@@ -108,7 +108,7 @@
     "@types/canvas-confetti": "1.9.0",
     "@types/hast": "3.0.4",
     "@types/lodash-es": "4.17.12",
-    "@types/node": "24.12.2",
+    "@types/node": "25.5.2",
     "@types/pluralize": "0.0.33",
     "@types/pngjs": "6.0.5",
     "@types/react": "18.3.28",
