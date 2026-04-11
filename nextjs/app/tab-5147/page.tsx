@@ -1,8 +1,9 @@
 "use client";
 
 import * as Ariakit from "@ariakit/react";
+import { Suspense } from "react";
 
-export default function TabPage() {
+function TabContent() {
   const tab = Ariakit.useTabStore({ id: "my-tabs" });
 
   return (
@@ -14,5 +15,15 @@ export default function TabPage() {
       <Ariakit.TabPanel>Panel 1</Ariakit.TabPanel>
       <Ariakit.TabPanel>Panel 2</Ariakit.TabPanel>
     </Ariakit.TabProvider>
+  );
+}
+
+// Workaround: Wrap in Suspense to avoid Math.random() detection during prerendering
+// TODO: Remove after https://github.com/ariakit/ariakit/issues/5147 is fixed
+export default function TabPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TabContent />
+    </Suspense>
   );
 }
