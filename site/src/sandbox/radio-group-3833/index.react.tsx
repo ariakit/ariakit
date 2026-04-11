@@ -6,15 +6,16 @@ export default function Example() {
       <ak.RadioProvider>
         <ak.RadioGroup aria-label="Fruits">
           <label>
-            <ak.Radio value="apple" />
+            {/* TODO: Remove name once https://github.com/ariakit/ariakit/issues/3833 is fixed */}
+            <ak.Radio name="fruits" value="apple" />
             Apple
           </label>
           <label>
-            <ak.Radio value="orange" />
+            <ak.Radio name="fruits" value="orange" />
             Orange
           </label>
           <label>
-            <ak.Radio value="watermelon" />
+            <ak.Radio name="fruits" value="watermelon" />
             Watermelon
           </label>
         </ak.RadioGroup>
@@ -23,15 +24,16 @@ export default function Example() {
       <ak.RadioProvider>
         <ak.RadioGroup aria-label="Vegetables">
           <label>
-            <ak.Radio value="potato" />
+            {/* TODO: Remove name once https://github.com/ariakit/ariakit/issues/3833 is fixed */}
+            <ak.Radio name="vegetables" value="potato" />
             Potato
           </label>
           <label>
-            <ak.Radio value="carrot" />
+            <ak.Radio name="vegetables" value="carrot" />
             Carrot
           </label>
           <label>
-            <ak.Radio value="cabbage" />
+            <ak.Radio name="vegetables" value="cabbage" />
             Cabbage
           </label>
         </ak.RadioGroup>
