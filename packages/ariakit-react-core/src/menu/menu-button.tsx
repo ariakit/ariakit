@@ -208,17 +208,14 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 
     const contentElement = useStoreState(store, "contentElement");
 
-    // When the menu has a combobox, the content element will typically have
-    // role="dialog" because useMenuList defaults composite to !hasCombobox.
-    // With a combobox, that default is false, which prevents role="menu" from
-    // being applied and falls through to Dialog's default role.
-    // Use this predictable role instead of dynamically reading from
-    // contentElement to ensure aria-haspopup remains stable when the menu
-    // opens/closes. See https://github.com/ariakit/ariakit/issues/4443
+    // Use the combobox presence to pick the correct fallback so
+    // aria-haspopup stays stable before the content element mounts.
+    // See https://github.com/ariakit/ariakit/issues/4443
     const hasCombobox = !!store.combobox;
-    const popupRole = hasCombobox
-      ? "dialog"
-      : getPopupRole(contentElement, "menu");
+    const popupRole = getPopupRole(
+      contentElement,
+      hasCombobox ? "dialog" : "menu",
+    );
 
     props = {
       role,
