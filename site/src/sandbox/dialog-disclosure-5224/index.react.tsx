@@ -6,10 +6,7 @@ export default function Example() {
       <Ariakit.DialogProvider>
         <Ariakit.DialogDisclosure
           render={
-            // TODO: Remove workaround once
-            // https://github.com/ariakit/ariakit/issues/5224 is fixed.
-            // Workaround: omit the onClick prop instead of passing undefined.
-            <Ariakit.Button>Open dialog</Ariakit.Button>
+            <Ariakit.Button onClick={undefined}>Open dialog</Ariakit.Button>
           }
         />
         <Ariakit.Dialog unmountOnHide>
@@ -18,10 +15,7 @@ export default function Example() {
           <Ariakit.DialogDismiss>Close</Ariakit.DialogDismiss>
         </Ariakit.Dialog>
       </Ariakit.DialogProvider>
-      {/* TODO: Remove workaround once
-          https://github.com/ariakit/ariakit/issues/5224 is fixed.
-          Workaround: omit the className prop instead of passing undefined. */}
-      <Ariakit.Button className="base" render={<a />}>
+      <Ariakit.Button className="base" render={<a className={undefined} />}>
         Check className
       </Ariakit.Button>
     </div>
