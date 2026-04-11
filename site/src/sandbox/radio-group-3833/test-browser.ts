@@ -28,4 +28,39 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // The two groups should have different names
     test.expect(fruitsName).not.toBe(vegetablesName);
   });
+
+  test("Tab moves focus between groups", async ({ page, q }) => {
+    // Focus the first radio in the Fruits group
+    await q.radio("Apple").focus();
+    await test.expect(q.radio("Apple")).toBeFocused();
+
+    // Tab should move focus out of the Fruits group into the Vegetables group
+    await page.keyboard.press("Tab");
+    await test.expect(q.radio("Potato")).toBeFocused();
+
+    // Shift+Tab should move focus back to the Fruits group
+    await page.keyboard.press("Shift+Tab");
+    await test.expect(q.radio("Apple")).toBeFocused();
+  });
+
+  test("form submission serializes values per group", async ({ page, q }) => {
+    const alertPromise = page.waitForEvent("dialog");
+
+    await q.radio("Orange").click();
+    await q.radio("Carrot").click();
+    await q.button("Submit").click();
+
+    const dialog = await alertPromise;
+    const data = JSON.parse(dialog.message());
+
+    // Each group should submit under its own name key
+    const keys = Object.keys(data);
+    test.expect(keys.length).toBe(2);
+
+    // Values should match the selected radios
+    test.expect(Object.values(data)).toContain("orange");
+    test.expect(Object.values(data)).toContain("carrot");
+
+    await dialog.accept();
+  });
 });

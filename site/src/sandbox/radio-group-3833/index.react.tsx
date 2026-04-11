@@ -1,8 +1,15 @@
 import * as ak from "@ariakit/react";
+import type { FormEvent } from "react";
 
 export default function Example() {
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    alert(JSON.stringify(Object.fromEntries(data)));
+  };
+
   return (
-    <div>
+    <form onSubmit={onSubmit}>
       <ak.RadioProvider>
         <ak.RadioGroup aria-label="Fruits">
           <label>
@@ -37,7 +44,7 @@ export default function Example() {
         </ak.RadioGroup>
       </ak.RadioProvider>
 
-      <button type="button">Submit</button>
-    </div>
+      <button type="submit">Submit</button>
+    </form>
   );
 }
