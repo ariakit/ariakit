@@ -93,7 +93,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       if (!hideMenu) return;
       // If this item is also a menu button, we don't want to hide the menu.
       const popupType = event.currentTarget.getAttribute("aria-haspopup");
-      if (popupType === "menu" || popupType === "dialog") return;
+      if (popupType === "menu") return;
       if (!hideOnClickProp(event)) return;
       hideMenu();
     });

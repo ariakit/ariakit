@@ -120,14 +120,3 @@ test("set block type", async () => {
   expect(q.dialog("Actions")).not.toBeInTheDocument();
   expect(q.text("Text")).toBeInTheDocument();
 });
-
-test("menu item with aria-haspopup=dialog does not close parent menu", async () => {
-  // Regression test for incomplete check in menu-item.tsx
-  // The check should handle both "menu" and "dialog" aria-haspopup values
-  await click(q.button("Actions"));
-  expect(q.dialog("Actions")).toBeVisible();
-  const turnIntoPageIn = q.option("Turn into page in");
-  expect(turnIntoPageIn).toHaveAttribute("aria-haspopup", "dialog");
-  await click(turnIntoPageIn);
-  expect(q.dialog("Actions")).toBeVisible();
-});
