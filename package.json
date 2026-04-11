@@ -97,7 +97,7 @@
     "oxfmt": "0.44.0",
     "oxlint": "1.59.0",
     "oxlint-tsgolint": "0.20.0",
-    "postcss": "8.5.8",
+    "postcss": "8.5.9",
     "postcss-import": "16.1.1",
     "prettier": "3.8.1",
     "prettier-plugin-tailwindcss": "0.7.2",
