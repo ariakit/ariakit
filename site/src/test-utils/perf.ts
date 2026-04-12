@@ -3,8 +3,8 @@ import path from "node:path";
 import type { CDPSession, Page, TestInfo } from "@playwright/test";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
-const DEFAULT_ITERATIONS = 20;
-const DEFAULT_WARMUP = 2;
+const DEFAULT_ITERATIONS = 10;
+const DEFAULT_WARMUP = 1;
 
 // CDP metric names (values are in seconds).
 const SCRIPT_DURATION = "ScriptDuration";
