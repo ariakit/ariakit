@@ -1,0 +1,29 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import {
+  getNextjsPreviewId,
+  getNextjsUrlFromRequest,
+} from "#app/lib/nextjs.ts";
+import { notFound } from "#app/lib/response.ts";
+
+export const prerender = false;
+
+const nextjsExampleId = getNextjsPreviewId(Astro.url.pathname);
+if (!nextjsExampleId) return notFound();
+
+const env = Astro.locals.runtime?.env;
+const nextjsUrl = getNextjsUrlFromRequest({
+  requestUrl: Astro.url.href,
+  path: `/${nextjsExampleId}`,
+  env,
+});
+return Astro.redirect(nextjsUrl, 307);
+---
