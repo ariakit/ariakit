@@ -5,12 +5,18 @@ import { createServer } from "node:net";
  * Finds the first available TCP port starting from the given port number.
  */
 function findAvailablePort(start: number): Promise<number> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const server = createServer();
     server.listen(start, () => {
       server.close(() => resolve(start));
     });
-    server.on("error", () => resolve(findAvailablePort(start + 1)));
+    server.on("error", (error: NodeJS.ErrnoException) => {
+      if (error.code === "EADDRINUSE") {
+        resolve(findAvailablePort(start + 1));
+        return;
+      }
+      reject(error);
+    });
   });
 }
 
