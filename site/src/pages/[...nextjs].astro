@@ -19,13 +19,12 @@ export const prerender = false;
 const nextjsExampleId = getNextjsPreviewId(Astro.url.pathname);
 if (!nextjsExampleId) return notFound();
 
-const runtimeEnv = Astro.locals.runtime?.env;
+const runtimePort = Astro.locals.runtime?.env?.NEXTJS_PORT;
 const nextjsUrl = getNextjsUrlFromRequest({
   requestUrl: Astro.url.href,
   path: `/${nextjsExampleId}`,
   env: {
-    ...runtimeEnv,
-    NEXTJS_PORT: runtimeEnv?.NEXTJS_PORT ?? process.env.NEXTJS_PORT,
+    NEXTJS_PORT: String(runtimePort ?? process.env.NEXTJS_PORT ?? ""),
   },
 });
 return Astro.redirect(nextjsUrl, 307);

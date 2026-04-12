@@ -46,7 +46,7 @@ interface GetNextjsUrlFromRequestParams {
   requestUrl: string;
   path: string;
   /** Runtime environment bindings (e.g., from Astro.locals.runtime.env) */
-  env?: Record<string, unknown>;
+  env?: Record<string, string | undefined>;
 }
 
 /**
@@ -76,10 +76,7 @@ export function getNextjsUrlFromRequest({
       hostname === "127.0.0.1" ||
       hostname === "0.0.0.0"
     ) {
-      const port =
-        typeof env?.NEXTJS_PORT === "string" && env.NEXTJS_PORT
-          ? env.NEXTJS_PORT
-          : NEXTJS_DEFAULT_PORT;
+      const port = env?.NEXTJS_PORT || NEXTJS_DEFAULT_PORT;
       return `http://localhost:${port}${normalizedPath}`;
     }
     // Preview deployment on workers.dev
