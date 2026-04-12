@@ -87,6 +87,7 @@ export const useDisclosureContent = createHook<
   const animated = useStoreState(store, "animated");
   const contentElement = useStoreState(store, "contentElement");
   const otherElement = useStoreState(store.disclosure, "contentElement");
+  const hasClosedRef = useRef(false);
 
   // This is a workaround to avoid the content element from being reset to null
   // on fast refresh.
@@ -112,11 +113,20 @@ export const useDisclosureContent = createHook<
 
   useSafeLayoutEffect(() => {
     if (!animated) {
-      // Even without animation, keep data-enter in sync with the open
-      // state so it's present while the dialog is open and removed on
-      // close. This ensures wrapper elements using :has([data-enter])
-      // work correctly.
-      setTransition(open ? "enter" : null);
+      // When animation detection has disabled animations (e.g., no CSS
+      // transition was detected on the content element), manage data-enter
+      // so wrapper elements using :has([data-enter]) work correctly even
+      // when the content element itself has no transitions.
+      if (!open) {
+        hasClosedRef.current = true;
+        setTransition((current) =>
+          current === "enter" || current === "leave" ? null : current,
+        );
+      } else if (hasClosedRef.current) {
+        // On reopen after animation detection disabled animations, restore
+        // data-enter so enter styles are re-applied.
+        setTransition("enter");
+      }
       return;
     }
     // When the disclosure content element is rendered in a portal, we need to
