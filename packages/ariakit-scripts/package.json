@@ -1,5 +1,5 @@
 {
-  "name": "ariakit-scripts",
+  "name": "@ariakit/scripts",
   "private": true,
   "type": "module",
   "exports": {
