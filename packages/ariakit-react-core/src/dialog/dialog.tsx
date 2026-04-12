@@ -514,10 +514,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // element so we can listen to the Escape key anywhere in the document, even
     // when the dialog is not focused. By using the capture phase, users can
     // call `event.stopPropagation()` on the `hideOnEscape` function prop.
-    const dialog = ref.current;
-    const win = dialog ? getWindow(dialog) : undefined;
+    const win = contentElement ? getWindow(contentElement) : undefined;
     return addGlobalEventListener("keydown", onKeyDown, true, win);
-  }, [store, domReady, mounted, hideOnEscapeProp]);
+  }, [store, domReady, mounted, contentElement, hideOnEscapeProp]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.
   props = useWrapElement(

@@ -56,19 +56,19 @@ function useEventOutside({
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
   const open = useStoreState(store, "open");
+  const contentElement = useStoreState(store, "contentElement");
   const focusedRef = useRef(false);
 
   useSafeLayoutEffect(() => {
     if (!open) return;
     if (!domReady) return;
-    const { contentElement } = store.getState();
     if (!contentElement) return;
     const onFocus = () => {
       focusedRef.current = true;
     };
     contentElement.addEventListener("focusin", onFocus, true);
     return () => contentElement.removeEventListener("focusin", onFocus, true);
-  }, [store, open, domReady]);
+  }, [open, domReady, contentElement]);
 
   useEffect(() => {
     if (!open) return;
@@ -98,10 +98,9 @@ function useEventOutside({
       // of the content element, we call the listener.
       callListener(event);
     };
-    const { contentElement } = store.getState();
     const win = contentElement ? getWindow(contentElement) : undefined;
     return addGlobalEventListener(type, onEvent, capture, win);
-  }, [open, capture, store, type, callListener]);
+  }, [open, capture, store, type, callListener, contentElement]);
 }
 
 function shouldHideOnInteractOutside(
