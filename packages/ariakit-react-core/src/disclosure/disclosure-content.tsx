@@ -184,13 +184,12 @@ export const useDisclosureContent = createHook<
     const timeout = delay + duration;
     // If the timeout is zero, there's no animation or transition, either
     // because they weren't defined in the CSS or the duration was explicitly
-    // set to zero. In this scenario, we can halt the animation right away
-    // and, if we're entering, we can set the animatedRef to false to bypass
-    // the leave animation.
+    // set to zero. In this scenario, we halt the animation right away. We
+    // keep the animated state as-is so that the transition lifecycle
+    // (data-enter/data-leave) continues to be managed on subsequent
+    // open/close cycles, even when the content element itself has no CSS
+    // transitions (e.g., a wrapper uses :has([data-enter]) instead).
     if (!timeout) {
-      if (transition === "enter") {
-        store.setState("animated", false);
-      }
       stopAnimation();
       return;
     }
