@@ -1,0 +1,32 @@
+.wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.1);
+  transition: background 150ms;
+}
+
+.wrapper:has([data-enter]) {
+  background: rgb(0 0 0 / 0.3);
+}
+
+.dialog {
+  position: relative;
+  z-index: 50;
+  max-width: 24rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: white;
+}
+
+.button {
+  padding: 0.25rem 0.5rem;
+}
+
+.heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
