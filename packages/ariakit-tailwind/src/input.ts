@@ -629,32 +629,40 @@ function getContrastL(contrastValue: Value) {
   const normalDelta = fn.mul(contrastValue, direction);
   const startLightness = l;
   const baseLightness = getLayerL(normalDelta);
+  // Crossed from dark side: l was below fla AND baseLightness moved above fla.
   const crossedFromDarkSide = fn.mul(
     fn.binary(fn.sub(lowerBoundary, startLightness)),
     fn.binary(fn.sub(baseLightness, lowerBoundary)),
   );
+  // Crossed from light side: l was above flb AND baseLightness moved below flb.
   const crossedFromLightSide = fn.mul(
     fn.binary(fn.sub(startLightness, upperBoundary)),
     fn.binary(fn.sub(upperBoundary, baseLightness)),
   );
-  const crossedForbiddenRange = fn.add(
-    fn.mul(vars.autoDirectionToLight, crossedFromDarkSide),
-    fn.mul(vars.autoDirectionToDark, crossedFromLightSide),
-  );
-  const skippedLightness = fn.add(
+  // These are mutually exclusive (l cannot be both below fla and above flb),
+  // and each can only fire when the auto-direction aligns with the crossing
+  // direction, so the autoDirectionToLight / autoDirectionToDark weights that
+  // were here before are redundant and have been removed.
+  const crossed = fn.add(crossedFromDarkSide, crossedFromLightSide);
+  // When l starts inside the forbidden range (crossed is always 0 there),
+  // baseLightness may still sit inside the range, so a second mask is needed.
+  // It is gated by valueEnabled so that a zero contrast value does not trigger
+  // the jump.
+  const baseLightnessInForbidden = getForbiddenRangeMask(
     baseLightness,
-    fn.mul(direction, bandWidth, crossedForbiddenRange),
-  );
-  const enteredForbiddenRange = getForbiddenRangeMask(
-    skippedLightness,
     lowerBoundary,
     upperBoundary,
   );
+  // A crossing always lands outside the forbidden range (the skip adds the
+  // full band width), so crossed and baseLightnessInForbidden are never both
+  // 1. Using max selects whichever condition applies without inflating the
+  // expression the way the previous skippedLightness intermediate did.
+  const needsJump = fn.max(
+    crossed,
+    fn.mul(baseLightnessInForbidden, valueEnabled),
+  );
   return fn.clamp01(
-    fn.add(
-      skippedLightness,
-      fn.mul(direction, bandWidth, enteredForbiddenRange, valueEnabled),
-    ),
+    fn.add(baseLightness, fn.mul(direction, bandWidth, needsJump)),
   );
 }
 
