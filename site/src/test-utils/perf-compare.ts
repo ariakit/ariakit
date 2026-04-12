@@ -143,7 +143,7 @@ function compare(): ComparisonSummary {
 
   for (const base of baseline) {
     if (!currentByKey.has(resultKey(base))) {
-      removedTests.push(base.label);
+      removedTests.push(resultKey(base));
     }
   }
 
@@ -238,6 +238,8 @@ function formatMarkdown(summary: ComparisonSummary): string {
     lines.push(...formatSummaryTable(rows, significantKeys));
   } else if (rows.length === 0 && newTests.length > 0) {
     lines.push("No baseline results available for comparison.");
+  } else if (rows.length === 0 && newTests.length === 0) {
+    lines.push("No performance results found.");
   } else {
     lines.push("No significant performance changes detected.");
   }
