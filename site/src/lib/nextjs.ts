@@ -77,7 +77,7 @@ export function getNextjsUrlFromRequest({
       hostname === "0.0.0.0"
     ) {
       const port =
-        typeof env?.NEXTJS_PORT === "string"
+        typeof env?.NEXTJS_PORT === "string" && env.NEXTJS_PORT
           ? env.NEXTJS_PORT
           : NEXTJS_DEFAULT_PORT;
       return `http://localhost:${port}${normalizedPath}`;
