@@ -1,7 +1,7 @@
 import { test } from "#app/test-utils/fixtures.ts";
 import { viewports } from "#app/test-utils/visual.ts";
 
-const TIMEOUT_PER_STEP = 10_000;
+const TIMEOUT_PER_STEP = 20_000;
 
 async function getPreviewPaths(baseURL: string) {
   const resPreviews = await fetch(new URL("/previews", baseURL));

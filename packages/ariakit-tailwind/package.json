@@ -30,16 +30,21 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.css",
+    "./output": "./src/output.css",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": ""
+    "build": "node src/build.ts",
+    "lint": "oxlint . && oxfmt --check ."
   },
   "dependencies": {
     "color-string": "^2.0.0"
   },
   "devDependencies": {
+    "@ariakit/core": "0.4.18",
     "@types/color-string": "1.5.5",
+    "color-string": "2.1.4",
+    "csstype": "3.2.3",
     "tailwindcss": "4.2.2"
   },
   "peerDependencies": {
