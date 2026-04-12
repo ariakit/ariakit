@@ -2,9 +2,6 @@
   "name": "@ariakit/scripts",
   "private": true,
   "type": "module",
-  "exports": {
-    "./dev": "./src/dev.ts"
-  },
   "bin": {
     "ariakit": "src/index.ts"
   },
