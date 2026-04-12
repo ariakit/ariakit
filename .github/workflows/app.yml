@@ -233,24 +233,37 @@ jobs:
       - name: Set up base environment
         uses: ./.github/workflows/setup
 
+      - name: Find base app artifact
+        id: find-base-artifact
+        continue-on-error: true
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'app.yml',
+              branch: '${{ github.event.pull_request.base.ref }}',
+              status: 'success',
+              per_page: 1,
+            });
+            const run = runs.data.workflow_runs[0];
+            if (!run) {
+              core.setFailed('No successful run found');
+              return;
+            }
+            core.setOutput('run-id', run.id);
+
       - name: Download base app artifact
         id: base-artifact
+        if: steps.find-base-artifact.outcome == 'success'
         continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          RUN_ID=$(gh run list \
-            --branch "${{ github.event.pull_request.base.ref }}" \
-            --workflow app.yml \
-            --status success \
-            --limit 1 \
-            --json databaseId \
-            --jq '.[0].databaseId')
-          if [ -n "$RUN_ID" ]; then
-            gh run download "$RUN_ID" --name app-dist --dir site/dist
-          else
-            exit 1
-          fi
+        uses: actions/download-artifact@v8
+        with:
+          name: app-dist
+          path: site/dist
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
       - name: Build base app
         if: steps.base-artifact.outcome != 'success'
