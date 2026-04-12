@@ -570,7 +570,18 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (event.metaKey) return;
       if (!store) return;
       const { open } = store.getState();
-      if (open) return;
+      if (open) {
+        // When the popover is open, prevent Enter from triggering the default
+        // behavior (submitting a parent form). If there's an active item, the
+        // keyboard event proxy on Composite will dispatch Enter to the item,
+        // which handles selection. If there's no active item (e.g., all items
+        // are filtered out, or activeId is stale after a React transition),
+        // Enter should be a no-op rather than submitting a form.
+        if (event.key === "Enter") {
+          event.preventDefault();
+        }
+        return;
+      }
       // Up and Down arrow keys should open the combobox popover.
       if (event.key === "ArrowUp" || event.key === "ArrowDown") {
         if (showOnKeyPressProp(event)) {
