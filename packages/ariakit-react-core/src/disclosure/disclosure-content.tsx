@@ -119,9 +119,7 @@ export const useDisclosureContent = createHook<
       // when the content element itself has no transitions.
       if (!open) {
         hasClosedRef.current = true;
-        setTransition((current) =>
-          current === "enter" || current === "leave" ? null : current,
-        );
+        setTransition(null);
       } else if (hasClosedRef.current) {
         // On reopen after animation detection disabled animations, restore
         // data-enter so enter styles are re-applied.
