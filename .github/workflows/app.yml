@@ -292,6 +292,9 @@ jobs:
       - name: Set up PR environment
         uses: ./.github/workflows/setup
 
+      - name: Clean base app artifacts
+        run: rm -rf site/dist
+
       - name: Download app artifact
         uses: actions/download-artifact@v8
         with:
