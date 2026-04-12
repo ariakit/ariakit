@@ -233,7 +233,27 @@ jobs:
       - name: Set up base environment
         uses: ./.github/workflows/setup
 
+      - name: Download base app artifact
+        id: base-artifact
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RUN_ID=$(gh run list \
+            --branch "${{ github.event.pull_request.base.ref }}" \
+            --workflow app.yml \
+            --status success \
+            --limit 1 \
+            --json databaseId \
+            --jq '.[0].databaseId')
+          if [ -n "$RUN_ID" ]; then
+            gh run download "$RUN_ID" --name app-dist --dir site/dist
+          else
+            exit 1
+          fi
+
       - name: Build base app
+        if: steps.base-artifact.outcome != 'success'
         run: pnpm -F site run build-lite
 
       - name: Run baseline perf tests
