@@ -1,12 +1,11 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
-import "./style.css";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Ariakit.Button onClick={() => setOpen(true)} className="button">
+      <Ariakit.Button onClick={() => setOpen(true)} className="px-2 py-1">
         Show modal
       </Ariakit.Button>
       <Ariakit.Dialog
@@ -14,12 +13,18 @@ export default function Example() {
         open={open}
         onClose={() => setOpen(false)}
         render={(props) => (
-          <div className="wrapper" hidden={!open}>
-            <div className="dialog" {...props} />
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 transition-[background] duration-150 has-[[data-enter]]:bg-black/30"
+            hidden={!open}
+          >
+            <div
+              className="relative z-50 max-w-96 rounded-lg bg-white p-4"
+              {...props}
+            />
           </div>
         )}
       >
-        <Ariakit.DialogHeading className="heading">
+        <Ariakit.DialogHeading className="text-xl font-semibold">
           Success
         </Ariakit.DialogHeading>
         <p>
@@ -27,7 +32,9 @@ export default function Example() {
           receipt.
         </p>
         <div>
-          <Ariakit.DialogDismiss className="button">OK</Ariakit.DialogDismiss>
+          <Ariakit.DialogDismiss className="px-2 py-1">
+            OK
+          </Ariakit.DialogDismiss>
         </div>
       </Ariakit.Dialog>
     </>
