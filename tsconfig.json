@@ -10,6 +10,7 @@
     { "path": "./packages/ariakit-react-core/tsconfig.json" },
     { "path": "./packages/ariakit-solid/tsconfig.json" },
     { "path": "./packages/ariakit-solid-core/tsconfig.json" },
+    { "path": "./packages/ariakit-scripts/tsconfig.json" },
     { "path": "./packages/ariakit-tailwind/tsconfig.json" },
     { "path": "./packages/ariakit-test/tsconfig.json" },
     { "path": "./examples/tsconfig.react.json" },
