@@ -14,6 +14,7 @@ const THRESHOLD_PERCENT = 10;
 type MetricKey = keyof PerfMetrics;
 
 interface ComparisonRow {
+  testFile: string;
   label: string;
   metric: MetricKey;
   baseline: number;
@@ -122,14 +123,20 @@ function compare(): ComparisonSummary {
       const curVal = cur.metrics[metric];
       const delta = curVal - baseVal;
       const percent = baseVal > 0 ? (delta / baseVal) * 100 : 0;
+      // Flag as significant when percentage exceeds threshold, or when a
+      // metric goes from zero to a non-trivial value (> 1ms).
+      const significant =
+        Math.abs(percent) > THRESHOLD_PERCENT ||
+        (baseVal === 0 && Math.abs(curVal) > 1);
       rows.push({
+        testFile: cur.testFile,
         label: cur.label,
         metric,
         baseline: baseVal,
         current: curVal,
         delta,
         percent,
-        significant: Math.abs(percent) > THRESHOLD_PERCENT,
+        significant,
       });
     }
   }
@@ -148,13 +155,18 @@ function compare(): ComparisonSummary {
   };
 }
 
-function formatSummaryTable(rows: ComparisonRow[], labels: string[]): string[] {
+function rowKey(row: ComparisonRow): string {
+  return `${row.testFile}::${row.label}`;
+}
+
+function formatSummaryTable(rows: ComparisonRow[], keys: string[]): string[] {
   const lines: string[] = [];
   lines.push("| Test | Scripting | Rendering | Total |");
   lines.push("|------|-----------|-----------|-------|");
 
-  for (const label of labels) {
-    const testRows = rows.filter((r) => r.label === label);
+  for (const key of keys) {
+    const testRows = rows.filter((r) => rowKey(r) === key);
+    const label = testRows[0]?.label ?? key;
     const cells: string[] = [label];
     for (const metric of PRIMARY_METRICS) {
       const row = testRows.find((r) => r.metric === metric);
@@ -179,11 +191,12 @@ function formatSummaryTable(rows: ComparisonRow[], labels: string[]): string[] {
 
 function formatDetailedBreakdown(
   rows: ComparisonRow[],
-  labels: string[],
+  keys: string[],
 ): string[] {
   const lines: string[] = [];
-  for (const label of labels) {
-    const testRows = rows.filter((r) => r.label === label);
+  for (const key of keys) {
+    const testRows = rows.filter((r) => rowKey(r) === key);
+    const label = testRows[0]?.label ?? key;
     lines.push(`### ${label}`);
     lines.push("");
     lines.push("| Metric | Baseline | Current | Delta |");
@@ -210,26 +223,30 @@ function formatDetailedBreakdown(
 function formatMarkdown(summary: ComparisonSummary): string {
   const { rows, hasSignificantChanges, newTests, removedTests } = summary;
 
-  const allLabels = [...new Set(rows.map((r) => r.label))];
-  const significantLabels = allLabels.filter((label) =>
-    rows.some((r) => r.label === label && r.significant),
+  const allKeys = [...new Set(rows.map((r) => rowKey(r)))];
+  const significantKeys = allKeys.filter((key) =>
+    rows.some((r) => rowKey(r) === key && r.significant),
   );
+
+  const totalTests = allKeys.length + newTests.length;
 
   const lines: string[] = [];
   lines.push("## Performance");
   lines.push("");
 
   if (hasSignificantChanges) {
-    lines.push(...formatSummaryTable(rows, significantLabels));
+    lines.push(...formatSummaryTable(rows, significantKeys));
+  } else if (rows.length === 0 && newTests.length > 0) {
+    lines.push("No baseline results available for comparison.");
   } else {
     lines.push("No significant performance changes detected.");
   }
 
   lines.push("");
   lines.push(`<details>`);
-  lines.push(`<summary>Full breakdown (${allLabels.length} tests)</summary>`);
+  lines.push(`<summary>Full breakdown (${totalTests} tests)</summary>`);
   lines.push("");
-  lines.push(...formatDetailedBreakdown(rows, allLabels));
+  lines.push(...formatDetailedBreakdown(rows, allKeys));
 
   if (newTests.length > 0) {
     lines.push("### New tests (no baseline)");
