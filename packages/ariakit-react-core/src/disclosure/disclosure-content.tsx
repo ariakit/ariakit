@@ -87,6 +87,7 @@ export const useDisclosureContent = createHook<
   const animated = useStoreState(store, "animated");
   const contentElement = useStoreState(store, "contentElement");
   const otherElement = useStoreState(store.disclosure, "contentElement");
+  const hasClosedRef = useRef(false);
 
   // This is a workaround to avoid the content element from being reset to null
   // on fast refresh.
@@ -111,7 +112,22 @@ export const useDisclosureContent = createHook<
   }, [store]);
 
   useSafeLayoutEffect(() => {
-    if (!animated) return;
+    if (!animated) {
+      // When animation detection has disabled animations (e.g., no CSS
+      // transition was detected on the content element), manage data-enter
+      // so wrapper elements using :has([data-enter]) work correctly even
+      // when the content element itself has no transitions.
+      if (!open) {
+        hasClosedRef.current = true;
+        setTransition(null);
+      } else if (hasClosedRef.current) {
+        // On reopen after animation detection disabled animations, restore
+        // data-enter so enter styles are re-applied.
+        hasClosedRef.current = false;
+        setTransition("enter");
+      }
+      return;
+    }
     // When the disclosure content element is rendered in a portal, we need to
     // wait for the portal to be mounted and connected to the DOM before we
     // can start the animation.
@@ -185,8 +201,9 @@ export const useDisclosureContent = createHook<
     // If the timeout is zero, there's no animation or transition, either
     // because they weren't defined in the CSS or the duration was explicitly
     // set to zero. In this scenario, we can halt the animation right away
-    // and, if we're entering, we can set the animatedRef to false to bypass
-    // the leave animation.
+    // and, if we're entering, we can set the animated state to false so
+    // the element unmounts immediately on close without waiting for a
+    // leave animation.
     if (!timeout) {
       if (transition === "enter") {
         store.setState("animated", false);

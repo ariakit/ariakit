@@ -4,9 +4,9 @@
 .cache
 dist
 test-results
+.perf-results
 playwright-report
 .playwright
-.playwright-browsers
 .playwright-cli
 
 # dependencies

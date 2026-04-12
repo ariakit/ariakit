@@ -7,7 +7,7 @@
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm -F website run dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
-    "dev-site": "conc -r 'pnpm -F site run dev' 'pnpm -F nextjs run dev'",
+    "dev-site": "ariakit dev",
     "dev-site-lite": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true pnpm run dev-site",
     "build-site": "pnpm -F nextjs run build-worker && pnpm -F site run build",
     "build-site-lite": "pnpm -F nextjs run build-worker && pnpm -F site run build-lite",
@@ -64,6 +64,7 @@
     "@ariakit/core": "workspace:*",
     "@ariakit/react": "workspace:*",
     "@ariakit/react-core": "workspace:*",
+    "@ariakit/scripts": "workspace:*",
     "@ariakit/solid": "workspace:*",
     "@ariakit/solid-core": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
@@ -114,11 +115,11 @@
     "tailwindcss-animate": "1.0.7",
     "tsup": "8.5.1",
     "typescript": "6.0.2",
-    "vite": "8.0.5",
+    "vite": "8.0.7",
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.3",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.80.0"
+    "wrangler": "4.81.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",

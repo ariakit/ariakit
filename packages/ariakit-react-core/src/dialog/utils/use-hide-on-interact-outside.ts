@@ -1,4 +1,4 @@
-import { contains, getDocument } from "@ariakit/core/utils/dom";
+import { contains, getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
@@ -56,19 +56,19 @@ function useEventOutside({
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
   const open = useStoreState(store, "open");
+  const contentElement = useStoreState(store, "contentElement");
   const focusedRef = useRef(false);
 
   useSafeLayoutEffect(() => {
     if (!open) return;
     if (!domReady) return;
-    const { contentElement } = store.getState();
     if (!contentElement) return;
     const onFocus = () => {
       focusedRef.current = true;
     };
     contentElement.addEventListener("focusin", onFocus, true);
     return () => contentElement.removeEventListener("focusin", onFocus, true);
-  }, [store, open, domReady]);
+  }, [open, domReady, contentElement]);
 
   useEffect(() => {
     if (!open) return;
@@ -98,8 +98,9 @@ function useEventOutside({
       // of the content element, we call the listener.
       callListener(event);
     };
-    return addGlobalEventListener(type, onEvent, capture);
-  }, [open, capture, store, type, callListener]);
+    const win = contentElement ? getWindow(contentElement) : undefined;
+    return addGlobalEventListener(type, onEvent, capture, win);
+  }, [open, capture, store, type, callListener, contentElement]);
 }
 
 function shouldHideOnInteractOutside(
@@ -119,7 +120,9 @@ export function useHideOnInteractOutside(
   interactedOutsideRef?: MutableRefObject<boolean>,
 ) {
   const open = useStoreState(store, "open");
-  const previousMouseDownRef = usePreviousMouseDownRef(open);
+  const contentElement = useStoreState(store, "contentElement");
+  const contentWindow = contentElement ? getWindow(contentElement) : undefined;
+  const previousMouseDownRef = usePreviousMouseDownRef(open, contentWindow);
   const props = { store, domReady, capture: true };
 
   useEventOutside({

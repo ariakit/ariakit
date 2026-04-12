@@ -6,6 +6,9 @@
   "imports": {
     "#app/*": "./*"
   },
+  "exports": {
+    "./pages/*": "./app/*/page.tsx"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

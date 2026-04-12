@@ -63,7 +63,7 @@ jobs:
 
   test:
     name: Test ${{ matrix.name }}
-    needs: [build]
+    needs: [build, build-nextjs]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -115,6 +115,12 @@ jobs:
         with:
           name: app-dist
           path: site/dist
+
+      - name: Download Next.js artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
 
       - name: Test
         id: test
@@ -203,6 +209,156 @@ jobs:
       event: ${{ github.event_name }}
       test-result: ${{ needs.test.result }}
     secrets: inherit
+
+  perf:
+    name: Performance
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: chromium
+
+      # --- Baseline (base branch) ---
+      - name: Checkout base branch
+        run: git checkout ${{ github.event.pull_request.base.sha }}
+
+      - name: Set up base environment
+        uses: ./.github/workflows/setup
+
+      - name: Install Playwright (base)
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: chromium
+
+      - name: Find base app artifact
+        id: find-base-artifact
+        continue-on-error: true
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'app.yml',
+              branch: '${{ github.event.pull_request.base.ref }}',
+              status: 'success',
+              per_page: 1,
+            });
+            const run = runs.data.workflow_runs[0];
+            if (!run) {
+              core.setFailed('No successful run found');
+              return;
+            }
+            core.setOutput('run-id', run.id);
+
+      - name: Download base app artifact
+        id: base-artifact
+        if: steps.find-base-artifact.outcome == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: app-dist
+          path: site/dist
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
+
+      - name: Build base app
+        if: steps.base-artifact.outcome != 'success'
+        run: pnpm -F site run build-lite
+
+      - name: Run baseline perf tests
+        # Baseline failures are expected when perf tests are new.
+        run: |
+          PERF_RESULTS_FILE=baseline.json \
+          xvfb-run pnpm -F site run test-perf --pass-with-no-tests || true
+
+      - name: Save baseline results
+        run: |
+          mkdir -p /tmp/perf-baseline
+          cp site/.perf-results/baseline*.json /tmp/perf-baseline/ 2>/dev/null || true
+
+      # --- Current (PR branch) ---
+      - name: Checkout PR branch
+        run: git checkout ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up PR environment
+        uses: ./.github/workflows/setup
+
+      - name: Clean base app artifacts
+        run: rm -rf site/dist
+
+      - name: Download app artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: app-dist
+          path: site/dist
+
+      - name: Restore baseline results
+        run: |
+          mkdir -p site/.perf-results
+          cp /tmp/perf-baseline/*.json site/.perf-results/ 2>/dev/null || true
+
+      - name: Run current perf tests
+        run: |
+          PERF_RESULTS_FILE=current.json \
+          xvfb-run pnpm -F site run test-perf --pass-with-no-tests
+
+      - name: Compare results
+        if: always()
+        run: pnpm -F site run perf-compare
+
+      - name: Post or update PR comment
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- perf-results -->';
+            let body;
+            try {
+              body = fs.readFileSync('site/.perf-results/comparison.md', 'utf-8');
+            } catch {
+              body = 'No performance results available.';
+            }
+            body = marker + '\n' + body;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
 
   deploy-preview:
     # Preview deployments and commit statuses intentionally run only under the

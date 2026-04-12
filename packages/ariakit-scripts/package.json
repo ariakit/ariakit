@@ -1,0 +1,11 @@
+{
+  "name": "@ariakit/scripts",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "ariakit": "src/index.ts"
+  },
+  "dependencies": {
+    "commander": "14.0.3"
+  }
+}
