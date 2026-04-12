@@ -61,14 +61,6 @@ jobs:
           retention-days: 7
           include-hidden-files: true
 
-      - name: Upload Next.js build
-        uses: actions/upload-artifact@v7
-        with:
-          name: nextjs-build
-          path: nextjs/.next
-          retention-days: 7
-          include-hidden-files: true
-
   test:
     name: Test ${{ matrix.name }}
     needs: [build, build-nextjs]
@@ -124,11 +116,11 @@ jobs:
           name: app-dist
           path: site/dist
 
-      - name: Download Next.js build
+      - name: Download Next.js artifact
         uses: actions/download-artifact@v8
         with:
-          name: nextjs-build
-          path: nextjs/.next
+          name: nextjs-dist
+          path: nextjs/.open-next
 
       - name: Test
         id: test
