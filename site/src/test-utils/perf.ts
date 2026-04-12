@@ -195,10 +195,15 @@ export async function createPerfMeasure(
   const medianMetrics = computeMedianMetrics(allMetrics);
 
   const testTitle = testInfo.titlePath.filter(Boolean).join(" > ");
+  const baseLabel = label ?? testTitle;
+  const duplicateCount = results.filter((r) => r.label === baseLabel).length;
+  const resolvedLabel =
+    duplicateCount === 0 ? baseLabel : `${baseLabel} #${duplicateCount + 1}`;
+
   results.push({
     testFile: path.relative(process.cwd(), testInfo.file),
     testTitle,
-    label: label ?? testTitle,
+    label: resolvedLabel,
     metrics: medianMetrics,
     raw: allMetrics,
   });
