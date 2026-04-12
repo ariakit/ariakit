@@ -287,12 +287,16 @@ jobs:
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
+      - name: Clean partial base artifacts
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        run: rm -rf site/dist nextjs/.open-next
+
       - name: Build base app
-        if: steps.base-artifact.outcome != 'success'
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
         run: pnpm -F site run build-lite
 
       - name: Build base Next.js app
-        if: steps.base-nextjs-artifact.outcome != 'success'
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
         run: pnpm -F nextjs run build-worker
 
       - name: Run baseline perf tests
