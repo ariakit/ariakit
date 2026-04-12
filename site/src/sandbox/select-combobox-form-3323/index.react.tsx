@@ -33,7 +33,17 @@ export default function Example() {
           <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
           <Ariakit.Select />
           <Ariakit.SelectPopover gutter={4} sameWidth>
-            <Ariakit.Combobox autoSelect placeholder="Search..." />
+            <Ariakit.Combobox
+              autoSelect
+              placeholder="Search..."
+              // TODO: Remove this workaround when the fix lands.
+              // https://github.com/ariakit/ariakit/issues/3323
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !matches.length) {
+                  event.preventDefault();
+                }
+              }}
+            />
             <Ariakit.ComboboxList>
               {matches.map((value) => (
                 <Ariakit.SelectItem
