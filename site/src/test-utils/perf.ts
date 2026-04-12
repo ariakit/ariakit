@@ -52,8 +52,12 @@ function median(values: number[]): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  if (sorted.length % 2 !== 0) return sorted[mid]!;
-  return (sorted[mid - 1]! + sorted[mid]!) / 2;
+  const midValue = sorted[mid];
+  if (midValue == null) return 0;
+  if (sorted.length % 2 !== 0) return midValue;
+  const prevValue = sorted[mid - 1];
+  if (prevValue == null) return midValue;
+  return (prevValue + midValue) / 2;
 }
 
 function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
@@ -88,7 +92,7 @@ async function measureOnce(
         }
       }
     });
-    observer.observe({ type: "event", buffered: true });
+    observer.observe({ type: "event", buffered: false });
     w.__perfObserver = observer;
   });
 
