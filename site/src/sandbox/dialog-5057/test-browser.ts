@@ -2,7 +2,6 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("data-enter is removed when dialog with render wrapper closes", async ({
-    page,
     q,
   }) => {
     // When Dialog uses render={(props) => <div><div {...props} /></div>},
@@ -15,12 +14,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("OK").click();
     await test.expect(q.dialog("Success")).not.toBeVisible();
 
-    const hiddenDialog = page.locator("[role='dialog']");
-    await test.expect(hiddenDialog).not.toHaveAttribute("data-enter");
+    await test
+      .expect(q.dialog("Success", { includeHidden: true }))
+      .not.toHaveAttribute("data-enter");
   });
 
   test("data-enter is re-added when dialog with render wrapper reopens", async ({
-    page,
     q,
   }) => {
     // After closing and reopening, data-enter should be re-added so
@@ -31,8 +30,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("OK").click();
     await test.expect(q.dialog("Success")).not.toBeVisible();
 
-    const dialogLocator = page.locator("[role='dialog']");
-    await test.expect(dialogLocator).not.toHaveAttribute("data-enter");
+    await test
+      .expect(q.dialog("Success", { includeHidden: true }))
+      .not.toHaveAttribute("data-enter");
 
     await q.button("Show modal").click();
     const dialog = q.dialog("Success");
