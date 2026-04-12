@@ -230,8 +230,8 @@ jobs:
       - name: Checkout base branch
         run: git checkout ${{ github.event.pull_request.base.sha }}
 
-      - name: Install base dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Set up base environment
+        uses: ./.github/workflows/setup
 
       - name: Build base app
         run: pnpm -F site run build-lite
@@ -251,8 +251,8 @@ jobs:
       - name: Checkout PR branch
         run: git checkout ${{ github.event.pull_request.head.sha }}
 
-      - name: Install PR dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Set up PR environment
+        uses: ./.github/workflows/setup
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
