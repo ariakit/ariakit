@@ -125,6 +125,7 @@ export const useDisclosureContent = createHook<
       } else if (hasClosedRef.current) {
         // On reopen after animation detection disabled animations, restore
         // data-enter so enter styles are re-applied.
+        hasClosedRef.current = false;
         setTransition("enter");
       }
       return;
