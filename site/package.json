@@ -41,6 +41,9 @@
     "test-visual-safari": "cross-env VISUAL_TEST=true playwright test --project=safari",
     "test-visual-ios": "cross-env VISUAL_TEST=true playwright test --project=ios",
     "test-visual-android": "cross-env VISUAL_TEST=true playwright test --project=android",
+    "test-perf": "playwright test --project=perf",
+    "test-perf-headed": "playwright test --project=perf --headed",
+    "perf-compare": "node src/test-utils/perf-compare.ts",
     "og-image-clean": "rimraf public/og-image",
     "og-image-generate": "node src/pages/og-image/_generate-images.ts",
     "build-styles": "node src/lib/build-styles.ts"

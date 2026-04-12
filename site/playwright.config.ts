@@ -80,5 +80,17 @@ export default defineConfig({
       testMatch: testMatchersFor("android", "mobile"),
       use: devices["Pixel 5"],
     },
+    {
+      name: "perf",
+      testMatch: [/\/perf[^/]*-chrome/, /\/perfs\/[^/]*-chrome/],
+      use: {
+        ...devices["Desktop Chrome"],
+        launchOptions: {
+          args: ["--enable-precise-memory-info"],
+        },
+      },
+      retries: 0,
+      timeout: 120_000,
+    },
   ],
 });
