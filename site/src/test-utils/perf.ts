@@ -196,7 +196,9 @@ export async function createPerfMeasure(
 
   const testTitle = testInfo.titlePath.filter(Boolean).join(" > ");
   const baseLabel = label ?? testTitle;
-  const duplicateCount = results.filter((r) => r.label === baseLabel).length;
+  const duplicateCount = results.filter(
+    (r) => r.label === baseLabel || r.label.startsWith(`${baseLabel} #`),
+  ).length;
   const resolvedLabel =
     duplicateCount === 0 ? baseLabel : `${baseLabel} #${duplicateCount + 1}`;
 
