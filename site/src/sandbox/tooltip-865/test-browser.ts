@@ -29,12 +29,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.waitForFunction(() => document.fullscreenElement == null);
     await q.button("Hover me").hover();
     await test.expect(q.tooltip("Tooltip content")).toBeVisible();
-    const isInBody = await page.evaluate(() => {
+    // The portal node must be a direct child of document.body, not still
+    // inside the former fullscreen container.
+    const portalParentIsBody = await page.evaluate(() => {
       const tooltipEl = document.querySelector("[role=tooltip]");
-      if (!tooltipEl) return false;
-      return tooltipEl.closest("body") === document.body;
+      const portalNode = tooltipEl?.closest("[id^='portal/']");
+      if (!portalNode) return false;
+      return portalNode.parentElement === document.body;
     });
-    test.expect(isInBody).toBe(true);
+    test.expect(portalParentIsBody).toBe(true);
   });
 
   test("tooltip mounted while in fullscreen renders inside it", async ({
