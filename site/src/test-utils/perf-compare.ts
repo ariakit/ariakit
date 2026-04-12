@@ -26,7 +26,7 @@ interface ComparisonRow {
 interface ComparisonSummary {
   rows: ComparisonRow[];
   hasSignificantChanges: boolean;
-  newTests: string[];
+  newTests: PerfResult[];
   removedTests: string[];
 }
 
@@ -88,28 +88,33 @@ function formatDelta(delta: number, percent: number, baseline: number): string {
   return `${sign}${formatMs(delta)} (${sign}${percent.toFixed(0)}%)`;
 }
 
+function resultKey(result: PerfResult): string {
+  return `${result.testFile}::${result.label}`;
+}
+
 function compare(): ComparisonSummary {
   const baseline = loadResults("baseline");
   const current = loadResults("current");
 
-  const baselineByLabel = new Map<string, PerfResult>();
+  const baselineByKey = new Map<string, PerfResult>();
   for (const result of baseline) {
-    baselineByLabel.set(result.label, result);
+    baselineByKey.set(resultKey(result), result);
   }
 
-  const currentByLabel = new Map<string, PerfResult>();
+  const currentByKey = new Map<string, PerfResult>();
   for (const result of current) {
-    currentByLabel.set(result.label, result);
+    currentByKey.set(resultKey(result), result);
   }
 
   const rows: ComparisonRow[] = [];
-  const newTests: string[] = [];
+  const newTests: PerfResult[] = [];
   const removedTests: string[] = [];
 
   for (const cur of current) {
-    const base = baselineByLabel.get(cur.label);
+    const key = resultKey(cur);
+    const base = baselineByKey.get(key);
     if (!base) {
-      newTests.push(cur.label);
+      newTests.push(cur);
       continue;
     }
     for (const metric of ALL_METRICS) {
@@ -130,7 +135,7 @@ function compare(): ComparisonSummary {
   }
 
   for (const base of baseline) {
-    if (!currentByLabel.has(base.label)) {
+    if (!currentByKey.has(resultKey(base))) {
       removedTests.push(base.label);
     }
   }
@@ -158,7 +163,10 @@ function formatSummaryTable(rows: ComparisonRow[], labels: string[]): string[] {
         continue;
       }
       let cell = `${formatMs(row.baseline)} \u2192 ${formatMs(row.current)}`;
-      cell += ` (${row.delta >= 0 ? "+" : ""}${row.percent.toFixed(0)}%)`;
+      cell +=
+        row.baseline === 0
+          ? " (n/a)"
+          : ` (${row.delta >= 0 ? "+" : ""}${row.percent.toFixed(0)}%)`;
       if (row.significant && row.delta > 0) {
         cell += " :warning:";
       }
@@ -223,8 +231,14 @@ function formatMarkdown(summary: ComparisonSummary): string {
   if (newTests.length > 0) {
     lines.push("### New tests (no baseline)");
     lines.push("");
-    for (const label of newTests) {
-      lines.push(`- ${label}`);
+    lines.push("| Test | Scripting | Rendering | Total |");
+    lines.push("|------|-----------|-----------|-------|");
+    for (const result of newTests) {
+      const cells: string[] = [result.label];
+      for (const metric of PRIMARY_METRICS) {
+        cells.push(formatMs(result.metrics[metric]));
+      }
+      lines.push(`| ${cells.join(" | ")} |`);
     }
     lines.push("");
   }
