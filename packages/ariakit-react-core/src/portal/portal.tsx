@@ -140,6 +140,10 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
         rootElement.appendChild(portalNode);
       }
     };
+    // Sync immediately in case fullscreen was entered before this effect
+    // ran, which can happen if the portal mounts while already in
+    // fullscreen mode.
+    onFullscreenChange();
     doc.addEventListener("fullscreenchange", onFullscreenChange);
     return () => {
       doc.removeEventListener("fullscreenchange", onFullscreenChange);
