@@ -28,7 +28,7 @@ interface ComparisonSummary {
   rows: ComparisonRow[];
   hasSignificantChanges: boolean;
   newTests: PerfResult[];
-  removedTests: string[];
+  removedTests: PerfResult[];
 }
 
 // Primary metrics shown in the summary table.
@@ -109,7 +109,7 @@ function compare(): ComparisonSummary {
 
   const rows: ComparisonRow[] = [];
   const newTests: PerfResult[] = [];
-  const removedTests: string[] = [];
+  const removedTests: PerfResult[] = [];
 
   for (const cur of current) {
     const key = resultKey(cur);
@@ -143,7 +143,7 @@ function compare(): ComparisonSummary {
 
   for (const base of baseline) {
     if (!currentByKey.has(resultKey(base))) {
-      removedTests.push(resultKey(base));
+      removedTests.push(base);
     }
   }
 
@@ -268,8 +268,8 @@ function formatMarkdown(summary: ComparisonSummary): string {
   if (removedTests.length > 0) {
     lines.push("### Removed tests");
     lines.push("");
-    for (const label of removedTests) {
-      lines.push(`- ${label}`);
+    for (const result of removedTests) {
+      lines.push(`- ${result.label}`);
     }
     lines.push("");
   }
