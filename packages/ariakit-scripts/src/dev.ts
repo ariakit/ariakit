@@ -4,35 +4,43 @@ import { createServer } from "node:net";
 /**
  * Finds the first available TCP port starting from the given port number.
  */
-function findAvailablePort(start: number): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const server = createServer();
-    server.listen(start, () => {
-      server.close(() => resolve(start));
+async function findAvailablePort(start: number): Promise<number> {
+  let port = start;
+  while (true) {
+    const available = await new Promise<boolean>((resolve, reject) => {
+      const server = createServer();
+      server.once("error", (error: NodeJS.ErrnoException) => {
+        if (error.code === "EADDRINUSE") {
+          resolve(false);
+          return;
+        }
+        reject(error);
+      });
+      server.once("listening", () => {
+        server.close(() => resolve(true));
+      });
+      server.listen(port);
     });
-    server.on("error", (error: NodeJS.ErrnoException) => {
-      if (error.code === "EADDRINUSE") {
-        resolve(findAvailablePort(start + 1));
-        return;
-      }
-      reject(error);
-    });
-  });
+    if (available) return port;
+    port += 1;
+  }
 }
 
-const nextjsPort = await findAvailablePort(3000);
+export async function dev() {
+  const nextjsPort = await findAvailablePort(3000);
 
-const child = spawn(
-  "conc",
-  [
-    "-r",
-    "pnpm -F site run dev",
-    `pnpm -F nextjs run dev -- --port ${nextjsPort}`,
-  ],
-  {
-    stdio: "inherit",
-    env: { ...process.env, NEXTJS_PORT: String(nextjsPort) },
-  },
-);
+  const child = spawn(
+    "conc",
+    [
+      "-r",
+      "pnpm -F site run dev",
+      `pnpm -F nextjs run dev -- --port ${nextjsPort}`,
+    ],
+    {
+      stdio: "inherit",
+      env: { ...process.env, NEXTJS_PORT: String(nextjsPort) },
+    },
+  );
 
-child.on("exit", (code) => process.exit(code ?? 0));
+  child.on("exit", (code) => process.exit(code ?? 0));
+}

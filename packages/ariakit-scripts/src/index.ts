@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-const command = process.argv[2];
+import { program } from "commander";
+import { dev } from "./dev.ts";
 
-if (command === "dev") {
-  await import("./dev.ts");
-} else {
-  console.error(
-    command ? `Unknown command: ${command}` : "Usage: ariakit <dev>",
-  );
-  process.exit(1);
-}
+program.name("ariakit");
+
+program
+  .command("dev")
+  .description("Start dev servers with automatic port detection")
+  .action(dev);
+
+program.parse();
