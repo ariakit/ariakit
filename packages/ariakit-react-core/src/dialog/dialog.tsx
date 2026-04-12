@@ -68,7 +68,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 const isSafariBrowser = isSafari();
 
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
-  const activeElement = getActiveElement();
+  const activeElement = getActiveElement(dialog);
   if (!activeElement) return false;
   if (dialog && contains(dialog, activeElement)) return false;
   if (isFocusable(activeElement)) return true;
@@ -514,7 +514,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // element so we can listen to the Escape key anywhere in the document, even
     // when the dialog is not focused. By using the capture phase, users can
     // call `event.stopPropagation()` on the `hideOnEscape` function prop.
-    return addGlobalEventListener("keydown", onKeyDown, true);
+    const dialog = ref.current;
+    const win = dialog ? getWindow(dialog) : undefined;
+    return addGlobalEventListener("keydown", onKeyDown, true, win);
   }, [store, domReady, mounted, hideOnEscapeProp]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.

@@ -1,4 +1,4 @@
-import { contains, getDocument } from "@ariakit/core/utils/dom";
+import { contains, getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
@@ -98,7 +98,9 @@ function useEventOutside({
       // of the content element, we call the listener.
       callListener(event);
     };
-    return addGlobalEventListener(type, onEvent, capture);
+    const { contentElement } = store.getState();
+    const win = contentElement ? getWindow(contentElement) : undefined;
+    return addGlobalEventListener(type, onEvent, capture, win);
   }, [open, capture, store, type, callListener]);
 }
 
@@ -119,7 +121,9 @@ export function useHideOnInteractOutside(
   interactedOutsideRef?: MutableRefObject<boolean>,
 ) {
   const open = useStoreState(store, "open");
-  const previousMouseDownRef = usePreviousMouseDownRef(open);
+  const contentElement = useStoreState(store, "contentElement");
+  const contentWindow = contentElement ? getWindow(contentElement) : undefined;
+  const previousMouseDownRef = usePreviousMouseDownRef(open, contentWindow);
   const props = { store, domReady, capture: true };
 
   useEventOutside({
