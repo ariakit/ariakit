@@ -212,7 +212,7 @@ jobs:
 
   perf:
     name: Performance
-    needs: [build]
+    needs: [build, build-nextjs]
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -276,9 +276,24 @@ jobs:
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
+      - name: Download base Next.js artifact
+        id: base-nextjs-artifact
+        if: steps.find-base-artifact.outcome == 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
+
       - name: Build base app
         if: steps.base-artifact.outcome != 'success'
         run: pnpm -F site run build-lite
+
+      - name: Build base Next.js app
+        if: steps.base-nextjs-artifact.outcome != 'success'
+        run: pnpm -F nextjs run build-worker
 
       - name: Run baseline perf tests
         # Baseline failures are expected when perf tests are new.
@@ -299,13 +314,19 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Clean base app artifacts
-        run: rm -rf site/dist
+        run: rm -rf site/dist nextjs/.open-next
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
         with:
           name: app-dist
           path: site/dist
+
+      - name: Download Next.js artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
 
       - name: Restore baseline results
         run: |
