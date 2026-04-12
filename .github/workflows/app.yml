@@ -231,7 +231,7 @@ jobs:
         run: git checkout ${{ github.event.pull_request.base.sha }}
 
       - name: Install base dependencies
-        run: pnpm install --frozen-lockfile || pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build base app
         run: pnpm -F site run build-lite
@@ -252,7 +252,7 @@ jobs:
         run: git checkout ${{ github.event.pull_request.head.sha }}
 
       - name: Install PR dependencies
-        run: pnpm install --frozen-lockfile || pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
