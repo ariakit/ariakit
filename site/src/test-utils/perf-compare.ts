@@ -228,7 +228,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
     rows.some((r) => rowKey(r) === key && r.significant),
   );
 
-  const totalTests = allKeys.length + newTests.length;
+  const totalTests = allKeys.length + newTests.length + removedTests.length;
 
   const lines: string[] = [];
   lines.push("## Performance");
