@@ -1,5 +1,11 @@
 {
   "name": "ariakit-scripts",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "exports": {
+    "./dev": "./src/dev.ts"
+  },
+  "bin": {
+    "ariakit": "src/index.ts"
+  }
 }
