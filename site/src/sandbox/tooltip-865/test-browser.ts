@@ -16,4 +16,43 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
     test.expect(isInsideFullscreen).toBe(true);
   });
+
+  test("tooltip moves back to body after exiting fullscreen", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Enter fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    await q.button("Hover me").hover();
+    await test.expect(q.tooltip("Tooltip content")).toBeVisible();
+    await q.button("Exit fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+    await q.button("Hover me").hover();
+    await test.expect(q.tooltip("Tooltip content")).toBeVisible();
+    const isInBody = await page.evaluate(() => {
+      const tooltipEl = document.querySelector("[role=tooltip]");
+      if (!tooltipEl) return false;
+      return tooltipEl.closest("body") === document.body;
+    });
+    test.expect(isInBody).toBe(true);
+  });
+
+  test("tooltip mounted while in fullscreen renders inside it", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Enter fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    // Mount the second tooltip while already in fullscreen.
+    await q.button("Show second tooltip").click();
+    await q.button("Second anchor").hover();
+    await test.expect(q.tooltip("Second tooltip")).toBeVisible();
+    const isInsideFullscreen = await page.evaluate(() => {
+      const fullscreenEl = document.fullscreenElement;
+      const tooltipEl = document.querySelectorAll("[role=tooltip]")[1];
+      if (!fullscreenEl || !tooltipEl) return false;
+      return fullscreenEl.contains(tooltipEl);
+    });
+    test.expect(isInsideFullscreen).toBe(true);
+  });
 });

@@ -1,8 +1,9 @@
 import * as Ariakit from "@ariakit/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export default function Example() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showSecond, setShowSecond] = useState(false);
 
   const enterFullscreen = () => {
     void containerRef.current?.requestFullscreen();
@@ -23,12 +24,23 @@ export default function Example() {
       <button type="button" onClick={exitFullscreen}>
         Exit fullscreen
       </button>
+      <button type="button" onClick={() => setShowSecond(true)}>
+        Show second tooltip
+      </button>
       <Ariakit.TooltipProvider>
         <Ariakit.TooltipAnchor render={<button type="button" />}>
           Hover me
         </Ariakit.TooltipAnchor>
         <Ariakit.Tooltip>Tooltip content</Ariakit.Tooltip>
       </Ariakit.TooltipProvider>
+      {showSecond && (
+        <Ariakit.TooltipProvider>
+          <Ariakit.TooltipAnchor render={<button type="button" />}>
+            Second anchor
+          </Ariakit.TooltipAnchor>
+          <Ariakit.Tooltip>Second tooltip</Ariakit.Tooltip>
+        </Ariakit.TooltipProvider>
+      )}
     </div>
   );
 }
