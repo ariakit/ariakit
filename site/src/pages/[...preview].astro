@@ -16,6 +16,8 @@ import { getCollection, render } from "astro:content";
 export const getStaticPaths = (async () => {
   const entries = await getCollection("previews");
   return entries.flatMap((entry) => {
+    // Next.js previews are handled by [...nextjs].astro (SSR redirect)
+    if (entry.id.includes("nextjs")) return [];
     return entry.data.frameworks.map((framework) => ({
       params: { preview: `${framework}/previews/${entry.id}` },
       props: { framework, entry },

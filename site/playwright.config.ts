@@ -7,6 +7,7 @@ if (process.argv.includes("--headed")) {
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
 const port = Number(process.env.SITE_PORT) || 4321;
+const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
 
 function testMatchersFor(...kinds: string[]): RegExp[] {
   return kinds.flatMap((kind) => [
@@ -23,13 +24,22 @@ export default defineConfig({
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   testDir: "src",
-  webServer: {
-    command: `pnpm run preview-lite --log-level warn --port ${port}`,
-    reuseExistingServer: !CI,
-    stdout: CI ? "pipe" : "ignore",
-    port,
-  },
+  webServer: [
+    {
+      command: `pnpm run preview-lite --log-level warn --port ${port} --var NEXTJS_PORT:${nextjsPort}`,
+      reuseExistingServer: !CI,
+      stdout: CI ? "pipe" : "ignore",
+      port,
+    },
+    {
+      command: `pnpm -F nextjs exec opennextjs-cloudflare preview -- --port ${nextjsPort}`,
+      reuseExistingServer: !CI,
+      stdout: CI ? "pipe" : "ignore",
+      port: nextjsPort,
+    },
+  ],
   use: {
+    baseURL: `http://localhost:${port}`,
     screenshot: "only-on-failure",
     trace: "on-first-retry",
     launchOptions: {
