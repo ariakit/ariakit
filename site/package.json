@@ -116,6 +116,7 @@
     "@vizzly-testing/cli": "0.29.6",
     "concurrently": "9.2.1",
     "cross-env": "10.1.0",
+    "nextjs": "workspace:*",
     "pixelmatch": "7.1.0",
     "pngjs": "7.0.0",
     "rimraf": "6.1.3",
