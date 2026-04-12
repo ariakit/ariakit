@@ -1,7 +1,6 @@
 import { utimesSync } from "node:fs";
 import path from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
-import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { vizzlyScreenshot } from "@vizzly-testing/cli/client";
@@ -29,7 +28,7 @@ type CSSProperties = Record<string, string | number>;
 type Viewports = Record<string, ViewportSize>;
 type Styles = Record<string, CSSProperties>;
 
-interface ScreenshotOptions {
+export interface ScreenshotOptions {
   /**
    * Viewports to capture.
    */
@@ -438,16 +437,3 @@ export async function visual(
     });
   }
 }
-
-export const visualTest = test.extend<{
-  visual: (options?: ScreenshotOptions) => Promise<void>;
-  q: ReturnType<typeof query>;
-}>({
-  visual: async ({ page }, use, testInfo) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await use((options) => visual(page, options, testInfo));
-  },
-  q: async ({ page }, use) => {
-    await use(query(page));
-  },
-});

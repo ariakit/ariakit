@@ -4,6 +4,7 @@
 .cache
 dist
 test-results
+.perf-results
 playwright-report
 .playwright
 .playwright-cli

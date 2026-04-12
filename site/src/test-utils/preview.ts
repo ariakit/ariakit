@@ -1,9 +1,8 @@
 import { readdirSync } from "node:fs";
 import { query } from "@ariakit/test/playwright";
-import { test } from "@playwright/test";
 import { frameworks, getIndexFile } from "#app/lib/frameworks.ts";
 import { keys } from "#app/lib/object.ts";
-import { visualTest } from "./visual.ts";
+import { test } from "./fixtures.ts";
 
 function getPreviewId(dirname: string) {
   if (!dirname.includes("site/src")) return null;
@@ -25,7 +24,7 @@ function getPreviewFramworks(dirname: string) {
 
 interface WithFrameworkCallbackParams {
   id: string;
-  test: typeof visualTest;
+  test: typeof test;
   framework: keyof typeof frameworks;
   query: typeof query;
 }
@@ -46,7 +45,7 @@ export function withFramework(
           waitUntil: "networkidle",
         });
       });
-      return callback({ id, framework, query, test: visualTest });
+      return callback({ id, framework, query, test });
     });
   }
 }

@@ -204,6 +204,115 @@ jobs:
       test-result: ${{ needs.test.result }}
     secrets: inherit
 
+  perf:
+    name: Performance
+    needs: [build]
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Install Playwright
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: chromium
+
+      # --- Baseline (base branch) ---
+      - name: Checkout base branch
+        run: git checkout ${{ github.event.pull_request.base.sha }}
+
+      - name: Install base dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: Build base app
+        run: pnpm -F site run build-lite
+
+      - name: Run baseline perf tests
+        # Baseline failures are expected when perf tests are new.
+        run: |
+          PERF_RESULTS_FILE=baseline.json \
+          xvfb-run pnpm -F site run test-perf --pass-with-no-tests || true
+
+      - name: Save baseline results
+        run: |
+          mkdir -p /tmp/perf-baseline
+          cp site/.perf-results/baseline*.json /tmp/perf-baseline/ 2>/dev/null || true
+
+      # --- Current (PR branch) ---
+      - name: Checkout PR branch
+        run: git checkout ${{ github.event.pull_request.head.sha }}
+
+      - name: Install PR dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
+
+      - name: Download app artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: app-dist
+          path: site/dist
+
+      - name: Restore baseline results
+        run: |
+          mkdir -p site/.perf-results
+          cp /tmp/perf-baseline/*.json site/.perf-results/ 2>/dev/null || true
+
+      - name: Run current perf tests
+        run: |
+          PERF_RESULTS_FILE=current.json \
+          xvfb-run pnpm -F site run test-perf --pass-with-no-tests
+
+      - name: Compare results
+        if: always()
+        run: pnpm -F site run perf-compare
+
+      - name: Post or update PR comment
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- perf-results -->';
+            let body;
+            try {
+              body = fs.readFileSync('site/.perf-results/comparison.md', 'utf-8');
+            } catch {
+              body = 'No performance results available.';
+            }
+            body = marker + '\n' + body;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
   deploy-preview:
     # Preview deployments and commit statuses intentionally run only under the
     # same-repo PR model adopted by this repository.
