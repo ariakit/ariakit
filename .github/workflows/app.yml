@@ -233,6 +233,11 @@ jobs:
       - name: Set up base environment
         uses: ./.github/workflows/setup
 
+      - name: Install Playwright (base)
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: chromium
+
       - name: Find base app artifact
         id: find-base-artifact
         continue-on-error: true
@@ -323,7 +328,7 @@ jobs:
             }
             body = marker + '\n' + body;
 
-            const { data: comments } = await github.rest.issues.listComments({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
