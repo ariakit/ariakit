@@ -167,8 +167,8 @@ function formatSummaryTable(rows: ComparisonRow[], labels: string[]): string[] {
         row.baseline === 0
           ? " (n/a)"
           : ` (${row.delta >= 0 ? "+" : ""}${row.percent.toFixed(0)}%)`;
-      if (row.significant && row.delta > 0) {
-        cell += " :warning:";
+      if (row.significant) {
+        cell += row.delta > 0 ? " :warning:" : " :rocket:";
       }
       cells.push(cell);
     }
@@ -194,9 +194,12 @@ function formatDetailedBreakdown(
       const prefix = RENDERING_SUB_METRICS.has(metric) ? "- " : "";
       const metricLabel = `${prefix}${METRIC_LABELS[metric]}`;
       const deltaStr = formatDelta(row.delta, row.percent, row.baseline);
-      const warn = row.significant && row.delta > 0 ? " :warning:" : "";
+      let icon = "";
+      if (row.significant) {
+        icon = row.delta > 0 ? " :warning:" : " :rocket:";
+      }
       lines.push(
-        `| ${metricLabel} | ${formatMs(row.baseline)} | ${formatMs(row.current)} | ${deltaStr}${warn} |`,
+        `| ${metricLabel} | ${formatMs(row.baseline)} | ${formatMs(row.current)} | ${deltaStr}${icon} |`,
       );
     }
     lines.push("");
@@ -255,7 +258,9 @@ function formatMarkdown(summary: ComparisonSummary): string {
   lines.push("</details>");
   lines.push("");
 
-  lines.push(`:warning: = regression above ${THRESHOLD_PERCENT}%`);
+  lines.push(
+    `:warning: = regression above ${THRESHOLD_PERCENT}% · :rocket: = improvement above ${THRESHOLD_PERCENT}%`,
+  );
 
   return lines.join("\n");
 }
