@@ -1035,14 +1035,14 @@ const layerLighten = utility(
   set(inputs.layerIdleRelativeL, getPercentTokenValue("[*]")),
 );
 
-utility("layer-darken-*", ...getNegatedDeclarations(layerLighten));
+utility("layer-darken-*", getNegatedDeclarations(layerLighten));
 
 const stateLighten = utility(
   "state-lighten-*",
   set(inputs.layerRelativeL, getPercentTokenValue("[*]")),
 );
 
-utility("state-darken-*", ...getNegatedDeclarations(stateLighten));
+utility("state-darken-*", getNegatedDeclarations(stateLighten));
 
 /**
  * Moves a hue toward a target by percentage on the shortest circular path.
@@ -1128,13 +1128,13 @@ const layerSaturate = utility(
     getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS),
   ),
 );
-utility("layer-desaturate-*", ...getNegatedDeclarations(layerSaturate));
+utility("layer-desaturate-*", getNegatedDeclarations(layerSaturate));
 
 const stateSaturate = utility(
   "state-saturate-*",
   set(inputs.layerRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
-utility("state-desaturate-*", ...getNegatedDeclarations(stateSaturate));
+utility("state-desaturate-*", getNegatedDeclarations(stateSaturate));
 
 utility(
   "layer-h-rotate-*",
@@ -1186,7 +1186,7 @@ const edgeLighten = utility(
   "edge-lighten-*",
   set(inputs.edgeRelativeL, getPercentTokenValue("[*]")),
 );
-utility("edge-darken-*", ...getNegatedDeclarations(edgeLighten));
+utility("edge-darken-*", getNegatedDeclarations(edgeLighten));
 
 utility(
   "edge-cool-*",
@@ -1207,7 +1207,7 @@ const edgeSaturate = utility(
   "edge-saturate-*",
   set(inputs.edgeRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
-utility("edge-desaturate-*", ...getNegatedDeclarations(edgeSaturate));
+utility("edge-desaturate-*", getNegatedDeclarations(edgeSaturate));
 
 utility(
   "edge-h-rotate-*",
@@ -1304,7 +1304,7 @@ utility(
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
   at.container(fn.style(vars.layerL), set.color(getTextDirectional())),
-  ...mapAncestorLayerLightnessSteps((parentL, isDark) => [
+  mapAncestorLayerLightnessSteps((parentL, isDark) => [
     set(vars.textContrastDirection, isDark ? 1 : -1),
     set(vars.textParentL, parentL),
     set(vars.textChromaCap, getChildTextChromaCap(parentL, isDark)),
@@ -1326,7 +1326,7 @@ const textLighten = utility(
   "text-lighten-*",
   set(inputs.textRelativeL, getPercentTokenValue("[*]")),
 );
-utility("text-darken-*", ...getNegatedDeclarations(textLighten));
+utility("text-darken-*", getNegatedDeclarations(textLighten));
 
 utility(
   "text-cool-*",
@@ -1342,7 +1342,7 @@ const textSaturate = utility(
   "text-saturate-*",
   set(inputs.textRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
-utility("text-desaturate-*", ...getNegatedDeclarations(textSaturate));
+utility("text-desaturate-*", getNegatedDeclarations(textSaturate));
 
 utility(
   "text-l-*",
@@ -1455,7 +1455,7 @@ const outlineLighten = utility(
   "outline-lighten-*",
   set(inputs.outlineRelativeL, getPercentTokenValue("[*]")),
 );
-utility("outline-darken-*", ...getNegatedDeclarations(outlineLighten));
+utility("outline-darken-*", getNegatedDeclarations(outlineLighten));
 
 utility(
   "outline-cool-*",
@@ -1480,7 +1480,7 @@ const outlineSaturate = utility(
     getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS),
   ),
 );
-utility("outline-desaturate-*", ...getNegatedDeclarations(outlineSaturate));
+utility("outline-desaturate-*", getNegatedDeclarations(outlineSaturate));
 
 utility(
   "outline-h-rotate-*",
