@@ -49,6 +49,7 @@ function getMetricValue(
 }
 
 function median(values: number[]): number {
+  if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   if (sorted.length % 2 !== 0) return sorted[mid]!;
@@ -156,26 +157,36 @@ export async function createPerfMeasure(
     label,
   } = options;
 
+  if (!Number.isInteger(iterations) || iterations <= 0) {
+    throw new Error(`Invalid perf iterations: ${iterations}`);
+  }
+  if (!Number.isInteger(warmup) || warmup < 0) {
+    throw new Error(`Invalid perf warmup: ${warmup}`);
+  }
+
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Performance.enable");
 
-  const url = page.url();
   const allMetrics: PerfMetrics[] = [];
 
-  for (let i = 0; i < warmup + iterations; i++) {
-    // Re-navigate for a clean state on every iteration.
-    await page.goto(url, { waitUntil: "networkidle" });
+  try {
+    const url = page.url();
 
-    const metrics = await measureOnce(page, cdp, interaction);
+    for (let i = 0; i < warmup + iterations; i++) {
+      // Re-navigate for a clean state on every iteration.
+      await page.goto(url, { waitUntil: "networkidle" });
 
-    // Only keep measured (non-warmup) iterations.
-    if (i >= warmup) {
-      allMetrics.push(metrics);
+      const metrics = await measureOnce(page, cdp, interaction);
+
+      // Only keep measured (non-warmup) iterations.
+      if (i >= warmup) {
+        allMetrics.push(metrics);
+      }
     }
+  } finally {
+    await cdp.send("Performance.disable").catch(() => {});
+    await cdp.detach().catch(() => {});
   }
-
-  await cdp.send("Performance.disable");
-  await cdp.detach();
 
   const medianMetrics = computeMedianMetrics(allMetrics);
 
