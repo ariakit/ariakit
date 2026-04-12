@@ -24,8 +24,16 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+// Returns the best root element for appending portal nodes. When an element
+// is in fullscreen mode, portals must be appended inside the fullscreen
+// element instead of document.body so they remain visible.
 function getRootElement(element?: Element | null) {
-  return getDocument(element).body;
+  const doc = getDocument(element);
+  const { fullscreenElement } = doc;
+  if (fullscreenElement instanceof HTMLElement) {
+    return fullscreenElement;
+  }
+  return doc.body;
 }
 
 function getPortalElement(
@@ -119,6 +127,28 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
       setRef(portalRef, null);
     };
   }, [portal, portalElement, context, portalRef]);
+
+  // Move the portal node when fullscreen state changes so it stays visible.
+  useEffect(() => {
+    if (!portalNode) return;
+    if (context) return;
+    if (portalElement) return;
+    const doc = getDocument(portalNode);
+    const onFullscreenChange = () => {
+      const rootElement = getRootElement(portalNode);
+      if (portalNode.parentElement !== rootElement) {
+        rootElement.appendChild(portalNode);
+      }
+    };
+    // Sync immediately in case fullscreen was entered before this effect
+    // ran, which can happen if the portal mounts while already in
+    // fullscreen mode.
+    onFullscreenChange();
+    doc.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => {
+      doc.removeEventListener("fullscreenchange", onFullscreenChange);
+    };
+  }, [portalNode, context, portalElement]);
 
   // Create the anchor portal node and attach it to the DOM.
   useSafeLayoutEffect(() => {
