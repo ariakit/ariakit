@@ -38,7 +38,7 @@ jobs:
       - name: Compute affected packages
         id: compute-affected-packages
         if: steps.changeset-status.outputs.has-changesets == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('node:fs');

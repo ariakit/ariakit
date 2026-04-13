@@ -24,7 +24,7 @@ jobs:
       - name: Set commit status (pending)
         # Preview statuses are created eagerly so the commit shows a stable
         # target URL even when deployment finishes later in the job.
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           SERVER_URL: ${{ github.server_url }}
           REPO: ${{ github.repository }}
@@ -151,7 +151,7 @@ jobs:
         # "Preview (branch)" keeps the old success signal: PRs only go green
         # when both version uploads succeeded, and main only goes green when
         # both deploy steps succeeded.
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           SERVER_URL: ${{ github.server_url }}
           REPO: ${{ github.repository }}
