@@ -34,7 +34,7 @@ export async function dev() {
     [
       "-r",
       "pnpm -F site run dev",
-      `pnpm -F nextjs run dev -- --port ${nextjsPort}`,
+      `pnpm -F nextjs run dev --port ${nextjsPort}`,
     ],
     {
       stdio: "inherit",
