@@ -121,6 +121,7 @@
         "@types/react",
         "@types/react-dom"
       ],
+      "matchUpdateTypes": ["major"],
       "enabled": false
     },
     {
@@ -131,6 +132,7 @@
         "@types/react",
         "@types/react-dom"
       ],
+      "matchUpdateTypes": ["major"],
       "matchFileNames": ["nextjs/**"],
       "enabled": true
     }
