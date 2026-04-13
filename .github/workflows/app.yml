@@ -247,7 +247,7 @@ jobs:
       - name: Find base app artifact
         id: find-base-artifact
         continue-on-error: true
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const runs = await github.rest.actions.listWorkflowRuns({
@@ -348,7 +348,7 @@ jobs:
 
       - name: Post or update PR comment
         if: always()
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
           script: |
