@@ -33,7 +33,7 @@ export default defineConfig({
       port,
     },
     {
-      command: `pnpm -F nextjs exec opennextjs-cloudflare preview -- --port ${nextjsPort}`,
+      command: `pnpm -F nextjs exec opennextjs-cloudflare preview --port ${nextjsPort}`,
       reuseExistingServer: !CI,
       stdout: CI ? "pipe" : "ignore",
       port: nextjsPort,
