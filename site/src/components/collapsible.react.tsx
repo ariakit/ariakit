@@ -46,7 +46,7 @@ export function useCollapsible<T extends HTMLElement>({
 
   const scrollableProps = {
     ref: scrollableRef,
-    inert: collapsed ? "" : undefined,
+    inert: collapsed ? true : undefined,
     tabIndex: -1,
     "aria-hidden": collapsed,
     onKeyDown: (event: React.KeyboardEvent<T>) => {

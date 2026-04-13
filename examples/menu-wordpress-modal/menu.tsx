@@ -115,7 +115,10 @@ export function createMenuSlot(name: string, bubblesVirtually = false) {
   };
 
   const Fill = (props: { children: React.ReactNode }) => {
-    if (!bubblesVirtually) return <SlotFill.Fill {...props} />;
+    // WordPress's FillComponentProps children type is incompatible with React 19's
+    // ReactNode (which added bigint and changed ReactElement shape). Cast to any
+    // since WordPress controls the type and doesn't actually reject these values.
+    if (!bubblesVirtually) return <SlotFill.Fill {...(props as any)} />;
     return (
       <SlotFill.Fill>
         {(menu) => (

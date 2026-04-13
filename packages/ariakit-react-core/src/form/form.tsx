@@ -1,6 +1,11 @@
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { ElementType, FocusEvent, FormEvent } from "react";
+import type {
+  ElementType,
+  FocusEvent,
+  SubmitEvent,
+  SyntheticEvent,
+} from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   useEvent,
@@ -104,7 +109,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
 
   const onSubmitProp = props.onSubmit;
 
-  const onSubmit = useEvent((event: FormEvent<HTMLType>) => {
+  const onSubmit = useEvent((event: SubmitEvent<HTMLType>) => {
     onSubmitProp?.(event);
     if (event.defaultPrevented) return;
     event.preventDefault();
@@ -126,7 +131,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
 
   const onResetProp = props.onReset;
 
-  const onReset = useEvent((event: FormEvent<HTMLType>) => {
+  const onReset = useEvent((event: SyntheticEvent<HTMLType>) => {
     onResetProp?.(event);
     if (event.defaultPrevented) return;
     event.preventDefault();

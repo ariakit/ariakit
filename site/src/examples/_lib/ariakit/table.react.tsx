@@ -106,7 +106,7 @@ export function Table<K extends keyof any>({
     if (isIterable(cell)) return false;
     if (React.isValidElement<any>(cell)) return false;
     if (!Object.hasOwn(cell, "numeric")) return false;
-    return Boolean(cell.numeric);
+    return Boolean((cell as TableCellProps).numeric);
   };
 
   const renderRow = (row: TableRow<K>, index: number) => {

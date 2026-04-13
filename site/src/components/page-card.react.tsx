@@ -50,8 +50,7 @@ export function PageCard({
     >
       <span className="ak-frame-cover/0">
         <span
-          //@ts-expect-error
-          inert="true"
+          inert
           className={clsx(
             "ak-light:ak-layer-down ak-dark:ak-layer-down-0.3 ak-frame-border ak-frame/4 flex justify-center items-center-safe group-focus-visible/card:ak-layer-contrast-primary overflow-hidden relative [content-visibility:auto]",
             sizeClass,

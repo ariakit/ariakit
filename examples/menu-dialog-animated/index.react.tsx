@@ -20,7 +20,7 @@ function useDisclosure(defaultOpen = false) {
 
 export default function Example() {
   const [menuInitialFocusRef, setMenuInitialFocusRef] =
-    useState<RefObject<HTMLElement>>();
+    useState<RefObject<HTMLElement | null>>();
 
   const createDialogInitialFocusRef = useRef<HTMLElement | null>(null);
   const manageDialogDisclosureRef = useRef<HTMLButtonElement>(null);
