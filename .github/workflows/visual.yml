@@ -81,7 +81,7 @@ jobs:
         if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && inputs.test-result == 'failure'
         # Only update committed screenshots when every browser shard that
         # uploads screenshots has produced its artifact for this run.
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const perPage = 100;
