@@ -1,5 +1,28 @@
 # @ariakit/react
 
+## 0.4.26
+
+### Fixed events not handled in popup windows
+
+[`Dialog`](https://ariakit.com/reference/dialog) and components that extend it, such as [`Menu`](https://ariakit.com/reference/menu) and [`Popover`](https://ariakit.com/reference/popover), now handle events correctly when rendered in a popup window opened via `window.open()`. [`hideOnEscape`](https://ariakit.com/reference/dialog#hideonescape), [`hideOnInteractOutside`](https://ariakit.com/reference/dialog#hideoninteractoutside), and focus restoration now use the content element's `ownerDocument` instead of the main window's `document` for event listeners.
+
+### Fixed `Portal` not rendering inside fullscreen elements
+
+[`Portal`](https://ariakit.com/reference/portal) was always appended to `document.body`, which made it invisible when an ancestor element entered fullscreen mode via the Fullscreen API. Portals are now automatically moved to `document.fullscreenElement` when it's active, and back to `document.body` when fullscreen is exited.
+
+### Auto-generated `name` attribute for `Radio`
+
+[`Radio`](https://ariakit.com/reference/radio) now automatically uses the [`RadioGroup`](https://ariakit.com/reference/radio-group) store's `id` as the default [`name`](https://ariakit.com/reference/radio#name) attribute when no explicit `name` prop is provided. This ensures consecutive [`RadioGroup`](https://ariakit.com/reference/radio-group) components have unique names, preventing the browser from treating all radio inputs as a single group and fixing Tab navigation and form submission issues.
+
+### Other updates
+
+- Fixed [`Combobox`](https://ariakit.com/reference/combobox) pressing Enter from submitting a parent form when the popover is open but has no matching items.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) not removing `data-enter` when closed after using the [`render`](https://ariakit.com/reference/dialog#render) prop to wrap the dialog element in an outer element.
+- Fixed [`MenuButton`](https://ariakit.com/reference/menu-button) `aria-haspopup` attribute changing from `"menu"` to `"dialog"` when opening a menu that contains a combobox.
+- Fixed [`render`](https://ariakit.com/guide/composition) prop merging when the rendered element passes falsy `className` or event handler values such as `undefined` or `null`.
+- Fixed `Math.random()` being called unconditionally when creating composite stores ([`useTabStore`](https://ariakit.com/reference/use-tab-store), [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store), [`useSelectStore`](https://ariakit.com/reference/use-select-store), etc.), even when an explicit `id` prop was provided. This was causing Next.js build errors with `cacheComponents` enabled.
+- Updated dependencies: `@ariakit/react-core@0.4.26`
+
 ## 0.4.25
 
 ### Clicking outside no longer restores focus to the disclosure element
