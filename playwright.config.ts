@@ -28,7 +28,7 @@ export default defineConfig({
   reportSlowTests: null,
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
-  testIgnore: ["site/**"],
+  testIgnore: ["site/**", ".claude/**"],
   webServer: {
     command: "pnpm start",
     reuseExistingServer: !CI,

@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
 import solidPlugin from "vite-plugin-solid";
 import type { Plugin } from "vitest/config";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./site/src/lib/source-plugin.ts";
 
 // In a pnpm monorepo, each workspace package may resolve its own copy of
@@ -56,6 +56,7 @@ export default defineConfig({
     testTimeout: 10_000,
     environment: "jsdom",
     setupFiles: ["vitest.setup.ts"],
+    exclude: [...configDefaults.exclude, ".claude/**"],
     include: ["**/*test.{ts,tsx}", `**/*test.${LOADER}.{ts,tsx}`],
     css: {
       include: includeWithStyles,
