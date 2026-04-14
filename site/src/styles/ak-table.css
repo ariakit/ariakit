@@ -17,7 +17,7 @@
 
 /* ak-table */
 @utility ak-table-container {
-  @apply ak-frame-card/0 ak-layer-current;
+  @apply ak-frame ak-frame-card/0 ak-layer;
   @apply overflow-clip;
   border-inline-start-width: var(--ak-table-border-s, 0px);
   border-inline-end-width: var(--ak-table-border-e, 0px);
@@ -47,7 +47,7 @@
 }
 
 @utility ak-table {
-  @apply ak-frame-field;
+  @apply ak-frame ak-frame-field/field;
   @apply p-0! relative w-full border-separate border-spacing-0 overflow-x-hidden;
 
   :where(tbody) {
@@ -88,7 +88,7 @@
 }
 
 @utility ak-table-rowgroup {
-  @apply ak-layer-current;
+  @apply ak-layer;
   @apply relative;
 
   &:is(thead):first-of-type,
@@ -103,7 +103,7 @@
 }
 
 @utility ak-table-head {
-  @apply ak-table-rowgroup ak-layer-pop-0.5;
+  @apply ak-table-rowgroup ak-layer ak-layer-3;
   @apply whitespace-nowrap text-sm;
 }
 
@@ -120,7 +120,7 @@
 }
 
 @utility ak-table-row_idle {
-  @apply ak-layer-current;
+  @apply ak-layer;
 
   &:first-of-type {
     --ak-table-row-first: var(--ak-table-rowgroup-first, 0);
@@ -132,7 +132,7 @@
 }
 
 @utility ak-table-row_hover {
-  @apply ak-layer-hover-0.5 z-2 *:z-2;
+  @apply ak-state-3 z-2 *:z-2;
 }
 
 @utility ak-table-row {
@@ -145,16 +145,16 @@
 }
 
 @utility ak-table-column-header {
-  @apply ak-text/70 text-start font-semibold;
+  @apply ak-layer-text-70 text-start font-semibold;
 }
 
 @utility ak-table-cell {
-  @apply ak-layer-current z-1 relative;
+  @apply ak-layer z-1 relative;
   padding-inline: var(--ak-table-px, var(--ak-frame-padding, 0));
   padding-block: var(--ak-table-py, var(--ak-frame-padding, 0));
 
   &::after {
-    @apply ak-layer-current -z-1 pointer-events-none absolute inset-0;
+    @apply ak-layer -z-1 pointer-events-none absolute inset-0;
     content: "";
     border-block-start-width: calc(
       var(--ak-table-border-t, 0px) * (1 - var(--ak-table-row-first, 0))
@@ -168,7 +168,7 @@
   }
 
   &::before {
-    @apply ak-layer-current -z-1 pointer-events-none absolute inset-0;
+    @apply ak-layer -z-1 pointer-events-none absolute inset-0;
     content: "";
     inset-block: var(--ak-table-border-gap, 0);
   }

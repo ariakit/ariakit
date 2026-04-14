@@ -91,7 +91,7 @@ function OrderCard({ order }: OrderCardProps) {
       setValue={(status: OrderStatus) => setStatus(status)}
       popover={{ portal: true }}
       className={clsx(
-        "ak-badge-(--status-color) ak-border text-sm gap-2",
+        "ak-badge-(color:--status-color) ak-frame-border text-sm gap-2",
         statusProps.className,
       )}
     >
@@ -103,7 +103,11 @@ function OrderCard({ order }: OrderCardProps) {
             value={status}
             className={clsx("text-sm", className)}
             checkmark="after"
-            icon={<span className="ak-text-(--status-color)">{icon}</span>}
+            icon={
+              <span className="ak-text ak-text-(color:--status-color)">
+                {icon}
+              </span>
+            }
           />
         );
       })}
@@ -125,14 +129,14 @@ function OrderCard({ order }: OrderCardProps) {
   const table = (
     <Table<"Item" | "Price">
       className="ak-table-border-y ak-table-px-(--ak-disclosure-padding)"
-      head={{ className: "ak-layer-0" }}
+      head={{ className: "ak-layer ak-layer-0" }}
       rows={[
         { group: "head", Item: "Item", Price: { numeric: true } },
         {
           group: "foot",
           Item: {
             header: true,
-            className: "ak-text/60",
+            className: "ak-layer-text-60",
             children: "Subtotal",
           },
           Price: {
@@ -144,7 +148,7 @@ function OrderCard({ order }: OrderCardProps) {
           Item: (
             <TableCell className="grid">
               <div className="truncate font-medium">{item.name}</div>
-              <div className="ak-text/60">
+              <div className="ak-layer-text-60">
                 Qty {item.quantity} • {formatCents(item.priceCents)} each
               </div>
             </TableCell>
@@ -163,39 +167,39 @@ function OrderCard({ order }: OrderCardProps) {
       key={order.id}
       split
       button={{ actions, description, children: order.customer.name }}
-      className="ak-frame-card ak-bordering ak-layer @container"
+      className="ak-frame ak-frame-card/card ak-frame-bordering ak-layer ak-layer-lighten-6 @container"
     >
-      <div className="grid @xl:grid-cols-2 ak-frame-cover/0 text-sm">
-        <section className="grid gap-3 @xl:border-e ak-layer-current @max-xl:border-b">
+      <div className="grid @xl:grid-cols-2 ak-frame ak-frame-cover ak-frame-p-0 text-sm">
+        <section className="grid gap-3 @xl:border-e ak-layer @max-xl:border-b">
           {table}
         </section>
-        <section className="grid gap-4 ak-layer-down-0.5 p-(--ak-disclosure-padding)">
+        <section className="grid gap-4 ak-layer ak-layer-darken-3 p-(--ak-disclosure-padding)">
           <div className="grid gap-1">
-            <h4 className="text-sm ak-text/60">Customer</h4>
+            <h4 className="text-sm ak-layer-text-60">Customer</h4>
             <div>
               <div className="font-medium">{order.customer.name}</div>
               <a
                 href={`mailto:${order.customer.email}`}
-                className="ak-link ak-text/80"
+                className="ak-link ak-layer-text-80"
               >
                 {order.customer.email}
               </a>
             </div>
           </div>
           <div className="grid gap-1">
-            <h4 className="text-sm ak-text/60">Shipping address</h4>
-            <address className="not-italic ak-text/80 whitespace-pre-wrap">
+            <h4 className="text-sm ak-layer-text-60">Shipping address</h4>
+            <address className="not-italic ak-layer-text-80 whitespace-pre-wrap">
               {order.shippingAddress}
             </address>
           </div>
           {order.tags.length ? (
             <div className="grid gap-1">
-              <h4 className="text-sm ak-text/60">Tags</h4>
+              <h4 className="text-sm ak-layer-text-60">Tags</h4>
               <div className="flex flex-wrap gap-2">
                 {order.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="ak-badge ak-layer-pop rounded-full"
+                    className="ak-badge ak-layer ak-layer-6 rounded-full"
                   >
                     {tag}
                   </span>
@@ -205,8 +209,8 @@ function OrderCard({ order }: OrderCardProps) {
           ) : null}
           {order.notes ? (
             <div className="grid gap-1">
-              <h4 className="text-sm ak-text/60">Notes</h4>
-              <div className="ak-text/80">{order.notes}</div>
+              <h4 className="text-sm ak-layer-text-60">Notes</h4>
+              <div className="ak-layer-text-80">{order.notes}</div>
             </div>
           ) : null}
         </section>

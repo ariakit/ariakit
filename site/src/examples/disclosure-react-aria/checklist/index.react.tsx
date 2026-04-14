@@ -71,8 +71,8 @@ export default function Example() {
 
   return (
     <div className="w-90 max-w-[100cqi] grid gap-4">
-      <div className="ak-frame-card/1 ak-layer ak-bordering ak-list-counter-reset grid gap-(--ak-frame-padding)">
-        <div className="ak-frame-field grid gap-4">
+      <div className="ak-frame ak-frame-card/1 ak-layer ak-layer-lighten-6 ak-frame-bordering ak-list-counter-reset grid gap-(--ak-frame-padding)">
+        <div className="ak-frame ak-frame-field/field grid gap-4">
           <h2 className="font-semibold">Setup guide</h2>
           <Progress
             value={progress}
@@ -87,13 +87,13 @@ export default function Example() {
             const progress = checked / length;
             const completed = progress === 1;
             const buttonClassName = completed
-              ? "not-in-data-expanded:ak-text/0 not-in-data-expanded:line-through not-in-data-expanded:font-normal"
+              ? "not-in-data-expanded:ak-layer-text-0 not-in-data-expanded:line-through not-in-data-expanded:font-normal"
               : "";
             return (
               <li key={task.title}>
                 <ListDisclosure
                   {...getDisclosureProps(task.title)}
-                  className="data-expanded:ak-layer-pop"
+                  className="data-expanded:ak-layer data-expanded:ak-layer-6"
                   button={
                     <ListDisclosureButton
                       indicator="chevron-down-end"
@@ -104,7 +104,7 @@ export default function Example() {
                     </ListDisclosureButton>
                   }
                 >
-                  <List className="ak-list-gap-0 ak-list-item-padding-1 ak-frame-cover/1 mt-0! pt-0">
+                  <List className="ak-list-gap-0 ak-list-item-padding-1 ak-frame ak-frame-cover ak-frame-p-1 mt-0! pt-0">
                     {task.tasks.map((task) => (
                       <li key={task.title}>
                         <ListItem

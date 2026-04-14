@@ -113,7 +113,7 @@ export default function Example() {
       <Sidebar className="ak-nav-icon-4">
         <SidebarHeader>
           <a href="" className="ak-nav-button ak-nav-icon-6">
-            <span className="ak-nav-icon rounded p-1 flex-none ak-layer-contrast-primary block">
+            <span className="ak-nav-icon rounded p-1 flex-none ak-layer ak-layer-primary ak-layer-contrast block">
               <icons.Triangle size={20} strokeWidth={2} />
             </span>
             <span className="ak-nav-button-content">Acme Corp</span>
@@ -149,27 +149,27 @@ export default function Example() {
       </Sidebar>
 
       <div>
-        <div className="ak-layer-0 ak-bordering border-x-0 border-t-0 h-14 sticky top-0 p-2" />
-        <div className="ak-frame-dialog grid gap-(--ak-frame-padding) max-w-240 mx-auto">
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
-          <div className="ak-layer-pop ak-frame-field h-10" />
+        <div className="ak-layer ak-layer-0 ak-frame-bordering border-x-0 border-t-0 h-14 sticky top-0 p-2" />
+        <div className="ak-frame ak-frame-dialog/dialog grid gap-(--ak-frame-padding) max-w-240 mx-auto">
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
+          <div className="ak-layer ak-layer-6 ak-frame ak-frame-field/field h-10" />
         </div>
       </div>
     </div>

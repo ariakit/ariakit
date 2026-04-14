@@ -354,8 +354,9 @@ const layerMathVars = {
   autoDirectionToDark: _ak.prop("adtd"),
   layerIdleAutoDelta: _ak.prop("liad"),
   layerAutoDelta: _ak.prop("lad"),
+  layerIdlePushValue: _ak.prop("lipv"),
+  layerPushValue: _ak.prop("lpv"),
   layerIdleContrastValue: _ak.prop("licv"),
-  layerContrastValue: _ak.prop("lcv"),
   edgeContrastDirection: _ak.prop("ecd", { initial: -1 }),
 };
 
@@ -379,13 +380,18 @@ const layerColorVars = {
   layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerAuto: _ak.prop.canvas("la"),
-  layerContrast: _ak.prop.canvas("lc"),
+  layerPush: _ak.prop.canvas("lp"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerParent: ak.var("layer-parent", "canvas"),
   edge: ak.prop.black("edge"),
   text: ak.prop.black("text", { inherits: true }),
   outline: ak.var("outline", "canvastext"),
+};
+
+const layerContrastMathVars = {
+  layerContrastDirection: _ak.prop.number("lcd", { initial: 0 }),
+  layerContrastParentL: _ak.prop.number("lcpl", { initial: 0 }),
 };
 
 const outlineMathVars = {
@@ -430,6 +436,7 @@ const vars = {
   ...layerMathVars,
   ...themeTokenVars,
   ...layerColorVars,
+  ...layerContrastMathVars,
   ...outlineMathVars,
   ...textMathVars,
   ...frameVars,
@@ -441,6 +448,7 @@ const inputs = {
   layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", { initial: 0 }),
   layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", { initial: 0 }),
   layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", { initial: 0 }),
+  layerIdlePushL: _ak.prop("layer-idle-push-lightness", { initial: 0 }),
   layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", { initial: 0 }),
   layerL: _ak.prop("layer-lightness"),
   layerC: _ak.prop("layer-chroma"),
@@ -453,7 +461,7 @@ const inputs = {
   layerRelativeL: _ak.prop("layer-relative-lightness", { initial: 0 }),
   layerRelativeC: _ak.prop("layer-relative-chroma", { initial: 0 }),
   layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
-  layerContrastL: _ak.prop("layer-contrast-lightness", { initial: 0 }),
+  layerPushL: _ak.prop("layer-push-lightness", { initial: 0 }),
   layerMix: _ak.prop("layer-mix"),
   layerMixMethod: _ak.prop("layer-mix-method", "oklab"),
   layerMixAmount: _ak.prop("layer-mix-amount", "50%"),
@@ -598,7 +606,7 @@ const root = rule(
 /**
  * Scales local contrast controls by the global contrast preference.
  */
-function getContrastValue(value: Value) {
+function getPushValue(value: Value) {
   return fn.add(value, fn.mul(value, vars.contrastT, 3.334));
 }
 
@@ -620,13 +628,13 @@ function getAutoL(value: Value) {
  * `ak-layer-*`, except values that would land inside the forbidden band jump
  * to the opposite boundary and preserve their remaining progress there.
  */
-function getContrastL(contrastValue: Value) {
+function getPushL(pushValue: Value) {
   const direction = vars.autoLDirection;
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
   const bandWidth = fn.sub(upperBoundary, lowerBoundary);
-  const valueEnabled = fn.binary(contrastValue);
-  const normalDelta = fn.mul(contrastValue, direction);
+  const valueEnabled = fn.binary(pushValue);
+  const normalDelta = fn.mul(pushValue, direction);
   const startLightness = l;
   const baseLightness = getLayerL(normalDelta);
   // Crossed from dark side: l was below fla AND baseLightness moved above fla.
@@ -834,8 +842,41 @@ const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
     vars.layerContrastBias,
   ),
 });
+
+/**
+ * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
+ * active (layerContrastDirection !== 0), derives the target lightness from the
+ * parent layer's lightness rather than the current color's lightness. Falls
+ * back to the self-relative `getContrastL` when inactive.
+ */
+function getContrastL(pushValue: Value, contrastValue: Value) {
+  const selfRelativeL = getPushL(pushValue);
+  const direction = vars.layerContrastDirection;
+  // Use the contrast value as the shift magnitude, pushed in the parent-
+  // relative direction (positive = lighter, negative = darker).
+  const parentShift = fn.mul(contrastValue, direction);
+  const parentTargetL = fn.clamp01(
+    fn.add(vars.layerContrastParentL, parentShift),
+  );
+  // On dark parents (direction=1), the target must be >= current l (push
+  // lighter). On light parents (direction=-1), must be <= current l (push
+  // darker). Use a directional clamp like ak-text does.
+  const darkMask = fn.clamp01(direction);
+  const parentDirectedL = fn.add(
+    fn.mul(fn.max(l, parentTargetL), darkMask),
+    fn.mul(fn.min(l, parentTargetL), fn.invert(darkMask)),
+  );
+  // When ak-layer-contrast is active, direction is ±1 so |direction|=1.
+  // When inactive, direction=0. Use this as a blend mask.
+  const isActive = fn.min(fn.mul(direction, direction), 1);
+  return fn.add(
+    fn.mul(parentDirectedL, isActive),
+    fn.mul(selfRelativeL, fn.sub(1, isActive)),
+  );
+}
+
 const layerIdle = fn.oklch(vars.layerIdleAuto, {
-  l: getContrastL(vars.layerIdleContrastValue),
+  l: getContrastL(vars.layerIdlePushValue, vars.layerIdleContrastValue),
 });
 
 const layerBase = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
@@ -846,11 +887,11 @@ const layerAuto = fn.oklch(vars.layerBase, {
   l: getLayerL(vars.layerAutoDelta),
 });
 
-const layerContrast = fn.oklch(vars.layerAuto, {
-  l: getContrastL(vars.layerContrastValue),
+const layerPush = fn.oklch(vars.layerAuto, {
+  l: getPushL(vars.layerPushValue),
 });
 
-const layer = fn.oklch(vars.layerContrast, {
+const layer = fn.oklch(vars.layerPush, {
   l: vars.safeL,
   c: fn.clamp(inputs.layerCMin, c, inputs.layerCMax),
 });
@@ -887,8 +928,9 @@ const layerMathDeclarations = [
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
   set(vars.layerIdleAutoDelta, getAutoL(inputs.layerIdleAutoL)),
   set(vars.layerAutoDelta, getAutoL(inputs.layerAutoL)),
-  set(vars.layerIdleContrastValue, getContrastValue(inputs.layerIdleContrastL)),
-  set(vars.layerContrastValue, getContrastValue(inputs.layerContrastL)),
+  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
+  set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
+  set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
 ];
 
 // Build the layered color stages from idle -> base -> auto -> final.
@@ -899,7 +941,7 @@ const layerColorDeclarations = [
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerBase),
   set(vars.layerAuto, layerAuto),
-  set(vars.layerContrast, layerContrast),
+  set(vars.layerPush, layerPush),
 ];
 
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
@@ -908,7 +950,7 @@ const edgeContrastT = fn.var(vars.contrastT, globalContrastT);
 // stay perceptible even when the user does not specify an edge contrast value.
 const edgeDirectionalDelta = fn.add(
   inputs.edgeContrastL,
-  fn.mul(edgeContrastT, 0.12),
+  fn.mul(edgeContrastT, CONTRAST_SCALE),
 );
 const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
@@ -923,7 +965,7 @@ const edgeRelative = fn.oklch(edgeDirectional, {
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
 });
 const edge = fn.oklch(edgeRelative, {
-  a: fn.clamp01(fn.add(inputs.edgeA, fn.mul(edgeContrastT, 0.5))),
+  a: fn.clamp01(fn.add(inputs.edgeA, fn.mul(edgeContrastT, CONTRAST_SCALE))),
 });
 
 // Collapse the continuous layer scale into five semantic buckets so variants
@@ -951,7 +993,10 @@ const textMinAlphaOnLightLayer = fn.div(
   fn.add(53.6, fn.mul(fn.sub(1, l), 85)),
   100,
 );
-const textMinAlphaOnDarkLayer = fn.div(fn.add(45.7, fn.mul(l, 108)), 100);
+const textMinAlphaOnDarkLayer = fn.div(
+  fn.add(45.7, fn.mul(fn.mul(l, l), 145)),
+  100,
+);
 const textMinimumAlpha = fn.add(
   lightDark(textMinAlphaOnLightLayer, textMinAlphaOnDarkLayer),
   fn.mul(c, 0.135),
@@ -1071,13 +1116,24 @@ utility(
 );
 
 utility(
-  "layer-contrast-*",
-  set(inputs.layerIdleContrastL, getPercentTokenValue("[*]")),
+  "layer-push-*",
+  set(inputs.layerIdlePushL, getPercentTokenValue("[*]")),
+);
+
+utility("state-push-*", set(inputs.layerPushL, getPercentTokenValue("[*]")));
+
+utility(
+  "layer-contrast",
+  set(inputs.layerIdleContrastL, 0.25),
+  mapLayerLightnessSteps((parentL, isDark) => [
+    set(vars.layerContrastDirection, isDark ? 1 : -1),
+    set(vars.layerContrastParentL, parentL),
+  ]),
 );
 
 utility(
-  "state-contrast-*",
-  set(inputs.layerContrastL, getPercentTokenValue("[*]")),
+  "layer-contrast-*",
+  set(inputs.layerIdleContrastL, getPercentTokenValue("[*]")),
 );
 
 utility(
@@ -1316,8 +1372,15 @@ utility(
   set(inputs.textC, fn.value(chroma)),
   set(inputs.textH, fn.value(hue)),
   set(inputs.textColor, fn.value(color, "[color]")),
-  set(inputs.textA, getPercentTokenValue("[number]")),
   set(inputs.textContrastL, getPercentTokenValue("[number]")),
+);
+
+utility(
+  "layer-text-*",
+  set(inputs.textA, getPercentTokenValue("[number]")),
+  set(vars.contrastT, globalContrastT),
+  set(vars.text, text),
+  set.color(vars.text),
 );
 
 utility("text-layer", set(inputs.textColor, vars.layer));
@@ -1626,24 +1689,41 @@ function getFrameStretchDeclarations({
     // Cross-axis margins always applied; main-axis margins only at edges
     // Col: inline = cross, block = main
     // Row: block = cross, inline = main
-    set.marginInlineStart(
-      fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameStart)), negStretchInset),
+    set.margin(
+      fn.join(
+        [
+          fn.mul(
+            fn.max(isRow, fn.mul(isCol, inputs.frameStart)),
+            negStretchInset,
+          ),
+          fn.mul(
+            fn.max(isCol, fn.mul(isRow, inputs.frameEnd)),
+            negStretchInset,
+          ),
+          fn.mul(
+            fn.max(isRow, fn.mul(isCol, inputs.frameEnd)),
+            negStretchInset,
+          ),
+          fn.mul(
+            fn.max(isCol, fn.mul(isRow, inputs.frameStart)),
+            negStretchInset,
+          ),
+        ],
+        " ",
+      ),
     ),
-    set.marginInlineEnd(
-      fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameEnd)), negStretchInset),
-    ),
-    set.marginBlockStart(
-      fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameStart)), negStretchInset),
-    ),
-    set.marginBlockEnd(
-      fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameEnd)), negStretchInset),
-    ),
-    set.borderRadius(fn.important(childRadius)),
     // Corner radii: each corner inherits its parent's corner state.
-    set.borderTopLeftRadius(fn.important(fn.mul(cornerTL, childRadius))),
-    set.borderTopRightRadius(fn.important(fn.mul(cornerTR, childRadius))),
-    set.borderBottomLeftRadius(fn.important(fn.mul(cornerBL, childRadius))),
-    set.borderBottomRightRadius(fn.important(fn.mul(cornerBR, childRadius))),
+    set.borderRadius(
+      fn.join(
+        [
+          fn.mul(cornerTL, childRadius),
+          fn.mul(cornerTR, childRadius),
+          fn.mul(cornerBR, childRadius),
+          fn.mul(cornerBL, childRadius),
+        ],
+        " ",
+      ),
+    ),
   ];
 }
 
@@ -1655,7 +1735,6 @@ utility(
   set(vars.frameRing, inputs.frameRing),
   set.padding(vars.framePadding),
   set.scrollPadding(vars.framePadding),
-  set.borderWidth(vars.frameBorder),
   set.borderRadius(vars.frameRadius),
   set.margin(vars.frameMargin),
   at.apply`ring-[length:${vars.frameRing}]`,
@@ -1673,18 +1752,31 @@ utility(
     );
     const minimumRadius = fn.min("0.125rem", inputs.frameRadius);
     const autoRadius = fn.max(minimumRadius, fn.max(nestedRadius, "0px"));
-    // Cap flag: 1 when parentPadding + margin > 1rem (use CSS sign() for
-    // length comparison). When capped, the child is far enough from the parent
-    // edge that concentric radius is not meaningful.
-    const capFlag = fn.max(
-      `sign(${fn.sub(parentPaddingAndMargin, FRAME_PADDING_CAP)})`,
-      0,
+    // When parent padding + margin >= 1rem, the child is far enough from
+    // the parent edge that concentric radius is not meaningful — use the
+    // child's own declared radius instead.
+    //
+    // Formula: max(auto - inflated, min(declared, auto + inflated))
+    //   No cap  (excess=0): max(auto, min(declared, auto)) = auto
+    //   Cap     (excess>0): max(auto - huge, min(declared, auto + huge))
+    //                      = max(negative, declared) = declared
+    //
+    // Subtract 0.5px so that exactly 1rem triggers the cap (>= not >).
+    const excess = fn.max(
+      fn.sub(parentPaddingAndMargin, fn.sub(FRAME_PADDING_CAP, "0.5px")),
+      "0px",
     );
-    // When forced or capped, use the hint radius directly.
-    const forceOrCap = fn.clamp01(fn.add(inputs.frameForce, capFlag));
+    // Must exceed the browser's max representable length (~3.35e7px for
+    // infinity-based radii like rounded-full). 0.5px * 1e9 = 5e8 >> 3.35e7.
+    const inflatedExcess = fn.mul(excess, 1e9);
+    const cappedRadius = fn.max(
+      fn.sub(autoRadius, inflatedExcess),
+      fn.min(inputs.frameRadius, fn.add(autoRadius, inflatedExcess)),
+    );
+    // When forced, use the declared radius directly.
     const frameRadius = fn.add(
-      fn.mul(forceOrCap, inputs.frameRadius),
-      fn.mul(fn.sub(1, forceOrCap), autoRadius),
+      fn.mul(inputs.frameForce, inputs.frameRadius),
+      fn.mul(fn.sub(1, inputs.frameForce), cappedRadius),
     );
     return [
       set(vars.frameRadius, frameRadius),
@@ -1708,7 +1800,7 @@ utility(
   "frame-*",
   set(inputs.frameRadius, fn.value(radius, "[*]")),
   set(inputs.framePadding, fn.modifier(spacing, "[*]")),
-  set(inputs.framePadding, fn.spacing(fn.modifier("number", "[number]"))),
+  set(inputs.framePadding, fn.spacing(fn.modifier("number"))),
 );
 
 utility("frame-rounded-*", set(inputs.frameRadius, fn.value(radius, "[*]")));
@@ -1717,7 +1809,7 @@ utility("frame-rounded-none", set(inputs.frameRadius, "0px"));
 utility(
   "frame-p-*",
   set(inputs.framePadding, fn.value(spacing, "[*]")),
-  set(inputs.framePadding, fn.spacing(fn.value("number", "[number]"))),
+  set(inputs.framePadding, fn.spacing(fn.value("number"))),
 );
 
 const frameMargin = utility(
@@ -1778,8 +1870,16 @@ utility("frame-col", set(inputs.frameRow, 0));
 utility("frame-start", set(inputs.frameStart, 1));
 utility("frame-end", set(inputs.frameEnd, 1));
 
-utility("frame-border", set(inputs.frameBorder, "1px"));
-utility("frame-border-*", getFrameBorderWidthDeclarations(inputs.frameBorder));
+utility(
+  "frame-border",
+  set(inputs.frameBorder, "1px"),
+  set.borderWidth(inputs.frameBorder),
+);
+utility(
+  "frame-border-*",
+  getFrameBorderWidthDeclarations(inputs.frameBorder),
+  set.borderWidth(inputs.frameBorder),
+);
 
 utility("frame-ring", set(inputs.frameRing, "1px"));
 utility("frame-ring-*", getFrameBorderWidthDeclarations(inputs.frameRing));
@@ -1789,6 +1889,7 @@ function getFrameBorderingDarkLight() {
     at.variant(
       dark,
       set(inputs.frameBorder, inputs.frameBordering),
+      set.borderWidth(inputs.frameBordering),
       set(inputs.frameRing, "0px"),
     ),
     at.variant(

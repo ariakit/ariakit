@@ -33,7 +33,7 @@ const { orgId } = Astro.locals.auth();
   {
     teams.size > 0 ? (
       <div class="flex flex-col gap-4">
-        <div class="flex items-center py-4 border-b ak-layer-current">
+        <div class="flex items-center py-4 border-b ak-layer">
           <OrganizationSwitcher
             hidePersonal
             afterSelectOrganizationUrl={
@@ -63,7 +63,7 @@ const { orgId } = Astro.locals.auth();
                 type: "team",
                 redirectUrl: Astro.url,
               })}
-              class="ak-button ak-layer-mix-primary/15"
+              class="ak-button ak-layer ak-layer-primary ak-layer-mix-15"
             >
               <span class="ak-text-primary">Get additional team license</span>
               <Icon

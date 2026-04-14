@@ -32,18 +32,39 @@ const layer = cv({
       90: "ak-state-90",
       100: "ak-state-100",
     },
+    $push: {
+      0: "ak-layer-push-0",
+      10: "ak-layer-push-10",
+      20: "ak-layer-push-20",
+      30: "ak-layer-push-30",
+      40: "ak-layer-push-40",
+      50: "ak-layer-push-50",
+      60: "ak-layer-push-60",
+      70: "ak-layer-push-70",
+      80: "ak-layer-push-80",
+      90: "ak-layer-push-90",
+      100: "ak-layer-push-100",
+    },
     $contrast: {
-      0: "ak-layer-contrast-0",
-      10: "ak-layer-contrast-10",
-      20: "ak-layer-contrast-20",
-      30: "ak-layer-contrast-30",
-      40: "ak-layer-contrast-40",
-      50: "ak-layer-contrast-50",
-      60: "ak-layer-contrast-60",
-      70: "ak-layer-contrast-70",
-      80: "ak-layer-contrast-80",
-      90: "ak-layer-contrast-90",
-      100: "ak-layer-contrast-100",
+      default: "ak-layer-contrast",
+      0: "ak-layer-contrast ak-layer-contrast-0",
+      10: "ak-layer-contrast ak-layer-contrast-10",
+      20: "ak-layer-contrast ak-layer-contrast-20",
+      30: "ak-layer-contrast ak-layer-contrast-30",
+      40: "ak-layer-contrast ak-layer-contrast-40",
+      50: "ak-layer-contrast ak-layer-contrast-50",
+      60: "ak-layer-contrast ak-layer-contrast-60",
+      70: "ak-layer-contrast ak-layer-contrast-70",
+      80: "ak-layer-contrast ak-layer-contrast-80",
+      90: "ak-layer-contrast ak-layer-contrast-90",
+      100: "ak-layer-contrast ak-layer-contrast-100",
+    },
+    $color: {
+      primary: "ak-layer-primary",
+      secondary: "ak-layer-secondary",
+      blue: "ak-layer-blue-500",
+      red: "ak-layer-red-500",
+      green: "ak-layer-green-500",
     },
     $bg: {
       blue: "ak-layer-blue-500",
@@ -101,6 +122,7 @@ const layer = cv({
       xl: "ak-frame-xl",
       "2xl": "ak-frame-2xl",
       "3xl": "ak-frame-3xl",
+      full: "ak-frame-full",
     },
     $p: {
       unset: "",
@@ -164,17 +186,17 @@ const layer = cv({
       4: "[--border-width:4px]",
     },
     $textLevel: {
-      0: "ak-text-0",
-      10: "ak-text-10",
-      20: "ak-text-20",
-      30: "ak-text-30",
-      40: "ak-text-40",
-      50: "ak-text-50",
-      60: "ak-text-60",
-      70: "ak-text-70",
-      80: "ak-text-80",
-      90: "ak-text-90",
-      100: "ak-text-100",
+      0: "ak-layer-text-0",
+      10: "ak-layer-text-10",
+      20: "ak-layer-text-20",
+      30: "ak-layer-text-30",
+      40: "ak-layer-text-40",
+      50: "ak-layer-text-50",
+      60: "ak-layer-text-60",
+      70: "ak-layer-text-70",
+      80: "ak-layer-text-80",
+      90: "ak-layer-text-90",
+      100: "ak-layer-text-100",
     },
     $textColor: {
       red: "*:ak-text *:ak-text-red-500",
@@ -249,22 +271,21 @@ function Layers(props: LayersProps) {
   );
 }
 
-function LayersContrast(props: LayersProps) {
-  const label =
-    props.label ?? ((props) => `ak-layer-contrast-${props.$contrast}`);
+function LayersPush(props: LayersProps) {
+  const label = props.label ?? ((props) => `ak-layer-push-${props.$push}`);
   return (
     <>
-      <Layer {...props} $contrast={0} label={label} />
-      <Layer {...props} $contrast={10} label={label} />
-      <Layer {...props} $contrast={20} label={label} />
-      <Layer {...props} $contrast={30} label={label} />
-      <Layer {...props} $contrast={40} label={label} />
-      <Layer {...props} $contrast={50} label={label} />
-      <Layer {...props} $contrast={60} label={label} />
-      <Layer {...props} $contrast={70} label={label} />
-      <Layer {...props} $contrast={80} label={label} />
-      <Layer {...props} $contrast={90} label={label} />
-      <Layer {...props} $contrast={100} label={label} />
+      <Layer {...props} $push={0} label={label} />
+      <Layer {...props} $push={10} label={label} />
+      <Layer {...props} $push={20} label={label} />
+      <Layer {...props} $push={30} label={label} />
+      <Layer {...props} $push={40} label={label} />
+      <Layer {...props} $push={50} label={label} />
+      <Layer {...props} $push={60} label={label} />
+      <Layer {...props} $push={70} label={label} />
+      <Layer {...props} $push={80} label={label} />
+      <Layer {...props} $push={90} label={label} />
+      <Layer {...props} $push={100} label={label} />
     </>
   );
 }
@@ -379,15 +400,15 @@ export default function Example() {
           </Layers>
         </Layer>
       </Layer>
-      <Layer label="ak-layer-contrast-<number>" $flow="col">
+      <Layer label="ak-layer-push-<number>" $flow="col">
         <Layer $stretch="overflow">
-          <LayersContrast $flow="col">
+          <LayersPush $flow="col">
             {(root) => (
               <Layer
                 $flow="row"
                 getVariants={(props) => ({
                   ...props,
-                  $borderWidth: getFrom(root.$contrast, props.$borderWidth, {
+                  $borderWidth: getFrom(root.$push, props.$borderWidth, {
                     10: 4,
                     20: 2,
                     30: 2,
@@ -395,13 +416,13 @@ export default function Example() {
                     70: 2,
                     80: 2,
                   }),
-                  $stretch: getFrom(root.$contrast, props.$stretch, {
+                  $stretch: getFrom(root.$push, props.$stretch, {
                     20: "overflow",
                     30: true,
                     70: true,
                     90: "overflow",
                   }),
-                  $borderColor: getFrom(root.$contrast, props.$borderColor, {
+                  $borderColor: getFrom(root.$push, props.$borderColor, {
                     10: "red",
                     20: "blueRel",
                     50: "blue",
@@ -410,21 +431,21 @@ export default function Example() {
                   }),
                 })}
               >
-                <LayersContrast
-                  label={(props) => props.$contrast}
+                <LayersPush
+                  label={(props) => props.$push}
                   getVariants={(props) => ({
                     ...props,
-                    $textLevel: getFrom(props.$contrast, props.$textLevel, {
+                    $textLevel: getFrom(props.$push, props.$textLevel, {
                       20: 0,
                       70: 0,
                       100: 0,
                     }),
-                    $stretch: getFrom(props.$contrast, props.$stretch, {
+                    $stretch: getFrom(props.$push, props.$stretch, {
                       0: "overflow",
                       50: true,
                       100: "overflow",
                     }),
-                    $m: getFrom(props.$contrast, props.$m, {
+                    $m: getFrom(props.$push, props.$m, {
                       20: "-0.5",
                       80: "-2",
                     }),
@@ -432,7 +453,7 @@ export default function Example() {
                 />
               </Layer>
             )}
-          </LayersContrast>
+          </LayersPush>
         </Layer>
       </Layer>
       <Layer label="ak-layer-blue" $flow="col">
@@ -485,6 +506,148 @@ export default function Example() {
               </>
             )}
           </LayersColor>
+        </Layer>
+      </Layer>
+      <Layer
+        label="Padding cap: parent padding >= 1rem → child uses own radius"
+        $flow="col"
+      >
+        <Layer $stretch="overflow" $flow="row">
+          {([1, 2, 3, 4, 5] as const).map((p) => (
+            <Layer
+              key={p}
+              label={`p=${p}`}
+              $rounded="2xl"
+              $p={p}
+              $border="border"
+              $borderWidth={2}
+            >
+              <Layer
+                label="nested"
+                $rounded="xl"
+                $p={1}
+                $border="border"
+                $borderWidth={1}
+              />
+            </Layer>
+          ))}
+        </Layer>
+      </Layer>
+      <Layer label="Padding cap with rounded-full parent" $flow="col">
+        <Layer $stretch="overflow" $flow="row">
+          {([1, 2, 3, 4, 5] as const).map((p) => (
+            <Layer
+              key={p}
+              label={`p=${p}`}
+              $rounded="full"
+              $forceRounded
+              $p={p}
+              $border="border"
+              $borderWidth={2}
+            >
+              <Layer
+                label="nested"
+                $rounded="xl"
+                $p={1}
+                $border="border"
+                $borderWidth={1}
+              />
+            </Layer>
+          ))}
+        </Layer>
+      </Layer>
+      <Layer
+        label="ak-layer-contrast (parent-relative) — primary on varied backgrounds"
+        $flow="col"
+      >
+        <Layer $stretch="overflow" $flow="col">
+          {([0, 20, 40, 60, 80, 100] as const).map((bg) => (
+            <Layer
+              key={bg}
+              $layer={bg}
+              $flow="row"
+              label={`parent: ak-layer-${bg}`}
+            >
+              {([0, 10, 20, 30, 50, 70, 100] as const).map((contrast) => (
+                <Layer
+                  key={contrast}
+                  $color="primary"
+                  $contrast={contrast}
+                  $p={1}
+                  label={contrast}
+                />
+              ))}
+            </Layer>
+          ))}
+        </Layer>
+      </Layer>
+      <Layer
+        label="ak-layer-contrast (parent-relative) — blue on varied backgrounds"
+        $flow="col"
+      >
+        <Layer $stretch="overflow" $flow="col">
+          {([0, 20, 40, 60, 80, 100] as const).map((bg) => (
+            <Layer
+              key={bg}
+              $layer={bg}
+              $flow="row"
+              label={`parent: ak-layer-${bg}`}
+            >
+              {([0, 10, 20, 30, 50, 70, 100] as const).map((contrast) => (
+                <Layer
+                  key={contrast}
+                  $color="blue"
+                  $contrast={contrast}
+                  $p={1}
+                  label={contrast}
+                />
+              ))}
+            </Layer>
+          ))}
+        </Layer>
+      </Layer>
+      <Layer
+        label="ak-layer-contrast default (25) vs explicit values"
+        $flow="col"
+      >
+        <Layer $stretch="overflow" $flow="col">
+          {([0, 20, 40, 60, 80, 100] as const).map((bg) => (
+            <Layer
+              key={bg}
+              $layer={bg}
+              $flow="row"
+              label={`parent: ak-layer-${bg}`}
+            >
+              <Layer
+                $color="primary"
+                $contrast="default"
+                $p={1}
+                label="default"
+              />
+              <Layer $color="primary" $contrast={0} $p={1} label="0" />
+              <Layer $color="primary" $contrast={20} $p={1} label="20" />
+              <Layer $color="primary" $contrast={50} $p={1} label="50" />
+            </Layer>
+          ))}
+        </Layer>
+      </Layer>
+      <Layer
+        label="ak-layer-push (self-relative) vs ak-layer-contrast (parent-relative)"
+        $flow="col"
+      >
+        <Layer $stretch="overflow" $flow="col">
+          <Layer $layer={20} $flow="row" label="parent: ak-layer-20">
+            <Layer $color="primary" $push={50} $p={1} label="push-50" />
+            <Layer $color="primary" $contrast={50} $p={1} label="contrast-50" />
+            <Layer $color="red" $push={50} $p={1} label="push-50" />
+            <Layer $color="red" $contrast={50} $p={1} label="contrast-50" />
+          </Layer>
+          <Layer $layer={80} $flow="row" label="parent: ak-layer-80">
+            <Layer $color="primary" $push={50} $p={1} label="push-50" />
+            <Layer $color="primary" $contrast={50} $p={1} label="contrast-50" />
+            <Layer $color="red" $push={50} $p={1} label="push-50" />
+            <Layer $color="red" $contrast={50} $p={1} label="contrast-50" />
+          </Layer>
         </Layer>
       </Layer>
     </div>

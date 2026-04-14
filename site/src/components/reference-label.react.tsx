@@ -42,7 +42,8 @@ export function getReferenceLabelText(
 
 export function getReferenceLabelColors(kind: ReferenceLabelProps["kind"]) {
   const kindColors = labelColors[kind];
-  const className = "ak-text-(--dark)/50 ak-light:ak-text-(--light)/65";
+  const className =
+    "ak-text ak-text-(color:--dark) ak-light:ak-text-(color:--light)";
   const getStyle = (color: typeof kindColors) => {
     return {
       "--dark": color.dark,
@@ -57,7 +58,7 @@ export function ReferenceLabel(props: ReferenceLabelProps) {
   const isFunction = props.kind === "function" || props.kind === "store";
   const isComponent = props.kind === "component";
 
-  const className = props.colors ? labelColors.className : "ak-text/0";
+  const className = props.colors ? labelColors.className : "ak-layer-text-0";
 
   const getStyle = (kindColors = labelColors.kindColors) => {
     if (!props.colors) return {};

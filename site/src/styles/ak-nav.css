@@ -50,7 +50,7 @@
 }
 
 @utility ak-nav-link_idle {
-  @apply ak-button_idle ak-dark:ak-text/70;
+  @apply ak-button_idle ak-layer ak-dark:ak-layer-text-70;
   @apply z-1 relative justify-start text-wrap;
   --ak-button-padding-block: calc(
     var(--ak-disclosure-padding, var(--ak-frame-padding)) -
@@ -67,14 +67,14 @@
     @apply bg-transparent;
   }
   &::before {
-    @apply -z-1 ak-layer-(--ak-layer) absolute inset-x-0 rounded-[inherit];
+    @apply -z-1 ak-layer ak-layer-(color:--ak-layer) absolute inset-x-0 rounded-[inherit];
     content: "";
     inset-block: calc(var(--ak-nav-gap) * 0.5);
   }
 }
 
 @utility ak-nav-link_hover {
-  @apply ak-button_hover ak-nav-link-overlay;
+  @apply ak-button_hover ak-nav-link-overlay ak-layer-text-100;
 }
 
 @utility ak-nav-link_focus {
@@ -90,10 +90,10 @@
 }
 
 @utility ak-nav-link_current {
-  @apply ak-layer-pop ak-nav-link-overlay;
+  @apply ak-layer ak-layer-6 ak-nav-link-overlay ak-layer-text-100;
   @apply z-1;
   &::before {
-    @apply ak-edge/0;
+    @apply ak-edge-0;
     @apply ring ring-inset;
   }
 }
@@ -108,7 +108,7 @@
 }
 
 @utility ak-nav-button_idle {
-  @apply ak-button_idle ak-frame-force-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2));
+  @apply ak-button_idle ak-frame ak-frame-force ak-frame-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2));
   @apply transition-discrete justify-start overflow-clip whitespace-normal text-start transition-[gap,width,height,padding] delay-0;
   interpolate-size: allow-keywords;
   transition-duration: var(--ak-sidebar-duration);
@@ -165,7 +165,7 @@
 }
 
 @utility ak-nav-disclosure {
-  @apply ak-disclosure ak-disclosure-split ak-frame-field/2;
+  @apply ak-disclosure ak-disclosure-split ak-frame ak-frame-field/2;
   @container style(--ak-nav-icon-size) {
     @apply ak-disclosure-icon-(--ak-nav-icon-size);
   }
@@ -195,7 +195,7 @@
 
 @utility ak-nav-disclosure-content-body {
   @apply ak-disclosure-content-body;
-  @apply ak-frame-force-(--ak-nav-disclosure-content-body-radius)/(--ak-nav-disclosure-content-body-padding);
+  @apply ak-frame ak-frame-force ak-frame-(--ak-nav-disclosure-content-body-radius)/(--ak-nav-disclosure-content-body-padding);
   --ak-nav-disclosure-content-body-padding: calc(var(--ak-nav-gap) * 0.5);
   --ak-nav-disclosure-content-body-radius: calc(
     var(--ak-disclosure-radius) + var(--ak-nav-disclosure-content-body-padding)

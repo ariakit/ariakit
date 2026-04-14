@@ -7,9 +7,9 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 @utility ak-popover_idle {
-  --ak-popover-ring-color: var(--ak-ring, var(--ak-layer-ring));
+  --ak-popover-ring-color: var(--ak-edge);
   transition-property: overlay, display, scale, opacity;
-  @apply ak-layer ak-frame-force-dialog ak-light:ring ak-dark:ak-frame-border ak-light:border-none;
+  @apply ak-layer ak-layer-lighten-6 ak-frame ak-frame-force ak-frame-dialog/dialog ak-light:ring ak-dark:ak-frame-border ak-light:border-none;
   @apply transition-discrete z-10 shadow-xl;
   @variant backdrop {
     transition-property: overlay, display, opacity;
@@ -44,7 +44,7 @@
 }
 
 @utility ak-popover-scroll {
-  @apply ak-frame-cover overflow-auto overscroll-contain;
+  @apply ak-frame ak-frame-cover overflow-auto overscroll-contain;
 }
 
 @utility ak-popover-position-* {

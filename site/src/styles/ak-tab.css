@@ -14,12 +14,12 @@
 
 @utility ak-tabs {
   --ak-tab-border-width: var(--ak-frame-border, 1px);
-  --ak-tab-border-color: var(--ak-border, var(--ak-layer-border, transparent));
+  --ak-tab-border-color: var(--ak-edge);
   --ak-tab-bg: var(--ak-layer);
 }
 
 @utility ak-tab-list {
-  @apply ak-frame-overflow ak-layer-down;
+  @apply ak-frame ak-frame-overflow ak-layer ak-layer-darken-6;
   @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) pb-0! relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain;
   scrollbar-width: none;
 
@@ -35,17 +35,17 @@
 }
 
 @utility ak-tab-panel {
-  @apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-cover;
+  @apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-(color:--ak-tab-bg) ak-frame ak-frame-overflow;
   @apply border-(--ak-tab-border-color)! relative;
 }
 
 @utility ak-tab_idle {
-  @apply ak-command_idle ak-text/70;
+  @apply ak-command_idle ak-layer-text-70;
   @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap font-medium leading-[1em];
 }
 
 @utility ak-tab-folder_idle {
-  @apply ak-tab_idle ak-frame-container ak-frame-border-(--ak-tab-border-width);
+  @apply ak-tab_idle ak-frame ak-frame-container/container ak-frame-border-(--ak-tab-border-width);
   @apply border-(length:--ak-tab-border-width) border-b-0! border-transparent;
   padding-block-end: calc(
     var(--ak-tab-border-width) + var(--ak-frame-padding)
@@ -57,7 +57,7 @@
   }
 
   > * {
-    @apply ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))];
+    @apply ak-frame ak-frame-field ak-frame-p-[calc(var(--spacing-field)-var(--ak-tab-folder-padding))];
     @apply flex h-full items-center gap-1.5 whitespace-nowrap transition-colors;
   }
 }
@@ -70,7 +70,7 @@
     @apply border-transparent;
   }
   > * {
-    @apply ak-layer-hover;
+    @apply ak-layer ak-state-6;
   }
 }
 
@@ -84,7 +84,7 @@
     @apply border-transparent;
   }
   > * {
-    @apply ak-layer-contrast-primary;
+    @apply ak-layer ak-layer-primary ak-layer-contrast ak-layer-text-100;
   }
 }
 
@@ -95,8 +95,15 @@
 }
 
 @utility ak-tab-folder_selected {
-  @apply ak-layer-(--ak-tab-bg) ak-text;
+  @apply ak-layer ak-layer-(color:--ak-tab-bg) ak-layer-text-100;
   @apply z-2 border-(--ak-tab-border-color)! rounded-b-none!;
+
+  &:not(:last-child)::after {
+    @apply border-transparent;
+  }
+  :has(+ &)::after {
+    @apply border-transparent;
+  }
 
   &::after,
   &::before {

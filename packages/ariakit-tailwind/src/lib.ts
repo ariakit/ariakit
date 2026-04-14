@@ -543,6 +543,7 @@ export const fn = {
   exp,
   oklch,
   round,
+  join,
 
   calc: (...args: Parameters<typeof exp>) =>
     `calc(${cleanCalc(fn.exp(...args))})`,

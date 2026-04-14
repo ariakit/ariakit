@@ -18,7 +18,7 @@ function Tabs({ tabList, ...props }: TabsProps) {
   return (
     <ak.Role
       {...props}
-      className="ak-tabs ak-layer ak-frame-container ak-frame-border overflow-clip"
+      className="ak-tabs ak-layer ak-layer-lighten-6 ak-frame ak-frame-container/container ak-frame-border overflow-clip"
     >
       <ak.Role className="ak-tab-list" render={tabList}>
         <div className="ak-tab-folder_idle [&&]:ak-tab-folder_selected">
@@ -49,7 +49,7 @@ function Tabs({ tabList, ...props }: TabsProps) {
         </button>
       </ak.Role>
       <div className="ak-tab-panel">
-        <p className="ak-frame/2">
+        <p className="ak-frame ak-frame-p-2">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo sed
           illum quaerat recusandae cupiditate dolor praesentium ab corrupti
           quidem laborum. Eveniet voluptatem velit animi vitae reiciendis

@@ -184,7 +184,7 @@ async function getOfferText() {
         <div class="flex flex-col gap-8 sm:pt-9 sm:sticky top-9">
           <div class="flex flex-col gap-2 items-start">
             <h2 class="text-xl font-bold">Choose your license</h2>
-            <p class="ak-text/70">
+            <p class="ak-layer-text-70">
               One-time payment, lifetime access, free updates
             </p>
           </div>
@@ -209,11 +209,11 @@ async function getOfferText() {
                     href={price.active ? undefined : price.path}
                     aria-disabled={price.active}
                     aria-current={price.selected ? "page" : undefined}
-                    class="ak-button ak-frame-card ak-layer-down-0.5 aria-disabled:ak-layer-down-0.5 aria-[current]:ak-layer aria-[current]:ring aria-[current]:shadow-lg aria-[current]:ak-edge-contrast-primary flex flex-col gap-2 items-start"
+                    class="ak-button ak-frame ak-frame-card/card ak-layer ak-layer-darken-3 aria-disabled:ak-layer-darken-3 aria-[current]:ring aria-[current]:shadow-lg aria-[current]:ak-edge-contrast-primary flex flex-col gap-2 items-start"
                   >
                     <span class="flex gap-2 items-center w-full">
                       <span class="text-lg flex-1 flex items-center gap-2">
-                        <span class="size-[1em] text-(--ak-layer-ring) flex-none rounded-full border-2 border-current bg-clip-content p-0.5 in-aria-[current]:bg-current in-aria-[current]:text-primary" />
+                        <span class="size-[1em] text-(--ak-edge) flex-none rounded-full border-2 border-current bg-clip-content p-0.5 in-aria-[current]:bg-current in-aria-[current]:text-primary" />
                         {capitalize(price.type)}
                         {price.active && (
                           <span class="ak-badge-primary">
@@ -233,7 +233,7 @@ async function getOfferText() {
                           <span class="ak-badge-yellow-500">
                             <span>Save {price.percentOff}%</span>
                           </span>
-                          <del class="ak-text/0 font-normal" aria-hidden="true">
+                          <del class="ak-layer-text-0 font-normal" aria-hidden="true">
                             {price.originalAmount}
                           </del>
                         </>
@@ -242,14 +242,14 @@ async function getOfferText() {
                         <span class="text-lg">{price.amount}</span>
                       )}
                     </span>
-                    <span class="ak-text/80 text-sm font-normal ms-[1.65rem]">
+                    <span class="ak-layer-text-80 text-sm font-normal ms-[1.65rem]">
                       {price.description}
                     </span>
                   </a>
                 );
               })
             )}
-            <p class="text-sm ak-text/70 justify-center flex items-center gap-1">
+            <p class="text-sm ak-layer-text-70 justify-center flex items-center gap-1">
               <Icon
                 name="info"
                 className="text-base ak-layer-contrast bg-transparent text-(--ak-layer)"
@@ -283,11 +283,11 @@ async function getOfferText() {
       <div data-access-step>
         <div class="flex flex-col gap-8 h-full justify-center items-center w-full">
           <div class="flex flex-col gap-2 items-center">
-            <div class="ak-text-green-500/50 text-8xl">
+            <div class="ak-text ak-text-green-500 text-8xl">
               <Icon name="checkCircle" strokeWidth={1} animateStroke={2000} />
             </div>
             <h2 class="text-2xl font-bold">Awesome!</h2>
-            <p class="ak-text/70">
+            <p class="ak-layer-text-70">
               You can now access all Ariakit Plus features
             </p>
           </div>
@@ -303,16 +303,16 @@ async function getOfferText() {
           <div class="flex flex-col gap-4 items-center py-8">
             <h3 class="text-lg font-medium">Access more</h3>
             <div class="flex gap-4 items-center flex-wrap justify-center">
-              <a href="/" class="ak-button ak-layer-pop">
+              <a href="/" class="ak-button ak-layer ak-layer-6">
                 Exclusive examples
               </a>
-              <a href="/" class="ak-button ak-layer-pop">
+              <a href="/" class="ak-button ak-layer ak-layer-6">
                 All examples
               </a>
-              <a href="/" class="ak-button ak-layer-pop">
+              <a href="/" class="ak-button ak-layer ak-layer-6">
                 Ariakit Plus Styles
               </a>
-              <a href="/" class="ak-button ak-layer-pop">
+              <a href="/" class="ak-button ak-layer ak-layer-6">
                 Account
               </a>
             </div>

@@ -6,9 +6,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-/* @import "./ariakit.css"; */
 @import "tailwindcss";
-@import "@ariakit/tailwind/output";
+@import "./ariakit.css";
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);

@@ -76,7 +76,7 @@ function getUserAvatarUrl(user: User) {
     {
       users.data.map((user) => (
         <li>
-          <div class="ak-frame-card ak-layer size-full flex flex-col gap-2">
+          <div class="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 size-full flex flex-col gap-2">
             <div class="flex items-center gap-2">
               <img
                 src={getUserAvatarUrl(user)}
@@ -87,7 +87,7 @@ function getUserAvatarUrl(user: User) {
                 {user.fullName ? (
                   <>
                     <span class="font-semibold">{user.fullName}</span>{" "}
-                    <span class="ak-text/80">
+                    <span class="ak-layer-text-80">
                       ({user.primaryEmailAddress?.emailAddress})
                     </span>
                   </>
@@ -104,18 +104,18 @@ function getUserAvatarUrl(user: User) {
               )}
             </div>
             {!!user.lastActiveAt && (
-              <div class="ak-text/80 text-sm truncate">
+              <div class="ak-layer-text-80 text-sm truncate">
                 Last active{" "}
                 {formatDistanceToNow(user.lastActiveAt, {
                   addSuffix: true,
                 })}
               </div>
             )}
-            <div class="grid grid-flow-col gap-1 mt-auto ak-frame-cover/1 text-sm">
+            <div class="grid grid-flow-col gap-1 mt-auto ak-frame ak-frame-cover ak-frame-p-1 text-sm">
               <a
                 href={`${clerkInstanceUrl}/users/${user.id}`}
                 target="_blank"
-                class="ak-button ak-layer-pop"
+                class="ak-button ak-layer ak-layer-6"
               >
                 Clerk <Icon name="newWindow" />
               </a>
@@ -123,7 +123,7 @@ function getUserAvatarUrl(user: User) {
                 <a
                   href={`${stripeDashboardUrl}/customers/${user.privateMetadata.stripeId}`}
                   target="_blank"
-                  class="ak-button ak-layer-pop"
+                  class="ak-button ak-layer ak-layer-6"
                 >
                   Stripe <Icon name="newWindow" />
                 </a>

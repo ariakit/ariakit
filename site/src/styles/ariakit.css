@@ -6,10 +6,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-@import "tailwindcss";
-/* @import "@ariakit/tailwind"; */
+@import "@ariakit/tailwind/output";
 
-/* @import "./ak-aurora.css";
+@import "./ak-aurora.css";
 @import "./ak-icon.css";
 @import "./ak-badge.css";
 @import "./ak-command.css";
@@ -34,7 +33,7 @@
 @import "./ak-segmented.css";
 @import "./ak-table.css";
 @import "./ak-sidebar.css";
-@import "./ak-prose.css"; */
+@import "./ak-prose.css";
 
 @theme {
   --spacing: 0.25rem;
@@ -93,5 +92,5 @@
 }
 
 body {
-  /* @apply ak-layer-canvas; */
+  @apply ak-layer ak-layer-canvas;
 }

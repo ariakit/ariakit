@@ -22,7 +22,7 @@ export default function Example() {
       <h2 className="ak-heading text-center">Payment methods</h2>
       <Disclosure
         split
-        className="ak-frame-card ak-layer ak-bordering @container"
+        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering @container"
       >
         <DisclosureButton
           indicator="chevron-down-end"
@@ -33,8 +33,8 @@ export default function Example() {
         </DisclosureButton>
         <DisclosureContent prose>
           <div className="p-(--ak-disclosure-padding)">
-            <h4 className="text-sm ak-text/60">Recent charges</h4>
-            <p className="ak-text/80">Example details content...</p>
+            <h4 className="text-sm ak-layer-text-60">Recent charges</h4>
+            <p className="ak-layer-text-80">Example details content...</p>
           </div>
         </DisclosureContent>
       </Disclosure>

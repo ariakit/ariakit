@@ -20,11 +20,11 @@ import {
 
 test("scanAkTokensInFiles finds ak-* tokens including bracketed", () => {
   const tokens = scanAkTokens(`
-    <div className="ak-badge ak-text/80"></div>
-    <div className='not-data-open:ak-text/0'></div>
+    <div className="ak-badge ak-text-80"></div>
+    <div className='not-data-open:ak-text-0'></div>
   `);
   expect(tokens.has("ak-badge")).toBe(true);
-  expect(tokens.has("ak-text/80")).toBe(true);
+  expect(tokens.has("ak-text-80")).toBe(true);
 });
 
 test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () => {
@@ -46,14 +46,14 @@ test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () 
 test("scanAkTokensInFiles finds tokens inside group-/peer- ak variant prefixes", () => {
   const tokens = scanAkTokens(`
     <div className="group-ak-command-disabled:ak-badge"></div>
-    <div className="peer-ak-command-active:ak-text/80"></div>
+    <div className="peer-ak-command-active:ak-text-80"></div>
   `);
   // Variants inside group-/peer- prefixes
   expect(tokens.has("ak-command-disabled")).toBe(true);
   expect(tokens.has("ak-command-active")).toBe(true);
   // Utilities after the ':' should also be picked up
   expect(tokens.has("ak-badge")).toBe(true);
-  expect(tokens.has("ak-text/80")).toBe(true);
+  expect(tokens.has("ak-text-80")).toBe(true);
 });
 
 test("styleDefToCss renders @property block", () => {
@@ -106,7 +106,7 @@ test("styleDefToCss renders ak-list-item-ol-border utility fully", () => {
       );
       /* Border segment */
       &::after {
-        @apply ak-layer-pop-2;
+        @apply ak-layer ak-layer-12;
         @apply z-2 pointer-events-none absolute h-full;
         content: "";
         width: var(--ak-list-border-width);

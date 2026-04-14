@@ -4,7 +4,7 @@ export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi]">
       <ak.DisclosureProvider defaultOpen>
-        <div className="ak-disclosure has-data-open:ak-disclosure_open ak-layer ak-frame-card ak-bordering">
+        <div className="ak-disclosure has-data-open:ak-disclosure_open ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card ak-frame-bordering">
           <ak.Disclosure className="ak-disclosure-button before:ak-disclosure-chevron-right">
             How do I get started?
           </ak.Disclosure>

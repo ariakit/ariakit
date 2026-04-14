@@ -8,7 +8,7 @@
  */
 
 @utility ak-icon {
-  @apply block size-full flex-none bg-current;
+  @apply block size-full flex-none bg-current!;
   mask-repeat: no-repeat;
   mask-position: center;
   mask-type: alpha;

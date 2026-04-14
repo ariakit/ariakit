@@ -30,7 +30,7 @@ const { direction, ...props } = Astro.props;
   aria-label={`Scroll ${direction}`}
 >
   <div
-    class="ak-button ak-button-square size-8 rounded-full ak-layer pointer-events-auto border shadow group-hover/scroll-button:ak-button_hover group-active/scroll-button:ak-button_active"
+    class="ak-button ak-button-square size-8 rounded-full ak-layer ak-layer-lighten-6 pointer-events-auto border shadow group-hover/scroll-button:ak-button_hover group-active/scroll-button:ak-button_active"
   >
     <slot>
       <Icon name={direction === "left" ? "chevronLeft" : "chevronRight"} />

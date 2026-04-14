@@ -76,7 +76,7 @@ function getTeamAvatarUrl(team: Organization) {
         return (
           <Fragment>
             <li>
-              <div class="ak-frame-card ak-layer size-full flex flex-col gap-2">
+              <div class="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 size-full flex flex-col gap-2">
                 <div class="flex items-center gap-2">
                   <img
                     src={getTeamAvatarUrl(team)}
@@ -85,23 +85,23 @@ function getTeamAvatarUrl(team: Organization) {
                   />
                   <div class="truncate">
                     <span class="font-semibold">{team.name}</span>{" "}
-                    <span class="ak-text/80">({team.slug})</span>
+                    <span class="ak-layer-text-80">({team.slug})</span>
                   </div>
                 </div>
                 <div>
                   <InlineLink
                     newWindow
                     href={`${orgUrl}?tab=members`}
-                    className="ak-text/80 text-sm"
+                    className="ak-layer-text-80 text-sm"
                   >
                     {`${team.membersCount} members`}
                   </InlineLink>
                 </div>
-                <div class="grid grid-flow-col gap-1 mt-auto ak-frame-cover/1">
+                <div class="grid grid-flow-col gap-1 mt-auto ak-frame ak-frame-cover ak-frame-p-1">
                   <a
                     href={orgUrl}
                     target="_blank"
-                    class="ak-button ak-layer-pop"
+                    class="ak-button ak-layer ak-layer-6"
                   >
                     Clerk <Icon name="newWindow" />
                   </a>

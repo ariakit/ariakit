@@ -7,15 +7,15 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 @utility ak-option_idle {
-  @apply ak-command_idle ak-frame-field/2;
+  @apply ak-command_idle ak-layer ak-frame ak-frame-field/2;
 }
 
 @utility ak-option_hover {
-  @apply ak-layer-hover;
+  @apply ak-state-6;
 }
 
 @utility ak-option_focus {
-  @apply ak-command_focus ak-layer-contrast-primary;
+  @apply ak-command_focus ak-layer-primary ak-layer-contrast;
   @apply outline-none;
 }
 
@@ -24,7 +24,7 @@
 }
 
 @utility ak-option_disabled {
-  @apply ak-text/50 ak-layer-mix/20;
+  @apply ak-layer-text-50 ak-layer-mix-20;
 }
 
 @utility ak-option {

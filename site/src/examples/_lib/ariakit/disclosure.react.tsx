@@ -84,7 +84,7 @@ export function DisclosureGroup({
       {...props}
       className={clsx(
         baseClassName || "ak-disclosure-group",
-        "ak-layer-current border-y divide-y divide-(--ak-layer-border)",
+        "ak-layer border-y divide-y divide-(--ak-edge)",
         props.className,
       )}
     />
@@ -189,7 +189,7 @@ export function DisclosureButton({
               {labelWrapperElement}
               <span
                 id={descriptionId}
-                className="ak-text/60 grid gap-[inherit] font-normal text-sm"
+                className="ak-layer-text-60 grid gap-[inherit] font-normal text-sm"
               >
                 {description}
               </span>

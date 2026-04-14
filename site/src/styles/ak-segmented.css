@@ -18,32 +18,32 @@
 }
 
 @utility ak-segmented {
-  @apply ak-frame-full/container ak-layer-down-0.25 ak-bordering after:ak-segmented-indicator;
+  @apply ak-frame ak-frame-full/container ak-layer ak-layer-darken-3 ak-frame-bordering after:ak-segmented-indicator;
   @apply gap-(--ak-frame-padding) relative flex overflow-clip;
   --ak-segmented-padding: var(--ak-frame-padding);
 }
 
 @utility ak-segmented-separator {
-  @apply ak-layer-current;
+  @apply ak-layer;
   @apply pointer-events-none absolute h-1/2 border-r transition-opacity delay-150 ease-in;
   content: "";
   inset-inline-start: calc((var(--ak-segmented-padding) / 2 + 1px) * -1);
 }
 
 @utility ak-segmented-indicator-base {
-  @apply ak-layer-2 ak-dark:ak-edge/0;
+  @apply ak-layer ak-layer-lighten-9 ak-dark:ak-edge-0;
   @apply ak-dark:ring-inset ring shadow;
 }
 
 @utility ak-segmented-indicator {
-  @apply ak-segmented-indicator-base ak-frame-field/0;
+  @apply ak-segmented-indicator-base ak-frame ak-frame-field/0;
   @apply absolute transition-[inset];
   position-anchor: --ak-segmented-button_selected;
   inset: anchor(start) anchor(end) anchor(end) anchor(start);
 }
 
 @utility ak-segmented-button_idle {
-  @apply ak-button_idle ak-text/70;
+  @apply ak-button_idle ak-layer-text-70;
   @apply z-1 font-medium transition-colors;
   padding-block: calc(var(--ak-button-padding-block) * 0.75);
   input[type="radio"] {
@@ -55,13 +55,14 @@
 }
 
 @utility ak-segmented-button_selected {
+  @apply ak-layer-text-100;
   &::before,
   & + *::before {
     @apply opacity-0 delay-0;
   }
 
   @supports (anchor-name: --a) {
-    @apply ak-layer-2;
+    @apply ak-layer ak-layer-lighten-9;
     @apply bg-transparent!;
     anchor-name: --ak-segmented-button_selected;
   }

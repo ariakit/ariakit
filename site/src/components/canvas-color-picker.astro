@@ -23,7 +23,7 @@ const id = generateId();
 
     &::-webkit-slider-thumb {
       appearance: none;
-      /* @apply ak-layer-hover-vivid ak-edge/90 size-8 rounded-full border; */
+      /* @apply ak-layer-hover-vivid ak-edge-90 size-8 rounded-full border; */
     }
   }
   .test {
@@ -54,7 +54,7 @@ const id = generateId();
   max="1"
   step="0.01"
   value="0.15"
-  class="test h-10 w-100 ak-layer ak-edge/20 ak-frame-container ring"
+  class="test h-10 w-100 ak-layer ak-layer-lighten-6 ak-edge-20 ak-frame ak-frame-container/container ring"
 />
 
 <input
@@ -65,7 +65,7 @@ const id = generateId();
   max="360"
   step="1"
   value="0"
-  class="test2 h-10 w-100 ak-layer ak-edge/20 ak-frame-container ring"
+  class="test2 h-10 w-100 ak-layer ak-layer-lighten-6 ak-edge-20 ak-frame ak-frame-container/container ring"
 />
 
 <script is:inline define:vars={{ id }}>

@@ -55,12 +55,12 @@ export const getStaticPaths = (async () => {
     const gallery = galleries.find((gallery) => gallery.id === id);
     const description = descriptions.find((header) => header.id === id);
     const componentExamples = examples.filter((example) =>
-      example.data.components.some((component) => component.id === entry.id)
+      example.data.components.some((component) => component.id === entry.id),
     );
     return entry.data.frameworks.flatMap((framework) => {
       const prefix = `${framework}/${entry.id}/`;
       const componentReferences = references.filter((reference) =>
-        reference.id.startsWith(prefix)
+        reference.id.startsWith(prefix),
       );
       const reference = componentReferences.find((reference) => {
         return reference.data.kind === "component";
@@ -112,7 +112,7 @@ Astro.locals.framework = framework;
 
 headings.unshift(
   { slug: "examples", text: "Examples", depth: 2 },
-  { slug: "api", text: "API Reference", depth: 2 }
+  { slug: "api", text: "API Reference", depth: 2 },
 );
 
 const tags = mapTags(entry.data.tags, [framework]);
@@ -120,7 +120,7 @@ const title = entry.data.title;
 const descriptionText = await descriptionToText(
   Description,
   framework,
-  components
+  components,
 );
 
 // Build href to the full API reference page for the default reference
@@ -128,7 +128,7 @@ const referenceHref = reference && getReferencePath({ reference });
 
 function getFunctions() {
   return references.filter(
-    (ref) => ref.data.kind === "function" || ref.data.kind === "store"
+    (ref) => ref.data.kind === "function" || ref.data.kind === "store",
   );
 }
 
@@ -137,7 +137,9 @@ function getComponents() {
 }
 
 function getMenu(
-  references: ReturnType<typeof getFunctions> | ReturnType<typeof getComponents>
+  references:
+    | ReturnType<typeof getFunctions>
+    | ReturnType<typeof getComponents>,
 ) {
   return references.map((reference) => {
     return {
@@ -160,7 +162,7 @@ const referenceMenu = [
 ];
 
 function isLinkItem(
-  item: SidebarMenuItem
+  item: SidebarMenuItem,
 ): item is Extract<SidebarMenuItem, { href: string; label: string }> {
   return "href" in item;
 }
@@ -221,7 +223,7 @@ async function parseDescription(description: string) {
         >
           {
             Description && (
-              <div class="ak-text/70 ak-prose-elements text-lg/[1.8] [&_p]:ak-text/70 [&_a]:not-hover:ak-text/70 [&_code]:ring-0 relative">
+              <div class="ak-layer-text-70 ak-prose-elements text-lg/[1.8] [&_p]:ak-layer-text-70 [&_a]:not-hover:ak-layer-text-70 [&_code]:ring-0 relative">
                 <Description {framework} {components} />
                 <BoxPatternsRightOnly />
               </div>
@@ -234,7 +236,7 @@ async function parseDescription(description: string) {
                   <li>
                     <a
                       href={`/${framework}/components/${tag.id}/`}
-                      class="ak-badge ak-button ak-layer-pop"
+                      class="ak-badge ak-button ak-layer ak-layer-6"
                     >
                       {tag.label}
                     </a>
@@ -261,7 +263,7 @@ async function parseDescription(description: string) {
             <ContentLink href="#examples">Examples</ContentLink>
           </ContentHeading>
           <div />
-          <ContentParagraph class="ak-text/0 mb-2">
+          <ContentParagraph class="ak-layer-text-0 mb-2">
             Learn <strong>{entry.data.title}</strong> by exploring these
             real-world examples.
           </ContentParagraph>
@@ -294,7 +296,7 @@ async function parseDescription(description: string) {
         {!main && <TimelineAnchor name="anchor" />}
         <div
           class:list={[
-            "border-b ak-layer-current flex items-center h-14",
+            "border-b ak-layer flex items-center h-14",
             !main &&
               "sticky top-(--scroll-mt) z-4 [&~*]:[--header-height:calc(var(--scroll-mt)+--spacing(14))]",
           ]}
@@ -331,14 +333,14 @@ async function parseDescription(description: string) {
                 <span>
                   Collapse<span class="@max-3xl:sr-only"> API Reference</span>
                 </span>
-                <Icon name="arrowUp" className="ak-text/0" />
+                <Icon name="arrowUp" className="ak-layer-text-0" />
               </TimelineAnimate>
             )}
           </ContainerRightMenu>
         </div>
         <div
           class:list={[
-            "@5xl:hidden ak-layer-current border-b",
+            "@5xl:hidden ak-layer border-b",
             "h-12 flex items-center",
             !main &&
               "sticky top-(--header-height) z-4 @max-5xl:[&~*]:[--header-height:calc(var(--scroll-mt)+--spacing(14)+--spacing(12))]",
@@ -346,7 +348,7 @@ async function parseDescription(description: string) {
         >
           <button
             aria-label="Search API Reference"
-            class="ak-button ak-frame-none/1 ak-layer-current size-12 aspect-square border-e"
+            class="ak-button ak-frame ak-frame-none/1 ak-layer size-12 aspect-square border-e"
           >
             <Icon name="search" className="text-base" />
           </button>
@@ -381,16 +383,16 @@ async function parseDescription(description: string) {
 
         <div
           class:list={[
-            "ak-layer-current border-b",
+            "ak-layer border-b",
             main &&
-              "max-h-[min(28rem,calc(100dvh-var(--scroll-mt)-8rem))] overflow-clip has-[[data-expand]:hover]:ak-layer-pop-0.5",
+              "max-h-[min(28rem,calc(100dvh-var(--scroll-mt)-8rem))] overflow-clip has-[[data-expand]:hover]:ak-layer-3",
           ]}
         >
           <ContainerLeftMenu>
             <SidebarMenu id="api-reference-menu" items={referenceMenu}>
               <div slot="before" class="p-2">
-                <button class="ak-input ak-edge/15 ak-frame-field/2 flex h-10 gap-2 items-center text-start w-full text-sm">
-                  <div class="flex items-center gap-2 grow min-w-0 ak-frame/1">
+                <button class="ak-input ak-frame ak-frame-field/2 ak-edge-15 flex h-10 gap-2 items-center text-start w-full text-sm">
+                  <div class="flex items-center gap-2 grow min-w-0 ak-frame ak-frame-p-1">
                     <Icon name="search" strokeWidth={2} className="flex-none" />
                     <div class="ak-input-placeholder truncate">
                       Search API Reference
@@ -404,7 +406,7 @@ async function parseDescription(description: string) {
             </SidebarMenu>
             <div
               data-content="true"
-              class:list={["ak-layer-current relative max-h-[inherit]"]}
+              class:list={["ak-layer relative max-h-[inherit]"]}
             >
               <div
                 inert={main ? "" : undefined}
@@ -416,13 +418,13 @@ async function parseDescription(description: string) {
                 <a
                   data-expand="true"
                   href={referenceHref}
-                  class="absolute group/expand outline-none inset-0 ak-layer-current bg-transparent bg-linear-to-b from-transparent from-20% to-[calc(100%-2rem)] to-(--ak-layer) z-2"
+                  class="absolute group/expand outline-none inset-0 ak-layer bg-transparent bg-linear-to-b from-transparent from-20% to-[calc(100%-2rem)] to-(--ak-layer) z-2"
                 >
                   <ContainerRightMenu
                     as="span"
                     class="absolute inset-0 py-2 grid justify-items-center items-end"
                   >
-                    <span class="ak-button ak-layer-current text-sm hover:ak-layer-hover group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
+                    <span class="ak-button ak-layer text-sm hover:ak-state-6 group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
                       Expand API Reference
                       <Icon className="text-base" name="chevronDown" />
                     </span>

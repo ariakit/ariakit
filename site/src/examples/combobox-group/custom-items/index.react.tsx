@@ -49,14 +49,14 @@ export default function Example() {
             {items.map((item) => (
               <ComboboxItem key={item.name} value={item.name}>
                 <div className="grid grid-cols-[2rem_auto] items-center gap-2">
-                  <div className="ak-layer-contrast-primary rounded-full aspect-square flex items-center justify-center text-sm font-medium">
+                  <div className="ak-layer ak-layer-primary ak-layer-contrast rounded-full aspect-square flex items-center justify-center text-sm font-medium">
                     {getInitials(item.name)}
                   </div>
                   <div className="grid">
-                    <div className="ak-text/90 text-sm font-medium">
+                    <div className="ak-layer-text-90 text-sm font-medium">
                       {item.name}
                     </div>
-                    <div className="ak-text/60 text-xs">
+                    <div className="ak-layer-text-60 text-xs">
                       {"email" in item ? item.email : item.folder}
                     </div>
                   </div>

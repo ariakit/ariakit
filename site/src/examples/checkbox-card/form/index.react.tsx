@@ -10,7 +10,7 @@ import { interests } from "../data.ts";
 export default function Example() {
   return (
     <form
-      className="w-120 max-w-[100cqi] flex flex-col gap-6 ak-frame-card/8 ak-layer ak-light:ring ak-dark:ak-frame-border"
+      className="w-120 max-w-[100cqi] flex flex-col gap-6 ak-frame ak-frame-card/8 ak-layer ak-layer-lighten-6 ak-light:ring ak-dark:ak-frame-border"
       onSubmit={(event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -41,7 +41,7 @@ export default function Example() {
               key={key}
               name="interests"
               value={key}
-              className="ak-frame-field/2"
+              className="ak-frame ak-frame-field/2"
               disabled={index === 0}
             >
               <CheckboxCardCheck />
@@ -52,8 +52,8 @@ export default function Example() {
           ))}
         </CheckboxCardGrid>
       </Group>
-      <div className="ak-layer-current pt-6 border-t grid">
-        <button type="submit" className="ak-button ak-layer-primary">
+      <div className="ak-layer pt-6 border-t grid">
+        <button type="submit" className="ak-button ak-layer ak-layer-primary">
           Sign up
         </button>
       </div>

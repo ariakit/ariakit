@@ -9,7 +9,7 @@ export default function Example() {
     <div className="w-100 max-w-[100cqi]">
       <Disclosure
         defaultExpanded
-        className="ak-frame-card ak-layer ak-bordering"
+        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering"
       >
         <DisclosureButton>How do I get started?</DisclosureButton>
         <DisclosureContent prose>

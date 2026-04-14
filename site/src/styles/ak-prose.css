@@ -7,13 +7,13 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 @utility ak-code {
-  @apply ak-layer-pop ak-edge/15;
+  @apply ak-layer ak-layer-6 ak-edge-15;
   @apply rounded px-[0.25em] py-[0.18em] font-mono text-inherit ring;
   font-size-adjust: 0.48;
 }
 
 @utility ak-separator {
-  @apply ak-layer-current ak-edge/20;
+  @apply ak-layer ak-edge-20;
   @apply border-t border-dashed;
   margin-block: calc(var(--ak-prose-gap) * 0.5);
 
@@ -23,7 +23,7 @@
 }
 
 @utility ak-strong {
-  @apply ak-text font-medium;
+  @apply ak-layer-text-100 font-medium;
 }
 
 @utility ak-prose-leading-* {
@@ -51,7 +51,7 @@
 }
 
 @utility ak-prose-text {
-  @apply ak-dark:ak-text/75 ak-light:ak-text/90;
+  @apply ak-dark:ak-layer-text-75 ak-light:ak-layer-text-90;
 }
 
 @utility ak-prose {

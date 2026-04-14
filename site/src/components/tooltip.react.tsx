@@ -42,15 +42,15 @@ export function Tooltip({
         {...props}
         className={clsx(
           "ak-tooltip data-open:ak-tooltip_open not-data-open:ak-tooltip_closed max-w-80 origin-(--popover-transform-origin)",
-          plus && "ak-frame-force-tooltip/0.5 p-1 px-2",
+          plus && "ak-frame ak-frame-force ak-frame-tooltip/0.5 p-1 px-2",
           props.className,
         )}
       >
         {arrow && <ak.TooltipArrow className="ak-tooltip-arrow" />}
         {plus ? (
           <>
-            <div className="float-end -m-0.5 -me-1.5 ms-1.5 ak-layer-mix-primary/15 ak-text-primary ak-frame/px font-medium px-1 ak-frame-border ak-edge-primary/20 border-dashed">
-              Plus
+            <div className="float-end -m-0.5 -me-1.5 ms-1.5 ak-layer ak-layer-primary ak-layer-mix-15 ak-frame ak-frame-full/px font-medium px-1 ak-frame-border ak-edge-primary ak-edge-20 border-dashed">
+              <span className="ak-text ak-text-primary">Plus</span>
             </div>
             {title}
           </>

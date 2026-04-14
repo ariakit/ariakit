@@ -62,9 +62,9 @@ export function useCollapsible<T extends HTMLElement>({
         data-expand
         ref={expandButtonRef}
         onClick={expand}
-        className="absolute group/expand grid outline-none ak-frame-cover/1 py-2 inset-0 ak-layer-current bg-transparent bg-linear-to-b from-transparent from-[calc(100%-var(--line-height)*8)] ak-light:from-[calc(100%-var(--line-height)*4)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-2 justify-center items-end"
+        className="absolute group/expand grid outline-none ak-frame ak-frame-cover ak-frame-p-1 py-2 inset-0 ak-layer bg-transparent bg-linear-to-b from-transparent from-[calc(100%-var(--line-height)*8)] ak-light:from-[calc(100%-var(--line-height)*4)] to-[calc(100%-var(--line-height))] to-(--ak-layer) z-2 justify-center items-end"
       >
-        <div className="ak-button h-9 ak-layer-pop text-sm/[1.5rem] hover:ak-layer-hover group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
+        <div className="ak-button h-9 ak-layer ak-layer-6 text-sm/[1.5rem] hover:ak-state-6 group-focus-visible/expand:ak-button_focus group-active/expand:ak-button_active">
           Expand code
           <Icon className="text-base" name="chevronDown" />
         </div>
@@ -79,10 +79,10 @@ export function useCollapsible<T extends HTMLElement>({
       )}
     >
       {collapsible && !collapsed && (
-        <div className="grid justify-center ak-frame-force-field/0">
+        <div className="grid justify-center ak-frame ak-frame-force ak-frame-field/0">
           <button
             onClick={collapse}
-            className="ak-button ak-layer ak-bordering h-9 text-sm/[1.5rem]"
+            className="ak-button ak-layer ak-layer-lighten-6 ak-frame-bordering h-9 text-sm/[1.5rem]"
           >
             Collapse code
             <Icon className="text-base" name="chevronUp" />

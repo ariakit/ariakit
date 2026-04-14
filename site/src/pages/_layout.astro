@@ -39,7 +39,7 @@ const { title, headerBorder = false } = Astro.props;
         <header
           class:list={[
             "sticky ak-container-size-default top-0 z-10",
-            "ak-layer-current ring ak-light:ak-layer",
+            "ak-layer ak-light:ak-layer-lighten-6 ring",
             headerBorder || "header-scroll-driven",
           ]}
         >
@@ -51,35 +51,35 @@ const { title, headerBorder = false } = Astro.props;
             <div class="flex items-center min-w-0">
               <span
                 aria-hidden="true"
-                class="ak-layer-current -me-px ak-edge/20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:delay-[0ms,50ms]"
+                class="ak-layer -me-px ak-edge-20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:delay-[0ms,50ms]"
               ></span>
               <button
-                class="ak-button font-normal ak-dark:ak-text/80 @max-3xl:hidden"
+                class="ak-button font-normal ak-dark:ak-layer-text-80 @max-3xl:hidden"
               >
                 <Icon name="react" className="flex-none" /><span>React</span>
               </button>
               <span
                 aria-hidden="true"
-                class="ak-layer-current -me-px ak-edge/20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
+                class="ak-layer -me-px ak-edge-20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
               ></span>
               <button
-                class="ak-button font-normal ak-dark:ak-text/80 min-w-0 @max-3xl:hidden"
+                class="ak-button font-normal ak-dark:ak-layer-text-80 min-w-0 @max-3xl:hidden"
               >
                 <span class="truncate">Examples</span>
               </button>
               <span
                 aria-hidden="true"
-                class="ak-layer-current -me-px ak-edge/20 border-s rotate-15 flex-none h-8 block [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
+                class="ak-layer -me-px ak-edge-20 border-s rotate-15 flex-none h-8 block [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
               ></span>
               <button class="ak-button min-w-0">
                 <span class="truncate">{title}</span>
-                <span class="ak-text/0 font-normal">⌘K</span>
+                <span class="ak-layer-text-0 font-normal">⌘K</span>
               </button>
             </div>
             <div class="flex items-center gap-2 ms-auto">
               <a
                 href="/plus/"
-                class="ak-button ak-frame-field/1 hover:ak-layer-mix-primary/20"
+                class="ak-button ak-frame ak-frame-field/1 hover:ak-layer hover:ak-layer-primary hover:ak-layer-mix-20"
               >
                 <span
                   class="ak-badge-primary border-dashed ak-frame-border ak-frame-field/2 text-sm"
@@ -92,12 +92,15 @@ const { title, headerBorder = false } = Astro.props;
                 class="ak-button font-normal text-sm group/theme @max-4xl:ak-button-square-10"
               >
                 <div
-                  class="flex-none ak-layer rounded-full p-1 border-white bg-clip-padding bg-conic/decreasing from-violet-500 via-lime-500 to-violet-500"
+                  class="flex-none ak-layer ak-layer-lighten-6 rounded-full p-1 border-white bg-clip-padding bg-conic/decreasing from-violet-500 via-lime-500 to-violet-500"
                 >
-                  <div class="ak-layer-current rounded-full size-[0.4em]"></div>
+                  <div class="ak-layer rounded-full size-[0.4em]"></div>
                 </div>
                 <span class="@max-4xl:sr-only">Theme</span>
-                <kbd class="ak-text/0 font-normal @max-4xl:hidden">T</kbd>
+                <kbd
+                  class="ak-layer-text-0 font-normal @max-4xl:hidden"
+                  >T</kbd
+                >
               </button>
             </div>
           </div>
@@ -108,7 +111,9 @@ const { title, headerBorder = false } = Astro.props;
         >
           <slot />
         </main>
-        <footer class="ak-container-size-default ak-layer-down mt-auto">
+        <footer
+          class="ak-container-size-default ak-layer ak-layer-darken-6 mt-auto"
+        >
           <div class="ak-container">Footer</div>
         </footer>
       </div>
@@ -116,7 +121,7 @@ const { title, headerBorder = false } = Astro.props;
         id="theme-sidebar"
         data-state="closed"
         transition:persist
-        class="hidden data-[state=open]:block sticky w-(--theme-sidebar-width) h-dvh top-0 z-10 ak-layer-current border-s -ms-px flex-none not-data-view-transitioning:starting:w-0 data-[state=closed]:w-0 transition-discrete transition-[display,width,min-width]"
+        class="hidden data-[state=open]:block sticky w-(--theme-sidebar-width) h-dvh top-0 z-10 ak-layer border-s -ms-px flex-none not-data-view-transitioning:starting:w-0 data-[state=closed]:w-0 transition-discrete transition-[display,width,min-width]"
       >
         Theme
       </div>

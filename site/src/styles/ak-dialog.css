@@ -31,7 +31,7 @@
 }
 
 @utility ak-dialog-backdrop {
-  @apply ak-layer-current bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30;
+  @apply ak-layer bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30;
   @apply backdrop-blur-xs;
 }
 

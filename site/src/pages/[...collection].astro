@@ -47,22 +47,22 @@ export const getStaticPaths = (async () => {
 
     return types.flatMap((type) => {
       const typeEntries = frameworkEntries.filter(
-        (entry) => entry.collection === type
+        (entry) => entry.collection === type,
       );
       const typePreviews = previews.filter(filterPreviews({ framework, type }));
       const frameworkLength = typePreviews.length;
 
       const tags = mapTags(
         typeEntries.flatMap((entry) => entry.data.tags),
-        [framework]
+        [framework],
       );
       // Calculate the number of entries for each tag.
       const tagsWithLength = tags.map((tag) => {
         const tagEntries = typeEntries.filter(
-          (entry) => !!entry.data.tags.find((t) => t === tag?.id)
+          (entry) => !!entry.data.tags.find((t) => t === tag?.id),
         );
         const tagPreviews = typePreviews.filter(
-          filterPreviews({ entries: tagEntries })
+          filterPreviews({ entries: tagEntries }),
         );
         const tagLength = tagPreviews.length;
         return { ...tag, length: tagLength };
@@ -72,7 +72,7 @@ export const getStaticPaths = (async () => {
         const tagEntries = !tag
           ? typeEntries
           : typeEntries.filter(
-              (entry) => !!entry.data.tags.find((t) => t === tag?.id)
+              (entry) => !!entry.data.tags.find((t) => t === tag?.id),
             );
         const path = tag ? `${type}/${tag.id}` : type;
         return {
@@ -136,7 +136,7 @@ const hasGuides = guides.length > 0;
       >
         {
           type === "examples" && (
-            <span class="ak-text-primary/0">{frameworkLength}</span>
+            <span class="ak-text ak-text-primary">{frameworkLength}</span>
           )
         }
         {
@@ -151,9 +151,11 @@ const hasGuides = guides.length > 0;
     </div>
     <div class="flex flex-col gap-4 items-center">
       <button
-        class="ak-input flex items-center gap-2 ak-frame-field/1 text-start"
+        class="ak-input ak-frame ak-frame-field/1 flex items-center gap-2 text-start"
       >
-        <div class="flex items-center gap-2 ak-frame-field/2 flex-grow min-w-0">
+        <div
+          class="flex items-center gap-2 ak-frame ak-frame-field/2 flex-grow min-w-0"
+        >
           <Icon name="search" className="flex-none" />
           <div class="ak-input-placeholder truncate">
             Search {frameworkData.label}
@@ -161,20 +163,22 @@ const hasGuides = guides.length > 0;
           </div>
         </div>
         <div class="flex-1 w-10"></div>
-        <kbd class="ak-text/0 ak-layer-pop-1.5 ak-frame-field/2">
+        <kbd
+          class="ak-layer-text-0 ak-layer ak-layer-9 ak-frame ak-frame-field/2"
+        >
           {type === "components" ? "," : "/"}
         </kbd>
       </button>
     </div>
   </div>
   <div
-    class="sticky top-(--header-height) ak-layer-current w-full h-px z-2 -translate-y-px"
+    class="sticky top-(--header-height) ak-layer w-full h-px z-2 -translate-y-px"
   >
   </div>
   <div
     id="tags"
     class:list={[
-      "ak-layer-current ring scroll-mt-[calc(var(--header-height)-1px)] content-start",
+      "ak-layer ring scroll-mt-[calc(var(--header-height)-1px)] content-start",
       "[--p:var(--ak-container-p)]",
       "[--sidebar-menu-width:max(14rem,calc(100%-min(100%,var(--container-default)+var(--ak-container-p)*2))/2)]",
       "grid-cols-[var(--sidebar-menu-width)_min(calc(100%-var(--sidebar-menu-width)),var(--container-default)+var(--ak-container-p)*2)]",
@@ -204,7 +208,7 @@ const hasGuides = guides.length > 0;
     }
     <div
       class:list={[
-        "flex flex-col ak-layer-current z-1 min-h-[100dvh]",
+        "flex flex-col ak-layer z-1 min-h-[100dvh]",
         hasGuides
           ? "@5xl:border-e"
           : "@default:border-x ak-container-size-[calc(var(--container-default)+var(--p)*2)]/0 ak-container",
@@ -212,7 +216,7 @@ const hasGuides = guides.length > 0;
     >
       <HorizontalScroll
         id="tags-scroll"
-        class="sticky top-(--header-height) z-2 ak-layer-current [box-shadow:0_1px_0_0_var(--ak-layer-border)]"
+        class="sticky top-(--header-height) z-2 ak-layer [box-shadow:0_1px_0_0_var(--ak-edge)]"
       >
         <ChipLinkList>
           {
@@ -243,7 +247,7 @@ const hasGuides = guides.length > 0;
               <PageCardComponent {entry} />
             ) : (
               <PageCardExample {entry} />
-            )
+            ),
           )
         }
       </div>

@@ -37,11 +37,11 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
 
 <Layout>
   <div class="flex flex-col">
-    <div class="sticky top-0 z-1 ak-layer ring ak-layer-current">
-      <div class="flex gap-2 ak-container py-2 text-sm ak-layer-current">
+    <div class="sticky top-0 z-1 ak-layer ring">
+      <div class="flex gap-2 ak-container py-2 text-sm ak-layer">
         <div class="flex items-center gap-2">
           <div
-            class="ak-input ps-2 ak-frame-field/0 ak-dark:scheme-dark"
+            class="ak-input ak-frame ak-frame-field/0 ps-2 ak-dark:scheme-dark"
             onclick="this.querySelector('input[name=q]').focus()"
           >
             <form class="flex gap-2 items-center">
@@ -61,11 +61,11 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
           </div>
           <form>
             {getDefaultInputs(["query"]).map((input) => <input {...input} />)}
-            <button class="ak-button ak-layer-pop">Reset</button>
+            <button class="ak-button ak-layer ak-layer-6">Reset</button>
           </form>
         </div>
-        <div class="flex gap-2 items-center ak-text/80 ms-auto">
-          <div class="border-(--ak-layer-border) border-r px-2">
+        <div class="flex gap-2 items-center ak-layer-text-80 ms-auto">
+          <div class="border-(--ak-edge) border-r px-2">
             {offset + 1} - {Math.min(offset + limit, totalCount)} of{" "}
             {totalCount}
           </div>
@@ -90,7 +90,7 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
             role="link"
             href={previousUrl}
             aria-disabled={!previousUrl}
-            class="ak-button ak-layer-pop"
+            class="ak-button ak-layer ak-layer-6"
           >
             <Icon name="chevronLeft" aria-label="Previous" />
           </a>
@@ -103,14 +103,14 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
             role="link"
             href={nextUrl}
             aria-disabled={!nextUrl}
-            class="ak-button ak-layer-pop"
+            class="ak-button ak-layer ak-layer-6"
           >
             <Icon name="chevronRight" aria-label="Next" />
           </a>
         </div>
       </div>
     </div>
-    <div class="ak-layer-down min-h-[90vh]">
+    <div class="ak-layer ak-layer-darken-6 min-h-[90vh]">
       <div class="ak-container">
         <slot />
       </div>

@@ -51,7 +51,7 @@ const pages = [
             action={actions.admin.sync}
             class="flex gap-2 items-center text-sm"
           >
-            <span class="ak-text/80">Last synced: {getLastSynced()}</span>
+            <span class="ak-layer-text-80">Last synced: {getLastSynced()}</span>
             <SubmitButton class="ak-button-classic"> Sync </SubmitButton>
           </form>
         </div>
@@ -61,7 +61,7 @@ const pages = [
               pages.map((page) => (
                 <li>
                   <a
-                    class="ak-button font-normal aria-[current]:ak-layer-pop aria-[current]:font-semibold"
+                    class="ak-button font-normal ak-layer aria-[current]:ak-layer-6 aria-[current]:font-semibold"
                     href={page.href}
                     aria-current={getAriaCurrent(page.href)}
                   >
