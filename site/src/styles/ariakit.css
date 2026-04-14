@@ -6,7 +6,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-@import "@ariakit/tailwind/output";
+@import "@ariakit/tailwind";
 
 @import "./ak-aurora.css";
 @import "./ak-icon.css";

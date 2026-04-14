@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@ariakit/tailwind/output";
+@import "@ariakit/tailwind";
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
@@ -17,5 +17,5 @@
 }
 
 body {
-  @apply ak-layer-canvas p-10;
+  @apply ak-layer ak-layer-canvas p-10;
 }

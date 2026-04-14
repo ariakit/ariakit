@@ -164,7 +164,7 @@ function getBaseCss() {
 }
 
 body {
-  @apply ak-layer-canvas;
+  @apply ak-layer ak-layer-canvas;
 }
 `;
 }

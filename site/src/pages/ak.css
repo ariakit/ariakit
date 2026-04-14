@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@ariakit/tailwind/output";
+@import "@ariakit/tailwind";
 
 @theme {
   --ak-contrast: 0;
