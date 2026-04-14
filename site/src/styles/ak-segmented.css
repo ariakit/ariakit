@@ -31,7 +31,7 @@
 }
 
 @utility ak-segmented-indicator-base {
-  @apply ak-layer ak-layer-lighten-9 ak-dark:ak-edge-0;
+  @apply ak-layer ak-layer-lighten-12 ak-dark:ak-edge-0;
   @apply ak-dark:ring-inset ring shadow;
 }
 
@@ -62,7 +62,7 @@
   }
 
   @supports (anchor-name: --a) {
-    @apply ak-layer ak-layer-lighten-9;
+    @apply ak-layer ak-layer-lighten-12;
     @apply bg-transparent!;
     anchor-name: --ak-segmented-button_selected;
   }
