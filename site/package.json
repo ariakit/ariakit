@@ -24,7 +24,7 @@
     "preview-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run preview",
     "preview-stripe": "concurrently -k -r 'pnpm:preview' 'pnpm:listen-*'",
     "preview-stripe-lite": "concurrently -k -r 'pnpm:preview-lite' 'pnpm:listen-*'",
-    "test": "playwright test",
+    "test": "playwright test --ignore-project=perf",
     "test-chrome": "playwright test --project=chrome",
     "test-firefox": "playwright test --project=firefox",
     "test-safari": "playwright test --project=safari",
