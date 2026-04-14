@@ -53,49 +53,48 @@ export default defineConfig({
       pathTemplate: "{testDir}/{testFileDir}/__screenshots__/{arg}{ext}",
     },
   },
-  projects: [
-    {
-      name: "chrome",
-      testMatch: testMatchersFor("chrome", "browser"),
-      use: devices["Desktop Chrome"],
-    },
-    {
-      name: "firefox",
-      testMatch: testMatchersFor("firefox", "browser"),
-      retries: CI ? 2 : 1,
-      use: devices["Desktop Firefox"],
-    },
-    {
-      name: "safari",
-      testMatch: testMatchersFor("safari", "browser"),
-      use: devices["Desktop Safari"],
-      retries: CI ? 3 : 1,
-    },
-    {
-      name: "ios",
-      testMatch: testMatchersFor("ios", "mobile"),
-      use: devices["iPhone 13 Pro Max"],
-    },
-    {
-      name: "android",
-      testMatch: testMatchersFor("android", "mobile"),
-      use: devices["Pixel 5"],
-    },
-    ...(PERF
-      ? [
-          {
-            name: "perf",
-            testMatch: [/\/perf[^/]*-chrome/, /\/perfs\/[^/]*-chrome/],
-            use: {
-              ...devices["Desktop Chrome"],
-              launchOptions: {
-                args: ["--enable-precise-memory-info"],
-              },
+  projects: PERF
+    ? [
+        {
+          name: "perf",
+          testMatch: [/\/perf[^/]*-chrome/, /\/perfs\/[^/]*-chrome/],
+          use: {
+            ...devices["Desktop Chrome"],
+            launchOptions: {
+              args: ["--enable-precise-memory-info"],
             },
-            retries: 0,
-            timeout: 120_000,
           },
-        ]
-      : []),
-  ],
+          retries: 0,
+          timeout: 120_000,
+        },
+      ]
+    : [
+        {
+          name: "chrome",
+          testMatch: testMatchersFor("chrome", "browser"),
+          use: devices["Desktop Chrome"],
+        },
+        {
+          name: "firefox",
+          testMatch: testMatchersFor("firefox", "browser"),
+          retries: CI ? 2 : 1,
+          use: devices["Desktop Firefox"],
+        },
+        {
+          name: "safari",
+          testMatch: testMatchersFor("safari", "browser"),
+          use: devices["Desktop Safari"],
+          retries: CI ? 3 : 1,
+        },
+        {
+          name: "ios",
+          testMatch: testMatchersFor("ios", "mobile"),
+          use: devices["iPhone 13 Pro Max"],
+        },
+        {
+          name: "android",
+          testMatch: testMatchersFor("android", "mobile"),
+          use: devices["Pixel 5"],
+        },
+      ],
 });
