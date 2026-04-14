@@ -8534,7 +8534,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer ak-layer-lighten-9 ak-dark:ak-edge-0",
+              "name": "@apply ak-layer ak-layer-lighten-12 ak-dark:ak-edge-0",
               "value": {}
             },
             {
@@ -8550,7 +8550,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-lighten-9",
+              "name": "ak-layer-lighten-12",
               "import": "@ariakit/tailwind"
             },
             {
@@ -8678,7 +8678,7 @@
               "name": "@supports (anchor-name: --a)",
               "value": [
                 {
-                  "name": "@apply ak-layer ak-layer-lighten-9",
+                  "name": "@apply ak-layer ak-layer-lighten-12",
                   "value": {}
                 },
                 {
@@ -8714,7 +8714,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-lighten-9",
+              "name": "ak-layer-lighten-12",
               "import": "@ariakit/tailwind"
             },
             {
