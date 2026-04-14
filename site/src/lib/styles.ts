@@ -21,7 +21,7 @@ import type {
   VariantDef,
 } from "./styles-json-types.ts";
 
-const styles: StylesJson = stylesRaw;
+const styles = stylesRaw as unknown as StylesJson;
 
 export type {
   AtPropertyDef,
