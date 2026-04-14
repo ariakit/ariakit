@@ -6,6 +6,7 @@ if (process.argv.includes("--headed")) {
 
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
+const PERF = process.env.PERF_TEST === "true";
 const port = Number(process.env.SITE_PORT) || 4321;
 const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
 
@@ -80,17 +81,21 @@ export default defineConfig({
       testMatch: testMatchersFor("android", "mobile"),
       use: devices["Pixel 5"],
     },
-    {
-      name: "perf",
-      testMatch: [/\/perf[^/]*-chrome/, /\/perfs\/[^/]*-chrome/],
-      use: {
-        ...devices["Desktop Chrome"],
-        launchOptions: {
-          args: ["--enable-precise-memory-info"],
-        },
-      },
-      retries: 0,
-      timeout: 120_000,
-    },
+    ...(PERF
+      ? [
+          {
+            name: "perf",
+            testMatch: [/\/perf[^/]*-chrome/, /\/perfs\/[^/]*-chrome/],
+            use: {
+              ...devices["Desktop Chrome"],
+              launchOptions: {
+                args: ["--enable-precise-memory-info"],
+              },
+            },
+            retries: 0,
+            timeout: 120_000,
+          },
+        ]
+      : []),
   ],
 });
