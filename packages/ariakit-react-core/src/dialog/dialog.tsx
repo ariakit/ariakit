@@ -389,11 +389,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const mayAutoFocusOnHide = !!autoFocusOnHide;
   const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
 
-  // Sets a `hasOpened` flag on an effect so we only auto focus on hide if the
-  // dialog was open before.
+  // Sets a `hasOpened` flag so we only auto focus on hide if the dialog was
+  // open before. This must be a layout effect (not a regular effect) so the
+  // flag is set synchronously during the same commit that renders the dialog.
+  // Otherwise, if the dialog opens and closes before a regular effect runs
+  // (e.g., when the close happens in the same browser task as the open), the
+  // flag would still be false and focusOnHide would not restore focus.
   const [hasOpened, setHasOpened] = useState(false);
 
-  useEffect(() => {
+  useSafeLayoutEffect(() => {
     if (!open) return;
     setHasOpened(true);
     return () => setHasOpened(false);
