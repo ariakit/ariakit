@@ -38,11 +38,16 @@ const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
 const LAYER_CONTAINER = "ak-layer";
 
+// Chroma-proportional minimum contrast: the lightness floor scales with text
+// chroma so that high-chroma hues (especially blue, which has lower sRGB
+// luminance at a given OKLCH lightness) get enough headroom for WCAG while
+// keeping the color close to its natural appearance.
 const CHILD_TEXT_MIN_CONTRAST = 0.521;
+const CHILD_TEXT_MIN_CONTRAST_CHROMA_BONUS = 0.1;
 // Child colored text can be more vivid on extreme backgrounds than on
 // mid-tone backgrounds, where the WCAG margin is tighter.
 const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
-const CHILD_TEXT_CHROMA_CAP_DARK_MAX = 0.25;
+const CHILD_TEXT_CHROMA_CAP_DARK_MAX = 0.3;
 const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
 const CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L = 0.5;
 const OUTLINE_MIN_CONTRAST = 0.5;
@@ -759,8 +764,8 @@ function mapAncestorLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
   );
 }
 
-function getQuarticRampWeight(progress: number) {
-  return progress * progress * progress * progress;
+function getQuadraticRampWeight(progress: number) {
+  return progress * progress;
 }
 
 function interpolateRoundedValue(min: number, max: number, weight: number) {
@@ -782,7 +787,7 @@ function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
   return interpolateRoundedValue(
     CHILD_TEXT_CHROMA_CAP_DARK_MIN,
     CHILD_TEXT_CHROMA_CAP_DARK_MAX,
-    getQuarticRampWeight(darknessRatio),
+    getQuadraticRampWeight(darknessRatio),
   );
 }
 
@@ -1312,11 +1317,21 @@ const textColorAdjusted = fn.oklch(textBaseColor, {
 });
 
 function getTextDirectional() {
-  // Text contrast utilities always keep at least a half-step delta so plain
-  // `ak-text` still separates from the parent layer in both schemes.
+  // Compute text chroma first so the minimum contrast floor can scale with it.
+  const textChroma = fn.min(
+    fn.clamp(inputs.textCMin, c, inputs.textCMax),
+    vars.textChromaCap,
+  );
+  // Chroma-proportional minimum: the base ensures WCAG for achromatic text,
+  // while the chroma bonus adds extra lightness headroom for high-chroma hues
+  // that have lower sRGB luminance at a given OKLCH lightness.
+  const chromaMinContrast = fn.add(
+    CHILD_TEXT_MIN_CONTRAST,
+    fn.mul(CHILD_TEXT_MIN_CONTRAST_CHROMA_BONUS, textChroma),
+  );
   const textContrastShift = fn.mul(
     fn.add(
-      fn.max(CHILD_TEXT_MIN_CONTRAST, inputs.textContrastL),
+      fn.max(chromaMinContrast, inputs.textContrastL),
       fn.mul(vars.contrastT, CONTRAST_SCALE),
     ),
     vars.textContrastDirection,
@@ -1336,10 +1351,6 @@ function getTextDirectional() {
       fn.min(textUserLightness, textAccessibleLightness),
       fn.invert(textDarkDirectionMask),
     ),
-  );
-  const textChroma = fn.min(
-    fn.clamp(inputs.textCMin, c, inputs.textCMax),
-    vars.textChromaCap,
   );
   // Child text utilities can push lightness around, but they must still land on
   // the accessible side of the parent layer's forbidden range.
