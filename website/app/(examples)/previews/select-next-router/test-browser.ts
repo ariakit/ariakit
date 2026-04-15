@@ -109,7 +109,7 @@ test("select statuses with a mouse", async ({ page }) => {
   );
   await expect(q.combobox("Status")).toHaveText("3 selected");
 
-  await q.option("published").click();
+  await q.option("Published").click();
   await page.waitForURL(hasSearchParam("status", ["draft", "archived"]));
   await expect(q.combobox("Status")).toHaveText("2 selected");
 });

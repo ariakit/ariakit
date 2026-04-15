@@ -99,7 +99,7 @@ test("set value on click outside", async ({ page }) => {
   await page.mouse.down();
   await expect(getCombobox(page)).toHaveValue("Avocado");
   await expect(getPopover(page)).toBeVisible();
-  expect(await page.getByRole("option").all()).toHaveLength(1);
+  await expect(page.getByRole("option")).toHaveCount(1);
   await page.mouse.up();
   await expect(getPopover(page)).not.toBeVisible();
 });
