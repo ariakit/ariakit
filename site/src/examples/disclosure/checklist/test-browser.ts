@@ -8,7 +8,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("open @visual", async ({ q, visual }) => {
     await q.button(/Set up invoices/).click();
-    await q.link("Add your branding").hover();
+    await q.link(/Add your branding/).hover();
     await visual();
   });
 });
