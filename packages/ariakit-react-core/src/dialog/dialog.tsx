@@ -393,7 +393,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // dialog was open before.
   const [hasOpened, setHasOpened] = useState(false);
 
-  useEffect(() => {
+  useSafeLayoutEffect(() => {
     if (!open) return;
     setHasOpened(true);
     return () => setHasOpened(false);
