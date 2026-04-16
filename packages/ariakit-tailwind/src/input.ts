@@ -43,7 +43,7 @@ const LAYER_CONTAINER = "ak-layer";
 // backgrounds, while the concave chroma bonus (scale*c - damping*c²) adds
 // progressively more lightness for high-chroma hues that need WCAG headroom.
 // The bonus tapers at high chroma so the push doesn't overshoot.
-const CHILD_TEXT_MIN_CONTRAST = 0.4;
+const CHILD_TEXT_MIN_CONTRAST = 0.38;
 const CHILD_TEXT_MIN_CONTRAST_CHROMA_SCALE = 1.0;
 const CHILD_TEXT_MIN_CONTRAST_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
@@ -810,27 +810,6 @@ const forbiddenLa = fn.max(
   fn.sub(vars.forbiddenLaBase, fn.mul(vars.contrastT, LA_CONTRAST_SPREAD)),
 );
 
-function getForbiddenLaValue(chromaValue: string | VarProperty) {
-  return fn.max(
-    FORBIDDEN_RANGE_LA_MIN,
-    fn.sub(
-      LA_BASE,
-      fn.mul(fn.min(chromaValue, CHROMA_MAX), LA_CHROMA_SPREAD),
-      fn.mul(vars.contrastT, LA_CONTRAST_SPREAD),
-    ),
-  );
-}
-
-function getForbiddenLbValue(chromaValue: string | VarProperty) {
-  return fn.min(
-    FORBIDDEN_RANGE_LB_MAX,
-    fn.add(
-      LB_BASE,
-      fn.mul(fn.min(chromaValue, CHROMA_MAX), LB_CHROMA_SPREAD),
-      fn.mul(vars.contrastT, LB_CONTRAST_SPREAD),
-    ),
-  );
-}
 const forbiddenLb = fn.min(
   FORBIDDEN_RANGE_LB_MAX,
   fn.add(vars.forbiddenLbBase, fn.mul(vars.contrastT, LB_CONTRAST_SPREAD)),
@@ -1359,30 +1338,8 @@ function getTextDirectional() {
       fn.invert(textDarkDirectionMask),
     ),
   );
-  // Unlike layers, text always has a known contrast direction, so the forbidden
-  // range push goes toward the parent's opposite side instead of nearest boundary.
-  // This prevents mid-lightness colors from being pushed toward the parent.
-  const textForbiddenLa = getForbiddenLaValue(textChroma);
-  const textForbiddenLb = getForbiddenLbValue(textChroma);
-  const textForbiddenMask = getForbiddenRangeMask(
-    textDirectedLightness,
-    textForbiddenLa,
-    textForbiddenLb,
-  );
-  // Dark parent → push to upper boundary (lighter), light → push to lower (darker).
-  const textForbiddenBoundary = fn.add(
-    textForbiddenLa,
-    fn.mul(textDarkDirectionMask, fn.sub(textForbiddenLb, textForbiddenLa)),
-  );
-  const textSafeLightness = fn.add(
-    textDirectedLightness,
-    fn.mul(
-      textForbiddenMask,
-      fn.sub(textForbiddenBoundary, textDirectedLightness),
-    ),
-  );
   return fn.oklch(textColorAdjusted, {
-    l: textSafeLightness,
+    l: textDirectedLightness,
     c: textChroma,
   });
 }
