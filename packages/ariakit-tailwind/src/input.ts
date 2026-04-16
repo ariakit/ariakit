@@ -55,6 +55,11 @@ const CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L = 0.5;
 const OUTLINE_MIN_CONTRAST = 0.5;
 
 const CONTRAST_SCALE = 0.3334;
+// Text gets a doubled contrast lift because the ancestor layer also shifts
+// with `--contrast`; the extra push compensates for the parent's movement so
+// the text actually changes lightness/alpha visibly rather than tracking the
+// background.
+const TEXT_CONTRAST_SCALE = CONTRAST_SCALE * 2;
 const TEXT_CONTRAST_L = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
 const DARK_L = fn.clamp01(TEXT_CONTRAST_L);
 const LIGHT_L = fn.clamp01(fn.invert(TEXT_CONTRAST_L));
@@ -986,7 +991,7 @@ const textMinAlphaOnDarkLayer = fn.div(
 const textMinimumAlpha = fn.add(
   lightDark(textMinAlphaOnLightLayer, textMinAlphaOnDarkLayer),
   fn.mul(c, 0.135),
-  fn.mul(vars.contrastT, CONTRAST_SCALE),
+  fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
 );
 const textAlpha = fn.max(textMinimumAlpha, inputs.textA);
 const text = fn.oklch(vars.layer, {
@@ -1318,7 +1323,7 @@ function getTextDirectional() {
   const textContrastShift = fn.mul(
     fn.add(
       fn.max(chromaMinContrast, inputs.textContrastL),
-      fn.mul(vars.contrastT, CONTRAST_SCALE),
+      fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
     ),
     vars.textContrastDirection,
   );
