@@ -19,7 +19,7 @@
 }
 
 @utility ak-tab-list {
-  @apply ak-frame ak-frame-overflow ak-layer ak-layer-darken-6;
+  @apply ak-frame ak-frame-cover ak-layer ak-layer-darken-6;
   @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) pb-0! relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain;
   scrollbar-width: none;
 
@@ -35,7 +35,7 @@
 }
 
 @utility ak-tab-panel {
-  @apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-(color:--ak-tab-bg) ak-frame ak-frame-overflow;
+  @apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-(color:--ak-tab-bg) ak-frame ak-frame-cover;
   @apply border-(--ak-tab-border-color)! relative;
 }
 

@@ -37,7 +37,7 @@ export function BoxPatternsRight() {
         </div>
       </div>
       <div className="ak-layer ak-layer-6 ak-frame-border h-40 ak-frame ak-frame-2xl/2 flex flex-col gap-2">
-        <div className="ak-layer ak-dark:ak-layer-darken-6 h-10 ak-frame-border ak-frame ak-frame-overflow flex flex-none">
+        <div className="ak-layer ak-dark:ak-layer-darken-6 h-10 ak-frame-border ak-frame ak-frame-cover flex flex-none">
           <div className="h-full aspect-square ak-frame ak-frame-p-1 ring ak-layer ak-layer-6 ms-auto" />
         </div>
         <div className="ak-layer ak-layer-darken-6 ak-frame-border h-10 ak-frame flex-none" />
@@ -51,7 +51,7 @@ export function BoxPatternsRight() {
       <div className="ak-layer ak-layer-6 ak-frame flex-1" />
       <div className="ak-layer ak-layer-6 ak-frame h-10 ak-frame-border" />
       <div className="ak-layer ak-layer-6 ak-frame h-10" />
-      <div className="ak-layer ak-layer-lighten-6 ak-frame-border ak-frame ak-frame-overflow flex gap-2">
+      <div className="ak-layer ak-layer-lighten-6 ak-frame-border ak-frame ak-frame-cover flex gap-2">
         <div className="ak-layer ak-layer-6 ak-frame-border h-8 w-14 ak-frame" />
         <div className="ak-layer ak-layer-6 ak-frame-border h-8 w-10 ak-frame" />
       </div>
@@ -82,7 +82,7 @@ export function BoxPatternsLeftOnly() {
     <div className="absolute bottom-full mb-4 w-full flex">
       <div className="ak-layer ak-layer-darken-6 ak-frame ak-frame-border w-40 h-32 justify-self-start ak-frame-xl/1 mask-t-from-50% mask-t-to-90% mask-r-to-50% flex flex-col gap-2">
         <div className="flex-1" />
-        <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-overflow ak-frame-border flex gap-1">
+        <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-cover ak-frame-border flex gap-1">
           <div className="ak-layer ak-layer-darken-6 ak-frame size-8 ak-frame-border" />
           <div className="ak-layer ak-layer-darken-6 ak-frame size-8 ak-frame-border" />
         </div>
@@ -97,7 +97,7 @@ export function BoxPatternsLeftOnly() {
         <div className="ak-layer ak-layer-6 ak-frame w-3/4 h-12" />
         <div className="ak-layer ak-layer-6 ak-frame w-3/4 h-12 self-end" />
         <div className="ak-layer ak-layer-6 ak-frame w-1/3 h-12 self-end" />
-        <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-overflow ak-frame-border mt-auto flex justify-end gap-2">
+        <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-cover ak-frame-border mt-auto flex justify-end gap-2">
           <div className="ak-layer ak-layer-6 ak-frame h-16 w-40" />
         </div>
       </div>
@@ -106,7 +106,7 @@ export function BoxPatternsLeftOnly() {
           <div className="ak-layer ak-layer-lighten-6 ak-frame h-10 mt-auto ak-frame-border" />
         </div>
         <div className="ak-layer ak-layer-darken-6 ak-frame-border w-48 ak-frame ak-frame-2xl/2 flex gap-2 flex-col mask-b-from-50% mask-b-to-90%">
-          <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-overflow ak-frame-border flex justify-end">
+          <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-cover ak-frame-border flex justify-end">
             <div className="ak-layer ak-layer-6 ak-frame ak-frame-border size-8" />
           </div>
           <div className="ak-layer ak-layer-6 ak-frame h-10" />
@@ -187,7 +187,7 @@ export function BoxPatternsMiddle() {
     <div className="absolute bottom-full mb-4 w-full flex">
       <div className="ak-layer ak-layer-darken-6 ak-frame-border w-40 h-32 justify-self-start ak-frame ak-frame-xl/1 mask-t-from-50% mask-t-to-90% mask-r-to-50% flex flex-col gap-2">
         <div className="flex-1" />
-        <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-overflow ak-frame-border flex gap-1">
+        <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-cover ak-frame-border flex gap-1">
           <div className="ak-layer ak-layer-darken-6 ak-frame size-8 ak-frame-border" />
           <div className="ak-layer ak-layer-darken-6 ak-frame size-8 ak-frame-border" />
         </div>
@@ -246,7 +246,7 @@ export function BoxPatternsMiddle() {
         <div className="ak-layer ak-layer-6 ak-frame w-3/4 h-12" />
         <div className="ak-layer ak-layer-6 ak-frame w-3/4 h-12 self-end" />
         <div className="ak-layer ak-layer-6 ak-frame w-1/3 h-12 self-end" />
-        <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-overflow ak-frame-border mt-auto flex justify-end gap-2">
+        <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-cover ak-frame-border mt-auto flex justify-end gap-2">
           <div className="ak-layer ak-layer-6 ak-frame h-16 w-40" />
         </div>
       </div>
@@ -255,7 +255,7 @@ export function BoxPatternsMiddle() {
           <div className="ak-layer ak-layer-lighten-6 ak-frame h-10 mt-auto ak-frame-border" />
         </div>
         <div className="ak-layer ak-layer-darken-6 ak-frame-border w-48 ak-frame ak-frame-2xl/2 flex gap-2 flex-col mask-b-from-50% mask-b-to-90%">
-          <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-overflow ak-frame-border flex justify-end">
+          <div className="ak-layer ak-layer-lighten-6 ak-frame ak-frame-cover ak-frame-border flex justify-end">
             <div className="ak-layer ak-layer-6 ak-frame ak-frame-border size-8" />
           </div>
           <div className="ak-layer ak-layer-6 ak-frame h-10" />
@@ -284,7 +284,7 @@ export function BoxPatternsFull() {
           <div className="ak-layer ak-layer-9 ak-frame h-24 w-2/3" />
           <div className="ak-layer ak-layer-9 ak-frame h-12 w-3/4 self-end" />
         </div>
-        <div className="ak-layer ak-layer-lighten-6 ak-frame-border ak-frame ak-frame-overflow">
+        <div className="ak-layer ak-layer-lighten-6 ak-frame-border ak-frame ak-frame-cover">
           <div className="ak-layer ak-layer-darken-6 ak-frame-border ak-frame ak-frame-p-1 flex items-center">
             <div className="px-2 text-[70%]">
               Install{" "}
@@ -368,7 +368,7 @@ export function BoxPatternsFull() {
         </div>
       </div>
       <div className="ak-layer ak-frame-border ak-frame ak-frame-2xl/2">
-        <div className="ak-layer ak-layer-darken-6 ak-frame ak-frame-overflow ak-frame-border flex items-center gap-2">
+        <div className="ak-layer ak-layer-darken-6 ak-frame ak-frame-cover ak-frame-border flex items-center gap-2">
           <Icon name="copy" className="text-[70%] ms-1.5" />
           <div className="text-[70%]">
             Copy & paste{" "}
@@ -398,7 +398,7 @@ export function BoxPatternsFull() {
         <div className="ak-layer ak-layer-6 ak-frame h-8" />
         <div className="ak-layer ak-layer-6 ak-frame h-8" />
         <div className="ak-layer ak-layer-6 ak-frame h-8 -mb-3" />
-        <div className="ak-layer ak-layer-lighten-9 ak-frame-border ak-frame ak-frame-overflow ak-frame-p-2 flex justify-end gap-(--ak-frame-padding)">
+        <div className="ak-layer ak-layer-lighten-9 ak-frame-border ak-frame ak-frame-cover ak-frame-p-2 flex justify-end gap-(--ak-frame-padding)">
           <div className="ak-layer ak-layer-3 ak-frame ak-frame-border w-14 h-8" />
           <div className="ak-layer ak-layer-3 ak-frame ak-frame-border w-14 h-8" />
         </div>

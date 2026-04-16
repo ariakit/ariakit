@@ -150,7 +150,6 @@ const layer = cv({
     },
     $stretch: {
       true: "ak-frame-cover",
-      overflow: "ak-frame-overflow",
     },
     $flow: {
       unset: "",
@@ -338,11 +337,36 @@ function getFrom<K extends keyof any, T>(
   return key != null ? (map[key] ?? value) : value;
 }
 
+function FrameStretchRow({
+  label,
+  parentClass = "",
+  childClass = "",
+}: {
+  label: string;
+  parentClass?: string;
+  childClass?: string;
+}) {
+  return (
+    <div className="flex flex-row gap-(--ak-frame-padding) items-start">
+      <span className="min-w-56 self-center">{label}</span>
+      <section
+        className={`ak-layer ak-frame ak-frame-xl ak-frame-p-3 ${parentClass}`}
+      >
+        <section
+          className={`ak-layer ak-frame ak-frame-cover ak-frame-p-2 ${childClass}`}
+        >
+          cover
+        </section>
+      </section>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Layer label="ak-layer-<number>" $flow="col">
-        <Layer $stretch="overflow">
+        <Layer $stretch>
           <Layers $flow="col">
             {(root) => (
               <Layer
@@ -358,10 +382,10 @@ export default function Example() {
                     80: 2,
                   }),
                   $stretch: getFrom(root.$layer, props.$stretch, {
-                    20: "overflow",
+                    20: true,
                     30: true,
                     70: true,
-                    90: "overflow",
+                    90: true,
                   }),
                   $borderColor: getFrom(root.$layer, props.$borderColor, {
                     10: "red",
@@ -387,9 +411,9 @@ export default function Example() {
                       100: 0,
                     }),
                     $stretch: getFrom(props.$layer, props.$stretch, {
-                      0: "overflow",
+                      0: true,
                       50: true,
-                      100: "overflow",
+                      100: true,
                     }),
                     $m: getFrom(props.$layer, props.$m, {
                       20: "-0.5",
@@ -403,7 +427,7 @@ export default function Example() {
         </Layer>
       </Layer>
       <Layer label="ak-layer-push-<number>" $flow="col">
-        <Layer $stretch="overflow">
+        <Layer $stretch>
           <LayersPush $flow="col">
             {(root) => (
               <Layer
@@ -419,10 +443,10 @@ export default function Example() {
                     80: 2,
                   }),
                   $stretch: getFrom(root.$push, props.$stretch, {
-                    20: "overflow",
+                    20: true,
                     30: true,
                     70: true,
-                    90: "overflow",
+                    90: true,
                   }),
                   $borderColor: getFrom(root.$push, props.$borderColor, {
                     10: "red",
@@ -443,9 +467,9 @@ export default function Example() {
                       100: 0,
                     }),
                     $stretch: getFrom(props.$push, props.$stretch, {
-                      0: "overflow",
+                      0: true,
                       50: true,
-                      100: "overflow",
+                      100: true,
                     }),
                     $m: getFrom(props.$push, props.$m, {
                       20: "-0.5",
@@ -459,7 +483,7 @@ export default function Example() {
         </Layer>
       </Layer>
       <Layer label="ak-layer-blue" $flow="col">
-        <Layer $stretch="overflow">
+        <Layer $stretch>
           <LayersColor $flow="col">
             {(root) => (
               <>
@@ -476,10 +500,10 @@ export default function Example() {
                       80: 2,
                     }),
                     $stretch: getFrom(root.$layer, props.$stretch, {
-                      20: "overflow",
+                      20: true,
                       30: true,
                       70: true,
-                      90: "overflow",
+                      90: true,
                     }),
                     $borderColor: getFrom(root.$layer, props.$borderColor, {
                       10: "red",
@@ -514,7 +538,7 @@ export default function Example() {
         label="Padding cap: parent padding >= 1rem → child uses own radius"
         $flow="col"
       >
-        <Layer $stretch="overflow" $flow="row">
+        <Layer $stretch $flow="row">
           {([1, 2, 3, 4, 5] as const).map((p) => (
             <Layer
               key={p}
@@ -536,7 +560,7 @@ export default function Example() {
         </Layer>
       </Layer>
       <Layer label="Padding cap with rounded-full parent" $flow="col">
-        <Layer $stretch="overflow" $flow="row">
+        <Layer $stretch $flow="row">
           {([1, 2, 3, 4, 5] as const).map((p) => (
             <Layer
               key={p}
@@ -562,7 +586,7 @@ export default function Example() {
         label="ak-layer-contrast (parent-relative) — primary on varied backgrounds"
         $flow="col"
       >
-        <Layer $stretch="overflow" $flow="col">
+        <Layer $stretch $flow="col">
           {([0, 20, 40, 60, 80, 100] as const).map((bg) => (
             <Layer
               key={bg}
@@ -587,7 +611,7 @@ export default function Example() {
         label="ak-layer-contrast (parent-relative) — blue on varied backgrounds"
         $flow="col"
       >
-        <Layer $stretch="overflow" $flow="col">
+        <Layer $stretch $flow="col">
           {([0, 20, 40, 60, 80, 100] as const).map((bg) => (
             <Layer
               key={bg}
@@ -612,7 +636,7 @@ export default function Example() {
         label="ak-layer-contrast default (25) vs explicit values"
         $flow="col"
       >
-        <Layer $stretch="overflow" $flow="col">
+        <Layer $stretch $flow="col">
           {([0, 20, 40, 60, 80, 100] as const).map((bg) => (
             <Layer
               key={bg}
@@ -637,7 +661,7 @@ export default function Example() {
         label="ak-layer-push (self-relative) vs ak-layer-contrast (parent-relative)"
         $flow="col"
       >
-        <Layer $stretch="overflow" $flow="col">
+        <Layer $stretch $flow="col">
           <Layer $layer={20} $flow="row" label="parent: ak-layer-20">
             <Layer $color="primary" $push={50} $p={1} label="push-50" />
             <Layer $color="primary" $contrast={50} $p={1} label="contrast-50" />
@@ -710,7 +734,7 @@ export default function Example() {
         />
       </Layer>
       <Layer label="ak-text colored text on all backgrounds" $flow="col">
-        <Layer $stretch="overflow" $flow="col">
+        <Layer $stretch $flow="col">
           <Layers
             label={(props) => `ak-layer-${props.$layer}`}
             $flow="row"
@@ -744,6 +768,95 @@ export default function Example() {
           </Layers>
         </Layer>
       </Layer>
+      {/* frame-cover: border/ring combinations (2px) */}
+      <section className="ak-layer ak-frame ak-frame-2xl ak-frame-p-3 ak-frame-col flex flex-col gap-(--ak-frame-padding) font-mono">
+        <div>frame-cover: border/ring (2px)</div>
+        <FrameStretchRow
+          label="parent: border / child: border"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-border-2"
+        />
+        <FrameStretchRow
+          label="parent: border / child: ring"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-ring-2"
+        />
+        <FrameStretchRow
+          label="parent: ring / child: border"
+          parentClass="ak-frame-ring-2"
+          childClass="ak-frame-border-2"
+        />
+        <FrameStretchRow
+          label="parent: ring / child: ring"
+          parentClass="ak-frame-ring-2"
+          childClass="ak-frame-ring-2"
+        />
+        <FrameStretchRow
+          label="parent: bordering / child: bordering"
+          parentClass="ak-frame-bordering-2"
+          childClass="ak-frame-bordering-2"
+        />
+        <FrameStretchRow
+          label="parent: border / child: none"
+          parentClass="ak-frame-border-2"
+        />
+        <FrameStretchRow
+          label="parent: ring / child: none"
+          parentClass="ak-frame-ring-2"
+        />
+        <FrameStretchRow
+          label="parent: none / child: border"
+          childClass="ak-frame-border-2"
+        />
+        <FrameStretchRow
+          label="parent: none / child: ring"
+          childClass="ak-frame-ring-2"
+        />
+      </section>
+      {/* frame-cover: mixed border widths */}
+      <section className="ak-layer ak-frame ak-frame-2xl ak-frame-p-3 ak-frame-col flex flex-col gap-(--ak-frame-padding) font-mono">
+        <div>frame-cover: mixed border widths</div>
+        <FrameStretchRow
+          label="parent: border(2) / child: border(1)"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-border-1"
+        />
+        <FrameStretchRow
+          label="parent: border(1) / child: border(2)"
+          parentClass="ak-frame-border-1"
+          childClass="ak-frame-border-2"
+        />
+        <FrameStretchRow
+          label="parent: ring(2) / child: ring(1)"
+          parentClass="ak-frame-ring-2"
+          childClass="ak-frame-ring-1"
+        />
+        <FrameStretchRow
+          label="parent: ring(1) / child: ring(2)"
+          parentClass="ak-frame-ring-1"
+          childClass="ak-frame-ring-2"
+        />
+        <FrameStretchRow
+          label="parent: border(2) / child: ring(1)"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-ring-1"
+        />
+        <FrameStretchRow
+          label="parent: ring(2) / child: border(1)"
+          parentClass="ak-frame-ring-2"
+          childClass="ak-frame-border-1"
+        />
+        <FrameStretchRow
+          label="parent: bordering(2) / child: bordering(1)"
+          parentClass="ak-frame-bordering-2"
+          childClass="ak-frame-bordering-1"
+        />
+        <FrameStretchRow
+          label="parent: bordering(1) / child: bordering(2)"
+          parentClass="ak-frame-bordering-1"
+          childClass="ak-frame-bordering-2"
+        />
+      </section>
     </div>
   );
 }

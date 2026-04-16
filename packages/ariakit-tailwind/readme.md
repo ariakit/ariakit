@@ -249,8 +249,7 @@ Frame presets include a `/name` suffix that sets the token scope for padding and
 | `ak-frame-border`            | Applies border width that influences nested element radius calculations.       |
 | `ak-frame-ring`              | Sets frame ring width.                                                         |
 | `ak-frame-bordering`         | Splits border width between border/ring based on layer lightness.              |
-| `ak-frame-cover`             | Stretches element to parent padding (negative margin).                         |
-| `ak-frame-overflow`          | Stretches element to parent padding + border + ring.                           |
+| `ak-frame-cover`             | Stretches element to fill parent content box, collapsing shared borders/rings. |
 | `ak-frame-start`             | Applies start (top) edge styles of frame-cover.                                |
 | `ak-frame-end`               | Applies end (bottom) edge styles of frame-cover.                               |
 | `ak-frame-row`               | Sets horizontal frame flow.                                                    |

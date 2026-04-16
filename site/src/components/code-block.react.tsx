@@ -134,7 +134,7 @@ export function CodeBlock({
         } as React.CSSProperties
       }
       className={clsx(
-        "ak-tab-panel ak-frame ak-frame-overflow ak-frame-p-0 relative grid overflow-hidden",
+        "ak-tab-panel ak-frame ak-frame-cover ak-frame-p-0 relative grid overflow-hidden",
         "has-[pre:focus-visible]:after:outline-2 after:ak-outline after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
       )}
     >

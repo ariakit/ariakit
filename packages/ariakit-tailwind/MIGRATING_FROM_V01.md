@@ -307,21 +307,18 @@ Padding is now a separate utility.
 
 ### `ak-frame-cover/N` → `ak-frame-cover ak-frame-p-N`
 
-The slash syntax for padding on cover/overflow utilities is split.
+The slash syntax for padding on cover utilities is split.
 
 ```diff
 - ak-frame-cover/1.5
 + ak-frame-cover ak-frame-p-1.5
-
-- ak-frame-overflow/1
-+ ak-frame-overflow ak-frame-p-1
 ```
 
 When used with variant prefixes, the prefix must be applied to **each** split utility:
 
 ```diff
-- sm:ak-frame-overflow/1
-+ sm:ak-frame-overflow sm:ak-frame-p-1
+- sm:ak-frame-cover/1
++ sm:ak-frame-cover sm:ak-frame-p-1
 ```
 
 ### `ak-frame-cover-start` / `ak-frame-cover-end` → `ak-frame-start` / `ak-frame-end`
@@ -343,12 +340,17 @@ The force modifier is now a separate utility.
 + ak-frame ak-frame-force ak-frame-container/container
 ```
 
-### `ak-frame-cover` vs `ak-frame-overflow`
+### `ak-frame-overflow` → `ak-frame-cover`
 
-These now have distinct semantics:
+`ak-frame-overflow` has been removed. Use `ak-frame-cover` instead — it now automatically handles all border/ring combinations, collapsing shared borders when both parent and child have them.
 
-- **`ak-frame-cover`**: Stretches to parent padding only. Use when the element has no border, or the parent has no `ak-frame-border`.
-- **`ak-frame-overflow`**: Stretches to parent padding + border + ring. Use when the element has its own border AND the parent has `ak-frame-border`, allowing borders to merge visually.
+```diff
+- ak-frame-overflow
++ ak-frame-cover
+
+- ak-frame-overflow ak-frame-p-1
++ ak-frame-cover ak-frame-p-1
+```
 
 ### Compound utility + frame override requires explicit `ak-frame`
 
@@ -439,6 +441,6 @@ The same applies in CSS custom utilities when a `_checked` or `_disabled` state 
 
 The `ak-frame-*` utility generates a `--spacing()` multiplication for arbitrary bracket modifiers, which can produce invalid `<length> × <length>` values. Workaround: use the frame preset without modifier and set the padding with `ak-frame-p-*`.
 
-### Responsive `ak-frame-overflow` overrides non-responsive `rounded-*!`
+### Responsive `ak-frame-cover` overrides non-responsive `rounded-*!`
 
-Tailwind v4 places responsive utilities after non-responsive utilities in the CSS output. If `ak-frame-overflow` is already provided by a compound utility, don't re-apply it at a responsive breakpoint — it will override non-responsive `!important` border-radius overrides. Use only `ak-frame-p-*` for responsive padding changes.
+Tailwind v4 places responsive utilities after non-responsive utilities in the CSS output. If `ak-frame-cover` is already provided by a compound utility, don't re-apply it at a responsive breakpoint — it will override non-responsive `!important` border-radius overrides. Use only `ak-frame-p-*` for responsive padding changes.

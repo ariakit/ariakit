@@ -1631,6 +1631,9 @@ function getFrameStretchDeclarations({
   const isCol = fn.sub(1, parentRow);
   const isRow = parentRow;
   const negStretchInset = fn.neg(stretchInset);
+  // Incorporate user-specified margin (from ak-frame-m-*) additively so
+  // both stretch and manual margin adjustments are applied together.
+  const totalNegMargin = fn.add(negStretchInset, inputs.frameMargin);
   const childRadius = fn.max(fn.sub(parentRadius, radiusInset), "0px");
 
   // Inherit per-corner flags from the parent stretch element (default: 1 = all
@@ -1667,7 +1670,10 @@ function getFrameStretchDeclarations({
     set(inputs.frameForce, 1),
     set(inputs.frameRadius, childRadius),
     set(inputs.framePadding, childPadding),
-    set(inputs.frameMargin, negStretchInset),
+    // Override frameMargin so descendants see the total effective margin.
+    // This wins over ak-frame's own set(vars.frameMargin, inputs.frameMargin)
+    // because ak-frame-cover appears later in the cascade.
+    set(vars.frameMargin, totalNegMargin),
     // Override the frame utility's computed radius so the context propagates
     // the stretch-derived value rather than the frame-* hint radius.
     set(vars.frameRadius, childRadius),
@@ -1684,19 +1690,13 @@ function getFrameStretchDeclarations({
         [
           fn.mul(
             fn.max(isRow, fn.mul(isCol, inputs.frameStart)),
-            negStretchInset,
+            totalNegMargin,
           ),
-          fn.mul(
-            fn.max(isCol, fn.mul(isRow, inputs.frameEnd)),
-            negStretchInset,
-          ),
-          fn.mul(
-            fn.max(isRow, fn.mul(isCol, inputs.frameEnd)),
-            negStretchInset,
-          ),
+          fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameEnd)), totalNegMargin),
+          fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameEnd)), totalNegMargin),
           fn.mul(
             fn.max(isCol, fn.mul(isRow, inputs.frameStart)),
-            negStretchInset,
+            totalNegMargin,
           ),
         ],
         " ",
@@ -1816,35 +1816,14 @@ utility(
     const parentBorder = inherit(vars.frameParentBorderContext, "0px");
     const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
     const parentRow = inherit(vars.frameParentRowContext, "0");
-    return getFrameStretchDeclarations({
-      stretchInset: parentPadding,
-      radiusInset: parentBorder,
-      childPadding: parentPadding,
-      parentRadius,
-      parentRow,
-      inherit,
-      provide,
-    });
-  }),
-);
-
-utility(
-  "frame-overflow",
-  frameContext(({ inherit, provide }) => {
-    const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
-    const parentBorder = inherit(vars.frameParentBorderContext, "0px");
-    const parentRing = inherit(vars.frameParentRingContext, "0px");
-    const parentRadius = inherit(vars.frameParentRadiusContext, "0px");
-    const parentRow = inherit(vars.frameParentRowContext, "0");
-    // Rings sit outside the border box, so a child ring must be removed from
-    // the border-box stretch inset to keep visible overflow aligned.
-    const stretchInset = fn.sub(
-      fn.add(parentPadding, parentBorder, parentRing),
-      inputs.frameRing,
-    );
+    // Stretch past parent content box by the child's own border width so
+    // the child's content box aligns with the parent's content box. This
+    // also collapses borders/rings when both parent and child have them.
+    const stretchInset = fn.add(parentPadding, inputs.frameBorder);
+    const radiusInset = fn.sub(parentBorder, inputs.frameBorder);
     return getFrameStretchDeclarations({
       stretchInset,
-      radiusInset: "0px",
+      radiusInset,
       childPadding: parentPadding,
       parentRadius,
       parentRow,

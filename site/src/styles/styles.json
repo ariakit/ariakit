@@ -2418,7 +2418,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame ak-frame-overflow ak-layer ak-layer-darken-6",
+              "name": "@apply ak-frame ak-frame-cover ak-layer ak-layer-darken-6",
               "value": {}
             },
             {
@@ -2461,7 +2461,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-overflow",
+              "name": "ak-frame-cover",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2481,7 +2481,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-(color:--ak-tab-bg) ak-frame ak-frame-overflow",
+              "name": "@apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-(color:--ak-tab-bg) ak-frame ak-frame-cover",
               "value": {}
             },
             {
@@ -2512,7 +2512,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-overflow",
+              "name": "ak-frame-cover",
               "import": "@ariakit/tailwind"
             }
           ]
