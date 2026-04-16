@@ -202,6 +202,8 @@ const layer = cv({
       red: "*:ak-text *:ak-text-red-500",
       green: "*:ak-text *:ak-text-green-500",
       blue: "*:ak-text *:ak-text-blue-500",
+      orange: "*:ak-text *:ak-text-orange-500",
+      purple: "*:ak-text *:ak-text-purple-500",
     },
   },
   defaultVariants: {
@@ -648,6 +650,41 @@ export default function Example() {
             <Layer $color="red" $push={50} $p={1} label="push-50" />
             <Layer $color="red" $contrast={50} $p={1} label="contrast-50" />
           </Layer>
+        </Layer>
+      </Layer>
+      <Layer label="ak-text colored text on all backgrounds" $flow="col">
+        <Layer $stretch="overflow" $flow="col">
+          <Layers
+            label={(props) => `ak-layer-${props.$layer}`}
+            $flow="row"
+            getVariants={(props) => ({
+              ...props,
+              $textColor: getFrom(props.$layer, "red" as const, {
+                20: "blue",
+                40: "green",
+                60: "orange",
+                80: "purple",
+              }),
+            })}
+          >
+            {(root) => (
+              <Layer $flow="row">
+                <Layers
+                  label={(props) => props.$layer}
+                  getVariants={(props) => ({
+                    ...props,
+                    $textColor: getFrom(props.$layer, props.$textColor, {
+                      0: "red",
+                      20: "blue",
+                      40: "green",
+                      60: "orange",
+                      80: "purple",
+                    }),
+                  })}
+                />
+              </Layer>
+            )}
+          </Layers>
         </Layer>
       </Layer>
     </div>

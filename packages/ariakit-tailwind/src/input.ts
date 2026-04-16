@@ -38,12 +38,14 @@ const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
 const LAYER_CONTAINER = "ak-layer";
 
-// Chroma-proportional minimum contrast: the lightness floor scales with text
-// chroma so that high-chroma hues (especially blue, which has lower sRGB
-// luminance at a given OKLCH lightness) get enough headroom for WCAG while
-// keeping the color close to its natural appearance.
-const CHILD_TEXT_MIN_CONTRAST = 0.521;
-const CHILD_TEXT_MIN_CONTRAST_CHROMA_BONUS = 0.1;
+// Chroma-proportional minimum contrast: the base floor is low enough that
+// achromatic text (like #808080) can stay at its natural lightness on dark
+// backgrounds, while the concave chroma bonus (scale*c - damping*c²) adds
+// progressively more lightness for high-chroma hues that need WCAG headroom.
+// The bonus tapers at high chroma so the push doesn't overshoot.
+const CHILD_TEXT_MIN_CONTRAST = 0.4;
+const CHILD_TEXT_MIN_CONTRAST_CHROMA_SCALE = 1.0;
+const CHILD_TEXT_MIN_CONTRAST_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
 // mid-tone backgrounds, where the WCAG margin is tighter.
 const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
@@ -1318,16 +1320,21 @@ const textColorAdjusted = fn.oklch(textBaseColor, {
 
 function getTextDirectional() {
   // Compute text chroma first so the minimum contrast floor can scale with it.
-  const textChroma = fn.min(
-    fn.clamp(inputs.textCMin, c, inputs.textCMax),
-    vars.textChromaCap,
-  );
-  // Chroma-proportional minimum: the base ensures WCAG for achromatic text,
-  // while the chroma bonus adds extra lightness headroom for high-chroma hues
-  // that have lower sRGB luminance at a given OKLCH lightness.
+  const textChromaUncapped = fn.clamp(inputs.textCMin, c, inputs.textCMax);
+  const textChroma = fn.min(textChromaUncapped, vars.textChromaCap);
+  // The contrast bonus uses the uncapped chroma so that high-chroma hues still
+  // get enough lightness push on mid-tone backgrounds where the chroma cap is
+  // tight. The concave formula (scale*c - damping*c²) rises quickly at low
+  // chroma and tapers at high chroma, preventing overshoot.
   const chromaMinContrast = fn.add(
     CHILD_TEXT_MIN_CONTRAST,
-    fn.mul(CHILD_TEXT_MIN_CONTRAST_CHROMA_BONUS, textChroma),
+    fn.sub(
+      fn.mul(CHILD_TEXT_MIN_CONTRAST_CHROMA_SCALE, textChromaUncapped),
+      fn.mul(
+        CHILD_TEXT_MIN_CONTRAST_CHROMA_DAMPING,
+        fn.mul(textChromaUncapped, textChromaUncapped),
+      ),
+    ),
   );
   const textContrastShift = fn.mul(
     fn.add(
@@ -1352,12 +1359,27 @@ function getTextDirectional() {
       fn.invert(textDarkDirectionMask),
     ),
   );
-  // Child text utilities can push lightness around, but they must still land on
-  // the accessible side of the parent layer's forbidden range.
-  const textSafeLightness = getSafeLightness(
+  // Unlike layers, text always has a known contrast direction, so the forbidden
+  // range push goes toward the parent's opposite side instead of nearest boundary.
+  // This prevents mid-lightness colors from being pushed toward the parent.
+  const textForbiddenLa = getForbiddenLaValue(textChroma);
+  const textForbiddenLb = getForbiddenLbValue(textChroma);
+  const textForbiddenMask = getForbiddenRangeMask(
     textDirectedLightness,
-    getForbiddenLaValue(textChroma),
-    getForbiddenLbValue(textChroma),
+    textForbiddenLa,
+    textForbiddenLb,
+  );
+  // Dark parent → push to upper boundary (lighter), light → push to lower (darker).
+  const textForbiddenBoundary = fn.add(
+    textForbiddenLa,
+    fn.mul(textDarkDirectionMask, fn.sub(textForbiddenLb, textForbiddenLa)),
+  );
+  const textSafeLightness = fn.add(
+    textDirectedLightness,
+    fn.mul(
+      textForbiddenMask,
+      fn.sub(textForbiddenBoundary, textDirectedLightness),
+    ),
   );
   return fn.oklch(textColorAdjusted, {
     l: textSafeLightness,
