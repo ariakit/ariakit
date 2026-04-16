@@ -234,7 +234,7 @@ jobs:
 
       # --- Baseline (base branch) ---
       - name: Checkout base branch
-        run: git checkout ${{ github.event.pull_request.base.sha }}
+        run: git checkout -f ${{ github.event.pull_request.base.sha }}
 
       - name: Set up base environment
         uses: ./.github/workflows/setup
