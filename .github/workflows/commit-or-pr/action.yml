@@ -74,16 +74,18 @@ runs:
         GH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
       # Rebase onto the latest branch tip so generated-file commits do not
       # fail just because another commit landed while the workflow was running.
+      # Abort the rebase on conflicts instead of swallowing the error; otherwise
+      # the working tree is left with conflict markers that break later steps
+      # (e.g., composite action YAML parsing on post-job cleanup).
       run: |
         cd "${{ inputs.working-directory }}"
-        set +e
+        set -e
         printf "%s" "$GH_TOKEN" | gh auth login --with-token
         gh auth setup-git
         git fetch origin "$HEAD_REF"
-        git rebase "origin/$HEAD_REF" || true
-        git push origin HEAD:"${HEAD_REF}"
-        status=$?
-        if [ $status -ne 0 ]; then
-          echo "Failed to push to PR head."
+        if ! git rebase "origin/$HEAD_REF"; then
+          git rebase --abort
+          echo "Failed to rebase onto origin/$HEAD_REF."
           exit 1
         fi
+        git push origin HEAD:"${HEAD_REF}"

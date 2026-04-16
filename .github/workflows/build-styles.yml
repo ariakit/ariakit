@@ -19,6 +19,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          # Check out the PR branch tip (not the merge ref) so `commit-or-pr`
+          # can fetch and rebase onto `origin/$HEAD_REF` cleanly. Otherwise
+          # the merge ref includes commits from `main` that are absent from
+          # the PR branch, which causes rebase conflicts.
+          ref: ${{ github.head_ref || github.ref_name }}
           persist-credentials: false
 
       - name: Set up environment
