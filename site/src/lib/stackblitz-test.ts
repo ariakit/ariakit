@@ -251,7 +251,7 @@ test("solid-vite project emits generated utilities", () => {
     @utility ak-badge-* {
       --ak-badge-color: --value(--color, [*]);
       @apply ak-badge_base;
-      @apply ak-layer ak-layer-(color:--ak-badge-color) ak-layer-mix-15 ak-dark:ak-edge-(color:--ak-badge-color) ak-dark:ak-edge-10 ak-light:ak-edge-(color:--ak-badge-color) ak-light:ak-edge-15;
+      @apply ak-layer ak-layer-(color:--ak-badge-color) ak-layer-mix-15 ak-dark:ak-edge-(color:--ak-badge-color) ak-edge-20 ak-light:ak-edge-(color:--ak-badge-color);
       &::before,
       &::after,
       :where(& > *) {
