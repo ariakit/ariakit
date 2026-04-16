@@ -831,13 +831,14 @@
 @utility ak-frame-bordering {
   --_ak-frame-bordering: 1px;
   @variant ak-dark {
-    --_ak-frame-border: var(--_ak-frame-bordering);
-    border-width: var(--_ak-frame-bordering);
-    --_ak-frame-ring: 0px;
+    --_ak-frame-border: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
+    border-width: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
+    --_ak-frame-ring: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
   }
   @variant ak-light {
-    --_ak-frame-border: 0px;
-    --_ak-frame-ring: var(--_ak-frame-bordering);
+    --_ak-frame-border: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
+    border-width: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
+    --_ak-frame-ring: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
   }
 }
 
@@ -845,13 +846,14 @@
   --_ak-frame-bordering: --value([*]);
   --_ak-frame-bordering: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
   @variant ak-dark {
-    --_ak-frame-border: var(--_ak-frame-bordering);
-    border-width: var(--_ak-frame-bordering);
-    --_ak-frame-ring: 0px;
+    --_ak-frame-border: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
+    border-width: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
+    --_ak-frame-ring: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
   }
   @variant ak-light {
-    --_ak-frame-border: 0px;
-    --_ak-frame-ring: var(--_ak-frame-bordering);
+    --_ak-frame-border: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
+    border-width: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
+    --_ak-frame-ring: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
   }
 }
 

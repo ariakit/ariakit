@@ -1860,17 +1860,25 @@ utility("frame-ring", set(inputs.frameRing, "1px"));
 utility("frame-ring-*", getFrameBorderWidthDeclarations(inputs.frameRing));
 
 function getFrameBorderingDarkLight() {
+  // When the layer is darkening relative to its parent (ak-layer-darken-*),
+  // reverse the border/ring condition so the edge style matches the visual
+  // context: border for darker surfaces, ring for lighter ones.
+  const isDarkening = fn.binary(fn.neg(inputs.layerIdleRelativeL));
+  const isLightening = fn.invert(isDarkening);
+  const borderVal = fn.mul(isLightening, inputs.frameBordering);
+  const ringVal = fn.mul(isDarkening, inputs.frameBordering);
   return [
     at.variant(
       dark,
-      set(inputs.frameBorder, inputs.frameBordering),
-      set.borderWidth(inputs.frameBordering),
-      set(inputs.frameRing, "0px"),
+      set(inputs.frameBorder, borderVal),
+      set.borderWidth(borderVal),
+      set(inputs.frameRing, ringVal),
     ),
     at.variant(
       light,
-      set(inputs.frameBorder, "0px"),
-      set(inputs.frameRing, inputs.frameBordering),
+      set(inputs.frameBorder, ringVal),
+      set.borderWidth(ringVal),
+      set(inputs.frameRing, borderVal),
     ),
   ];
 }

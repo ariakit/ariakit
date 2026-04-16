@@ -31,8 +31,8 @@
 }
 
 @utility ak-segmented-indicator-base {
-  @apply ak-layer ak-layer-lighten-12 ak-dark:ak-edge-0;
-  @apply ak-dark:ring-inset ring shadow;
+  @apply ak-layer ak-layer-lighten-12 ak-dark:ak-edge-0 ak-frame-bordering;
+  @apply shadow;
 }
 
 @utility ak-segmented-indicator {
