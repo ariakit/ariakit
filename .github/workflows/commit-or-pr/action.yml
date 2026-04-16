@@ -84,8 +84,10 @@ runs:
         gh auth setup-git
         git fetch origin "$HEAD_REF"
         if ! git rebase "origin/$HEAD_REF"; then
-          git rebase --abort
-          echo "Failed to rebase onto origin/$HEAD_REF."
+          # `|| true` so a non-zero `--abort` (e.g., no in-progress rebase)
+          # doesn't swallow the explicit diagnostic under `set -e`.
+          git rebase --abort || true
+          echo "Failed to rebase onto origin/$HEAD_REF." >&2
           exit 1
         fi
         git push origin HEAD:"${HEAD_REF}"
