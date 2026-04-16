@@ -98,8 +98,8 @@
     "lint-staged": "16.4.0",
     "next": "14.2.35",
     "open-cli": "9.0.0",
-    "oxfmt": "0.44.0",
-    "oxlint": "1.59.0",
+    "oxfmt": "0.45.0",
+    "oxlint": "1.60.0",
     "oxlint-tsgolint": "0.20.0",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
@@ -109,7 +109,7 @@
     "react-dom": "18.3.1",
     "rimraf": "6.1.3",
     "solid-js": "1.9.12",
-    "stylelint": "17.6.0",
+    "stylelint": "17.7.0",
     "stylelint-config-standard": "40.0.0",
     "tailwindcss": "3.4.18",
     "tailwindcss-animate": "1.0.7",
@@ -119,12 +119,12 @@
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.4",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.81.1"
+    "wrangler": "4.82.1"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
     "*.{js,ts,tsx,md,mdx,json}": [
-      "oxlint --disable-nested-config --fix",
+      "oxlint --disable-nested-config --fix --no-error-on-unmatched-pattern",
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
