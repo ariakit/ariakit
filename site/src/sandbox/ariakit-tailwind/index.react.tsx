@@ -737,6 +737,37 @@ export default function Example() {
           label="green-500"
         />
       </Layer>
+      <Layer
+        label="ak-text vivid hex on ak-layer-[#131418]"
+        className="ak-layer-[#131418]"
+        $flow="row"
+      >
+        <Layer
+          className="ak-layer-[#131418] *:ak-text *:ak-text-[#42FA7D]"
+          $p={1}
+          label="#42FA7D"
+        />
+        <Layer
+          className="ak-layer-[#131418] *:ak-text *:ak-text-[#FF5C5C]"
+          $p={1}
+          label="#FF5C5C"
+        />
+        <Layer
+          className="ak-layer-[#131418] *:ak-text *:ak-text-[#5CB8FF]"
+          $p={1}
+          label="#5CB8FF"
+        />
+        <Layer
+          className="ak-layer-[#131418] *:ak-text *:ak-text-[#FFD23F]"
+          $p={1}
+          label="#FFD23F"
+        />
+        <Layer
+          className="ak-layer-[#131418] *:ak-text *:ak-text-[#D67BFF]"
+          $p={1}
+          label="#D67BFF"
+        />
+      </Layer>
       <Layer label="ak-text colored text on all backgrounds" $flow="col">
         <Layer $stretch $flow="col">
           <Layers

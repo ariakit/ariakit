@@ -49,7 +49,7 @@ const CHILD_TEXT_MIN_CONTRAST_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
 // mid-tone backgrounds, where the WCAG margin is tighter.
 const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
-const CHILD_TEXT_CHROMA_CAP_DARK_MAX = 0.3;
+const CHILD_TEXT_CHROMA_CAP_DARK_MAX = CHROMA_MAX_P3;
 const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
 const CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L = 0.5;
 const OUTLINE_MIN_CONTRAST = 0.5;
@@ -766,10 +766,6 @@ function mapAncestorLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
   );
 }
 
-function getQuadraticRampWeight(progress: number) {
-  return progress * progress;
-}
-
 function interpolateRoundedValue(min: number, max: number, weight: number) {
   return roundToDecimals(min + weight * (max - min), 4);
 }
@@ -780,16 +776,20 @@ function getChildTextChromaCap(parentLightness: number, isDark: boolean) {
   }
   // Dark parents stay at the conservative minimum near the midpoint, then
   // ramp toward the black-background cap as the parent approaches black.
+  // Use ease-out so darker backgrounds open up chroma quickly — vivid hues like
+  // bright greens (chroma > 0.2) on near-black layers don't need to be muted to
+  // pass WCAG, since the lightness floor already provides ample headroom.
   if (parentLightness >= CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L) {
     return CHILD_TEXT_CHROMA_CAP_DARK_MIN;
   }
   const darknessRatio =
     (CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L - parentLightness) /
     CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L;
+  const easeOutWeight = 1 - (1 - darknessRatio) * (1 - darknessRatio);
   return interpolateRoundedValue(
     CHILD_TEXT_CHROMA_CAP_DARK_MIN,
     CHILD_TEXT_CHROMA_CAP_DARK_MAX,
-    getQuadraticRampWeight(darknessRatio),
+    easeOutWeight,
   );
 }
 
