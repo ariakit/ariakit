@@ -80,7 +80,9 @@ runs:
       run: |
         cd "${{ inputs.working-directory }}"
         set -e
-        printf "%s" "$GH_TOKEN" | gh auth login --with-token
+        # `gh auth git-credential` reads GH_TOKEN from the environment, so no
+        # explicit `gh auth login` is needed — and calling it under `set -e`
+        # would fail the step because gh exits 1 when GH_TOKEN is already set.
         gh auth setup-git
         git fetch origin "$HEAD_REF"
         if ! git rebase "origin/$HEAD_REF"; then
