@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@ariakit/core": "workspace:*",
-    "@testing-library/dom": "^8.0.0 || ^9.0.0 || ^10.0.0"
+    "@testing-library/dom": "^10.4.1"
   },
   "devDependencies": {
     "react": "18.3.1",
