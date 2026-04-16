@@ -328,6 +328,6 @@
     @apply ak-progress-thickness-[0.15em];
   }
   @variant ak-list-ul {
-    @apply ak-progress-thickness-[calc(30%+5%*var(--contrast,0))];
+    @apply ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))];
   }
 }

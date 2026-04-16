@@ -692,7 +692,7 @@ function getFragmentPieces(
 <Fragment>
   <div
     class:list={[
-      "grid whitespace-pre **:data-highlight:ak-edge-25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0625rem*var(--contrast,0))_0_var(--ak-edge)]",
+      "grid whitespace-pre **:data-highlight:ak-edge-25 **:data-highlight:shadow-[inset_calc(0.175rem+0.0003rem*var(--contrast,0))_0_var(--ak-edge)]",
       "*:*:ps-4 *:*:in-data-admonition:ps-3",
       showGridColumns && {
         "sm:grid-cols-[max-content_1fr]": !hasAddedOrRemoved,
@@ -739,8 +739,8 @@ function getFragmentPieces(
               >
                 <span
                   class:list={{
-                    "ak-text-red-500": isRemoved,
-                    "ak-text-green-500": isAdded,
+                    "ak-text ak-text-red-500": isRemoved,
+                    "ak-text ak-text-green-500": isAdded,
                   }}
                 >
                   {displayLineNum}
