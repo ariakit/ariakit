@@ -347,18 +347,22 @@ function FrameStretchRow({
   childClass?: string;
 }) {
   return (
-    <div className="flex flex-row gap-(--ak-frame-padding) items-start">
-      <span className="min-w-56 self-center">{label}</span>
-      <section
-        className={`ak-layer ak-frame ak-frame-xl ak-frame-p-3 ${parentClass}`}
-      >
-        <section
-          className={`ak-layer ak-frame ak-frame-cover ak-frame-p-2 ${childClass}`}
-        >
-          cover
-        </section>
-      </section>
-    </div>
+    <Layer
+      label={label}
+      className={parentClass}
+      $rounded="xl"
+      $p={3}
+      $border={false}
+      $flow="col"
+    >
+      <Layer
+        label="cover"
+        className={childClass}
+        $stretch
+        $p={2}
+        $border={false}
+      />
+    </Layer>
   );
 }
 
@@ -740,7 +744,10 @@ export default function Example() {
             $flow="row"
             getVariants={(props) => ({
               ...props,
-              $textColor: getFrom(props.$layer, "red" as const, {
+              $textColor: getFrom<
+                number,
+                "red" | "blue" | "green" | "orange" | "purple"
+              >(props.$layer, "red", {
                 20: "blue",
                 40: "green",
                 60: "orange",
@@ -748,7 +755,7 @@ export default function Example() {
               }),
             })}
           >
-            {(root) => (
+            {() => (
               <Layer $flow="row">
                 <Layers
                   label={(props) => props.$layer}
@@ -857,6 +864,54 @@ export default function Example() {
           childClass="ak-frame-bordering-2"
         />
       </section>
+      {/* frame-cover + frame-m-*: margin with concentric radius */}
+      <Layer
+        label="frame-cover + frame-m-*"
+        $rounded="3xl"
+        $p={2}
+        $flow="col"
+        $border={false}
+        className="font-mono"
+      >
+        <FrameStretchRow
+          label="border + m-1"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-border-2 ak-frame-m-1"
+        />
+        <FrameStretchRow
+          label="border + m-2"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-border-2 ak-frame-m-2"
+        />
+        <FrameStretchRow
+          label="border + m-3"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-border-2 ak-frame-m-3"
+        />
+        <FrameStretchRow
+          label="ring + m-1"
+          parentClass="ak-frame-ring-2"
+          childClass="ak-frame-ring-2 ak-frame-m-1"
+        />
+        <FrameStretchRow
+          label="ring + m-2"
+          parentClass="ak-frame-ring-2"
+          childClass="ak-frame-ring-2 ak-frame-m-2"
+        />
+        <FrameStretchRow label="no border + m-1" childClass="ak-frame-m-1" />
+        <FrameStretchRow label="no border + m-2" childClass="ak-frame-m-2" />
+        <FrameStretchRow
+          label="border + -m-1"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-border-2 -ak-frame-m-1"
+        />
+        <FrameStretchRow
+          label="border + -m-2"
+          parentClass="ak-frame-border-2"
+          childClass="ak-frame-border-2 -ak-frame-m-2"
+        />
+        <FrameStretchRow label="no border + -m-1" childClass="-ak-frame-m-1" />
+      </Layer>
     </div>
   );
 }

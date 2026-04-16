@@ -1634,7 +1634,13 @@ function getFrameStretchDeclarations({
   // Incorporate user-specified margin (from ak-frame-m-*) additively so
   // both stretch and manual margin adjustments are applied together.
   const totalNegMargin = fn.add(negStretchInset, inputs.frameMargin);
-  const childRadius = fn.max(fn.sub(parentRadius, radiusInset), "0px");
+  // Concentric border radius: reduce parent radius by the total visual
+  // distance from parent border-box edge to child border-box edge.
+  // frameMargin moves the child further inward, so it reduces the radius.
+  const childRadius = fn.max(
+    fn.sub(parentRadius, fn.add(radiusInset, inputs.frameMargin)),
+    "0px",
+  );
 
   // Inherit per-corner flags from the parent stretch element (default: 1 = all
   // corners rounded, provided by the frame utility for non-stretch parents).
