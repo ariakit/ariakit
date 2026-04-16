@@ -96,7 +96,7 @@
     "solid-js": "1.9.12",
     "stripe": "22.0.1",
     "tailwindcss": "4.2.2",
-    "ts-morph": "27.0.2",
+    "ts-morph": "28.0.0",
     "typescript": "6.0.2",
     "unified": "11.0.5",
     "unist-util-visit": "5.1.0",
