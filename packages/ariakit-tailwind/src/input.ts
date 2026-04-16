@@ -356,20 +356,20 @@ const constantMathVars = {
 // Utility-assigned math values. These depend on other vars and are resolved in
 // @utility ak-layer.
 const layerMathVars = {
-  contrastT: _ak.prop("ct"),
-  negativeContrastT: _ak.prop("nct"),
-  layerContrastBias: _ak.prop("lcb"),
-  forbiddenLa: _ak.prop("fla", { inherits: true }),
-  forbiddenLb: _ak.prop("flb", { inherits: true }),
-  safeL: _ak.prop("sl"),
-  autoDirectionToLight: _ak.prop("adtl"),
-  autoDirectionToDark: _ak.prop("adtd"),
-  layerIdleAutoDelta: _ak.prop("liad"),
-  layerAutoDelta: _ak.prop("lad"),
-  layerIdlePushValue: _ak.prop("lipv"),
-  layerPushValue: _ak.prop("lpv"),
-  layerIdleContrastValue: _ak.prop("licv"),
-  edgeContrastDirection: _ak.prop("ecd", { initial: -1 }),
+  contrastT: _ak.var("ct", globalContrastT),
+  negativeContrastT: _ak.var("nct"),
+  layerContrastBias: _ak.var("lcb"),
+  forbiddenLa: _ak.var("fla"),
+  forbiddenLb: _ak.var("flb"),
+  safeL: _ak.var("sl"),
+  autoDirectionToLight: _ak.var("adtl"),
+  autoDirectionToDark: _ak.var("adtd"),
+  layerIdleAutoDelta: _ak.var("liad"),
+  layerAutoDelta: _ak.var("lad"),
+  layerIdlePushValue: _ak.var("lipv"),
+  layerPushValue: _ak.var("lpv"),
+  layerIdleContrastValue: _ak.var("licv"),
+  edgeContrastDirection: _ak.var("ecd", -1),
 };
 
 // Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
@@ -893,7 +893,6 @@ const layer = fn.oklch(vars.layerPush, {
  */
 function getBaseDeclarations(sourceColor: string | VarProperty) {
   return [
-    set(vars.contrastT, globalContrastT),
     set(
       vars.layerL,
       fn.oklch(sourceColor, {
@@ -1373,7 +1372,6 @@ utility(
 utility(
   "layer-text-*",
   set(inputs.textA, getPercentTokenValue("[number]")),
-  set(vars.contrastT, globalContrastT),
   set(vars.text, text),
   set.color(vars.text),
 );
