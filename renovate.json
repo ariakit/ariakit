@@ -64,6 +64,10 @@
       "allowedVersions": "/^12\\./"
     },
     {
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "/^24\\./"
+    },
+    {
       "matchPackageNames": ["lint-staged", "vite", "/^@vitejs/"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
