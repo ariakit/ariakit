@@ -19,7 +19,7 @@
 }
 
 @utility ak-tab-list {
-  @apply ak-frame ak-frame-cover ak-layer ak-layer-darken-6;
+  @apply ak-frame ak-frame-cover ak-layer ak-layer-darken-6 -ak-frame-m-(--ak-tab-border-width);
   @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) pb-0! relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain;
   scrollbar-width: none;
 
