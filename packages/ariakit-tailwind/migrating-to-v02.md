@@ -1,4 +1,4 @@
-# Migrating from v0.1 to v0.2
+# Migrating to v0.2
 
 This guide covers all breaking changes for users of the `@ariakit/tailwind` plugin.
 
@@ -88,12 +88,15 @@ In v0.1, `ak-layer-contrast-<color>` adjusted the color's lightness to contrast 
 ```diff
 - ak-layer-contrast-primary
 + ak-layer ak-layer-primary ak-layer-contrast
-
-- ak-layer-contrast-secondary
-+ ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0
 ```
 
-`ak-layer-contrast-N` overrides the default contrast amount. Higher values push the color further from the parent's lightness.
+`ak-layer-contrast-N` overrides the default contrast amount. Higher values push the color further from the parent's lightness; `ak-layer-contrast-0` disables the push entirely (useful when you want the raw color without any contrast adjustment):
+
+```diff
+  <!-- Keep the color as-is, no automatic contrast -->
+- ak-layer-secondary
++ ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0
+```
 
 ### `ak-layer-canvas` → `ak-layer ak-layer-canvas`
 
@@ -307,27 +310,27 @@ Padding is now a separate utility.
 + ak-frame ak-frame-p-2
 ```
 
-### `ak-frame-cover/N` → `ak-frame-cover ak-frame-p-N`
+### `ak-frame-cover/N` → `ak-frame ak-frame-cover ak-frame-p-N`
 
 The slash syntax for padding on cover utilities is split.
 
 ```diff
 - ak-frame-cover/1.5
-+ ak-frame-cover ak-frame-p-1.5
++ ak-frame ak-frame-cover ak-frame-p-1.5
 ```
 
 When used with variant prefixes, the prefix must be applied to **each** split utility:
 
 ```diff
 - sm:ak-frame-cover/1
-+ sm:ak-frame-cover sm:ak-frame-p-1
++ sm:ak-frame sm:ak-frame-cover sm:ak-frame-p-1
 ```
 
-### `ak-frame-cover-start` / `ak-frame-cover-end` → `ak-frame-start` / `ak-frame-end`
+### `ak-frame-cover-start` / `ak-frame-cover-end` → `ak-frame ak-frame-start` / `ak-frame-end`
 
 ```diff
 - ak-frame-cover-start ak-frame-cover-end
-+ ak-frame-start ak-frame-end
++ ak-frame ak-frame-start ak-frame-end
 ```
 
 ### `ak-frame-force-TYPE` → `ak-frame ak-frame-force ak-frame-TYPE/TYPE`
@@ -342,16 +345,16 @@ The force modifier is now a separate utility.
 + ak-frame ak-frame-force ak-frame-container/container
 ```
 
-### `ak-frame-overflow` → `ak-frame-cover`
+### `ak-frame-overflow` → `ak-frame ak-frame-cover`
 
 `ak-frame-overflow` has been removed. Use `ak-frame-cover` instead — it now automatically handles all border/ring combinations, collapsing shared borders when both parent and child have them.
 
 ```diff
 - ak-frame-overflow
-+ ak-frame-cover
++ ak-frame ak-frame-cover
 
 - ak-frame-overflow ak-frame-p-1
-+ ak-frame-cover ak-frame-p-1
++ ak-frame ak-frame-cover ak-frame-p-1
 ```
 
 ### Compound utility + frame override requires explicit `ak-frame`

@@ -19,7 +19,7 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 - [`ak-frame`](#ak-frame) — radius, padding, margin, borders, layout
 - [`ak-state-*`](#ak-state) — interactive state adjustments
 - [Variants](#variants)
-- [Migrating from v0.1](#migrating-from-v01)
+- [Migrating to v0.2](#migrating-to-v02)
 
 ## Installation
 
@@ -528,9 +528,9 @@ You can opt extra utilities into high-contrast mode with `contrast-more:`:
 </button>
 ```
 
-## Migrating from v0.1
+## Migrating to v0.2
 
-See [`MIGRATING_FROM_V01.md`](./MIGRATING_FROM_V01.md) for the full list of breaking changes from the v0.1 plugin.
+See [`migrating-to-v02.md`](./migrating-to-v02.md) for the full list of breaking changes from the v0.1 plugin.
 
 ## Core Team
 
