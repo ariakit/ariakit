@@ -51,12 +51,14 @@ export function createInstance(
 /**
  * Returns props with an additional `wrapInstance` prop.
  */
-export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
+export function wrapInstance<P>(
   props: P & { wrapInstance?: WrapInstance },
   element: WrapInstanceValue,
-): Q {
+): P & { wrapInstance: WrapInstance } {
   const wrapInstance = [...(props.wrapInstance ?? []), element];
-  return mergeProps(props, { wrapInstance }) as Q;
+  return mergeProps(props, { wrapInstance }) as P & {
+    wrapInstance: WrapInstance;
+  };
 }
 
 /**

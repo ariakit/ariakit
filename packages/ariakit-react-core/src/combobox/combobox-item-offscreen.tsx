@@ -28,6 +28,7 @@ function getItemRole(popupRole?: string) {
 
 export function useComboboxItemOffscreen<
   T extends ElementType,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends ComboboxItemProps<T>,
 >({ store, value, ...props }: P) {
   const context = useComboboxScopedContext();

@@ -451,6 +451,7 @@ export interface FormStoreFunctions<
    * // Can also use store.names for type-safety.
    * const emailValue = store.getValue(store.names.email);
    */
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   getValue: <T = any>(name: StringLike) => T;
   /**
    * Sets a field value.
@@ -472,6 +473,7 @@ export interface FormStoreFunctions<
    * // Can also use store.names for type-safety.
    * store.pushValue(store.names.tags, "new tag");
    */
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   pushValue: <T>(name: StringLike, value: T) => void;
   /**
    * Removes a value from an array field.

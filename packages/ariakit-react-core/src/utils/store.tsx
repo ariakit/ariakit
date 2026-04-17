@@ -238,8 +238,12 @@ export function useStoreProps<
   S extends State,
   P extends Partial<S>,
   K extends keyof S,
-  SK extends keyof PickByValue<P, SetState<P[K]>>,
->(store: CoreStore<S>, props: P, key: K, setKey?: SK) {
+>(
+  store: CoreStore<S>,
+  props: P,
+  key: K,
+  setKey?: keyof PickByValue<P, SetState<P[K]>>,
+) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
   const setValue = setKey ? props[setKey] : undefined;
   const propsRef = useLiveRef({ value, setValue });
