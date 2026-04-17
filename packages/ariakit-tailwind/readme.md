@@ -55,10 +55,11 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 
 ## How it works
 
-Ariakit Tailwind revolves around five families of utilities:
+Ariakit Tailwind revolves around a few families of utilities:
 
 - **[`ak-layer`](#ak-layer)** turns any element into a _layer_ — a surface with its own background, text, border, and shadow colors. Layers nest, and each nested layer shifts in lightness relative to its parent so stacked surfaces read correctly in both light and dark modes.
-- **[`ak-text`](#ak-text)** colors text inside a layer, automatically adjusting lightness for WCAG contrast.
+- **[`ak-layer-text`](#ak-layer-text)** sets the text opacity for the layer's own text. Safe to apply on the same element as `ak-layer` or on a descendant.
+- **[`ak-text`](#ak-text)** colors inline text _inside_ a layer with automatic WCAG contrast. Must go on a descendant, not on the `ak-layer` element itself.
 - **[`ak-edge`](#ak-edge)** colors borders and rings, adapting opacity and contrast to the layer behind them.
 - **[`ak-outline`](#ak-outline)** colors outlines in the same adaptive way.
 - **[`ak-frame`](#ak-frame)** handles radius, padding, margin, borders, and concentric-radius layout.
@@ -224,12 +225,12 @@ Combine freely — `ak-layer ak-layer-primary ak-layer-mix ak-layer-mix-30 ak-la
 
 ## `ak-layer-text`
 
-Controls the opacity of text inside a layer — useful for secondary text, captions, and disabled states. This is self-contained and does **not** require `ak-layer` on the same element.
+Controls the opacity of text inside a layer — useful for secondary text, captions, and disabled states. It only sets text color, so it works either on the same element as [`ak-layer`](#ak-layer) (styling the layer's own text) or on a descendant element.
 
 ```html
-<div class="ak-layer ak-layer-canvas">
-  <p class="ak-layer-text-70">70% opacity</p>
-  <p class="ak-layer-text-0">Minimum opacity that still meets WCAG AA</p>
+<div class="ak-layer ak-layer-canvas ak-layer-text-70">
+  Layer with its own text at 70% opacity
+  <p class="ak-layer-text-0">Nested text at minimum readable opacity</p>
 </div>
 ```
 
@@ -239,7 +240,9 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ## `ak-text`
 
-`ak-text` colors inline text with automatic contrast against the parent layer. Elements with `ak-text` must be descendants of an element with [`ak-layer`](#ak-layer).
+`ak-text` colors inline text with automatic contrast against the parent layer.
+
+> **Apply `ak-text` to a descendant, not to the layer element itself.** It forces `background-color: transparent` to let the layer show through, which would erase the surface if placed on the `ak-layer` element. For styling the layer's own text color, use [`ak-layer-text`](#ak-layer-text) instead.
 
 ```html
 <div class="ak-layer ak-layer-canvas">
@@ -283,9 +286,9 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Overrides
 
-| Utility         | Description                                                                                                                                                 |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-text-layer` | Sets text color directly to the layer color, bypassing contrast math. Use when you want text to blend fully with the surface (dividers, decorative labels). |
+| Utility         | Description                                                                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-text-layer` | Resets the text base color back to the current `--ak-layer`. Useful for undoing a prior `ak-text-<color>` override so the contrast pipeline recomputes against the surface. |
 
 ## `ak-edge`
 
