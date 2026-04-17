@@ -107,7 +107,6 @@
 }
 
 @utility ak-layer {
-  container-type: normal;
   container-name: ak-layer;
   color: var(--ak-text);
   border-color: var(--ak-edge);

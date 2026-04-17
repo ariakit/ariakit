@@ -1016,7 +1016,6 @@ const layerContext = createContext();
 
 utility(
   "layer",
-  set.containerType("normal"),
   set.containerName(LAYER_CONTAINER),
   set.color(vars.text),
   set.borderColor(vars.edge),
