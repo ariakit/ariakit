@@ -234,9 +234,9 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 </div>
 ```
 
-| Utility                  | Description                                                                             |
-| ------------------------ | --------------------------------------------------------------------------------------- |
-| `ak-layer-text-<number>` | Sets text opacity (`0`–`100`). `0` is the minimum readable alpha for the current layer. |
+| Utility                  | Description                                                                                                                                                          |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-text-<number>` | Sets text opacity as an **absolute** alpha value (`0`–`100`). `0` clamps to the minimum alpha that still meets WCAG AA for the current layer; `100` is fully opaque. |
 
 ## `ak-text`
 
@@ -253,13 +253,13 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Setting the text color
 
-| Utility            | Description                                                                        |
-| ------------------ | ---------------------------------------------------------------------------------- |
-| `ak-text`          | Required base class for colored text.                                              |
-| `ak-text-<color>`  | Applies a color with automatic contrast, e.g. `ak-text-primary`, `ak-text-[#c33]`. |
-| `ak-text-<number>` | Adjusts contrast lightness (`0`–`100`). `0` is minimum contrast.                   |
-| `ak-text-<chroma>` | Sets chroma from a named preset (`ak-text-vivid`).                                 |
-| `ak-text-<hue>`    | Sets hue from a named preset (`ak-text-blue`).                                     |
+| Utility            | Description                                                                                                                                                                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-text`          | Required base class for colored text.                                                                                                                                                                                                                                    |
+| `ak-text-<color>`  | Applies a color with automatic contrast, e.g. `ak-text-primary`, `ak-text-[#c33]`.                                                                                                                                                                                       |
+| `ak-text-<number>` | **Relative** contrast amount (`0`–`100`). Shifts lightness away from the parent layer; `0` is the minimum contrast the system still considers readable, `100` is the strongest contrast. Not an absolute lightness — that's [`ak-text-l-<value>`](#channels-and-bounds). |
+| `ak-text-<chroma>` | Sets chroma from a named preset (`ak-text-vivid`).                                                                                                                                                                                                                       |
+| `ak-text-<hue>`    | Sets hue from a named preset (`ak-text-blue`).                                                                                                                                                                                                                           |
 
 ### Adjustments
 
