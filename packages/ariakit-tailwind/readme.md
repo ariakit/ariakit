@@ -2,7 +2,7 @@
 
 > **Experimental.** This package is currently experimental. Breaking changes might be introduced in patch or minor releases.
 
-Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values — themes adapt automatically without hand-tuning.
+Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values, giving end users full freedom to customize the theme without sacrificing visual consistency. Swap any token — a brand color, a radius, a spacing scale — and every derived surface, text, border, and shadow rebalances itself automatically.
 
 Ariakit Tailwind is framework and library agnostic. It works with any frontend framework (React, Vue, Svelte, Astro, …) and any component library (Ariakit React, Radix UI, React Aria, …).
 
@@ -63,7 +63,7 @@ Ariakit Tailwind revolves around five families of utilities:
 - **[`ak-outline`](#ak-outline)** colors outlines in the same adaptive way.
 - **[`ak-frame`](#ak-frame)** handles radius, padding, margin, borders, and concentric-radius layout.
 
-All color math uses [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues.
+All color math uses [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Because every value is computed relatively, changing a single theme token ripples through every layer, text, edge, and frame that depends on it — so users can reskin the whole system without breaking contrast, depth, or shape relationships.
 
 ## Theming
 
