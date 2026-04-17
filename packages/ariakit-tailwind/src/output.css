@@ -71,43 +71,42 @@
 }
 
 @custom-variant ak-dark {
-  @container ak-layer style(--_ak-ls: oklch(1 0 0)) {
+  @container style(--_ak-ls: oklch(1 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-light {
-  @container ak-layer style(--_ak-ls: oklch(0 0 0)) {
+  @container style(--_ak-ls: oklch(0 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-dark-high {
-  @container ak-layer style(--_ak-lbd: oklch(0 0 0)) {
+  @container style(--_ak-lbd: oklch(0 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-dark-low {
-  @container ak-layer style(--_ak-lbd: oklch(0.25 0 0)) {
+  @container style(--_ak-lbd: oklch(0.25 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-light-low {
-  @container ak-layer style(--_ak-lbd: oklch(0.75 0 0)) {
+  @container style(--_ak-lbd: oklch(0.75 0 0)) {
     @slot;
   }
 }
 
 @custom-variant ak-light-high {
-  @container ak-layer style(--_ak-lbd: oklch(1 0 0)) {
+  @container style(--_ak-lbd: oklch(1 0 0)) {
     @slot;
   }
 }
 
 @utility ak-layer {
-  container-name: ak-layer;
   color: var(--ak-text);
   border-color: var(--ak-edge);
   background-color: var(--ak-layer);
@@ -216,39 +215,39 @@
 
 @utility ak-layer-contrast {
   --_ak-layer-idle-contrast-lightness: 0.25;
-  @container ak-layer style(--_ak-ll: oklch(0 0 0)) {
+  @container style(--_ak-ll: oklch(0 0 0)) {
     --_ak-lcd: 1;
     --_ak-lcpl: 0;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.125 0 0)) {
+  @container style(--_ak-ll: oklch(0.125 0 0)) {
     --_ak-lcd: 1;
     --_ak-lcpl: 0.125;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.25 0 0)) {
+  @container style(--_ak-ll: oklch(0.25 0 0)) {
     --_ak-lcd: 1;
     --_ak-lcpl: 0.25;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.375 0 0)) {
+  @container style(--_ak-ll: oklch(0.375 0 0)) {
     --_ak-lcd: 1;
     --_ak-lcpl: 0.375;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.5 0 0)) {
+  @container style(--_ak-ll: oklch(0.5 0 0)) {
     --_ak-lcd: 1;
     --_ak-lcpl: 0.5;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.625 0 0)) {
+  @container style(--_ak-ll: oklch(0.625 0 0)) {
     --_ak-lcd: 1;
     --_ak-lcpl: 0.625;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.75 0 0)) {
+  @container style(--_ak-ll: oklch(0.75 0 0)) {
     --_ak-lcd: -1;
     --_ak-lcpl: 0.75;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.875 0 0)) {
+  @container style(--_ak-ll: oklch(0.875 0 0)) {
     --_ak-lcd: -1;
     --_ak-lcpl: 0.875;
   }
-  @container ak-layer style(--_ak-ll: oklch(1 0 0)) {
+  @container style(--_ak-ll: oklch(1 0 0)) {
     --_ak-lcd: -1;
     --_ak-lcpl: 1;
   }
@@ -336,6 +335,11 @@
   --_ak-edge-h: --value(--hue-*);
   --_ak-edge-color: --value(--color-*, [color]);
   --_ak-edge-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+}
+
+@utility ak-edge-raw {
+  --_ak-edge-alpha: 1;
+  --_ak-edge-push-lightness: 0;
 }
 
 @utility ak-edge-lighten-* {
@@ -555,39 +559,39 @@
   @container style(--_ak-ll) {
     --ak-outline: oklch(from oklch(from var(--_ak-outline-color, var(--ak-layer)) var(--_ak-outline-lightness, calc(l + var(--_ak-outline-relative-lightness))) var(--_ak-outline-chroma, calc(c + var(--_ak-outline-relative-chroma))) var(--_ak-outline-hue, calc(h + var(--_ak-outline-relative-hue)))) clamp(var(--_ak-outline-lightness-min), ((max(l, (var(--_ak-opl) + ((max(0.5, var(--_ak-outline-contrast-lightness)) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.3334)) * var(--_ak-ocd)))) * clamp(0, var(--_ak-ocd), 1)) + (min(l, (var(--_ak-opl) + ((max(0.5, var(--_ak-outline-contrast-lightness)) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.3334)) * var(--_ak-ocd)))) * (1 - clamp(0, var(--_ak-ocd), 1)))), var(--_ak-outline-lightness-max)) clamp(var(--_ak-outline-chroma-min), c, var(--_ak-outline-chroma-max, var(--chroma-p3-max, 0.368))) h);
   }
-  @container ak-layer style(--_ak-ll: oklch(0 0 0)) {
+  @container style(--_ak-ll: oklch(0 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.125 0 0)) {
+  @container style(--_ak-ll: oklch(0.125 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.125;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.25 0 0)) {
+  @container style(--_ak-ll: oklch(0.25 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.25;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.375 0 0)) {
+  @container style(--_ak-ll: oklch(0.375 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.375;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.5 0 0)) {
+  @container style(--_ak-ll: oklch(0.5 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.5;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.625 0 0)) {
+  @container style(--_ak-ll: oklch(0.625 0 0)) {
     --_ak-ocd: 1;
     --_ak-opl: 0.625;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.75 0 0)) {
+  @container style(--_ak-ll: oklch(0.75 0 0)) {
     --_ak-ocd: -1;
     --_ak-opl: 0.75;
   }
-  @container ak-layer style(--_ak-ll: oklch(0.875 0 0)) {
+  @container style(--_ak-ll: oklch(0.875 0 0)) {
     --_ak-ocd: -1;
     --_ak-opl: 0.875;
   }
-  @container ak-layer style(--_ak-ll: oklch(1 0 0)) {
+  @container style(--_ak-ll: oklch(1 0 0)) {
     --_ak-ocd: -1;
     --_ak-opl: 1;
   }

@@ -36,8 +36,6 @@ const BAND_LEVEL_DARK_LOW = 0.25;
 const BAND_LEVEL_MID = 0.5;
 const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
-const LAYER_CONTAINER = "ak-layer";
-
 // Chroma-proportional minimum contrast: the base floor is low enough that
 // achromatic text (like #808080) can stay at its natural lightness on dark
 // backgrounds, while the concave chroma bonus (scale*c - damping*c²) adds
@@ -567,24 +565,18 @@ const theme = at.theme(
 
 const dark = createVariant(
   "ak-dark",
-  at.container(
-    `${LAYER_CONTAINER} ${fn.style(vars.layerScheme, "oklch(1 0 0)")}`,
-    set("@slot"),
-  ),
+  at.container(fn.style(vars.layerScheme, "oklch(1 0 0)"), set("@slot")),
 );
 
 const light = createVariant(
   "ak-light",
-  at.container(
-    `${LAYER_CONTAINER} ${fn.style(vars.layerScheme, "oklch(0 0 0)")}`,
-    set("@slot"),
-  ),
+  at.container(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
 );
 
 const darkHigh = createVariant(
   "ak-dark-high",
   at.container(
-    `${LAYER_CONTAINER} ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH }))}`,
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH })),
     set("@slot"),
   ),
 );
@@ -592,7 +584,7 @@ const darkHigh = createVariant(
 const darkLow = createVariant(
   "ak-dark-low",
   at.container(
-    `${LAYER_CONTAINER} ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_LOW }))}`,
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_LOW })),
     set("@slot"),
   ),
 );
@@ -600,7 +592,7 @@ const darkLow = createVariant(
 const lightLow = createVariant(
   "ak-light-low",
   at.container(
-    `${LAYER_CONTAINER} ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_LOW }))}`,
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_LOW })),
     set("@slot"),
   ),
 );
@@ -608,7 +600,7 @@ const lightLow = createVariant(
 const lightHigh = createVariant(
   "ak-light-high",
   at.container(
-    `${LAYER_CONTAINER} ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH }))}`,
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH })),
     set("@slot"),
   ),
 );
@@ -757,12 +749,7 @@ function mapLightnessSteps(
 function mapLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
   return mapLightnessSteps(
     (parentLightness) =>
-      `${LAYER_CONTAINER} ${fn.style(
-        vars.layerL,
-        fn.oklch({
-          l: parentLightness,
-        }),
-      )}`,
+      fn.style(vars.layerL, fn.oklch({ l: parentLightness })),
     callback,
   );
 }
@@ -1016,7 +1003,6 @@ const layerContext = createContext();
 
 utility(
   "layer",
-  set.containerName(LAYER_CONTAINER),
   set.color(vars.text),
   set.borderColor(vars.edge),
   set.backgroundColor(vars.layer),
@@ -1238,6 +1224,8 @@ utility(
   set(inputs.edgeColor, fn.value(color, "[color]")),
   set(inputs.edgeA, getPercentTokenValue("[number]")),
 );
+
+utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 
 const edgeLighten = utility(
   "edge-lighten-*",

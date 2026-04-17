@@ -304,12 +304,13 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Setting the edge color
 
-| Utility            | Description                                |
-| ------------------ | ------------------------------------------ |
-| `ak-edge-<number>` | Sets edge alpha (`0`–`100`, default `10`). |
-| `ak-edge-<color>`  | Applies a specific edge color.             |
-| `ak-edge-<chroma>` | Sets chroma from a named preset.           |
-| `ak-edge-<hue>`    | Sets hue from a named preset.              |
+| Utility            | Description                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| `ak-edge-<number>` | Sets edge alpha (`0`–`100`, default `10`).                                               |
+| `ak-edge-<color>`  | Applies a specific edge color.                                                           |
+| `ak-edge-<chroma>` | Sets chroma from a named preset.                                                         |
+| `ak-edge-<hue>`    | Sets hue from a named preset.                                                            |
+| `ak-edge-raw`      | Applies the color exactly as specified — shorthand for `ak-edge-100` + `ak-edge-push-0`. |
 
 ### Adjustments
 
