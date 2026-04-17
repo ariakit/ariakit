@@ -284,11 +284,11 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 | `ak-text-max-c-<value>` | Caps chroma specifically.                                           |
 | `ak-text-min-c-<value>` | Floors chroma specifically.                                         |
 
-### Overrides
+### Shorthands
 
-| Utility         | Description                                                                                                                                                                 |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-text-layer` | Resets the text base color back to the current `--ak-layer`. Useful for undoing a prior `ak-text-<color>` override so the contrast pipeline recomputes against the surface. |
+| Utility         | Description                                                                                               |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| `ak-text-layer` | Convenience shorthand equivalent to `ak-text-(color:--ak-layer)` — uses the layer color as the text base. |
 
 ## `ak-edge`
 
