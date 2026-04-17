@@ -54,8 +54,6 @@ function countItems(items?: number | readonly Item[]): number[] {
   return items.reduce<number[]>((count, item, index) => {
     const object = getItemObject(item);
     if (!object.items) {
-    }
-    if (!object.items) {
       count[index] = index + 1;
       return count;
     }
