@@ -115,7 +115,7 @@
   @apply ring-[color:var(--ak-edge)];
   --ak-layer: oklch(from var(--_ak-lp) var(--_ak-sl) clamp(var(--_ak-layer-chroma-min), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
   --ak-text: oklch(from var(--ak-layer) var(--_ak-tcl) 0 0 / max((((var(--_ak-lil) * ((53.6 + ((1 - l) * 85)) / 100)) + (var(--_ak-dal) * ((45.7 + ((l * l) * 145)) / 100))) + (c * 0.135) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.6668)), var(--_ak-text-alpha)));
-  --ak-edge: oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-edge-contrast-lightness) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.3334)) * var(--_ak-ecd, -1))), 1) c h) var(--_ak-edge-lightness, calc(max(l, min(0.13, var(--_ak-edge-relative-lightness))) + var(--_ak-edge-relative-lightness))) var(--_ak-edge-chroma, calc(c + var(--_ak-edge-relative-chroma))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue)))) l c h / clamp(0, (var(--_ak-edge-alpha) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.3334)), 1));
+  --ak-edge: oklch(from oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-edge-push-lightness) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.3334)) * var(--_ak-epd, -1))), 1) c h) clamp(var(--_ak-edge-lightness-min), var(--_ak-edge-lightness, (max(l, min(0.13, var(--_ak-edge-relative-lightness))) + var(--_ak-edge-relative-lightness))), var(--_ak-edge-lightness-max)) clamp(var(--_ak-edge-chroma-min), var(--_ak-edge-chroma, (c + var(--_ak-edge-relative-chroma))), var(--_ak-edge-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue)))) l c h / clamp(0, (var(--_ak-edge-alpha) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.3334)), 1));
   --_ak-lbd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
   --_ak-ls: oklch(from var(--ak-layer) var(--_ak-tcl) 0 0);
   --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
@@ -139,10 +139,10 @@
   --_ak-la: oklch(from var(--_ak-lb) calc(max(l, min(0.13, var(--_ak-lad))) + var(--_ak-lad)) c h);
   --_ak-lp: oklch(from var(--_ak-la) clamp(0, ((max(l, min(0.13, (var(--_ak-lpv) * var(--_ak-ald)))) + (var(--_ak-lpv) * var(--_ak-ald))) + (var(--_ak-ald) * (var(--_ak-flb) - var(--_ak-fla)) * max(((clamp(0, ((var(--_ak-fla) - l) * 1000000), 1) * clamp(0, (((max(l, min(0.13, (var(--_ak-lpv) * var(--_ak-ald)))) + (var(--_ak-lpv) * var(--_ak-ald))) - var(--_ak-fla)) * 1000000), 1)) + (clamp(0, ((l - var(--_ak-flb)) * 1000000), 1) * clamp(0, ((var(--_ak-flb) - (max(l, min(0.13, (var(--_ak-lpv) * var(--_ak-ald)))) + (var(--_ak-lpv) * var(--_ak-ald)))) * 1000000), 1))), (clamp(0, (min(((max(l, min(0.13, (var(--_ak-lpv) * var(--_ak-ald)))) + (var(--_ak-lpv) * var(--_ak-ald))) - var(--_ak-fla)), (var(--_ak-flb) - (max(l, min(0.13, (var(--_ak-lpv) * var(--_ak-ald)))) + (var(--_ak-lpv) * var(--_ak-ald))))) * 1000000), 1) * clamp(0, (var(--_ak-lpv) * 1000000), 1))))), 1) c h);
   @variant ak-light {
-    --_ak-ecd: -1;
+    --_ak-epd: -1;
   }
   @variant ak-dark {
-    --_ak-ecd: 1;
+    --_ak-epd: 1;
   }
   @container style(--_context-0: even) {
     --_context-0: odd;
@@ -355,8 +355,8 @@
   --_ak-edge-h: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
 }
 
-@utility ak-edge-contrast-* {
-  --_ak-edge-contrast-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+@utility ak-edge-push-* {
+  --_ak-edge-push-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
 @utility ak-edge-saturate-* {
@@ -385,6 +385,30 @@
 @utility ak-edge-h-* {
   --_ak-edge-h: --value(--hue-*, [*]);
   --_ak-edge-h: --value(number, [number], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
+}
+
+@utility ak-edge-max-* {
+  --_ak-edge-chroma-max: --value(--chroma-*);
+  --_ak-edge-lightness-max: --value([*]);
+  --_ak-edge-lightness-max: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+}
+
+@utility ak-edge-min-* {
+  --_ak-edge-chroma-min: --value(--chroma-*);
+  --_ak-edge-lightness-min: --value([*]);
+  --_ak-edge-lightness-min: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+}
+
+@utility ak-edge-max-c-* {
+  --_ak-edge-chroma-max: --value([*]);
+  --_ak-edge-chroma-max: --value(--chroma-*);
+  --_ak-edge-chroma-max: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+}
+
+@utility ak-edge-min-c-* {
+  --_ak-edge-chroma-min: --value([*]);
+  --_ak-edge-chroma-min: --value(--chroma-*);
+  --_ak-edge-chroma-min: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
 }
 
 @utility ak-text {
@@ -480,6 +504,10 @@
 
 @utility ak-text-desaturate-* {
   --_ak-text-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+}
+
+@utility ak-text-h-rotate-* {
+  --_ak-text-relative-hue: --value(number, [*], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
 }
 
 @utility ak-text-l-* {
@@ -1215,10 +1243,33 @@
   initial-value: 0;
 }
 
-@property --_ak-edge-contrast-lightness {
+@property --_ak-edge-push-lightness {
   syntax: "*";
   inherits: false;
   initial-value: 1;
+}
+
+@property --_ak-edge-lightness-min {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-edge-lightness-max {
+  syntax: "*";
+  inherits: false;
+  initial-value: 1;
+}
+
+@property --_ak-edge-chroma-min {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --_ak-edge-chroma-max {
+  syntax: "*";
+  inherits: false;
 }
 
 @property --_ak-edge-lightness {

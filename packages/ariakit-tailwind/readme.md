@@ -274,15 +274,16 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Channels and bounds
 
-| Utility                 | Description                                                         |
-| ----------------------- | ------------------------------------------------------------------- |
-| `ak-text-l-<value>`     | Absolute lightness (percentage, `[value]`, or raw OKLCH lightness). |
-| `ak-text-c-<value>`     | Absolute chroma (percentage, named preset, or `[value]`).           |
-| `ak-text-h-<value>`     | Absolute hue (named, degrees, or `[value]`).                        |
-| `ak-text-max-<value>`   | Caps lightness, or caps chroma when given a named chroma preset.    |
-| `ak-text-min-<value>`   | Floors lightness or chroma, same form.                              |
-| `ak-text-max-c-<value>` | Caps chroma specifically.                                           |
-| `ak-text-min-c-<value>` | Floors chroma specifically.                                         |
+| Utility                     | Description                                                         |
+| --------------------------- | ------------------------------------------------------------------- |
+| `ak-text-l-<value>`         | Absolute lightness (percentage, `[value]`, or raw OKLCH lightness). |
+| `ak-text-c-<value>`         | Absolute chroma (percentage, named preset, or `[value]`).           |
+| `ak-text-h-<value>`         | Absolute hue (named, degrees, or `[value]`).                        |
+| `ak-text-h-rotate-<number>` | Rotates hue by degrees.                                             |
+| `ak-text-max-<value>`       | Caps lightness, or caps chroma when given a named chroma preset.    |
+| `ak-text-min-<value>`       | Floors lightness or chroma, same form.                              |
+| `ak-text-max-c-<value>`     | Caps chroma specifically.                                           |
+| `ak-text-min-c-<value>`     | Floors chroma specifically.                                         |
 
 ### Shorthands
 
@@ -312,24 +313,28 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Adjustments
 
-| Utility                       | Description                                                              |
-| ----------------------------- | ------------------------------------------------------------------------ |
-| `ak-edge-lighten-<number>`    | Lightens the edge.                                                       |
-| `ak-edge-darken-<number>`     | Darkens the edge.                                                        |
-| `ak-edge-saturate-<number>`   | Increases chroma.                                                        |
-| `ak-edge-desaturate-<number>` | Decreases chroma.                                                        |
-| `ak-edge-warm-<number>`       | Shifts hue toward `--hue-warm`.                                          |
-| `ak-edge-cool-<number>`       | Shifts hue toward `--hue-cool`.                                          |
-| `ak-edge-contrast-<number>`   | Adjusts edge lightness for contrast. Independent of `ak-layer-contrast`. |
+| Utility                       | Description                                             |
+| ----------------------------- | ------------------------------------------------------- |
+| `ak-edge-lighten-<number>`    | Lightens the edge.                                      |
+| `ak-edge-darken-<number>`     | Darkens the edge.                                       |
+| `ak-edge-saturate-<number>`   | Increases chroma.                                       |
+| `ak-edge-desaturate-<number>` | Decreases chroma.                                       |
+| `ak-edge-warm-<number>`       | Shifts hue toward `--hue-warm`.                         |
+| `ak-edge-cool-<number>`       | Shifts hue toward `--hue-cool`.                         |
+| `ak-edge-push-<number>`       | Pushes edge lightness away from the layer for contrast. |
 
-### Channels
+### Channels and bounds
 
-| Utility                     | Description             |
-| --------------------------- | ----------------------- |
-| `ak-edge-l-<value>`         | Absolute lightness.     |
-| `ak-edge-c-<value>`         | Absolute chroma.        |
-| `ak-edge-h-<value>`         | Absolute hue.           |
-| `ak-edge-h-rotate-<number>` | Rotates hue by degrees. |
+| Utility                     | Description                 |
+| --------------------------- | --------------------------- |
+| `ak-edge-l-<value>`         | Absolute lightness.         |
+| `ak-edge-c-<value>`         | Absolute chroma.            |
+| `ak-edge-h-<value>`         | Absolute hue.               |
+| `ak-edge-h-rotate-<number>` | Rotates hue by degrees.     |
+| `ak-edge-max-<value>`       | Caps lightness or chroma.   |
+| `ak-edge-min-<value>`       | Floors lightness or chroma. |
+| `ak-edge-max-c-<value>`     | Caps chroma specifically.   |
+| `ak-edge-min-c-<value>`     | Floors chroma specifically. |
 
 ## `ak-outline`
 

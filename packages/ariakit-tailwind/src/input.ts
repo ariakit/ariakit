@@ -369,7 +369,7 @@ const layerMathVars = {
   layerIdlePushValue: _ak.var("lipv"),
   layerPushValue: _ak.var("lpv"),
   layerIdleContrastValue: _ak.var("licv"),
-  edgeContrastDirection: _ak.var("ecd", -1),
+  edgePushDirection: _ak.var("epd", -1),
 };
 
 // Theme-level tokens consumed by --value(--chroma-*) and --value(--hue-*).
@@ -482,7 +482,11 @@ const inputs = {
   edgeRelativeL: _ak.prop("edge-relative-lightness", { initial: 0 }),
   edgeRelativeC: _ak.prop("edge-relative-chroma", { initial: 0 }),
   edgeRelativeH: _ak.prop("edge-relative-hue", { initial: 0 }),
-  edgeContrastL: _ak.prop("edge-contrast-lightness", { initial: 1 }),
+  edgePushL: _ak.prop("edge-push-lightness", { initial: 1 }),
+  edgeLMin: _ak.prop("edge-lightness-min", { initial: 0 }),
+  edgeLMax: _ak.prop("edge-lightness-max", { initial: 1 }),
+  edgeCMin: _ak.prop("edge-chroma-min", { initial: 0 }),
+  edgeCMax: _ak.prop("edge-chroma-max", vars.chromaP3Max),
   edgeL: _ak.prop("edge-lightness"),
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
@@ -937,21 +941,29 @@ const layerColorDeclarations = [
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
 const edgeContrastT = fn.var(vars.contrastT, globalContrastT);
 // Borders get a small extra push from the global contrast preference so they
-// stay perceptible even when the user does not specify an edge contrast value.
+// stay perceptible even when the user does not specify an edge push value.
 const edgeDirectionalDelta = fn.add(
-  inputs.edgeContrastL,
+  inputs.edgePushL,
   fn.mul(edgeContrastT, CONTRAST_SCALE),
 );
 const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
-  vars.edgeContrastDirection,
+  vars.edgePushDirection,
 );
 const edgeDirectional = fn.oklch(edgeBaseColor, {
   l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
 });
 const edgeRelative = fn.oklch(edgeDirectional, {
-  l: getLayerL(inputs.edgeRelativeL, inputs.edgeL),
-  c: getLayerC(inputs.edgeRelativeC, inputs.edgeC),
+  l: fn.clamp(
+    inputs.edgeLMin,
+    getLayerL(inputs.edgeRelativeL, inputs.edgeL),
+    inputs.edgeLMax,
+  ),
+  c: fn.clamp(
+    inputs.edgeCMin,
+    getLayerC(inputs.edgeRelativeC, inputs.edgeC),
+    inputs.edgeCMax,
+  ),
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
 });
 const edge = fn.oklch(edgeRelative, {
@@ -1018,8 +1030,8 @@ utility(
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
-  at.variant(light, set(vars.edgeContrastDirection, -1)),
-  at.variant(dark, set(vars.edgeContrastDirection, 1)),
+  at.variant(light, set(vars.edgePushDirection, -1)),
+  at.variant(dark, set(vars.edgePushDirection, 1)),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
@@ -1244,10 +1256,7 @@ utility(
   set(inputs.edgeH, getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]"))),
 );
 
-utility(
-  "edge-contrast-*",
-  set(inputs.edgeContrastL, getPercentTokenValue("[*]")),
-);
+utility("edge-push-*", set(inputs.edgePushL, getPercentTokenValue("[*]")));
 
 const edgeSaturate = utility(
   "edge-saturate-*",
@@ -1277,6 +1286,34 @@ utility(
   "edge-h-*",
   set(inputs.edgeH, fn.value(hue, "[*]")),
   set(inputs.edgeH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
+);
+
+utility(
+  "edge-max-*",
+  set(inputs.edgeCMax, fn.value(chroma)),
+  set(inputs.edgeLMax, fn.value("[*]")),
+  set(inputs.edgeLMax, getPercentTokenValue("[number]")),
+);
+
+utility(
+  "edge-min-*",
+  set(inputs.edgeCMin, fn.value(chroma)),
+  set(inputs.edgeLMin, fn.value("[*]")),
+  set(inputs.edgeLMin, getPercentTokenValue("[number]")),
+);
+
+utility(
+  "edge-max-c-*",
+  set(inputs.edgeCMax, fn.value("[*]")),
+  set(inputs.edgeCMax, fn.value(chroma)),
+  set(inputs.edgeCMax, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+);
+
+utility(
+  "edge-min-c-*",
+  set(inputs.edgeCMin, fn.value("[*]")),
+  set(inputs.edgeCMin, fn.value(chroma)),
+  set(inputs.edgeCMin, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
 );
 
 const textBaseColor = fn.var(inputs.textColor, vars.layer);
@@ -1399,6 +1436,11 @@ const textSaturate = utility(
   set(inputs.textRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 utility("text-desaturate-*", getNegatedDeclarations(textSaturate));
+
+utility(
+  "text-h-rotate-*",
+  set(inputs.textRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
+);
 
 utility(
   "text-l-*",

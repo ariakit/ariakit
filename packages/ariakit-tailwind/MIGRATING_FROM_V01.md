@@ -238,13 +238,13 @@ Custom color text now uses the `color:` prefix.
 + ak-edge-(color:--my-color) ak-edge-10
 ```
 
-### `ak-edge-contrast-primary` → `ak-edge-primary ak-edge-100 ak-edge-contrast-0`
+### `ak-edge-contrast-primary` → `ak-edge-primary ak-edge-100 ak-edge-push-0`
 
-In v0.1, `ak-edge-contrast-<color>` set the edge to a solid color with lightness adjusted for contrast against the layer background. In v0.2, this is decomposed: `ak-edge-<color>` sets the color, `ak-edge-N` controls alpha (100 = fully opaque, matching the old solid behavior), and `ak-edge-contrast-N` controls lightness contrast (0 = use the color's natural lightness).
+In v0.1, `ak-edge-contrast-<color>` set the edge to a solid color with lightness adjusted for contrast against the layer background. In v0.2, this is decomposed: `ak-edge-<color>` sets the color, `ak-edge-N` controls alpha (100 = fully opaque, matching the old solid behavior), and `ak-edge-push-N` controls how far the edge lightness is pushed away from the layer (0 = use the color's natural lightness).
 
 ```diff
 - ak-edge-contrast-primary
-+ ak-edge-primary ak-edge-100 ak-edge-contrast-0
++ ak-edge-primary ak-edge-100 ak-edge-push-0
 ```
 
 ### CSS variable renames (color)

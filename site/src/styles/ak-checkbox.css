@@ -92,7 +92,7 @@
   --ak-checkbox-checked: 1;
   @variant not-has-disabled {
     @variant not-has-aria-disabled {
-      @apply ak-edge-primary ak-edge-100 ak-edge-contrast-0;
+      @apply ak-edge-primary ak-edge-100 ak-edge-push-0;
     }
   }
 }

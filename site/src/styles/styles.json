@@ -1404,7 +1404,7 @@
                   "name": "@variant not-has-aria-disabled",
                   "value": [
                     {
-                      "name": "@apply ak-edge-primary ak-edge-100 ak-edge-contrast-0",
+                      "name": "@apply ak-edge-primary ak-edge-100 ak-edge-push-0",
                       "value": {}
                     }
                   ]
@@ -1425,7 +1425,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-edge-contrast-0",
+              "name": "ak-edge-push-0",
               "import": "@ariakit/tailwind"
             }
           ]
