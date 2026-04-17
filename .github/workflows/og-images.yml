@@ -63,10 +63,13 @@ jobs:
 
       - name: Detect changes
         id: patch
-        # `commit-or-pr` handles the actual write path. This only decides
-        # whether the generator produced any file changes worth publishing.
+        # Scope the diff check to the generator's output directory. Other tree
+        # changes from earlier steps (e.g., `pnpm install` rewriting
+        # `pnpm-lock.yaml` to re-add pnpm's self-managed
+        # `packageManagerDependencies` section) must not trigger an OG image
+        # commit.
         run: |
-          git add -A
+          git add -- site/public/og-image
           if git diff --cached --quiet --exit-code; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             exit 0
@@ -85,4 +88,5 @@ jobs:
           message: Update OG images
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-og-images
+          paths: site/public/og-image
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
