@@ -43,7 +43,7 @@
 }
 
 @utility ak-segmented-button_idle {
-  @apply ak-button_idle ak-layer-text-70;
+  @apply ak-button_idle ak-ink-70;
   @apply z-1 font-medium transition-colors;
   padding-block: calc(var(--ak-button-padding-block) * 0.75);
   input[type="radio"] {
@@ -55,7 +55,7 @@
 }
 
 @utility ak-segmented-button_selected {
-  @apply ak-layer-text-100;
+  @apply ak-ink-100;
   &::before,
   & + *::before {
     @apply opacity-0 delay-0;

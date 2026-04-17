@@ -1394,7 +1394,7 @@ utility(
 );
 
 utility(
-  "layer-text-*",
+  "ink-*",
   set(inputs.textA, getPercentTokenValue("[number]")),
   set(vars.text, text),
   set.color(vars.text),

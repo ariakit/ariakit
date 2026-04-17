@@ -23,7 +23,7 @@
 }
 
 @utility ak-strong {
-  @apply ak-layer-text-100 font-medium;
+  @apply ak-ink-100 font-medium;
 }
 
 @utility ak-prose-leading-* {
@@ -51,7 +51,7 @@
 }
 
 @utility ak-prose-text {
-  @apply ak-dark:ak-layer-text-75 ak-light:ak-layer-text-90;
+  @apply ak-dark:ak-ink-75 ak-light:ak-ink-90;
 }
 
 @utility ak-prose {

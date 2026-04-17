@@ -98,7 +98,7 @@ const signedIn = isSignedIn(Astro);
                     <li
                       class:list={[
                         "relative flex items-center gap-2",
-                        !step.isActive && !step.isDone && "ak-layer-text-80",
+                        !step.isActive && !step.isDone && "ak-ink-80",
                       ]}
                     >
                       <div
@@ -131,22 +131,22 @@ const signedIn = isSignedIn(Astro);
       >
         <ul class="flex flex-wrap gap-4 items-center">
           <li>
-            <InlineLink href="/plus/license/" className="ak-layer-text-60">
+            <InlineLink href="/plus/license/" className="ak-ink-60">
               License agreement
             </InlineLink>
           </li>
           <li>
-            <InlineLink href="/privacy/" className="ak-layer-text-60">
+            <InlineLink href="/privacy/" className="ak-ink-60">
               Privacy policy
             </InlineLink>
           </li>
           <li>
-            <InlineLink href="/terms/" className="ak-layer-text-60">
+            <InlineLink href="/terms/" className="ak-ink-60">
               Terms of service
             </InlineLink>
           </li>
           <li>
-            <InlineLink href="/plus/#faq" className="ak-layer-text-60">
+            <InlineLink href="/plus/#faq" className="ak-ink-60">
               FAQ
             </InlineLink>
           </li>
@@ -162,7 +162,7 @@ const signedIn = isSignedIn(Astro);
                 >
                   <button
                     type="button"
-                    class="ak-link [&&]:ak-layer-text-60 ak-button hover:no-underline"
+                    class="ak-link [&&]:ak-ink-60 ak-button hover:no-underline"
                   >
                     Sign out
                   </button>

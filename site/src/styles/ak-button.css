@@ -30,7 +30,7 @@
 }
 
 @utility ak-button_disabled {
-  @apply ak-layer ak-layer-text-50 ak-layer-mix-20;
+  @apply ak-layer ak-ink-50 ak-layer-mix-20;
   @apply inset-shadow-none bg-none shadow-none;
 }
 

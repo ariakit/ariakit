@@ -301,7 +301,7 @@ test("tokenizes ak- classes inside nested clsx in object props", () => {
 import * as ak from "@ariakit/react";
 const completed = false;
 export function X(){return (
-  <ak.Disclosure button={{ className: clsx(completed && "not-data-open:ak-layer-text-0") }} />
+  <ak.Disclosure button={{ className: clsx(completed && "not-data-open:ak-ink-0") }} />
 )}
 `;
   const perLine = findCodeReferenceAnchors({
@@ -320,7 +320,7 @@ export function X(){return (
       {
         "kind": "prop",
         "line": 4,
-        "text": "ak-layer-text-0",
+        "text": "ak-ink-0",
       },
     ]
   `);
@@ -332,7 +332,7 @@ import * as rac from "react-aria-components";
 export function X(){return (
   <rac.Disclosure
     render
-    className={clsx("ak-disclosure", true && "not-data-open:ak-layer-text-0")}
+    className={clsx("ak-disclosure", true && "not-data-open:ak-ink-0")}
   />
 )}
 `;
@@ -352,7 +352,7 @@ export function X(){return (
       {
         "kind": "prop",
         "line": 5,
-        "text": "ak-layer-text-0",
+        "text": "ak-ink-0",
       },
     ]
   `);

@@ -145,7 +145,7 @@
 }
 
 @utility ak-table-column-header {
-  @apply ak-layer-text-70 text-start font-semibold;
+  @apply ak-ink-70 text-start font-semibold;
 }
 
 @utility ak-table-cell {

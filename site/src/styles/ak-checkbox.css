@@ -80,7 +80,7 @@
 @utility ak-checkbox-card_disabled {
   --ak-checkbox-disabled: 1;
   && {
-    @apply ak-edge-5 ak-layer-mix-80 ak-layer-text-0;
+    @apply ak-edge-5 ak-layer-mix-80 ak-ink-0;
   }
   svg,
   img {
@@ -143,7 +143,7 @@
 }
 
 @utility ak-checkbox-card-check_disabled {
-  @apply ak-layer ak-layer-(color:--ak-layer-parent) ak-layer-darken-0 ak-layer-text-0 ak-edge-10;
+  @apply ak-layer ak-layer-(color:--ak-layer-parent) ak-layer-darken-0 ak-ink-0 ak-edge-10;
 }
 
 @utility ak-checkbox-card-check {
@@ -166,10 +166,10 @@
 }
 
 @utility ak-checkbox-card-description {
-  @apply ak-layer-text-70;
+  @apply ak-ink-70;
   @apply w-full self-start font-normal;
   @variant ak-checkbox-disabled {
-    @apply ak-layer-text-0;
+    @apply ak-ink-0;
   }
 }
 

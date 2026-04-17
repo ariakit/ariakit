@@ -150,7 +150,7 @@ export const npm: Icon = {
 export const pnpm: Icon = {
   size: 32,
   stroke: "none",
-  html: `<g><path class="ak-text ak-text-[#f9ad00] fill-current" d="M30 10.75h-8.749V2H30Zm-9.626 0h-8.75V2h8.75Zm-9.625 0H2V2h8.749ZM30 20.375h-8.749v-8.75H30Z"/><path class="ak-layer-text-50 fill-current" d="M20.374 20.375h-8.75v-8.75h8.75Zm0 9.625h-8.75v-8.75h8.75ZM30 30h-8.749v-8.75H30Zm-19.251 0H2v-8.75h8.749Z"/></g>`,
+  html: `<g><path class="ak-text ak-text-[#f9ad00] fill-current" d="M30 10.75h-8.749V2H30Zm-9.626 0h-8.75V2h8.75Zm-9.625 0H2V2h8.749ZM30 20.375h-8.749v-8.75H30Z"/><path class="ak-ink-50 fill-current" d="M20.374 20.375h-8.75v-8.75h8.75Zm0 9.625h-8.75v-8.75h8.75ZM30 30h-8.749v-8.75H30Zm-19.251 0H2v-8.75h8.749Z"/></g>`,
 };
 
 export const yarn: Icon = {

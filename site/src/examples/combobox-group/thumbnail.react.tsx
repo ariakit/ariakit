@@ -7,16 +7,14 @@ export default function Thumbnail() {
         <PlaceholderText>e.g., John Doe</PlaceholderText>
       </div>
       <div className="ak-popover_idle ak-frame ak-frame-force ak-frame-container/container w-66 max-w-full">
-        <div className="ak-frame ak-frame-container/2 text-sm ak-layer-text-60 font-medium">
+        <div className="ak-frame ak-frame-container/2 text-sm ak-ink-60 font-medium">
           Members
         </div>
         <div className="base:ak-option_idle ak-option_hover grid gap-2 grid-cols-[2rem_auto] items-center">
           <div className="ak-layer ak-layer-primary ak-layer-contrast rounded-full aspect-square" />
           <div className="grid">
-            <div className="ak-layer-text-90 text-sm font-medium">
-              John Smith
-            </div>
-            <div className="ak-layer-text-60 text-xs">john@example.com</div>
+            <div className="ak-ink-90 text-sm font-medium">John Smith</div>
+            <div className="ak-ink-60 text-xs">john@example.com</div>
           </div>
         </div>
         <div className="base:ak-option_idle grid gap-2 grid-cols-[2rem_auto] items-center">
@@ -28,7 +26,7 @@ export default function Thumbnail() {
             </PlaceholderText>
           </div>
         </div>
-        <div className="ak-frame ak-frame-container/2 text-sm ak-layer-text-60 font-medium">
+        <div className="ak-frame ak-frame-container/2 text-sm ak-ink-60 font-medium">
           Files
         </div>
         <div className="base:ak-option_idle grid gap-2 grid-cols-[2rem_auto] items-center">

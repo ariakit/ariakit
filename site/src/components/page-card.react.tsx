@@ -77,7 +77,7 @@ export function PageCard({
           </span>
         </span>
         {description ? (
-          <span id={descriptionId} className="ak-layer-text-70 text-sm">
+          <span id={descriptionId} className="ak-ink-70 text-sm">
             {description}
           </span>
         ) : null}

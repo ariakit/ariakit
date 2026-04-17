@@ -87,7 +87,7 @@ export default function Example() {
             const progress = checked / length;
             const completed = progress === 1;
             const buttonClassName = completed
-              ? "not-data-open:ak-layer-text-0 not-data-open:line-through not-data-open:font-normal"
+              ? "not-data-open:ak-ink-0 not-data-open:line-through not-data-open:font-normal"
               : "";
             return (
               <li key={task.title}>

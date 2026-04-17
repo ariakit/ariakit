@@ -5,7 +5,7 @@ This guide covers all breaking changes for users of the `@ariakit/tailwind` plug
 ## General principles
 
 1. **Explicit base classes.** Utilities like `ak-layer`, `ak-frame`, `ak-text`, and `ak-outline` must now appear as base classes before their modifiers.
-2. **Slash to hyphen.** Opacity/value syntax changes from `/N` to `-N`. Text opacity moves from `ak-text/80` to `ak-layer-text-80`.
+2. **Slash to hyphen.** Opacity/value syntax changes from `/N` to `-N`. Text opacity moves from `ak-text/80` to `ak-ink-80`.
 3. **`color:` prefix for custom properties.** Custom CSS variable colors now use `(color:--var)` instead of `(--var)`.
 4. **Unified `--ak-edge`.** The CSS variables `--ak-layer-border`, `--ak-border`, `--ak-ring`, and `--ak-layer-ring` are all replaced by `--ak-edge`.
 
@@ -167,28 +167,28 @@ Note: `ak-layer-mix-<color>` (with a color directly on the mix utility) is a **n
 
 ## Text
 
-### `ak-text/N` → `ak-layer-text-N`
+### `ak-text/N` → `ak-ink-N`
 
-Text opacity is now `ak-layer-text-N`. It is self-contained and does not require `ak-layer` on the same element.
+Text opacity is now `ak-ink-N`. It is self-contained and does not require `ak-layer` on the same element.
 
 ```diff
 - ak-text/80
-+ ak-layer-text-80
++ ak-ink-80
 ```
 
 Note: the bare `ak-text-N` utility still exists but now only controls **contrast lightness** for the directional `ak-text` text color system (see below). It no longer sets text alpha.
 
-### Bare `ak-text` for opacity reset → `ak-layer-text-100`
+### Bare `ak-text` for opacity reset → `ak-ink-100`
 
-In v0.1, bare `ak-text` was sometimes used to reset text opacity inherited from a parent's `ak-text/N`. In v0.2, text opacity is controlled by `ak-layer-text-N`. Resetting it to full opacity uses `ak-layer-text-100`.
+In v0.1, bare `ak-text` was sometimes used to reset text opacity inherited from a parent's `ak-text/N`. In v0.2, text opacity is controlled by `ak-ink-N`. Resetting it to full opacity uses `ak-ink-100`.
 
 ```diff
 - ak-text
-+ ak-layer-text-100
++ ak-ink-100
 
   <!-- Conditional reset -->
 - data-active:ak-text
-+ data-active:ak-layer-text-100
++ data-active:ak-ink-100
 ```
 
 ### `ak-text-COLOR/N` → `ak-text ak-text-COLOR`

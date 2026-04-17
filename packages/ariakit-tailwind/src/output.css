@@ -475,7 +475,7 @@
   --_ak-text-contrast-lightness: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
-@utility ak-layer-text-* {
+@utility ak-ink-* {
   --_ak-text-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --ak-text: oklch(from var(--ak-layer) var(--_ak-tcl) 0 0 / max((((var(--_ak-lil) * ((53.6 + ((1 - l) * 85)) / 100)) + (var(--_ak-dal) * ((45.7 + ((l * l) * 145)) / 100))) + (c * 0.135) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.6668)), var(--_ak-text-alpha)));
   color: var(--ak-text);

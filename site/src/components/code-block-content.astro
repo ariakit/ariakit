@@ -126,7 +126,7 @@ let diffInfo: DiffInfo | null = null;
 
 // Reusable UI class constants (template-only consumers)
 const REMOVED_TOKEN_CLASS =
-  "ak-layer ak-layer-red-500 ak-layer-mix-30 ak-edge-red-500 ak-edge-20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-layer-text-0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
+  "ak-layer ak-layer-red-500 ak-layer-mix-30 ak-edge-red-500 ak-edge-20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-ink-0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
 const HIGHLIGHT_CHIP_CLASS = "ring rounded px-[0.25em] py-0.5";
 const HIGHLIGHT_ADDED_CHIP_CLASS =
   "ak-layer ak-layer-green-500 ak-layer-mix-30 ak-edge-green-500 ak-edge-20 ring mx-[0.1em] rounded px-[0.25em] py-0.5";
@@ -761,7 +761,7 @@ function getFragmentPieces(
             isHighlighted(lineInfo.i) || isAdded || isRemoved;
           const lineClass = {
             "ak-layer ak-layer-green-500 ak-layer-mix-25": isAdded,
-            "ak-layer ak-layer-red-500 ak-layer-mix-25 ak-layer-text-0":
+            "ak-layer ak-layer-red-500 ak-layer-mix-25 ak-ink-0":
               lineInfo.type === "removed",
           };
 

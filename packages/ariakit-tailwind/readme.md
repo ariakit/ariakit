@@ -12,7 +12,7 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 - [How it works](#how-it-works)
 - [Theming](#theming)
 - [`ak-layer`](#ak-layer) — background, text, border colors for a surface
-- [`ak-layer-text`](#ak-layer-text) — text opacity inside a layer
+- [`ak-ink`](#ak-ink) — text opacity inside a layer
 - [`ak-text`](#ak-text) — colored text with automatic contrast
 - [`ak-edge`](#ak-edge) — border and ring colors
 - [`ak-outline`](#ak-outline) — outline colors
@@ -58,7 +58,7 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 Ariakit Tailwind revolves around a few families of utilities:
 
 - **[`ak-layer`](#ak-layer)** turns any element into a _layer_ — a surface with its own background, text, border, and shadow colors. Layers nest, and each nested layer shifts in lightness relative to its parent so stacked surfaces read correctly in both light and dark modes.
-- **[`ak-layer-text`](#ak-layer-text)** sets the text opacity for the layer's own text. Safe to apply on the same element as `ak-layer` or on a descendant.
+- **[`ak-ink`](#ak-ink)** sets the text opacity for the layer's own text. Safe to apply on the same element as `ak-layer` or on a descendant.
 - **[`ak-text`](#ak-text)** colors inline text _inside_ a layer with automatic WCAG contrast. Must go on a descendant, not on the `ak-layer` element itself.
 - **[`ak-edge`](#ak-edge)** colors borders and rings, adapting opacity and contrast to the layer behind them.
 - **[`ak-outline`](#ak-outline)** colors outlines in the same adaptive way.
@@ -223,26 +223,26 @@ Combine freely — `ak-layer ak-layer-primary ak-layer-mix ak-layer-mix-30 ak-la
 | `ak-state-push-<number>`       | Minimum lightness shift in state context.                                             |
 | `ak-state-h-rotate-<number>`   | Rotates hue in state context.                                                         |
 
-## `ak-layer-text`
+## `ak-ink`
 
 Controls the opacity of text inside a layer — useful for secondary text, captions, and disabled states. It only sets text color, so it works either on the same element as [`ak-layer`](#ak-layer) (styling the layer's own text) or on a descendant element.
 
 ```html
-<div class="ak-layer ak-layer-canvas ak-layer-text-70">
+<div class="ak-layer ak-layer-canvas ak-ink-70">
   Layer with its own text at 70% opacity
-  <p class="ak-layer-text-0">Nested text at minimum readable opacity</p>
+  <p class="ak-ink-0">Nested text at minimum readable opacity</p>
 </div>
 ```
 
-| Utility                  | Description                                                                                                                                                          |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-text-<number>` | Sets text opacity as an **absolute** alpha value (`0`–`100`). `0` clamps to the minimum alpha that still meets WCAG AA for the current layer; `100` is fully opaque. |
+| Utility           | Description                                                                                                                                                          |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-ink-<number>` | Sets text opacity as an **absolute** alpha value (`0`–`100`). `0` clamps to the minimum alpha that still meets WCAG AA for the current layer; `100` is fully opaque. |
 
 ## `ak-text`
 
 `ak-text` colors inline text with automatic contrast against the parent layer.
 
-> **Apply `ak-text` to a descendant, not to the layer element itself.** It forces `background-color: transparent` to let the layer show through, which would erase the surface if placed on the `ak-layer` element. For styling the layer's own text color, use [`ak-layer-text`](#ak-layer-text) instead.
+> **Apply `ak-text` to a descendant, not to the layer element itself.** It forces `background-color: transparent` to let the layer show through, which would erase the surface if placed on the `ak-layer` element. For styling the layer's own text color, use [`ak-ink`](#ak-ink) instead.
 
 ```html
 <div class="ak-layer ak-layer-canvas">

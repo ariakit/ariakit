@@ -14,7 +14,7 @@
   }
 
   @variant before {
-    @apply ak-layer-text-50;
+    @apply ak-ink-50;
     @apply size-[1em] flex-none rounded-full border-2 border-current bg-clip-content p-0.5 content-[''];
   }
 }

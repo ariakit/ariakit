@@ -50,7 +50,7 @@
 }
 
 @utility ak-nav-link_idle {
-  @apply ak-button_idle ak-layer ak-dark:ak-layer-text-70;
+  @apply ak-button_idle ak-layer ak-dark:ak-ink-70;
   @apply z-1 relative justify-start text-wrap;
   --ak-button-padding-block: calc(
     var(--ak-disclosure-padding, var(--ak-frame-padding)) -
@@ -74,7 +74,7 @@
 }
 
 @utility ak-nav-link_hover {
-  @apply ak-button_hover ak-nav-link-overlay ak-layer-text-100;
+  @apply ak-button_hover ak-nav-link-overlay ak-ink-100;
 }
 
 @utility ak-nav-link_focus {
@@ -90,7 +90,7 @@
 }
 
 @utility ak-nav-link_current {
-  @apply ak-layer ak-layer-6 ak-nav-link-overlay ak-layer-text-100;
+  @apply ak-layer ak-layer-6 ak-nav-link-overlay ak-ink-100;
   @apply z-1;
   &::before {
     @apply ak-edge-0;

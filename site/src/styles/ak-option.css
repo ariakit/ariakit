@@ -24,7 +24,7 @@
 }
 
 @utility ak-option_disabled {
-  @apply ak-layer-text-50 ak-layer-mix-20;
+  @apply ak-ink-50 ak-layer-mix-20;
 }
 
 @utility ak-option {

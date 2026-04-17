@@ -58,7 +58,7 @@ export function ReferenceLabel(props: ReferenceLabelProps) {
   const isFunction = props.kind === "function" || props.kind === "store";
   const isComponent = props.kind === "component";
 
-  const className = props.colors ? labelColors.className : "ak-layer-text-0";
+  const className = props.colors ? labelColors.className : "ak-ink-0";
 
   const getStyle = (kindColors = labelColors.kindColors) => {
     if (!props.colors) return {};

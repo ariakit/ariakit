@@ -707,7 +707,7 @@ export function CodeBlockTabs({
             {exampleId ? (
               <a
                 href={`#${exampleId}`}
-                className="ak-link not-hover:no-underline hover:decoration-1 @lg:row-1 @lg:col-2 @max-lg:px-4 ak-layer-text-60 font-medium truncate transition-[color] group-hocus-within/code-block-tabs:ak-layer-text-100"
+                className="ak-link not-hover:no-underline hover:decoration-1 @lg:row-1 @lg:col-2 @max-lg:px-4 ak-ink-60 font-medium truncate transition-[color] group-hocus-within/code-block-tabs:ak-ink-100"
               >
                 {title}
               </a>
@@ -847,7 +847,7 @@ export function CodeBlockTabs({
                               framework={framework}
                               example={example}
                               stackblitzFramework={stackblitzFramework}
-                              className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-layer-text-80"
+                              className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-ink-80"
                             />
                           </Tooltip>
                         )}
@@ -877,7 +877,7 @@ export function CodeBlockTabs({
               {preview && (
                 <div
                   className={clsx(
-                    "absolute @max-[64rem]:hidden z-1 text-lg ak-layer-text-0 top-1/2 inset-e-0 -translate-y-1/2 translate-x-7 ak-layer ak-light:ak-edge-15 ak-dark:ak-edge-[13] size-10 grid place-items-center border touch-none rounded-full",
+                    "absolute @max-[64rem]:hidden z-1 text-lg ak-ink-0 top-1/2 inset-e-0 -translate-y-1/2 translate-x-7 ak-layer ak-light:ak-edge-15 ak-dark:ak-edge-[13] size-10 grid place-items-center border touch-none rounded-full",
                   )}
                 >
                   <Icon name="chevronRight" />

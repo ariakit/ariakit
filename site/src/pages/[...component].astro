@@ -223,7 +223,7 @@ async function parseDescription(description: string) {
         >
           {
             Description && (
-              <div class="ak-layer-text-70 ak-prose-elements text-lg/[1.8] [&_p]:ak-layer-text-70 [&_a]:not-hover:ak-layer-text-70 [&_code]:ring-0 relative">
+              <div class="ak-ink-70 ak-prose-elements text-lg/[1.8] [&_p]:ak-ink-70 [&_a]:not-hover:ak-ink-70 [&_code]:ring-0 relative">
                 <Description {framework} {components} />
                 <BoxPatternsRightOnly />
               </div>
@@ -263,7 +263,7 @@ async function parseDescription(description: string) {
             <ContentLink href="#examples">Examples</ContentLink>
           </ContentHeading>
           <div />
-          <ContentParagraph class="ak-layer-text-0 mb-2">
+          <ContentParagraph class="ak-ink-0 mb-2">
             Learn <strong>{entry.data.title}</strong> by exploring these
             real-world examples.
           </ContentParagraph>
@@ -333,7 +333,7 @@ async function parseDescription(description: string) {
                 <span>
                   Collapse<span class="@max-3xl:sr-only"> API Reference</span>
                 </span>
-                <Icon name="arrowUp" className="ak-layer-text-0" />
+                <Icon name="arrowUp" className="ak-ink-0" />
               </TimelineAnimate>
             )}
           </ContainerRightMenu>

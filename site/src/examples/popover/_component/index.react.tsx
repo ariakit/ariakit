@@ -11,7 +11,7 @@ export default function Example() {
         <ak.PopoverHeading className="text-lg font-medium">
           Team meeting
         </ak.PopoverHeading>
-        <ak.PopoverDescription className="ak-layer-text-80">
+        <ak.PopoverDescription className="ak-ink-80">
           We are going to discuss what we have achieved on the project.
         </ak.PopoverDescription>
         <div className="ak-frame ak-frame-cover ak-frame-p-2 grid">

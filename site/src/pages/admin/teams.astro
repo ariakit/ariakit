@@ -85,14 +85,14 @@ function getTeamAvatarUrl(team: Organization) {
                   />
                   <div class="truncate">
                     <span class="font-semibold">{team.name}</span>{" "}
-                    <span class="ak-layer-text-80">({team.slug})</span>
+                    <span class="ak-ink-80">({team.slug})</span>
                   </div>
                 </div>
                 <div>
                   <InlineLink
                     newWindow
                     href={`${orgUrl}?tab=members`}
-                    className="ak-layer-text-80 text-sm"
+                    className="ak-ink-80 text-sm"
                   >
                     {`${team.membersCount} members`}
                   </InlineLink>

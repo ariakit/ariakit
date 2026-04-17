@@ -54,7 +54,7 @@ const { title, headerBorder = false } = Astro.props;
                 class="ak-layer -me-px ak-edge-20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:delay-[0ms,50ms]"
               ></span>
               <button
-                class="ak-button font-normal ak-dark:ak-layer-text-80 @max-3xl:hidden"
+                class="ak-button font-normal ak-dark:ak-ink-80 @max-3xl:hidden"
               >
                 <Icon name="react" className="flex-none" /><span>React</span>
               </button>
@@ -63,7 +63,7 @@ const { title, headerBorder = false } = Astro.props;
                 class="ak-layer -me-px ak-edge-20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
               ></span>
               <button
-                class="ak-button font-normal ak-dark:ak-layer-text-80 min-w-0 @max-3xl:hidden"
+                class="ak-button font-normal ak-dark:ak-ink-80 min-w-0 @max-3xl:hidden"
               >
                 <span class="truncate">Examples</span>
               </button>
@@ -73,7 +73,7 @@ const { title, headerBorder = false } = Astro.props;
               ></span>
               <button class="ak-button min-w-0">
                 <span class="truncate">{title}</span>
-                <span class="ak-layer-text-0 font-normal">⌘K</span>
+                <span class="ak-ink-0 font-normal">⌘K</span>
               </button>
             </div>
             <div class="flex items-center gap-2 ms-auto">
@@ -98,7 +98,7 @@ const { title, headerBorder = false } = Astro.props;
                 </div>
                 <span class="@max-4xl:sr-only">Theme</span>
                 <kbd
-                  class="ak-layer-text-0 font-normal @max-4xl:hidden"
+                  class="ak-ink-0 font-normal @max-4xl:hidden"
                   >T</kbd
                 >
               </button>

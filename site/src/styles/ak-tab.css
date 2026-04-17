@@ -40,7 +40,7 @@
 }
 
 @utility ak-tab_idle {
-  @apply ak-command_idle ak-layer-text-70;
+  @apply ak-command_idle ak-ink-70;
   @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap font-medium leading-[1em];
 }
 
@@ -84,7 +84,7 @@
     @apply border-transparent;
   }
   > * {
-    @apply ak-layer ak-layer-primary ak-layer-contrast ak-layer-text-100;
+    @apply ak-layer ak-layer-primary ak-layer-contrast ak-ink-100;
   }
 }
 
@@ -95,7 +95,7 @@
 }
 
 @utility ak-tab-folder_selected {
-  @apply ak-layer ak-layer-(color:--ak-tab-bg) ak-layer-text-100;
+  @apply ak-layer ak-layer-(color:--ak-tab-bg) ak-ink-100;
   @apply z-2 border-(--ak-tab-border-color)! rounded-b-none!;
 
   &:not(:last-child)::after {

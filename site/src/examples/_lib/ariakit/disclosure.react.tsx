@@ -189,7 +189,7 @@ export function DisclosureButton({
               {labelWrapperElement}
               <span
                 id={descriptionId}
-                className="ak-layer-text-60 grid gap-[inherit] font-normal text-sm"
+                className="ak-ink-60 grid gap-[inherit] font-normal text-sm"
               >
                 {description}
               </span>

@@ -27,7 +27,7 @@
 }
 
 @utility ak-heading {
-  @apply ak-layer-text-100 mb-[0.5em] font-medium;
+  @apply ak-ink-100 mb-[0.5em] font-medium;
 
   &:where(:not(:first-child)) {
     @apply mt-[1em];
@@ -38,7 +38,7 @@
   }
 
   a {
-    @apply hover:ak-link_idle hover:ak-layer-text-100 font-[weight:inherit] text-current no-underline;
+    @apply hover:ak-link_idle hover:ak-ink-100 font-[weight:inherit] text-current no-underline;
   }
 
   li & {

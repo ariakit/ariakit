@@ -41,7 +41,7 @@ export function Logo({ iconOnly, responsive }: LogoProps) {
           height="1.25em"
           viewBox="0 0 150 40"
           className={clsx(
-            "fill-current ak-dark:ak-layer-text-80",
+            "fill-current ak-dark:ak-ink-80",
             responsive && "hidden sm:block",
           )}
         >

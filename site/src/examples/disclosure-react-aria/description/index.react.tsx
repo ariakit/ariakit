@@ -33,8 +33,8 @@ export default function Example() {
         </DisclosureButton>
         <DisclosureContent prose>
           <div className="p-(--ak-disclosure-padding)">
-            <h4 className="text-sm ak-layer-text-60">Recent charges</h4>
-            <p className="ak-layer-text-80">Example details content...</p>
+            <h4 className="text-sm ak-ink-60">Recent charges</h4>
+            <p className="ak-ink-80">Example details content...</p>
           </div>
         </DisclosureContent>
       </Disclosure>

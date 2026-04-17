@@ -49,7 +49,7 @@ const allHeadings = title
       return (
         <li class="relative" style={`--depth:${depth}`}>
           <a
-            class="block decoration-1 data-top-level:font-semibold data-top-level:ak-layer-text-100 underline-offset-[0.25em] ak-layer ak-layer-text-80 data-active:ak-layer-text-100 hover:underline data-active:ak-layer-6 font-normal justify-start ak-frame ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))] pe-3 scroll-m-2"
+            class="block decoration-1 data-top-level:font-semibold data-top-level:ak-ink-100 underline-offset-[0.25em] ak-layer ak-ink-80 data-active:ak-ink-100 hover:underline data-active:ak-layer-6 font-normal justify-start ak-frame ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))] pe-3 scroll-m-2"
             href={`#${heading.slug}`}
             data-heading-link={heading.slug}
             data-top-level={isTopLevel || undefined}
@@ -60,7 +60,7 @@ const allHeadings = title
                 <Icon
                   slot="iconRight"
                   name="arrowUp"
-                  className="ak-layer-text-0"
+                  className="ak-ink-0"
                 />
               )}
             </InlineFragment>

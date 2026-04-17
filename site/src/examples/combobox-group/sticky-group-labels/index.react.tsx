@@ -53,10 +53,10 @@ export default function Example() {
                     {getInitials(item.name)}
                   </div>
                   <div className="grid">
-                    <div className="ak-layer-text-90 text-sm font-medium">
+                    <div className="ak-ink-90 text-sm font-medium">
                       {item.name}
                     </div>
-                    <div className="ak-layer-text-60 text-xs">
+                    <div className="ak-ink-60 text-xs">
                       {"email" in item ? item.email : item.folder}
                     </div>
                   </div>

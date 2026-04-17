@@ -51,7 +51,7 @@ export const ComboboxGroup = React.forwardRef<
         <ak.ComboboxGroupLabel
           data-sticky={stickyLabel || undefined}
           className={clsx(
-            "text-sm font-medium ak-layer-text-50 cursor-default",
+            "text-sm font-medium ak-ink-50 cursor-default",
             stickyLabel
               ? "sticky top-(--ak-frame-margin) z-10 ak-layer ak-frame ak-frame-cover ak-frame-p-3 pb-[calc(var(--ak-frame-padding)---spacing(1))] border-b mb-1"
               : "ak-frame ak-frame-container/2 [&+*]:scroll-mt-11",

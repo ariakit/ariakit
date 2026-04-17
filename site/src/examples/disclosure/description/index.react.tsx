@@ -73,16 +73,16 @@ export default function Example() {
         <div className="grid @2xl:grid-cols-[max-content_1fr] ak-frame ak-frame-cover ak-frame-p-0 text-sm">
           <section className="ak-layer ak-frame ak-frame-none/(--ak-disclosure-padding) grid gap-4 @2xl:border-e @max-2xl:border-b">
             <div className="grid gap-1">
-              <h4 className="text-sm ak-layer-text-60">Card details</h4>
+              <h4 className="text-sm ak-ink-60">Card details</h4>
               <div>
                 <div className="font-medium">John Doe</div>
-                <div className="ak-layer-text-80">Visa •••• •••• •••• 3421</div>
-                <div className="ak-layer-text-80">Expires 10/27</div>
+                <div className="ak-ink-80">Visa •••• •••• •••• 3421</div>
+                <div className="ak-ink-80">Expires 10/27</div>
               </div>
             </div>
             <div className="grid gap-1">
-              <h4 className="text-sm ak-layer-text-60">Billing address</h4>
-              <address className="not-italic ak-layer-text-80 whitespace-pre-wrap">
+              <h4 className="text-sm ak-ink-60">Billing address</h4>
+              <address className="not-italic ak-ink-80 whitespace-pre-wrap">
                 1234 Main Street
                 {"\n"}
                 New York, NY 10001
@@ -91,7 +91,7 @@ export default function Example() {
               </address>
             </div>
             <div className="grid gap-2">
-              <h4 className="text-sm ak-layer-text-60">Actions</h4>
+              <h4 className="text-sm ak-ink-60">Actions</h4>
               <div className="flex flex-wrap gap-2">
                 <button className="ak-button ak-layer ak-layer-6">Edit</button>
                 <button className="ak-button ak-layer ak-layer-6">
@@ -105,7 +105,7 @@ export default function Example() {
           </section>
           <section className="grid content-start">
             <div className="p-(--ak-disclosure-padding)">
-              <h4 className="text-sm ak-layer-text-60">Recent charges</h4>
+              <h4 className="text-sm ak-ink-60">Recent charges</h4>
             </div>
             <Table<"date" | "description" | "amount">
               className="ak-table-border-y ak-table-px-(--ak-disclosure-padding)"

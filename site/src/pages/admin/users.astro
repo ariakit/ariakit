@@ -87,7 +87,7 @@ function getUserAvatarUrl(user: User) {
                 {user.fullName ? (
                   <>
                     <span class="font-semibold">{user.fullName}</span>{" "}
-                    <span class="ak-layer-text-80">
+                    <span class="ak-ink-80">
                       ({user.primaryEmailAddress?.emailAddress})
                     </span>
                   </>
@@ -104,7 +104,7 @@ function getUserAvatarUrl(user: User) {
               )}
             </div>
             {!!user.lastActiveAt && (
-              <div class="ak-layer-text-80 text-sm truncate">
+              <div class="ak-ink-80 text-sm truncate">
                 Last active{" "}
                 {formatDistanceToNow(user.lastActiveAt, {
                   addSuffix: true,

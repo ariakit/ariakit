@@ -136,7 +136,7 @@ function OrderCard({ order }: OrderCardProps) {
           group: "foot",
           Item: {
             header: true,
-            className: "ak-layer-text-60",
+            className: "ak-ink-60",
             children: "Subtotal",
           },
           Price: {
@@ -148,7 +148,7 @@ function OrderCard({ order }: OrderCardProps) {
           Item: (
             <TableCell className="grid">
               <div className="truncate font-medium">{item.name}</div>
-              <div className="ak-layer-text-60">
+              <div className="ak-ink-60">
                 Qty {item.quantity} • {formatCents(item.priceCents)} each
               </div>
             </TableCell>
@@ -175,26 +175,26 @@ function OrderCard({ order }: OrderCardProps) {
         </section>
         <section className="grid gap-4 ak-layer ak-layer-darken-3 p-(--ak-disclosure-padding)">
           <div className="grid gap-1">
-            <h4 className="text-sm ak-layer-text-60">Customer</h4>
+            <h4 className="text-sm ak-ink-60">Customer</h4>
             <div>
               <div className="font-medium">{order.customer.name}</div>
               <a
                 href={`mailto:${order.customer.email}`}
-                className="ak-link ak-layer-text-80"
+                className="ak-link ak-ink-80"
               >
                 {order.customer.email}
               </a>
             </div>
           </div>
           <div className="grid gap-1">
-            <h4 className="text-sm ak-layer-text-60">Shipping address</h4>
-            <address className="not-italic ak-layer-text-80 whitespace-pre-wrap">
+            <h4 className="text-sm ak-ink-60">Shipping address</h4>
+            <address className="not-italic ak-ink-80 whitespace-pre-wrap">
               {order.shippingAddress}
             </address>
           </div>
           {order.tags.length ? (
             <div className="grid gap-1">
-              <h4 className="text-sm ak-layer-text-60">Tags</h4>
+              <h4 className="text-sm ak-ink-60">Tags</h4>
               <div className="flex flex-wrap gap-2">
                 {order.tags.map((tag) => (
                   <span
@@ -209,8 +209,8 @@ function OrderCard({ order }: OrderCardProps) {
           ) : null}
           {order.notes ? (
             <div className="grid gap-1">
-              <h4 className="text-sm ak-layer-text-60">Notes</h4>
-              <div className="ak-layer-text-80">{order.notes}</div>
+              <h4 className="text-sm ak-ink-60">Notes</h4>
+              <div className="ak-ink-80">{order.notes}</div>
             </div>
           ) : null}
         </section>

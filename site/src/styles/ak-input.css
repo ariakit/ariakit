@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 @utility ak-input-placeholder {
-  @apply ak-layer-text-0;
+  @apply ak-ink-0;
 }
 
 @utility ak-input_idle {
