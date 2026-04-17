@@ -1,5 +1,9 @@
 # @ariakit/solid-core
 
+## 0.1.6
+
+- Updated dependencies: `@ariakit/core@0.4.20`
+
 ## 0.1.5
 
 - Updated dependencies: `@ariakit/core@0.4.19`
