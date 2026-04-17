@@ -18,6 +18,7 @@ type TagName = typeof TagName;
 
 export function useCompositeItemOffscreen<
   T extends ElementType,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends CompositeItemProps<T>,
 >({ store, offscreenMode = "active", disabled, value, ...props }: P) {
   const context = useCompositeContext();

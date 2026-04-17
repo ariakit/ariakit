@@ -238,6 +238,7 @@ export function useStoreProps<
   S extends State,
   P extends Partial<S>,
   K extends keyof S,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   SK extends keyof PickByValue<P, SetState<P[K]>>,
 >(store: CoreStore<S>, props: P, key: K, setKey?: SK) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;

@@ -42,9 +42,9 @@ function getItemObject(item: Item): ItemObject {
   return item;
 }
 
-function findIndicesByValue<V extends SelectStoreValue>(
+function findIndicesByValue(
   items: readonly Item[],
-  value: V,
+  value: SelectStoreValue,
 ): number[] {
   const values = toArray(value);
   const indices: number[] = [];

@@ -13,6 +13,7 @@ type TagName = typeof TagName;
 
 export function useSelectItemOffscreen<
   T extends ElementType,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends SelectItemProps<T>,
 >({ store, value, ...props }: P) {
   const context = useSelectScopedContext();

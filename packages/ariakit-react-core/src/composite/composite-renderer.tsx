@@ -46,15 +46,13 @@ function getItemObject(item: Item): ItemObject {
   return item;
 }
 
-function countItems<T extends Item>(items?: number | readonly T[]): number[] {
+function countItems(items?: number | readonly Item[]): number[] {
   if (!items) return [0];
   if (typeof items === "number") {
     return Array.from({ length: items }, (_, index) => index + 1);
   }
   return items.reduce<number[]>((count, item, index) => {
     const object = getItemObject(item);
-    if (!object.items) {
-    }
     if (!object.items) {
       count[index] = index + 1;
       return count;
@@ -66,7 +64,7 @@ function countItems<T extends Item>(items?: number | readonly T[]): number[] {
   }, []);
 }
 
-function findFirst<T extends Item>(items: readonly T[], offset = 1): number {
+function findFirst(items: readonly Item[], offset = 1): number {
   for (
     let index = offset > 0 ? 0 : items.length - 1;
     index >= 0 && index < items.length;
@@ -80,15 +78,11 @@ function findFirst<T extends Item>(items: readonly T[], offset = 1): number {
   return -1;
 }
 
-function findLast<T extends Item>(items: readonly T[]) {
+function findLast(items: readonly Item[]) {
   return findFirst(items, -1);
 }
 
-function findById<T extends Item>(
-  items: readonly T[],
-  id: string,
-  baseId: string,
-): number {
+function findById(items: readonly Item[], id: string, baseId: string): number {
   return items.findIndex((item, index) => {
     const itemId = getCollectionRendererItemId(item, index, baseId);
     if (itemId === id) return true;
