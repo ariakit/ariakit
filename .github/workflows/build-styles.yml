@@ -39,7 +39,7 @@ jobs:
         # to re-add pnpm's self-managed `packageManagerDependencies` section)
         # must not trigger a style commit.
         run: |
-          git add -- site/src/styles/styles.json
+          git add -A -- site/src/styles/styles.json
           if git diff --cached --quiet --exit-code; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             exit 0

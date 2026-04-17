@@ -68,8 +68,13 @@ runs:
       run: |
         cd "${{ inputs.working-directory }}"
         if [ -n "$PATHS" ]; then
-          mapfile -t path_args < <(printf '%s\n' "$PATHS" | sed '/^[[:space:]]*$/d')
-          git add -- "${path_args[@]}"
+          # macOS runners ship bash 3.2, which lacks `mapfile`. Fall back to a
+          # read loop that's portable across the bash versions GitHub hosts.
+          path_args=()
+          while IFS= read -r path; do
+            [ -n "${path//[[:space:]]/}" ] && path_args+=("$path")
+          done < <(printf '%s\n' "$PATHS")
+          git add -A -- "${path_args[@]}"
         else
           git add -A
         fi

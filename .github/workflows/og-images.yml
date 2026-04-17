@@ -69,7 +69,7 @@ jobs:
         # `packageManagerDependencies` section) must not trigger an OG image
         # commit.
         run: |
-          git add -- site/public/og-image
+          git add -A -- site/public/og-image
           if git diff --cached --quiet --exit-code; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             exit 0
