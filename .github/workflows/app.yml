@@ -312,7 +312,7 @@ jobs:
 
       # --- Current (PR branch) ---
       - name: Checkout PR branch
-        run: git checkout ${{ github.event.pull_request.head.sha }}
+        run: git checkout -f ${{ github.event.pull_request.head.sha }}
 
       - name: Set up PR environment
         uses: ./.github/workflows/setup
