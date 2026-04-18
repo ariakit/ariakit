@@ -313,6 +313,7 @@ jobs:
       # --- Current (PR branch) ---
       - name: Checkout PR branch
         run: |
+          git reset --hard
           git clean -fd
           git checkout -f ${{ github.event.pull_request.head.sha }}
 
