@@ -313,8 +313,7 @@ jobs:
       # --- Current (PR branch) ---
       - name: Checkout PR branch
         run: |
-          git reset --hard
-          git clean -fd
+          git checkout HEAD -- pnpm-lock.yaml
           git checkout -f ${{ github.event.pull_request.head.sha }}
 
       - name: Set up PR environment
