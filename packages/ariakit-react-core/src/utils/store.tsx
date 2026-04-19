@@ -4,12 +4,7 @@ import type {
   State,
   StoreState,
 } from "@ariakit/core/utils/store";
-import {
-  batch,
-  init,
-  subscribe,
-  sync,
-} from "@ariakit/core/utils/store";
+import { batch, init, subscribe, sync } from "@ariakit/core/utils/store";
 import type {
   AnyFunction,
   AnyObject,
