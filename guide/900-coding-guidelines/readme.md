@@ -32,7 +32,7 @@ If you use the `type` keyword with intersection (`&`), it may silently introduce
 // ❌ Bad, produces an invalid type without error
 type CheckboxProps = React.ComponentPropsWithoutRef<"input"> & {
   onChange?: (value: boolean) => void;
-}
+};
 
 // ❗ Interface immediately detects the error
 interface CheckboxProps extends React.ComponentPropsWithoutRef<"input"> {
@@ -40,13 +40,15 @@ interface CheckboxProps extends React.ComponentPropsWithoutRef<"input"> {
 }
 
 // ✅ Good, fixed
-interface CheckboxProps
-  extends Omit<React.ComponentPropsWithoutRef<"input">, "onChange"> {
+interface CheckboxProps extends Omit<
+  React.ComponentPropsWithoutRef<"input">,
+  "onChange"
+> {
   onChange?: (value: boolean) => void;
 }
 ```
 
-<div class="text-center -mt-6">
+<div class="text-center -mt-6 max-w-[--size-content-box]">
 
 [Open in TS Playground](https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAKjgQwM5wEoFNkGN4BmUEIcARFDvmQNwBQdA9I3IDLkcAQsgCYA0cYYtwCuuLOmQA7OMEkA3ZABtg3ODACeYLHADuwGAAsIw+FijEodDVrgBhA1lwBrAEYQAHgAViYVABVNbQBeTCoYADpbEkhJLEkYbwhfAHV9IxNsAgAeMlkwEzIAPjgAMjgAbzo4OAhJeykAcywAfgAuOAAKBUVhLHa3CEUcSQBKOCDiuQgVegBfBmY2OD8HODMLGXRaxXU4VCMdaVq4YVRkJrpcWtR4WvrJJvb7R1cPRN8ArQBtMjuDRqwZAAuuNOt1ev0IINhmMJhV5kwWIB1cjgAEl4mYCHhtKAQFhuMBkDAsDs4NwsMT8OhDNp1tA6LJiVAsWI7A5nG4vD50Fh3MTJNx0Ng8BEouBanEEtzUoZjDBMjk8gVipVqn8AW0wUoIXABkMpLDJtNuHMFixAKDkcAA4lC+HACMB3PiGRjmdi2S9Oe9UFU1ny4oK4AB5ED6LLC-CRaIS+LemXpeVYbK5ST5GBFfi-Or-B6AlW+9W5zVdbV9XVQ-WjcZGmZ0WZAA)
 
@@ -55,7 +57,6 @@ interface CheckboxProps
 JSDoc is also better merged with `interface`. For example, tags such as `@default` will be appropriately overridden, whereas `type` would duplicate them.
 
 In summary, according to the [TypeScript documentation](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces:~:text=If%20you%20would%20like%20a%20heuristic%2C%20use%20interface%20until%20you%20need%20to%20use%20features%20from%20type), it is recommended that you use `interface` until you need to use features from `type`.
-
 
 ## Name functions inside `forwardRef`
 
@@ -66,7 +67,7 @@ When wrapping components with `React.forwardRef`, we pass a named function as an
 export const Combobox = React.forwardRef<HTMLInputElement, Props>(
   (props, ref) => {
     // ...
-  }
+  },
 );
 
 // ❌ Bad
@@ -76,7 +77,7 @@ Combobox.displayName = "Combobox";
 export const Combobox = React.forwardRef<HTMLInputElement, Props>(
   function Combobox(props, ref) {
     // ...
-  }
+  },
 );
 ```
 
@@ -122,42 +123,3 @@ const Component = Ariakit.Combobox;
 ```
 
 </aside>
-
-## Import `.jsx` extension
-
-The code examples are written using the [ECMAScript modules](https://nodejs.org/api/esm.html) syntax, which is the official standard format for JavaScript modules supported by modern browsers.
-
-One difference between ESM and CommonJS is that ESM requires the file extension to be specified in the import statement. For TypeScript React files, you can use either `.js` or `.jsx` extensions.
-
-When importing `.tsx` files, we use the `.jsx` extension for consistency and better compatibility with build tools like [Vite](https://vitejs.dev).
-
-```js
-// ❌ Bad, non-standard
-import "./component";
-
-// ❌ Bad
-import "./component.js";
-
-// ✅ Good
-import "./component.jsx";
-```
-
-## Import style first
-
-In our code examples, we place the import statement for styles at the top of the file. This ensures that when we edit the example, the autoimport feature will add import statements at the end of the import list. This prevents the style import from being inserted in the middle of the list.
-
-```js
-// ❌ Bad
-import { Combobox } from "@ariakit/react";
-import "./style.css";
-
-// ❌ Bad, autoimport will append the list
-import { Combobox } from "@ariakit/react";
-import "./style.css";
-import { useState } from "react";
-
-// ✅ Good
-import "./style.css";
-import { Combobox } from "@ariakit/react";
-import { useState } from "react";
-```

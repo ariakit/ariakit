@@ -2,9 +2,9 @@ import type {
   DisclosureStoreFunctions,
   DisclosureStoreOptions,
   DisclosureStoreState,
-} from "../disclosure/disclosure-store.js";
-import { createDisclosureStore } from "../disclosure/disclosure-store.js";
-import type { Store, StoreProps } from "../utils/store.js";
+} from "../disclosure/disclosure-store.ts";
+import { createDisclosureStore } from "../disclosure/disclosure-store.ts";
+import type { Store, StoreProps } from "../utils/store.ts";
 
 /**
  * Creates a dialog store.
@@ -20,9 +20,7 @@ export interface DialogStoreFunctions extends DisclosureStoreFunctions {}
 export interface DialogStoreOptions extends DisclosureStoreOptions {}
 
 export interface DialogStoreProps
-  extends DialogStoreOptions,
-    StoreProps<DialogStoreState> {}
+  extends DialogStoreOptions, StoreProps<DialogStoreState> {}
 
 export interface DialogStore
-  extends DialogStoreFunctions,
-    Store<DialogStoreState> {}
+  extends DialogStoreFunctions, Store<DialogStoreState> {}

@@ -1,4 +1,5 @@
 import { press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("show focus-within styles", async () => {
   expect(q.group()).not.toHaveClass("focus-within");

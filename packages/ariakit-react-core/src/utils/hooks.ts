@@ -1,3 +1,6 @@
+import { canUseDOM } from "@ariakit/core/utils/dom";
+import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import type { AnyFunction } from "@ariakit/core/utils/types";
 import type {
   ComponentType,
   DependencyList,
@@ -7,7 +10,9 @@ import type {
   Ref,
   RefCallback,
   RefObject,
+  SetStateAction,
 } from "react";
+import * as React from "react";
 import {
   useCallback,
   useEffect,
@@ -17,13 +22,8 @@ import {
   useRef,
   useState,
 } from "react";
-import * as React from "react";
-import { canUseDOM } from "@ariakit/core/utils/dom";
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { applyState } from "@ariakit/core/utils/misc";
-import type { AnyFunction, SetState } from "@ariakit/core/utils/types";
-import { setRef } from "./misc.js";
-import type { WrapElement } from "./types.js";
+import { setRef } from "./misc.ts";
+import type { WrapElement } from "./types.ts";
 
 // See https://github.com/webpack/webpack/issues/14814
 const _React = { ...React };
@@ -56,7 +56,7 @@ export function useInitialValue<T>(value: T | (() => T)) {
  * }
  */
 export function useLazyValue<T>(init: () => T) {
-  const ref = useRef<T>();
+  const ref = useRef<T>(undefined);
   if (ref.current === undefined) {
     ref.current = init();
   }
@@ -115,6 +115,31 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
 }
 
 /**
+ * Creates a React state that calls a callback function whenever the state
+ * changes and rolls back to the previous state on cleanup.
+ */
+export function useTransactionState<T>(
+  callback?: ((state: SetStateAction<T | null>) => void) | null,
+) {
+  const [state, setState] = useState<T | null>(null);
+
+  useSafeLayoutEffect(() => {
+    if (state == null) return;
+    if (!callback) return;
+    let prevState: T | null = null;
+    callback((prev) => {
+      prevState = prev;
+      return state;
+    });
+    return () => {
+      callback(prevState);
+    };
+  }, [state, callback]);
+
+  return [state, setState] as const;
+}
+
+/**
  * Merges React Refs into a single memoized function ref so you can pass it to
  * an element.
  * @example
@@ -127,20 +152,12 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
   return useMemo(() => {
     if (!refs.some(Boolean)) return;
     return (value: unknown) => {
-      refs.forEach((ref) => setRef(ref, value));
+      for (const ref of refs) {
+        setRef(ref, value);
+      }
     };
+    // oxlint-disable-next-line exhaustive-deps
   }, refs);
-}
-
-/**
- * Returns the ref element's ID.
- */
-export function useRefId(ref?: RefObject<HTMLElement>, deps?: DependencyList) {
-  const [id, setId] = useState<string | undefined>(undefined);
-  useSafeLayoutEffect(() => {
-    setId(ref?.current?.id);
-  }, deps);
-  return id;
 }
 
 /**
@@ -155,7 +172,7 @@ export function useId(defaultId?: string): string | undefined {
   const [id, setId] = useState(defaultId);
   useSafeLayoutEffect(() => {
     if (defaultId || id) return;
-    const random = Math.random().toString(36).substr(2, 6);
+    const random = Math.random().toString(36).slice(2, 8);
     setId(`id-${random}`);
   }, [defaultId, id]);
   return defaultId || id;
@@ -186,7 +203,7 @@ export function useDeferredValue<T>(value: T): T {
  * }
  */
 export function useTagName(
-  refOrElement?: RefObject<HTMLElement> | HTMLElement | null,
+  refOrElement?: RefObject<HTMLElement | null> | HTMLElement | null,
   type?: string | ComponentType,
 ) {
   const stringOrUndefined = (type?: string | ComponentType) => {
@@ -217,28 +234,32 @@ export function useTagName(
  * }
  */
 export function useAttribute(
-  refOrElement: RefObject<HTMLElement> | HTMLElement | null,
+  refOrElement: RefObject<HTMLElement | null> | HTMLElement | null,
   attributeName: string,
   defaultValue?: string,
 ) {
-  const [attribute, setAttribute] = useState(defaultValue);
+  const initialValue = useInitialValue(defaultValue);
+  const [attribute, setAttribute] = useState(initialValue);
 
-  useSafeLayoutEffect(() => {
+  useEffect(() => {
     const element =
       refOrElement && "current" in refOrElement
         ? refOrElement.current
         : refOrElement;
     if (!element) return;
+
     const callback = () => {
       const value = element.getAttribute(attributeName);
-      if (value == null) return;
-      setAttribute(value);
+      setAttribute(value == null ? initialValue : value);
     };
+
     const observer = new MutationObserver(callback);
     observer.observe(element, { attributeFilter: [attributeName] });
+
     callback();
+
     return () => observer.disconnect();
-  }, [refOrElement, attributeName]);
+  }, [refOrElement, attributeName, initialValue]);
 
   return attribute;
 }
@@ -254,6 +275,7 @@ export function useUpdateEffect(effect: EffectCallback, deps?: DependencyList) {
       return effect();
     }
     mounted.current = true;
+    // oxlint-disable-next-line exhaustive-deps
   }, deps);
 
   useEffect(
@@ -278,6 +300,7 @@ export function useUpdateLayoutEffect(
       return effect();
     }
     mounted.current = true;
+    // oxlint-disable-next-line exhaustive-deps
   }, deps);
 
   useSafeLayoutEffect(
@@ -286,55 +309,6 @@ export function useUpdateLayoutEffect(
     },
     [],
   );
-}
-
-/**
- * A custom version of `React.useState` that uses the `state` and `setState`
- * arguments. If they're not provided, it will use the internal state.
- */
-export function useControlledState<S>(
-  defaultState: S | (() => S),
-  state?: S,
-  setState?: (value: S) => void,
-): [S, SetState<S>] {
-  const [localState, setLocalState] = useState(defaultState);
-  const nextState = state !== undefined ? state : localState;
-
-  const stateRef = useLiveRef(state);
-  const setStateRef = useLiveRef(setState);
-  const nextStateRef = useLiveRef(nextState);
-
-  const setNextState = useCallback((prevValue: S) => {
-    const setStateProp = setStateRef.current;
-    if (setStateProp) {
-      if (isSetNextState(setStateProp)) {
-        setStateProp(prevValue);
-      } else {
-        const nextValue = applyState(prevValue, nextStateRef.current);
-        nextStateRef.current = nextValue;
-        setStateProp(nextValue);
-      }
-    }
-    if (stateRef.current === undefined) {
-      setLocalState(prevValue);
-    }
-  }, []);
-
-  defineSetNextState(setNextState);
-
-  return [nextState, setNextState];
-}
-
-const SET_NEXT_STATE = Symbol("setNextState");
-
-function isSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
-  return arg[SET_NEXT_STATE] === true;
-}
-
-function defineSetNextState(arg: AnyFunction & { [SET_NEXT_STATE]?: true }) {
-  if (!isSetNextState(arg)) {
-    Object.defineProperty(arg, SET_NEXT_STATE, { value: true });
-  }
 }
 
 /**
@@ -374,6 +348,7 @@ export function useWrapElement<P>(
       }
       return callback(element);
     },
+    // oxlint-disable-next-line exhaustive-deps
     [...deps, props.wrapElement],
   );
 
@@ -406,17 +381,24 @@ export function useMetadataProps<T, K extends keyof any>(
 ) {
   const parent = props.onLoadedMetadataCapture;
   const onLoadedMetadataCapture = useMemo(() => {
-    return Object.assign(() => {}, { ...parent, [key]: value });
+    return Object.assign(
+      () => {},
+      parent,
+      ...(value !== undefined ? [{ [key]: value }] : []),
+    );
   }, [parent, key, value]);
 
   return [parent?.[key], { onLoadedMetadataCapture }] as const;
 }
+
+let hasInstalledGlobalEventListeners = false;
 
 /**
  * Returns a function that checks whether the mouse is moving.
  */
 export function useIsMouseMoving() {
   useEffect(() => {
+    if (hasInstalledGlobalEventListeners) return;
     // We're not returning the event listener cleanup function here because we
     // may lose some events if this component is unmounted, but others are
     // still mounted.
@@ -426,6 +408,7 @@ export function useIsMouseMoving() {
     addGlobalEventListener("mouseup", resetMouseMoving, true);
     addGlobalEventListener("keydown", resetMouseMoving, true);
     addGlobalEventListener("scroll", resetMouseMoving, true);
+    hasInstalledGlobalEventListeners = true;
   }, []);
 
   const isMouseMoving = useEvent(() => mouseMoving);

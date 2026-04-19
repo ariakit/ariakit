@@ -1,0 +1,37 @@
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+import type { NextConfig } from "next";
+
+const config: NextConfig = {
+  reactCompiler: true,
+  typedRoutes: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  cacheComponents: true,
+
+  // Allow cross-origin iframe embedding from the Astro site
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "ALLOWALL",
+          },
+          {
+            key: "Content-Security-Policy",
+            // Allow embedding from any ariakit.com/ariakit.org subdomain and workers.dev
+            value:
+              "frame-ancestors 'self' https://*.ariakit.com https://*.ariakit.org https://*.workers.dev http://localhost:*",
+          },
+        ],
+      },
+    ];
+  },
+};
+
+export default async function nextConfig(): Promise<NextConfig> {
+  await initOpenNextCloudflareForDev();
+  return config;
+}

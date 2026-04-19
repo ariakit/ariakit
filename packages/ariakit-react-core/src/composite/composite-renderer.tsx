@@ -1,24 +1,24 @@
 import type { ElementType, ReactNode } from "react";
 import { useMemo } from "react";
-import {
-  getCollectionRendererItem,
-  getCollectionRendererItemId,
-  useCollectionRenderer,
-} from "../collection/collection-renderer.js";
 import type {
   CollectionRendererBaseItemProps,
   CollectionRendererItem,
   CollectionRendererItemObject,
   CollectionRendererItemProps,
   CollectionRendererOptions,
-} from "../collection/collection-renderer.js";
-import type { CollectionStoreItem } from "../collection/collection-store.js";
-import { useId } from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
-import { createElement, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useCompositeContext } from "./composite-context.js";
-import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
+} from "../collection/collection-renderer.tsx";
+import {
+  getCollectionRendererItem,
+  getCollectionRendererItemId,
+  useCollectionRenderer,
+} from "../collection/collection-renderer.tsx";
+import type { CollectionStoreItem } from "../collection/collection-store.ts";
+import { useId } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useCompositeContext } from "./composite-context.tsx";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -46,15 +46,13 @@ function getItemObject(item: Item): ItemObject {
   return item;
 }
 
-function countItems<T extends Item>(items?: number | readonly T[]): number[] {
+function countItems(items?: number | readonly Item[]): number[] {
   if (!items) return [0];
   if (typeof items === "number") {
     return Array.from({ length: items }, (_, index) => index + 1);
   }
   return items.reduce<number[]>((count, item, index) => {
     const object = getItemObject(item);
-    if (!object.items) {
-    }
     if (!object.items) {
       count[index] = index + 1;
       return count;
@@ -66,7 +64,7 @@ function countItems<T extends Item>(items?: number | readonly T[]): number[] {
   }, []);
 }
 
-function findFirst<T extends Item>(items: readonly T[], offset = 1): number {
+function findFirst(items: readonly Item[], offset = 1): number {
   for (
     let index = offset > 0 ? 0 : items.length - 1;
     index >= 0 && index < items.length;
@@ -80,15 +78,11 @@ function findFirst<T extends Item>(items: readonly T[], offset = 1): number {
   return -1;
 }
 
-function findLast<T extends Item>(items: readonly T[]) {
+function findLast(items: readonly Item[]) {
   return findFirst(items, -1);
 }
 
-function findById<T extends Item>(
-  items: readonly T[],
-  id: string,
-  baseId: string,
-): number {
+function findById(items: readonly Item[], id: string, baseId: string): number {
   return items.findIndex((item, index) => {
     const itemId = getCollectionRendererItemId(item, index, baseId);
     if (itemId === id) return true;
@@ -113,7 +107,7 @@ export function useCompositeRenderer<T extends Item = any>({
   store = store || (context as typeof store);
 
   const orientation = useStoreState(store, (state) =>
-    orientationProp ?? state?.orientation === "both"
+    (orientationProp ?? state?.orientation === "both")
       ? "vertical"
       : state?.orientation,
   );
@@ -175,11 +169,10 @@ export function useCompositeRenderer<T extends Item = any>({
     persistentIndices,
     ...props,
     children: (item) => {
-      const nextItem = {
-        ...item,
+      const nextItem = Object.assign({}, item, {
         "aria-setsize": setSize,
         "aria-posinset": ariaPosInSet + (itemsCount[item.index - 1] ?? 0),
-      };
+      });
       return renderItem?.(nextItem as ItemProps<T>);
     },
   });
@@ -205,19 +198,21 @@ export const CompositeRenderer = forwardRef(function CompositeRenderer<
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeRendererOptions<T extends Item = any>
-  extends Omit<CollectionRendererOptions<T>, "store" | "children"> {
+export interface CompositeRendererOptions<T extends Item = any> extends Omit<
+  CollectionRendererOptions<T>,
+  "store" | "children"
+> {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [Composite](https://ariakit.org/components/composite) component's context
+   * [Composite](https://ariakit.com/components/composite) component's context
    * will be used.
    *
    * The store
-   * [`items`](https://ariakit.org/reference/use-composite-store#items) state
+   * [`items`](https://ariakit.com/reference/use-composite-store#items) state
    * will be used to render the items if the
-   * [`items`](https://ariakit.org/reference/composite-items#items) prop is not
+   * [`items`](https://ariakit.com/reference/composite-items#items) prop is not
    * provided.
    */
   store?: CompositeStore<
@@ -231,5 +226,7 @@ export interface CompositeRendererOptions<T extends Item = any>
   children?: (item: ItemProps<T>) => ReactNode;
 }
 
-export interface CompositeRendererProps<T extends Item = any>
-  extends Props<TagName, CompositeRendererOptions<T>> {}
+export interface CompositeRendererProps<T extends Item = any> extends Props<
+  TagName,
+  CompositeRendererOptions<T>
+> {}

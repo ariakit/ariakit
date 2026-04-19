@@ -1,16 +1,19 @@
-import * as React from "react";
 import type { AnyObject, EmptyObject } from "@ariakit/core/utils/types";
-import { useMergeRefs } from "./hooks.js";
-import { getRefProperty, mergeProps } from "./misc.js";
-import type { Store } from "./store.js";
-import type { HTMLProps, Hook, Options, Props } from "./types.js";
+import * as React from "react";
+import { useMergeRefs } from "./hooks.ts";
+import { getRefProperty, mergeProps } from "./misc.ts";
+import type { Store } from "./store.ts";
+import type { Hook, HTMLProps, Options, Props } from "./types.ts";
 
 /**
  * The same as `React.forwardRef` but passes the `ref` as a prop and returns a
  * component with the same generic type.
  */
 export function forwardRef<T extends React.FC<any>>(render: T) {
-  const Role = React.forwardRef((props, ref) => render({ ...props, ref }));
+  const Role = React.forwardRef(
+    // @ts-ignore Incompatible with React 19 types. Ignore for now.
+    (props, ref) => render({ ...props, ref }),
+  );
   Role.displayName = render.displayName || render.name;
   return Role as unknown as T;
 }
@@ -41,7 +44,11 @@ export function createElement(
   let element: React.ReactElement;
 
   if (React.isValidElement<any>(render)) {
-    const renderProps = { ...render.props, ref: mergedRef };
+    const renderProps = {
+      // @ts-ignore Incompatible with React 19 types. Ignore for now.
+      ...render.props,
+      ref: mergedRef,
+    };
     element = React.cloneElement(render, mergeProps(rest, renderProps));
   } else if (render) {
     element = render(rest) as React.ReactElement;

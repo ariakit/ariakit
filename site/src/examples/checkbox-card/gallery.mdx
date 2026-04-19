@@ -1,0 +1,56 @@
+import CodeBlockTabs from "#app/components/code-block-tabs.astro";
+import PreviewGallery from "#app/components/preview-gallery.astro";
+import Preview, { source } from "./preview.astro";
+import Grid, { source as grid } from "./grid/preview.astro";
+import Round, { source as round } from "./round/preview.astro";
+import Detailed, { source as detailed } from "./detailed/preview.astro";
+import Indented, { source as indented } from "./indented/preview.astro";
+import Leading, { source as leading } from "./leading-images/preview.astro";
+import Trailing, { source as trailing } from "./trailing-images/preview.astro";
+import TopImages, { source as topImages } from "./top-images/preview.astro";
+import Form, { source as form } from "./form/preview.astro";
+
+export const minHeight = "30rem";
+
+export const sources = [
+  source,
+  grid,
+  round,
+  detailed,
+  indented,
+  leading,
+  trailing,
+  topImages,
+  form,
+];
+
+<CodeBlockTabs source={source}>
+  <Preview />
+</CodeBlockTabs>
+
+<PreviewGallery>
+  <CodeBlockTabs source={grid} minHeight={minHeight}>
+    <Grid />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={round} minHeight={minHeight}>
+    <Round />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={detailed} minHeight={minHeight}>
+    <Detailed />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={indented} minHeight={minHeight}>
+    <Indented />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={leading} minHeight={minHeight}>
+    <Leading />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={trailing} minHeight={minHeight}>
+    <Trailing />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={topImages} minHeight={minHeight}>
+    <TopImages />
+  </CodeBlockTabs>
+  <CodeBlockTabs source={form} minHeight={minHeight}>
+    <Form />
+  </CodeBlockTabs>
+</PreviewGallery>

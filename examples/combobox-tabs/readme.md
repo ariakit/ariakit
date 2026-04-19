@@ -16,17 +16,17 @@ media:
     height: 720
 ---
 
-# Combobox with tabs
+# Combobox with Tabs
 
 <div data-description>
 
-Organizing [Combobox](/components/combobox) with [Tab](/components/tab) components that support mouse, keyboard, and screen reader interactions. The UI remains responsive by using [`React.startTransition`](https://react.dev/reference/react/startTransition).
+Organizing [Combobox](/components/combobox) with [Tab](/components/tab) components that support mouse, keyboard, and screen reader interactions. The UI remains responsive by using `React.startTransition`.
 
 </div>
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -85,7 +85,7 @@ This behavior is abstracted into the custom `ComboboxProvider` component and exp
 Additionally, we can make the mounting of the combobox popover children non-blocking by using [`React.useDeferredValue`](https://react.dev/reference/react/useDeferredValue) on the combobox `mounted` state:
 
 ```jsx "useDeferredValue"
-const mounted = React.useDeferredValue(combobox.useState("mounted"));
+const mounted = React.useDeferredValue(useStoreState(combobox, "mounted"));
 
 <Ariakit.ComboboxPopover hidden={!mounted}>
   {mounted && props.children}
@@ -99,7 +99,7 @@ Typically, we have one [`TabPanel`](/reference/tab-panel) for each [`Tab`](/refe
 To render a single [`TabPanel`](/reference/tab-panel), we need to set its [`tabId`](/reference/tab-panel#tabid) prop to the [`selectedId`](/reference/use-tab-store#selectedid) state:
 
 ```jsx
-const selectedId = tab.useState("selectedId");
+const selectedId = useStoreState(tab, "selectedId");
 
 <Ariakit.TabPanel tabId={selectedId}>
 ```
@@ -128,12 +128,13 @@ It might not be clear that pressing <kbd>←</kbd> and <kbd>→</kbd> while an `
 
 <div data-cards="examples">
 
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/combobox-filtering)
 - [](/examples/combobox-filtering-integrated)
 - [](/examples/combobox-group)
 - [](/examples/combobox-links)
 - [](/examples/combobox-cancel)
 - [](/examples/combobox-disclosure)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/select-combobox-tab)
 
 </div>

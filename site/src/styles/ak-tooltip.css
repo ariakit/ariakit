@@ -1,0 +1,27 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-tooltip_idle {
+  @apply ak-popover_idle ak-frame-force-tooltip;
+  @apply px-2 text-sm shadow-md;
+}
+
+@utility ak-tooltip_open {
+  @apply ak-popover_open;
+}
+
+@utility ak-tooltip_closed {
+  @apply ak-popover_closed;
+}
+
+@utility ak-tooltip {
+  @apply ak-tooltip_idle;
+  &:is(dialog, [popover]) {
+    @apply open:ak-tooltip_open not-open:ak-tooltip_closed;
+  }
+}

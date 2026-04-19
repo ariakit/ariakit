@@ -1,0 +1,153 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-button_idle {
+  @apply ak-command_idle ak-outline-primary ak-frame-field;
+  @apply leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+50*var(--contrast))];
+  --ak-button-leading: 1.5em;
+  --ak-button-padding-block: calc(
+    var(--ak-frame-padding) - (var(--ak-button-leading) - 1em) * 0.5
+  );
+  padding-block: var(--ak-button-padding-block);
+  gap: max(--spacing(2), var(--ak-frame-padding) * 0.5);
+}
+
+@utility ak-button_hover {
+  @apply ak-layer-hover;
+}
+
+@utility ak-button_focus {
+  @apply ak-command_focus outline-2;
+}
+
+@utility ak-button_active {
+  @apply ak-command_active;
+}
+
+@utility ak-button_disabled {
+  @apply ak-text/50 ak-layer-mix/20;
+  @apply inset-shadow-none bg-none shadow-none;
+}
+
+@utility ak-button {
+  @apply ak-button_idle;
+  @apply ak-command-hover:ak-button_hover;
+  @apply ak-command-focus:ak-button_focus;
+  @apply ak-command-active:ak-button_active;
+  @apply ak-command-disabled:ak-button_disabled;
+}
+
+@utility ak-button-square {
+  @apply aspect-square p-0;
+}
+
+@utility ak-button-square-* {
+  height: --spacing(--value(number));
+  height: --value(--spacing, [length]);
+  @apply aspect-square p-0;
+}
+
+@utility ak-button-classic_idle {
+  @apply ak-button_idle ak-layer;
+  @apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-linear-to-b from-50% bg-clip-padding;
+
+  --ak-button-min-l: 0.25;
+  --ak-button-max-l: 1;
+  --ak-button-bg-dark-l: l - 0.02 - 0.1 * c;
+  --ak-button-bg-light-l: l + 0.01;
+  --ak-button-bg-dark: oklch(
+    from var(--ak-layer)
+      clamp(
+        var(--ak-button-min-l),
+        var(--ak-button-bg-dark-l),
+        var(--ak-button-max-l)
+      )
+      c h
+  );
+  --ak-button-bg-light: oklch(
+    from var(--ak-layer)
+      clamp(
+        var(--ak-button-min-l),
+        var(--ak-button-bg-light-l),
+        var(--ak-button-max-l)
+      )
+      c h
+  );
+  --ak-button-shadow-color: oklch(
+    from var(--ak-button-bg-dark) calc(l - 0.15) c h
+  );
+  --ak-button-shadow: 0 -0.5px 0.5px 1px var(--ak-button-shadow-color);
+  --ak-button-highlight: 0 2px 0.5px
+    oklch(from var(--ak-button-bg-dark) calc(l + 0.2) calc(c / 2) h);
+  --ak-button-inset-shadow:
+    var(--ak-button-shadow), inset var(--ak-button-highlight);
+
+  @variant ak-dark {
+    --ak-button-min-l: 0.15;
+    --ak-button-max-l: 0.85;
+    --ak-button-bg-dark-l: l;
+    --ak-button-highlight: 0 1.5px 0.5px
+      oklch(from var(--ak-button-bg-dark) calc(l + 0.1) c h);
+  }
+}
+
+@utility ak-button-classic_hover {
+  @apply ak-button_hover;
+
+  --ak-button-min-l: 0.35;
+  --ak-button-max-l: 1;
+
+  @variant ak-dark {
+    --ak-button-min-l: 0.25;
+    --ak-button-max-l: 1;
+  }
+}
+
+@utility ak-button-classic_focus {
+  @apply ak-button_focus outline-offset-1;
+}
+
+@utility ak-button-classic_active {
+  @apply ak-button_active;
+  @apply from-(--ak-button-bg-dark-active) to-(--ak-button-bg-light-active) from-60%;
+
+  --ak-button-bg-dark-active: oklch(from var(--ak-button-bg-dark) l c h);
+  --ak-button-bg-light-active: oklch(
+    from var(--ak-button-bg-dark) calc(l + 0.02) c h
+  );
+  --ak-button-shadow: 0 1px 0.5px 1px var(--ak-button-shadow-color);
+  --ak-button-highlight: 0 0 transparent;
+
+  @variant ak-dark {
+    --ak-button-bg-dark-active: oklch(
+      from var(--ak-button-bg-dark) calc(l - 0.02) c h
+    );
+    --ak-button-bg-light-active: oklch(from var(--ak-button-bg-dark) l c h);
+    --ak-button-shadow: 0 1px 0.5px var(--ak-button-shadow-color);
+  }
+}
+
+@utility ak-button-classic_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-button-classic {
+  @apply ak-button-classic_idle;
+  @apply hover:ak-button-classic_hover;
+  @apply ak-command-focus:ak-button-classic_focus;
+  @apply ak-command-active:ak-button-classic_active;
+  @apply ak-command-disabled:ak-button-classic_disabled;
+}
+
+@utility ak-button-aurora-* {
+  --ak-button-aurora-color-1: --value(--color, [*]);
+  --ak-button-aurora-color-2: --modifier(--color, [*]);
+
+  @apply ak-aurora-(--ak-button-aurora-color-1)/(--ak-button-aurora-color-2);
+  @apply ak-command-hover:ak-aurora_hover;
+}

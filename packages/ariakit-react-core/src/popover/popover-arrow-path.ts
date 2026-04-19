@@ -15,7 +15,7 @@
  *
  * Modifications Copyright 2019 - present by Diego Haz.
  *
- * Extracted the SVG path only.
+ * Extracted the SVG path and made the tip more angled.
  */
 export const POPOVER_ARROW_PATH =
-  "M23,27.8c1.1,1.2,3.4,2.2,5,2.2h2H0h2c1.7,0,3.9-1,5-2.2l6.6-7.2c0.7-0.8,2-0.8,2.7,0L23,27.8L23,27.8z";
+  "M23 27.8C24.1 29 26.4 30 28 30H30H0H2C3.7 30 5.9 29 7 27.8L14 20.6C14.7 19.8 15.3 19.8 16 20.6L23 27.8Z";

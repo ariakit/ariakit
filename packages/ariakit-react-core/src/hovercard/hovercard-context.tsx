@@ -1,9 +1,9 @@
 import {
   PopoverContextProvider,
   PopoverScopedContextProvider,
-} from "../popover/popover-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { HovercardStore } from "./hovercard-store.js";
+} from "../popover/popover-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { HovercardStore } from "./hovercard-store.ts";
 
 const ctx = createStoreContext<HovercardStore>(
   [PopoverContextProvider],

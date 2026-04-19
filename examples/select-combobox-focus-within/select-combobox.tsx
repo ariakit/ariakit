@@ -1,5 +1,5 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
+import * as React from "react";
 
 type SelectComboboxProps = Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -52,11 +52,12 @@ export const SelectCombobox = React.forwardRef<
     });
 
     const [popoverFocused, setPopoverFocused] = React.useState(false);
-    const showComboboxCancel = combobox.useState(
+    const showComboboxCancel = Ariakit.useStoreState(
+      combobox,
       (state) => popoverFocused || state.value !== "",
     );
 
-    const mounted = select.useState("mounted");
+    const mounted = Ariakit.useStoreState(select, "mounted");
 
     return (
       <>

@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
-import { Role } from "./role.jsx";
-import type { RoleProps } from "./role.jsx";
+import type { RoleProps } from "./role.tsx";
+import { Role } from "./role.tsx";
 
 export interface PlusBorderedProps extends RoleProps<"div"> {
   plus?: boolean;
@@ -17,6 +17,7 @@ export const PlusBordered = forwardRef<HTMLDivElement, PlusBorderedProps>(
         {...props}
         className={twMerge(
           "[&>svg>foreignObject]:overflow-hidden [&>svg>foreignObject]:rounded-[inherit] [&>svg]:h-auto [&>svg]:overflow-hidden [&>svg]:rounded-[inherit]",
+          "[&>img]:rounded-[inherit]",
           props.className,
           plus && [
             "relative overflow-visible border-solid !border-transparent bg-clip-padding",

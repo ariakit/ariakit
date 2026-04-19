@@ -1,17 +1,17 @@
-import { closest, isVisible } from "@ariakit/core/utils/dom";
+import { isVisible } from "@ariakit/core/utils/dom";
 import { isFocusable } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import { wrapAsync } from "./__utils.js";
-import { dispatch } from "./dispatch.js";
-import { focus } from "./focus.js";
-import { hover } from "./hover.js";
-import { mouseDown } from "./mouse-down.js";
-import { mouseUp } from "./mouse-up.js";
-import { sleep } from "./sleep.js";
+import { wrapAsync } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
+import { focus } from "./focus.ts";
+import { hover } from "./hover.ts";
+import { mouseDown } from "./mouse-down.ts";
+import { mouseUp } from "./mouse-up.ts";
+import { sleep } from "./sleep.ts";
 
 function getClosestLabel(element: Element) {
   if (!isFocusable(element)) {
-    return closest(element, "label");
+    return element.closest("label");
   }
   return null;
 }
@@ -65,7 +65,7 @@ async function clickOption(
   eventOptions?: MouseEventInit,
 ) {
   // https://stackoverflow.com/a/16530782/5513909
-  const select = closest(element, "select") as HTMLSelectElement & {
+  const select = element.closest("select") as HTMLSelectElement & {
     lastOptionSelectedNotByShiftKey?: HTMLOptionElement;
   };
 
@@ -76,17 +76,18 @@ async function clickOption(
 
   if (select.multiple) {
     const options = Array.from(select.options);
-    const resetOptions = () =>
-      options.forEach((option) => {
+    const resetOptions = () => {
+      for (const option of options) {
         setSelected(option, false);
-      });
+      }
+    };
     const selectRange = (a: number, b: number) => {
       const from = Math.min(a, b);
       const to = Math.max(a, b) + 1;
       const selectedOptions = options.slice(from, to);
-      selectedOptions.forEach((option) => {
+      for (const option of selectedOptions) {
         setSelected(option, true);
-      });
+      }
     };
 
     if (eventOptions?.shiftKey) {
@@ -126,7 +127,7 @@ async function clickOption(
 
 export function click(
   element: Element | null,
-  options?: MouseEventInit,
+  options?: PointerEventInit,
   tap = false,
 ) {
   return wrapAsync(async () => {

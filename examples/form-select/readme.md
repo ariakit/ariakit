@@ -17,7 +17,7 @@ Combining [Form](/components/form) and [Select](/components/select) to create an
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -35,4 +35,3 @@ Combining [Form](/components/form) and [Select](/components/select) to create an
 - [](/examples/form-radio)
 
 </div>
-

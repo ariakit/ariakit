@@ -1,4 +1,5 @@
 import { click, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("not call the onFocus callback on every key pressed", async () => {
   await click(q.combobox());

@@ -1,0 +1,12 @@
+@import "./properties.css";
+@plugin "./plugin.js";
+
+@theme {
+  --contrast: 0;
+}
+
+:root {
+  @variant contrast-more {
+    --contrast: 3;
+  }
+}

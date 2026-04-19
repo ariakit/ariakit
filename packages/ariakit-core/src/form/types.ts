@@ -1,9 +1,12 @@
-import type { AnyObject } from "../utils/types.js";
+import type { AnyObject } from "../utils/types.ts";
 
 /**
  * An object or primitive value that can be converted to a string.
  */
-export type StringLike = { toString: () => string; valueOf: () => string };
+export interface StringLike {
+  toString: () => string;
+  valueOf: () => string;
+}
 
 /**
  * Maps through an object `T` or array and defines the leaf values to the given

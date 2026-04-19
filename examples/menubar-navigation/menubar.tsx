@@ -1,7 +1,12 @@
-import * as React from "react";
-import type { Dispatch, SetStateAction } from "react";
+/**
+ * @license
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.com/plus/license
+ */
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
+import type { Dispatch, SetStateAction } from "react";
+import * as React from "react";
 
 // These contexts allow us to set the props on the parent menu component from a
 // child component.
@@ -28,7 +33,6 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
         <SetShiftContext.Provider value={setShift}>
           <SetPlacementContext.Provider value={setPlacement}>
             <Ariakit.MenuProvider
-              animated
               placement={placement}
               showTimeout={100}
               hideTimeout={250}
@@ -82,10 +86,11 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   const menu = Ariakit.useMenuStore({ store: context });
   // Get the menu element rendered by the parent component (contentElement) and
   // use it as the portal element for this menu's contents.
-  const parentMenu = menu.useState("contentElement");
+  const parentMenu = Ariakit.useStoreState(menu, "contentElement");
   // Compare the menu button element with the current anchor element set when
   // the menu opens to ascertain whether the menu is open.
-  const open = menu.useState(
+  const open = Ariakit.useStoreState(
+    menu,
     (state) => state.mounted && state.anchorElement === menuButton,
   );
 

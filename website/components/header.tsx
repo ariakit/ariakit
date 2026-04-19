@@ -1,13 +1,13 @@
 import Link from "next/link.js";
-import { getUpdates } from "utils/get-updates.js";
-import { getPagesByTag } from "utils/tag.js";
-import { AuthEnabled } from "./auth.jsx";
-import { HeaderAriakitPlus } from "./header-ariakit-plus.jsx";
-import { HeaderLogo } from "./header-logo.js";
-import { HeaderNav } from "./header-nav.js";
-import { HeaderThemeSwitch } from "./header-theme-switch.js";
-import { HeaderUpdates } from "./header-updates.jsx";
-import { HeaderVersionSelect } from "./header-version-select.js";
+import { getUpdates } from "@/lib/get-updates.ts";
+import { getPagesByTag } from "@/lib/tag.ts";
+import { AuthEnabled } from "./auth.tsx";
+import { HeaderAriakitPlus } from "./header-ariakit-plus.tsx";
+import { HeaderLogo } from "./header-logo.tsx";
+import { HeaderNav } from "./header-nav.tsx";
+import { HeaderThemeSwitch } from "./header-theme-switch.tsx";
+import { HeaderUpdates } from "./header-updates.tsx";
+import { HeaderVersionSelect } from "./header-version-select.tsx";
 
 let versionsCache: Record<string, Record<string, string>> | null = null;
 
@@ -53,7 +53,7 @@ export async function Header() {
   );
   return (
     <div className="sticky left-0 top-0 z-40 flex w-full justify-center bg-gray-50 dark:bg-gray-800">
-      <div className="flex w-full max-w-[1440px] items-center gap-2 px-3 py-2 sm:gap-3 md:px-4 md:py-4">
+      <div className="flex h-[--header-height] w-full max-w-[--size-wide] items-center gap-2 px-[--page-padding] sm:gap-3">
         <Link
           href="/"
           className="flex items-center gap-2 rounded-[9px] focus-visible:ariakit-outline"
@@ -66,6 +66,10 @@ export async function Header() {
           <HeaderNav />
         </div>
         <div className="flex-1" />
+        <div
+          id="call-to-action-slot"
+          className="flex h-full items-center overflow-y-clip"
+        />
         <AuthEnabled>
           <HeaderAriakitPlus />
         </AuthEnabled>

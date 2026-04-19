@@ -1,9 +1,9 @@
 import {
   DialogContextProvider,
   DialogScopedContextProvider,
-} from "../dialog/dialog-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { PopoverStore } from "./popover-store.js";
+} from "../dialog/dialog-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { PopoverStore } from "./popover-store.ts";
 
 const ctx = createStoreContext<PopoverStore>(
   [DialogContextProvider],

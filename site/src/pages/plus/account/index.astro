@@ -1,0 +1,34 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { isSignedIn } from "#app/lib/auth.ts";
+import { getPlusAccountPath } from "#app/lib/url.ts";
+import { UserProfile } from "@clerk/astro/components";
+import Layout from "./_layout.astro";
+
+export const prerender = false;
+
+const signedIn = isSignedIn(Astro);
+
+if (!signedIn) {
+  return Astro.redirect(getPlusAccountPath({ url: Astro.url, path: "login" }));
+}
+---
+
+<Layout
+  ><UserProfile
+    appearance={{
+      elements: {
+        rootBox: { width: "100%", maxWidth: "100%" },
+        cardBox: { width: "100%", maxWidth: "100%" },
+      },
+    }}
+  /></Layout
+>

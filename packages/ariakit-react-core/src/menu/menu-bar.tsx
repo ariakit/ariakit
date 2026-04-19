@@ -1,9 +1,9 @@
-import { useEffect } from "react";
 import type { ElementType } from "react";
-import { useMenubar } from "../menubar/menubar.js";
-import type { MenubarOptions } from "../menubar/menubar.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import { useEffect } from "react";
+import type { MenubarOptions } from "../menubar/menubar.tsx";
+import { useMenubar } from "../menubar/menubar.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -34,7 +34,7 @@ export const useMenuBar = createHook<TagName, MenuBarOptions>(
       if (process.env.NODE_ENV !== "production") {
         console.warn(
           "MenuBar is deprecated. Use Menubar instead.",
-          "See https://ariakit.org/reference/menubar",
+          "See https://ariakit.com/reference/menubar",
         );
       }
     }, []);
@@ -46,7 +46,7 @@ export const useMenuBar = createHook<TagName, MenuBarOptions>(
  * Renders a menu bar that may contain a group of menu items that control other
  * submenus.
  * @deprecated
- * Use [`Menubar`](https://ariakit.org/reference/menubar) instead.
+ * Use [`Menubar`](https://ariakit.com/reference/menubar) instead.
  * @example
  * ```jsx
  * <MenuBarProvider>
@@ -74,8 +74,9 @@ export const MenuBar = forwardRef(function MenuBar(props: MenuBarProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuBarOptions<T extends ElementType = TagName>
-  extends MenubarOptions<T> {}
+export interface MenuBarOptions<
+  T extends ElementType = TagName,
+> extends MenubarOptions<T> {}
 
 export type MenuBarProps<T extends ElementType = TagName> = Props<
   T,

@@ -1,0 +1,18 @@
+---
+import PreviewFramework from "#app/components/preview-framework.astro";
+import ReactExample from "./index.react.tsx";
+import SolidExample from "./index.solid.tsx";
+
+import sourceReact from "./index.react.tsx?source";
+import sourceSolid from "./index.solid.tsx?source";
+
+export const source = {
+  react: sourceReact,
+  solid: sourceSolid,
+};
+---
+
+<PreviewFramework>
+  <ReactExample client:load slot="react" />
+  <SolidExample client:load slot="solid" />
+</PreviewFramework>

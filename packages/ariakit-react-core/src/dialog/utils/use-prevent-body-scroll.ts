@@ -1,10 +1,10 @@
 // Based on https://github.com/floating-ui/floating-ui/blob/1201e72e67a80e479122293d46d96c9bbc8f156d/packages/react-dom-interactions/src/FloatingOverlay.tsx
-import { useEffect } from "react";
 import { getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { chain } from "@ariakit/core/utils/misc";
 import { isApple, isMac } from "@ariakit/core/utils/platform";
-import { assignStyle, setCSSProperty } from "./orchestrate.js";
-import { useRootDialog } from "./use-root-dialog.js";
+import { useEffect } from "react";
+import { assignStyle, setCSSProperty } from "./orchestrate.ts";
+import { useRootDialog } from "./use-root-dialog.ts";
 
 function getPaddingProperty(documentElement: HTMLElement) {
   // RTL <body> scrollbar
@@ -34,7 +34,7 @@ export function usePreventBodyScroll(
     const cssScrollbarWidth =
       documentElement.style.getPropertyValue("--scrollbar-width");
     const scrollbarWidth = cssScrollbarWidth
-      ? parseInt(cssScrollbarWidth)
+      ? Number.parseInt(cssScrollbarWidth, 10)
       : win.innerWidth - documentElement.clientWidth;
 
     const setScrollbarWidthProperty = () =>
@@ -73,7 +73,7 @@ export function usePreventBodyScroll(
         restoreStyle();
         // istanbul ignore next: JSDOM doesn't implement window.scrollTo
         if (process.env.NODE_ENV !== "test") {
-          win.scrollTo(scrollX, scrollY);
+          win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
         }
       };
     };

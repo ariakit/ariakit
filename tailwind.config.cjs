@@ -1,25 +1,21 @@
 // @ts-nocheck
-const path = require("path");
+const path = require("node:path");
 
-const black = "hsl(204 4% 0%)";
-const white = "hsl(204 20% 100%)";
+const black = "black";
+const white = "white";
 
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
   content: [
-    path.join(__dirname, "guide/**/site-icon.tsx"),
-    path.join(__dirname, "components/**/site-icon.tsx"),
-    path.join(__dirname, "examples/**/site-icon.tsx"),
-    path.join(__dirname, "blog/**/site-icon.tsx"),
-    path.join(__dirname, "guide/**/*.md"),
-    path.join(__dirname, "blog/**/*.md"),
-    path.join(__dirname, "components/**/*.md"),
-    path.join(__dirname, "examples/**/*.md"),
+    path.join(__dirname, "blog/**/*.{ts,tsx,md}"),
+    path.join(__dirname, "guide/**/*.{ts,tsx,md}"),
+    path.join(__dirname, "components/**/*.{ts,tsx,md}"),
+    path.join(__dirname, "examples/**/*.{ts,tsx,md}"),
     path.join(__dirname, "website/app/**/*.{ts,tsx}"),
     path.join(__dirname, "website/components/**/*.{ts,tsx}"),
     path.join(__dirname, "website/icons/**/*.{ts,tsx}"),
   ],
-  darkMode: "class",
+  darkMode: "selector",
   theme: {
     extend: {
       colors: {
@@ -151,7 +147,7 @@ module.exports = {
   plugins: [
     require("tailwindcss-animate"),
     {
-      handler: ({ addUtilities, matchUtilities, addVariant, theme }) => {
+      handler: ({ addUtilities, addVariant, theme }) => {
         const dropShadow = theme("dropShadow");
         const dropShadowUtils = Object.entries(dropShadow).reduce(
           (acc, [key, shadow]) => {
@@ -169,7 +165,7 @@ module.exports = {
         const boxShadowUtils = Object.entries(boxShadow).reduce(
           (acc, [key, shadow]) => {
             acc[`.shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
-              "box-shadow": `${shadow}`,
+              "box-shadow": String(shadow),
             };
             return acc;
           },

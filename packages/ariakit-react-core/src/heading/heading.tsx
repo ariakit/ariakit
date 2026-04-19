@@ -1,10 +1,10 @@
-import { useContext, useMemo, useRef } from "react";
 import type { ElementType } from "react";
-import { useMergeRefs, useTagName } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.jsx";
-import type { Options, Props } from "../utils/types.js";
-import { HeadingContext } from "./heading-context.js";
-import type { HeadingLevels } from "./utils.js";
+import { useContext, useMemo, useRef } from "react";
+import { useMergeRefs, useTagName } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { HeadingContext } from "./heading-context.tsx";
+import type { HeadingLevels } from "./utils.ts";
 
 type HeadingElements = `h${HeadingLevels}`;
 const TagName = "h1" satisfies ElementType;
@@ -15,7 +15,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * Returns props to create a `Heading` component. The element type (or the
  * `aria-level` prop, if the element type is not a native heading) is determined
  * by the context level provided by the parent `HeadingLevel` component.
- * @see https://ariakit.org/components/heading
+ * @see https://ariakit.com/components/heading
  * @example
  * ```jsx
  * const props = useHeading();
@@ -49,8 +49,8 @@ export const useHeading = createHook<TagName, HeadingOptions>(
  * Renders a heading element. The element type (or the `aria-level` attribute,
  * if the element type is not a native heading) is determined by the context
  * level provided by the closest
- * [`HeadingLevel`](https://ariakit.org/reference/heading-level) ancestor.
- * @see https://ariakit.org/components/heading
+ * [`HeadingLevel`](https://ariakit.com/reference/heading-level) ancestor.
+ * @see https://ariakit.com/components/heading
  * @example
  * ```jsx
  * <HeadingLevel>
@@ -66,8 +66,9 @@ export const Heading = forwardRef(function Heading(props: HeadingProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface HeadingOptions<_T extends ElementType = TagName>
-  extends Options {}
+export interface HeadingOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type HeadingProps<T extends ElementType = TagName> = Props<
   T,

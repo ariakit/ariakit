@@ -3,10 +3,10 @@ import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore } from "../utils/store.js";
+} from "../composite/composite-store.ts";
+import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore } from "../utils/store.tsx";
 
 export function useMenubarStoreProps<T extends Core.MenubarStore>(
   store: T,
@@ -18,8 +18,8 @@ export function useMenubarStoreProps<T extends Core.MenubarStore>(
 
 /**
  * Creates a menubar store to control the state of
- * [Menubar](https://ariakit.org/components/menubar) components.
- * @see https://ariakit.org/components/menubar
+ * [Menubar](https://ariakit.com/components/menubar) components.
+ * @see https://ariakit.com/components/menubar
  * @example
  * ```jsx
  * const menu = useMenubarStore();
@@ -33,21 +33,16 @@ export function useMenubarStore(props: MenubarStoreProps = {}): MenubarStore {
 }
 
 export interface MenubarStoreState
-  extends Core.MenubarStoreState,
-    CompositeStoreState {}
+  extends Core.MenubarStoreState, CompositeStoreState {}
 
 export interface MenubarStoreFunctions
-  extends Core.MenubarStoreFunctions,
-    CompositeStoreFunctions {}
+  extends Core.MenubarStoreFunctions, CompositeStoreFunctions {}
 
 export interface MenubarStoreOptions
-  extends Core.MenubarStoreOptions,
-    CompositeStoreOptions {}
+  extends Core.MenubarStoreOptions, CompositeStoreOptions {}
 
 export interface MenubarStoreProps
-  extends MenubarStoreOptions,
-    Core.MenubarStoreProps {}
+  extends MenubarStoreOptions, Core.MenubarStoreProps {}
 
 export interface MenubarStore
-  extends MenubarStoreFunctions,
-    Store<Core.MenubarStore> {}
+  extends MenubarStoreFunctions, Store<Core.MenubarStore> {}

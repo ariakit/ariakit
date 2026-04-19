@@ -1,15 +1,15 @@
-import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { MenuContextProvider } from "./menu-context.js";
-import { useMenuStore } from "./menu-store.js";
-import type { MenuStoreProps, MenuStoreValues } from "./menu-store.js";
+import type { ReactElement, ReactNode } from "react";
+import { MenuContextProvider } from "./menu-context.tsx";
+import type { MenuStoreProps, MenuStoreValues } from "./menu-store.ts";
+import { useMenuStore } from "./menu-store.ts";
 
 type Values = MenuStoreValues;
 
 /**
- * Provides a menu store to [Menu](https://ariakit.org/components/menu)
+ * Provides a menu store to [Menu](https://ariakit.com/components/menu)
  * components.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * <MenuProvider placement="top">
@@ -35,7 +35,8 @@ export function MenuProvider(props: MenuProviderProps = {}) {
   );
 }
 
-export interface MenuProviderProps<T extends Values = Values>
-  extends MenuStoreProps<T> {
+export interface MenuProviderProps<
+  T extends Values = Values,
+> extends MenuStoreProps<T> {
   children?: ReactNode;
 }

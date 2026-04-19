@@ -1,24 +1,25 @@
+import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useRef, useState } from "react";
-import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { isHidden } from "../disclosure/disclosure-content.js";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
   useAttribute,
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
 import {
   ComboboxListRoleContext,
   ComboboxScopedContextProvider,
   useComboboxContext,
   useComboboxScopedContext,
-} from "./combobox-context.js";
-import type { ComboboxStore } from "./combobox-store.js";
+} from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -26,7 +27,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `ComboboxList` component.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -53,11 +54,11 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
 
     const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
-    const mounted = store.useState("mounted");
+    const mounted = useStoreState(store, "mounted");
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
-    const multiSelectable = store.useState((state) =>
+    const multiSelectable = useStoreState(store, (state) =>
       Array.isArray(state.selectedValue),
     );
     const role = useAttribute(ref, "role", props.role);
@@ -68,7 +69,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       : undefined;
 
     const [hasListboxInside, setHasListboxInside] = useState(false);
-    const contentElement = store.useState("contentElement");
+    const contentElement = useStoreState(store, "contentElement");
 
     // We support nested <ComboboxList> elements (usually in the form of
     // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
@@ -120,9 +121,9 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
         : null;
 
     props = {
-      id,
       hidden,
       ...props,
+      id,
       ref: useMergeRefs(setContentElement, ref, props.ref),
       style,
     };
@@ -135,7 +136,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
  * Renders a combobox list. The `role` prop is set to `listbox` by default, but
  * can be overriden by any other valid combobox popup role (`listbox`, `menu`,
  * `tree`, `grid` or `dialog`).
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3-7}
  * <ComboboxProvider>
@@ -156,13 +157,12 @@ export const ComboboxList = forwardRef(function ComboboxList(
 });
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
-  extends Options,
-    Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
+  extends Options, Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
    */
   store?: ComboboxStore;

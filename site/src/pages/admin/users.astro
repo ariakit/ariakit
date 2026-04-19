@@ -1,0 +1,137 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { Icon } from "#app/icons/icon.react.tsx";
+import { isAdmin } from "#app/lib/auth.ts";
+import { capitalize } from "#app/lib/string.ts";
+import { clerkClient } from "@clerk/astro/server";
+import { formatDistanceToNow } from "date-fns";
+import LayoutPagination from "./_layout-pagination.astro";
+import {
+  getClerkInstanceUrl,
+  getPageUrls,
+  getPaginationData,
+  getStripeDashboardUrl,
+} from "./_utils.ts";
+
+export const prerender = false;
+
+if (!(await isAdmin(Astro))) {
+  return Astro.redirect("/");
+}
+
+const data = await getPaginationData(Astro);
+
+if (data instanceof Response) return data;
+
+const { limit, offset, query } = data;
+
+const clerk = clerkClient(Astro);
+const clerkInstanceUrl = await getClerkInstanceUrl(Astro);
+const stripeDashboardUrl = getStripeDashboardUrl();
+
+async function getUserData() {
+  const users = await clerk.users.getUserList({
+    query,
+    limit,
+    offset,
+    orderBy: "-last_active_at",
+  });
+  const pageURLs = getPageUrls(Astro, {
+    limit,
+    offset,
+    totalCount: users.totalCount,
+  });
+  return { ...users, ...pageURLs };
+}
+
+const users = await getUserData();
+
+function getUserAvatarUrl(user: User) {
+  const url = new URL(user.imageUrl);
+  url.searchParams.set("width", "32");
+  url.searchParams.set("height", "32");
+  return url.toString();
+}
+---
+
+<LayoutPagination
+  totalCount={users.totalCount}
+  nextUrl={users.nextUrl}
+  previousUrl={users.previousUrl}
+  limit={limit}
+  offset={offset}
+  query={query}
+>
+  <ul
+    class="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-(--ak-container-p) py-(--ak-container-p)"
+  >
+    {
+      users.data.map((user) => (
+        <li>
+          <div class="ak-frame-card ak-layer size-full flex flex-col gap-2">
+            <div class="flex items-center gap-2">
+              <img
+                src={getUserAvatarUrl(user)}
+                alt=""
+                class="size-[1em] object-cover rounded-full"
+              />
+              <div class="truncate">
+                {user.fullName ? (
+                  <>
+                    <span class="font-semibold">{user.fullName}</span>{" "}
+                    <span class="ak-text/80">
+                      ({user.primaryEmailAddress?.emailAddress})
+                    </span>
+                  </>
+                ) : (
+                  <span class="font-medium">
+                    {user.primaryEmailAddress?.emailAddress}
+                  </span>
+                )}
+              </div>
+              {user.publicMetadata.plus && (
+                <div class="ak-badge-primary ms-auto">
+                  <span>{capitalize(user.publicMetadata.plus)}</span>
+                </div>
+              )}
+            </div>
+            {!!user.lastActiveAt && (
+              <div class="ak-text/80 text-sm truncate">
+                Last active{" "}
+                {formatDistanceToNow(user.lastActiveAt, {
+                  addSuffix: true,
+                })}
+              </div>
+            )}
+            <div class="grid grid-flow-col gap-1 mt-auto ak-frame-cover/1 text-sm">
+              <a
+                href={`${clerkInstanceUrl}/users/${user.id}`}
+                target="_blank"
+                class="ak-button ak-layer-pop"
+              >
+                Clerk <Icon name="newWindow" />
+              </a>
+              {user.privateMetadata.stripeId && (
+                <a
+                  href={`${stripeDashboardUrl}/customers/${user.privateMetadata.stripeId}`}
+                  target="_blank"
+                  class="ak-button ak-layer-pop"
+                >
+                  Stripe <Icon name="newWindow" />
+                </a>
+              )}
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</LayoutPagination>

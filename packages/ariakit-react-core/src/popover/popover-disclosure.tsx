@@ -1,16 +1,16 @@
-import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
-import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
-import { useEvent, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { PopoverAnchorOptions } from "./popover-anchor.js";
-import { usePopoverAnchor } from "./popover-anchor.js";
+import type { ElementType, MouseEvent } from "react";
+import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
+import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
+import { useEvent, useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { PopoverAnchorOptions } from "./popover-anchor.tsx";
+import { usePopoverAnchor } from "./popover-anchor.tsx";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
-} from "./popover-context.js";
+} from "./popover-context.tsx";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -18,7 +18,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `PopoverDisclosure` component.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * const store = usePopoverStore();
@@ -70,8 +70,8 @@ export const usePopoverDisclosure = createHook<
 
 /**
  * Renders a button that controls the visibility of the
- * [`Popover`](https://ariakit.org/reference/popover) component when clicked.
- * @see https://ariakit.org/components/popover
+ * [`Popover`](https://ariakit.com/reference/popover) component when clicked.
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx {2}
  * <PopoverProvider>
@@ -88,8 +88,7 @@ export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
 });
 
 export interface PopoverDisclosureOptions<T extends ElementType = TagName>
-  extends PopoverAnchorOptions<T>,
-    Omit<DialogDisclosureOptions<T>, "store"> {}
+  extends PopoverAnchorOptions<T>, Omit<DialogDisclosureOptions<T>, "store"> {}
 
 export type PopoverDisclosureProps<T extends ElementType = TagName> = Props<
   T,

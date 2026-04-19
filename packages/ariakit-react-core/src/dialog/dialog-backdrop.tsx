@@ -1,14 +1,17 @@
-import { isValidElement, useRef } from "react";
-import { useDisclosureContent } from "../disclosure/disclosure-content.js";
-import { useDisclosureStore } from "../disclosure/disclosure-store.js";
-import { Role } from "../role/role.js";
-import { useSafeLayoutEffect } from "../utils/hooks.js";
-import type { DialogStore } from "./dialog-store.js";
-import type { DialogProps } from "./dialog.js";
-import { markAncestor } from "./utils/mark-tree-outside.js";
+import { isValidElement, useEffect, useRef } from "react";
+import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
+import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
+import { Role } from "../role/role.tsx";
+import { useSafeLayoutEffect } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import type { DialogStore } from "./dialog-store.ts";
+import type { DialogProps } from "./dialog.tsx";
+import { markAncestor } from "./utils/mark-tree-outside.ts";
 
-interface DialogBackdropProps
-  extends Pick<DialogProps, "backdrop" | "alwaysVisible" | "hidden"> {
+interface DialogBackdropProps extends Pick<
+  DialogProps,
+  "backdrop" | "alwaysVisible" | "hidden"
+> {
   store: DialogStore;
 }
 
@@ -20,9 +23,9 @@ export function DialogBackdrop({
 }: DialogBackdropProps) {
   const ref = useRef<HTMLDivElement>(null);
   const disclosure = useDisclosureStore({ disclosure: store });
-  const contentElement = store.useState("contentElement");
+  const contentElement = useStoreState(store, "contentElement");
 
-  useSafeLayoutEffect(() => {
+  useEffect(() => {
     const backdrop = ref.current;
     const dialog = contentElement;
     if (!backdrop) return;

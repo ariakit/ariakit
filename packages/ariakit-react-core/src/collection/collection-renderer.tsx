@@ -1,3 +1,10 @@
+import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
+import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
+import type {
+  AnyObject,
+  BooleanOrCallback,
+  EmptyObject,
+} from "@ariakit/core/utils/types";
 import type {
   CSSProperties,
   ElementType,
@@ -14,13 +21,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
-import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
-import type {
-  AnyObject,
-  BooleanOrCallback,
-  EmptyObject,
-} from "@ariakit/core/utils/types";
 import { flushSync } from "react-dom";
 import {
   useBooleanEvent,
@@ -29,15 +29,15 @@ import {
   useId,
   useMergeRefs,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.jsx";
-import { createElement, forwardRef } from "../utils/system.jsx";
-import type { Options, Props } from "../utils/types.js";
-import { useCollectionContext } from "./collection-context.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { useCollectionContext } from "./collection-context.tsx";
 import type {
   CollectionStore,
   CollectionStoreItem,
-} from "./collection-store.js";
+} from "./collection-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -194,7 +194,7 @@ function getItemSize(
   fallbackElement?: HTMLElement | null | false,
 ): number {
   const itemObject = getItemObject(item);
-  horizontal = itemObject.orientation === "horizontal" ?? horizontal;
+  horizontal = itemObject.orientation === "horizontal" || horizontal;
   const prop = horizontal ? "width" : "height";
   const style = itemObject.style;
   if (style) {
@@ -214,6 +214,7 @@ function getItemSize(
     if (hasSameOrientation && itemObject.itemSize) {
       return initialSize + itemObject.itemSize * items.length;
     }
+    // oxlint-disable-next-line no-unnecessary-type-arguments
     const totalSize = items.reduce<number>(
       (sum, item) => sum + getItemSize(item, horizontal),
       initialSize,
@@ -275,7 +276,7 @@ function getViewport(scroller: Element) {
   return scroller;
 }
 
-function useScroller(rendererRef: RefObject<HTMLElement> | null) {
+function useScroller(rendererRef: RefObject<HTMLElement | null> | null) {
   const [scroller, setScroller] = useState<Element | null>(null);
   useEffect(() => {
     const renderer = rendererRef?.current;
@@ -345,6 +346,7 @@ function getItemsEnd<T extends Item>(props: {
   const lastItemData = props.data.get(lastItemId);
   if (lastItemData?.end) return lastItemData.end + props.paddingEnd;
   if (!Array.isArray(props.items)) return defaultEnd;
+  // oxlint-disable-next-line no-unnecessary-type-arguments
   const end = props.items.reduce<number>(
     (sum, item) => sum + getItemSize(item, props.horizontal, false),
     0,
@@ -467,11 +469,11 @@ export function useCollectionRenderer<T extends Item = any>({
   const visibleIndices = useMemo(() => {
     if (!persistentIndices) return defaultVisibleIndices;
     const nextIndices = defaultVisibleIndices.slice();
-    persistentIndices.forEach((index) => {
-      if (index < 0) return;
-      if (nextIndices.includes(index)) return;
+    for (const index of persistentIndices) {
+      if (index < 0) continue;
+      if (nextIndices.includes(index)) continue;
       nextIndices.push(index);
-    });
+    }
     nextIndices.sort((a, b) => a - b);
     if (shallowEqual(defaultVisibleIndices, nextIndices)) {
       return defaultVisibleIndices;
@@ -605,6 +607,7 @@ export function useCollectionRenderer<T extends Item = any>({
       if (shallowEqual(prevIndices, indices)) return prevIndices;
       return indices;
     });
+    // oxlint-disable-next-line exhaustive-deps
   }, [
     elementsUpdated,
     items,
@@ -735,7 +738,7 @@ export function useCollectionRenderer<T extends Item = any>({
     return () => {
       observer.disconnect();
     };
-  }, [scroller, processVisibleIndicesEvent]);
+  }, [scroller, horizontal, processVisibleIndicesEvent]);
 
   const elementObserver = useMemo(() => {
     if (typeof ResizeObserver !== "function") return;
@@ -760,7 +763,7 @@ export function useCollectionRenderer<T extends Item = any>({
       const itemId = getItemId(item, index, baseId);
       const offset = itemSize
         ? paddingStart + itemSize * index + gap * index
-        : data.get(itemId)?.start ?? 0;
+        : (data.get(itemId)?.start ?? 0);
       const baseItemProps: BaseItemProps = {
         id: itemId,
         ref: itemRef,
@@ -860,19 +863,20 @@ export type CollectionRendererItemProps<
   P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
-export interface CollectionRendererOptions<T extends Item = any>
-  extends Options {
+export interface CollectionRendererOptions<
+  T extends Item = any,
+> extends Options {
   /**
    * Object returned by the
-   * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
+   * [`useCollectionStore`](https://ariakit.com/reference/use-collection-store)
    * hook. If not provided, the closest
-   * [Collection](https://ariakit.org/components/collection) component's
+   * [Collection](https://ariakit.com/components/collection) component's
    * context will be used.
    *
    * The store
-   * [`items`](https://ariakit.org/reference/use-collection-store#items) state
+   * [`items`](https://ariakit.com/reference/use-collection-store#items) state
    * will be used to render the items if the
-   * [`items`](https://ariakit.org/reference/collection-items#items) prop is not
+   * [`items`](https://ariakit.com/reference/collection-items#items) prop is not
    * provided.
    */
   store?: CollectionStore<
@@ -983,5 +987,7 @@ export interface CollectionRendererOptions<T extends Item = any>
   children?: (item: ItemProps<T>) => ReactNode;
 }
 
-export interface CollectionRendererProps<T extends Item = any>
-  extends Props<TagName, CollectionRendererOptions<T>> {}
+export interface CollectionRendererProps<T extends Item = any> extends Props<
+  TagName,
+  CollectionRendererOptions<T>
+> {}

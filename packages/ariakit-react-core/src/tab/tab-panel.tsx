@@ -1,28 +1,29 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { ElementType, KeyboardEvent } from "react";
-import { createTabStore } from "@ariakit/core/tab/tab-store";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CollectionItemOptions } from "../collection/collection-item.js";
-import { useCollectionItem } from "../collection/collection-item.js";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.jsx";
-import { useDisclosureContent } from "../disclosure/disclosure-content.jsx";
-import { useDisclosureStore } from "../disclosure/disclosure-store.js";
-import type { FocusableOptions } from "../focusable/focusable.js";
-import { useFocusable } from "../focusable/focusable.js";
+import type { ElementType, KeyboardEvent, RefObject } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { CollectionItemOptions } from "../collection/collection-item.tsx";
+import { useCollectionItem } from "../collection/collection-item.tsx";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
+import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
+import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
+import type { FocusableOptions } from "../focusable/focusable.tsx";
+import { useFocusable } from "../focusable/focusable.tsx";
 import {
   useEvent,
   useId,
   useMergeRefs,
+  useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.jsx";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   TabScopedContextProvider,
   useTabProviderContext,
-} from "./tab-context.jsx";
-import type { TabStore } from "./tab-store.js";
+} from "./tab-context.tsx";
+import type { TabStore } from "./tab-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -30,7 +31,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `TabPanel` component.
- * @see https://ariakit.org/components/tab
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx
  * const store = useTabStore();
@@ -47,6 +48,8 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     unmountOnHide,
     tabId: tabIdProp,
     getItem: getItemProp,
+    scrollRestoration,
+    scrollElement,
     ...props
   }) {
     const context = useTabProviderContext();
@@ -61,14 +64,76 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
 
+    const tabId = useStoreState(
+      store.panels,
+      () => tabIdProp || store?.panels.item(id)?.tabId,
+    );
+    const open = useStoreState(
+      store,
+      (state) => !!tabId && state.selectedId === tabId,
+    );
+
+    const disclosure = useDisclosureStore({ open });
+    const mounted = useStoreState(disclosure, "mounted");
+
+    // Store the scroll position for each tabId. The component may receive
+    // different tab ids if it's a single tab panel with dynamic tab id and
+    // content.
+    const scrollPositionRef = useRef(
+      new Map<string, { x: number; y: number }>(),
+    );
+
+    const getScrollElement = useEvent(() => {
+      const panelElement = ref.current;
+      if (!panelElement) return null;
+      if (!scrollElement) return panelElement;
+      if (typeof scrollElement === "function") {
+        return scrollElement(panelElement);
+      }
+      if ("current" in scrollElement) {
+        return scrollElement.current;
+      }
+      return scrollElement;
+    });
+
+    // Adds scroll restoration behavior to the tab panel.
+    useEffect(() => {
+      if (!scrollRestoration) return;
+      if (!mounted) return;
+      const element = getScrollElement();
+      if (!element) return;
+      // If scrollRestoration is set to "reset", scroll to the top of the
+      // element and return early.
+      if (scrollRestoration === "reset") {
+        element.scroll(0, 0);
+        return;
+      }
+      if (!tabId) return;
+      const position = scrollPositionRef.current.get(tabId);
+      element.scroll(position?.x ?? 0, position?.y ?? 0);
+      // On scroll, save the scroll position for the current tab id.
+      const onScroll = () => {
+        scrollPositionRef.current.set(tabId, {
+          x: element.scrollLeft,
+          y: element.scrollTop,
+        });
+      };
+      element.addEventListener("scroll", onScroll);
+      return () => {
+        element.removeEventListener("scroll", onScroll);
+      };
+    }, [scrollRestoration, mounted, tabId, getScrollElement, store]);
+
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
-    useEffect(() => {
+    // Re-check tabbable children each time the panel becomes visible so
+    // content rendered conditionally on tab selection is accounted for.
+    useSafeLayoutEffect(() => {
+      if (!mounted) return;
       const element = ref.current;
       if (!element) return;
-      const tabbable = getAllTabbableIn(element);
-      setHasTabbableChildren(!!tabbable.length);
-    }, []);
+      setHasTabbableChildren(!!getAllTabbableIn(element).length);
+    }, [mounted]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
@@ -87,26 +152,19 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!store?.composite) return;
-      // If the tab panel is part of another composite widget like a combobox,
-      // keyboard navigation is managed here. We need to recreate a tab store
-      // and provide the selected id as the active id. This is necessary because
-      // the original tab store may have the same active id as the external
-      // composite store, which might not be a valid tab id.
-      const { items, renderedItems, selectedId } = store.getState();
-      const tab = createTabStore({ items, activeId: selectedId });
-      tab.setState("renderedItems", renderedItems);
       const keyMap = {
-        ArrowLeft: tab.previous,
-        ArrowRight: tab.next,
-        Home: tab.first,
-        End: tab.last,
+        ArrowLeft: store.previous,
+        ArrowRight: store.next,
+        Home: store.first,
+        End: store.last,
       };
       const action = keyMap[event.key as keyof typeof keyMap];
       if (!action) return;
-      const nextId = action();
+      const { selectedId } = store.getState();
+      const nextId = action({ activeId: selectedId });
       if (!nextId) return;
       event.preventDefault();
-      store.select(nextId);
+      store.move(nextId);
     });
 
     props = useWrapElement(
@@ -119,21 +177,12 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       [store],
     );
 
-    const tabId = store.panels.useState(
-      () => tabIdProp || store?.panels.item(id)?.tabId,
-    );
-    const open = store.useState(
-      (state) => !!tabId && state.selectedId === tabId,
-    );
-
-    const disclosure = useDisclosureStore({ open });
-    const mounted = disclosure.useState("mounted");
-
     props = {
-      id,
       role: "tabpanel",
-      "aria-labelledby": tabId || undefined,
+      "aria-labelledby":
+        props["aria-label"] != null ? undefined : tabId || undefined,
       ...props,
+      id,
       children: unmountOnHide && !mounted ? null : props.children,
       ref: useMergeRefs(ref, props.ref),
       onKeyDown,
@@ -154,15 +203,15 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
 /**
  * Renders a tab panel element that's controlled by a
- * [`Tab`](https://ariakit.org/reference/tab) component.
+ * [`Tab`](https://ariakit.com/reference/tab) component.
  *
- * If the [`tabId`](https://ariakit.org/reference/tab-panel#tabid) prop isn't
+ * If the [`tabId`](https://ariakit.com/reference/tab-panel#tabid) prop isn't
  * provided, the tab panel will automatically associate with a
- * [`Tab`](https://ariakit.org/reference/tab) based on its position in the DOM.
+ * [`Tab`](https://ariakit.com/reference/tab) based on its position in the DOM.
  * Alternatively, you can render a single tab panel with a dynamic
- * [`tabId`](https://ariakit.org/reference/tab-panel#tabid) value pointing to
+ * [`tabId`](https://ariakit.com/reference/tab-panel#tabid) value pointing to
  * the selected tab.
- * @see https://ariakit.org/components/tab
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx {6,7}
  * <TabProvider>
@@ -181,35 +230,81 @@ export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
 });
 
 export interface TabPanelOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T>,
+  extends
+    FocusableOptions<T>,
     CollectionItemOptions<T>,
     Omit<DisclosureContentOptions<T>, "store"> {
   /**
    * Object returned by the
-   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
+   * [`useTabStore`](https://ariakit.com/reference/use-tab-store) hook. If not
    * provided, the closest
-   * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
+   * [`TabProvider`](https://ariakit.com/reference/tab-provider) component's
    * context will be used.
    */
   store?: TabStore;
   /**
-   * The [`id`](https://ariakit.org/reference/tab#id) of the tab controlling
+   * The [`id`](https://ariakit.com/reference/tab#id) of the tab controlling
    * this panel. This connection is used to assign the `aria-labelledby`
    * attribute to the tab panel and to determine if the tab panel should be
    * visible.
    *
    * This link is automatically established by matching the order of
-   * [`Tab`](https://ariakit.org/reference/tab) and
-   * [`TabPanel`](https://ariakit.org/reference/tab-panel) elements in the DOM.
+   * [`Tab`](https://ariakit.com/reference/tab) and
+   * [`TabPanel`](https://ariakit.com/reference/tab-panel) elements in the DOM.
    * If you're rendering a single tab panel, this can be set to a dynamic value
    * that refers to the selected tab.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
-   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Tab with React Router](https://ariakit.com/examples/tab-react-router)
+   * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   tabId?: string | null;
+  /**
+   * Manages the scrolling behavior of the tab panel when it is hidden and then
+   * shown again.
+   *
+   * This is especially useful when using a single tab panel for multiple tabs,
+   * where you dynamically change the
+   * [`tabId`](https://ariakit.com/reference/tab-panel#tabid) prop and the
+   * panel's children, which would otherwise retain the current scroll position
+   * when switching tabs.
+   *
+   * When set to `true`, the component will save the scroll position and restore
+   * it when the panel is shown again. When set to `"reset"`, the scroll
+   * position will reset to the top when the panel is displayed again.
+   *
+   * The default scroll element is the tab panel itself. To scroll a different
+   * element, use the
+   * [`scrollElement`](https://ariakit.com/reference/tab-panel#scrollelement)
+   * prop.
+   * @default false
+   */
+  scrollRestoration?: boolean | "reset";
+  /**
+   * When using the
+   * [`scrollRestoration`](https://ariakit.com/reference/tab-panel#scrollrestoration)
+   * prop, the tab panel element serves as the default scroll element. You can
+   * use this prop to designate a different element for scrolling.
+   *
+   * If a function is provided, it will be called with the tab panel element as
+   * an argument. The function should return the element to scroll.
+   * @example
+   * ```jsx
+   * <TabPanel
+   *   scrollRestoration
+   *   scrollElement={(panel) => panel.querySelector(".scrollable")}
+   * />
+   * ```
+   */
+  scrollElement?:
+    | HTMLElement
+    | RefObject<HTMLElement | null>
+    | ((panel: HTMLElement) => HTMLElement | null);
 }
 
 export type TabPanelProps<T extends ElementType = TagName> = Props<

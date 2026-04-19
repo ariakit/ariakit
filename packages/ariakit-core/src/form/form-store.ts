@@ -3,28 +3,29 @@ import type {
   CollectionStoreItem,
   CollectionStoreOptions,
   CollectionStoreState,
-} from "../collection/collection-store.js";
-import { createCollectionStore } from "../collection/collection-store.js";
+} from "../collection/collection-store.ts";
+import { createCollectionStore } from "../collection/collection-store.ts";
 import {
   applyState,
   defaultValue,
   isInteger,
   isObject,
-} from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   createStore,
   init,
   setup,
+  sync,
   throwOnConflictingProps,
-} from "../utils/store.js";
+} from "../utils/store.ts";
 import type {
   AnyObject,
   PickRequired,
   SetState,
   SetStateAction,
-} from "../utils/types.js";
-import type { DeepMap, DeepPartial, Names, StringLike } from "./types.js";
+} from "../utils/types.ts";
+import type { DeepMap, DeepPartial, Names, StringLike } from "./types.ts";
 
 type ErrorMessage = string | undefined | null;
 
@@ -46,7 +47,7 @@ export function get<T>(
   path: StringLike | string[],
   defaultValue?: T,
 ): T {
-  const [key, ...rest] = Array.isArray(path) ? path : `${path}`.split(".");
+  const [key, ...rest] = Array.isArray(path) ? path : String(path).split(".");
   if (key == null || !values) {
     return defaultValue as T;
   }
@@ -56,35 +57,43 @@ export function get<T>(
   return get(values[key], rest, defaultValue);
 }
 
+// Returns the existing nested value if it is an array or object, otherwise
+// creates a new container based on whether the next key is an integer.
+function getOrCreateNested(nestedValues: unknown, nextKey: string) {
+  if (Array.isArray(nestedValues) || isObject(nestedValues)) {
+    return nestedValues;
+  }
+  return isInteger(nextKey) ? [] : {};
+}
+
 function set<T extends FormStoreValues | unknown[]>(
   values: T,
   path: StringLike | string[],
   value: unknown,
 ): T {
-  const [k, ...rest] = Array.isArray(path) ? path : `${path}`.split(".");
+  const [k, ...rest] = Array.isArray(path) ? path : String(path).split(".");
   if (k == null) return values;
   const key = k as keyof T;
   const isIntegerKey = isInteger(key);
   const nextValues = isIntegerKey ? values || [] : values || {};
   const nestedValues = nextValues[key];
+  const nextKey = rest[0];
   const result =
-    rest.length && (Array.isArray(nestedValues) || isObject(nestedValues))
-      ? set(nestedValues, rest, value)
+    rest.length && nextKey != null
+      ? set(getOrCreateNested(nestedValues, nextKey), rest, value)
       : value;
   if (isIntegerKey) {
     const index = Number(key);
     if (values && Array.isArray(values)) {
-      return [
-        ...values.slice(0, index),
-        result,
-        ...values.slice(index + 1),
-      ] as T;
+      const copy = [...values];
+      copy[index] = result;
+      return copy as T;
     }
     const nextValues = [] as unknown as T;
     nextValues[index as keyof T] = result as T[keyof T];
     return nextValues;
   }
-  return { ...values, [key]: result };
+  return Object.assign({}, values, { [key]: result });
 }
 
 function setAll<T extends FormStoreValues, V>(values: T, value: V) {
@@ -215,6 +224,13 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
 
   setup(form, () => init(callbacks));
 
+  setup(form, () =>
+    sync(form, ["validating", "errors"], (state) => {
+      if (state.validating) return;
+      form.setState("valid", !hasMessages(state.errors));
+    }),
+  );
+
   const validate = async () => {
     form.setState("validating", true);
     form.setState("errors", {});
@@ -337,6 +353,7 @@ export function createFormStore(props: FormStoreProps = {}): FormStore {
       form.setState("submitting", false);
       form.setState("submitSucceed", 0);
       form.setState("submitFailed", 0);
+      form.setState("valid", !hasMessages(errors));
     },
 
     // @ts-expect-error Internal
@@ -355,14 +372,15 @@ export interface FormStoreItem extends CollectionStoreItem {
   name: string;
 }
 
-export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
-  extends CollectionStoreState<FormStoreItem> {
+export interface FormStoreState<
+  T extends FormStoreValues = FormStoreValues,
+> extends CollectionStoreState<FormStoreItem> {
   /**
    * Form values.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
-   * - [FormSelect](https://ariakit.org/examples/form-select)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
+   * - [FormSelect](https://ariakit.com/examples/form-select)
    * @default {}
    */
   values: T;
@@ -388,26 +406,27 @@ export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
   submitting: boolean;
   /**
    * The number of times
-   * [`submit`](https://ariakit.org/reference/use-form-store#submit) has been
+   * [`submit`](https://ariakit.com/reference/use-form-store#submit) has been
    * called with a successful response.
    */
   submitSucceed: number;
   /**
    * The number of times
-   * [`submit`](https://ariakit.org/reference/use-form-store#submit) has been
+   * [`submit`](https://ariakit.com/reference/use-form-store#submit) has been
    * called with an error response.
    */
   submitFailed: number;
 }
 
-export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
-  extends CollectionStoreFunctions<FormStoreItem> {
+export interface FormStoreFunctions<
+  T extends FormStoreValues = FormStoreValues,
+> extends CollectionStoreFunctions<FormStoreItem> {
   /**
    * An object containing the names of the form fields for type safety.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
-   * - [FormSelect](https://ariakit.org/examples/form-select)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
+   * - [FormSelect](https://ariakit.com/examples/form-select)
    * @example
    * store.names.name; // "name"
    * store.names.name.first; // "name.first"
@@ -415,7 +434,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    */
   names: Names<T>;
   /**
-   * Sets the [`values`](https://ariakit.org/reference/form-provider#values)
+   * Sets the [`values`](https://ariakit.com/reference/form-provider#values)
    * state.
    * @example
    * store.setValues({ name: "John" });
@@ -426,18 +445,19 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    * Retrieves a field value.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
    * @example
    * const nameValue = store.getValue("name");
    * // Can also use store.names for type-safety.
    * const emailValue = store.getValue(store.names.email);
    */
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   getValue: <T = any>(name: StringLike) => T;
   /**
    * Sets a field value.
    *
    * Live examples:
-   * - [FormSelect](https://ariakit.org/examples/form-select)
+   * - [FormSelect](https://ariakit.com/examples/form-select)
    * @example
    * store.setValue("name", "John");
    * store.setValue("name", (value) => value + " Doe");
@@ -453,6 +473,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    * // Can also use store.names for type-safety.
    * store.pushValue(store.names.tags, "new tag");
    */
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   pushValue: <T>(name: StringLike, value: T) => void;
   /**
    * Removes a value from an array field.
@@ -464,7 +485,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    */
   removeValue: (name: StringLike, index: number) => void;
   /**
-   * Sets the [`errors`](https://ariakit.org/reference/form-provider#errors)
+   * Sets the [`errors`](https://ariakit.com/reference/form-provider#errors)
    * state.
    * @example
    * store.setErrors({ name: "Name is required" });
@@ -483,7 +504,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    * Sets a field error.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
    * @example
    * store.setError("name", "Name is required");
    * store.setError("name", (error) => error + "!");
@@ -492,7 +513,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    */
   setError: (name: StringLike, error: SetStateAction<ErrorMessage>) => void;
   /**
-   * Sets the [`touched`](https://ariakit.org/reference/form-provider#touched)
+   * Sets the [`touched`](https://ariakit.com/reference/form-provider#touched)
    * state.
    * @example
    * store.setTouched({ name: true });
@@ -518,7 +539,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   setFieldTouched: (name: StringLike, value: SetStateAction<boolean>) => void;
   /**
    * Function that accepts a callback that will be used to validate the form
-   * when [`validate`](https://ariakit.org/reference/use-form-store#validate) is
+   * when [`validate`](https://ariakit.com/reference/use-form-store#validate) is
    * called. It returns a cleanup function that will remove the callback.
    * @example
    * const cleanup = store.onValidate(async (state) => {
@@ -528,10 +549,10 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    *   }
    * });
    */
-  onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => void;
+  onValidate: (callback: FormStoreCallback<FormStoreState<T>>) => () => void;
   /**
    * Function that accepts a callback that will be used to submit the form when
-   * [`submit`](https://ariakit.org/reference/use-form-store#submit) is called.
+   * [`submit`](https://ariakit.com/reference/use-form-store#submit) is called.
    * It returns a cleanup function that will remove the callback.
    * @param callback The callback function.
    * @example
@@ -543,7 +564,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    *   }
    * });
    */
-  onSubmit: (callback: FormStoreCallback<FormStoreState<T>>) => void;
+  onSubmit: (callback: FormStoreCallback<FormStoreState<T>>) => () => void;
   /**
    * Validates the form.
    * @example
@@ -567,7 +588,8 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
 }
 
 export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
-  extends CollectionStoreOptions<FormStoreItem>,
+  extends
+    CollectionStoreOptions<FormStoreItem>,
     StoreOptions<FormStoreState<T>, "values" | "errors" | "touched"> {
   /**
    * The default values of the form.
@@ -585,9 +607,7 @@ export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
 }
 
 export interface FormStoreProps<T extends FormStoreValues = FormStoreValues>
-  extends FormStoreOptions<T>,
-    StoreProps<FormStoreState<T>> {}
+  extends FormStoreOptions<T>, StoreProps<FormStoreState<T>> {}
 
 export interface FormStore<T extends FormStoreValues = FormStoreValues>
-  extends FormStoreFunctions<T>,
-    Store<FormStoreState<T>> {}
+  extends FormStoreFunctions<T>, Store<FormStoreState<T>> {}

@@ -8,6 +8,7 @@
 /hover
 /mouse-down
 /mouse-up
+/playwright
 /press
 /query
 /react

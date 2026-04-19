@@ -1,14 +1,14 @@
+import { sync } from "@ariakit/core/utils/store";
 import type { ElementType, FocusEvent } from "react";
 import { useEffect, useRef, useState } from "react";
-import { sync } from "@ariakit/core/utils/store";
-import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
-import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
-import { useEvent, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import type { CompositeItemOptions } from "./composite-item.js";
-import { useCompositeItem } from "./composite-item.js";
-import type { CompositeOverflowStore } from "./composite-overflow-store.js";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
+import { useEvent, useMergeRefs } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import type { CompositeItemOptions } from "./composite-item.tsx";
+import { useCompositeItem } from "./composite-item.tsx";
+import type { CompositeOverflowStore } from "./composite-overflow-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -17,7 +17,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 /**
  * Returns props to create a `CompositeOverflowDisclosure` component. This hook
  * should be used in a component that's wrapped with a composite component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * // This component should be wrapped with Composite
@@ -71,7 +71,7 @@ export const useCompositeOverflowDisclosure = createHook<
 /**
  * Renders a disclosure button for the `CompositeOverflow` component. This
  * component should be wrapped with a composite component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();
@@ -100,8 +100,8 @@ export const CompositeOverflowDisclosure = forwardRef(
 
 export interface CompositeOverflowDisclosureOptions<
   T extends ElementType = TagName,
-> extends Omit<CompositeItemOptions<T>, "store">,
-    PopoverDisclosureOptions<T> {
+>
+  extends Omit<CompositeItemOptions<T>, "store">, PopoverDisclosureOptions<T> {
   /**
    * Object returned by the `useCompositeOverflowStore` hook.
    */

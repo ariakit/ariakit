@@ -1,1 +1,1 @@
-import "../combobox/test.js";
+import "../combobox/test.ts";

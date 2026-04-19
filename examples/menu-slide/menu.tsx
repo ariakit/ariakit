@@ -1,5 +1,5 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
+import * as React from "react";
 import { flushSync } from "react-dom";
 
 interface MenuButtonProps extends React.ComponentPropsWithRef<"div"> {}
@@ -28,8 +28,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     animated: isSubmenu ? 500 : false,
   });
 
-  const open = menu.useState("open");
-  const autoFocusOnShow = menu.useState("autoFocusOnShow");
+  const open = Ariakit.useStoreState(menu, "open");
+  const autoFocusOnShow = Ariakit.useStoreState(menu, "autoFocusOnShow");
 
   // By default, submenus don't automatically receive focus when they open.
   // But here we want them to always receive focus.
@@ -82,7 +82,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     };
     parentWrapper.addEventListener("scroll", onScroll);
     return () => parentWrapper.removeEventListener("scroll", onScroll);
-  }, [parent, menu.hide, menu.stopAnimation]);
+  }, [parent, menu]);
 
   const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
     <Ariakit.MenuButton
@@ -175,8 +175,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 });
 
-export interface MenuItemProps
-  extends React.ComponentPropsWithoutRef<"button"> {
+export interface MenuItemProps extends React.ComponentPropsWithoutRef<"button"> {
   label: React.ReactNode;
   disabled?: boolean;
 }
@@ -195,8 +194,7 @@ export const MenuItem = React.forwardRef<HTMLButtonElement, MenuItemProps>(
   },
 );
 
-export interface MenuSeparatorProps
-  extends React.ComponentPropsWithoutRef<"hr"> {}
+export interface MenuSeparatorProps extends React.ComponentPropsWithoutRef<"hr"> {}
 
 export const MenuSeparator = React.forwardRef<
   HTMLHRElement,

@@ -1,7 +1,7 @@
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
-import { useUpdateEffect } from "../utils/hooks.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+import { useUpdateEffect } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
   store: T,
@@ -18,8 +18,8 @@ export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
 
 /**
  * Creates a disclosure store to control the state of
- * [Disclosure](https://ariakit.org/components/disclosure) components.
- * @see https://ariakit.org/components/disclosure
+ * [Disclosure](https://ariakit.com/components/disclosure) components.
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx
  * const disclosure = useDisclosureStore();
@@ -38,13 +38,14 @@ export function useDisclosureStore(
 export interface DisclosureStoreState extends Core.DisclosureStoreState {}
 
 export interface DisclosureStoreFunctions
-  extends Pick<DisclosureStoreOptions, "disclosure">,
+  extends
+    Pick<DisclosureStoreOptions, "disclosure">,
     Omit<Core.DisclosureStoreFunctions, "disclosure"> {}
 
 export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
   /**
    * A callback that gets called when the
-   * [`open`](https://ariakit.org/reference/disclosure-provider#open) state
+   * [`open`](https://ariakit.com/reference/disclosure-provider#open) state
    * changes.
    * @example
    * const [open, setOpen] = useState(false);
@@ -62,19 +63,23 @@ export interface DisclosureStoreOptions extends Core.DisclosureStoreOptions {
    * A reference to another disclosure store that controls another disclosure
    * component to keep them in sync. Element states like `contentElement` and
    * `disclosureElement` won't be synced. For that, use the
-   * [`store`](https://ariakit.org/reference/disclosure-provider#store) prop
+   * [`store`](https://ariakit.com/reference/disclosure-provider#store) prop
    * instead.
    *
    * Live examples:
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu](https://ariakit.com/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   disclosure?: DisclosureStore | null;
 }
 
 export interface DisclosureStoreProps
-  extends DisclosureStoreOptions,
+  extends
+    DisclosureStoreOptions,
     Omit<Core.DisclosureStoreProps, "disclosure"> {}
 
 export interface DisclosureStore
-  extends DisclosureStoreFunctions,
+  extends
+    DisclosureStoreFunctions,
     Omit<Store<Core.DisclosureStore>, "disclosure"> {}

@@ -1,9 +1,9 @@
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint",
+    "oxc.oxc-vscode",
     "editorconfig.editorconfig",
     "bradlc.vscode-tailwindcss",
-    "christian-kohler.path-intellisense"
+    "astro-build.astro-vscode"
   ],
   "unwantedRecommendations": []
 }

@@ -2,10 +2,10 @@ import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 
 /**
  * Creates a toolbar store.
@@ -36,13 +36,12 @@ export interface ToolbarStoreState extends CompositeStoreState {
 export interface ToolbarStoreFunctions extends CompositeStoreFunctions {}
 
 export interface ToolbarStoreOptions
-  extends StoreOptions<ToolbarStoreState, "orientation" | "focusLoop">,
+  extends
+    StoreOptions<ToolbarStoreState, "orientation" | "focusLoop">,
     CompositeStoreOptions {}
 
 export interface ToolbarStoreProps
-  extends ToolbarStoreOptions,
-    StoreProps<ToolbarStoreState> {}
+  extends ToolbarStoreOptions, StoreProps<ToolbarStoreState> {}
 
 export interface ToolbarStore
-  extends ToolbarStoreFunctions,
-    Store<ToolbarStoreState> {}
+  extends ToolbarStoreFunctions, Store<ToolbarStoreState> {}

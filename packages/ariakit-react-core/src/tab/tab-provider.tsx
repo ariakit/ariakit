@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
-import { TabContextProvider } from "./tab-context.js";
-import { useTabStore } from "./tab-store.js";
-import type { TabStoreProps } from "./tab-store.js";
+import { TabContextProvider } from "./tab-context.tsx";
+import type { TabStoreProps } from "./tab-store.ts";
+import { useTabStore } from "./tab-store.ts";
 
 /**
- * Provides a tab store to [Tab](https://ariakit.org/components/tab) components.
- * @see https://ariakit.org/components/tab
+ * Provides a tab store to [Tab](https://ariakit.com/components/tab) components.
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx
  * <TabProvider>

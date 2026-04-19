@@ -1,25 +1,32 @@
+import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
+import {
+  disabledFromElement,
+  disabledFromProps,
+  invariant,
+} from "@ariakit/core/utils/misc";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useRef } from "react";
-import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
-import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
-import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.js";
-import { useHovercardAnchor } from "../hovercard/hovercard-anchor.js";
-import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.js";
-import { usePopoverDisclosure } from "../popover/popover-disclosure.js";
-import { Role } from "../role/role.js";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
+import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
+import { Role } from "../role/role.tsx";
 import {
   useEvent,
   useId,
   useMergeRefs,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { MenuContextProvider, useMenuProviderContext } from "./menu-context.js";
-import type { MenuStore, MenuStoreState } from "./menu-store.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import {
+  MenuContextProvider,
+  useMenuProviderContext,
+} from "./menu-context.tsx";
+import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName | "div";
@@ -49,7 +56,7 @@ function hasActiveItem(
 
 /**
  * Returns props to create a `MenuButton` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -84,6 +91,8 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     const hasParentMenu = !!parentMenu;
     const parentIsMenubar = !!parentMenubar && !hasParentMenu;
     const disabled = disabledFromProps(props);
+    const isDisabled = (element: Element) =>
+      disabled || disabledFromElement(element);
 
     const showMenu = () => {
       const trigger = ref.current;
@@ -97,7 +106,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event as any);
-      if (disabled) return;
+      if (isDisabled(event.currentTarget)) return;
       if (event.defaultPrevented) return;
       // Reset the autoFocusOnShow state so we can focus the menu button while
       // the menu is open and press arrow keys to move focus to the menu items.
@@ -117,7 +126,8 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       }
     });
 
-    const dir = store.useState(
+    const dir = useStoreState(
+      store,
       (state) => state.placement.split("-")[0] as BasePlacement,
     );
 
@@ -125,7 +135,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event as any);
-      if (disabled) return;
+      if (isDisabled(event.currentTarget)) return;
       if (event.defaultPrevented) return;
       const initialFocus = getInitialFocus(event, dir);
       if (initialFocus) {
@@ -196,13 +206,22 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
         ? getPopupItemRole(parentContentElement, "menuitem")
         : undefined;
 
-    const contentElement = store.useState("contentElement");
+    const contentElement = useStoreState(store, "contentElement");
+
+    // Use the combobox presence to pick the correct fallback so
+    // aria-haspopup stays stable before the content element mounts.
+    // See https://github.com/ariakit/ariakit/issues/4443
+    const hasCombobox = !!store.combobox;
+    const popupRole = getPopupRole(
+      contentElement,
+      hasCombobox ? "dialog" : "menu",
+    );
 
     props = {
-      id,
       role,
-      "aria-haspopup": getPopupRole(contentElement, "menu"),
+      "aria-haspopup": popupRole,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
       onFocus,
       onKeyDown,
@@ -257,9 +276,9 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 
 /**
  * Renders a menu button that toggles the visibility of a
- * [`Menu`](https://ariakit.org/reference/menu) component when clicked or when
+ * [`Menu`](https://ariakit.com/reference/menu) component when clicked or when
  * using arrow keys.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {2}
  * <MenuProvider>
@@ -279,25 +298,26 @@ export const MenuButton = forwardRef(function MenuButton(
 });
 
 export interface MenuButtonOptions<T extends ElementType = TagName>
-  extends HovercardAnchorOptions<T>,
+  extends
+    HovercardAnchorOptions<T>,
     PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
    * provided, the closest
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) component's
    * context will be used.
    */
   store?: MenuStore;
   /**
    * Determines whether pressing a character key while focusing on the
-   * [`MenuButton`](https://ariakit.org/reference/menu-button) should move focus
-   * to the [`MenuItem`](https://ariakit.org/reference/menu-item) starting with
+   * [`MenuButton`](https://ariakit.com/reference/menu-button) should move focus
+   * to the [`MenuItem`](https://ariakit.com/reference/menu-item) starting with
    * that character.
    *
    * By default, it's `true` for menu buttons in a
-   * [`Menubar`](https://ariakit.org/reference/menubar), but `false` for other
+   * [`Menubar`](https://ariakit.com/reference/menubar), but `false` for other
    * menu buttons.
    */
   typeahead?: boolean;

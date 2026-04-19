@@ -1,4 +1,5 @@
 import { press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("@ at the beginning", async () => {
   await press.Tab();
@@ -42,11 +43,11 @@ test("typing on the textarea", async () => {
   expect(q.combobox()).toHaveValue("Hi @tcodes0 @matheus1lva ");
   await type("\b\n\n#lat");
   await press.ArrowLeft();
-  await expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox()).not.toBeInTheDocument();
   await type("\b");
-  await expect(q.listbox()).not.toBeInTheDocument();
+  expect(q.listbox()).not.toBeInTheDocument();
   await type("\b");
-  await expect(q.listbox()).toBeVisible();
+  expect(q.listbox()).toBeVisible();
   await press.Enter();
   expect(q.combobox()).toHaveValue("Hi @tcodes0 @matheus1lva\n\n#1253 t");
 });

@@ -1,11 +1,13 @@
 # Contributing
 
+> Join the [Ariakit Discord server](https://discord.gg/WyHvnXsvMs) to connect with other contributors!
+
 ## Basic tutorial
 
 This guide is intended to help you get started with contributing to the project. By following these steps — **which should take no more than 30 minutes** —, you will understand the development process and workflow.
 
 1. [Cloning the repository](#cloning-the-repository)
-2. [Installing Node.js and npm](#installing-nodejs-and-npm)
+2. [Installing Node.js and pnpm](#installing-nodejs-and-pnpm)
 3. [Installing dependencies](#installing-dependencies)
 4. [Starting the development server](#starting-the-development-server)
 5. [Creating a component](#creating-a-component)
@@ -25,8 +27,7 @@ This guide is intended to help you get started with contributing to the project.
 This guide covers more advanced topics. Pick the topics based on your needs.
 
 16. [Versioning](#versioning)
-17. [Running with React 17](#running-with-react-17)
-18. [Writing end-to-end tests](#writing-end-to-end-tests)
+17. [Writing end-to-end tests](#writing-end-to-end-tests)
 
 <br>
 
@@ -36,17 +37,13 @@ This guide covers more advanced topics. Pick the topics based on your needs.
 
 ## Cloning the repository
 
-To start contributing to the project, you have to fork this repository and clone it to your local machine:
-
-```bash
-git clone https://github.com/YOUR_USERNAME/ariakit.git
-```
-
-If you are already part of the organization on GitHub, clone the repository directly:
+Pull requests are expected to come from branches on `ariakit/ariakit`, so clone the repository directly:
 
 ```bash
 git clone https://github.com/ariakit/ariakit.git
 ```
+
+If you don't have write access yet, reach out to a maintainer before preparing a pull request. The GitHub workflows currently assume same-repository branches.
 
 Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit) and skip to [Creating a component](#creating-a-component).
 
@@ -54,20 +51,20 @@ Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://g
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
-## Installing Node.js and npm
+## Installing Node.js and pnpm
 
-This repository uses [npm workspaces](https://docs.npmjs.com/cli/v8/using-npm/workspaces) to manage multiple ESM projects. You need to install **npm v7 or higher** and **Node.js v18 or higher**.
+This repository uses [pnpm workspaces](https://pnpm.io/workspaces) to manage multiple ESM projects. You need to install **[pnpm](https://pnpm.io/installation)** and **Node.js v18 or higher**.
 
-You can run the following commands in your terminal to check your local Node.js and npm versions:
+You can run the following commands in your terminal to check your local Node.js and pnpm versions:
 
 ```bash
 node -v
-npm -v
+pnpm -v
 ```
 
-If the versions are not correct or you don't have Node.js or npm installed, download them from https://nodejs.org.
+If you don't have Node.js installed, download it from https://nodejs.org. You can install pnpm via `corepack enable` (built into Node.js) or follow the [pnpm installation guide](https://pnpm.io/installation).
 
-Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js and npm versions. Once in the project's root directory, run the following command in your terminal:
+Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js version. Once in the project's root directory, run the following command in your terminal:
 
 ```bash
 nvm use
@@ -84,7 +81,7 @@ nvm use
 Once in the project's root directory, run the following command to install the project's dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 <div align="right">
@@ -96,7 +93,7 @@ npm install
 After installing the project's dependencies, run the following command to start the development server:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 > If you're on Windows, we recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) or [Gitpod](https://gitpod.io/#https://github.com/ariakit/ariakit).
@@ -111,19 +108,19 @@ Now open http://localhost:3000 in your browser to see the project's site.
 
 To make a new component, create a file with the following contents:
 
-`packages/ariakit-react-core/src/my-component/my-component.ts`
+`packages/ariakit-react-core/src/my-component/my-component.tsx`
 
 ````tsx
 import type { ElementType } from "react";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
  * Description for my component hook.
- * @see https://ariakit.org/components/my-component
+ * @see https://ariakit.com/components/my-component
  * @example
  * ```jsx
  * const props = useMyComponent();
@@ -134,12 +131,12 @@ export const useMyComponent = createHook<TagName, MyComponentOptions>(
   function useMyComponent({ customProp = "My component", ...props }) {
     props = { children: customProp, ...props };
     return props;
-  }
+  },
 );
 
 /**
  * Description for my component.
- * @see https://ariakit.org/components/my-component
+ * @see https://ariakit.com/components/my-component
  * @example
  * ```jsx
  * <MyComponent />
@@ -152,13 +149,14 @@ export const MyComponent = forwardRef(function MyComponent(
   return createElement(TagName, htmlProps);
 });
 
-export interface MyComponentOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface MyComponentOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Description for custom prop.
    */
   customProp?: string;
-};
+}
 
 export type MyComponentProps<T extends ElementType = TagName> = Props<
   T,
@@ -180,7 +178,7 @@ The development workflow on this project is entirely based on examples. You can 
 
 Let's create a default example for our component:
 
-`examples/my-component/index.tsx`
+`examples/my-component/index.react.tsx`
 
 ```tsx
 import { MyComponent } from "@ariakit/react-core/my-component/my-component";
@@ -206,19 +204,15 @@ When necessary, you can apply styles to the example. We're using [Tailwind](http
 
 `examples/my-component/style.css`
 
-<!-- prettier-ignore -->
 ```css
 .my-component {
-  @apply
-    bg-red-600
-    text-white
-    dark:bg-red-800
+  @apply bg-red-600 text-white dark:bg-red-800;
 }
 ```
 
-Now we need to import the CSS file on the example's `index.tsx` file and add the class name to the respective elements:
+Now we need to import the CSS file on the example's `index.react.tsx` file and add the class name to the respective elements:
 
-`examples/my-component/index.tsx`
+`examples/my-component/index.react.tsx`
 
 ```tsx
 import "./style.css";
@@ -258,7 +252,7 @@ test("my component", () => {
 Now run the following command in your terminal to watch the test results:
 
 ```bash
-npm test watch my-component
+pnpm test watch my-component
 ```
 
 <div align="right">
@@ -273,7 +267,7 @@ A component may have multiple examples besides the default one. This is useful w
 
 Let's create another example for our component:
 
-`examples/my-component-custom-prop/index.tsx`
+`examples/my-component-custom-prop/index.react.tsx`
 
 ```tsx
 import "./style.css";
@@ -294,13 +288,11 @@ We can `@import` CSS files from other examples. You'll usually import the styles
 
 `examples/my-component-custom-prop/style.css`
 
-<!-- prettier-ignore -->
 ```css
 @import url("../my-component/style.css");
 
 .my-component {
-  @apply
-    p-4
+  @apply p-4;
 }
 ```
 
@@ -333,7 +325,7 @@ Finally, we must update the `index.ts` file to export the component:
 
 ```ts
 // ...
-export * from "./my-component.js";
+export * from "./my-component.ts";
 // ...
 ```
 
@@ -345,7 +337,7 @@ export * from "./my-component.js";
 
 Now that we've promoted our component to the `@ariakit/react` package, we need to update the import declarations on the examples:
 
-`examples/my-component/index.tsx`
+`examples/my-component/index.react.tsx`
 
 ```tsx
 import "./style.css";
@@ -356,7 +348,7 @@ export default function Example() {
 }
 ```
 
-`examples/my-component-custom-prop/index.tsx`
+`examples/my-component-custom-prop/index.react.tsx`
 
 ```tsx
 import "./style.css";
@@ -390,7 +382,7 @@ This is my component.
 
 </div>
 
-<a href="../examples/my-component/index.tsx" data-playground>Example</a>
+<a href="../examples/my-component/index.react.tsx" data-playground>Example</a>
 ```
 
 Now open http://localhost:3000/components/my-component to see the component documentation.
@@ -436,7 +428,7 @@ When you're ready to submit a pull request, you can follow these naming conventi
 - Pull request titles use the [Imperative Mood](https://en.wikipedia.org/wiki/Imperative_mood) (e.g., `Add something`, `Fix something`).
 - [Changesets](#versioning) use past tense verbs (e.g., `Added something`, `Fixed something`).
 
-When you submit a pull request, GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause.
+Open the pull request from a branch on `ariakit/ariakit`. GitHub will automatically lint, build, and test your changes. If you see an ❌, it's most likely a bug in your code. Please, inspect the logs through the GitHub UI to find the cause.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -479,20 +471,6 @@ Once your pull request is merged into the `main` branch, the `Publish` PR will b
     <a href="#advanced-tutorial">&uarr; back to top</a></b>
 </div>
 
-## Running with React 17
-
-Ariakit supports both React 17 and React 18. If you want to see if your example works with React 17, you can run the following commands.
-
-```bash
-npm run test-react17
-```
-
-This command will automatically re-install React 18 at the end of the process. If, for some reason, this doesn't happen automatically, you should run `npm i` in your terminal.
-
-<div align="right">
-    <a href="#advanced-tutorial">&uarr; back to top</a></b>
-</div>
-
 ## Writing end-to-end tests
 
 Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. They use [JSDOM](https://github.com/jsdom/jsdom), which implements JavaScript DOM APIs in a Node.js environment.
@@ -504,11 +482,8 @@ Let's create an end-to-end test for our example:
 `examples/my-component/test-chrome.ts`
 
 ```ts
-import { expect, test } from "@playwright/test";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/my-component");
-});
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 test("my component", async ({ page }) => {
   const element = await page.getByText("My component");
@@ -521,19 +496,19 @@ Now run the following command in your terminal to see the test results (make sur
 > **Note**: The [development server](#starting-the-development-server) must be running in another terminal instance.
 
 ```bash
-npm run test-browser my-component
+pnpm run test-browser my-component
 ```
 
 You can also run the tests in headed mode:
 
 ```bash
-npm run test-browser-headed my-component
+pnpm run test-browser-headed my-component
 ```
 
 Or in debug mode:
 
 ```bash
-npm run test-browser-debug my-component
+pnpm run test-browser-debug my-component
 ```
 
 <div align="right">

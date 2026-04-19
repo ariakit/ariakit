@@ -1,5 +1,110 @@
 # @ariakit/core
 
+## 0.4.20
+
+- Fixed `Math.random()` being called unconditionally when creating composite stores ([`useTabStore`](https://ariakit.com/reference/use-tab-store), [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store), [`useSelectStore`](https://ariakit.com/reference/use-select-store), etc.), even when an explicit `id` prop was provided. This was causing Next.js build errors with `cacheComponents` enabled.
+
+## 0.4.19
+
+- Added `disabledFromElement` to `@ariakit/core/utils/misc`.
+- Fixed [`formStore.setError()`](https://ariakit.org/reference/use-form-store#seterror) and [`formStore.setFieldTouched()`](https://ariakit.org/reference/use-form-store#setfieldtouched) failing to set values on nested array field paths such as `items.0.name`.
+
+## 0.4.18
+
+- Fixed an error when trying to reach focusable elements within iframes.
+
+## 0.4.17
+
+- Updated packages to target ES2018 (previously ES2017).
+
+## 0.4.16
+
+- Updated `Array` types to `ReadonlyArray` for better compatibility.
+
+## 0.4.15
+
+- Fixed `valid` state not updating on [Form](https://ariakit.org/components/form).
+
+## 0.4.14
+
+- Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
+- Fixed typings for [`onSubmit`](https://ariakit.org/reference/use-form-store#onsubmit) and [`onValidate`](https://ariakit.org/reference/use-form-store#onvalidate).
+- Improved JSDocs.
+
+## 0.4.13
+
+- Fixed the [`item`](https://ariakit.org/reference/use-collection-store#item) method to prevent it from returning items that have been removed from the collection store.
+- Fixed the [`item`](https://ariakit.org/reference/use-menu-store#item) method when keeping different menu stores in sync.
+- Added [`id`](https://ariakit.org/reference/use-composite-store#id) prop to composite stores.
+- Added `sortBasedOnDOMPosition` function.
+- Updated core utils.
+- Improved JSDocs.
+
+## 0.4.12
+
+- Fixed regression in [`focusShift`](https://ariakit.org/reference/composite-provider#focusshift).
+- Improved JSDocs.
+
+## 0.4.11
+
+### Overriding composite state for specific methods
+
+The [`next`](https://ariakit.org/reference/use-composite-store#next), [`previous`](https://ariakit.org/reference/use-composite-store#previous), [`up`](https://ariakit.org/reference/use-composite-store#up), and [`down`](https://ariakit.org/reference/use-composite-store#down) methods of the [composite store](https://ariakit.org/reference/use-composite-store) now accept an object as the first argument to override the composite state for that specific method. For example, you can pass a different [`activeId`](https://ariakit.org/reference/use-composite-store#activeid) value to the [`next`](https://ariakit.org/reference/use-composite-store#next) method so it returns the next item based on that value rather than the current active item in the composite store:
+
+```js
+const store = useCompositeStore({ defaultActiveId: "item1" });
+const item3 = store.next({ activeId: "item2" });
+```
+
+It's important to note that the composite state is not modified when using this feature. The state passed to these methods is used solely for that specific method call.
+
+### Other updates
+
+- Fixed CJS build on Next.js.
+- Fixed `getScrollingElement` to consider `overflow: clip`.
+- Improved JSDocs.
+
+## 0.4.10
+
+### Tabs inside animated Combobox or Select
+
+When rendering [Tab](https://ariakit.org/components/tab) inside [Combobox](https://ariakit.org/components/combobox) or [Select](https://ariakit.org/components/select), it now waits for the closing animation to finish before restoring the tab with the selected item. This should prevent an inconsistent UI where the tab is restored immediately while the content is still animating out. See [Select with Combobox and Tabs](https://ariakit.org/examples/select-combobox-tab).
+
+### Other updates
+
+- Updated [Combobox](https://ariakit.org/components/combobox) to immediately reset the [`activeId`](https://ariakit.org/reference/use-combobox-store#activeid) upon closing the popover.
+- Improved JSDocs.
+
+## 0.4.9
+
+- Improved JSDocs.
+
+## 0.4.8
+
+- Added a README file to the package.
+- Improved JSDocs.
+
+## 0.4.7
+
+- Improved JSDocs.
+
+## 0.4.6
+
+- Ensured [Combobox](https://ariakit.org/components/combobox) uses roving tabindex to manage focus on mobile Safari.
+- Added a new `listElement` state to the Select store.
+- Removed unnecessary utility functions: `closest`, `matches`.
+- Improved use of [Tab](https://ariakit.org/components/tab) components within [Select](https://ariakit.org/components/select) widgets.
+- Improved JSDocs.
+
+## 0.4.5
+
+- Added new `undo` utils.
+- Added new experimental Tag components.
+- Added DOM utils: `isTextbox`, `getTextboxValue`.
+- Added event function: `getInputType`.
+- Added new [`resetValue`](https://ariakit.org/reference/use-combobox-store#resetvalue) method to combobox store.
+- Improved JSDocs.
+
 ## 0.4.4
 
 ### Combobox `autoFocusOnHide` behavior

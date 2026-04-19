@@ -1,4 +1,5 @@
-import { press, q } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("tab to listbox", async () => {
   expect(q.listbox()).not.toHaveFocus();
@@ -21,6 +22,19 @@ test("move through items with arrow keys", async () => {
   expect(q.option("Banana")).toHaveAttribute("data-active-item");
   expect(q.option("Banana")).toHaveAttribute("data-focus-visible");
   expect(q.option("Banana")).toHaveAttribute("aria-selected", "false");
+});
+
+test("click on item then move with arrow keys", async () => {
+  await click(q.option("Apple"));
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Apple")).toHaveFocus();
+  expect(q.option("Apple")).toHaveAttribute("data-active-item");
+  expect(q.option("Apple")).not.toHaveAttribute("data-focus-visible");
+  await press.ArrowDown();
+  expect(q.listbox()).toHaveFocus();
+  expect(q.option("Banana")).toHaveFocus();
+  expect(q.option("Banana")).toHaveAttribute("data-active-item");
+  expect(q.option("Banana")).toHaveAttribute("data-focus-visible");
 });
 
 test("select item with keyboard", async () => {

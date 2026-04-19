@@ -1,18 +1,18 @@
-import type { ComboboxStore } from "../combobox/combobox-store.js";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
-} from "../hovercard/hovercard-store.js";
-import { createHovercardStore } from "../hovercard/hovercard-store.js";
-import { applyState, defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../hovercard/hovercard-store.ts";
+import { createHovercardStore } from "../hovercard/hovercard-store.ts";
+import { applyState, defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   createStore,
   mergeStore,
@@ -21,14 +21,14 @@ import {
   setup,
   sync,
   throwOnConflictingProps,
-} from "../utils/store.js";
+} from "../utils/store.ts";
 import type {
   BivariantCallback,
   PickRequired,
   SetState,
   SetStateAction,
-} from "../utils/types.js";
-import type { MenuBarStore } from "./menu-bar-store.js";
+} from "../utils/types.ts";
+import type { MenuBarStore } from "./menu-bar-store.ts";
 
 export function createMenuStore<T extends MenuStoreValues = MenuStoreValues>(
   props: PickRequired<MenuStoreProps<T>, "values" | "defaultValues">,
@@ -150,12 +150,11 @@ export function createMenuStore({
 
 export type MenuStoreValues = Record<
   string,
-  string | boolean | number | Array<string | number>
+  string | boolean | number | ReadonlyArray<string | number>
 >;
 
 export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
-  extends CompositeStoreState,
-    HovercardStoreState {
+  extends CompositeStoreState, HovercardStoreState {
   /** @default "vertical" */
   orientation: CompositeStoreState["orientation"];
   /** @default "bottom-start" */
@@ -168,20 +167,21 @@ export interface MenuStoreState<T extends MenuStoreValues = MenuStoreValues>
   initialFocus: "container" | "first" | "last";
   /**
    * A map of names and values that will be used by the
-   * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox) and
-   * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio)
+   * [`MenuItemCheckbox`](https://ariakit.com/reference/menu-item-checkbox) and
+   * [`MenuItemRadio`](https://ariakit.com/reference/menu-item-radio)
    * components.
    *
    * Live examples:
-   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
+   * - [MenuItemCheckbox](https://ariakit.com/examples/menu-item-checkbox)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    */
   values: T;
 }
 
 export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
-  extends CompositeStoreFunctions,
+  extends
+    CompositeStoreFunctions,
     HovercardStoreFunctions,
     Pick<MenuStoreOptions, "combobox" | "parent" | "menubar"> {
   /**
@@ -189,7 +189,7 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
    *
    * Live examples:
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    */
   hideAll: () => void;
   /**
@@ -197,7 +197,7 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
    */
   setInitialFocus: SetState<MenuStoreState<T>["initialFocus"]>;
   /**
-   * Sets the [`values`](https://ariakit.org/reference/menu-provider#values)
+   * Sets the [`values`](https://ariakit.com/reference/menu-provider#values)
    * state.
    * @example
    * store.setValues({ watching: ["issues"] });
@@ -209,7 +209,7 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
    *
    * Live examples:
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    * @example
    * store.setValue("watching", ["issues"]);
    * store.setValue("watching", (value) => [...value, "issues"]);
@@ -223,7 +223,8 @@ export interface MenuStoreFunctions<T extends MenuStoreValues = MenuStoreValues>
 }
 
 export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
-  extends StoreOptions<
+  extends
+    StoreOptions<
       MenuStoreState<T>,
       "orientation" | "placement" | "hideTimeout" | "values"
     >,
@@ -246,20 +247,18 @@ export interface MenuStoreOptions<T extends MenuStoreValues = MenuStoreValues>
   menubar?: MenuBarStore | null;
   /**
    * The default values for the
-   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+   * [`values`](https://ariakit.com/reference/menu-provider#values) state.
    *
    * Live examples:
-   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
-   * - [MenuItemRadio](https://ariakit.org/examples/menu-item-radio)
+   * - [MenuItemCheckbox](https://ariakit.com/examples/menu-item-checkbox)
+   * - [MenuItemRadio](https://ariakit.com/examples/menu-item-radio)
    * @default {}
    */
   defaultValues?: MenuStoreState<T>["values"];
 }
 
 export interface MenuStoreProps<T extends MenuStoreValues = MenuStoreValues>
-  extends MenuStoreOptions<T>,
-    StoreProps<MenuStoreState<T>> {}
+  extends MenuStoreOptions<T>, StoreProps<MenuStoreState<T>> {}
 
 export interface MenuStore<T extends MenuStoreValues = MenuStoreValues>
-  extends MenuStoreFunctions<T>,
-    Store<MenuStoreState<T>> {}
+  extends MenuStoreFunctions<T>, Store<MenuStoreState<T>> {}

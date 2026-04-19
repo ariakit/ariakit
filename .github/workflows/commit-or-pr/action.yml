@@ -1,0 +1,115 @@
+name: commit-or-pr
+description: Commit or create a pull request
+
+inputs:
+  event:
+    description: Event type (push or pull_request)
+    required: true
+  message:
+    description: Commit message and PR title
+    required: true
+  head-branch:
+    description: Branch name when committing to existing PR
+    required: true
+  new-branch:
+    description: Branch name when creating a new PR
+    required: true
+  token:
+    description: Token used for PR creation (defaults to GITHUB_TOKEN)
+    required: false
+    default: ""
+  working-directory:
+    description: Directory where the repository is checked out
+    required: false
+    default: "."
+  paths:
+    description: >
+      Newline-separated pathspecs to stage and commit. When empty, all working
+      tree changes are included. Set this to the generator's output paths so
+      unrelated tree changes (e.g., a `pnpm install` rewriting `pnpm-lock.yaml`)
+      are not captured by the commit.
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure git
+      shell: bash
+      run: |
+        cd "${{ inputs.working-directory }}"
+        git config user.name "ariakit-bot"
+        git config user.email "ariakit-bot@users.noreply.github.com"
+
+    - name: Create PR
+      if: inputs.event == 'push'
+      uses: peter-evans/create-pull-request@v8
+      with:
+        # Push workflows should not write directly to `main`; they publish
+        # generated changes through a dedicated maintenance PR instead.
+        path: ${{ inputs.working-directory }}
+        add-paths: ${{ inputs.paths }}
+        commit-message: ${{ inputs.message }}
+        title: ${{ inputs.message }}
+        base: ${{ inputs.head-branch }}
+        branch: ${{ inputs.new-branch }}
+        delete-branch: true
+        token: ${{ inputs.token != '' && inputs.token || github.token }}
+        author: ariakit-bot <ariakit-bot@users.noreply.github.com>
+        committer: ariakit-bot <ariakit-bot@users.noreply.github.com>
+
+    - name: Commit changes
+      id: commit
+      shell: bash
+      if: inputs.event == 'pull_request'
+      env:
+        MESSAGE: ${{ inputs.message }}
+        PATHS: ${{ inputs.paths }}
+      run: |
+        cd "${{ inputs.working-directory }}"
+        if [ -n "$PATHS" ]; then
+          # macOS runners ship bash 3.2, which lacks `mapfile`. Fall back to a
+          # read loop that's portable across the bash versions GitHub hosts.
+          path_args=()
+          while IFS= read -r path; do
+            [ -n "${path//[[:space:]]/}" ] && path_args+=("$path")
+          done < <(printf '%s\n' "$PATHS")
+          git add -A -- "${path_args[@]}"
+        else
+          git add -A
+        fi
+        if git diff --cached --quiet --exit-code; then
+          echo "No files to commit."
+          echo "did_commit=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        git commit -m "$MESSAGE"
+        echo "did_commit=true" >> "$GITHUB_OUTPUT"
+
+    - name: Push to PR head branch
+      shell: bash
+      if: ${{ inputs.event == 'pull_request' && steps.commit.outputs.did_commit == 'true' }}
+      env:
+        HEAD_REF: ${{ inputs.head-branch }}
+        GH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
+      # Rebase onto the latest branch tip so generated-file commits do not
+      # fail just because another commit landed while the workflow was running.
+      # Abort the rebase on conflicts instead of swallowing the error; otherwise
+      # the working tree is left with conflict markers that break later steps
+      # (e.g., composite action YAML parsing on post-job cleanup).
+      run: |
+        cd "${{ inputs.working-directory }}"
+        set -e
+        # `gh auth git-credential` reads GH_TOKEN from the environment, so no
+        # explicit `gh auth login` is needed — and calling it under `set -e`
+        # would fail the step because gh exits 1 when GH_TOKEN is already set.
+        gh auth setup-git
+        git fetch origin "$HEAD_REF"
+        if ! git rebase "origin/$HEAD_REF"; then
+          # `|| true` so a non-zero `--abort` (e.g., no in-progress rebase)
+          # doesn't swallow the explicit diagnostic under `set -e`.
+          git rebase --abort || true
+          echo "Failed to rebase onto origin/$HEAD_REF." >&2
+          exit 1
+        fi
+        git push origin HEAD:"${HEAD_REF}"

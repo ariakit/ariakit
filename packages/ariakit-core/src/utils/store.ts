@@ -7,8 +7,8 @@ import {
   hasOwnProperty,
   invariant,
   noop,
-} from "./misc.js";
-import type { AnyObject, SetStateAction } from "./types.js";
+} from "./misc.ts";
+import type { AnyObject, SetStateAction } from "./types.ts";
 
 type Listener<S> = (state: S, prevState: S) => void | (() => void);
 
@@ -124,7 +124,9 @@ export function createStore<S extends State>(
     );
 
     const teardowns: Array<void | (() => void)> = [];
-    setups.forEach((setup) => teardowns.push(setup()));
+    for (const setup of setups) {
+      teardowns.push(setup());
+    }
 
     const cleanups = stores.map(init);
 
@@ -224,9 +226,9 @@ export function createStore<S extends State>(
     if (nextValue === state[key]) return;
 
     if (!fromStores) {
-      stores.forEach((store) => {
+      for (const store of stores) {
         store?.setState?.(key, nextValue);
-      });
+      }
     }
 
     const isControlled = props[key] !== undefined;
@@ -456,13 +458,15 @@ export function pick(store: Store, ...args: Parameters<StorePick>) {
 export function mergeStore<S extends State>(
   ...stores: Array<Store<S> | undefined>
 ): Store<S> {
-  const initialState = stores.reduce((state, store) => {
+  const initialState = {} as S;
+  for (const store of stores) {
     const nextState = store?.getState?.();
-    if (!nextState) return state;
-    return { ...state, ...nextState };
-  }, {} as S);
+    if (nextState) {
+      Object.assign(initialState, nextState);
+    }
+  }
   const store = createStore(initialState, ...stores);
-  return store;
+  return Object.assign({}, ...stores, store);
 }
 
 /**
@@ -520,15 +524,15 @@ export type StoreOptions<S extends State, K extends keyof S> = Partial<
  * Props that can be passed to a store creator function.
  * @template S State type.
  */
-export type StoreProps<S extends State = State> = {
+export interface StoreProps<S extends State = State> {
   /**
    * Another store object that will be kept in sync with the original store.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   store?: Store<Partial<S>>;
-};
+}
 
 /**
  * Extracts the state type from a store type.

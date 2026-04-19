@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@import "@ariakit/tailwind";
+
+@theme {
+  --color-canvas: oklch(99.33% 0.0011 197.14);
+  --color-primary: oklch(56.7% 0.1546 248.5156);
+  --color-secondary: oklch(65.59% 0.2118 354.31);
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+:root {
+  @variant dark {
+    --color-canvas: oklch(16.34% 0.0091 264.28);
+  }
+}
+
+body {
+  @apply ak-layer-canvas p-10;
+}

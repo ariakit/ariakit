@@ -1,0 +1,70 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import ReferenceContent from "#app/components/reference-content.astro";
+import ReferenceItem from "#app/components/reference-item.astro";
+import { getReferenceItems } from "#app/lib/reference.ts";
+import { getReferencePath, referenceURLToPartialPath } from "#app/lib/url.ts";
+import { invariant } from "@ariakit/core/utils/misc";
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+
+export const partial = true;
+
+export const getStaticPaths = (async () => {
+  if (import.meta.env.DISABLE_REFERENCE_LINKS) {
+    return [];
+  }
+  const references = await getCollection("references");
+  return references.flatMap((reference) => {
+    const framework = reference.data.framework;
+
+    const getPath = (item?: string) => {
+      const path = getReferencePath({ reference, item });
+      invariant(
+        path,
+        `Reference path not found for ${item} in ${reference.id}`
+      );
+      return referenceURLToPartialPath(path);
+    };
+
+    const data = reference.data;
+    const items = getReferenceItems(data);
+
+    return [
+      {
+        params: { partials: getPath() },
+        props: { framework, reference },
+      },
+      ...items.map((item) => ({
+        params: { partials: getPath(item.id) },
+        props: { framework, reference, item },
+      })),
+    ];
+  });
+}) satisfies GetStaticPaths;
+
+const { reference, item } = Astro.props;
+
+Astro.locals.framework = reference.data.framework;
+Astro.locals.reference = reference.id;
+---
+
+{
+  item ? (
+    <div class="ak-frame/2 ak-prose">
+      <ReferenceItem reference={reference} {...item} standalone />
+    </div>
+  ) : (
+    <div class="ak-frame/2 p-0">
+      <ReferenceContent reference={reference} compact />
+    </div>
+  )
+}

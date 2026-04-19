@@ -1,0 +1,299 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import ContainerRightMenu from "#app/components/container-right-menu.astro";
+import ContentAdmonition from "#app/components/content-admonition.astro";
+import ContentCodeBlock from "#app/components/content-code-block.astro";
+import ContentHeading from "#app/components/content-heading.astro";
+import ContentLink from "#app/components/content-link.astro";
+import ContentParagraph from "#app/components/content-paragraph.astro";
+import ContentSeparator from "#app/components/content-separator.astro";
+import Markdown from "#app/components/markdown.astro";
+import ReferenceItem from "#app/components/reference-item.astro";
+import {
+  ReferenceLabel,
+  getReferenceLabelText,
+} from "#app/components/reference-label.react.tsx";
+import TableOfContents from "#app/components/table-of-contents.astro";
+import {
+  getReferenceItemId,
+  getReferenceItemKind,
+  getReferenceSections,
+  type ReferenceSection,
+} from "#app/lib/reference.ts";
+import type { Reference } from "#app/lib/schemas.ts";
+import { getReferencePath } from "#app/lib/url.ts";
+import type { CollectionEntry } from "astro:content";
+import { encode } from "html-entities";
+
+interface Props {
+  reference: CollectionEntry<"references">;
+  inert?: boolean;
+  compact?: boolean;
+}
+
+const { reference, inert = false, compact = false } = Astro.props;
+const data = reference.data;
+
+interface ReferenceSectionContent extends ReferenceSection {
+  typeHtml?: string;
+}
+
+function formatExamplesToHtml(examples: typeof data.examples = []) {
+  return examples.map((example) => ({
+    ...example,
+    codeHtml: `<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${encode(example.code)}</code>`,
+  }));
+}
+
+function getSectionsFromData(data: Reference) {
+  const sections = getReferenceSections(data).map((section) => ({
+    ...section,
+    typeHtml: section.type
+      ? `<code class=\"language-typescript\">${section.type}</code>`
+      : undefined,
+  }));
+  return sections;
+}
+
+function getInertSections(
+  sections: ReferenceSectionContent[],
+  isInert: boolean
+) {
+  if (!isInert) return sections;
+  const firstWithItems = sections.find(
+    (s) => (s.items && s.items.length > 0) || s.id === "return-value"
+  );
+  if (!firstWithItems) return [];
+  if (firstWithItems.items && firstWithItems.items.length > 0) {
+    return [{ ...firstWithItems, items: firstWithItems.items.slice(0, 1) }];
+  }
+  return [firstWithItems];
+}
+
+function getHeadingsFromSections(sections: ReferenceSectionContent[]) {
+  const entries: Array<{ slug: string; depth: number; text: string }> = [];
+  for (const section of sections) {
+    if (section.id === "return-value") {
+      entries.push({ slug: section.id, depth: 2, text: section.title });
+      for (const item of section.items || []) {
+        entries.push({
+          slug: getReferenceItemId("return-prop", item.name),
+          depth: 3,
+          text: item.name,
+        });
+      }
+      continue;
+    }
+    entries.push({ slug: section.id, depth: 2, text: section.title });
+    for (const item of section.items || []) {
+      const itemKind = getReferenceItemKind(section.id);
+      entries.push({
+        slug: getReferenceItemId(itemKind, item.name),
+        depth: 3,
+        text: item.name,
+      });
+    }
+  }
+  return entries;
+}
+
+function getDeprecationInfo(data: Reference) {
+  const isDeprecated = Boolean(data.deprecated);
+  const deprecatedMarkdown =
+    typeof data.deprecated === "string" ? data.deprecated : undefined;
+  return { isDeprecated, deprecatedMarkdown };
+}
+
+const kind = data.kind ?? "component";
+const name = data.name;
+const tocTitle = getReferenceLabelText(kind, name);
+const { isDeprecated, deprecatedMarkdown } = getDeprecationInfo(data);
+const description = data.description;
+const formattedExamples = formatExamplesToHtml(data.examples);
+const sections = getSectionsFromData(data);
+const sectionsToRender = getInertSections(sections, inert);
+const hasSectionsToRender = !!sectionsToRender.length;
+const headings = getHeadingsFromSections(
+  compact ? sections.map((s) => ({ ...s, items: [] })) : sections
+);
+const storeStateCodeExamplesHtml = [
+  `<code class="language-tsx">const value = ak.useStoreState(store, "key");</code>`,
+  `<code class="language-tsx">const derived = ak.useStoreState(store, (state) => state.key);</code>`,
+];
+
+const inHovercard = !!Astro.locals.reference;
+
+function canRenderSeparator(sectionDiff: number, itemDiff: number) {
+  return sectionDiff !== 1 || itemDiff !== 1;
+}
+---
+
+<div class="@container" inert={inert}>
+  {!inert && <div id="api" class="scroll-mt-(--header-height)" />}
+  <div class:list={[inHovercard ? "py-4" : "py-8 @default:pt-16"]}>
+    <ContainerRightMenu>
+      <Fragment slot="prose">
+        <ContentHeading as="h3" class="mt-0 mb-8 ak-heading-2">
+          <ReferenceLabel symbols kind={kind} set:text={name} />
+        </ContentHeading>
+      </Fragment>
+    </ContainerRightMenu>
+    <ContainerRightMenu>
+      <Fragment slot="prose">
+        {
+          isDeprecated && (
+            <ContentAdmonition type="warning" title="Deprecated" class="mb-4">
+              {deprecatedMarkdown ? (
+                <Markdown content={deprecatedMarkdown} />
+              ) : (
+                ""
+              )}
+            </ContentAdmonition>
+          )
+        }
+        <Markdown content={description} />
+        {
+          formattedExamples.map((example) => (
+            <Fragment>
+              {example.description && (
+                <ContentParagraph>{example.description}</ContentParagraph>
+              )}
+              <ContentCodeBlock set:html={example.codeHtml} />
+            </Fragment>
+          ))
+        }
+        {
+          hasSectionsToRender && (
+            <Fragment>
+              {sectionsToRender.map((section, i, a) => (
+                <Fragment>
+                  <ContentHeading
+                    as="h4"
+                    id={section.id}
+                    class="ak-heading-3 mb-0"
+                  >
+                    <ContentLink href={`#${section.id}`}>
+                      {section.title}
+                    </ContentLink>
+                  </ContentHeading>
+                  {section.id === "state" && !compact && (
+                    <Fragment>
+                      {section.description && (
+                        <ContentParagraph>
+                          {section.description}
+                        </ContentParagraph>
+                      )}
+                      {storeStateCodeExamplesHtml.map((html) => (
+                        <ContentCodeBlock set:html={html} />
+                      ))}
+                    </Fragment>
+                  )}
+                  {section.id !== "return-value" && section.items?.length ? (
+                    compact ? (
+                      <Fragment>
+                        <ContentParagraph class="grid gap-2">
+                          {section.items.map((item) => (
+                            <ContentLink
+                              className="block w-full [&_code]:block hover:ak-layer-pop bg-transparent!"
+                              href={getReferencePath({
+                                reference,
+                                item: item.id,
+                              })}
+                            >
+                              <code>{item.name}</code>
+                            </ContentLink>
+                          ))}
+                        </ContentParagraph>
+                      </Fragment>
+                    ) : (
+                      <Fragment>
+                        <ContentSeparator />
+                        {section.items.map((item, j, b) => (
+                          <Fragment>
+                            <ReferenceItem reference={reference} {...item} />
+                            {canRenderSeparator(a.length - i, b.length - j) && (
+                              <ContentSeparator />
+                            )}
+                          </Fragment>
+                        ))}
+                      </Fragment>
+                    )
+                  ) : null}
+                  {section.id === "return-value" && (
+                    <Fragment>
+                      {compact ? (
+                        <Fragment>
+                          {section.description && (
+                            <Markdown content={section.description} />
+                          )}
+                          {section.items?.length ? (
+                            <Fragment>
+                              <ContentParagraph class="grid gap-2">
+                                {section.items.map((item) => (
+                                  <ContentLink
+                                    className="block w-full [&_code]:block hover:ak-layer-pop bg-transparent!"
+                                    href={getReferencePath({
+                                      reference,
+                                      item: item.id,
+                                    })}
+                                  >
+                                    <code>{item.name}</code>
+                                  </ContentLink>
+                                ))}
+                              </ContentParagraph>
+                            </Fragment>
+                          ) : null}
+                        </Fragment>
+                      ) : section.items?.length ? (
+                        <Fragment>
+                          {section.description && (
+                            <Markdown content={section.description} />
+                          )}
+                          <ContentSeparator />
+                          {section.items.map((item, j, b) => (
+                            <Fragment>
+                              <ReferenceItem reference={reference} {...item} />
+                              {canRenderSeparator(
+                                a.length - i,
+                                b.length - j
+                              ) && <ContentSeparator />}
+                            </Fragment>
+                          ))}
+                        </Fragment>
+                      ) : (
+                        <Fragment>
+                          {section.typeHtml && (
+                            <ContentCodeBlock set:html={section.typeHtml} />
+                          )}
+                          {section.description && (
+                            <Markdown content={section.description} />
+                          )}
+                        </Fragment>
+                      )}
+                    </Fragment>
+                  )}
+                </Fragment>
+              ))}
+            </Fragment>
+          )
+        }
+      </Fragment>
+      <TableOfContents
+        slot="sidebar"
+        headings={headings}
+        title={tocTitle}
+        titleSlug="api"
+        inert={inert}
+        class="sticky [--top:calc(var(--header-height)+--spacing(2))] top-(--top) max-h-[calc(100dvh-var(--top))] overflow-y-auto"
+      />
+    </ContainerRightMenu>
+  </div>
+</div>

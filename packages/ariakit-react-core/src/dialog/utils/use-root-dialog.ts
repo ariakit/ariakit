@@ -1,7 +1,7 @@
-import { useCallback, useEffect } from "react";
 import { getDocument } from "@ariakit/core/utils/dom";
+import { useCallback, useEffect } from "react";
 import { flushSync } from "react-dom";
-import { useForceUpdate } from "../../utils/hooks.js";
+import { useForceUpdate } from "../../utils/hooks.ts";
 
 interface Props {
   attribute: string;
@@ -24,6 +24,7 @@ export function useRootDialog({
     const { body } = getDocument(contentElement);
     const id = body.getAttribute(attribute);
     return !id || id === contentId;
+    // oxlint-disable-next-line exhaustive-deps
   }, [updated, enabled, contentElement, attribute, contentId]);
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export function useRootDialog({
     const observer = new MutationObserver(() => flushSync(retry));
     observer.observe(body, { attributeFilter: [attribute] });
     return () => observer.disconnect();
+    // oxlint-disable-next-line exhaustive-deps
   }, [updated, enabled, contentId, contentElement, isRootDialog, attribute]);
 
   return isRootDialog;

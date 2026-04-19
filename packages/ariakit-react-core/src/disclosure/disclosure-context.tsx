@@ -1,5 +1,5 @@
-import { createStoreContext } from "../utils/system.js";
-import type { DisclosureStore } from "./disclosure-store.js";
+import { createStoreContext } from "../utils/system.tsx";
+import type { DisclosureStore } from "./disclosure-store.ts";
 
 const ctx = createStoreContext<DisclosureStore>();
 

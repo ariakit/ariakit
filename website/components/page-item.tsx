@@ -1,8 +1,8 @@
+import Link from "next/link.js";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { useId } from "react";
-import Link from "next/link.js";
 import { twJoin } from "tailwind-merge";
-import { PlusBordered } from "./plus-bordered.jsx";
+import { PlusBordered } from "./plus-bordered.tsx";
 
 interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;

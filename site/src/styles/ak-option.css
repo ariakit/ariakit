@@ -1,0 +1,36 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-option_idle {
+  @apply ak-command_idle ak-frame-field/2;
+}
+
+@utility ak-option_hover {
+  @apply ak-layer-hover;
+}
+
+@utility ak-option_focus {
+  @apply ak-command_focus ak-layer-contrast-primary;
+  @apply outline-none;
+}
+
+@utility ak-option_active {
+  @apply ak-command_active;
+}
+
+@utility ak-option_disabled {
+  @apply ak-text/50 ak-layer-mix/20;
+}
+
+@utility ak-option {
+  @apply ak-option_idle;
+  @apply ak-command-hover:ak-option_hover;
+  @apply ak-command-focus:ak-option_focus;
+  @apply ak-command-active:ak-option_active;
+  @apply ak-command-disabled:ak-option_disabled;
+}

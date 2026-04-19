@@ -15,4 +15,4 @@ Using <a href="/components/select">Select</a> with <a href="/reference/select-po
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>

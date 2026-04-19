@@ -1,11 +1,13 @@
-import type { ComponentProps } from "react";
 import Link from "next/link.js";
+import type { ComponentProps } from "react";
 import { twJoin } from "tailwind-merge";
-import { getTagSlug } from "utils/tag.js";
-import { PlusBordered } from "./plus-bordered.jsx";
+import { getTagSlug } from "@/lib/tag.ts";
+import { PlusBordered } from "./plus-bordered.tsx";
 
-export interface PageTagProps
-  extends Omit<ComponentProps<typeof Link>, "href"> {
+export interface PageTagProps extends Omit<
+  ComponentProps<typeof Link>,
+  "href"
+> {
   tag: string;
 }
 
@@ -31,13 +33,15 @@ export interface PageTagListProps extends ComponentProps<"div"> {}
 
 export function PageTagList({ ...props }: PageTagListProps) {
   return (
-    <div
-      {...props}
-      className={twJoin(
-        "flex gap-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible [[data-description]+&]:-translate-y-2",
-        "[[data-dialog]_&]:hidden",
-        props.className,
-      )}
-    />
+    <div className="max-w-[--size-content-box] [:has([data-description])+&]:-translate-y-2 [[data-dialog]_&]:hidden">
+      <div
+        {...props}
+        className={twJoin(
+          "flex gap-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible",
+          "max-w-[--size-content]",
+          props.className,
+        )}
+      />
+    </div>
   );
 }

@@ -3,10 +3,10 @@ import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { usePopoverStoreProps } from "../popover/popover-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../popover/popover-store.ts";
+import { usePopoverStoreProps } from "../popover/popover-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useHovercardStoreProps<T extends Core.HovercardStore>(
   store: T,
@@ -21,8 +21,8 @@ export function useHovercardStoreProps<T extends Core.HovercardStore>(
 
 /**
  * Creates a hovercard store to control the state of
- * [Hovercard](https://ariakit.org/reference/hovercard) components.
- * @see https://ariakit.org/components/hovercard
+ * [Hovercard](https://ariakit.com/reference/hovercard) components.
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const hovercard = useHovercardStore({ placement: "top" });
@@ -39,21 +39,20 @@ export function useHovercardStore(
 }
 
 export interface HovercardStoreState
-  extends Core.HovercardStoreState,
-    PopoverStoreState {}
+  extends Core.HovercardStoreState, PopoverStoreState {}
 
 export interface HovercardStoreFunctions
-  extends Omit<Core.HovercardStoreFunctions, "disclosure">,
+  extends
+    Omit<Core.HovercardStoreFunctions, "disclosure">,
     PopoverStoreFunctions {}
 
 export interface HovercardStoreOptions
-  extends Omit<Core.HovercardStoreOptions, "disclosure">,
-    PopoverStoreOptions {}
+  extends Omit<Core.HovercardStoreOptions, "disclosure">, PopoverStoreOptions {}
 
 export interface HovercardStoreProps
-  extends HovercardStoreOptions,
-    Omit<Core.HovercardStoreProps, "disclosure"> {}
+  extends HovercardStoreOptions, Omit<Core.HovercardStoreProps, "disclosure"> {}
 
 export interface HovercardStore
-  extends HovercardStoreFunctions,
+  extends
+    HovercardStoreFunctions,
     Omit<Store<Core.HovercardStore>, "disclosure"> {}

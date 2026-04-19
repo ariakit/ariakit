@@ -1,11 +1,11 @@
-import { Children, isValidElement } from "react";
-import type { ComponentProps, ReactNode } from "react";
 import type { Element } from "hast";
 import parseNumericRange from "parse-numeric-range";
+import type { ComponentProps, ReactNode } from "react";
+import { Children, isValidElement } from "react";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
-import { defer } from "utils/defer.js";
-import { CodeBlock } from "./code-block.jsx";
+import { defer } from "@/lib/defer.ts";
+import { CodeBlock } from "./code-block.tsx";
 
 export interface PagePreProps extends ComponentProps<"pre"> {
   node?: Element;
@@ -17,6 +17,7 @@ export function PagePre({ node, hovercards, ...props }: PagePreProps) {
     <pre
       {...props}
       className={twJoin(
+        "w-full max-w-[--size-content]",
         "data-[api]:leading-8 data-[api]:tracking-wide data-[api]:text-black/60 dark:data-[api]:text-white/60",
         props.className,
       )}
@@ -27,13 +28,13 @@ export function PagePre({ node, hovercards, ...props }: PagePreProps) {
 
   if (!child) return pre;
 
-  type Props = {
+  interface ElementProps {
     children: ReactNode;
     className?: string;
     meta?: string;
-  };
+  }
 
-  if (!isValidElement<Props>(child)) return pre;
+  if (!isValidElement<ElementProps>(child)) return pre;
 
   if (child.type !== "code") return pre;
   if (!child.props) return pre;
@@ -75,7 +76,7 @@ export function PagePre({ node, hovercards, ...props }: PagePreProps) {
       lineNumbers={lineNumbers}
       highlightLines={highlightLines}
       highlightTokens={highlightTokens}
-      className={definition ? "" : "!max-w-[832px]"}
+      className={definition ? "max-w-[--size-content]" : "max-w-[--size-lg]"}
       onRender={deferred.resolve}
     />
   );

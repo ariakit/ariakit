@@ -1,10 +1,10 @@
-import { UpdateLink } from "components/update-link.jsx";
 import { twJoin } from "tailwind-merge";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
-import { getUpdates } from "utils/get-updates.js";
-import { getPagesByTag } from "utils/tag.js";
-import { PageContainer } from "../page-container.jsx";
-import { SeeNow } from "./see-now.jsx";
+import { UpdateLink } from "@/components/update-link.tsx";
+import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
+import { getUpdates } from "@/lib/get-updates.ts";
+import { getPagesByTag } from "@/lib/tag.ts";
+import { PageContainer } from "../page-container.tsx";
+import { SeeNow } from "./see-now.tsx";
 
 export function generateMetadata() {
   return getNextPageMetadata({ title: `Updates - Ariakit` });

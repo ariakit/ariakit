@@ -1,7 +1,7 @@
 import { chain } from "@ariakit/core/utils/misc";
-import { isBackdrop } from "./is-backdrop.js";
-import { setProperty } from "./orchestrate.js";
-import { walkTreeOutside } from "./walk-tree-outside.js";
+import { isBackdrop } from "./is-backdrop.ts";
+import { setProperty } from "./orchestrate.ts";
+import { walkTreeOutside } from "./walk-tree-outside.ts";
 
 type Elements = Array<Element | null>;
 
@@ -33,6 +33,7 @@ export function isElementMarked(element: Element, id?: string) {
     if (element[elementProperty]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
+    // oxlint-disable-next-line no-constant-condition
   } while (true);
 }
 
@@ -57,7 +58,9 @@ export function markTreeOutside(id: string, elements: Elements) {
   );
 
   const restoreAccessibilityTree = () => {
-    cleanups.forEach((fn) => fn());
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
   };
 
   return restoreAccessibilityTree;

@@ -11,7 +11,7 @@ import {
   FaceTimeIcon,
   MailIcon,
   PodcastsIcon,
-} from "./icons.jsx";
+} from "./icons.tsx";
 
 export interface Command {
   name: string;

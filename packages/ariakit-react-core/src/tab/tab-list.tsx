@@ -1,22 +1,23 @@
-import type { ElementType } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import type { ElementType } from "react";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import { useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   TabScopedContextProvider,
   useTabProviderContext,
-} from "./tab-context.js";
-import type { TabStore } from "./tab-store.js";
+} from "./tab-context.tsx";
+import type { TabStore } from "./tab-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
  * Returns props to create a `TabList` component.
- * @see https://ariakit.org/components/tab
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx
  * const store = useTabStore();
@@ -40,7 +41,7 @@ export const useTabList = createHook<TagName, TabListOptions>(
         "TabList must receive a `store` prop or be wrapped in a TabProvider component.",
     );
 
-    const orientation = store.useState((state) =>
+    const orientation = useStoreState(store, (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
 
@@ -77,8 +78,8 @@ export const useTabList = createHook<TagName, TabListOptions>(
 
 /**
  * Renders a composite tab list wrapper for
- * [`Tab`](https://ariakit.org/reference/tab) elements.
- * @see https://ariakit.org/components/tab
+ * [`Tab`](https://ariakit.com/reference/tab) elements.
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx {2-5}
  * <TabProvider>
@@ -96,13 +97,14 @@ export const TabList = forwardRef(function TabList(props: TabListProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TabListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface TabListOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
-   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
+   * [`useTabStore`](https://ariakit.com/reference/use-tab-store) hook. If not
    * provided, the closest
-   * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
+   * [`TabProvider`](https://ariakit.com/reference/tab-provider) component's
    * context will be used.
    */
   store?: TabStore;

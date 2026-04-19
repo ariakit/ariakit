@@ -1,8 +1,8 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { createSlotFill } from "@wordpress/components";
-import clsx from "clsx";
-import { ModalContext } from "./modal.js";
+import { clsx } from "clsx";
+import * as React from "react";
+import { ModalContext } from "./modal.tsx";
 
 export const MenuContext = React.createContext<
   Ariakit.MenuStore | null | undefined
@@ -47,7 +47,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   // relying on (2). This ensures parent menus won't close when we interact with
   // nested menus, even when they're not nested in the React tree, which is the
   // case when using the WordPress SlotFill module.
-  const mounted = menu.useState("mounted");
+  const mounted = Ariakit.useStoreState(menu, "mounted");
 
   return (
     <>

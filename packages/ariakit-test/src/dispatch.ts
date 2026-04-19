@@ -1,8 +1,8 @@
 // Part of this code is based on https://github.com/testing-library/user-event/blob/d7483f049a1ec2ebf1ca1e2c1f4367849fca5997/src/event/createEvent.ts
 import { getKeys, invariant } from "@ariakit/core/utils/misc";
-import { createEvent, fireEvent } from "@testing-library/dom";
 import type { EventType } from "@testing-library/dom";
-import { flushMicrotasks, wrapAsync } from "./__utils.js";
+import { createEvent, fireEvent } from "@testing-library/dom";
+import { flushMicrotasks, wrapAsync } from "./__utils.ts";
 
 type SpecificEventInit<E extends Event> = E extends InputEvent
   ? InputEventInit
@@ -36,7 +36,7 @@ function assignProps<T extends object>(
 }
 
 function sanitizeNumber(n: number | undefined) {
-  return Number(n ?? 0);
+  return n ?? 0;
 }
 
 function initClipboardEvent(
@@ -160,8 +160,8 @@ function initPointerEvent(
     tiltX,
     tiltY,
     twist,
-    pointerType,
     isPrimary,
+    pointerType = "mouse",
   }: PointerEventInit,
 ) {
   assignProps(event, {
@@ -173,8 +173,8 @@ function initPointerEvent(
     tiltX: sanitizeNumber(tiltX),
     tiltY: sanitizeNumber(tiltY),
     twist: sanitizeNumber(twist),
-    pointerType: String(pointerType),
     isPrimary: !!isPrimary,
+    pointerType: pointerType,
   });
 }
 

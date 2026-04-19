@@ -1,0 +1,66 @@
+{
+  "name": "@ariakit/solid-core",
+  "version": "0.1.6",
+  "description": "Ariakit Solid core",
+  "keywords": [
+    "ariakit",
+    "core",
+    "solid"
+  ],
+  "homepage": "https://ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid-core"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "node ../../scripts/build/build.js",
+    "clean": "node ../../scripts/build/clean.js"
+  },
+  "dependencies": {
+    "@ariakit/core": "workspace:*",
+    "@solid-primitives/props": "3.2.3",
+    "@solid-primitives/utils": "6.4.0"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8"
+  },
+  "exports": {
+    "./as/as": "./src/as/as.tsx",
+    "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
+    "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
+    "./group/group-label-context": "./src/group/group-label-context.tsx",
+    "./group/group-label": "./src/group/group-label.tsx",
+    "./group/group": "./src/group/group.tsx",
+    "./heading/heading-context": "./src/heading/heading-context.tsx",
+    "./heading/heading-level": "./src/heading/heading-level.tsx",
+    "./heading/heading": "./src/heading/heading.tsx",
+    "./heading/utils": "./src/heading/utils.ts",
+    "./role/role": "./src/role/role.tsx",
+    "./separator/separator": "./src/separator/separator.tsx",
+    "./utils/misc": "./src/utils/misc.ts",
+    "./utils/reactivity": "./src/utils/reactivity.ts",
+    "./utils/system": "./src/utils/system.tsx",
+    "./utils/types": "./src/utils/types.ts",
+    "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
+    "./package.json": "./package.json"
+  }
+}

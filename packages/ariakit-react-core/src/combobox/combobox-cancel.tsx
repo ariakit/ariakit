@@ -1,13 +1,14 @@
-import { Fragment } from "react";
-import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { ButtonOptions } from "../button/button.js";
-import { useButton } from "../button/button.js";
-import { useEvent, useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useComboboxProviderContext } from "./combobox-context.js";
-import type { ComboboxStore } from "./combobox-store.js";
+import type { ElementType, MouseEvent } from "react";
+import { Fragment } from "react";
+import type { ButtonOptions } from "../button/button.tsx";
+import { useButton } from "../button/button.tsx";
+import { useEvent, useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -35,7 +36,7 @@ const children = (
 /**
  * Returns props to create a `ComboboxCancel` component that clears the combobox
  * input when clicked.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -65,8 +66,8 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
       store?.move(null);
     });
 
-    const comboboxId = store.useState((state) => state.baseElement?.id);
-    const empty = store.useState((state) => state.value === "");
+    const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
+    const empty = useStoreState(store, (state) => state.value === "");
 
     props = useWrapElement(
       props,
@@ -98,7 +99,7 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
 /**
  * Renders a combobox cancel button that clears the combobox input value when
  * clicked.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3}
  * <ComboboxProvider>
@@ -119,13 +120,14 @@ export const ComboboxCancel = forwardRef(function ComboboxCancel(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxCancelOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface ComboboxCancelOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
    */
   store?: ComboboxStore;
@@ -134,7 +136,7 @@ export interface ComboboxCancelOptions<T extends ElementType = TagName>
    * empty.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * @default false
    */
   hideWhenEmpty?: boolean;

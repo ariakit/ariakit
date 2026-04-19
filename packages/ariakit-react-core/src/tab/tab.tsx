@@ -1,21 +1,22 @@
+import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
-import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import type { CompositeItemOptions } from "../composite/composite-item.jsx";
+import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import {
   CompositeItem,
   useCompositeItem,
-} from "../composite/composite-item.jsx";
-import { useEvent, useId, useWrapElement } from "../utils/hooks.js";
+} from "../composite/composite-item.tsx";
+import { useEvent, useId } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.jsx";
-import type { Props } from "../utils/types.js";
-import { useTabScopedContext } from "./tab-context.jsx";
-import type { TabStore } from "./tab-store.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useTabScopedContext } from "./tab-context.tsx";
+import type { TabStore } from "./tab-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -23,7 +24,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `Tab` component.
- * @see https://ariakit.org/components/tab
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx
  * const store = useTabStore();
@@ -36,7 +37,6 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useTab = createHook<TagName, TabOptions>(function useTab({
   store,
-  accessibleWhenDisabled = true,
   getItem: getItemProp,
   ...props
 }) {
@@ -75,52 +75,84 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     store?.setSelectedId(id);
   });
 
-  const panelId = store.panels.useState(
+  const panelId = useStoreState(
+    store.panels,
     (state) => state.items.find((item) => item.tabId === id)?.id,
   );
-  const selected = store.useState((state) => !!id && state.selectedId === id);
-  const shouldRegisterItem = !!defaultId ? props.shouldRegisterItem : false;
+  const shouldRegisterItem = defaultId ? props.shouldRegisterItem : false;
 
-  props = useWrapElement(
-    props,
-    (element) => {
-      if (!store?.composite) return element;
-      const defaultProps = {
-        id,
-        store: store.composite,
-        shouldRegisterItem: selected && shouldRegisterItem,
-        render: element,
-      } satisfies CompositeItemOptions;
-      // If the tab is rendered as part of another composite widget such as
-      // combobox, we need to render it as a composite item. This ensures it's
-      // recognized in the composite store and lets us manage arrow key
-      // navigation to move focus to other composite items that might be
-      // rendered in a tab panel. We only register the selected tab to maintain
-      // a vertical list orientation.
-      return (
+  const isActive = useStoreState(
+    store,
+    (state) => !!id && state.activeId === id,
+  );
+  const selected = useStoreState(
+    store,
+    (state) => !!id && state.selectedId === id,
+  );
+  const hasActiveItem = useStoreState(
+    store,
+    (state) => !!store.item(state.activeId),
+  );
+  const canRegisterComposedItem = isActive || (selected && !hasActiveItem);
+  const accessibleWhenDisabled =
+    selected || (props.accessibleWhenDisabled ?? true);
+
+  // If the tab is rendered within another composite widget with virtual focus,
+  // such as combobox, it shouldn't be tabbable even if the tab store uses
+  // roving tabindex. Otherwise, the focus will be trapped within the composite
+  // widget.
+  const isWithinVirtualFocusComposite = useStoreState(
+    store.combobox || store.composite,
+    "virtualFocus",
+  );
+
+  if (isWithinVirtualFocusComposite) {
+    props = {
+      ...props,
+      tabIndex: -1,
+    };
+  }
+
+  props = {
+    role: "tab",
+    "aria-selected": selected,
+    "aria-controls": panelId || undefined,
+    ...props,
+    id,
+    onClick,
+  };
+
+  // If the tab is rendered as part of another composite widget such as
+  // combobox, we need to render it as a composite item. This ensures it's
+  // recognized in the composite store and lets us manage arrow key navigation
+  // to move focus to other composite items that might be rendered in a tab
+  // panel. We only register the selected tab to maintain a vertical list
+  // orientation.
+  if (store.composite) {
+    const defaultProps = {
+      id,
+      accessibleWhenDisabled,
+      store: store.composite,
+      shouldRegisterItem: canRegisterComposedItem && shouldRegisterItem,
+      rowId: props.rowId,
+      render: props.render,
+    } satisfies CompositeItemOptions;
+    props = {
+      ...props,
+      render: (
         <CompositeItem
           {...defaultProps}
           render={
             store.combobox && store.composite !== store.combobox ? (
               <CompositeItem {...defaultProps} store={store.combobox} />
             ) : (
-              element
+              defaultProps.render
             )
           }
         />
-      );
-    },
-    [store, id, selected, shouldRegisterItem],
-  );
-
-  props = {
-    id,
-    role: "tab",
-    "aria-selected": selected,
-    "aria-controls": panelId || undefined,
-    ...props,
-    onClick,
-  };
+      ),
+    };
+  }
 
   props = useCompositeItem({
     store,
@@ -135,8 +167,8 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
 
 /**
  * Renders a tab element inside a
- * [`TabList`](https://ariakit.org/reference/tab-list) wrapper.
- * @see https://ariakit.org/components/tab
+ * [`TabList`](https://ariakit.com/reference/tab-list) wrapper.
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx {3,4}
  * <TabProvider>
@@ -156,12 +188,13 @@ export const Tab = memo(
   }),
 );
 
-export interface TabOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface TabOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
-   * provided, the closest [`TabList`](https://ariakit.org/reference/tab-list)
+   * [`useTabStore`](https://ariakit.com/reference/use-tab-store) hook. If not
+   * provided, the closest [`TabList`](https://ariakit.com/reference/tab-list)
    * component's context will be used.
    */
   store?: TabStore;

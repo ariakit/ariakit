@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { DisclosureContextProvider } from "./disclosure-context.js";
-import { useDisclosureStore } from "./disclosure-store.js";
-import type { DisclosureStoreProps } from "./disclosure-store.js";
+import { DisclosureContextProvider } from "./disclosure-context.tsx";
+import type { DisclosureStoreProps } from "./disclosure-store.ts";
+import { useDisclosureStore } from "./disclosure-store.ts";
 
 /**
  * Provides a disclosure store to
- * [Disclosure](https://ariakit.org/components/disclosure) components.
- * @see https://ariakit.org/components/disclosure
+ * [Disclosure](https://ariakit.com/components/disclosure) components.
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx
  * <DisclosureProvider>

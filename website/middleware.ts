@@ -1,5 +1,5 @@
 import { authMiddleware } from "@clerk/nextjs";
-import type { NextFetchEvent, NextRequest } from "next/server.js";
+import type { NextFetchEvent, NextRequest } from "next/server.ts";
 
 export const config = {
   matcher: ["/api(.*)"],

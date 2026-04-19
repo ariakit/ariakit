@@ -1,28 +1,28 @@
-import type { ReactNode } from "react";
 import type { PickRequired, ToPrimitive } from "@ariakit/core/utils/types";
-import { useStoreState } from "../utils/store.js";
-import { useSelectContext } from "./select-context.js";
-import type { SelectStore, SelectStoreValue } from "./select-store.js";
+import type { ReactNode } from "react";
+import { useStoreState } from "../utils/store.tsx";
+import { useSelectContext } from "./select-context.tsx";
+import type { SelectStore, SelectStoreValue } from "./select-store.ts";
 
 type Value = SelectStoreValue;
 
 /**
  * Renders the current
- * [`value`](https://ariakit.org/reference/use-select-store#value) state in the
- * [select store](https://ariakit.org/reference/use-select-store).
+ * [`value`](https://ariakit.com/reference/use-select-store#value) state in the
+ * [select store](https://ariakit.com/reference/use-select-store).
  *
  * As a value component, it doesn't render any DOM elements and therefore
  * doesn't accept HTML props. It can optionally accept a
- * [`fallback`](https://ariakit.org/reference/select-value#fallback) prop to use
+ * [`fallback`](https://ariakit.com/reference/select-value#fallback) prop to use
  * as a default value if the store's
- * [`value`](https://ariakit.org/reference/use-select-store#value) is
+ * [`value`](https://ariakit.com/reference/use-select-store#value) is
  * `undefined`.
  *
  * Additionally, it takes a
- * [`children`](https://ariakit.org/reference/select-value#children) function
+ * [`children`](https://ariakit.com/reference/select-value#children) function
  * that gets called with the current value as an argument. This is handy for
  * rendering the value in a custom way.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {3}
  * <SelectProvider>
@@ -71,7 +71,10 @@ export function SelectValue({
   const context = useSelectContext();
   store = store || context;
 
-  const value = useStoreState(store, (state) => state?.value || fallback);
+  const value = useStoreState(store, (state) => {
+    if (!state?.value.length) return fallback;
+    return state.value;
+  });
 
   if (children) {
     return children(value || "");
@@ -83,16 +86,16 @@ export function SelectValue({
 export interface SelectValueProps<T extends Value = Value> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components'
    * context will be used.
    */
   store?: SelectStore<T>;
   /**
    * The value to use as a default if the store's
-   * [`value`](https://ariakit.org/reference/use-select-store#value) is
+   * [`value`](https://ariakit.com/reference/use-select-store#value) is
    * `undefined`.
    * @default ""
    */

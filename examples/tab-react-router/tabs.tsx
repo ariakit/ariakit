@@ -1,8 +1,8 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
-import { Link, useHref, useLocation } from "react-router-dom";
-import type { LinkProps } from "react-router-dom";
+import { clsx } from "clsx";
+import * as React from "react";
+import type { LinkProps } from "react-router";
+import { Link, useHref, useLocation } from "react-router";
 
 export function Tabs(props: Ariakit.TabProviderProps) {
   const { pathname } = useLocation();
@@ -44,10 +44,7 @@ export const Tab = React.forwardRef<HTMLButtonElement, LinkProps>(
 export const TabPanel = React.forwardRef<HTMLDivElement, Ariakit.TabPanelProps>(
   function TabPanel(props, ref) {
     const tab = Ariakit.useTabContext();
-    if (!tab) throw new Error("TabPanel must be wrapped in a Tabs component");
-
-    const tabId = tab.useState("selectedId");
-
+    const tabId = Ariakit.useStoreState(tab, "selectedId");
     return (
       <Ariakit.TabPanel
         ref={ref}

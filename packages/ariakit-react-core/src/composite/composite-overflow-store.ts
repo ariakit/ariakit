@@ -3,10 +3,10 @@ import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { usePopoverStoreProps } from "../popover/popover-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore } from "../utils/store.js";
+} from "../popover/popover-store.ts";
+import { usePopoverStoreProps } from "../popover/popover-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore } from "../utils/store.tsx";
 
 export function useCompositeOverflowStoreProps<
   T extends Core.CompositeOverflowStore,
@@ -16,7 +16,7 @@ export function useCompositeOverflowStoreProps<
 
 /**
  * Creates a composite overflow store.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();
@@ -42,15 +42,16 @@ export function useCompositeOverflowStore(
 }
 
 export interface CompositeOverflowStoreState
-  extends Core.CompositeOverflowStoreState,
-    PopoverStoreState {}
+  extends Core.CompositeOverflowStoreState, PopoverStoreState {}
 
 export interface CompositeOverflowStoreFunctions
-  extends Omit<Core.CompositeOverflowStoreFunctions, "disclosure">,
+  extends
+    Omit<Core.CompositeOverflowStoreFunctions, "disclosure">,
     PopoverStoreFunctions {}
 
 export interface CompositeOverflowStoreOptions
-  extends Omit<Core.CompositeOverflowStoreOptions, "disclosure">,
+  extends
+    Omit<Core.CompositeOverflowStoreOptions, "disclosure">,
     PopoverStoreOptions {}
 
 export type CompositeOverflowStoreProps = CompositeOverflowStoreOptions &

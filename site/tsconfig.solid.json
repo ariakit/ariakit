@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.solid.json",
+  "include": [
+    ".astro/types.d.ts",
+    "env.d.ts",
+    "**/*.solid.tsx",
+    "../worker-configuration.d.ts"
+  ],
+  "exclude": ["dist", "**/*test.solid.tsx"]
+}

@@ -1,0 +1,56 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-input-placeholder {
+  @apply ak-text/0;
+}
+
+@utility ak-input_idle {
+  @apply ak-edge-contrast ak-frame-field ak-frame-border;
+  @apply max-w-full cursor-text leading-[1em] -outline-offset-1;
+  @variant ak-light {
+    @apply ak-layer;
+  }
+  @variant ak-dark {
+    @apply not-hover:not-focus-within:ak-layer-down-0.5;
+  }
+  &:is(input) {
+    @apply box-content h-[1em];
+  }
+  input {
+    @apply -my-[0.25em] box-content h-[1.5em] outline-none;
+  }
+  &::placeholder,
+  ::placeholder {
+    @apply ak-input-placeholder;
+  }
+}
+
+@utility ak-input_hover {
+  @apply transition-[background-color];
+  @variant ak-light {
+    @apply ak-layer-hover-0.5;
+  }
+  @variant ak-dark {
+    @apply ak-layer-current;
+  }
+}
+
+@utility ak-input_focus {
+  @apply ak-outline-primary outline-2;
+  @variant ak-light {
+    @apply ak-layer;
+  }
+  @variant ak-dark {
+    @apply ak-layer-current;
+  }
+}
+
+@utility ak-input {
+  @apply ak-input_idle hover:ak-input_hover focus-within:ak-input_focus;
+}

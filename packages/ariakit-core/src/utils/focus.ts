@@ -1,11 +1,4 @@
-import {
-  closest,
-  contains,
-  getActiveElement,
-  isFrame,
-  isVisible,
-  matches,
-} from "./dom.js";
+import { contains, getActiveElement, isFrame, isVisible } from "./dom.ts";
 
 const selector =
   "input:not([type='hidden']):not([disabled]), select:not([disabled]), " +
@@ -14,7 +7,7 @@ const selector =
   "video[controls], [contenteditable]:not([contenteditable='false'])";
 
 function hasNegativeTabIndex(element: Element) {
-  const tabIndex = parseInt(element.getAttribute("tabindex") || "0", 10);
+  const tabIndex = Number.parseInt(element.getAttribute("tabindex") || "0", 10);
   return tabIndex < 0;
 }
 
@@ -26,10 +19,10 @@ function hasNegativeTabIndex(element: Element) {
  * isFocusable(document.querySelector("input[hidden]")); // false
  * isFocusable(document.querySelector("input:disabled")); // false
  */
-export function isFocusable(element: Element): element is HTMLElement {
-  if (!matches(element, selector)) return false;
+export function isFocusable(element: Element) {
+  if (!element.matches(selector)) return false;
   if (!isVisible(element)) return false;
-  if (closest(element, "[inert]")) return false;
+  if (element.closest("[inert]")) return false;
   return true;
 }
 
@@ -88,10 +81,10 @@ export function getAllFocusableIn(
   const focusableElements = elements.filter(isFocusable);
 
   focusableElements.forEach((element, i) => {
-    if (isFrame(element) && element.contentDocument) {
-      const frameBody = element.contentDocument.body;
-      focusableElements.splice(i, 1, ...getAllFocusableIn(frameBody));
-    }
+    if (!isFrame(element)) return;
+    const frameBody = element.contentDocument?.body;
+    if (!frameBody) return;
+    focusableElements.splice(i, 1, ...getAllFocusableIn(frameBody));
   });
 
   return focusableElements;
@@ -141,15 +134,15 @@ export function getAllTabbableIn(
   }
 
   tabbableElements.forEach((element, i) => {
-    if (isFrame(element) && element.contentDocument) {
-      const frameBody = element.contentDocument.body;
-      const allFrameTabbable = getAllTabbableIn(
-        frameBody,
-        false,
-        fallbackToFocusable,
-      );
-      tabbableElements.splice(i, 1, ...allFrameTabbable);
-    }
+    if (!isFrame(element)) return;
+    const frameBody = element.contentDocument?.body;
+    if (!frameBody) return;
+    const allFrameTabbable = getAllTabbableIn(
+      frameBody,
+      false,
+      fallbackToFocusable,
+    );
+    tabbableElements.splice(i, 1, ...allFrameTabbable);
   });
 
   if (!tabbableElements.length && fallbackToFocusable) {
@@ -291,7 +284,7 @@ export function getPreviousTabbable(
  */
 export function getClosestFocusable(element?: HTMLElement | null) {
   while (element && !isFocusable(element)) {
-    element = closest<HTMLElement>(element, selector);
+    element = element.closest<HTMLElement>(selector);
   }
   return element || null;
 }
@@ -354,7 +347,9 @@ export function disableFocusIn(
   includeContainer?: boolean,
 ) {
   const tabbableElements = getAllTabbableIn(container, includeContainer);
-  tabbableElements.forEach(disableFocus);
+  for (const element of tabbableElements) {
+    disableFocus(element);
+  }
 }
 
 /**
@@ -375,7 +370,9 @@ export function restoreFocusIn(container: HTMLElement) {
   if (container.hasAttribute("data-tabindex")) {
     restoreTabIndex(container);
   }
-  elements.forEach(restoreTabIndex);
+  for (const element of elements) {
+    restoreTabIndex(element);
+  }
 }
 
 /**

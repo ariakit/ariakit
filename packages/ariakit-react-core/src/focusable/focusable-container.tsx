@@ -1,15 +1,15 @@
 import type { ElementType } from "react";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { FocusableContext } from "./focusable-context.js";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FocusableContainer` component.
- * @see https://ariakit.org/components/focusable
+ * @see https://ariakit.com/components/focusable
  * @example
  * ```jsx
  * const props = useFocusableContainer();
@@ -35,9 +35,9 @@ export const useFocusableContainer = createHook<
 
 /**
  * Renders a div that wraps
- * [`Focusable`](https://ariakit.org/reference/focusable) components and
+ * [`Focusable`](https://ariakit.com/reference/focusable) components and
  * controls whether they can be auto-focused.
- * @see https://ariakit.org/components/focusable
+ * @see https://ariakit.com/components/focusable
  * @example
  * ```jsx
  * <FocusableContainer autoFocusOnShow={false}>
@@ -52,13 +52,14 @@ export const FocusableContainer = forwardRef(function FocusableContainer(
   return createElement(TagName, htmlProps);
 });
 
-export interface FocusableContainerOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface FocusableContainerOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
-   * Determines whether [`Focusable`](https://ariakit.org/reference/focusable)
+   * Determines whether [`Focusable`](https://ariakit.com/reference/focusable)
    * elements inside the container should be automatically focused when the
    * container is shown and they have the
-   * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus) prop.
+   * [`autoFocus`](https://ariakit.com/reference/focusable#autofocus) prop.
    * @default true
    */
   autoFocusOnShow?: boolean;

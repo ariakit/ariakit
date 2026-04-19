@@ -1,37 +1,44 @@
-import type { ElementType, KeyboardEvent } from "react";
-import { useEffect, useRef, useState } from "react";
 import { isSelfTarget } from "@ariakit/core/utils/events";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.js";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.js";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { isHidden } from "../disclosure/disclosure-content.js";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import type { ElementType, KeyboardEvent } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
   useAttribute,
   useBooleanEvent,
   useEvent,
   useId,
   useMergeRefs,
+  useTransactionState,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
+  SelectHeadingContext,
   SelectScopedContextProvider,
-  useSelectProviderContext,
-} from "./select-context.js";
-import type { SelectStore } from "./select-store.js";
+  useSelectContext,
+} from "./select-context.tsx";
+import type { SelectStore } from "./select-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+const SelectListContext = createContext<
+  ((store: SelectStore | null) => void) | null
+>(null);
+
 /**
  * Returns props to create a `SelectList` component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -52,7 +59,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     alwaysVisible,
     ...props
   }) {
-    const context = useSelectProviderContext();
+    const context = useSelectContext();
     store = store || context;
 
     invariant(
@@ -61,13 +68,12 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
         "SelectList must receive a `store` prop or be wrapped in a SelectProvider component.",
     );
 
-    const ref = useRef<HTMLType>(null);
     const id = useId(props.id);
-    const value = store.useState("value");
+    const value = useStoreState(store, "value");
     const multiSelectable = Array.isArray(value);
     const [defaultValue, setDefaultValue] = useState(value);
 
-    const mounted = store.useState("mounted");
+    const mounted = useStoreState(store, "mounted");
 
     // Stores the intial value so we can reset it later when Escape is pressed
     useEffect(() => {
@@ -96,25 +102,46 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
       }
     });
 
+    const headingContext = useContext(SelectHeadingContext);
+    const headingState = useState<string>();
+    const [headingId, setHeadingId] = headingContext || headingState;
+
+    const headingContextValue: typeof headingState = useMemo(
+      () => [headingId, setHeadingId],
+      [headingId, setHeadingId],
+    );
+
+    const [childStore, setChildStore] = useState<SelectStore | null>(null);
+    const setStore = useContext(SelectListContext);
+
+    useEffect(() => {
+      if (!setStore) return;
+      setStore(store);
+      return () => setStore(null);
+    }, [setStore, store]);
+
     props = useWrapElement(
       props,
       (element) => (
         <SelectScopedContextProvider value={store}>
-          {element}
+          <SelectListContext.Provider value={setChildStore}>
+            <SelectHeadingContext.Provider value={headingContextValue}>
+              {element}
+            </SelectHeadingContext.Provider>
+          </SelectListContext.Provider>
         </SelectScopedContextProvider>
       ),
-      [store],
+      [store, headingContextValue],
     );
 
-    const labelId = store.useState((state) => state.labelElement?.id);
     const hasCombobox = !!store.combobox;
-    composite = composite ?? !hasCombobox;
+    composite = composite ?? (!hasCombobox && childStore !== store);
 
-    if (composite) {
-      props = { role: "listbox", ...props };
-    }
+    const [element, setElement] = useTransactionState(
+      composite ? store.setListElement : null,
+    );
 
-    const role = useAttribute(ref, "role", props.role);
+    const role = useAttribute(element, "role", props.role);
     const isCompositeRole =
       role === "listbox" ||
       role === "menu" ||
@@ -126,13 +153,25 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
+    if (composite) {
+      props = {
+        role: "listbox",
+        "aria-multiselectable": ariaMultiSelectable,
+        ...props,
+      };
+    }
+
+    const labelId = useStoreState(
+      store,
+      (state) => headingId || state.labelElement?.id,
+    );
+
     props = {
-      id,
-      "aria-labelledby": labelId,
-      "aria-multiselectable": ariaMultiSelectable,
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       hidden,
       ...props,
-      ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
+      id,
+      ref: useMergeRefs(setElement, props.ref),
       style,
       onKeyDown,
     };
@@ -145,24 +184,26 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
 );
 
 /**
- * Renders a select list element. This is the primitive component used by the
- * [`SelectPopover`](https://ariakit.org/reference/select-popover) component.
- *
- * Unlike [`SelectPopover`](https://ariakit.org/reference/select-popover), this
- * component doesn't render a popover and therefore doesn't automatically focus
- * on items when opened.
+ * Renders a wrapper for
+ * [`SelectItem`](https://ariakit.com/reference/select-item) elements. This
+ * component may be rendered within a
+ * [`SelectPopover`](https://ariakit.com/reference/select-popover) component if
+ * there are other non-item elements inside the popover.
  *
  * The `aria-labelledby` prop is set to the
- * [`Select`](https://ariakit.org/reference/select) element's `id` by default.
- * @see https://ariakit.org/components/select
+ * [`Select`](https://ariakit.com/reference/select) element's `id` by default.
+ * @see https://ariakit.com/components/select
  * @example
- * ```jsx {3-6}
+ * ```jsx {5-8}
  * <SelectProvider>
  *   <Select />
- *   <SelectList>
- *     <SelectItem value="Apple" />
- *     <SelectItem value="Orange" />
- *   </SelectList>
+ *   <SelectPopover>
+ *     <SelectDismiss />
+ *     <SelectList>
+ *       <SelectItem value="Apple" />
+ *       <SelectItem value="Orange" />
+ *     </SelectList>
+ *   </SelectPopover>
  * </SelectProvider>
  * ```
  */
@@ -174,28 +215,29 @@ export const SelectList = forwardRef(function SelectList(
 });
 
 export interface SelectListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the closest
-   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * component's context will be used.
    */
   store?: SelectStore;
   /**
    * Whether the select value should be reset to the value before the list got
    * shown when Escape is pressed. This has effect only when
-   * [`setValueOnMove`](https://ariakit.org/reference/select-provider#setvalueonmove)
+   * [`setValueOnMove`](https://ariakit.com/reference/select-provider#setvalueonmove)
    * is `true`.
    * @default true
    */
   resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * Whether the [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * Whether the [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
    * should be hidden when the user presses Enter or Space while the list
    * element is focused and no item is active.
    * @default true

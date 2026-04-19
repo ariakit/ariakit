@@ -1,0 +1,98 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@utility ak-code {
+  @apply ak-layer-pop ak-edge/15;
+  @apply rounded px-[0.25em] py-[0.18em] font-mono text-inherit ring;
+  font-size-adjust: 0.48;
+}
+
+@utility ak-separator {
+  @apply ak-layer-current ak-edge/20;
+  @apply border-t border-dashed;
+  margin-block: calc(var(--ak-prose-gap) * 0.5);
+
+  + * {
+    @apply mt-0;
+  }
+}
+
+@utility ak-strong {
+  @apply ak-text font-medium;
+}
+
+@utility ak-prose-leading-* {
+  --ak-prose-leading: calc(1em * --value(--leading));
+  --ak-prose-leading: --spacing(--value(number));
+  --ak-prose-leading: --value([*]);
+  @apply leading-(--ak-prose-leading);
+}
+
+@utility ak-prose-text-* {
+  --ak-prose-leading: calc(1em * --modifier(--leading));
+  --ak-prose-leading: --modifier([length]);
+  --ak-prose-leading: --spacing(--modifier(number));
+  font-size: --value(--text, [*]);
+  @apply leading-(--ak-prose-leading);
+}
+
+@utility ak-prose-gap-* {
+  --ak-prose-gap: --spacing(--value(number));
+  --ak-prose-gap: --value(--spacing, [*]);
+}
+
+@utility ak-prose-content {
+  @apply gap-(--ak-prose-gap) flex flex-col;
+}
+
+@utility ak-prose-text {
+  @apply ak-dark:ak-text/75 ak-light:ak-text/90;
+}
+
+@utility ak-prose {
+  --ak-prose-gap: 1.25em;
+  @apply ak-prose-text ak-prose-text-base/relaxed ak-prose-elements ak-prose-content;
+}
+
+@utility ak-prose-elements {
+  :where(h1, h2, h3, h4, h5) {
+    @apply ak-heading;
+  }
+
+  :where(p) {
+    @apply ak-prose-text;
+  }
+
+  :where(ul, ol) {
+    @apply ak-prose-text ak-list ak-list-leading-(--ak-prose-leading) ak-list-gap-(--ak-prose-gap);
+  }
+
+  :where(li) {
+    @apply ak-list-item;
+  }
+
+  :where(strong) {
+    @apply ak-strong;
+  }
+
+  :where(code):not(:where(pre code)) {
+    @apply ak-code;
+  }
+
+  :where(p a) {
+    @apply ak-link;
+  }
+
+  :where(kbd) {
+    @apply ak-kbd;
+  }
+
+  :where(hr) {
+    @apply ak-separator;
+  }
+}

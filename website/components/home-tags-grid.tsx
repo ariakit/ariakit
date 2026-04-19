@@ -1,11 +1,11 @@
-import { useId } from "react";
-import type { ReactNode } from "react";
-import pageIndex from "build-pages/index.js";
-import { Check } from "icons/check.jsx";
-import { ChevronDown } from "icons/chevron-down.jsx";
-import { Close } from "icons/close.jsx";
 import Link from "next/link.js";
+import type { ReactNode } from "react";
+import { useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
+import pageIndex from "@/build-pages/index.ts";
+import { Check } from "@/icons/check.tsx";
+import { ChevronDown } from "@/icons/chevron-down.tsx";
+import { Close } from "@/icons/close.tsx";
 
 interface DefaultProps {
   className?: string;
@@ -424,7 +424,7 @@ function NextAppRouter() {
     >
       <span className="h-full w-full">
         <Input className="-ml-44 mt-10 w-max gap-0 rounded-full pr-12 text-black/60 dark:text-white/60">
-          https://ariakit.org/?
+          https://ariakit.com/?
           <span className="font-medium text-black dark:text-white">lang</span>=
           <span className="-mx-[1px] rounded bg-blue-50/50 px-[2px] font-medium text-blue-700 dark:bg-blue-900/15 dark:font-normal dark:text-blue-300">
             en

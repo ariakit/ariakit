@@ -1,6 +1,0 @@
-{
-  "packages": ["packages/*"],
-  "buildCommand": "build",
-  "sandboxes": ["m4n32vjkoj"],
-  "node": "18"
-}

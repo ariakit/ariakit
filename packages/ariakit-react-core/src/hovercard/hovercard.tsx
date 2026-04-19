@@ -1,12 +1,3 @@
-import type { ElementType, FocusEvent } from "react";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
@@ -17,31 +8,42 @@ import {
 } from "@ariakit/core/utils/misc";
 import { sync } from "@ariakit/core/utils/store";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { createDialogComponent } from "../dialog/dialog.js";
-import type { PopoverOptions } from "../popover/popover.js";
-import { usePopover } from "../popover/popover.js";
+import type { ElementType, FocusEvent } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { createDialogComponent } from "../dialog/dialog.tsx";
+import type { PopoverOptions } from "../popover/popover.tsx";
+import { usePopover } from "../popover/popover.tsx";
 import {
   useBooleanEvent,
   useEvent,
+  useIsMouseMoving,
   useLiveRef,
   useMergeRefs,
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   HovercardScopedContextProvider,
   useHovercardProviderContext,
-} from "./hovercard-context.js";
-import type { HovercardStore } from "./hovercard-store.js";
-import type { Point } from "./utils/polygon.js";
+} from "./hovercard-context.tsx";
+import type { HovercardStore } from "./hovercard-store.ts";
+import type { Point } from "./utils/polygon.ts";
 import {
   getElementPolygon,
   getEventPoint,
   isPointInPolygon,
-} from "./utils/polygon.js";
+} from "./utils/polygon.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -74,7 +76,7 @@ function useAutoFocusOnHide({
   ...props
 }: HovercardProps & { store: HovercardStore }) {
   const [autoFocusOnHide, setAutoFocusOnHide] = useState(false);
-  const mounted = store.useState("mounted");
+  const mounted = useStoreState(store, "mounted");
 
   // Resets autoFocusOnHide
   useEffect(() => {
@@ -98,7 +100,7 @@ function useAutoFocusOnHide({
     return sync(store, ["anchorElement"], (state) => {
       finalFocusRef.current = state.anchorElement;
     });
-  }, []);
+  }, [store]);
 
   props = {
     autoFocusOnHide,
@@ -116,7 +118,7 @@ const NestedHovercardContext = createContext<
 
 /**
  * Returns props to create a `Hovercard` component.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const store = useHovercardStore();
@@ -129,7 +131,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
   function useHovercard({
     store,
     modal = false,
-    portal = !!modal,
+    portal = modal,
     hideOnEscape = true,
     hideOnHoverOutside = true,
     disablePointerEventsOnApproach = !!hideOnHoverOutside,
@@ -150,6 +152,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     const enterPointRef = useRef<Point | null>(null);
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
+    const isMouseMoving = useIsMouseMoving();
+
     const mayHideOnHoverOutside = !!hideOnHoverOutside;
     const hideOnHoverOutsideProp = useBooleanEvent(hideOnHoverOutside);
     const mayDisablePointerEvents = !!disablePointerEventsOnApproach;
@@ -157,8 +161,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       disablePointerEventsOnApproach,
     );
 
-    const open = store.useState("open");
-    const mounted = store.useState("mounted");
+    const open = useStoreState(store, "open");
+    const mounted = useStoreState(store, "mounted");
 
     // Checks whether the mouse is moving toward the hovercard. If not, hide the
     // card after a short delay (hideTimeout).
@@ -170,6 +174,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       if (!element) return;
       const onMouseMove = (event: MouseEvent) => {
         if (!store) return;
+        if (!isMouseMoving()) return;
         const { anchorElement, hideTimeout, timeout } = store.getState();
         const enterPoint = enterPointRef.current;
         const [target] = event.composedPath() as Node[];
@@ -221,6 +226,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       );
     }, [
       store,
+      isMouseMoving,
       domReady,
       mounted,
       mayHideOnHoverOutside,
@@ -272,10 +278,14 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     useEffect(() => {
       if (!domReady) return;
       return () => {
+        // oxlint-disable-next-line exhaustive-deps
         if (!openRef.current) {
           store?.setAutoFocusOnShow(false);
         }
       };
+      // This cleanup intentionally reads the live ref so it can observe the
+      // latest open state at unmount time.
+      // oxlint-disable-next-line exhaustive-deps
     }, [store, domReady]);
 
     const registerOnParent = useContext(NestedHovercardContext);
@@ -332,7 +342,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     props = useAutoFocusOnHide({ store, ...props });
 
     // If the hovercard is modal, we should always autoFocus on show.
-    const autoFocusOnShow = store.useState(
+    const autoFocusOnShow = useStoreState(
+      store,
       (state) => modal || state.autoFocusOnShow,
     );
 
@@ -364,8 +375,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
 /**
  * Renders a hovercard element, which is a popover that's usually made visible
  * by hovering the mouse cursor over a
- * [`HovercardAnchor`](https://ariakit.org/reference/hovercard-anchor).
- * @see https://ariakit.org/components/hovercard
+ * [`HovercardAnchor`](https://ariakit.com/reference/hovercard-anchor).
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx {3}
  * <HovercardProvider>
@@ -382,13 +393,14 @@ export const Hovercard = createDialogComponent(
   useHovercardProviderContext,
 );
 
-export interface HovercardOptions<T extends ElementType = TagName>
-  extends PopoverOptions<T> {
+export interface HovercardOptions<
+  T extends ElementType = TagName,
+> extends PopoverOptions<T> {
   /**
    * Object returned by the
-   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
    * hook. If not provided, the closest
-   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * component's context will be used.
    */
   store?: HovercardStore;

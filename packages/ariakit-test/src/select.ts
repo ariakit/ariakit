@@ -1,16 +1,16 @@
 import { isVisible } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import { wrapAsync } from "./__utils.js";
-import { dispatch } from "./dispatch.js";
-import { hover } from "./hover.js";
-import { mouseDown } from "./mouse-down.js";
-import { mouseUp } from "./mouse-up.js";
-import { sleep } from "./sleep.js";
+import { wrapAsync } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
+import { hover } from "./hover.ts";
+import { mouseDown } from "./mouse-down.ts";
+import { mouseUp } from "./mouse-up.ts";
+import { sleep } from "./sleep.ts";
 
 export function select(
   text: string,
   element: Element | null = document.body,
-  options?: MouseEventInit,
+  options?: PointerEventInit,
 ) {
   return wrapAsync(async () => {
     invariant(element, "Unable to select text on null element");

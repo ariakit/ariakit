@@ -1,57 +1,56 @@
-import type {
-  ElementType,
-  FocusEvent,
-  KeyboardEvent,
-  RefObject,
-  SyntheticEvent,
-} from "react";
-import { useCallback, useContext, useMemo, useRef, useState } from "react";
 import {
   getScrollingElement,
   getTextboxSelection,
   getTextboxValue,
   isButton,
-  isTextField,
   isTextbox,
+  isTextField,
 } from "@ariakit/core/utils/dom";
 import { isPortalEvent, isSelfTarget } from "@ariakit/core/utils/events";
 import {
   disabledFromProps,
   removeUndefinedValues,
 } from "@ariakit/core/utils/misc";
+import { isSafari } from "@ariakit/core/utils/platform";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { CollectionItemOptions } from "../collection/collection-item.js";
-import { useCollectionItem } from "../collection/collection-item.js";
-import type { CommandOptions } from "../command/command.js";
-import { useCommand } from "../command/command.js";
+import type {
+  ElementType,
+  FocusEvent,
+  KeyboardEvent,
+  SyntheticEvent,
+} from "react";
+import { useCallback, useContext, useMemo, useRef } from "react";
+import type { CollectionItemOptions } from "../collection/collection-item.tsx";
+import { useCollectionItem } from "../collection/collection-item.tsx";
+import type { CommandOptions } from "../command/command.tsx";
+import { useCommand } from "../command/command.tsx";
 import {
   useBooleanEvent,
   useEvent,
   useId,
   useMergeRefs,
-  useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
+} from "../utils/hooks.ts";
+import { useStoreStateObject } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   CompositeItemContext,
   CompositeRowContext,
   useCompositeContext,
-} from "./composite-context.js";
-import type { CompositeStore } from "./composite-store.js";
+} from "./composite-context.tsx";
+import type { CompositeStore } from "./composite-store.ts";
 import {
   focusSilently,
   getEnabledItem,
   isItem,
   selectTextField,
-} from "./utils.js";
+} from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -137,37 +136,9 @@ function targetIsAnotherItem(event: SyntheticEvent, store: CompositeStore) {
   return isItem(store, event.target as HTMLElement);
 }
 
-function useRole(ref: RefObject<HTMLElement>, props: CompositeItemProps) {
-  const roleProp = props.role;
-  const [role, setRole] = useState(roleProp);
-
-  useSafeLayoutEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-    setRole(element.getAttribute("role") || roleProp);
-  }, [roleProp]);
-
-  return role;
-}
-
-function requiresAriaSelected(role?: string) {
-  return role === "option" || role === "treeitem";
-}
-
-function supportsAriaSelected(role?: string) {
-  if (role === "option") return true;
-  if (role === "tab") return true;
-  if (role === "treeitem") return true;
-  if (role === "gridcell") return true;
-  if (role === "row") return true;
-  if (role === "columnheader") return true;
-  if (role === "rowheader") return true;
-  return false;
-}
-
 /**
  * Returns props to create a `CompositeItem` component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -193,15 +164,65 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
     const row = useContext(CompositeRowContext);
-    const rowId = useStoreState(store, (state) => {
-      if (rowIdProp) return rowIdProp;
-      if (!state) return;
-      if (!row?.baseElement) return;
-      if (row.baseElement !== state.baseElement) return;
-      return row.id;
-    });
     const disabled = disabledFromProps(props);
     const trulyDisabled = disabled && !props.accessibleWhenDisabled;
+
+    const {
+      rowId,
+      baseElement,
+      isActiveItem,
+      ariaSetSize,
+      ariaPosInSet,
+      isTabbable,
+    } = useStoreStateObject(store, {
+      rowId(state) {
+        if (rowIdProp) return rowIdProp;
+        if (!state) return;
+        if (!row?.baseElement) return;
+        if (row.baseElement !== state.baseElement) return;
+        return row.id;
+      },
+      baseElement(state) {
+        return state?.baseElement || undefined;
+      },
+      isActiveItem(state) {
+        return !!state && state.activeId === id;
+      },
+      ariaSetSize(state) {
+        if (ariaSetSizeProp != null) return ariaSetSizeProp;
+        if (!state) return;
+        if (!row?.ariaSetSize) return;
+        if (row.baseElement !== state.baseElement) return;
+        return row.ariaSetSize;
+      },
+      ariaPosInSet(state) {
+        if (ariaPosInSetProp != null) return ariaPosInSetProp;
+        if (!state) return;
+        if (!row?.ariaPosInSet) return;
+        if (row.baseElement !== state.baseElement) return;
+        const itemsInRow = state.renderedItems.filter(
+          (item) => item.rowId === rowId,
+        );
+        return (
+          row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id)
+        );
+      },
+      isTabbable(state) {
+        if (!state?.renderedItems.length) return true;
+        if (state.virtualFocus) return false;
+        if (tabbable) return true;
+        if (state.activeId === null) return false;
+        // If activeId refers to an item that's disabled or not connected to the
+        // DOM, we make all items tabbable so users can tab into the composite
+        // widget. Once the activeId is valid, we restore the roving tabindex. See
+        // https://github.com/ariakit/ariakit/issues/3232
+        // https://github.com/ariakit/ariakit/issues/4129
+        const item = store?.item(state.activeId);
+        if (item?.disabled) return true;
+        if (!item?.element) return true;
+        return state.activeId === id;
+      },
+    });
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
@@ -209,7 +230,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           ...item,
           id: id || item.id,
           rowId,
-          disabled: !!trulyDisabled,
+          disabled: trulyDisabled,
+          children: item.element?.textContent,
         };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -254,6 +276,14 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // a scroll jump on Safari. This is necessary when the base element is
       // removed from the DOM just before triggering this focus event.
       if (!baseElement?.isConnected) return;
+      // Safari doesn't scroll the element into view when another element is
+      // immediately focused. So we have to do it manually here.
+      if (isSafari() && event.currentTarget.hasAttribute("data-autofocus")) {
+        event.currentTarget.scrollIntoView({
+          block: "nearest",
+          inline: "nearest",
+        });
+      }
       hasFocusedComposite.current = true;
       // If the previously focused element is a composite or composite item
       // component, we'll transfer focus silently to the composite element.
@@ -368,11 +398,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       }
     });
 
-    const baseElement = useStoreState(
-      store,
-      (state) => state?.baseElement || undefined,
-    );
-
     const providerValue = useMemo(
       () => ({ id, baseElement }),
       [id, baseElement],
@@ -388,59 +413,10 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       [providerValue],
     );
 
-    const isActiveItem = useStoreState(
-      store,
-      (state) => !!state && state.activeId === id,
-    );
-    const virtualFocus = useStoreState(store, "virtualFocus");
-    const role = useRole(ref, props);
-    let ariaSelected: boolean | undefined;
-
-    if (isActiveItem) {
-      if (requiresAriaSelected(role)) {
-        // When the active item role _requires_ the aria-selected attribute
-        // (e.g., option, treeitem), we always set it to true.
-        ariaSelected = true;
-      } else if (virtualFocus && supportsAriaSelected(role)) {
-        // Otherwise, it will be set to true when virtualFocus is set to true
-        // (meaning that the focus will be managed using the
-        // aria-activedescendant attribute) and the aria-selected attribute is
-        // _supported_ by the active item role.
-        ariaSelected = true;
-      }
-    }
-
-    const ariaSetSize = useStoreState(store, (state) => {
-      if (ariaSetSizeProp != null) return ariaSetSizeProp;
-      if (!state) return;
-      if (!row?.ariaSetSize) return;
-      if (row.baseElement !== state.baseElement) return;
-      return row.ariaSetSize;
-    });
-
-    const ariaPosInSet = useStoreState(store, (state) => {
-      if (ariaPosInSetProp != null) return ariaPosInSetProp;
-      if (!state) return;
-      if (!row?.ariaPosInSet) return;
-      if (row.baseElement !== state.baseElement) return;
-      const itemsInRow = state.renderedItems.filter(
-        (item) => item.rowId === rowId,
-      );
-      return row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id);
-    });
-
-    const isTabbable = useStoreState(store, (state) => {
-      if (!state?.renderedItems.length) return true;
-      if (state.virtualFocus) return false;
-      if (tabbable) return true;
-      return state.activeId === id;
-    });
-
     props = {
-      id,
-      "aria-selected": ariaSelected,
       "data-active-item": isActiveItem || undefined,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,
       onFocus,
@@ -453,7 +429,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       store,
       ...props,
       getItem,
-      shouldRegisterItem: !!id ? props.shouldRegisterItem : false,
+      shouldRegisterItem: id ? props.shouldRegisterItem : false,
     });
 
     return removeUndefinedValues({
@@ -467,16 +443,16 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 /**
  * Renders a focusable item as part of a composite widget. The `tabindex`
  * attribute is automatically managed by this component based on the
- * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+ * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
  * option.
  *
  * When this component receives DOM focus or is virtually focused (when the
- * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+ * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
  * option is set to `true`), the element will automatically receive the
- * [`data-active-item`](https://ariakit.org/guide/styling#data-active-item)
+ * [`data-active-item`](https://ariakit.com/guide/styling#data-active-item)
  * attribute. This can be used to style the focused item, no matter the focus
  * approach employed.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx {3-5}
  * <CompositeProvider>
@@ -496,14 +472,13 @@ export const CompositeItem = memo(
 );
 
 export interface CompositeItemOptions<T extends ElementType = TagName>
-  extends CommandOptions<T>,
-    CollectionItemOptions<T> {
+  extends CommandOptions<T>, CollectionItemOptions<T> {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`Composite`](https://ariakit.com/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
   store?: CompositeStore;
@@ -515,8 +490,12 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
   /**
    * The id that will be used to group items in the same row. This is usually
    * retrieved by the
-   * [`CompositeRow`](https://ariakit.org/reference/composite-row) component
+   * [`CompositeRow`](https://ariakit.com/reference/composite-row) component
    * through context so in most cases you don't need to set it manually.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   rowId?: string;
   /**
@@ -534,10 +513,10 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    *
    * **Note**: To entirely disable focus moving within a composite widget, you
    * can use the
-   * [`focusOnMove`](https://ariakit.org/reference/composite#focusonmove) prop
+   * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) prop
    * on the composite component instead. If you want to control the behavior
    * _only when arrow keys are pressed_, where
-   * [`focusOnMove`](https://ariakit.org/reference/composite#focusonmove) may
+   * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) may
    * not be applicable, this prop must be set on all composite items because
    * they each manage their own key presses, as well as on the composite
    * component itself.
@@ -576,11 +555,11 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * implications of using this prop.
    *
    * **Note**: This prop has no effect when the
-   * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+   * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
    * option is enabled.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   tabbable?: boolean;
 }

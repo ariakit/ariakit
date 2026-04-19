@@ -4,10 +4,18 @@ import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,
   CollectionStoreState,
-} from "../collection/collection-store.js";
-import { useCollectionStoreProps } from "../collection/collection-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../collection/collection-store.ts";
+import { useCollectionStoreProps } from "../collection/collection-store.ts";
+import { useId } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
+
+export function useCompositeStoreOptions<T extends Core.CompositeStoreOptions>(
+  props: T,
+) {
+  const id = useId(props.id);
+  return { id, ...props };
+}
 
 export function useCompositeStoreProps<T extends Core.CompositeStore>(
   store: T,
@@ -28,8 +36,8 @@ export function useCompositeStoreProps<T extends Core.CompositeStore>(
 
 /**
  * Creates a composite store to control the state of
- * [Composite](https://ariakit.org/components/composite) components.
- * @see https://ariakit.org/components/composite
+ * [Composite](https://ariakit.com/components/composite) components.
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();
@@ -53,6 +61,7 @@ export function useCompositeStore(props?: CompositeStoreProps): CompositeStore;
 export function useCompositeStore(
   props: CompositeStoreProps = {},
 ): CompositeStore {
+  props = useCompositeStoreOptions(props);
   const [store, update] = useStore(Core.createCompositeStore, props);
   return useCompositeStoreProps(store, update, props);
 }
@@ -61,21 +70,21 @@ export interface CompositeStoreItem extends Core.CompositeStoreItem {}
 
 export interface CompositeStoreState<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends Core.CompositeStoreState<T>,
-    CollectionStoreState<T> {}
+>
+  extends Core.CompositeStoreState<T>, CollectionStoreState<T> {}
 
 export interface CompositeStoreFunctions<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends Core.CompositeStoreFunctions<T>,
-    CollectionStoreFunctions<T> {}
+>
+  extends Core.CompositeStoreFunctions<T>, CollectionStoreFunctions<T> {}
 
 export interface CompositeStoreOptions<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends Core.CompositeStoreOptions<T>,
-    CollectionStoreOptions<T> {
+>
+  extends Core.CompositeStoreOptions<T>, CollectionStoreOptions<T> {
   /**
    * A callback that gets called when the
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    * state changes.
    */
   setActiveId?: (activeId: CompositeStoreState<T>["activeId"]) => void;
@@ -83,10 +92,10 @@ export interface CompositeStoreOptions<
 
 export interface CompositeStoreProps<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreOptions<T>,
-    Core.CompositeStoreProps<T> {}
+>
+  extends CompositeStoreOptions<T>, Core.CompositeStoreProps<T> {}
 
 export interface CompositeStore<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreFunctions<T>,
-    Store<Core.CompositeStore<T>> {}
+>
+  extends CompositeStoreFunctions<T>, Store<Core.CompositeStore<T>> {}

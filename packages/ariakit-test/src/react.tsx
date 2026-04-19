@@ -1,13 +1,27 @@
+import * as ReactTestingLibrary from "@testing-library/react";
 import type { ReactNode } from "react";
 import { StrictMode } from "react";
-import * as ReactTestingLibrary from "@testing-library/react";
-import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.js";
+import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.ts";
 
-export * from "./index.js";
+export * from "./index.ts";
 
-export interface RenderOptions
-  extends Omit<ReactTestingLibrary.RenderOptions, "queries"> {
+export interface RenderOptions extends Omit<
+  ReactTestingLibrary.RenderOptions,
+  "queries"
+> {
   strictMode?: boolean;
+}
+
+function wrapRender<T extends (...args: any[]) => any>(
+  renderFn: T,
+): Promise<ReturnType<T>> {
+  return wrapAsync(async () => {
+    const output: ReturnType<T> = renderFn();
+    await flushMicrotasks();
+    await nextFrame();
+    await flushMicrotasks();
+    return output;
+  });
 }
 
 export async function render(ui: ReactNode, options?: RenderOptions) {
@@ -18,11 +32,15 @@ export async function render(ui: ReactNode, options?: RenderOptions) {
     return <StrictMode>{element}</StrictMode>;
   };
 
-  return wrapAsync(async () => {
-    const { unmount } = ReactTestingLibrary.render(ui, { ...options, wrapper });
-    await flushMicrotasks();
-    await nextFrame();
-    await flushMicrotasks();
-    return unmount;
+  return wrapRender(() => {
+    const { unmount, rerender } = ReactTestingLibrary.render(ui, {
+      ...options,
+      // @ts-ignore - We have mismatching types between React and React Testing Library, so we need to ignore this error.
+      wrapper,
+    });
+    return {
+      unmount,
+      rerender: (newUi: ReactNode) => wrapRender(() => rerender(newUi)),
+    };
   });
 }

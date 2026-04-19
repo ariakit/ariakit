@@ -1,5 +1,5 @@
-import { readdirSync } from "fs";
-import { basename, join, resolve } from "path";
+import { readdirSync } from "node:fs";
+import { basename, join, resolve } from "node:path";
 import { camelCase, upperFirst } from "lodash-es";
 import { getPageName } from "./get-page-name.js";
 import { getPageTitle } from "./get-page-title.js";

@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 import { useContext } from "react";
-import { HeadingContext } from "./heading-context.js";
-import type { HeadingLevels } from "./utils.js";
+import { HeadingContext } from "./heading-context.tsx";
+import type { HeadingLevels } from "./utils.ts";
 
 /**
  * A component that sets the heading level for its children. It doesn't render
  * any HTML element, just sets the
- * [`level`](https://ariakit.org/reference/heading-level#level) prop on the
+ * [`level`](https://ariakit.com/reference/heading-level#level) prop on the
  * context.
- * @see https://ariakit.org/components/heading
+ * @see https://ariakit.com/components/heading
  * @example
  * ```jsx
  * <HeadingLevel>

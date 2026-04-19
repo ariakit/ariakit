@@ -1,12 +1,12 @@
-import { createHovercardStore } from "../hovercard/hovercard-store.js";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
-} from "../hovercard/hovercard-store.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore } from "../utils/store.js";
+} from "../hovercard/hovercard-store.ts";
+import { createHovercardStore } from "../hovercard/hovercard-store.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import { createStore } from "../utils/store.ts";
 
 /**
  * Creates a tooltip store.
@@ -19,7 +19,7 @@ export function createTooltipStore(
       console.warn(
         "The `type` option on the tooltip store is deprecated.",
         "Render a visually hidden label or use the `aria-label` or `aria-labelledby` attributes on the anchor element instead.",
-        "See https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names",
+        "See https://ariakit.com/components/tooltip#tooltip-anchors-must-have-accessible-names",
       );
     }
   }
@@ -74,7 +74,8 @@ export interface TooltipStoreState extends HovercardStoreState {
 export type TooltipStoreFunctions = HovercardStoreFunctions;
 
 export interface TooltipStoreOptions
-  extends StoreOptions<
+  extends
+    StoreOptions<
       TooltipStoreState,
       | "type"
       | "placement"
@@ -86,9 +87,7 @@ export interface TooltipStoreOptions
     HovercardStoreOptions {}
 
 export interface TooltipStoreProps
-  extends TooltipStoreOptions,
-    StoreProps<TooltipStoreState> {}
+  extends TooltipStoreOptions, StoreProps<TooltipStoreState> {}
 
 export interface TooltipStore
-  extends TooltipStoreFunctions,
-    Store<TooltipStoreState> {}
+  extends TooltipStoreFunctions, Store<TooltipStoreState> {}

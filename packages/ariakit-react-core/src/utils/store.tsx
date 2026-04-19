@@ -1,15 +1,14 @@
-import * as React from "react";
 import { hasOwnProperty, identity } from "@ariakit/core/utils/misc";
-import {
-  init,
-  internalSync,
-  setProp,
-  subscribe,
-} from "@ariakit/core/utils/store";
 import type {
   Store as CoreStore,
   State,
   StoreState,
+} from "@ariakit/core/utils/store";
+import {
+  batch,
+  init,
+  subscribe,
+  sync,
 } from "@ariakit/core/utils/store";
 import type {
   AnyFunction,
@@ -17,16 +16,15 @@ import type {
   PickByValue,
   SetState,
 } from "@ariakit/core/utils/types";
-// import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
-// This doesn't work in ESM, because use-sync-external-store only exposes CJS.
-// The following is a workaround until ESM is supported.
-import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
-const { useSyncExternalStore } = useSyncExternalStoreExports;
-import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.js";
+import * as React from "react";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
+import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.ts";
 
-type UseState<S> = {
+export interface UseState<S> {
   /**
    * Re-renders the component when state changes and returns the current state.
+   * @deprecated Use
+   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const state = store.useState();
    */
@@ -36,6 +34,8 @@ type UseState<S> = {
    * state given the passed key. Changes on other keys will not trigger a
    * re-render.
    * @param key The state key.
+   * @deprecated Use
+   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const foo = store.useState("foo");
    */
@@ -46,21 +46,57 @@ type UseState<S> = {
    * be compared to the previous value. Returns the value returned by the
    * selector function.
    * @param selector The selector function.
+   * @deprecated Use
+   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const foo = store.useState((state) => state.foo);
    */
   <V>(selector: (state: S) => V): V;
-};
+}
 
 type StateStore<T = CoreStore> = T | null | undefined;
 type StateKey<T = CoreStore> = keyof StoreState<T>;
 
 const noopSubscribe = () => () => {};
 
+/**
+ * Receives an Ariakit store object (which can be `null` or `undefined`) and
+ * returns the current state. If a key is provided as the second argument, it
+ * returns the value of that key. If a selector function is provided, the state
+ * is passed to it, and its return value is used.
+ *
+ * The component using this hook will re-render when the returned value changes.
+ * @example
+ * Accessing the whole combobox state:
+ * ```js
+ * const combobox = Ariakit.useComboboxStore();
+ * const state = Ariakit.useStoreState(combobox);
+ * ```
+ * @example
+ * Accessing a specific value from the combobox state:
+ * ```js
+ * const combobox = Ariakit.useComboboxStore();
+ * const value = Ariakit.useStoreState(combobox, "value");
+ * ```
+ * @example
+ * Accessing a value using a selector function:
+ * ```js
+ * const combobox = Ariakit.useComboboxStore();
+ * const value = Ariakit.useStoreState(combobox, (state) => state.value);
+ * ```
+ * @example
+ * Accessing the state of a store that may be `null` or `undefined` (for
+ * example, using a context):
+ * ```js
+ * const combobox = Ariakit.useComboboxContext();
+ * const value = Ariakit.useStoreState(combobox, "value");
+ * ```
+ */
+
 export function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
 
 export function useStoreState<T extends CoreStore>(
-  store: T | null | undefined,
+  store: StateStore<T>,
 ): StoreState<T> | undefined;
 
 export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
@@ -69,7 +105,7 @@ export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
 ): StoreState<T>[K];
 
 export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
-  store: T | null | undefined,
+  store: StateStore<T>,
   key: K,
 ): StoreState<T>[K] | undefined;
 
@@ -79,7 +115,7 @@ export function useStoreState<T extends CoreStore, V>(
 ): V;
 
 export function useStoreState<T extends CoreStore, V>(
-  store: T | null | undefined,
+  store: StateStore<T>,
   selector: (state?: StoreState<T>) => V,
 ): V;
 
@@ -109,6 +145,93 @@ export function useStoreState(
   return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
 }
 
+type StoreStateObject<
+  T extends StateStore,
+  S extends StoreState<T> | undefined,
+> = Record<string, StateKey<T> | ((state: S) => any)>;
+
+type StoreStateObjectResult<
+  T extends StateStore,
+  S extends StoreState<T> | undefined,
+  O extends StoreStateObject<T, S>,
+> = {
+  [K in keyof O]: O[K] extends keyof StoreState<T>
+    ? O[K] extends keyof S
+      ? S[O[K]]
+      : StoreState<T>[O[K]] | undefined
+    : O[K] extends (state: S) => infer R
+      ? R
+      : never;
+};
+
+/**
+ * Receives an Ariakit store object (which can be `null` or `undefined`) and
+ * returns the current state. Unlike `useStoreState`, this hook receives an
+ * object with keys that map to store keys or selector functions.
+ */
+export function useStoreStateObject<
+  T extends CoreStore,
+  O extends StoreStateObject<T, StoreState<T>>,
+>(store: T, object: O): StoreStateObjectResult<T, StoreState<T>, O>;
+
+export function useStoreStateObject<
+  T extends StateStore,
+  O extends StoreStateObject<T, StoreState<T> | undefined>,
+>(store: T, object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
+
+export function useStoreStateObject(
+  store: StateStore,
+  object: StoreStateObject<StateStore, State | undefined>,
+) {
+  const objRef = React.useRef(
+    {} as StoreStateObjectResult<StateStore, State, any>,
+  );
+
+  const storeSubscribe = React.useCallback(
+    (callback: () => void) => {
+      if (!store) return noopSubscribe();
+      return subscribe(store, null, callback);
+    },
+    [store],
+  );
+
+  const getSnapshot = () => {
+    const state = store?.getState();
+    let updated = false;
+    const obj = objRef.current;
+
+    for (const prop in object) {
+      const keyOrSelector = object[prop];
+
+      if (typeof keyOrSelector === "function") {
+        const value = keyOrSelector(state);
+        if (value !== obj[prop]) {
+          obj[prop] = value;
+          updated = true;
+        }
+      }
+
+      if (typeof keyOrSelector === "string") {
+        if (!state) continue;
+        if (!hasOwnProperty(state, keyOrSelector)) continue;
+        const value = state[keyOrSelector];
+        if (value !== obj[prop]) {
+          obj[prop] = value;
+          updated = true;
+        }
+      }
+    }
+
+    if (updated) {
+      objRef.current = { ...obj };
+    }
+
+    return objRef.current;
+  };
+
+  return useSyncExternalStore(storeSubscribe, getSnapshot, getSnapshot);
+}
+
 /**
  * Synchronizes the store with the props, including parent store props.
  * @param store The store to synchronize.
@@ -120,30 +243,33 @@ export function useStoreProps<
   S extends State,
   P extends Partial<S>,
   K extends keyof S,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   SK extends keyof PickByValue<P, SetState<P[K]>>,
 >(store: CoreStore<S>, props: P, key: K, setKey?: SK) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
   const setValue = setKey ? props[setKey] : undefined;
   const propsRef = useLiveRef({ value, setValue });
-  const hasSetValue = !!setValue;
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
-    if (!hasSetValue) return;
-    return internalSync(store, [key], (state, prev) => {
+    return sync(store, [key], (state, prev) => {
       const { value, setValue } = propsRef.current;
       if (!setValue) return;
       if (state[key] === prev[key]) return;
       if (state[key] === value) return;
       setValue(state[key]);
     });
-  }, [store, key, hasSetValue]);
+  }, [store, key]);
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {
     if (value === undefined) return;
-    setProp(store, key, value!);
-  }, [store, key, value]);
+    store.setState(key, value);
+    return batch(store, [key], () => {
+      if (value === undefined) return;
+      store.setState(key, value);
+    });
+  });
 }
 
 /**
@@ -182,6 +308,8 @@ export type Store<T extends CoreStore = CoreStore> = T & {
   /**
    * Re-renders the component when the state changes and returns the current
    * state.
+   * @deprecated Use
+   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    */
   useState: UseState<StoreState<T>>;
 };

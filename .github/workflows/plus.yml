@@ -5,6 +5,9 @@ on:
     branches: [main, next]
   pull_request:
 
+permissions:
+  contents: read
+
 env:
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
@@ -19,63 +22,34 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: npm-
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: cache-node-modules
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-          key: modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
-
-      - name: Cache playwright
-        id: cache-playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-chromium-${{ hashFiles('package-lock.json') }}
-          restore-keys: playwright-chromium-
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Install playwright
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium
+        uses: ./.github/workflows/install-playwright
+        with:
+          engine: chromium
 
       - name: Cache Next.js
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: website/.next
           key: nextjs-${{ github.run_id }}
           restore-keys: nextjs-
 
       - name: Build website
-        run: npm run build-website-lite
+        run: pnpm run build-website-lite
 
       - name: Test
         id: test
-        run: xvfb-run npm run test-plus-headed
+        run: xvfb-run pnpm run test-plus-headed
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
-          name: test-results
+          name: plus-test-results
           path: test-results
           retention-days: 30

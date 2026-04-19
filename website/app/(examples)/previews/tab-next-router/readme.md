@@ -54,7 +54,7 @@ You can learn more about controlled state on the [Component providers](/guide/co
 It's possible to render a single [`TabPanel`](/reference/tab-panel) component and use the [`tabId`](/reference/tab-panel#tabid) prop to point to the selected tab.
 
 ```jsx
-const tabId = tab.useState("selectedId");
+const tabId = useStoreState(tab, "selectedId");
 
 <TabPanel tabId={tabId}>{props.children}</TabPanel>;
 ```

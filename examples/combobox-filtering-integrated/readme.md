@@ -14,13 +14,13 @@ tags:
 
 <div data-description>
 
-Filtering options in a [Combobox](/components/combobox) component through an abstracted implementation using [`React.useDeferredValue`](https://react.dev/reference/react/useDeferredValue), resulting in a simple higher-level API.
+Filtering options in a [Combobox](/components/combobox) component through an abstracted implementation using `React.useDeferredValue`, resulting in a simple higher-level API.
 
 </div>
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -56,10 +56,10 @@ function Combobox({ value, onChange }) {
 }
 ```
 
-We can use the custom [`useState`](/reference/use-combobox-store#usestate) hook provided by [`useComboboxStore`](/reference/use-combobox-store) to access the current value, regardless if it's controlled or uncontrolled:
+We can use the custom [`useStoreState`](/reference/use-store-state) hook provided by Ariakit to access the current value, regardless if it's controlled or uncontrolled:
 
 ```js
-const searchValue = combobox.useState("value");
+const searchValue = useStoreState(combobox, "value");
 ```
 
 You can learn more about these functions on the [Component stores](/guide/component-stores) guide.
@@ -86,7 +86,7 @@ const matches = React.useMemo(() => {
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
 - [](/examples/combobox-tabs)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menu-nested-combobox)
 
 </div>

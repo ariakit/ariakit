@@ -1,36 +1,20 @@
 {
-  "compilerOptions": {
-    "target": "ES2017",
-    "module": "Node16",
-    "moduleResolution": "Node16",
-    "jsx": "react-jsx",
-    "types": ["node", "vitest/globals"],
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "noEmit": true,
-    "skipLibCheck": true,
-    "allowJs": true,
-    "checkJs": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "stripInternal": true,
-    "noUncheckedIndexedAccess": true,
-    "verbatimModuleSyntax": true
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.mts",
-    "**/*.cts",
-    "**/*.js",
-    "**/*.cjs",
-    "**/*.mjs"
-  ],
-  "exclude": ["node_modules", "website", "coverage"]
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.test.json" },
+    { "path": "./tsconfig.test.react.json" },
+    { "path": "./tsconfig.test.solid.json" },
+    { "path": "./packages/ariakit-core/tsconfig.json" },
+    { "path": "./packages/ariakit-react/tsconfig.json" },
+    { "path": "./packages/ariakit-react-core/tsconfig.json" },
+    { "path": "./packages/ariakit-solid/tsconfig.json" },
+    { "path": "./packages/ariakit-solid-core/tsconfig.json" },
+    { "path": "./packages/ariakit-scripts/tsconfig.json" },
+    { "path": "./packages/ariakit-tailwind/tsconfig.json" },
+    { "path": "./packages/ariakit-test/tsconfig.json" },
+    { "path": "./examples/tsconfig.react.json" },
+    { "path": "./examples/tsconfig.solid.json" },
+    { "path": "./site/tsconfig.json" }
+  ]
 }

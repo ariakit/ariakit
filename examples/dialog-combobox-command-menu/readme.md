@@ -21,7 +21,7 @@ Combining [Dialog](/components/dialog) and [Combobox](/components/combobox) to e
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -106,6 +106,7 @@ In this example, we've decided to maintain the highlight state on the currently 
 
 <div data-cards="examples">
 
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/combobox-links)
 - [](/examples/combobox-filtering)
 - [](/examples/combobox-tabs)

@@ -1,5 +1,6 @@
 import { click, press, q } from "@ariakit/test";
-import "../combobox-multiple/test.js";
+import "../combobox-multiple/test.ts";
+import { expect, test } from "vitest";
 
 test("click on listbox then move through items with keyboard", async () => {
   await click(q.combobox());

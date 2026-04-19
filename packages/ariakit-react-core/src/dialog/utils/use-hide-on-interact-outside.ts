@@ -1,19 +1,21 @@
-import { useEffect, useRef } from "react";
-import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
+import { contains, getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.js";
-import type { DialogStore } from "../dialog-store.js";
-import type { DialogOptions } from "../dialog.js";
-import { isElementMarked } from "./mark-tree-outside.js";
-import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.js";
+import type { MutableRefObject } from "react";
+import { useEffect, useRef } from "react";
+import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.ts";
+import { useStoreState } from "../../utils/store.tsx";
+import type { DialogStore } from "../dialog-store.ts";
+import type { DialogOptions } from "../dialog.tsx";
+import { isElementMarked } from "./mark-tree-outside.ts";
+import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
 
-type EventOutsideOptions = {
+interface EventOutsideOptions {
   store: DialogStore;
   type: string;
   listener: (event: Event) => void;
   capture?: boolean;
   domReady?: boolean | HTMLElement | null;
-};
+}
 
 function isInDocument(target: Element) {
   if (target.tagName === "HTML") return true;
@@ -53,20 +55,20 @@ function useEventOutside({
   domReady,
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
-  const open = store.useState("open");
+  const open = useStoreState(store, "open");
+  const contentElement = useStoreState(store, "contentElement");
   const focusedRef = useRef(false);
 
   useSafeLayoutEffect(() => {
     if (!open) return;
     if (!domReady) return;
-    const { contentElement } = store.getState();
     if (!contentElement) return;
     const onFocus = () => {
       focusedRef.current = true;
     };
     contentElement.addEventListener("focusin", onFocus, true);
     return () => contentElement.removeEventListener("focusin", onFocus, true);
-  }, [store, open, domReady]);
+  }, [open, domReady, contentElement]);
 
   useEffect(() => {
     if (!open) return;
@@ -96,8 +98,9 @@ function useEventOutside({
       // of the content element, we call the listener.
       callListener(event);
     };
-    return addGlobalEventListener(type, onEvent, capture);
-  }, [open, capture]);
+    const win = contentElement ? getWindow(contentElement) : undefined;
+    return addGlobalEventListener(type, onEvent, capture, win);
+  }, [open, capture, store, type, callListener, contentElement]);
 }
 
 function shouldHideOnInteractOutside(
@@ -114,9 +117,12 @@ export function useHideOnInteractOutside(
   store: DialogStore,
   hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
   domReady?: boolean | HTMLElement | null,
+  interactedOutsideRef?: MutableRefObject<boolean>,
 ) {
-  const open = store.useState("open");
-  const previousMouseDownRef = usePreviousMouseDownRef(open);
+  const open = useStoreState(store, "open");
+  const contentElement = useStoreState(store, "contentElement");
+  const contentWindow = contentElement ? getWindow(contentElement) : undefined;
+  const previousMouseDownRef = usePreviousMouseDownRef(open, contentWindow);
   const props = { store, domReady, capture: true };
 
   useEventOutside({
@@ -130,7 +136,6 @@ export function useHideOnInteractOutside(
       // was dispatched outside of the dialog. See form-select example. We just
       // ignore this.
       if (!previousMouseDown) return;
-      if (!isVisible(previousMouseDown)) return;
       // This prevents the dialog from closing by dragging the cursor (for
       // example, selecting some text inside the dialog and releasing the mouse
       // outside of it). See:
@@ -138,6 +143,9 @@ export function useHideOnInteractOutside(
       // - https://github.com/ariakit/ariakit/issues/2330
       if (!isElementMarked(previousMouseDown, contentElement?.id)) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
+      if (interactedOutsideRef) {
+        interactedOutsideRef.current = true;
+      }
       store.hide();
     },
   });
@@ -160,6 +168,9 @@ export function useHideOnInteractOutside(
     type: "contextmenu",
     listener: (event) => {
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
+      if (interactedOutsideRef) {
+        interactedOutsideRef.current = true;
+      }
       store.hide();
     },
   });

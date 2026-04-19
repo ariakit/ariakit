@@ -1,13 +1,19 @@
-import { useMemo, useState } from "react";
-import type { ElementType } from "react";
 import { getWindow } from "@ariakit/core/utils/dom";
 import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { POPOVER_ARROW_PATH } from "./popover-arrow-path.js";
-import { usePopoverContext } from "./popover-context.js";
-import type { PopoverStore } from "./popover-store.js";
+import type { ElementType } from "react";
+import { useMemo, useState } from "react";
+import { useId, useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  memo,
+} from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { POPOVER_ARROW_PATH } from "./popover-arrow-path.ts";
+import { usePopoverContext } from "./popover-context.tsx";
+import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -25,7 +31,7 @@ const rotateMap = {
 
 function useComputedStyle(store: PopoverStore) {
   const [style, setStyle] = useState<CSSStyleDeclaration>();
-  const contentElement = store.useState("contentElement");
+  const contentElement = useStoreState(store, "contentElement");
   useSafeLayoutEffect(() => {
     if (!contentElement) return;
     const win = getWindow(contentElement);
@@ -35,9 +41,28 @@ function useComputedStyle(store: PopoverStore) {
   return style;
 }
 
+function getRingWidth(style?: CSSStyleDeclaration) {
+  if (!style) return;
+  const boxShadow = style.getPropertyValue("box-shadow");
+  const ringWidth = boxShadow.match(/0px 0px 0px ([^0]+px)/)?.[1];
+  return ringWidth;
+}
+
+function getBorderColor(dir: BasePlacement, style?: CSSStyleDeclaration) {
+  if (!style) return;
+  const borderColor = style.getPropertyValue(`border-${dir}-color`);
+  if (borderColor) return borderColor;
+  const boxShadow = style.getPropertyValue("box-shadow");
+  const match = boxShadow.match(/0px 0px 0px [^,]+/);
+  if (!match) return;
+  const segment = match[0];
+  const ringColor = segment.replace(/^0px 0px 0px\s+[^\s,]+/, "").trim();
+  return ringColor || undefined;
+}
+
 /**
  * Returns props to create a `PopoverArrow` component.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * const store = usePopoverStore();
@@ -49,7 +74,12 @@ function useComputedStyle(store: PopoverStore) {
  * ```
  */
 export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
-  function usePopoverArrow({ store, size = defaultSize, ...props }) {
+  function usePopoverArrow({
+    store,
+    size = defaultSize,
+    borderWidth: borderWidthProp,
+    ...props
+  }) {
     const context = usePopoverContext();
     store = store || context;
 
@@ -59,27 +89,65 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
         "PopoverArrow must be wrapped in a Popover component.",
     );
 
-    const dir = store.useState(
+    const dir = useStoreState(
+      store,
       (state) => state.currentPlacement.split("-")[0] as BasePlacement,
     );
 
+    const maskId = useId();
     const style = useComputedStyle(store);
+    const stroke = getBorderColor(dir, style) || "none";
     const fill = style?.getPropertyValue("background-color") || "none";
-    const stroke = style?.getPropertyValue(`border-${dir}-color`) || "none";
-    const borderWidth = style?.getPropertyValue(`border-${dir}-width`) || "0px";
-    const strokeWidth = parseInt(borderWidth) * 2 * (defaultSize / size);
+
+    const [borderWidth, isRing] = useMemo(() => {
+      if (borderWidthProp != null) return [borderWidthProp, false];
+      if (!style) return [0, false];
+      const ringWidth = getRingWidth(style);
+      if (ringWidth) return [Number.parseInt(ringWidth, 10), true];
+      const borderWidth = style.getPropertyValue(`border-${dir}-width`);
+      if (borderWidth) {
+        const parsed = Number.parseFloat(borderWidth);
+        if (!Number.isNaN(parsed)) {
+          return [Math.ceil(parsed), false];
+        }
+      }
+      return [0, false];
+    }, [borderWidthProp, style, dir]);
+
+    const strokeWidth = borderWidth * 2 * (defaultSize / size);
     const transform = rotateMap[dir];
 
     const children = useMemo(
       () => (
         <svg display="block" viewBox="0 0 30 30">
           <g transform={transform}>
-            <path fill="none" d={POPOVER_ARROW_PATH} />
+            {!isRing && (
+              // When using the CSS border property, set the fill color to match
+              // the background behind the stroke so transparent strokes match
+              // the appearance of borders on HTML elements.
+              <path
+                fill="none"
+                stroke={`var(--ak-layer, ${fill})`}
+                d={POPOVER_ARROW_PATH}
+                mask={`url(#${maskId})`}
+              />
+            )}
+            <path fill="none" d={POPOVER_ARROW_PATH} mask={`url(#${maskId})`} />
             <path stroke="none" d={POPOVER_ARROW_PATH} />
+            <mask id={maskId} maskUnits="userSpaceOnUse">
+              <rect
+                x="-15"
+                y="0"
+                width="60"
+                height="30"
+                fill="white"
+                stroke="black"
+              />
+            </mask>
           </g>
         </svg>
       ),
-      [transform],
+      [transform, isRing, fill, maskId],
     );
 
     props = {
@@ -88,14 +156,13 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
       ...props,
       ref: useMergeRefs(store.setArrowElement, props.ref),
       style: {
-        // server side rendering
         position: "absolute",
         fontSize: size,
         width: "1em",
         height: "1em",
         pointerEvents: "none",
-        fill,
-        stroke,
+        fill: `var(--ak-layer, ${fill})`,
+        stroke: `var(--ak-layer-border, ${stroke})`,
         strokeWidth,
         ...props.style,
       },
@@ -106,9 +173,9 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
 );
 
 /**
- * Renders an arrow inside a [`Popover`](https://ariakit.org/reference/popover)
+ * Renders an arrow inside a [`Popover`](https://ariakit.com/reference/popover)
  * component pointing to the anchor element.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx {4}
  * <PopoverProvider>
@@ -120,21 +187,22 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
  * </PopoverProvider>
  * ```
  */
-export const PopoverArrow = forwardRef(function PopoverArrow(
-  props: PopoverArrowProps,
-) {
-  const htmlProps = usePopoverArrow(props);
-  return createElement(TagName, htmlProps);
-});
+export const PopoverArrow = memo(
+  forwardRef(function PopoverArrow(props: PopoverArrowProps) {
+    const htmlProps = usePopoverArrow(props);
+    return createElement(TagName, htmlProps);
+  }),
+);
 
-export interface PopoverArrowOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface PopoverArrowOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * [`usePopoverStore`](https://ariakit.com/reference/use-popover-store) hook.
    * If not provided, the closest
-   * [`Popover`](https://ariakit.org/reference/popover) or
-   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * [`Popover`](https://ariakit.com/reference/popover) or
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * components' context will be used.
    */
   store?: PopoverStore;
@@ -142,10 +210,15 @@ export interface PopoverArrowOptions<_T extends ElementType = TagName>
    * The size of the arrow.
    *
    * Live examples:
-   * - [Selection Popover](https://ariakit.org/examples/popover-selection)
+   * - [Selection Popover](https://ariakit.com/examples/popover-selection)
    * @default 30
    */
   size?: number;
+  /**
+   * The arrow's border width. If not specified, Ariakit will infer it from the
+   * popover `contentElement`'s style.
+   */
+  borderWidth?: number;
 }
 
 export type PopoverArrowProps<T extends ElementType = TagName> = Props<

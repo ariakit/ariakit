@@ -1,0 +1,27 @@
+packages:
+  - packages/*
+  - templates/*
+  - nextjs
+  - examples
+  - guide
+  - website
+  - site
+
+minimumReleaseAge: 4320
+
+publicHoistPattern:
+  - "*react*"
+  - "*testing-library*"
+
+saveExact: true
+
+overrides:
+  "@wordpress/components>@ariakit/react": "workspace:*"
+
+patchedDependencies:
+  "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true

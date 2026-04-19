@@ -1,4 +1,5 @@
 import { click, hover, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function getSelectionStart(element: Element | HTMLInputElement | null) {
   return element && "selectionStart" in element ? element.selectionStart : null;
@@ -127,4 +128,23 @@ test("clear input with mouse", async () => {
   expect(q.combobox()).toHaveFocus();
   expect(q.combobox()).toHaveAttribute("data-active-item");
   expect(q.combobox()).toHaveValue("");
+});
+
+test("open the popover with arrow down after switching tabs", async () => {
+  await click(q.combobox());
+  expect(q.dialog("Pages")).toBeVisible();
+  await press.ArrowDown();
+  expect(q.tab("Components 16")).toHaveFocus();
+  await press.ArrowDown();
+  expect(q.option("Button")).toHaveFocus();
+  await press.ArrowRight();
+  expect(q.tab("Examples 31")).toHaveFocus();
+  await press.Escape();
+  expect(q.combobox()).toHaveAttribute("data-active-item");
+  expect(q.dialog("Pages")).not.toBeInTheDocument();
+  await press.ArrowDown();
+  expect(q.dialog("Pages")).toBeVisible();
+  expect(q.tabpanel("Components 16")).toBeVisible();
+  await press.ArrowDown();
+  expect(q.tab("Components 16")).toHaveFocus();
 });

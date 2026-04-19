@@ -1,0 +1,124 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@custom-variant ak-select-item-selected {
+  &:checked,
+  &[aria-selected="true"],
+  &[aria-checked="true"],
+  :checked &,
+  [aria-selected="true"] &,
+  [aria-checked="true"] & {
+    @slot;
+  }
+  @container style(--ak-select-item-selected: 1) {
+    @slot;
+  }
+}
+
+/* ak-select */
+@utility ak-select_idle {
+  @apply ak-button_idle;
+}
+
+@utility ak-select_hover {
+  @apply ak-button_hover;
+}
+
+@utility ak-select_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-select_active {
+  @apply ak-button_active;
+}
+
+@utility ak-select_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-select {
+  @apply ak-select_idle;
+  @apply ak-command-hover:ak-select_hover;
+  @apply ak-command-focus:ak-select_focus;
+  @apply ak-command-active:ak-select_active;
+  @apply ak-command-disabled:ak-select_disabled;
+}
+
+/* ak-select-arrow */
+@utility ak-select-arrow {
+  @apply ak-icon-chevron;
+  @apply ms-auto size-4;
+}
+
+/* ak-select-popover */
+@utility ak-select-popover_idle {
+  @apply ak-popover_idle ak-frame-force-container ak-layer-canvas-1;
+  @apply outline-none;
+  top: calc(anchor(bottom) + --spacing(1));
+  inset-inline-start: calc(anchor(start) - --spacing(1));
+  position-try-fallbacks: flip-block, flip-inline;
+}
+
+@utility ak-select-popover_open {
+  @apply ak-popover_open;
+}
+
+@utility ak-select-popover_closed {
+  @apply ak-popover_closed;
+}
+
+@utility ak-select-popover {
+  @apply ak-select-popover_idle;
+  &:is(dialog, [popover]) {
+    @apply open:ak-select-popover_open not-open:ak-select-popover_closed;
+  }
+}
+
+/* ak-select-item */
+@utility ak-select-item_idle {
+  @apply ak-option_idle;
+  @apply flex items-center gap-2;
+}
+
+@utility ak-select-item_selected {
+  --ak-select-item-selected: 1;
+}
+
+@utility ak-select-item_hover {
+  @apply ak-option_hover;
+}
+
+@utility ak-select-item_focus {
+  @apply ak-option_focus;
+}
+
+@utility ak-select-item_active {
+  @apply ak-option_active;
+}
+
+@utility ak-select-item_disabled {
+  @apply ak-option_disabled;
+}
+
+@utility ak-select-item {
+  @apply ak-select-item_idle;
+  @apply ak-select-item-selected:ak-select-item_selected;
+  @apply ak-command-hover:ak-select-item_hover;
+  @apply ak-command-focus:ak-select-item_focus;
+  @apply ak-command-active:ak-select-item_active;
+  @apply ak-command-disabled:ak-select-item_disabled;
+}
+
+/* ak-select-item-check */
+@utility ak-select-item-check {
+  @apply ak-icon-check;
+  @apply invisible size-4;
+  @variant ak-select-item-selected {
+    @apply visible;
+  }
+}

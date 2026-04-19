@@ -4,37 +4,60 @@ import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
+} from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { usePopoverStoreProps } from "../popover/popover-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../popover/popover-store.ts";
+import { usePopoverStoreProps } from "../popover/popover-store.ts";
+import { useTagContext } from "../tag/tag-context.tsx";
+import type { TagStore } from "../tag/tag-store.ts";
+import { useUpdateEffect } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
+
+export function useComboboxStoreOptions<T extends Core.ComboboxStoreOptions>(
+  props: T,
+) {
+  const tag = useTagContext();
+  props = {
+    ...props,
+    tag: props.tag !== undefined ? props.tag : tag,
+  };
+  return useCompositeStoreOptions(props);
+}
 
 export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   store: T,
   update: () => void,
   props: ComboboxStoreProps,
 ) {
+  useUpdateEffect(update, [props.tag]);
+
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "selectedValue", "setSelectedValue");
   useStoreProps(store, props, "resetValueOnHide");
   useStoreProps(store, props, "resetValueOnSelect");
-  return useCompositeStoreProps(
-    usePopoverStoreProps(store, update, props),
-    update,
-    props,
+
+  return Object.assign(
+    useCompositeStoreProps(
+      usePopoverStoreProps(store, update, props),
+      update,
+      props,
+    ),
+    { tag: props.tag },
   );
 }
 
 /**
  * Creates a combobox store to control the state of
- * [Combobox](https://ariakit.org/components/combobox) components.
- * @see https://ariakit.org/components/combobox
+ * [Combobox](https://ariakit.com/components/combobox) components.
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const combobox = useComboboxStore();
@@ -63,6 +86,7 @@ export function useComboboxStore(props?: ComboboxStoreProps): ComboboxStore;
 export function useComboboxStore(
   props: ComboboxStoreProps = {},
 ): ComboboxStore {
+  props = useComboboxStoreOptions(props);
   const [store, update] = useStore(Core.createComboboxStore, props);
   return useComboboxStoreProps(store, update, props);
 }
@@ -73,56 +97,72 @@ export interface ComboboxStoreItem extends Core.ComboboxStoreItem {}
 
 export interface ComboboxStoreState<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends Core.ComboboxStoreState<T>,
+>
+  extends
+    Core.ComboboxStoreState<T>,
     CompositeStoreState<ComboboxStoreItem>,
     PopoverStoreState {}
 
 export interface ComboboxStoreFunctions<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends Omit<Core.ComboboxStoreFunctions<T>, "disclosure">,
+>
+  extends
+    Pick<ComboboxStoreOptions<T>, "tag">,
+    Omit<Core.ComboboxStoreFunctions<T>, "tag" | "disclosure">,
     CompositeStoreFunctions<ComboboxStoreItem>,
     PopoverStoreFunctions {}
 
 export interface ComboboxStoreOptions<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends Omit<Core.ComboboxStoreOptions<T>, "disclosure">,
+>
+  extends
+    Omit<Core.ComboboxStoreOptions<T>, "tag" | "disclosure">,
     CompositeStoreOptions<ComboboxStoreItem>,
     PopoverStoreOptions {
   /**
    * A callback that gets called when the
-   * [`value`](https://ariakit.org/reference/combobox-provider#value) state
+   * [`value`](https://ariakit.com/reference/combobox-provider#value) state
    * changes.
    *
    * Live examples:
    * - [Combobox with integrated
-   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
-   * - [ComboboxGroup](https://ariakit.org/examples/combobox-group)
-   * - [Combobox with links](https://ariakit.org/examples/combobox-links)
+   *   filter](https://ariakit.com/examples/combobox-filtering-integrated)
+   * - [ComboboxGroup](https://ariakit.com/examples/combobox-group)
+   * - [Combobox with links](https://ariakit.com/examples/combobox-links)
    * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
-   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
-   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
+   *   Combobox](https://ariakit.com/examples/combobox-multiple)
+   * - [Menu with Combobox](https://ariakit.com/examples/menu-combobox)
+   * - [Select with Combobox](https://ariakit.com/examples/select-combobox)
    */
   setValue?: (value: ComboboxStoreState<T>["value"]) => void;
   /**
    * A callback that's invoked when the
-   * [`selectedValue`](https://ariakit.org/reference/combobox-provider#selectedvalue)
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * state changes, typically when the user selects an item. This can be used to
    * implement behavior like `onSelect` or `onItemSelect`.
    *
    * Live examples:
    * - [Multi-selectable
-   *   Combobox](https://ariakit.org/examples/combobox-multiple)
+   *   Combobox](https://ariakit.com/examples/combobox-multiple)
    */
   setSelectedValue?: (value: ComboboxStoreState<T>["selectedValue"]) => void;
+  /**
+   * A reference to a [tag store](https://ariakit.com/apis/use-tag-store). It's
+   * automatically set when rendering a combobox within a tag list.
+   */
+  tag?: TagStore | null;
 }
 
 export interface ComboboxStoreProps<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends ComboboxStoreOptions<T>,
-    Omit<Core.ComboboxStoreProps<T>, "disclosure"> {}
+>
+  extends
+    ComboboxStoreOptions<T>,
+    Omit<Core.ComboboxStoreProps<T>, "tag" | "disclosure"> {}
 
 export interface ComboboxStore<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
-> extends ComboboxStoreFunctions<T>,
-    Omit<Store<Core.ComboboxStore<T>>, "disclosure"> {}
+>
+  extends
+    ComboboxStoreFunctions<T>,
+    Omit<Store<Core.ComboboxStore<T>>, "tag" | "disclosure"> {}

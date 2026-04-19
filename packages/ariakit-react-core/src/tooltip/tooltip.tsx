@@ -1,24 +1,25 @@
-import type { ElementType } from "react";
 import { contains } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
-import { createDialogComponent } from "../dialog/dialog.js";
-import { useHovercard } from "../hovercard/hovercard.js";
-import type { HovercardOptions } from "../hovercard/hovercard.js";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import type { ElementType } from "react";
+import { createDialogComponent } from "../dialog/dialog.tsx";
+import type { HovercardOptions } from "../hovercard/hovercard.tsx";
+import { useHovercard } from "../hovercard/hovercard.tsx";
+import { useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   TooltipScopedContextProvider,
   useTooltipProviderContext,
-} from "./tooltip-context.js";
-import type { TooltipStore } from "./tooltip-store.js";
+} from "./tooltip-context.tsx";
+import type { TooltipStore } from "./tooltip-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Tooltip` component.
- * @see https://ariakit.org/components/tooltip
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx
  * const store = useToolTipStore();
@@ -56,7 +57,7 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
       [store],
     );
 
-    const role = store.useState((state) =>
+    const role = useStoreState(store, (state) =>
       state.type === "description" ? "tooltip" : "none",
     );
 
@@ -98,14 +99,14 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
 
 /**
  * Renders a tooltip element that visually describes a
- * [`TooltipAnchor`](https://ariakit.org/reference/tooltip-anchor) when it
+ * [`TooltipAnchor`](https://ariakit.com/reference/tooltip-anchor) when it
  * receives focus or is hovered.
  *
  * The tooltip is strictly for visual purposes. It's your responsibility to
  * ensure the anchor element has an accessible name. See [Tooltip anchors must
  * have accessible
- * names](https://ariakit.org/components/tooltip#tooltip-anchors-must-have-accessible-names)
- * @see https://ariakit.org/components/tooltip
+ * names](https://ariakit.com/components/tooltip#tooltip-anchors-must-have-accessible-names)
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx {3}
  * <TooltipProvider>
@@ -122,13 +123,14 @@ export const Tooltip = createDialogComponent(
   useTooltipProviderContext,
 );
 
-export interface TooltipOptions<T extends ElementType = TagName>
-  extends HovercardOptions<T> {
+export interface TooltipOptions<
+  T extends ElementType = TagName,
+> extends HovercardOptions<T> {
   /**
    * Object returned by the
-   * [`useTooltipStore`](https://ariakit.org/reference/use-tooltip-store) hook.
+   * [`useTooltipStore`](https://ariakit.com/reference/use-tooltip-store) hook.
    * If not provided, the closest
-   * [`TooltipProvider`](https://ariakit.org/reference/tooltip-provider)
+   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)
    * component's context will be used.
    */
   store?: TooltipStore;

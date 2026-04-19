@@ -2,13 +2,13 @@ import { createContext } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
-} from "../composite/composite-context.js";
+} from "../composite/composite-context.tsx";
 import {
   PopoverContextProvider,
   PopoverScopedContextProvider,
-} from "../popover/popover-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { ComboboxStore } from "./combobox-store.js";
+} from "../popover/popover-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 export const ComboboxListRoleContext = createContext<string | undefined>(
   undefined,

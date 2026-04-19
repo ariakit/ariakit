@@ -1,0 +1,62 @@
+{
+  "name": "@ariakit/solid",
+  "version": "0.1.6",
+  "description": "Toolkit for building accessible web apps with Solid",
+  "keywords": [
+    "a11y",
+    "ariakit",
+    "components",
+    "solid",
+    "toolkit",
+    "ui"
+  ],
+  "homepage": "https://solid.ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ariakit"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "node ../../scripts/build/build.js",
+    "clean": "node ../../scripts/build/clean.js"
+  },
+  "dependencies": {
+    "@ariakit/solid-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./as": "./src/as.ts",
+    "./focus-trap": "./src/focus-trap.ts",
+    "./group": "./src/group.ts",
+    "./heading": "./src/heading.ts",
+    "./role": "./src/role.ts",
+    "./separator": "./src/separator.ts",
+    "./visually-hidden": "./src/visually-hidden.ts",
+    "./package.json": "./package.json"
+  }
+}

@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
 import {
   getScrollingElement,
   scrollIntoViewIfNeeded,
 } from "@ariakit/core/utils/dom";
 import * as Ariakit from "@ariakit/react";
-import { Popup } from "components/popup.js";
-import { List } from "icons/list.js";
-import { useMedia } from "utils/use-media.js";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { Popup } from "@/components/popup.tsx";
+import { List } from "@/icons/list.tsx";
+import { useMedia } from "@/lib/use-media.ts";
 
 interface TableOfContentsProps {
   ids: string[];
@@ -34,7 +34,7 @@ export function TableOfContents({
         if (!element) return false;
         const { top } = element.getBoundingClientRect();
         const { scrollMarginTop } = getComputedStyle(element);
-        return top - parseInt(scrollMarginTop) <= 64;
+        return top - Number.parseInt(scrollMarginTop, 10) <= 64;
       });
       setActiveId(activeId ?? null);
     };
@@ -45,7 +45,7 @@ export function TableOfContents({
 
   useEffect(() => {
     const anchors = document.body.querySelectorAll("li a[href^='#']");
-    anchors.forEach((anchor) => {
+    for (const anchor of anchors) {
       anchor.removeAttribute("aria-current");
       if (anchor.getAttribute("href") === `#${activeId ? activeId : ""}`) {
         anchor.setAttribute("aria-current", "true");
@@ -54,13 +54,13 @@ export function TableOfContents({
           scrollIntoViewIfNeeded(anchor, { block: "nearest" });
         }
       }
-    });
+    }
   }, [activeId, mounted, isLarge, children, popoverContents]);
 
   return (
     <>
       {isLarge && children}
-      <div className="sticky top-14 z-30 mt-8 flex h-0 w-full justify-end px-3 md:hidden">
+      <div className="sticky top-[--header-height] z-30 mt-8 flex h-0 w-full justify-end md:hidden [&+*]:-mt-6">
         <Ariakit.PopoverDisclosure
           store={popover}
           className="flex h-10 w-10 items-center justify-center rounded-lg bg-transparent hover:bg-black/5 aria-expanded:bg-black/10 dark:hover:bg-white/5 dark:aria-expanded:bg-white/10 [&:focus-visible]:ariakit-outline-input"

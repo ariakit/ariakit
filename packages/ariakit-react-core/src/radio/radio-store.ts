@@ -3,10 +3,13 @@ import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useRadioStoreProps<T extends Core.RadioStore>(
   store: T,
@@ -20,8 +23,8 @@ export function useRadioStoreProps<T extends Core.RadioStore>(
 
 /**
  * Creates a radio store to control the state of
- * [Radio](https://ariakit.org/components/radio) components.
- * @see https://ariakit.org/components/radio
+ * [Radio](https://ariakit.com/components/radio) components.
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx
  * const radio = useRadioStore();
@@ -33,33 +36,29 @@ export function useRadioStoreProps<T extends Core.RadioStore>(
  * ```
  */
 export function useRadioStore(props: RadioStoreProps = {}): RadioStore {
+  props = useCompositeStoreOptions(props);
   const [store, update] = useStore(Core.createRadioStore, props);
   return useRadioStoreProps(store, update, props);
 }
 
 export interface RadioStoreState
-  extends Core.RadioStoreState,
-    CompositeStoreState {}
+  extends Core.RadioStoreState, CompositeStoreState {}
 
 export interface RadioStoreFunctions
-  extends Core.RadioStoreFunctions,
-    CompositeStoreFunctions {}
+  extends Core.RadioStoreFunctions, CompositeStoreFunctions {}
 
 export interface RadioStoreOptions
-  extends Core.RadioStoreOptions,
-    CompositeStoreOptions {
+  extends Core.RadioStoreOptions, CompositeStoreOptions {
   /**
    * Function that will be called when the
-   * [`value`](https://ariakit.org/reference/radio-provider#value) state
+   * [`value`](https://ariakit.com/reference/radio-provider#value) state
    * changes.
    */
   setValue?: (value: RadioStoreState["value"]) => void;
 }
 
 export interface RadioStoreProps
-  extends RadioStoreOptions,
-    Core.RadioStoreProps {}
+  extends RadioStoreOptions, Core.RadioStoreProps {}
 
 export interface RadioStore
-  extends RadioStoreFunctions,
-    Store<Core.RadioStore> {}
+  extends RadioStoreFunctions, Store<Core.RadioStore> {}

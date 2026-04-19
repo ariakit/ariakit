@@ -1,8 +1,13 @@
-import "./style.css";
-import * as React from "react";
+/**
+ * @license
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.com/plus/license
+ */
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { matchSorter } from "match-sorter";
+import * as React from "react";
+import "./style.css";
 
 const ComboboxContext = React.createContext<{
   matches?: string[];
@@ -20,7 +25,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
     const [list, setList] = React.useState<string[]>([]);
 
     const combobox = Ariakit.useComboboxStore({ value, setValue: onChange });
-    const searchValue = combobox.useState("value");
+    const searchValue = Ariakit.useStoreState(combobox, "value");
 
     // Use deferred value to avoid lag when typing.
     const deferredValue = React.useDeferredValue(searchValue);
@@ -73,7 +78,7 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
       };
     }, [setList, value]);
 
-    const match = value != null && matches && matches?.includes(value);
+    const match = value != null && matches?.includes(value);
 
     // If the item is not in the list, don't render it.
     if (!match) return null;

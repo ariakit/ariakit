@@ -3,15 +3,31 @@ import type {
   CollectionStoreItem,
   CollectionStoreOptions,
   CollectionStoreState,
-} from "../collection/collection-store.js";
-import { createCollectionStore } from "../collection/collection-store.js";
-import { flatten2DArray, reverseArray } from "../utils/array.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, setup, sync } from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+} from "../collection/collection-store.ts";
+import { createCollectionStore } from "../collection/collection-store.ts";
+import { flatten2DArray, reverseArray } from "../utils/array.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import { createStore, setup, sync } from "../utils/store.ts";
+import type { SetState } from "../utils/types.ts";
 
 type Orientation = "horizontal" | "vertical" | "both";
+
+interface NextOptions extends Pick<
+  Partial<CompositeStoreState>,
+  | "activeId"
+  | "focusShift"
+  | "focusLoop"
+  | "focusWrap"
+  | "includesBaseElement"
+  | "renderedItems"
+  | "rtl"
+> {
+  /**
+   * The number of items to skip.
+   */
+  skip?: number;
+}
 
 const NULL_ITEM = { id: null as unknown as string };
 
@@ -31,12 +47,6 @@ function getEnabledItems(items: CompositeStoreItem[], excludeId?: string) {
     }
     return !item.disabled;
   });
-}
-
-function getOppositeOrientation(orientation: Orientation) {
-  if (orientation === "vertical") return "horizontal" as const;
-  if (orientation === "horizontal") return "vertical" as const;
-  return;
 }
 
 function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
@@ -151,6 +161,9 @@ export function createCompositeStore<
 
   const initialState: CompositeStoreState<T> = {
     ...collection.getState(),
+    id:
+      defaultValue(props.id, syncState?.id) ??
+      `id-${Math.random().toString(36).slice(2, 8)}`,
     activeId,
     focusedId: defaultValue(syncState?.focusedId),
     baseElement: defaultValue(syncState?.baseElement, null),
@@ -190,32 +203,57 @@ export function createCompositeStore<
   );
 
   const getNextId = (
-    items: CompositeStoreItem[],
-    orientation: Orientation,
-    hasNullItem: boolean,
-    skip?: number,
+    direction: "next" | "previous" | "up" | "down" = "next",
+    options: NextOptions = {},
   ): string | null | undefined => {
-    const { activeId, rtl, focusLoop, focusWrap, includesBaseElement } =
-      composite.getState();
-    // RTL doesn't make sense on vertical navigation
-    const isHorizontal = orientation !== "vertical";
-    const isRTL = rtl && isHorizontal;
-    const allItems = isRTL ? reverseArray(items) : items;
-    // If there's no item focused, we just move the first one.
+    const defaultState = composite.getState();
+    const {
+      skip = 0,
+      activeId = defaultState.activeId,
+      focusShift = defaultState.focusShift,
+      focusLoop = defaultState.focusLoop,
+      focusWrap = defaultState.focusWrap,
+      includesBaseElement = defaultState.includesBaseElement,
+      renderedItems = defaultState.renderedItems,
+      rtl = defaultState.rtl,
+    } = options;
+
+    const isVerticalDirection = direction === "up" || direction === "down";
+    const isNextDirection = direction === "next" || direction === "down";
+
+    const canReverse = isNextDirection
+      ? rtl && !isVerticalDirection
+      : !rtl || isVerticalDirection;
+
+    const canShift = focusShift && !skip;
+
+    let items = !isVerticalDirection
+      ? renderedItems
+      : flatten2DArray(
+          normalizeRows(groupItemsByRows(renderedItems), activeId, canShift),
+        );
+
+    items = canReverse ? reverseArray(items) : items;
+    items = isVerticalDirection ? verticalizeItems(items) : items;
+
     if (activeId == null) {
-      return findFirstEnabledItem(allItems)?.id;
+      // If there's no item focused, we just move the first one.
+      return findFirstEnabledItem(items)?.id;
     }
-    const activeItem = allItems.find((item) => item.id === activeId);
-    // If there's no item focused, we just move to the first one.
+
+    const activeItem = items.find((item) => item.id === activeId);
     if (!activeItem) {
-      return findFirstEnabledItem(allItems)?.id;
+      // If there's no item focused, we just move to the first one.
+      return findFirstEnabledItem(items)?.id;
     }
-    const isGrid = !!activeItem.rowId;
-    const activeIndex = allItems.indexOf(activeItem);
-    const nextItems = allItems.slice(activeIndex + 1);
+
+    const isGrid = items.some((item) => item.rowId);
+    const activeIndex = items.indexOf(activeItem);
+    const nextItems = items.slice(activeIndex + 1);
     const nextItemsInRow = getItemsInRow(nextItems, activeItem.rowId);
-    // Home, End, PageUp, PageDown
-    if (skip !== undefined) {
+
+    if (skip) {
+      // Home, End, PageUp, PageDown
       const nextEnabledItemsInRow = getEnabledItems(nextItemsInRow, activeId);
       const nextItem =
         nextEnabledItemsInRow.slice(skip)[0] ||
@@ -223,27 +261,36 @@ export function createCompositeStore<
         nextEnabledItemsInRow[nextEnabledItemsInRow.length - 1];
       return nextItem?.id;
     }
-    const oppositeOrientation = getOppositeOrientation(
-      // If it's a grid and orientation is not set, it's a next/previous call,
-      // which is inherently horizontal. up/down will call next with orientation
-      // set to vertical by default (see below on up/down methods).
-      isGrid ? orientation || "horizontal" : orientation,
-    );
-    const canLoop = focusLoop && focusLoop !== oppositeOrientation;
-    const canWrap = isGrid && focusWrap && focusWrap !== oppositeOrientation;
-    // previous and up methods will set hasNullItem, but when calling next
-    // directly, hasNullItem will only be true if if it's not a grid and
-    // focusLoop is set to true, which means that pressing right or down keys on
-    // grids will never focus the composite container element. On
+
+    const canLoop =
+      focusLoop &&
+      (isVerticalDirection
+        ? focusLoop !== "horizontal"
+        : focusLoop !== "vertical");
+
+    const canWrap =
+      isGrid &&
+      focusWrap &&
+      (isVerticalDirection
+        ? focusWrap !== "horizontal"
+        : focusWrap !== "vertical");
+
+    // When calling next directly, hasNullItem will only be true if if it's not
+    // a grid and focusLoop is set to true, which means that pressing right or
+    // down keys on grids will never focus the composite container element. On
     // one-dimensional composites that don't loop, pressing right or down keys
     // also doesn't focus on the composite container element.
-    hasNullItem = hasNullItem || (!isGrid && canLoop && includesBaseElement);
+    const hasNullItem = isNextDirection
+      ? (!isGrid || isVerticalDirection) && canLoop && includesBaseElement
+      : isVerticalDirection
+        ? includesBaseElement
+        : false;
 
     if (canLoop) {
       const loopItems =
         canWrap && !hasNullItem
-          ? allItems
-          : getItemsInRow(allItems, activeItem.rowId);
+          ? items
+          : getItemsInRow(items, activeItem.rowId);
       const sortedItems = flipItems(loopItems, activeId, hasNullItem);
       const nextItem = findFirstEnabledItem(sortedItems, activeId);
       return nextItem?.id;
@@ -291,70 +338,32 @@ export function createCompositeStore<
       findFirstEnabledItem(reverseArray(composite.getState().renderedItems))
         ?.id,
 
-    next: (skip) => {
-      const { renderedItems, orientation } = composite.getState();
-      return getNextId(renderedItems, orientation, false, skip);
+    next: (options) => {
+      if (options !== undefined && typeof options === "number") {
+        options = { skip: options };
+      }
+      return getNextId("next", options);
     },
 
-    previous: (skip) => {
-      const { renderedItems, orientation, includesBaseElement } =
-        composite.getState();
-      // If activeId is initially set to null or if includesBaseElement is set
-      // to true, then the composite container will be focusable while
-      // navigating with arrow keys. But, if it's a grid, we don't want to
-      // focus on the composite container with horizontal navigation.
-      const isGrid = !!findFirstEnabledItem(renderedItems)?.rowId;
-      const hasNullItem = !isGrid && includesBaseElement;
-      return getNextId(
-        reverseArray(renderedItems),
-        orientation,
-        hasNullItem,
-        skip,
-      );
+    previous: (options) => {
+      if (options !== undefined && typeof options === "number") {
+        options = { skip: options };
+      }
+      return getNextId("previous", options);
     },
 
-    down: (skip) => {
-      const {
-        activeId,
-        renderedItems,
-        focusShift,
-        focusLoop,
-        includesBaseElement,
-      } = composite.getState();
-      const shouldShift = focusShift && !skip;
-      // First, we make sure rows have the same number of items by filling it
-      // with disabled fake items. Then, we reorganize the items.
-      const verticalItems = verticalizeItems(
-        flatten2DArray(
-          normalizeRows(groupItemsByRows(renderedItems), activeId, shouldShift),
-        ),
-      );
-      const canLoop = focusLoop && focusLoop !== "horizontal";
-      // Pressing down arrow key will only focus on the composite container if
-      // loop is true, both, or vertical.
-      const hasNullItem = canLoop && includesBaseElement;
-      return getNextId(verticalItems, "vertical", hasNullItem, skip);
+    down: (options) => {
+      if (options !== undefined && typeof options === "number") {
+        options = { skip: options };
+      }
+      return getNextId("down", options);
     },
 
-    up: (skip) => {
-      const { activeId, renderedItems, focusShift, includesBaseElement } =
-        composite.getState();
-      const shouldShift = focusShift && !skip;
-      const verticalItems = verticalizeItems(
-        reverseArray(
-          flatten2DArray(
-            normalizeRows(
-              groupItemsByRows(renderedItems),
-              activeId,
-              shouldShift,
-            ),
-          ),
-        ),
-      );
-      // If activeId is initially set to null, we'll always focus on the
-      // composite container when the up arrow key is pressed in the first row.
-      const hasNullItem = includesBaseElement;
-      return getNextId(verticalItems, "vertical", hasNullItem, skip);
+    up: (options) => {
+      if (options !== undefined && typeof options === "number") {
+        options = { skip: options };
+      }
+      return getNextId("up", options);
     },
   };
 }
@@ -365,7 +374,7 @@ export interface CompositeStoreItem extends CollectionStoreItem {
   /**
    * The row id of the item. This is only used on two-dimensional composite
    * widgets (when using
-   * [`CompositeRow`](https://ariakit.org/reference/composite-row)).
+   * [`CompositeRow`](https://ariakit.com/reference/composite-row)).
    */
   rowId?: string;
   /**
@@ -383,11 +392,17 @@ export interface CompositeStoreState<
   T extends CompositeStoreItem = CompositeStoreItem,
 > extends CollectionStoreState<T> {
   /**
+   * The ID of the composite store is used to reference elements within the
+   * composite widget before hydration. If not provided, a random ID will be
+   * generated.
+   */
+  id: string;
+  /**
    * The composite element itself. Typically, it's the wrapper element that
    * contains composite items. However, in a combobox, it's the input element.
    *
    * Live examples:
-   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    */
   baseElement: HTMLElement | null;
   /**
@@ -399,8 +414,12 @@ export interface CompositeStoreState<
    * virtual focus.
    *
    * In both scenarios, the item in focus will carry the
-   * [`data-active-item`](https://ariakit.org/guide/styling#data-active-item)
+   * [`data-active-item`](https://ariakit.com/guide/styling#data-active-item)
    * attribute.
+   *
+   * Live examples:
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    * @default false
    */
   virtualFocus: boolean;
@@ -418,8 +437,8 @@ export interface CompositeStoreState<
   orientation: Orientation;
   /**
    * Determines how the
-   * [`next`](https://ariakit.org/reference/use-composite-store#next) and
-   * [`previous`](https://ariakit.org/reference/use-composite-store#previous)
+   * [`next`](https://ariakit.com/reference/use-composite-store#next) and
+   * [`previous`](https://ariakit.com/reference/use-composite-store#previous)
    * functions will behave. If `rtl` is set to `true`, they will be inverted.
    *
    * This only affects the composite widget behavior. You still need to set
@@ -434,21 +453,21 @@ export interface CompositeStoreState<
    * On one-dimensional composite widgets:
    * - `true` loops from the last item to the first item and vice-versa.
    * - `horizontal` loops only if
-   *   [`orientation`](https://ariakit.org/reference/composite-provider#orientation)
+   *   [`orientation`](https://ariakit.com/reference/composite-provider#orientation)
    *   is `horizontal` or not set.
    * - `vertical` loops only if
-   *   [`orientation`](https://ariakit.org/reference/composite-provider#orientation)
+   *   [`orientation`](https://ariakit.com/reference/composite-provider#orientation)
    *   is `vertical` or not set.
    * - If
-   *   [`includesBaseElement`](https://ariakit.org/reference/composite-provider#includesbaseelement)
+   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
    *   is set to `true` (or
-   *   [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   *   [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    *   is initially set to `null`), the composite element will be focused in
    *   between the last and first items.
    *
    * On two-dimensional composite widgets (when using
-   * [`CompositeRow`](https://ariakit.org/reference/composite-row) or explicitly
-   * passing a [`rowId`](https://ariakit.org/reference/composite-item#rowid)
+   * [`CompositeRow`](https://ariakit.com/reference/composite-row) or explicitly
+   * passing a [`rowId`](https://ariakit.com/reference/composite-item#rowid)
    * prop to composite items):
    * - `true` loops from the last row/column item to the first item in the same
    *   row/column and vice-versa. If it's the last item in the last row, it
@@ -458,20 +477,22 @@ export interface CompositeStoreState<
    * - `vertical` loops only from the last column item to the first item in the
    *   column row.
    * - If
-   *   [`includesBaseElement`](https://ariakit.org/reference/composite-provider#includesbaseelement)
+   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
    *   is set to `true` (or
-   *   [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   *   [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    *   is initially set to `null`), vertical loop will have no effect as moving
    *   down from the last row or up from the first row will focus on the
    *   composite element.
    * - If
-   *   [`focusWrap`](https://ariakit.org/reference/composite-provider#focuswrap)
+   *   [`focusWrap`](https://ariakit.com/reference/composite-provider#focuswrap)
    *   matches the value of `focusLoop`, it'll wrap between the last item in the
    *   last row or column and the first item in the first row or column and
    *   vice-versa.
    *
    * Live examples:
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   * - [Command Menu](https://ariakit.com/examples/dialog-combobox-command-menu)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusLoop: boolean | Orientation;
@@ -484,10 +505,14 @@ export interface CompositeStoreState<
    * - `horizontal` wraps only between rows.
    * - `vertical` wraps only between columns.
    * - If
-   *   [`focusLoop`](https://ariakit.org/reference/composite-provider#focusloop)
+   *   [`focusLoop`](https://ariakit.com/reference/composite-provider#focusloop)
    *   matches the value of `focusWrap`, it'll wrap between the last item in the
    *   last row or column and the first item in the first row or column and
    *   vice-versa.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusWrap: boolean | Orientation;
@@ -496,12 +521,16 @@ export interface CompositeStoreState<
    *
    * If enabled, moving up or down when there's no next item or when the next
    * item is disabled will shift to the item right before it.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    * @default false
    */
   focusShift: boolean;
   /**
    * The number of times the
-   * [`move`](https://ariakit.org/reference/use-composite-store#move) function
+   * [`move`](https://ariakit.com/reference/use-composite-store#move) function
    * has been called.
    */
   moves: number;
@@ -515,27 +544,27 @@ export interface CompositeStoreState<
    *
    * Live examples:
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
-   * - [Command Menu](https://ariakit.org/examples/dialog-combobox-command-menu)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
+   * - [Command Menu](https://ariakit.com/examples/dialog-combobox-command-menu)
    * @default false
    */
   includesBaseElement: boolean;
   /**
    * The current active item `id`. The active item is the element within the
    * composite widget that has either DOM or virtual focus (in case
-   * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+   * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
    * is enabled).
    * - `null` represents the base composite element (the one with a [composite
    *   role](https://w3c.github.io/aria/#composite)). Users will be able to
    *   navigate out of it using arrow keys.
    * - If `activeId` is initially set to `null`, the
-   *   [`includesBaseElement`](https://ariakit.org/reference/composite-provider#includesbaseelement)
+   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
    *   prop will also default to `true`, which means the base composite element
    *   itself will have focus and users will be able to navigate to it using
    *   arrow keys.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    */
   activeId: string | null | undefined;
   /**
@@ -554,9 +583,9 @@ export interface CompositeStoreFunctions<
   setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
   /**
    * Sets the
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    * state _without moving focus_. If you want to move focus, use the
-   * [`move`](https://ariakit.org/reference/use-composite-store#move) function
+   * [`move`](https://ariakit.com/reference/use-composite-store#move) function
    * instead.
    * @example
    * // Sets the composite element as the active item
@@ -573,11 +602,11 @@ export interface CompositeStoreFunctions<
    *   [composite role](https://w3c.github.io/aria/#composite)). Users will be
    *   able to navigate out of it using arrow keys.
    * - If you want to set the active item id _without moving focus_, use the
-   *   [`setActiveId`](https://ariakit.org/reference/use-composite-store#setactiveid)
+   *   [`setActiveId`](https://ariakit.com/reference/use-composite-store#setactiveid)
    *   function instead.
    *
    * Live examples:
-   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select Grid](https://ariakit.com/examples/select-grid)
    * @example
    * // Moves focus to the composite element
    * store.move(null);
@@ -589,40 +618,60 @@ export interface CompositeStoreFunctions<
   move: (id?: string | null) => void;
   /**
    * Returns the id of the next enabled item based on the current
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
+   * state. You can pass additional options to override the current state.
    * @example
    * const nextId = store.next();
-   * const nextNextId = store.next(2);
    */
-  next: (skip?: number) => string | null | undefined;
+  next: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `next({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the previous enabled item based on the current
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
+   * state. You can pass additional options to override the current state.
    * @example
    * const previousId = store.previous();
-   * const previousPreviousId = store.previous(2);
    */
-  previous: (skip?: number) => string | null | undefined;
+  previous: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `previous({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the enabled item above based on the current
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
+   * state. You can pass additional options to override the current state.
    * @example
    * const upId = store.up();
-   * const upUpId = store.up(2);
    */
-  up: (skip?: number) => string | null | undefined;
+  up: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `up({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the enabled item below based on the current
-   * [`activeId`](https://ariakit.org/reference/composite-provider#activeid)
-   * state.
+   * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
+   * state. You can pass additional options to override the current state.
    * @example
    * const downId = store.down();
-   * const downDownId = store.down(2);
    */
-  down: (skip?: number) => string | null | undefined;
+  down: {
+    (options?: NextOptions): string | null | undefined;
+    /**
+     * @deprecated Use the object syntax instead: `down({ skip: 2 })`.
+     */
+    (skip?: number): string | null | undefined;
+  };
   /**
    * Returns the id of the first enabled item.
    */
@@ -635,9 +684,12 @@ export interface CompositeStoreFunctions<
 
 export interface CompositeStoreOptions<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CollectionStoreOptions<T>,
+>
+  extends
+    CollectionStoreOptions<T>,
     StoreOptions<
       CompositeStoreState<T>,
+      | "id"
       | "virtualFocus"
       | "orientation"
       | "rtl"
@@ -658,10 +710,10 @@ export interface CompositeStoreOptions<
 
 export interface CompositeStoreProps<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreOptions<T>,
-    StoreProps<CompositeStoreState<T>> {}
+>
+  extends CompositeStoreOptions<T>, StoreProps<CompositeStoreState<T>> {}
 
 export interface CompositeStore<
   T extends CompositeStoreItem = CompositeStoreItem,
-> extends CompositeStoreFunctions<T>,
-    Store<CompositeStoreState<T>> {}
+>
+  extends CompositeStoreFunctions<T>, Store<CompositeStoreState<T>> {}

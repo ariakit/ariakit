@@ -1,7 +1,7 @@
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
-import { createStore, throwOnConflictingProps } from "../utils/store.js";
-import type { PickRequired, SetState, ToPrimitive } from "../utils/types.js";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import { createStore, throwOnConflictingProps } from "../utils/store.ts";
+import type { PickRequired, SetState, ToPrimitive } from "../utils/types.ts";
 
 /**
  * Creates a checkbox store.
@@ -39,7 +39,7 @@ export type CheckboxStoreValue =
   | boolean
   | string
   | number
-  | Array<string | number>;
+  | ReadonlyArray<string | number>;
 
 export interface CheckboxStoreState<
   T extends CheckboxStoreValue = CheckboxStoreValue,
@@ -48,7 +48,7 @@ export interface CheckboxStoreState<
    * The checked state of the checkbox.
    *
    * Live examples:
-   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
+   * - [Custom Checkbox](https://ariakit.com/examples/checkbox-custom)
    */
   value: ToPrimitive<T>;
 }
@@ -57,7 +57,7 @@ export interface CheckboxStoreFunctions<
   T extends CheckboxStoreValue = CheckboxStoreValue,
 > {
   /**
-   * Sets the [`value`](https://ariakit.org/reference/checkbox-provider#value)
+   * Sets the [`value`](https://ariakit.com/reference/checkbox-provider#value)
    * state.
    * @example
    * store.setValue(true);
@@ -71,12 +71,12 @@ export interface CheckboxStoreOptions<
 > extends StoreOptions<CheckboxStoreState<T>, "value"> {
   /**
    * The default
-   * [`value`](https://ariakit.org/reference/checkbox-provider#value) state of
+   * [`value`](https://ariakit.com/reference/checkbox-provider#value) state of
    * the checkbox.
    *
    * Live examples:
-   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
-   * - [Checkbox group](https://ariakit.org/examples/checkbox-group)
+   * - [Custom Checkbox](https://ariakit.com/examples/checkbox-custom)
+   * - [Checkbox group](https://ariakit.com/examples/checkbox-group)
    * @default false
    */
   defaultValue?: CheckboxStoreState<T>["value"];
@@ -84,10 +84,10 @@ export interface CheckboxStoreOptions<
 
 export interface CheckboxStoreProps<
   T extends CheckboxStoreValue = CheckboxStoreValue,
-> extends CheckboxStoreOptions<T>,
-    StoreProps<CheckboxStoreState<T>> {}
+>
+  extends CheckboxStoreOptions<T>, StoreProps<CheckboxStoreState<T>> {}
 
 export interface CheckboxStore<
   T extends CheckboxStoreValue = CheckboxStoreValue,
-> extends CheckboxStoreFunctions<T>,
-    Store<CheckboxStoreState<T>> {}
+>
+  extends CheckboxStoreFunctions<T>, Store<CheckboxStoreState<T>> {}

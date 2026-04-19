@@ -1,0 +1,63 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLTag, Polymorphic } from "astro/types";
+
+type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
+  keepSidebar?: boolean;
+};
+
+const {
+  as: Tag = "div",
+  keepSidebar = false,
+  ...props
+} = Astro.props as Props<HTMLTag>;
+---
+
+<Tag
+  data-container-right-menu="true"
+  class:list={[
+    "grid",
+    keepSidebar
+      ? "grid-cols-[1fr_var(--container-sidebar)] @max-3xl:[--container-sidebar:max-content]"
+      : "@3xl:grid-cols-[1fr_var(--container-sidebar)]",
+    props.class,
+  ]}
+  {...props}
+>
+  <slot />
+  {
+    Astro.slots.has("heading") && (
+      <div class="flex flex-col gap-4 my-16 ak-container-size-content/(--container-p) ak-container">
+        <slot name="heading" />
+      </div>
+    )
+  }
+  {
+    Astro.slots.has("prose") && (
+      <div
+        class:list={[
+          "ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose",
+          "@3xl:ak-container-size-[calc(100cqi-var(--container-sidebar))]/(--container-p) ak-container",
+        ]}
+      >
+        <slot name="prose" />
+      </div>
+    )
+  }
+  <div
+    class:list={[
+      "ps-3 in-data-container-left-menu:ps-0 in-data-container-left-menu:pe-3",
+      !keepSidebar && "hidden @3xl:block",
+    ]}
+  >
+    <slot name="sidebar" />
+  </div>
+</Tag>

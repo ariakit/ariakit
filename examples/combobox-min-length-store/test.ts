@@ -1,1 +1,1 @@
-import "../combobox-min-length/test.js";
+import "../combobox-min-length/test.ts";

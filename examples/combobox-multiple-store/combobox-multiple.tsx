@@ -1,9 +1,11 @@
-import { forwardRef, useEffect } from "react";
-import type { ComponentPropsWithoutRef } from "react";
 import * as Ariakit from "@ariakit/react";
+import type { ComponentPropsWithoutRef } from "react";
+import { forwardRef, useEffect } from "react";
 
-export interface ComboboxProps
-  extends Omit<ComponentPropsWithoutRef<"input">, "onChange"> {
+export interface ComboboxProps extends Omit<
+  ComponentPropsWithoutRef<"input">,
+  "onChange"
+> {
   label?: string;
   value?: string;
   onChange?: (value: string) => void;
@@ -41,7 +43,7 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
       defaultValue: defaultValues,
     });
 
-    const selectValue = select.useState("value");
+    const selectValue = Ariakit.useStoreState(select, "value");
 
     // Reset the combobox value whenever an item is checked or unchecked.
     useEffect(() => combobox.setValue(""), [selectValue, combobox]);

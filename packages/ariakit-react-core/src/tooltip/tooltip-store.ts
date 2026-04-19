@@ -3,10 +3,10 @@ import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,
   HovercardStoreState,
-} from "../hovercard/hovercard-store.js";
-import { useHovercardStoreProps } from "../hovercard/hovercard-store.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../hovercard/hovercard-store.ts";
+import { useHovercardStoreProps } from "../hovercard/hovercard-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useTooltipStoreProps<T extends Core.TooltipStore>(
   store: T,
@@ -20,8 +20,8 @@ export function useTooltipStoreProps<T extends Core.TooltipStore>(
 
 /**
  * Creates a tooltip store to control the state of
- * [Tooltip](https://ariakit.org/components/tooltip) components.
- * @see https://ariakit.org/components/tooltip
+ * [Tooltip](https://ariakit.com/components/tooltip) components.
+ * @see https://ariakit.com/components/tooltip
  * @example
  * ```jsx
  * const tooltip = useTooltipStore();
@@ -36,21 +36,18 @@ export function useTooltipStore(props: TooltipStoreProps = {}): TooltipStore {
 }
 
 export interface TooltipStoreState
-  extends Core.TooltipStoreState,
-    HovercardStoreState {}
+  extends Core.TooltipStoreState, HovercardStoreState {}
 
 export interface TooltipStoreFunctions
-  extends Omit<Core.TooltipStoreFunctions, "disclosure">,
+  extends
+    Omit<Core.TooltipStoreFunctions, "disclosure">,
     HovercardStoreFunctions {}
 
 export interface TooltipStoreOptions
-  extends Omit<Core.TooltipStoreOptions, "disclosure">,
-    HovercardStoreOptions {}
+  extends Omit<Core.TooltipStoreOptions, "disclosure">, HovercardStoreOptions {}
 
 export interface TooltipStoreProps
-  extends TooltipStoreOptions,
-    Omit<Core.TooltipStoreProps, "disclosure"> {}
+  extends TooltipStoreOptions, Omit<Core.TooltipStoreProps, "disclosure"> {}
 
 export interface TooltipStore
-  extends TooltipStoreFunctions,
-    Omit<Store<Core.TooltipStore>, "disclosure"> {}
+  extends TooltipStoreFunctions, Omit<Store<Core.TooltipStore>, "disclosure"> {}

@@ -1,0 +1,74 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+
+export interface Props {
+  /**
+   * A CSS selector for the element whose scroll position should be preserved.
+   */
+  selector?: string;
+  /**
+   * Axis to preserve: 'x', 'y' or 'both'. Defaults to 'both'.
+   */
+  axis?: "x" | "y" | "both";
+}
+
+const { selector, axis = "both" } = Astro.props;
+---
+
+<script is:inline define:vars={{ selector, axis }}>
+  let memX = 0;
+  let memY = 0;
+  let hasMem = false;
+
+  function getTarget() {
+    return selector ? document.querySelector(selector) : null;
+  }
+
+  function getScrollable(el) {
+    if (!el) return null;
+    const inside = el.querySelector("[data-scroll-container]");
+    return inside || el;
+  }
+
+  function save() {
+    const el = getScrollable(getTarget());
+    if (!el) return;
+    const x = el.scrollLeft || 0;
+    const y = el.scrollTop || 0;
+    memX = x;
+    memY = y;
+    hasMem = true;
+  }
+
+  function restore() {
+    const el = getScrollable(getTarget());
+    if (!el) return;
+    if (!hasMem) return;
+    const wantX = axis === "x" || axis === "both";
+    const wantY = axis === "y" || axis === "both";
+
+    const currentLeft = el.scrollLeft || 0;
+    const currentTop = el.scrollTop || 0;
+
+    const nextLeft = wantX ? (memX != null ? memX : currentLeft) : currentLeft;
+    const nextTop = wantY ? (memY != null ? memY : currentTop) : currentTop;
+
+    if (typeof el.scrollTo === "function") {
+      el.scrollTo({ left: nextLeft, top: nextTop, behavior: "auto" });
+    } else {
+      if (wantX) el.scrollLeft = nextLeft;
+      if (wantY) el.scrollTop = nextTop;
+    }
+  }
+
+  document.addEventListener("astro:before-preparation", save);
+  document.addEventListener("astro:after-swap", restore);
+</script>

@@ -1,6 +1,6 @@
 import { contains, getDocument } from "@ariakit/core/utils/dom";
 import { chain } from "@ariakit/core/utils/misc";
-import { setProperty } from "./orchestrate.js";
+import { setProperty } from "./orchestrate.ts";
 
 type Elements = Array<Element | null>;
 
@@ -17,9 +17,10 @@ function inSnapshot(id: string, element: Element) {
   if (!doc.body[propertyName]) return true;
   do {
     if (element === doc.body) return false;
-    if (!!element[propertyName]) return true;
+    if (element[propertyName]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
+    // oxlint-disable-next-line no-constant-condition
   } while (true);
 }
 
@@ -77,7 +78,9 @@ export function createWalkTreeSnapshot(id: string, elements: Elements) {
 
   walkTreeOutside(id, elements, markElement);
 
-  return chain(setProperty(body, getSnapshotPropertyName(id), true), () =>
-    cleanups.forEach((fn) => fn()),
-  );
+  return chain(setProperty(body, getSnapshotPropertyName(id), true), () => {
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
+  });
 }

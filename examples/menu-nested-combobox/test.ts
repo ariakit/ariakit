@@ -1,4 +1,5 @@
 import { click, hover, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("open/hide menu", async () => {
   await click(q.button("Actions"));
@@ -24,12 +25,15 @@ test("filter actions", async () => {
   await click(q.button("Actions"));
   await type("de");
   expect(q.option("Default checked")).toHaveFocus();
-  expect(q.option("Default checked")).toHaveAttribute("aria-selected", "true");
+  expect(q.option("Default checked")).toHaveAttribute(
+    "data-active-item",
+    "true",
+  );
   await press.ArrowDown();
   expect(q.option("Default background checked")).toHaveFocus();
   await press.ArrowDown();
   expect(q.option("Delete")).toHaveFocus();
-  expect(q.option("Delete")).toHaveAttribute("aria-selected", "true");
+  expect(q.option("Delete")).toHaveAttribute("data-active-item", "true");
   await press.ArrowDown();
   expect(q.option("Code not checked")).toHaveFocus();
 });
@@ -40,7 +44,7 @@ test("reset filter on hide", async () => {
   expect(q.combobox("Search actions...")).toHaveValue("a");
   await click(document.body);
   expect(q.dialog("Actions")).not.toBeInTheDocument();
-  expect(q.button("Actions")).toHaveFocus();
+  expect(q.button("Actions")).not.toHaveFocus();
   await click(q.button("Actions"));
   expect(q.combobox("Search actions...")).toHaveValue("");
 });

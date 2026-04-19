@@ -1,0 +1,29 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"p"> {
+  hasSidebar?: boolean;
+}
+
+const { hasSidebar = true, ...props } = Astro.props;
+---
+
+<p
+  class:list={[
+    "ak-container",
+    hasSidebar ? "ak-container-size-content/0" : "ak-container-size-default/0",
+    props.class,
+  ]}
+  {...props}
+>
+  <slot />
+</p>

@@ -1,5 +1,5 @@
-import { contains } from "./dom.js";
-import { isApple } from "./platform.js";
+import { contains } from "./dom.ts";
+import { isApple } from "./platform.ts";
 
 /**
  * Returns `true` if `event` has been fired within a React Portal element.
@@ -9,7 +9,7 @@ export function isPortalEvent(
 ): boolean {
   return Boolean(
     event.currentTarget &&
-      !contains(event.currentTarget as Node, event.target as Element),
+    !contains(event.currentTarget as Node, event.target as Element),
   );
 }
 
@@ -172,22 +172,29 @@ export function queueBeforeEvent(
   element: Element,
   type: string,
   callback: () => void,
+  timeout?: number,
 ) {
-  const raf = requestAnimationFrame(() => {
-    element.removeEventListener(type, callImmediately, true);
+  const createTimer = (callback: () => void) => {
+    if (timeout) {
+      const timerId = setTimeout(callback, timeout);
+      return () => clearTimeout(timerId);
+    }
+    const timerId = requestAnimationFrame(callback);
+    return () => cancelAnimationFrame(timerId);
+  };
+
+  const cancelTimer = createTimer(() => {
+    element.removeEventListener(type, callSync, true);
     callback();
   });
-  const callImmediately = () => {
-    cancelAnimationFrame(raf);
+  const callSync = () => {
+    cancelTimer();
     callback();
   };
   // By listening to the event in the capture phase, we make sure the callback
   // is fired before the respective React events.
-  element.addEventListener(type, callImmediately, {
-    once: true,
-    capture: true,
-  });
-  return raf;
+  element.addEventListener(type, callSync, { once: true, capture: true });
+  return cancelTimer;
 }
 
 export function addGlobalEventListener<K extends keyof DocumentEventMap>(
@@ -226,7 +233,9 @@ export function addGlobalEventListener(
     try {
       scope.document.removeEventListener(type, listener, options);
     } catch {}
-    children.forEach((remove) => remove());
+    for (const remove of children) {
+      remove();
+    }
   };
 
   return removeEventListener;

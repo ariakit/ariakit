@@ -1,1 +1,1 @@
-import "../select-grid/test.js";
+import "../select-grid/test.ts";

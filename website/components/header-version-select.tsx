@@ -1,8 +1,7 @@
 "use client";
 
-import { Fragment } from "react";
-import { cx, invariant } from "@ariakit/core/utils/misc";
-import pkg from "@ariakit/react/package.json";
+import { invariant } from "@ariakit/core/utils/misc";
+import pkg from "@ariakit/react/package.json" with { type: "json" };
 import {
   Select,
   SelectArrow,
@@ -15,50 +14,15 @@ import {
   SelectSeparator,
   useSelectStore,
 } from "@ariakit/react/select";
-import { NewWindow } from "icons/new-window.js";
-import { React } from "icons/react.js";
-import { Vue } from "icons/vue.js";
 import Link from "next/link.js";
 import { usePathname } from "next/navigation.js";
-import { tw } from "utils/tw.js";
-import { Command } from "./command.jsx";
-import { Popup } from "./popup.js";
-
-const style = {
-  group: tw`
-    flex flex-col
-  `,
-  groupLabel: tw`
-    flex gap-1.5 items-center
-    p-1.5
-    text-sm text-black/60 dark:text-white/50
-    cursor-default
-  `,
-  item: tw`
-    group
-    flex items-center gap-1.5
-    p-1.5
-    rounded
-    font-medium
-    active-item:bg-blue-200/40 dark:active-item:bg-blue-600/25
-    active:bg-blue-200/70 dark:active:bg-blue-800/25
-  `,
-  itemIcon: tw`
-    w-4 h-4
-    stroke-black/75 dark:stroke-white/75 group-active-item:stroke-current
-  `,
-  itemBadge: tw`
-    p-1 px-2
-    text-xs text-black/70 dark:text-white/70
-    rounded-full
-    bg-gray-150 dark:bg-gray-850
-    group-active-item:bg-black/5 dark:group-active-item:bg-black/45
-  `,
-  separator: tw`
-    w-full my-1.5 h-0
-    border-t border-gray-250 dark:border-gray-550
-  `,
-};
+import { Fragment } from "react";
+import { twJoin } from "tailwind-merge";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { React } from "@/icons/react.tsx";
+import { Vue } from "@/icons/vue.tsx";
+import { Command } from "./command.tsx";
+import { Popup } from "./popup.tsx";
 
 function getValueFromPkg(pkg: { name: string; version: string }) {
   return `${pkg.name}__${pkg.version}`;
@@ -97,6 +61,12 @@ interface Props {
   versions: Record<string, Record<string, string>>;
 }
 
+const itemClassName = twJoin(
+  "group flex items-center gap-1.5 p-1.5 rounded font-medium",
+  "active-item:bg-blue-200/40 dark:active-item:bg-blue-600/25",
+  "active:bg-blue-200/70 dark:active:bg-blue-800/25",
+);
+
 export function HeaderVersionSelect({ versions }: Props) {
   const select = useSelectStore({ defaultValue: getValueFromPkg(pkg) });
   const pathname = usePathname();
@@ -108,12 +78,14 @@ export function HeaderVersionSelect({ versions }: Props) {
       <SelectItem
         key={value}
         value={value}
-        className={style.item}
+        className={itemClassName}
         render={<Link href={pathname} />}
       >
         <SelectItemCheck />
         <span className="flex-1 pr-4">{getDisplayValue(version)}</span>
-        <span className={style.itemBadge}>{tag}</span>
+        <span className="rounded-full bg-gray-150 p-1 px-2 text-xs text-black/70 group-active-item:bg-black/5 dark:bg-gray-850 dark:text-white/70 dark:group-active-item:bg-black/45">
+          {tag}
+        </span>
       </SelectItem>
     );
   };
@@ -131,7 +103,7 @@ export function HeaderVersionSelect({ versions }: Props) {
       </SelectLabel>
       <Select
         store={select}
-        className="mr-2 hidden h-8 px-3 text-xs font-semibold text-black/80 dark:text-white/80 md:flex md:gap-1.5"
+        className="mr-2 hidden h-8 px-3 text-xs font-semibold text-black/80 md:flex md:gap-1.5 dark:text-white/80"
         render={<Command />}
       >
         {getIcon(selectedPkg.name)}
@@ -147,8 +119,8 @@ export function HeaderVersionSelect({ versions }: Props) {
         >
           {Object.entries(versions).map(([name, tags]) => (
             <Fragment key={name}>
-              <SelectGroup className={style.group}>
-                <SelectGroupLabel className={style.groupLabel}>
+              <SelectGroup className="flex flex-col">
+                <SelectGroupLabel className="flex cursor-default items-center gap-1.5 p-1.5 text-sm text-black/60 dark:text-white/50">
                   {getIcon(name)}
                   {name}
                 </SelectGroupLabel>
@@ -156,12 +128,15 @@ export function HeaderVersionSelect({ versions }: Props) {
                   renderItem(getValueFromPkg({ name, version }), tag),
                 )}
               </SelectGroup>
-              <SelectSeparator className={style.separator} />
+              <SelectSeparator className="my-1.5 h-0 w-full border-t border-gray-250 dark:border-gray-550" />
             </Fragment>
           ))}
           <SelectItem
             hideOnClick
-            className={cx(style.item, "justify-between pl-[26px] font-normal")}
+            className={twJoin(
+              itemClassName,
+              "justify-between pl-[26px] font-normal",
+            )}
             render={
               isChangelogExternal ? (
                 <a href={changelogUrl} target="_blank" rel="noreferrer" />
@@ -171,7 +146,9 @@ export function HeaderVersionSelect({ versions }: Props) {
             }
           >
             Changelog
-            {isChangelogExternal && <NewWindow className={style.itemIcon} />}
+            {isChangelogExternal && (
+              <NewWindow className="size-4 stroke-black/75 group-active-item:stroke-current dark:stroke-white/75" />
+            )}
           </SelectItem>
         </SelectPopover>
       )}

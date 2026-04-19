@@ -1,17 +1,17 @@
-import { useState } from "react";
-import type { ElementType } from "react";
 import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Options, Props } from "../utils/types.js";
-import { GroupLabelContext } from "./group-label-context.js";
+import type { ElementType } from "react";
+import { useState } from "react";
+import { useWrapElement } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Options, Props } from "../utils/types.ts";
+import { GroupLabelContext } from "./group-label-context.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Group` component.
- * @see https://ariakit.org/components/group
+ * @see https://ariakit.com/components/group
  * @example
  * ```jsx
  * const props = useGroup();
@@ -34,7 +34,7 @@ export const useGroup = createHook<TagName, GroupOptions>(
 
     props = {
       role: "group",
-      "aria-labelledby": labelId,
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       ...props,
     };
 
@@ -44,9 +44,9 @@ export const useGroup = createHook<TagName, GroupOptions>(
 
 /**
  * Renders a group element. Optionally, a
- * [`GroupLabel`](https://ariakit.org/reference/group-label) can be rendered as
+ * [`GroupLabel`](https://ariakit.com/reference/group-label) can be rendered as
  * a child to provide a label for the group.
- * @see https://ariakit.org/components/group
+ * @see https://ariakit.com/components/group
  * @example
  * ```jsx
  * <Group>Group</Group>

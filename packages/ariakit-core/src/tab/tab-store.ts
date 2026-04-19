@@ -1,19 +1,20 @@
 import type {
   CollectionStore,
   CollectionStoreItem,
-} from "../collection/collection-store.js";
-import { createCollectionStore } from "../collection/collection-store.js";
-import type { ComboboxStore } from "../combobox/combobox-store.js";
+} from "../collection/collection-store.ts";
+import { createCollectionStore } from "../collection/collection-store.ts";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStore,
   CompositeStoreFunctions,
   CompositeStoreItem,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
+import type { SelectStore } from "../select/select-store.ts";
+import { chain, defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
   createStore,
@@ -21,8 +22,8 @@ import {
   omit,
   setup,
   sync,
-} from "../utils/store.js";
-import type { SetState } from "../utils/types.js";
+} from "../utils/store.ts";
+import type { SetState } from "../utils/types.ts";
 
 export function createTabStore({
   composite: parentComposite,
@@ -34,6 +35,8 @@ export function createTabStore({
     "renderedItems",
     "moves",
     "orientation",
+    "virtualFocus",
+    "includesBaseElement",
     "baseElement",
     "focusLoop",
     "focusShift",
@@ -49,6 +52,16 @@ export function createTabStore({
 
   const composite = createCompositeStore({
     ...props,
+    store,
+    // We need to explicitly set the default value of `includesBaseElement` to
+    // `false` since we don't want the composite store to default it to `true`
+    // when the activeId state is null, which could be the case when rendering
+    // combobox with tab.
+    includesBaseElement: defaultValue(
+      props.includesBaseElement,
+      syncState?.includesBaseElement,
+      false,
+    ),
     orientation: defaultValue(
       props.orientation,
       syncState?.orientation,
@@ -65,7 +78,6 @@ export function createTabStore({
       props.selectedId,
       syncState?.selectedId,
       props.defaultSelectedId,
-      undefined,
     ),
     selectOnMove: defaultValue(
       props.selectOnMove,
@@ -92,9 +104,22 @@ export function createTabStore({
     }),
   );
 
+  let syncActiveId = true;
+
   // Keep activeId in sync with selectedId.
   setup(tab, () =>
-    batch(tab, ["selectedId"], (state) => {
+    batch(tab, ["selectedId"], (state, prev) => {
+      // There are cases where we don't want to sync activeId with selectedId.
+      // For example, restoring the selectedId from a select or combobox
+      // selected value. In those cases, we set syncActiveId to false.
+      if (!syncActiveId) {
+        syncActiveId = true;
+        return;
+      }
+      // If there's a parent composite widget, we don't need to sync the
+      // activeId state with the initial selectedId state. The parent composite
+      // widget should handle the initial activeId state.
+      if (parentComposite && state.selectedId === prev.selectedId) return;
       tab.setState("activeId", state.selectedId);
     }),
   );
@@ -139,6 +164,34 @@ export function createTabStore({
     }),
   );
 
+  // Preserve the selected tab when a select or combobox value is selected
+  // within the tab panel.
+  let selectedIdFromSelectedValue: string | null | undefined = null;
+
+  setup(tab, () => {
+    const backupSelectedId = () => {
+      selectedIdFromSelectedValue = tab.getState().selectedId;
+    };
+    const restoreSelectedId = () => {
+      // We set syncActiveId to false to prevent the activeId state from being
+      // set to the selectedId state since this is just a restoration of the
+      // selectedId state from a select or combobox selected value.
+      syncActiveId = false;
+      tab.setState("selectedId", selectedIdFromSelectedValue);
+    };
+    if (parentComposite && "setSelectElement" in parentComposite) {
+      return chain(
+        sync(parentComposite, ["value"], backupSelectedId),
+        sync(parentComposite, ["mounted"], restoreSelectedId),
+      );
+    }
+    if (!combobox) return;
+    return chain(
+      sync(combobox, ["selectedValue"], backupSelectedId),
+      sync(combobox, ["mounted"], restoreSelectedId),
+    );
+  });
+
   return {
     ...composite,
     ...tab,
@@ -169,29 +222,34 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
    * will be automatically set to the first enabled tab.
    *
    * Live examples:
-   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Tab with React Router](https://ariakit.com/examples/tab-react-router)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   selectedId: TabStoreState["activeId"];
   /**
    * Determines if the tab should be selected when it receives focus. If set to
-   * `false`, the tab will only be selected upon clicking, not when
-   * using arrow keys to shift focus.
+   * `false`, the tab will only be selected upon clicking, not when using arrow
+   * keys to shift focus.
    *
    * Live examples:
-   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
+   * - [Tab with React Router](https://ariakit.com/examples/tab-react-router)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    * @default true
    */
   selectOnMove?: boolean;
 }
 
-export interface TabStoreFunctions
-  extends CompositeStoreFunctions<TabStoreItem> {
+export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem> {
   /**
    * Sets the
-   * [`selectedId`](https://ariakit.org/reference/tab-provider#selectedid) state
+   * [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid) state
    * without moving focus. If you want to move focus, use the
-   * [`select`](https://ariakit.org/reference/use-tab-store#select) function
+   * [`select`](https://ariakit.com/reference/use-tab-store#select) function
    * instead.
    * @example
    * // Selects the tab with id "tab-1"
@@ -208,14 +266,14 @@ export interface TabStoreFunctions
    * A collection store containing the tab panels.
    *
    * Live examples:
-   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
    */
   panels: CollectionStore<TabStorePanel>;
   /**
    * Selects the tab for the given id and moves focus to it. If you want to set
-   * the [`selectedId`](https://ariakit.org/reference/tab-provider#selectedid)
+   * the [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid)
    * state without moving focus, use the
-   * [`setSelectedId`](https://ariakit.org/reference/use-tab-store#setselectedid-1)
+   * [`setSelectedId`](https://ariakit.com/reference/use-tab-store#setselectedid-1)
    * function instead.
    * @example
    * // Selects the tab with id "tab-1"
@@ -229,25 +287,26 @@ export interface TabStoreFunctions
 }
 
 export interface TabStoreOptions
-  extends StoreOptions<
+  extends
+    StoreOptions<
       TabStoreState,
       "orientation" | "focusLoop" | "selectedId" | "selectOnMove"
     >,
     CompositeStoreOptions<TabStoreItem> {
   /**
    * A reference to another [composite
-   * store](https://ariakit.org/reference/use-composite-store). This is used when
+   * store](https://ariakit.com/reference/use-composite-store). This is used when
    * rendering tabs as part of another composite widget such as
-   * [Combobox](https://ariakit.org/components/combobox) or
-   * [Select](https://ariakit.org/components/select). The stores will share the
+   * [Combobox](https://ariakit.com/components/combobox) or
+   * [Select](https://ariakit.com/components/select). The stores will share the
    * same state.
    */
-  composite?: CompositeStore | null;
+  composite?: CompositeStore | SelectStore | null;
   /**
    * A reference to a [combobox
-   * store](https://ariakit.org/reference/use-combobox-store). This is used when
+   * store](https://ariakit.com/reference/use-combobox-store). This is used when
    * rendering tabs inside a
-   * [Combobox](https://ariakit.org/components/combobox).
+   * [Combobox](https://ariakit.com/components/combobox).
    */
   combobox?: ComboboxStore | null;
   /**
@@ -255,14 +314,17 @@ export interface TabStoreOptions
    * will be automatically set to the first enabled tab.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   defaultSelectedId?: TabStoreState["selectedId"];
 }
 
 export interface TabStoreProps
-  extends TabStoreOptions,
-    StoreProps<TabStoreState> {}
+  extends TabStoreOptions, StoreProps<TabStoreState> {}
 
 export interface TabStore extends TabStoreFunctions, Store<TabStoreState> {}

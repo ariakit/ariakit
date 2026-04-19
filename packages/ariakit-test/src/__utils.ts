@@ -1,3 +1,4 @@
+// oxlint-disable unbound-method
 import { isFocusable } from "@ariakit/core/utils/focus";
 import { noop } from "@ariakit/core/utils/misc";
 

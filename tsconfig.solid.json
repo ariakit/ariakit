@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "jsxImportSource": "solid-js"
+  },
+  "include": ["**/*.solid.tsx"],
+  "exclude": ["website", "site", "examples", "**/*test.solid.tsx"]
+}

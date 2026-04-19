@@ -1,22 +1,23 @@
 import type { ElementType } from "react";
-import type { CompositeOptions } from "../composite/composite.js";
-import { useComposite } from "../composite/composite.js";
-import { useWrapElement } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import { useWrapElement } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   ToolbarScopedContextProvider,
   useToolbarProviderContext,
-} from "./toolbar-context.js";
-import { useToolbarStore } from "./toolbar-store.js";
-import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.js";
+} from "./toolbar-context.tsx";
+import type { ToolbarStore, ToolbarStoreProps } from "./toolbar-store.ts";
+import { useToolbarStore } from "./toolbar-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Toolbar` component.
- * @see https://ariakit.org/components/toolbar
+ * @see https://ariakit.com/components/toolbar
  * @example
  * ```jsx
  * const store = useToolbarStore();
@@ -47,7 +48,7 @@ export const useToolbar = createHook<TagName, ToolbarOptions>(
       rtl,
     });
 
-    const orientation = store.useState((state) =>
+    const orientation = useStoreState(store, (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
 
@@ -75,7 +76,7 @@ export const useToolbar = createHook<TagName, ToolbarOptions>(
 
 /**
  * Renders a toolbar element that groups interactive elements together.
- * @see https://ariakit.org/components/toolbar
+ * @see https://ariakit.com/components/toolbar
  * @example
  * ```jsx
  * <Toolbar>
@@ -90,18 +91,19 @@ export const Toolbar = forwardRef(function Toolbar(props: ToolbarProps) {
 });
 
 export interface ToolbarOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     Pick<
       ToolbarStoreProps,
       "focusLoop" | "orientation" | "rtl" | "virtualFocus"
     > {
   /**
    * Object returned by the
-   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.
+   * [`useToolbarStore`](https://ariakit.com/reference/use-toolbar-store) hook.
    * If not provided, the closest
-   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * [`ToolbarProvider`](https://ariakit.com/reference/toolbar-provider)
    * component context will be used. If the component is not wrapped in a
-   * [`ToolbarProvider`](https://ariakit.org/reference/toolbar-provider)
+   * [`ToolbarProvider`](https://ariakit.com/reference/toolbar-provider)
    * component, an internal store will be used.
    */
   store?: ToolbarStore;

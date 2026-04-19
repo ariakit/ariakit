@@ -1,5 +1,435 @@
 # @ariakit/react-core
 
+## 0.4.26
+
+This version focuses on bug fixes across [`Dialog`](https://ariakit.com/reference/dialog), [`Portal`](https://ariakit.com/reference/portal), [`Radio`](https://ariakit.com/reference/radio), [`Combobox`](https://ariakit.com/reference/combobox), and [`MenuButton`](https://ariakit.com/reference/menu-button), along with improvements to how portals behave inside fullscreen elements, how dialogs handle events in popup windows, and how [`Radio`](https://ariakit.com/reference/radio) groups automatically generate unique `name` attributes.
+
+### Fixed events not handled in popup windows
+
+[`Dialog`](https://ariakit.com/reference/dialog) and components that extend it, such as [`Menu`](https://ariakit.com/reference/menu) and [`Popover`](https://ariakit.com/reference/popover), now handle events correctly when rendered in a popup window opened via `window.open()`. [`hideOnEscape`](https://ariakit.com/reference/dialog#hideonescape), [`hideOnInteractOutside`](https://ariakit.com/reference/dialog#hideoninteractoutside), and focus restoration now use the content element's `ownerDocument` instead of the main window's `document` for event listeners.
+
+### Fixed `Portal` not rendering inside fullscreen elements
+
+[`Portal`](https://ariakit.com/reference/portal) was always appended to `document.body`, which made it invisible when an ancestor element entered fullscreen mode via the Fullscreen API. Portals are now automatically moved to `document.fullscreenElement` when it's active, and back to `document.body` when fullscreen is exited.
+
+### Auto-generated `name` attribute for `Radio`
+
+[`Radio`](https://ariakit.com/reference/radio) now automatically uses the [`RadioGroup`](https://ariakit.com/reference/radio-group) store's `id` as the default [`name`](https://ariakit.com/reference/radio#name) attribute when no explicit `name` prop is provided. This ensures consecutive [`RadioGroup`](https://ariakit.com/reference/radio-group) components have unique names, preventing the browser from treating all radio inputs as a single group and fixing Tab navigation and form submission issues.
+
+### Other updates
+
+- Fixed [`Combobox`](https://ariakit.com/reference/combobox) pressing Enter from submitting a parent form when the popover is open but has no matching items.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) not removing `data-enter` when closed after using the [`render`](https://ariakit.com/reference/dialog#render) prop to wrap the dialog element in an outer element.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) not restoring focus to the disclosure element when the dialog was opened and closed quickly in succession.
+- Fixed [`MenuButton`](https://ariakit.com/reference/menu-button) `aria-haspopup` attribute changing from `"menu"` to `"dialog"` when opening a menu that contains a combobox.
+- Fixed [`render`](https://ariakit.com/guide/composition) prop merging when the rendered element passes falsy `className` or event handler values such as `undefined` or `null`.
+- Fixed `Math.random()` being called unconditionally when creating composite stores ([`useTabStore`](https://ariakit.com/reference/use-tab-store), [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store), [`useSelectStore`](https://ariakit.com/reference/use-select-store), etc.), even when an explicit `id` prop was provided. This was causing Next.js build errors with `cacheComponents` enabled.
+- Updated dependencies: `@ariakit/core@0.4.20`
+
+## 0.4.25
+
+### Renamed `offscreenBehavior` to `offscreenMode`
+
+**BREAKING** if you're using the `offscreenBehavior` prop on collection or composite item offscreen components.
+
+The `offscreenBehavior` prop has been renamed to `offscreenMode` for consistency.
+
+Before:
+
+```tsx
+<ComboboxItem offscreenBehavior="lazy" />
+```
+
+After:
+
+```tsx
+<ComboboxItem offscreenMode="lazy" />
+```
+
+### Clicking outside no longer restores focus to the disclosure element
+
+[`Dialog`](https://ariakit.com/reference/dialog) and components that extend it (such as [`Menu`](https://ariakit.com/reference/menu) and [`Popover`](https://ariakit.com/reference/popover)) no longer restore focus to the disclosure element when the dialog is closed by clicking or right-clicking outside. This aligns with native HTML `<dialog>` and `popover` behavior where trigger buttons don't receive focus when you interact outside.
+
+Focus is still restored normally when the dialog is closed by other means, such as pressing Escape, selecting a menu item, or calling `store.hide()` programmatically. In these cases the disclosure element is now focused with default browser scrolling instead of `preventScroll`.
+
+### Improved Safari focus behavior for buttons, checkboxes, and radio buttons
+
+On Safari, buttons, checkboxes, and radio buttons don't receive focus on mousedown like other browsers. Previously, this was handled by manually focusing the element in a `mousedown` handler. Now, an explicit `tabIndex` attribute is set on these elements in Safari, which causes the browser to focus them natively. This results in more predictable focus behavior and fewer timing-sensitive workarounds.
+
+### Other updates
+
+- Fixed a race condition in [`Dialog`](https://ariakit.org/reference/dialog) where the deferred auto-focus could steal focus from the disclosure element after the dialog was closed.
+- Fixed [`formStore.setError()`](https://ariakit.org/reference/use-form-store#seterror) and [`formStore.setFieldTouched()`](https://ariakit.org/reference/use-form-store#setfieldtouched) failing to set values on nested array field paths such as `items.0.name`.
+- Fixed [`SelectItem`](https://ariakit.com/reference/select-item) store item `children` property reflecting the [`value`](https://ariakit.com/reference/select-item#value) prop instead of the actual rendered text content.
+- Fixed [`MenuButton`](https://ariakit.com/reference/menu-button) to preserve [`accessibleWhenDisabled`](https://ariakit.com/reference/menu-button#accessiblewhendisabled) behavior when composed with a rendered [`Button`](https://ariakit.com/reference/button).
+- Fixed [`Menu`](https://ariakit.org/reference/menu) with [`modal`](https://ariakit.org/reference/menu#modal) and [`getPersistentElements`](https://ariakit.org/reference/menu#getpersistentelements) so focusing a persistent [`MenuButton`](https://ariakit.org/reference/menu-button) doesn't immediately move focus back to the menu.
+- Fixed `useMetadataProps` overwriting parent metadata with `undefined` when the child doesn't provide an explicit value.
+- Fixed [`TabPanel`](https://ariakit.com/reference/tab-panel) not re-evaluating tabbable children when the panel becomes visible.
+- Fixed components not dropping their internal `aria-labelledby` when `aria-label` is passed.
+- Updated dependencies: `@ariakit/core@0.4.19`
+
+## 0.4.24
+
+This release improves React combobox and form reliability, including preserved combobox input and popover scroll position during result updates, more predictable focus behavior after filtering selects on iOS Safari, proper isolation of [`FormRadio`](https://ariakit.org/reference/form-radio) groups inside nested composite widgets, safer handling of explicitly undefined [`id`](https://ariakit.org/reference/select-item#id) props, and better generic typing for [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) wrappers.
+
+### Improved `CheckboxProvider` generic typing
+
+This fixes TypeScript errors when wrapping [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) in generic React components. Controlled and uncontrolled checkbox group wrappers now type-check correctly without requiring non-null assertions on values such as `defaultValue`.
+
+Before, generic wrappers often needed a non-null assertion to satisfy the provider props:
+
+```tsx {15}
+interface CheckboxCardGridProps<T extends string | number> extends Pick<
+  Ariakit.CheckboxProviderProps<T>,
+  "value" | "setValue" | "defaultValue"
+> {}
+
+function CheckboxCardGrid<T extends string | number>({
+  value,
+  setValue,
+  defaultValue,
+}: CheckboxCardGridProps<T>) {
+  return (
+    <CheckboxProvider
+      value={value}
+      setValue={setValue}
+      defaultValue={defaultValue!}
+    />
+  );
+}
+```
+
+Now the same wrapper can type-check without the workaround:
+
+```tsx {4}
+<CheckboxProvider
+  value={value}
+  setValue={setValue}
+  defaultValue={defaultValue}
+/>
+```
+
+### Fixed `Combobox` input scroll position resetting
+
+When a [`Combobox`](https://ariakit.org/reference/combobox) input's text overflowed its width, the input's horizontal scroll position reset to the beginning each time the results changed. This happened because the virtual focus mechanism briefly moved DOM focus to the active item and back when [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) was enabled, causing browsers to reset the input's internal `scrollLeft`.
+
+The scroll position is now preserved across these focus transitions.
+
+### Fixed `FormRadio` registering to ancestor composite stores
+
+[`FormRadio`](https://ariakit.org/reference/form-radio) items nested inside components like [`TabPanel`](https://ariakit.org/reference/tab-panel) were incorrectly registering to the tab store, causing arrow keys in the tab list to navigate to radio items instead of other tabs. [`FormRadioGroup`](https://ariakit.org/reference/form-radio-group) now resets the composite context for its children, preventing form radio items from being picked up by unrelated parent stores.
+
+### Other updates
+
+- Fixed [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) scroll position resetting when items change in multi-select mode (e.g., during infinite scroll).
+- Fixed [`SelectItem`](https://ariakit.org/reference/select-item) stealing focus from the combobox input when the selected item reappears after filtering, which dismissed the keyboard on iOS Safari.
+- Fixed components crashing with "Maximum call stack size exceeded" when the [`id`](https://ariakit.org/reference/select-item#id) prop is explicitly passed as `undefined`.
+
+## 0.4.23
+
+- Fixed [`ComboboxDisclosure`](https://ariakit.org/reference/combobox-disclosure) so pressing Escape closes [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) when the popover starts open and the [`Combobox`](https://ariakit.org/reference/combobox) input is auto-focused.
+
+## 0.4.22
+
+- Fixed [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio) so controlled reset states are reflected correctly by the menu item and [`MenuItemCheck`](https://ariakit.org/reference/menu-item-check).
+
+## 0.4.21
+
+- Fixed an error when trying to reach focusable elements within iframes.
+- Fixed issues with React 19 types.
+- Updated dependencies: `@ariakit/core@0.4.18`
+
+## 0.4.20
+
+- Fixed `RefObject` types for React 19.
+- Updated packages to target ES2018 (previously ES2017).
+- Updated dependencies: `@ariakit/core@0.4.17`
+
+## 0.4.19
+
+- Updated `Array` types to `ReadonlyArray` for better compatibility.
+- Fixed the automatic border width on [`PopoverArrow`](https://ariakit.org/reference/popover-arrow) to account for the device pixel ratio.
+- Updated dependencies: `@ariakit/core@0.4.16`
+
+## 0.4.18
+
+### Improved Combobox performance
+
+Thanks to [@iamakulov](https://github.com/iamakulov), the [Combobox](https://ariakit.org/components/combobox) component now opens ~30% faster by removing unnecessary calls to an internal function that adds global event listeners. See the [pull request](https://github.com/ariakit/ariakit/pull/4860) for more details.
+
+### Other updates
+
+- Improved [`PopoverArrow`](https://ariakit.org/reference/popover-arrow) default appearance when using semi-transparent borders.
+
+## 0.4.17
+
+- Restored support for React 17 in [`PopoverArrow`](https://ariakit.org/reference/popover-arrow).
+
+## 0.4.16
+
+### Improved `PopoverArrow`
+
+The [`PopoverArrow`](https://ariakit.org/reference/popover-arrow) component now attempts to infer its border width from the popover’s `box-shadow` style when all lengths are `0px` and the spread radius exceeds `0px` (e.g., `box-shadow: 0 0 0 1px black`), which is commonly known as a "ring". If the border width cannot be inferred, you can use the new [`borderWidth`](https://ariakit.org/reference/popover-arrow#borderwidth) prop to define it. This ensures a consistent size regardless of the arrow's size, which wasn't achievable before when manually setting the CSS `stroke-width` property.
+
+In addition, the arrow’s SVG path has been slightly modified to be more angled in the pointing direction. Note that you can always provide your own SVG using the `children` prop.
+
+### Scrolling behavior when closing dialogs and popovers
+
+When hiding a dialog or popover, the [`finalFocus`](https://ariakit.org/reference/dialog#finalfocus) element will no longer scroll into view. This change prevents scrolling issues when the element lies outside the viewport and mirrors the behavior of native HTML dialog and popover elements.
+
+### Other updates
+
+- Fixed [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible) attribute removal on lower-end devices.
+- Fixed [Select](https://ariakit.org/components/select) not passing down the [`disabled`](https://ariakit.org/reference/select#disabled) prop to the native select element.
+- Fixed [Dialog](https://ariakit.org/components/dialog) initial focus behavior in Safari for non-focusable elements.
+- Fixed `valid` state not updating on [Form](https://ariakit.org/components/form).
+- Fixed [`moveOnKeyPress`](https://ariakit.org/reference/composite#moveonkeypress) being triggered with composition text commands.
+- Updated dependencies: `@ariakit/core@0.4.15`
+
+## 0.4.15
+
+- Fixed a regression on [Hovercard](https://ariakit.org/components/hovercard) that sometimes prevented it from closing when other popups were opened.
+- Fixed typings for [`onSubmit`](https://ariakit.org/reference/use-form-store#onsubmit) and [`onValidate`](https://ariakit.org/reference/use-form-store#onvalidate).
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.14`
+
+## 0.4.14
+
+### Improved performance on composite widgets
+
+Composite item components such as [`ComboboxItem`](https://ariakit.org/reference/combobox-item) and [`SelectItem`](https://ariakit.org/reference/select-item) now render 20-30% faster compared to Ariakit v0.4.13.
+
+This enhancement should decrease the time needed to render large collections of items in composite widgets and improve the Interaction to Next Paint (INP) metric. We're working on further optimizations to make composite widgets even faster in future releases.
+
+### Combobox auto-scroll
+
+The [`Combobox`](https://ariakit.org/reference/combobox) component now scrolls the list to the top while typing when the [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop is disabled.
+
+The behavior is now consistent with the [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) prop, except the first item won't be automatically focused.
+
+### Other updates
+
+- Fixed the [`item`](https://ariakit.org/reference/use-collection-store#item) method to prevent it from returning items that have been removed from the collection store.
+- Fixed the [`item`](https://ariakit.org/reference/use-menu-store#item) method when keeping different menu stores in sync.
+- Added experimental `offscreenBehavior` prop to collection and composite item components.
+- Added [`id`](https://ariakit.org/reference/use-composite-store#id) prop to composite stores.
+- Fixed composite typeahead functionality when rendering virtualized lists.
+- Added `useStoreStateObject` function.
+- Fixed `TagInput` when pasting content with final newline.
+- Fixed [`SelectValue`](https://ariakit.org/reference/select-value) to display the [`fallback`](https://ariakit.org/reference/select-value#fallback) when the value is an empty array or string.
+- Fixed an issue where composite widgets might not navigate to the correct item when pressing <kbd>↑</kbd> while the composite base element was focused.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.13`
+
+## 0.4.13
+
+### Accessible composite widgets with invalid `activeId`
+
+We've improved the logic for composite widgets such as [Tabs](https://ariakit.org/components/tab) and [Toolbar](https://ariakit.org/components/toolbar) when the [`activeId`](https://ariakit.org/reference/composite-provider#activeid) state points to an element that is disabled or missing from the DOM. This can happen if an item is dynamically removed, disabled, or lazily rendered, potentially making the composite widget inaccessible to keyboard users.
+
+Now, when the [`activeId`](https://ariakit.org/reference/composite-provider#activeid) state is invalid, all composite items will remain tabbable, enabling users to <kbd>Tab</kbd> into the composite widget. Once a composite item receives focus or the element referenced by the [`activeId`](https://ariakit.org/reference/composite-provider#activeid) state becomes available, the roving tabindex behavior is restored.
+
+### Other updates
+
+- Fixed regression in [`focusShift`](https://ariakit.org/reference/composite-provider#focusshift).
+- Fixed [Radio](https://ariakit.org/components/radio) to prevent `onChange` from triggering on radios that are already checked.
+- Fixed [`DisclosureContent`](https://ariakit.org/reference/disclosure-content) setting an incorrect `animating` state value during enter animations.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.12`
+
+## 0.4.12
+
+### Tab panels with scroll restoration
+
+Ariakit now supports scroll restoration for the [`TabPanel`](https://ariakit.org/reference/tab-panel) component. This allows you to control whether and how the scroll position is restored when switching tabs.
+
+To enable scroll restoration, use the new [`scrollRestoration`](https://ariakit.org/reference/tab-panel#scrollrestoration) prop:
+
+```jsx
+// Restores the scroll position of the tab panel element when switching tabs
+<TabPanel scrollRestoration />
+```
+
+By default, the scroll position is restored when switching tabs. You can set it to `"reset"` to return the scroll position to the top of the tab panel when changing tabs. Use the [`scrollElement`](https://ariakit.org/reference/tab-panel#scrollelement) prop to specify a different scrollable element:
+
+```jsx
+// Resets the scroll position of a different scrollable element
+<div className="overflow-auto">
+  <TabPanel
+    scrollRestoration="reset"
+    scrollElement={(panel) => panel.parentElement}
+  />
+</div>
+```
+
+### Full height dialogs and on-screen virtual keyboards
+
+A new [`--dialog-viewport-height`](https://ariakit.org/guide/styling#--dialog-viewport-height) CSS variable has been added to the [Dialog](https://ariakit.org/components/dialog) component. This variable exposes the height of the visual viewport, considering the space taken by virtual keyboards on mobile devices. Use this CSS variable when you have input fields in your dialog to ensure it always fits within the visual viewport:
+
+```css
+.dialog {
+  max-height: var(--dialog-viewport-height, 100dvh);
+}
+```
+
+### Overriding composite state for specific methods
+
+The [`next`](https://ariakit.org/reference/use-composite-store#next), [`previous`](https://ariakit.org/reference/use-composite-store#previous), [`up`](https://ariakit.org/reference/use-composite-store#up), and [`down`](https://ariakit.org/reference/use-composite-store#down) methods of the [composite store](https://ariakit.org/reference/use-composite-store) now accept an object as the first argument to override the composite state for that specific method. For example, you can pass a different [`activeId`](https://ariakit.org/reference/use-composite-store#activeid) value to the [`next`](https://ariakit.org/reference/use-composite-store#next) method so it returns the next item based on that value rather than the current active item in the composite store:
+
+```js
+const store = useCompositeStore({ defaultActiveId: "item1" });
+const item3 = store.next({ activeId: "item2" });
+```
+
+It's important to note that the composite state is not modified when using this feature. The state passed to these methods is used solely for that specific method call.
+
+### Other updates
+
+- Fixed the ability to <kbd>Tab</kbd> out of a nested [Menu](https://ariakit.org/components/menu) within a modal [Dialog](https://ariakit.org/components/dialog).
+- Fixed CJS build on Next.js.
+- Enhanced performance on [Dialog](https://ariakit.org/components/dialog) backdrops.
+- Updated the `useAttribute` hook to handle cases when the attribute is removed from the element.
+- Fixed [`Tab`](https://ariakit.org/reference/tab) to pass the [`rowId`](https://ariakit.org/reference/tab#rowid) prop when used with other composite widgets.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.11`
+
+## 0.4.11
+
+### Tabs inside animated Combobox or Select
+
+When rendering [Tab](https://ariakit.org/components/tab) inside [Combobox](https://ariakit.org/components/combobox) or [Select](https://ariakit.org/components/select), it now waits for the closing animation to finish before restoring the tab with the selected item. This should prevent an inconsistent UI where the tab is restored immediately while the content is still animating out. See [Select with Combobox and Tabs](https://ariakit.org/examples/select-combobox-tab).
+
+### Other updates
+
+- Updated [Combobox](https://ariakit.org/components/combobox) to immediately reset the [`activeId`](https://ariakit.org/reference/use-combobox-store#activeid) upon closing the popover.
+- Removed delay when applying the [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible) attribute.
+- Fixed mouse down on [`MenuButton`](https://ariakit.org/reference/menu-button) hiding the menu on Safari.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.10`
+
+## 0.4.10
+
+- Fixed a regression introduced in `v0.4.8` that set the default value of the [`accessibleWhenDisabled`](https://ariakit.org/reference/tab#accessiblewhendisabled) prop to `false` on [`Tab`](https://ariakit.org/reference/tab).
+
+## 0.4.9
+
+### `aria-selected` on composite items
+
+Composite items like [`ComboboxItem`](https://ariakit.org/reference/combobox-item) no longer have the `aria-selected` attribute automatically set when focused. This attribute was previously used to address an old bug in Google Chrome, but it's no longer needed. Now, it's only set when the item is actually selected, such as in a select widget or a multi-selectable combobox.
+
+This change shouldn't affect most users since the `aria-selected` attribute is not part of the public API and is not recommended as a [CSS selector](https://ariakit.org/guide/styling#css-selectors) (use [`[data-active-item]`](https://ariakit.org/guide/styling#data-active-item) instead). However, if you have snapshot tests, you may need to update them.
+
+### Other updates
+
+- Removed `useControlledState` and `useRefId` hooks.
+- Added [`userValue`](https://ariakit.org/reference/combobox-item-value#uservalue) prop to [`ComboboxItemValue`](https://ariakit.org/reference/combobox-item-value).
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.9`
+
+## 0.4.8
+
+### Accessing selected tabs when disabled
+
+A [Tab](https://ariakit.org/components/tab) component that is both selected and disabled will now remain accessible to keyboard focus even if the [`accessibleWhenDisabled`](https://ariakit.org/reference/tab#accessiblewhendisabled) prop is set to `false`. This ensures users can navigate to other tabs using the keyboard.
+
+### Other updates
+
+- Fixed [Dialog](https://ariakit.org/components/dialog) to prevent smooth scrolling on hide.
+- Fixed [Hovercard](https://ariakit.org/components/hovercard) unexpectedly hiding when scrolling in Safari.
+- Added a README file to the package.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.8`
+
+## 0.4.7
+
+- Added React 19 to peer dependencies.
+- Fixed [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) behavior with virtualized lists on mobile devices.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.7`
+
+## 0.4.6
+
+### Nested `SelectList`
+
+The [`SelectList`](https://ariakit.org/reference/select-list) component can now be nested within a [`SelectPopover`](https://ariakit.org/reference/select-popover). This lets you render additional elements inside the popover without breaking the accessibility tree. The ARIA roles will be automatically adjusted to ensure a valid accessibility tree:
+
+```jsx {6-9}
+<SelectProvider>
+  <Select />
+  <SelectPopover>
+    <SelectHeading>Fruits</SelectHeading>
+    <SelectDismiss />
+    <SelectList>
+      <SelectItem value="Apple" />
+      <SelectItem value="Banana" />
+    </SelectList>
+  </SelectPopover>
+</SelectProvider>
+```
+
+### New Select components
+
+Two new components have been added to the [Select](https://ariakit.org/components/select) module: [`SelectHeading`](https://ariakit.org/reference/select-heading) and [`SelectDismiss`](https://ariakit.org/reference/select-dismiss).
+
+You can use them alongside [`SelectList`](https://ariakit.org/reference/select-list) to add a heading and a dismiss button to the select popover:
+
+```jsx {4,5}
+<SelectProvider>
+  <Select />
+  <SelectPopover>
+    <SelectHeading>Fruits</SelectHeading>
+    <SelectDismiss />
+    <SelectList>
+      <SelectItem value="Apple" />
+      <SelectItem value="Banana" />
+    </SelectList>
+  </SelectPopover>
+</SelectProvider>
+```
+
+### `--popover-transform-origin`
+
+The [Popover](https://ariakit.org/components/popover) components now expose a [`--popover-transform-origin`](https://ariakit.org/guide/styling#--popover-transform-origin) CSS variable. You can use this to set the `transform-origin` property for the popover content element in relation to the anchor element:
+
+```css
+.popover {
+  transform-origin: var(--popover-transform-origin);
+}
+```
+
+### Opening `SelectPopover` on click
+
+To ensure uniformity across all dropdown buttons in the library, the [`SelectPopover`](https://ariakit.org/reference/select-popover) now opens when you click on the [`Select`](https://ariakit.org/reference/select) component, instead of on mouse/touch/pointer down.
+
+This change also resolves a problem where the `:active` state wouldn't be triggered on the select button due to a focus change on mousedown.
+
+### Other updates
+
+- Fixed `ref` warning in React 19.
+- Ensured [Combobox](https://ariakit.org/components/combobox) uses roving tabindex to manage focus on mobile Safari.
+- Added a new `listElement` state to the Select store.
+- Improved use of [Tab](https://ariakit.org/components/tab) components within [Select](https://ariakit.org/components/select) widgets.
+- Fixed `data-focus-visible` being applied after a `blur` event.
+- Fixed composite items not scrolling into view in Safari.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.6`
+
+## 0.4.5
+
+### Multi-selectable Combobox with inline autocomplete
+
+When rendering a [Multi-selectable Combobox](https://ariakit.org/examples/combobox-multiple) with the [`autoComplete`](https://ariakit.org/reference/combobox#autocomplete) prop set to `"inline"` or `"both"`, the completion string will no longer be inserted into the input upon deselecting an item. This is because the completion string generally represents an addition action, whereas deselecting an item is a removal action.
+
+### Other updates
+
+- Added new experimental Tag components.
+- Updated [`Combobox`](https://ariakit.org/reference/combobox) to no longer use `ReactDOM.flushSync` when updating the value.
+- Added new [`resetValueOnSelect`](https://ariakit.org/reference/combobox-item#resetvalueonselect) prop to [`ComboboxItem`](https://ariakit.org/reference/combobox-item).
+- Added new [`resetValue`](https://ariakit.org/reference/use-combobox-store#resetvalue) method to combobox store.
+- Added experimental `ComboboxValue` component.
+- Improved JSDocs.
+- Updated dependencies: `@ariakit/core@0.4.5`
+
 ## 0.4.4
 
 ### Combobox `autoFocusOnHide` behavior
@@ -60,7 +490,7 @@ When using [Tooltip](https://ariakit.org/components/tooltip) components alongsid
 
 This was already the case when tooltips had no [`timeout`](https://ariakit.org/reference/tooltip-provider#timeout). Now, the behavior is consistent regardless of the timeout value.
 
-### Combobox with tabs
+### Combobox with Tabs
 
 [Tab](https://ariakit.org/components/tab) components can now be rendered as part of other composite widgets, like [Combobox](https://ariakit.org/components/combobox). The following structure should work seamlessly:
 

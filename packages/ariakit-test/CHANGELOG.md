@@ -1,5 +1,89 @@
 # @ariakit/test
 
+## 0.4.15
+
+- Changed the [`query`](https://ariakit.com/reference/query) helper to use `exact: true` by default for role and text queries in Playwright tests.
+- Updated dependencies: `@ariakit/core@0.4.20`
+
+## 0.4.14
+
+- Updated dependencies: `@ariakit/core@0.4.19`
+
+## 0.4.13
+
+- Added `q.text()` query to `@ariakit/test/playwright`.
+- Updated dependencies: `@ariakit/core@0.4.18`
+
+## 0.4.12
+
+- Updated packages to target ES2018 (previously ES2017).
+- Updated dependencies: `@ariakit/core@0.4.17`
+
+## 0.4.11
+
+- Updated dependencies: `@ariakit/core@0.4.16`
+
+## 0.4.10
+
+- Updated dependencies: `@ariakit/core@0.4.15`
+
+## 0.4.9
+
+- Fixed a build issue that resulted in JavaScript files not being part of the released package.
+
+## 0.4.8
+
+- Fixed the package for running in an SSR environment.
+
+## 0.4.7
+
+- Updated dependencies: `@ariakit/core@0.4.14`
+
+## 0.4.6
+
+- Updated dependencies: `@ariakit/core@0.4.13`
+
+## 0.4.5
+
+- Updated dependencies: `@ariakit/core@0.4.12`
+
+## 0.4.4
+
+- Fixed CJS build on Next.js.
+- Updated pointer events to initialize with a default `pointerType` value of `mouse`.
+- Updated dependencies: `@ariakit/core@0.4.11`
+
+## 0.4.3
+
+- Updated dependencies: `@ariakit/core@0.4.10`
+
+## 0.4.2
+
+- Updated dependencies: `@ariakit/core@0.4.9`
+
+## 0.4.1
+
+- Added a README file to the package.
+- Updated dependencies: `@ariakit/core@0.4.8`
+
+## 0.4.0
+
+- The `render` method now returns a promise of `{ unmount, rerender }` instead of just the `unmount` function.
+
+## 0.3.16
+
+- Added React 19 to peer dependencies.
+- Updated dependencies: `@ariakit/core@0.4.7`
+
+## 0.3.15
+
+- Updated dependencies: `@ariakit/core@0.4.6`
+
+## 0.3.14
+
+- Added `within` function to queries.
+- Updated dependencies: `@ariakit/core@0.4.5`
+
 ## 0.3.13
 
 - Updated dependencies: `@ariakit/core@0.4.4`

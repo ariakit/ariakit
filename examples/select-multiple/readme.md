@@ -15,4 +15,4 @@ Allowing the [Select](/components/select) component to select multiple values by
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>

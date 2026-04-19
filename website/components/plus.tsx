@@ -1,14 +1,13 @@
 "use client";
-import {
-  createContext,
-  forwardRef,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import type { CSSProperties } from "react";
 import { scrollIntoViewIfNeeded } from "@ariakit/core/utils/dom";
 import { createStore, sync } from "@ariakit/core/utils/store";
+import type {
+  ButtonProps,
+  HovercardAnchorProps,
+  HovercardProps,
+  HovercardProviderProps,
+  RoleProps,
+} from "@ariakit/react";
 import {
   Heading,
   HeadingLevel,
@@ -18,35 +17,36 @@ import {
   Role,
   VisuallyHidden,
 } from "@ariakit/react";
-import type {
-  ButtonProps,
-  HovercardAnchorProps,
-  HovercardProps,
-  HovercardProviderProps,
-  RoleProps,
-} from "@ariakit/react";
 import { useEvent } from "@ariakit/react-core/utils/hooks";
 import { useStore, useStoreProps } from "@ariakit/react-core/utils/store";
-import { SignUp, SignedIn, SignedOut } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignUp } from "@clerk/clerk-react";
 import {
   EmbeddedCheckout,
   EmbeddedCheckoutProvider,
 } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js/pure.js";
+import { loadStripe } from "@stripe/stripe-js/pure";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { CheckCircle } from "icons/check-circle.jsx";
-import { Check } from "icons/check.jsx";
-import { ChevronRight } from "icons/chevron-right.jsx";
-import { Heart } from "icons/heart.jsx";
 import Link from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
+import type { CSSProperties } from "react";
+import {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { twJoin, twMerge } from "tailwind-merge";
-import type { PlusPrice } from "utils/stripe.js";
-import { useMedia } from "utils/use-media.js";
-import { useSubscription } from "utils/use-subscription.js";
-import { Command } from "./command.jsx";
-import { useRootPathname } from "./root-pathname.jsx";
+import { CheckCircle } from "@/icons/check-circle.tsx";
+import { Check } from "@/icons/check.tsx";
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { Heart } from "@/icons/heart.tsx";
+import type { PlusPrice } from "@/lib/stripe.ts";
+import { useMedia } from "@/lib/use-media.ts";
+import { useSubscription } from "@/lib/use-subscription.ts";
+import { Command } from "./command.tsx";
+import { useRootPathname } from "./root-pathname.tsx";
 
 let stripePromise: ReturnType<typeof loadStripe> | null = null;
 
@@ -87,8 +87,7 @@ function usePlusStore(props: PlusStoreProps) {
 }
 
 export interface PlusProviderProps
-  extends PlusStoreProps,
-    HovercardProviderProps {}
+  extends PlusStoreProps, HovercardProviderProps {}
 
 export function PlusProvider(props: PlusProviderProps) {
   const store = usePlusStore(props);

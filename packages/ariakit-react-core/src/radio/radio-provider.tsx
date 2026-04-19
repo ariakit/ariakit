@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { RadioContextProvider } from "./radio-context.js";
-import { useRadioStore } from "./radio-store.js";
-import type { RadioStoreProps } from "./radio-store.js";
+import { RadioContextProvider } from "./radio-context.tsx";
+import type { RadioStoreProps } from "./radio-store.ts";
+import { useRadioStore } from "./radio-store.ts";
 
 /**
- * Provides a radio store to [Radio](https://ariakit.org/components/radio)
+ * Provides a radio store to [Radio](https://ariakit.com/components/radio)
  * components.
- * @see https://ariakit.org/components/radio
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx
  * <RadioProvider defaultValue="Apple">

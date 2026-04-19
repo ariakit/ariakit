@@ -1,0 +1,33 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"details"> {}
+
+const props = Astro.props;
+---
+
+<details
+  class:list={[
+    "ak-disclosure ak-frame-card ak-layer-pop-0.5 ring",
+    "ak-container-size-[calc(min(theme(--container-content),100%)+var(--ak-frame-padding)*2)]/0",
+    "ak-container",
+    props.class,
+  ]}
+  {...props}
+>
+  <summary class="before:ak-disclosure-chevron-right">
+    <slot name="summary" />
+  </summary>
+  <div class="ak-prose-content">
+    <slot />
+  </div>
+</details>

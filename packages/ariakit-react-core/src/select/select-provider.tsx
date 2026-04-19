@@ -1,15 +1,15 @@
-import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { SelectContextProvider } from "./select-context.js";
-import { useSelectStore } from "./select-store.js";
-import type { SelectStoreProps, SelectStoreValue } from "./select-store.js";
+import type { ReactElement, ReactNode } from "react";
+import { SelectContextProvider } from "./select-context.tsx";
+import type { SelectStoreProps, SelectStoreValue } from "./select-store.ts";
+import { useSelectStore } from "./select-store.ts";
 
 type Value = SelectStoreValue;
 
 /**
- * Provides a select store to [Select](https://ariakit.org/components/select)
+ * Provides a select store to [Select](https://ariakit.com/components/select)
  * components.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * <SelectProvider defaultValue="Apple">
@@ -38,7 +38,8 @@ export function SelectProvider(props: SelectProviderProps = {}) {
   );
 }
 
-export interface SelectProviderProps<T extends Value = Value>
-  extends SelectStoreProps<T> {
+export interface SelectProviderProps<
+  T extends Value = Value,
+> extends SelectStoreProps<T> {
   children?: ReactNode;
 }

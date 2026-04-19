@@ -1,6 +1,6 @@
-import { Suspense } from "react";
 import type { PropsWithChildren } from "react";
-import PostMessage from "./post-message.jsx";
+import { Suspense } from "react";
+import PostMessage from "./post-message.tsx";
 
 export default function Layout({ children }: PropsWithChildren) {
   return (

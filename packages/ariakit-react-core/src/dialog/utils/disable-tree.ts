@@ -1,16 +1,17 @@
 import { contains } from "@ariakit/core/utils/dom";
 import { getAllTabbableIn } from "@ariakit/core/utils/focus";
 import { chain, noop } from "@ariakit/core/utils/misc";
-import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.js";
-import { isBackdrop } from "./is-backdrop.js";
+import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.ts";
+import { isBackdrop } from "./is-backdrop.ts";
+import { isFocusTrap } from "./is-focus-trap.ts";
 import {
   assignStyle,
   orchestrate,
   setAttribute,
   setProperty,
-} from "./orchestrate.js";
-import { supportsInert } from "./supports-inert.js";
-import { walkTreeOutside } from "./walk-tree-outside.js";
+} from "./orchestrate.ts";
+import { supportsInert } from "./supports-inert.ts";
+import { walkTreeOutside } from "./walk-tree-outside.ts";
 
 type Elements = Array<Element | null>;
 
@@ -57,6 +58,9 @@ export function disableTreeOutside(id: string, elements: Elements) {
     elements,
     (element) => {
       if (isBackdrop(element, ...ids)) return;
+      // Ignore focus trap elements connected to any of the dialog elements. See
+      // dialog-menu "move back to menu button with Shift+Tab" test.
+      if (isFocusTrap(element, ...ids)) return;
       cleanups.unshift(disableTree(element, elements));
     },
     (element) => {
@@ -70,7 +74,9 @@ export function disableTreeOutside(id: string, elements: Elements) {
   );
 
   const restoreTreeOutside = () => {
-    cleanups.forEach((fn) => fn());
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
   };
 
   return restoreTreeOutside;

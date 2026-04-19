@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { HovercardContextProvider } from "./hovercard-context.js";
-import { useHovercardStore } from "./hovercard-store.js";
-import type { HovercardStoreProps } from "./hovercard-store.js";
+import { HovercardContextProvider } from "./hovercard-context.tsx";
+import type { HovercardStoreProps } from "./hovercard-store.ts";
+import { useHovercardStore } from "./hovercard-store.ts";
 
 /**
  * Provides a hovercard store to
- * [Hovercard](https://ariakit.org/components/hovercard) components.
- * @see https://ariakit.org/components/hovercard
+ * [Hovercard](https://ariakit.com/components/hovercard) components.
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * <HovercardProvider timeout={250}>

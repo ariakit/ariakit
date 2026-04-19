@@ -1,15 +1,16 @@
-import { useRef } from "react";
-import type { ElementType } from "react";
-import { getDocument, matches } from "@ariakit/core/utils/dom";
+import { getDocument } from "@ariakit/core/utils/dom";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
-import { createDialogComponent } from "../dialog/dialog.js";
-import type { PopoverOptions } from "../popover/popover.js";
-import { usePopover } from "../popover/popover.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useComboboxProviderContext } from "./combobox-context.js";
-import type { ComboboxListOptions } from "./combobox-list.js";
-import { useComboboxList } from "./combobox-list.js";
+import type { ElementType } from "react";
+import { useRef } from "react";
+import { createDialogComponent } from "../dialog/dialog.tsx";
+import type { PopoverOptions } from "../popover/popover.tsx";
+import { usePopover } from "../popover/popover.tsx";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
+import type { ComboboxListOptions } from "./combobox-list.tsx";
+import { useComboboxList } from "./combobox-list.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -25,14 +26,14 @@ function isController(
       .map((id) => `[aria-controls~="${id}"]`)
       .join(", ");
     if (!selector) return false;
-    return matches(target, selector);
+    return target.matches(selector);
   }
   return false;
 }
 
 /**
  * Returns props to create a `ComboboxPopover` component.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -63,8 +64,17 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         "ComboboxPopover must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const baseElement = store.useState("baseElement");
+    const baseElement = useStoreState(store, "baseElement");
     const hiddenByClickOutsideRef = useRef(false);
+
+    // When new tags are rendered while the combobox popover is open, they will
+    // be considered nested popups, and therefore the popover won't hide when
+    // interacting with them. We use the treeSnapshotKey to force the popover to
+    // take a new snapshot of the tree when new items are rendered.
+    const treeSnapshotKey = useStoreState(
+      store.tag,
+      (state) => state?.renderedItems.length,
+    );
 
     props = useComboboxList({ store, alwaysVisible, ...props });
 
@@ -76,6 +86,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       autoFocusOnShow: false,
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
+      unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
       // When the combobox popover is modal, we make sure to include the
       // combobox input and all the combobox controls (cancel, disclosure) in
@@ -139,7 +150,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
  * Renders a combobox popover. The `role` prop is set to `listbox` by default,
  * but can be overriden by any other valid combobox popup role (`listbox`,
  * `menu`, `tree`, `grid` or `dialog`).
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3-7}
  * <ComboboxProvider>
@@ -161,8 +172,7 @@ export const ComboboxPopover = createDialogComponent(
 );
 
 export interface ComboboxPopoverOptions<T extends ElementType = TagName>
-  extends ComboboxListOptions<T>,
-    Omit<PopoverOptions<T>, "store"> {}
+  extends ComboboxListOptions<T>, Omit<PopoverOptions<T>, "store"> {}
 
 export type ComboboxPopoverProps<T extends ElementType = TagName> = Props<
   T,

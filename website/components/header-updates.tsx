@@ -1,23 +1,23 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
-import type { ComponentPropsWithoutRef } from "react";
 import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import * as Ariakit from "@ariakit/react";
 import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
 import { track } from "@vercel/analytics";
-import { Bell } from "icons/bell.jsx";
 import { partition } from "lodash-es";
 import Link from "next/link.js";
-import { twJoin, twMerge } from "tailwind-merge";
-import type { UpdateItem } from "updates.js";
-import { useMedia } from "utils/use-media.js";
-import { useUpdates } from "utils/use-updates.js";
-// import { NewsletterForm } from "./newsletter-form.jsx";
-import { Command } from "./command.jsx";
-import { Popup } from "./popup.jsx";
-import { TooltipButton } from "./tooltip-button.jsx";
-import { UpdateLink } from "./update-link.jsx";
+import type { ComponentPropsWithoutRef } from "react";
+import { useId, useMemo, useState } from "react";
+import { twJoin } from "tailwind-merge";
+import { Bell } from "@/icons/bell.tsx";
+import { useMedia } from "@/lib/use-media.ts";
+import { useUpdates } from "@/lib/use-updates.ts";
+import type { UpdateItem } from "@/updates.ts";
+// import { NewsletterForm } from "./newsletter-form.tsx";
+import { Command } from "./command.tsx";
+import { Popup } from "./popup.tsx";
+import { TooltipButton } from "./tooltip-button.tsx";
+import { UpdateLink } from "./update-link.tsx";
 
 export interface HeaderUpdatesProps extends ComponentPropsWithoutRef<"button"> {
   updates: UpdateItem[];
@@ -33,7 +33,6 @@ export function HeaderUpdates({
   const isLarge = useMedia("(min-width: 640px)", true);
   const { seen, previousSeen, seeNow } = useUpdates({ updates });
   const popover = Ariakit.usePopoverStore({
-    animated: true,
     placement: isLarge ? "bottom-end" : "bottom",
     setOpen(open) {
       if (open) {
@@ -99,15 +98,8 @@ export function HeaderUpdates({
         }}
         render={
           <Popup
-            scroller={(props) => (
-              <>
-                <Ariakit.PopoverArrow />
-                <div
-                  {...props}
-                  className={twMerge(props.className, "flex flex-col py-0")}
-                />
-              </>
-            )}
+            arrow={<Ariakit.PopoverArrow />}
+            scroller={<div className="!py-0" />}
           />
         }
       >

@@ -2,16 +2,15 @@
 
 .nav {
   @apply
-    mx-auto
-  ;
+    h-full
 }
 
 .menubar {
   @apply
     flex
+    w-max
     gap-1
     items-center
-  ;
 }
 
 .menubar-item {
@@ -37,7 +36,6 @@
     [a&]:data-[focus-visible]:underline
     [a&]:cursor-pointer
     [a&]:hover:underline
-  ;
 }
 
 .menubar-arrow {
@@ -45,19 +43,16 @@
     [&_svg]:stroke-1
     transition-transform
     [[aria-expanded=true]_&]:[transform:rotate(180deg)]
-  ;
 }
 
 .menu-wrapper {
   @apply
     [&:has([data-enter])]:transition-[transform]
-  ;
 }
 
 .menu-arrow {
   @apply
     transition-[left]
-  ;
 }
 
 .menu {
@@ -69,7 +64,7 @@
     border
     border-solid
     max-w-[--popover-available-width]
-    max-h-[var(--popover-available-height)]
+    max-h-[max(max-content,var(--popover-available-height))]
     border-gray-250
     dark:border-gray-600
     bg-white
@@ -81,7 +76,6 @@
     transition-opacity
     opacity-0
     data-[enter]:opacity-100
-  ;
 }
 
 .menu-contents {
@@ -91,14 +85,12 @@
     [&:has([role=group])]:grid
     [&:has([role=group])]:grid-cols-2
     [&:has([role=group])]:items-start
-  ;
 }
 
 .group {
   @apply
     flex
     flex-col
-  ;
 }
 
 .group-label {
@@ -108,7 +100,6 @@
     font-medium
     opacity-60
     cursor-default
-  ;
 }
 
 .menu-item {
@@ -128,18 +119,15 @@
     data-[focus-visible]:outline-2
     data-[focus-visible]:-outline-offset-1
     data-[focus-visible]:outline-blue-600
-  ;
 }
 
 .menu-item-label {
   @apply
     font-medium
-  ;
 }
 
 .menu-item-description {
   @apply
     opacity-70
     font-light
-  ;
 }

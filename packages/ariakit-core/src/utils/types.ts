@@ -179,5 +179,4 @@ export type AriaRole =
   | "tree"
   | "treegrid"
   | "treeitem"
-  // eslint-disable-next-line @typescript-eslint/ban-types
   | (string & {});

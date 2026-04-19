@@ -1,11 +1,3 @@
-import type {
-  ElementType,
-  FocusEvent,
-  KeyboardEventHandler,
-  KeyboardEvent as ReactKeyboardEvent,
-  RefObject,
-} from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
 import { flatten2DArray, reverseArray } from "@ariakit/core/utils/array";
 import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
 import {
@@ -16,29 +8,39 @@ import {
 import { focusIntoView, hasFocus } from "@ariakit/core/utils/focus";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { FocusableOptions } from "../focusable/focusable.js";
-import { useFocusable } from "../focusable/focusable.js";
+import type {
+  ElementType,
+  FocusEvent,
+  KeyboardEventHandler,
+  KeyboardEvent as ReactKeyboardEvent,
+  RefObject,
+} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { FocusableOptions } from "../focusable/focusable.tsx";
+import { useFocusable } from "../focusable/focusable.tsx";
 import {
   useBooleanEvent,
   useEvent,
   useMergeRefs,
   useSafeLayoutEffect,
+  useTransactionState,
   useWrapElement,
-} from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
 import {
   CompositeContextProvider,
   useCompositeProviderContext,
-} from "./composite-context.js";
-import type { CompositeStore, CompositeStoreItem } from "./composite-store.js";
+} from "./composite-context.tsx";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import {
   findFirstEnabledItem,
   getEnabledItem,
   groupItemsByRows,
   isItem,
   silentlyFocused,
-} from "./utils.js";
+} from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -104,10 +106,28 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
   );
 }
 
+// When virtual focus briefly moves DOM focus from a text input to an
+// item and back, browsers reset the input's internal scroll position
+// (e.g., scrollLeft). This helper preserves and restores scroll across
+// such focus transitions. Only applies to text field base elements to
+// avoid undoing intentional scrollIntoView on scrollable containers.
+function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
+  const { virtualFocus, baseElement } = store.getState();
+  if (!virtualFocus || !baseElement || !isTextField(baseElement)) {
+    callback();
+    return;
+  }
+  const savedScrollLeft = baseElement.scrollLeft;
+  const savedScrollTop = baseElement.scrollTop;
+  callback();
+  baseElement.scrollLeft = savedScrollLeft;
+  baseElement.scrollTop = savedScrollTop;
+}
+
 function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
-  const activeItem = store.useState((state) =>
+  const activeItem = useStoreState(store, (state) =>
     getEnabledItem(store, state.activeId),
   );
   useEffect(() => {
@@ -115,14 +135,16 @@ function useScheduleFocus(store: CompositeStore) {
     if (!scheduled) return;
     if (!activeElement) return;
     setScheduled(false);
-    activeElement.focus({ preventScroll: true });
-  }, [activeItem, scheduled]);
+    withBaseScrollPreserved(store, () => {
+      activeElement.focus({ preventScroll: true });
+    });
+  }, [store, activeItem, scheduled]);
   return schedule;
 }
 
 /**
  * Returns props to create a `Composite` component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -150,10 +172,15 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         "Composite must receive a `store` prop or be wrapped in a CompositeProvider component.",
     );
 
+    const ref = useRef<HTMLType>(null);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const scheduleFocus = useScheduleFocus(store);
-    const moves = store.useState("moves");
-    const focusedId = store.useState("focusedId");
+    const moves = useStoreState(store, "moves");
+    const focusedId = useStoreState(store, "focusedId");
+
+    const [, setBaseElement] = useTransactionState(
+      composite ? store.setBaseElement : null,
+    );
 
     // Focus on the active item element.
     useEffect(() => {
@@ -163,7 +190,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (!focusOnMove) return;
       const itemElement = getEnabledItem(store, focusedId)?.element;
       if (!itemElement) return;
-      focusIntoView(itemElement);
+      withBaseScrollPreserved(store, () => focusIntoView(itemElement));
     }, [store, moves, focusedId, composite, focusOnMove]);
 
     // If composite.move(null) has been called, the composite container (this
@@ -191,8 +218,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       }
     }, [store, focusedId, composite]);
 
-    const activeId = store.useState("activeId");
-    const virtualFocus = store.useState("virtualFocus");
+    const activeId = useStoreState(store, "activeId");
+    const virtualFocus = useStoreState(store, "virtualFocus");
 
     // At this point, if the activeId has changed and we still have a
     // previousElement, this means that the previousElement hasn't been blurred,
@@ -361,10 +388,12 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
+      // https://github.com/ariakit/ariakit/issues/4388
+      if (event.nativeEvent.isComposing) return;
       if (event.defaultPrevented) return;
       if (!store) return;
       if (!isSelfTarget(event)) return;
-      const { orientation, items, renderedItems, activeId } = store.getState();
+      const { orientation, renderedItems, activeId } = store.getState();
       const activeItem = getEnabledItem(store, activeId);
       if (activeItem?.element?.isConnected) return;
       const isVertical = orientation !== "horizontal";
@@ -381,7 +410,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (isHorizontalKey && isTextField(event.currentTarget)) return;
       const up = () => {
         if (grid) {
-          const item = items && findFirstEnabledItemInTheLastRow(items);
+          const item = findFirstEnabledItemInTheLastRow(renderedItems);
           return item?.id;
         }
         return store?.last();
@@ -417,7 +446,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       [store],
     );
 
-    const activeDescendant = store.useState((state) => {
+    const activeDescendant = useStoreState(store, (state) => {
       if (!store) return;
       if (!composite) return;
       if (!state.virtualFocus) return;
@@ -427,7 +456,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     props = {
       "aria-activedescendant": activeDescendant,
       ...props,
-      ref: useMergeRefs(composite ? store.setBaseElement : null, props.ref),
+      ref: useMergeRefs(ref, setBaseElement, props.ref),
       onKeyDownCapture,
       onKeyUpCapture,
       onFocusCapture,
@@ -436,7 +465,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       onKeyDown,
     };
 
-    const focusable = store.useState(
+    const focusable = useStoreState(
+      store,
       (state) => composite && (state.virtualFocus || state.activeId === null),
     );
 
@@ -448,7 +478,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
 /**
  * Renders a composite widget.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();
@@ -463,13 +493,14 @@ export const Composite = forwardRef(function Composite(props: CompositeProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T> {
+export interface CompositeOptions<
+  T extends ElementType = TagName,
+> extends FocusableOptions<T> {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * component's context will be used.
    */
   store?: CompositeStore;
@@ -485,17 +516,17 @@ export interface CompositeOptions<T extends ElementType = TagName>
    *
    * **Note**: In most cases, this prop doesn't need to be set manually. For
    * example, when composing [Menu with
-   * Combobox](https://ariakit.org/examples/menu-combobox) or [Select with
-   * Combobox](https://ariakit.org/examples/select-combobox), this prop will be
+   * Combobox](https://ariakit.com/examples/menu-combobox) or [Select with
+   * Combobox](https://ariakit.com/examples/select-combobox), this prop will be
    * set to `false` automatically on the
-   * [`Menu`](https://ariakit.org/reference/menu) and
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
-   * so the [`Combobox`](https://ariakit.org/reference/combobox) component can
+   * [`Menu`](https://ariakit.com/reference/menu) and
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
+   * so the [`Combobox`](https://ariakit.com/reference/combobox) component can
    * take over the composite widget responsibilities.
    *
    * Live examples:
-   * - [Menu with Combobox](https://ariakit.org/examples/menu-combobox)
-   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
+   * - [Menu with Combobox](https://ariakit.com/examples/menu-combobox)
+   * - [Select with Combobox](https://ariakit.com/examples/select-combobox)
    * @default true
    */
   composite?: boolean;
@@ -506,10 +537,10 @@ export interface CompositeOptions<T extends ElementType = TagName>
    *
    * **Note**: To entirely disable focus moving within a composite widget, you
    * can use the
-   * [`focusOnMove`](https://ariakit.org/reference/composite#focusonmove) prop
+   * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) prop
    * instead. If you want to control the behavior _only when arrow keys are
    * pressed_, where
-   * [`focusOnMove`](https://ariakit.org/reference/composite#focusonmove) may
+   * [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) may
    * not be applicable, this prop must be set on composite items as well.
    * @default true
    * @example
@@ -524,27 +555,27 @@ export interface CompositeOptions<T extends ElementType = TagName>
   /**
    * Determines if the active composite item should receive focus (or virtual
    * focus if the
-   * [`virtualFocus`](https://ariakit.org/reference/composite-provider#virtualfocus)
+   * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
    * option is enabled) when moving through items. This typically happens when
    * navigating through items with arrow keys, but it can also happen when
    * calling the
-   * [`move`](https://ariakit.org/reference/use-composite-store#move) method
+   * [`move`](https://ariakit.com/reference/use-composite-store#move) method
    * directly.
    *
    * Unlike the
-   * [`composite`](https://ariakit.org/reference/composite#composite-1) prop,
+   * [`composite`](https://ariakit.com/reference/composite#composite-1) prop,
    * this option doesn't disable the entire composite widget behavior. It only
    * stops this component from managing focus when navigating through items.
    *
    * **Note**: If you want to control the behavior only _when arrow keys are
    * pressed_, use the
-   * [`moveOnKeyPress`](https://ariakit.org/reference/composite#moveonkeypress)
+   * [`moveOnKeyPress`](https://ariakit.com/reference/composite#moveonkeypress)
    * prop instead.
    * @default true
    */
   focusOnMove?: boolean;
   /**
-   * @see https://ariakit.org/reference/focusable
+   * @see https://ariakit.com/reference/focusable
    */
   focusable?: FocusableOptions<T>["focusable"];
 }

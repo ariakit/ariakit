@@ -1,16 +1,16 @@
-import type { ReactElement, ReactNode } from "react";
 import type { PickRequired } from "@ariakit/core/utils/types";
-import { CollectionContextProvider } from "./collection-context.js";
-import { useCollectionStore } from "./collection-store.js";
+import type { ReactElement, ReactNode } from "react";
+import { CollectionContextProvider } from "./collection-context.tsx";
 import type {
   CollectionStoreItem,
   CollectionStoreProps,
-} from "./collection-store.js";
+} from "./collection-store.ts";
+import { useCollectionStore } from "./collection-store.ts";
 
 /**
  * Provides a collection store to
- * [`CollectionItem`](https://ariakit.org/reference/collection-item) components.
- * @see https://ariakit.org/components/collection
+ * [`CollectionItem`](https://ariakit.com/reference/collection-item) components.
+ * @see https://ariakit.com/components/collection
  * @example
  * ```jsx
  * <CollectionProvider>

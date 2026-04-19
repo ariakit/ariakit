@@ -1,0 +1,45 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import PageCard from "#app/components/page-card.astro";
+import { filterPreviews } from "#app/lib/content.ts";
+import type { Framework } from "#app/lib/schemas.ts";
+import { type CollectionEntry, getCollection } from "astro:content";
+import pluralize from "pluralize";
+
+interface Props {
+  entry: CollectionEntry<"components">;
+  framework?: Framework;
+}
+
+const { entry, framework = Astro.locals.framework } = Astro.props;
+
+const examples = await getCollection("examples", (example) =>
+  example.data.components.some((c) => c.id === entry.id)
+);
+
+const previews = await getCollection(
+  "previews",
+  filterPreviews({ framework, entries: [...examples, entry] })
+);
+
+const length = previews.length;
+const description = `${length} ${pluralize("example", length)}`;
+const href = `/${framework}/components/${entry.id}/`;
+const plus = !!entry.data.tags?.includes("plus");
+---
+
+<PageCard
+  href={href}
+  plus={plus}
+  title={entry.data.title}
+  description={description}
+  thumbnailId={entry.id}
+/>

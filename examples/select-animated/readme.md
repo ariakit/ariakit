@@ -17,7 +17,7 @@ Animating [Select](/components/select) using CSS transitions in React. The compo
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

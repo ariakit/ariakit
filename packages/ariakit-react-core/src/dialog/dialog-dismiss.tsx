@@ -1,12 +1,12 @@
 import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
-import type { ButtonOptions } from "../button/button.js";
-import { useButton } from "../button/button.js";
-import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useDialogScopedContext } from "./dialog-context.js";
-import type { DialogStore } from "./dialog-store.js";
+import type { ButtonOptions } from "../button/button.tsx";
+import { useButton } from "../button/button.tsx";
+import { useEvent } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useDialogScopedContext } from "./dialog-context.tsx";
+import type { DialogStore } from "./dialog-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -14,7 +14,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `DialogDismiss` component.
- * @see https://ariakit.org/components/dialog
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx
  * const store = useDialogStore();
@@ -73,8 +73,8 @@ export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
 
 /**
  * Renders a button that hides a
- * [`Dialog`](https://ariakit.org/reference/dialog) when clicked.
- * @see https://ariakit.org/components/dialog
+ * [`Dialog`](https://ariakit.com/reference/dialog) when clicked.
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx {4}
  * const [open, setOpen] = useState(false);
@@ -91,12 +91,13 @@ export const DialogDismiss = forwardRef(function DialogDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogDismissOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface DialogDismissOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
-   * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
+   * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook. If
+   * not provided, the closest [`Dialog`](https://ariakit.com/reference/dialog)
    * component's context will be used.
    */
   store?: DialogStore;

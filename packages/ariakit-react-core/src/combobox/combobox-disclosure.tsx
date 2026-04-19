@@ -1,12 +1,13 @@
-import type { ElementType, MouseEvent } from "react";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
-import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
-import { useEvent } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useComboboxProviderContext } from "./combobox-context.js";
-import type { ComboboxStore } from "./combobox-store.js";
+import type { ElementType, MouseEvent } from "react";
+import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
+import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
+import { useEvent, useSafeLayoutEffect } from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -33,7 +34,7 @@ const children = (
 /**
  * Returns props to create a `ComboboxDisclosure` component that toggles the
  * combobox popover visibility when clicked.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -80,7 +81,15 @@ export const useComboboxDisclosure = createHook<
     store.setDisclosureElement(baseElement);
   });
 
-  const open = store.useState("open");
+  const baseElement = useStoreState(store, "baseElement");
+  const open = useStoreState(store, "open");
+
+  // The combobox input should remain the disclosure element so focus and Escape
+  // handling keep working when the popover is already open on mount.
+  useSafeLayoutEffect(() => {
+    if (!baseElement) return;
+    store.setDisclosureElement(baseElement);
+  }, [store, baseElement]);
 
   props = {
     children,
@@ -102,13 +111,13 @@ export const useComboboxDisclosure = createHook<
 
 /**
  * Renders a combobox disclosure button that toggles the
- * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) element's
+ * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) element's
  * visibility when clicked.
  *
  * Although this button is not tabbable, it remains accessible to screen reader
  * users. On clicking, it automatically shifts focus to the
- * [`Combobox`](https://ariakit.org/reference/combobox) element.
- * @see https://ariakit.org/components/combobox
+ * [`Combobox`](https://ariakit.com/reference/combobox) element.
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3}
  * <ComboboxProvider>
@@ -129,13 +138,14 @@ export const ComboboxDisclosure = forwardRef(function ComboboxDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxDisclosureOptions<T extends ElementType = TagName>
-  extends DialogDisclosureOptions<T> {
+export interface ComboboxDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
    */
   store?: ComboboxStore;

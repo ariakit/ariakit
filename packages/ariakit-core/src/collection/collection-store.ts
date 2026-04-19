@@ -1,55 +1,27 @@
-import { getDocument } from "../utils/dom.js";
-import { chain, defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+import { getDocument, sortBasedOnDOMPosition } from "../utils/dom.ts";
+import { chain, defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
   createStore,
   init,
   setup,
   throwOnConflictingProps,
-} from "../utils/store.js";
-import type { BivariantCallback } from "../utils/types.js";
-
-function isElementPreceding(a: Element, b: Element) {
-  return Boolean(
-    b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING,
-  );
-}
-
-function sortBasedOnDOMPosition<T extends CollectionStoreItem>(items: T[]) {
-  const pairs = items.map((item, index) => [index, item] as const);
-  let isOrderDifferent = false;
-  pairs.sort(([indexA, a], [indexB, b]) => {
-    const elementA = a.element;
-    const elementB = b.element;
-    if (elementA === elementB) return 0;
-    if (!elementA || !elementB) return 0;
-    // a before b
-    if (isElementPreceding(elementA, elementB)) {
-      if (indexA > indexB) {
-        isOrderDifferent = true;
-      }
-      return -1;
-    }
-    // a after b
-    if (indexA < indexB) {
-      isOrderDifferent = true;
-    }
-    return 1;
-  });
-  if (isOrderDifferent) {
-    return pairs.map(([_, item]) => item);
-  }
-  return items;
-}
+} from "../utils/store.ts";
+import type { BivariantCallback } from "../utils/types.ts";
 
 function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);
-  const lastItem = [...items].reverse().find((item) => !!item.element);
+  const lastElement = [...items]
+    .reverse()
+    .find((item) => !!item.element)?.element;
   let parentElement = firstItem?.element?.parentElement;
-  while (parentElement && lastItem?.element) {
+  if (!lastElement) {
+    return getDocument(parentElement).body;
+  }
+  while (parentElement) {
     const parent = parentElement;
-    if (lastItem && parent.contains(lastItem.element)) {
+    if (parent.contains(lastElement)) {
       return parentElement;
     }
     parentElement = parentElement.parentElement;
@@ -101,7 +73,7 @@ export function createCollectionStore<
   const collection = createStore(initialState, props.store);
 
   const sortItems = (renderedItems: T[]) => {
-    const sortedItems = sortBasedOnDOMPosition(renderedItems);
+    const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
     privateStore.setState("renderedItems", sortedItems);
     collection.setState("renderedItems", sortedItems);
   };
@@ -222,7 +194,7 @@ export function createCollectionStore<
       if (!id) return null;
       let item = itemsMap.get(id);
       if (!item) {
-        const { items } = collection.getState();
+        const { items } = privateStore.getState();
         item = items.find((item) => item.id === id);
         if (item) {
           itemsMap.set(id, item);
@@ -253,15 +225,19 @@ export interface CollectionStoreState<
   /**
    * Lists all items along with their metadata. This state is automatically
    * updated when an item is registered or unregistered using the
-   * [`registerItem`](https://ariakit.org/reference/use-collection-store#registeritem)
+   * [`registerItem`](https://ariakit.com/reference/use-collection-store#registeritem)
    * function.
+   *
+   * Live examples:
+   * - [Command Menu with
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   items: T[];
   /**
    * Lists all items, along with their metadata, in the exact order they appear in
    * the DOM. This state is automatically updated when an item is rendered or
    * unmounted using the
-   * [`renderItem`](https://ariakit.org/reference/use-collection-store#renderitem)
+   * [`renderItem`](https://ariakit.com/reference/use-collection-store#renderitem)
    * function.
    */
   renderedItems: T[];
@@ -292,7 +268,7 @@ export interface CollectionStoreFunctions<
    * Gets an item by its id.
    *
    * Live examples:
-   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
    * @example
    * const item = store.item("item-1");
    */
@@ -304,7 +280,7 @@ export interface CollectionStoreOptions<
 > extends StoreOptions<CollectionStoreState<T>, "items"> {
   /**
    * The defaut value for the
-   * [`items`](https://ariakit.org/reference/collection-provider#items) state.
+   * [`items`](https://ariakit.com/reference/collection-provider#items) state.
    * @default []
    */
   defaultItems?: CollectionStoreState<T>["items"];
@@ -312,10 +288,10 @@ export interface CollectionStoreOptions<
 
 export interface CollectionStoreProps<
   T extends CollectionStoreItem = CollectionStoreItem,
-> extends CollectionStoreOptions<T>,
-    StoreProps<CollectionStoreState<T>> {}
+>
+  extends CollectionStoreOptions<T>, StoreProps<CollectionStoreState<T>> {}
 
 export interface CollectionStore<
   T extends CollectionStoreItem = CollectionStoreItem,
-> extends CollectionStoreFunctions<T>,
-    Store<CollectionStoreState<T>> {}
+>
+  extends CollectionStoreFunctions<T>, Store<CollectionStoreState<T>> {}

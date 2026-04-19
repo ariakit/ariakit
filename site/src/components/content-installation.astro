@@ -1,0 +1,182 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { Icon } from "#app/icons/icon.react.tsx";
+import { getFramework } from "#app/lib/frameworks.ts";
+import type { Framework } from "#app/lib/schemas.ts";
+import type { Source } from "#app/lib/source.ts";
+import type { StyleDependency } from "#app/lib/styles.ts";
+import { invariant } from "@ariakit/core/utils/misc";
+import ContentCodeBlock from "./content-code-block.astro";
+import ContentLink from "./content-link.astro";
+import ContentList from "./content-list.astro";
+import ContentParagraph from "./content-paragraph.astro";
+
+interface Props {
+  sources: Source[] | Record<Framework, Source>[];
+  framework?: Framework;
+}
+
+const { sources, framework = Astro.locals.framework } = Astro.props;
+invariant(framework, "Framework is required");
+
+const frameworkDetail = getFramework(framework);
+
+function getSource(source: Source | Record<Framework, Source>) {
+  if (!source) return;
+  if ("files" in source) return source;
+  if (!framework) return;
+  return source[framework];
+}
+
+const dependencies: Record<string, string> = {};
+const devDependencies: Record<string, string> = {};
+const frameworkDependencies: Record<string, string> = {};
+const frameworkDevDependencies: Record<string, string> = {};
+const frameworkLookupDependencies = [
+  ...frameworkDetail.dependencies,
+  ...frameworkDetail.dependencies.map((dependency) => `@types/${dependency}`),
+];
+
+const frameworkStyles = new Map<string, StyleDependency>();
+
+for (const source of sources) {
+  const frameworkSource = getSource(source);
+  if (!frameworkSource) continue;
+  for (const [key, value] of Object.entries(frameworkSource.dependencies)) {
+    if (frameworkLookupDependencies.includes(key)) {
+      frameworkDependencies[key] = value;
+      continue;
+    }
+    dependencies[key] = value;
+  }
+  for (const [key, value] of Object.entries(frameworkSource.devDependencies)) {
+    if (frameworkLookupDependencies.includes(key)) {
+      frameworkDevDependencies[key] = value;
+      continue;
+    }
+    devDependencies[key] = value;
+  }
+  for (const style of frameworkSource.styles) {
+    if ("import" in style) continue;
+    frameworkStyles.set(style.name, style);
+  }
+}
+
+const dependenciesKeys = Object.keys(dependencies).join(" ");
+const devDependenciesKeys = Object.keys(devDependencies).join(" ");
+
+const dependenciesHtml = Object.entries(dependencies)
+  .map(([key, value]) => `<code>${key}@${value.replace(/^[~^]/, "")}</code>`)
+  .join(" ");
+
+const devDependenciesHtml = Object.entries(devDependencies)
+  .map(([key, value]) => `<code>${key}@${value.replace(/^[~^]/, "")}</code>`)
+  .join(" ");
+
+const frameworkDependenciesHtml = Object.entries(frameworkDependencies)
+  .map(([key, value]) => `<code>${key}@${value.replace(/^[~^]/, "")}</code>`)
+  .join(" ");
+---
+
+<ContentList as="ol">
+  {
+    frameworkDependenciesHtml && (
+      <li>
+        <details>
+          <summary>Install {frameworkDetail.label}</summary>
+          <div>
+            <ContentParagraph>
+              First, make sure you have a project with{" "}
+              <ContentLink href={frameworkDetail.url}>
+                {frameworkDetail.label}
+              </ContentLink>
+              installed. This example uses{" "}
+              <Fragment set:html={frameworkDependenciesHtml} />
+            </ContentParagraph>
+          </div>
+        </details>
+      </li>
+    )
+  }
+  <li>
+    <details>
+      <summary>
+        Set up Ariakit Styles
+        <span class="ak-badge ak-layer-pop rounded-full"
+          ><span>Optional</span></span
+        >
+      </summary>
+      <div>
+        <ContentParagraph>
+          Most Ariakit examples are written with <ContentLink href="/tailwind/"
+            >Ariakit Tailwind</ContentLink
+          > (free, open-source) and <ContentLink href="/tailwind/styles/plus/"
+            >Ariakit Plus Styles</ContentLink
+          >.</ContentParagraph
+        >
+        <ContentParagraph>
+          You can purchase an <ContentLink href="/plus/"
+            >Ariakit Plus</ContentLink
+          >
+          license to get the best out of these examples or use your own styles.
+        </ContentParagraph>
+      </div>
+    </details>
+  </li>
+  {
+    devDependenciesHtml && (
+      <li>
+        <ContentParagraph>
+          <strong>Install development dependencies</strong>
+        </ContentParagraph>
+        <ContentParagraph>
+          This example uses <Fragment set:html={devDependenciesHtml} />
+        </ContentParagraph>
+        <ContentCodeBlock
+          set:html={`<code class="language-sh">npm install --save-dev ${devDependenciesKeys}</code>`}
+        />
+      </li>
+    )
+  }
+  {
+    dependenciesHtml && (
+      <li>
+        <ContentParagraph>
+          <strong>Install dependencies</strong>
+        </ContentParagraph>
+        <ContentParagraph>
+          This example uses <Fragment set:html={dependenciesHtml} />
+        </ContentParagraph>
+        <ContentCodeBlock
+          set:html={`<code class="language-sh">npm install ${dependenciesKeys}</code>`}
+        />
+      </li>
+    )
+  }
+
+  <li>
+    <ContentParagraph
+      ><strong>Copy the code into your project</strong></ContentParagraph
+    >
+    <ContentParagraph
+      >Click the <span
+        class="ak-button_idle ak-layer-pop inline-flex text-sm ak-frame-border ak-frame-field/2 py-0.5"
+        ><Icon name="code" />Code</span
+      > button on an example in the gallery above to view its source code. Then,
+      click the
+      <span
+        class="ak-button_idle ak-layer-pop inline-flex ak-button-square-7 text-xs ak-frame-border"
+      >
+        <Icon name="copy" /><span class="sr-only">Copy code</span>
+      </span> button on any file to copy its code.</ContentParagraph
+    >
+  </li>
+</ContentList>

@@ -1,14 +1,15 @@
+import type { Dispatch, SetStateAction } from "react";
 import { createContext } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
-} from "../composite/composite-context.js";
+} from "../composite/composite-context.tsx";
 import {
   PopoverContextProvider,
   PopoverScopedContextProvider,
-} from "../popover/popover-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { SelectStore } from "./select-store.js";
+} from "../popover/popover-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { SelectStore } from "./select-store.ts";
 
 const ctx = createStoreContext<SelectStore>(
   [PopoverContextProvider, CompositeContextProvider],
@@ -39,3 +40,7 @@ export const SelectContextProvider = ctx.ContextProvider;
 export const SelectScopedContextProvider = ctx.ScopedContextProvider;
 
 export const SelectItemCheckedContext = createContext(false);
+
+export const SelectHeadingContext = createContext<
+  [string | undefined, Dispatch<SetStateAction<string | undefined>>] | null
+>(null);

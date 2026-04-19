@@ -1,15 +1,15 @@
 "use client";
 import { Heading, HeadingLevel } from "@ariakit/react";
-import { Heart } from "icons/heart.jsx";
-import { Nextjs } from "icons/nextjs.jsx";
-import { Vite } from "icons/vite.jsx";
 import Link from "next/link.js";
 import { useSearchParams } from "next/navigation.js";
-import { usePrice } from "utils/use-price.js";
-import { CodePlaceholder } from "./code-placeholder.jsx";
-import { Focusable } from "./focusable.jsx";
-import { InlineLink } from "./inline-link.jsx";
-import { PlusBordered } from "./plus-bordered.jsx";
+import { Heart } from "@/icons/heart.tsx";
+import { Nextjs } from "@/icons/nextjs.tsx";
+import { Vite } from "@/icons/vite.tsx";
+import { usePrice } from "@/lib/use-price.ts";
+import { CodePlaceholder } from "./code-placeholder.tsx";
+import { Focusable } from "./focusable.tsx";
+import { InlineLink } from "./inline-link.tsx";
+import { PlusBordered } from "./plus-bordered.tsx";
 import {
   PlusCheckoutButton,
   PlusCheckoutFrame,
@@ -17,7 +17,7 @@ import {
   PlusFeaturePreview,
   PlusFeaturePreviewContainer,
   PlusProvider,
-} from "./plus.jsx";
+} from "./plus.tsx";
 
 export function PlusScreen() {
   const searchParams = useSearchParams();
@@ -31,19 +31,19 @@ export function PlusScreen() {
             Ariakit{" "}
             <PlusBordered
               thick
-              className="inline-block rounded-xl bg-gray-50 p-1 dark:bg-gray-800 sm:px-2"
+              className="inline-block rounded-xl bg-gray-50 p-1 sm:px-2 dark:bg-gray-800"
             >
               Plus
             </PlusBordered>
           </Heading>
-          <p className="mx-3 max-w-[620px] -translate-y-5 text-center text-lg font-light text-black/80 dark:text-white/80 sm:text-xl [&>strong]:font-medium [&>strong]:text-black [&>strong]:dark:font-semibold [&>strong]:dark:text-white">
+          <p className="mx-3 max-w-[620px] -translate-y-5 text-center text-lg font-light text-black/80 sm:text-xl dark:text-white/80 [&>strong]:font-medium [&>strong]:text-black [&>strong]:dark:font-semibold [&>strong]:dark:text-white">
             Ariakit is a <strong>free</strong>, open-source project.{" "}
             <strong>Ariakit Plus</strong> gives you access to exclusive content
             and features on the site, <strong>forever</strong>.
           </p>
           <div className="grid w-[1024px] max-w-full grid-cols-1 gap-y-8 md:grid-cols-2">
             <div>
-              <div className="top-20 flex w-full flex-col gap-8 rounded-xl bg-white p-8 py-8 [box-shadow:0_0_0_1px_rgb(0_0_0/0.08),0_16px_36px_-12px_rgb(0_0_0/0.25)] dark:bg-gray-700 dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_16px_36px_-12px_rgb(0_0_0/0.35)] sm:rounded-2xl md:sticky">
+              <div className="top-20 flex w-full flex-col gap-8 rounded-xl bg-white p-8 py-8 [box-shadow:0_0_0_1px_rgb(0_0_0/0.08),0_16px_36px_-12px_rgb(0_0_0/0.25)] sm:rounded-2xl md:sticky dark:bg-gray-700 dark:[box-shadow:0_0_0_1px_rgb(255_255_255/0.15),0_16px_36px_-12px_rgb(0_0_0/0.35)]">
                 <Heading className="text-2xl font-medium">All included</Heading>
                 <ul className="mb-8 flex cursor-default flex-col gap-2">
                   <PlusFeature
@@ -60,9 +60,14 @@ export function PlusScreen() {
                   </PlusFeature>
                   <PlusFeature
                     feature="preview-docs"
+                    disabled
+                    className="aria-disabled:opacity-50"
                     render={<Focusable flat render={<li />} />}
                   >
-                    Preview API docs
+                    Preview API docs{" "}
+                    <span className="uppercase ms-2 text-xs px-1.5 py-1 rounded bg-black/60 dark:bg-white/60 text-white dark:text-black font-semibold">
+                      Soon
+                    </span>
                   </PlusFeature>
                   <PlusFeature
                     feature="support"

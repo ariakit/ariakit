@@ -1,3 +1,15 @@
+import {
+  contains,
+  getActiveElement,
+  getDocument,
+  getWindow,
+} from "@ariakit/core/utils/dom";
+import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { getFirstTabbableIn, isFocusable } from "@ariakit/core/utils/focus";
+import { chain } from "@ariakit/core/utils/misc";
+import { isSafari } from "@ariakit/core/utils/platform";
+import { sync } from "@ariakit/core/utils/store";
+import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type {
   ComponentPropsWithRef,
   ElementType,
@@ -8,36 +20,17 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  closest,
-  contains,
-  getActiveElement,
-  getDocument,
-  isButton,
-} from "@ariakit/core/utils/dom";
-import {
-  addGlobalEventListener,
-  queueBeforeEvent,
-} from "@ariakit/core/utils/events";
-import {
-  focusIfNeeded,
-  getFirstTabbableIn,
-  isFocusable,
-} from "@ariakit/core/utils/focus";
-import { chain } from "@ariakit/core/utils/misc";
-import { isSafari } from "@ariakit/core/utils/platform";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.js";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,
   useDisclosureContent,
-} from "../disclosure/disclosure-content.js";
-import { useFocusableContainer } from "../focusable/focusable-container.js";
-import type { FocusableOptions } from "../focusable/focusable.js";
-import { useFocusable } from "../focusable/focusable.js";
-import { HeadingLevel } from "../heading/heading-level.js";
-import type { PortalOptions } from "../portal/portal.js";
-import { usePortal } from "../portal/portal.js";
+} from "../disclosure/disclosure-content.tsx";
+import { useFocusableContainer } from "../focusable/focusable-container.tsx";
+import type { FocusableOptions } from "../focusable/focusable.tsx";
+import { useFocusable } from "../focusable/focusable.tsx";
+import { HeadingLevel } from "../heading/heading-level.tsx";
+import type { PortalOptions } from "../portal/portal.tsx";
+import { usePortal } from "../portal/portal.tsx";
 import {
   useBooleanEvent,
   useEvent,
@@ -46,27 +39,27 @@ import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.js";
-import { useStoreState } from "../utils/store.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { DialogBackdrop } from "./dialog-backdrop.js";
+} from "../utils/hooks.ts";
+import { useStoreState } from "../utils/store.tsx";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { DialogBackdrop } from "./dialog-backdrop.tsx";
 import {
   DialogDescriptionContext,
   DialogHeadingContext,
   DialogScopedContextProvider,
   useDialogProviderContext,
-} from "./dialog-context.js";
-import { useDialogStore } from "./dialog-store.js";
-import type { DialogStore } from "./dialog-store.js";
-import { disableTree, disableTreeOutside } from "./utils/disable-tree.js";
-import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.js";
-import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.js";
-import { supportsInert } from "./utils/supports-inert.js";
-import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.js";
-import { useNestedDialogs } from "./utils/use-nested-dialogs.js";
-import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.js";
-import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.js";
+} from "./dialog-context.tsx";
+import type { DialogStore } from "./dialog-store.ts";
+import { useDialogStore } from "./dialog-store.ts";
+import { disableTree, disableTreeOutside } from "./utils/disable-tree.ts";
+import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
+import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
+import { supportsInert } from "./utils/supports-inert.ts";
+import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
+import { useNestedDialogs } from "./utils/use-nested-dialogs.tsx";
+import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.ts";
+import { createWalkTreeSnapshot } from "./utils/walk-tree-outside.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -75,7 +68,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 const isSafariBrowser = isSafari();
 
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
-  const activeElement = getActiveElement();
+  const activeElement = getActiveElement(dialog);
   if (!activeElement) return false;
   if (dialog && contains(dialog, activeElement)) return false;
   if (isFocusable(activeElement)) return true;
@@ -83,7 +76,7 @@ function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
 }
 
 function getElementFromProp(
-  prop?: HTMLElement | RefObject<HTMLElement> | null,
+  prop?: HTMLElement | RefObject<HTMLElement | null> | null,
   focusable = false,
 ) {
   if (!prop) return null;
@@ -95,7 +88,7 @@ function getElementFromProp(
 
 /**
  * Returns props to create a `Dialog` component.
- * @see https://ariakit.org/components/dialog
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx
  * const store = useDialogStore();
@@ -109,17 +102,18 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   onClose,
   focusable = true,
   modal = true,
-  portal = !!modal,
-  backdrop = !!modal,
+  portal = modal,
+  backdrop = modal,
   hideOnEscape = true,
   hideOnInteractOutside = true,
   getPersistentElements,
-  preventBodyScroll = !!modal,
+  preventBodyScroll = modal,
   autoFocusOnShow = true,
   autoFocusOnHide = true,
   initialFocus,
   finalFocus,
   unmountOnHide,
+  unstable_treeSnapshotKey,
   ...props
 }) {
   const context = useDialogProviderContext();
@@ -149,20 +143,62 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // Sets preserveTabOrder to true only if the dialog is not a modal and is
   // open.
   const preserveTabOrderProp = props.preserveTabOrder;
-  const preserveTabOrder = store.useState(
+  const preserveTabOrder = useStoreState(
+    store,
     (state) => preserveTabOrderProp && !modal && state.mounted,
   );
   const id = useId(props.id);
-  const open = store.useState("open");
-  const mounted = store.useState("mounted");
-  const contentElement = store.useState("contentElement");
+  const open = useStoreState(store, "open");
+  const mounted = useStoreState(store, "mounted");
+  const contentElement = useStoreState(store, "contentElement");
   const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
   usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
-  useHideOnInteractOutside(store, hideOnInteractOutside, domReady);
+
+  // Tracks whether the dialog was hidden by an outside click or context menu.
+  // When true, focusOnHide skips focus restoration to match native HTML
+  // behavior where trigger buttons don't receive focus when you click outside.
+  // Reset when the dialog opens to avoid stale flags from prevented closes
+  // (e.g., onClose calling event.preventDefault), async closes with
+  // animations, or when autoFocusOnHide is disabled.
+  const interactedOutsideRef = useRef(false);
+  useSafeLayoutEffect(() => {
+    return sync(store, ["open"], (state) => {
+      if (!state.open) return;
+      interactedOutsideRef.current = false;
+    });
+  }, [store]);
+  useHideOnInteractOutside(
+    store,
+    hideOnInteractOutside,
+    domReady,
+    interactedOutsideRef,
+  );
 
   const { wrapElement, nestedDialogs } = useNestedDialogs(store);
   props = useWrapElement(props, wrapElement, [wrapElement]);
+
+  // On Safari, buttons don't receive focus on mousedown unless they have an
+  // explicit tabIndex. Non-Ariakit buttons (which don't go through
+  // useFocusable) won't have this, so activeElement may still be BODY when the
+  // dialog opens. We track the last mousedown target as a fallback.
+  const lastMousedownRef = useRef<Element | null>(null);
+
+  if (isSafariBrowser) {
+    useEffect(() => {
+      if (!domReady) return;
+      const dialog = ref.current;
+      if (!dialog) return;
+      const doc = getDocument(dialog);
+      const onMousedown = (event: MouseEvent) => {
+        lastMousedownRef.current = event.target as Element;
+      };
+      doc.addEventListener("mousedown", onMousedown, true);
+      return () => {
+        doc.removeEventListener("mousedown", onMousedown, true);
+      };
+    }, [domReady]);
+  }
 
   // Sets disclosure element using the current active element right after the
   // dialog is opened.
@@ -171,41 +207,42 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const dialog = ref.current;
     const activeElement = getActiveElement(dialog, true);
     if (!activeElement) return;
-    if (activeElement.tagName === "BODY") return;
+    if (activeElement.tagName === "BODY") {
+      // Safari fallback: use the last mousedown target when activeElement is
+      // BODY (happens with native buttons that lack an explicit tabIndex).
+      const fallback = lastMousedownRef.current;
+      lastMousedownRef.current = null;
+      if (!fallback?.isConnected) return;
+      if (!isFocusable(fallback)) return;
+      if (dialog && contains(dialog, fallback)) return;
+      store.setDisclosureElement(fallback as HTMLElement);
+      return;
+    }
     // The disclosure element can't be inside the dialog.
     if (dialog && contains(dialog, activeElement)) return;
     store.setDisclosureElement(activeElement);
   }, [store, open]);
 
-  // Safari does not focus on native buttons on mousedown. The DialogDisclosure
-  // component normalizes this behavior using the useFocusable hook, but the
-  // disclosure button may use a custom component, and not DialogDisclosure. In
-  // this case, we need to make sure the disclosure button gets focused here.
-  if (isSafariBrowser) {
-    useEffect(() => {
-      if (!mounted) return;
-      const { disclosureElement } = store.getState();
-      if (!disclosureElement) return;
-      if (!isButton(disclosureElement)) return;
-      const onMouseDown = () => {
-        let receivedFocus = false;
-        const onFocus = () => {
-          receivedFocus = true;
-        };
-        const options = { capture: true, once: true };
-        disclosureElement.addEventListener("focusin", onFocus, options);
-        queueBeforeEvent(disclosureElement, "mouseup", () => {
-          disclosureElement.removeEventListener("focusin", onFocus, true);
-          if (receivedFocus) return;
-          focusIfNeeded(disclosureElement);
-        });
-      };
-      disclosureElement.addEventListener("mousedown", onMouseDown);
-      return () => {
-        disclosureElement.removeEventListener("mousedown", onMouseDown);
-      };
-    }, [store, mounted]);
-  }
+  // Sets --dialog-viewport-height CSS variable to the height of the visual
+  // viewport. This allows the dialog to be positioned correctly when the
+  // viewport height changes (e.g., when the keyboard is shown on mobile).
+  useEffect(() => {
+    if (!mounted) return;
+    if (!domReady) return;
+    const dialog = ref.current;
+    if (!dialog) return;
+    const win = getWindow(dialog);
+    const viewport = win.visualViewport || win;
+    const setViewportHeight = () => {
+      const height = win.visualViewport?.height ?? win.innerHeight;
+      dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
+    };
+    setViewportHeight();
+    viewport.addEventListener("resize", setViewportHeight);
+    return () => {
+      viewport.removeEventListener("resize", setViewportHeight);
+    };
+  }, [mounted, domReady]);
 
   // Renders a hidden dismiss button at the top of the modal dialog element. So
   // that screen reader users aren't trapped in the dialog when there's no
@@ -251,7 +288,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // dialogs. Hence, we take the snapshot here, independent of any nested
     // dialogs.
     return createWalkTreeSnapshot(id, [dialog]);
-  }, [id, canTakeTreeSnapshot]);
+  }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
@@ -281,6 +318,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     getPersistentElementsProp,
     nestedDialogs,
     modal,
+    unstable_treeSnapshotKey,
   ]);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;
@@ -324,10 +362,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
     setAutoFocusEnabled(true);
     queueMicrotask(() => {
+      // If the dialog was closed between scheduling and executing this
+      // microtask, skip the focus call. Otherwise, focusing a now-hidden
+      // element could steal focus from the disclosure that focusOnHide already
+      // restored.
+      if (!store.getState().open) return;
       element.focus();
       // Safari doesn't scroll to the element on focus, so we have to do it
       // manually here.
       if (!isSafariBrowser) return;
+      if (!isElementFocusable) return;
       element.scrollIntoView({ block: "nearest", inline: "nearest" });
     });
   }, [
@@ -338,6 +382,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     initialFocus,
     portal,
     preserveTabOrder,
+    store,
     autoFocusOnShowProp,
   ]);
 
@@ -348,7 +393,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // dialog was open before.
   const [hasOpened, setHasOpened] = useState(false);
 
-  useEffect(() => {
+  useSafeLayoutEffect(() => {
     if (!open) return;
     setHasOpened(true);
     return () => setHasOpened(false);
@@ -356,6 +401,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const focusOnHide = useCallback(
     (dialog: HTMLElement | null, retry = true) => {
+      // Hide was triggered by clicking or right-clicking outside the dialog.
+      // Native HTML dialogs and popovers don't restore focus to the trigger
+      // in this case, so we skip focus restoration entirely.
+      if (interactedOutsideRef.current) return;
       const { disclosureElement } = store.getState();
       // Hide was triggered by a click/focus on a tabbable element outside the
       // dialog. We won't change focus then.
@@ -377,8 +426,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // also got hidden when this dialog was shown. We'll try to focus on their
       // disclosure element instead.
       if (element && !isFocusable(element)) {
-        const maybeParentDialog = closest(element, "[data-dialog]");
-        if (maybeParentDialog && maybeParentDialog.id) {
+        const maybeParentDialog = element.closest("[data-dialog]");
+        if (maybeParentDialog?.id) {
           const doc = getDocument(maybeParentDialog);
           const selector = `[aria-controls~="${maybeParentDialog.id}"]`;
           const control = doc.querySelector<HTMLElement>(selector);
@@ -465,8 +514,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // element so we can listen to the Escape key anywhere in the document, even
     // when the dialog is not focused. By using the capture phase, users can
     // call `event.stopPropagation()` on the `hideOnEscape` function prop.
-    return addGlobalEventListener("keydown", onKeyDown, true);
-  }, [store, domReady, mounted, hideOnEscapeProp]);
+    const win = contentElement ? getWindow(contentElement) : undefined;
+    return addGlobalEventListener("keydown", onKeyDown, true, win);
+  }, [store, domReady, mounted, contentElement, hideOnEscapeProp]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.
   props = useWrapElement(
@@ -518,13 +568,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   );
 
   props = {
-    id,
     "data-dialog": "",
     role: "dialog",
     tabIndex: focusable ? -1 : undefined,
-    "aria-labelledby": headingId,
+    "aria-labelledby": props["aria-label"] != null ? undefined : headingId,
     "aria-describedby": descriptionId,
     ...props,
+    id,
     ref: useMergeRefs(ref, props.ref),
   };
 
@@ -557,14 +607,14 @@ export function createDialogComponent<T extends DialogOptions>(
 
 /**
  * Renders a dialog similar to the native `dialog` element that's rendered in a
- * [`portal`](https://ariakit.org/reference/dialog#portal) by default.
+ * [`portal`](https://ariakit.com/reference/dialog#portal) by default.
  *
  * The dialog can be either
- * [`modal`](https://ariakit.org/reference/dialog#modal) or non-modal. The
+ * [`modal`](https://ariakit.com/reference/dialog#modal) or non-modal. The
  * visibility state can be controlled with the
- * [`open`](https://ariakit.org/reference/dialog#open) and
- * [`onClose`](https://ariakit.org/reference/dialog#onclose) props.
- * @see https://ariakit.org/components/dialog
+ * [`open`](https://ariakit.com/reference/dialog#open) and
+ * [`onClose`](https://ariakit.com/reference/dialog#onclose) props.
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx {4-6}
  * const [open, setOpen] = useState(false);
@@ -584,14 +634,12 @@ export const Dialog = createDialogComponent(
 );
 
 export interface DialogOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T>,
-    PortalOptions<T>,
-    DisclosureContentOptions<T> {
+  extends FocusableOptions<T>, PortalOptions<T>, DisclosureContentOptions<T> {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
+   * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook. If
    * not provided, the closest
-   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * [`DialogProvider`](https://ariakit.com/reference/dialog-provider)
    * component's context will be used. Otherwise, an internal store will be
    * created.
    */
@@ -603,12 +651,12 @@ export interface DialogOptions<T extends ElementType = TagName>
    *
    * Live examples:
    * - [Dialog with scrollable
-   *   backdrop](https://ariakit.org/examples/dialog-backdrop-scrollable)
+   *   backdrop](https://ariakit.com/examples/dialog-backdrop-scrollable)
    * - [Dialog with details &
-   *   summary](https://ariakit.org/examples/dialog-details)
+   *   summary](https://ariakit.com/examples/dialog-details)
    * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
-   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
+   *   hide](https://ariakit.com/examples/dialog-hide-warning)
+   * - [Dialog with Menu](https://ariakit.com/examples/dialog-menu)
    */
   open?: boolean;
   /**
@@ -619,45 +667,45 @@ export interface DialogOptions<T extends ElementType = TagName>
    * `event.preventDefault()`, which will prevent the dialog from hiding.
    *
    * It's important to note that this event only fires when the dialog store's
-   * [`open`](https://ariakit.org/reference/use-dialog-store#open) state is set
+   * [`open`](https://ariakit.com/reference/use-dialog-store#open) state is set
    * to `false`. If the controlled
-   * [`open`](https://ariakit.org/reference/dialog#open) prop value changes, or
+   * [`open`](https://ariakit.com/reference/dialog#open) prop value changes, or
    * if the dialog's visibility is altered in any other way (such as unmounting
    * the dialog without adjusting the open state), this event won't be
    * triggered.
    *
    * Live examples:
    * - [Dialog with scrollable
-   *   backdrop](https://ariakit.org/examples/dialog-backdrop-scrollable)
+   *   backdrop](https://ariakit.com/examples/dialog-backdrop-scrollable)
    * - [Dialog with details &
-   *   summary](https://ariakit.org/examples/dialog-details)
+   *   summary](https://ariakit.com/examples/dialog-details)
    * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
-   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
+   *   hide](https://ariakit.com/examples/dialog-hide-warning)
+   * - [Dialog with Menu](https://ariakit.com/examples/dialog-menu)
    */
   onClose?: (event: Event) => void;
   /**
    * Determines whether the dialog is modal. Modal dialogs have distinct states
    * and behaviors:
-   * - The [`portal`](https://ariakit.org/reference/dialog#portal) and
-   *   [`preventBodyScroll`](https://ariakit.org/reference/dialog#preventbodyscroll)
+   * - The [`portal`](https://ariakit.com/reference/dialog#portal) and
+   *   [`preventBodyScroll`](https://ariakit.com/reference/dialog#preventbodyscroll)
    *   props are set to `true`. They can still be manually set to `false`.
-   * - When using the [`Heading`](https://ariakit.org/reference/heading) or
-   *   [`DialogHeading`](https://ariakit.org/reference/dialog-heading)
+   * - When using the [`Heading`](https://ariakit.com/reference/heading) or
+   *   [`DialogHeading`](https://ariakit.com/reference/dialog-heading)
    *   components within the dialog, their level will be reset so they start
    *   with `h1`.
    * - A visually hidden dismiss button will be rendered if the
-   *   [`DialogDismiss`](https://ariakit.org/reference/dialog-dismiss) component
+   *   [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss) component
    *   hasn't been used. This allows screen reader users to close the dialog.
    * - When the dialog is open, element tree outside it will be inert.
    *
    * Live examples:
-   * - [Combobox with tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * - [Dialog with details &
-   *   summary](https://ariakit.org/examples/dialog-details)
-   * - [Form with Select](https://ariakit.org/examples/form-select)
-   * - [Context menu](https://ariakit.org/examples/menu-context-menu)
-   * - [Responsive Popover](https://ariakit.org/examples/popover-responsive)
+   *   summary](https://ariakit.com/examples/dialog-details)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   * - [Context menu](https://ariakit.com/examples/menu-context-menu)
+   * - [Responsive Popover](https://ariakit.com/examples/popover-responsive)
    * @default true
    */
   modal?: boolean;
@@ -668,19 +716,19 @@ export interface DialogOptions<T extends ElementType = TagName>
    *
    * **Note**: If a custom component is used, it must [accept ref and spread all
    * props to its underlying DOM
-   * element](https://ariakit.org/guide/composition#custom-components-must-be-open-for-extension),
+   * element](https://ariakit.com/guide/composition#custom-components-must-be-open-for-extension),
    * the same way a native element would.
    *
    * Live examples:
-   * - [Animated Dialog](https://ariakit.org/examples/dialog-animated)
+   * - [Animated Dialog](https://ariakit.com/examples/dialog-animated)
    * - [Dialog with scrollable
-   *   backdrop](https://ariakit.org/examples/dialog-backdrop-scrollable)
-   * - [Dialog with Framer
-   *   Motion](https://ariakit.org/examples/dialog-framer-motion)
-   * - [Dialog with Menu](https://ariakit.org/examples/dialog-menu)
-   * - [Nested Dialog](https://ariakit.org/examples/dialog-nested)
+   *   backdrop](https://ariakit.com/examples/dialog-backdrop-scrollable)
+   * - [Dialog with
+   *   Motion](https://ariakit.com/examples/dialog-framer-motion)
+   * - [Dialog with Menu](https://ariakit.com/examples/dialog-menu)
+   * - [Nested Dialog](https://ariakit.com/examples/dialog-nested)
    * - [Dialog with Next.js App
-   *   Router](https://ariakit.org/examples/dialog-next-router)
+   *   Router](https://ariakit.com/examples/dialog-next-router)
    * @example
    * ```jsx
    * <Dialog backdrop={<div className="backdrop" />} />
@@ -714,14 +762,14 @@ export interface DialogOptions<T extends ElementType = TagName>
    * event of various types.
    *
    * Live examples:
-   * - [Selection Popover](https://ariakit.org/examples/popover-selection)
+   * - [Selection Popover](https://ariakit.com/examples/popover-selection)
    * @default true
    */
   hideOnInteractOutside?: BooleanOrCallback<Event | SyntheticEvent>;
   /**
    * When a dialog is open, the elements outside of it are disabled to prevent
    * interaction if the dialog is
-   * [`modal`](https://ariakit.org/reference/dialog#modal). For non-modal
+   * [`modal`](https://ariakit.com/reference/dialog#modal). For non-modal
    * dialogs, interacting with elements outside the dialog prompts it to close.
    *
    * This function allows you to return an iterable collection of elements that
@@ -733,13 +781,13 @@ export interface DialogOptions<T extends ElementType = TagName>
    *
    * Live examples:
    * - [Dialog with
-   *   React-Toastify](https://ariakit.org/examples/dialog-react-toastify)
+   *   React-Toastify](https://ariakit.com/examples/dialog-react-toastify)
    */
   getPersistentElements?: () => Iterable<Element>;
   /**
    * Determines whether the body scrolling will be prevented when the dialog is
    * shown. This is automatically set to `true` when the dialog is
-   * [`modal`](https://ariakit.org/reference/dialog#modal). You can disable this
+   * [`modal`](https://ariakit.com/reference/dialog#modal). You can disable this
    * prop if you want to implement your own logic.
    */
   preventBodyScroll?: boolean;
@@ -747,14 +795,14 @@ export interface DialogOptions<T extends ElementType = TagName>
    * Determines whether an element inside the dialog will receive focus when the
    * dialog is shown. By default, this is usually the first tabbable element in
    * the dialog or the dialog itself. The
-   * [`initialFocus`](https://ariakit.org/reference/dialog#initialfocus) prop
+   * [`initialFocus`](https://ariakit.com/reference/dialog#initialfocus) prop
    * can be used to set a different element to receive focus.
    *
    * Live examples:
    * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
-   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
-   * - [Selection Popover](https://ariakit.org/examples/popover-selection)
+   *   hide](https://ariakit.com/examples/dialog-hide-warning)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
+   * - [Selection Popover](https://ariakit.com/examples/popover-selection)
    * @default true
    */
   autoFocusOnShow?: BooleanOrCallback<HTMLElement | null>;
@@ -765,13 +813,13 @@ export interface DialogOptions<T extends ElementType = TagName>
    * tabbable element outside of the dialog).
    *
    * By default, this is usually the disclosure element. The
-   * [`finalFocus`](https://ariakit.org/reference/dialog#finalfocus) prop can be
+   * [`finalFocus`](https://ariakit.com/reference/dialog#finalfocus) prop can be
    * used to define a different element to be focused.
    *
    * Live examples:
    * - [Dialog with Next.js App
-   *   Router](https://ariakit.org/examples/dialog-next-router)
-   * - [Sliding menu](https://ariakit.org/examples/menu-slide)
+   *   Router](https://ariakit.com/examples/dialog-next-router)
+   * - [Sliding menu](https://ariakit.com/examples/menu-slide)
    * @default true
    */
   autoFocusOnHide?: BooleanOrCallback<HTMLElement | null>;
@@ -781,28 +829,32 @@ export interface DialogOptions<T extends ElementType = TagName>
    * `HTMLElement`.
    *
    * If
-   * [`autoFocusOnShow`](https://ariakit.org/reference/dialog#autofocusonshow)
+   * [`autoFocusOnShow`](https://ariakit.com/reference/dialog#autofocusonshow)
    * is set to `false`, this prop will have no effect. If left unset, the dialog
    * will attempt to determine the initial focus element in the following order:
-   * 1. A [Focusable](https://ariakit.org/components/focusable) element with an
-   *    [`autoFocus`](https://ariakit.org/reference/focusable#autofocus) prop.
+   * 1. A [Focusable](https://ariakit.com/components/focusable) element with an
+   *    [`autoFocus`](https://ariakit.com/reference/focusable#autofocus) prop.
    * 2. The first tabbable element inside the dialog.
    * 3. The first focusable element inside the dialog.
    * 4. The dialog element itself.
    */
-  initialFocus?: HTMLElement | RefObject<HTMLElement> | null;
+  initialFocus?: HTMLElement | RefObject<HTMLElement | null> | null;
   /**
    * Determines the element that will receive focus once the dialog is closed,
    * provided that no other element has been focused while the dialog was being
    * hidden (e.g., by clicking or tabbing into another tabbable element outside
    * of the dialog).
    * - If
-   *   [`autoFocusOnHide`](https://ariakit.org/reference/dialog#autofocusonhide)
+   *   [`autoFocusOnHide`](https://ariakit.com/reference/dialog#autofocusonhide)
    *   is set to `false`, this prop will have no effect.
    * - If left unset, the element that was focused before the dialog was opened
    *   will be focused again.
    */
-  finalFocus?: HTMLElement | RefObject<HTMLElement> | null;
+  finalFocus?: HTMLElement | RefObject<HTMLElement | null> | null;
+  /**
+   * @private
+   */
+  unstable_treeSnapshotKey?: string | number | boolean | null;
 }
 
 export type DialogProps<T extends ElementType = TagName> = Props<

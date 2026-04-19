@@ -1,6 +1,6 @@
-import { isBackdrop } from "./is-backdrop.js";
-import { setAttribute } from "./orchestrate.js";
-import { walkTreeOutside } from "./walk-tree-outside.js";
+import { isBackdrop } from "./is-backdrop.ts";
+import { setAttribute } from "./orchestrate.ts";
+import { walkTreeOutside } from "./walk-tree-outside.ts";
 
 type Elements = Array<Element | null>;
 
@@ -21,7 +21,9 @@ export function disableAccessibilityTreeOutside(
   });
 
   const restoreAccessibilityTree = () => {
-    cleanups.forEach((fn) => fn());
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
   };
 
   return restoreAccessibilityTree;

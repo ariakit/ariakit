@@ -1,9 +1,9 @@
 import {
   CollectionContextProvider,
   CollectionScopedContextProvider,
-} from "../collection/collection-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { FormStore } from "./form-store.js";
+} from "../collection/collection-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { FormStore } from "./form-store.ts";
 
 const ctx = createStoreContext<FormStore>(
   [CollectionContextProvider],

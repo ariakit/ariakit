@@ -1,20 +1,21 @@
-import { forwardRef, useId } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { getPageTitle } from "build-pages/get-page-title.js";
-import pageIndex from "build-pages/index.js";
-import { ChevronRight } from "icons/chevron-right.jsx";
-import { NewWindow } from "icons/new-window.jsx";
-import { Npm } from "icons/npm.jsx";
-import { Substack } from "icons/substack.jsx";
 import Link from "next/link.js";
+import type { ComponentPropsWithoutRef } from "react";
+import { forwardRef, useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
-import type { UpdateItem } from "updates.js";
-import { getPageIcon } from "utils/get-page-icon.jsx";
-import { DateFromNow } from "./date-from-now.jsx";
-import { PlusBordered } from "./plus-bordered.jsx";
+import { getPageTitle } from "@/build-pages/get-page-title.js";
+import pageIndex from "@/build-pages/index.ts";
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { Npm } from "@/icons/npm.tsx";
+import { Substack } from "@/icons/substack.tsx";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
+import type { UpdateItem } from "@/updates.ts";
+import { DateFromNow } from "./date-from-now.tsx";
+import { PlusBordered } from "./plus-bordered.tsx";
 
 export interface UpdateLinkProps
-  extends UpdateItem,
+  extends
+    UpdateItem,
     Omit<ComponentPropsWithoutRef<typeof Link>, "href" | "title" | "type"> {
   dateStyle?: "fromNow" | "long";
   layer?: "popup" | "page";
@@ -26,7 +27,7 @@ export interface UpdateLinkProps
 
 function renderPaths(id: string, url: URL) {
   const [, category, page] = url.pathname.split("/");
-  if (url.origin !== "https://ariakit.org") {
+  if (url.origin !== "https://ariakit.com") {
     return (
       <span
         aria-hidden
@@ -36,7 +37,7 @@ function renderPaths(id: string, url: URL) {
         <span className="truncate text-blue-700 dark:text-blue-400 ">
           {url.host}
         </span>
-        <NewWindow className="h-3 w-3 opacity-50" />
+        <NewWindow className="size-3 opacity-50" />
       </span>
     );
   }
@@ -79,14 +80,14 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
   ) {
     let id = useId();
     id = props.id ?? id;
-    const url = new URL(props.href, "https://ariakit.org");
+    const url = new URL(props.href, "https://ariakit.com");
     const [, category, page] = url.pathname.split("/");
     return (
       <Link
         ref={ref}
         aria-labelledby={`${id}/label`}
         aria-describedby={`${id}/path ${id}/description`}
-        target={url.origin !== "https://ariakit.org" ? "_blank" : undefined}
+        target={url.origin !== "https://ariakit.com" ? "_blank" : undefined}
         {...props}
         className={twMerge(
           "group relative z-[1] flex w-full scroll-m-2 scroll-mb-14 scroll-mt-[92px] items-start gap-4 rounded p-4",
@@ -96,7 +97,7 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
         )}
       >
         {unread && (
-          <div className="absolute left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-blue-600 dark:bg-blue-500"></div>
+          <div className="absolute left-1 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-blue-600 dark:bg-blue-500" />
         )}
         {connected && (
           <div className="absolute -top-3 left-[47px] h-6 w-0.5 bg-black/10 dark:bg-white/10" />

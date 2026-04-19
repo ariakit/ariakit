@@ -1,8 +1,5 @@
-import { expect, test } from "@playwright/test";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-menu", { waitUntil: "networkidle" });
-});
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 test("menu closes when tapping dialog", async ({ page }) => {
   await page.getByRole("button", { name: "View recipe" }).tap();

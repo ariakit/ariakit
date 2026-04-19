@@ -1,9 +1,9 @@
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
-} from "../composite/composite-context.js";
-import { createStoreContext } from "../utils/system.js";
-import type { TabStore } from "./tab-store.js";
+} from "../composite/composite-context.tsx";
+import { createStoreContext } from "../utils/system.tsx";
+import type { TabStore } from "./tab-store.ts";
 
 const ctx = createStoreContext<TabStore>(
   [CompositeContextProvider],

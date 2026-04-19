@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { PopoverContextProvider } from "./popover-context.js";
-import { usePopoverStore } from "./popover-store.js";
-import type { PopoverStoreProps } from "./popover-store.js";
+import { PopoverContextProvider } from "./popover-context.tsx";
+import type { PopoverStoreProps } from "./popover-store.ts";
+import { usePopoverStore } from "./popover-store.ts";
 
 /**
- * Provides a popover store to [Popover](https://ariakit.org/components/popover)
+ * Provides a popover store to [Popover](https://ariakit.com/components/popover)
  * components.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * <PopoverProvider>

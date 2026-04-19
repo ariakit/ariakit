@@ -15,4 +15,4 @@ Separating <a href="/components/select">Select</a> items into groups using the <
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>

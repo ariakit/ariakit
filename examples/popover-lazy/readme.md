@@ -11,12 +11,11 @@ tags:
 
 Lazy loading [Popover](/components/popover) using [`React.lazy`](https://react.dev/reference/react/lazy) and [`React.useTransition`](https://react.dev/reference/react/useTransition) to avoid downloading additional code until the user interacts with the button.
 
-
 </div>
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Controlling the popover state
 

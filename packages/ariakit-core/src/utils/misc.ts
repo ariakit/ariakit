@@ -3,7 +3,7 @@ import type {
   AnyObject,
   BivariantCallback,
   SetStateAction,
-} from "./types.js";
+} from "./types.ts";
 
 /**
  * Empty function.
@@ -64,7 +64,7 @@ function isUpdater<T>(
   return typeof argument === "function";
 }
 
-function isLazyValue<T>(value: any): value is () => T {
+function isLazyValue<T>(value: T | (() => T)): value is () => T {
   return typeof value === "function";
 }
 
@@ -131,7 +131,6 @@ export function chain<T>(...fns: T[]) {
   return (...args: T extends AnyFunction ? Parameters<T> : never) => {
     for (const fn of fns) {
       if (typeof fn === "function") {
-        // @ts-ignore
         fn(...args);
       }
     }
@@ -266,6 +265,15 @@ export function disabledFromProps(props: {
     props["aria-disabled"] === true ||
     props["aria-disabled"] === "true"
   );
+}
+
+/**
+ * Checks whether something is disabled or not based on its DOM attributes.
+ */
+export function disabledFromElement(element: Element) {
+  if (element.getAttribute("aria-disabled") === "true") return true;
+  if ("disabled" in element && element.disabled === true) return true;
+  return false;
 }
 
 /**

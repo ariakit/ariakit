@@ -1,5 +1,6 @@
-import type { Polygon } from "../polygon.js";
-import { isPointInPolygon } from "../polygon.js";
+import { expect, test } from "vitest";
+import type { Point, Polygon } from "../polygon.ts";
+import { isPointInPolygon } from "../polygon.ts";
 
 test("isPointInPolygon", () => {
   const polygon: Polygon = [
@@ -50,4 +51,16 @@ test("isPointInPolygon", () => {
   expect(isPointInPolygon([3, 5], polygon)).toBe(false);
   expect(isPointInPolygon([4, 5], polygon)).toBe(false);
   expect(isPointInPolygon([5, 5], polygon)).toBe(false);
+});
+
+test("isPointInPolygon returns false for malformed polygons", () => {
+  const polygon: Array<Point | undefined> = [
+    [2, 2],
+    [2, 4],
+    [4, 4],
+    [4, 2],
+  ];
+  polygon[1] = undefined;
+
+  expect(isPointInPolygon([3, 3], polygon as Polygon)).toBe(false);
 });

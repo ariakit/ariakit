@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type { ComponentProps } from "react";
 import type { Element } from "hast";
+import type { ComponentProps } from "react";
+import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 
@@ -25,7 +25,7 @@ export function PageVideo({
   const [source, setSource] = useState(lazy ? undefined : src);
   gif = gif === "true" || gif === true;
   lazy = lazy ?? gif;
-  const playbackRate = parseFloat(playbackrate.toString());
+  const playbackRate = Number.parseFloat(playbackrate.toString());
 
   useEffect(() => {
     const element = ref.current;
@@ -68,7 +68,7 @@ export function PageVideo({
       src={source}
       {...props}
       className={twJoin(
-        "overflow-hidden rounded-lg data-[large]:!max-w-[832px] data-[wide]:!max-w-5xl md:rounded-xl data-[wide]:md:rounded-2xl",
+        "overflow-hidden rounded-lg data-[large]:max-w-[--size-lg] data-[wide]:max-w-[--size-xl] md:rounded-xl data-[wide]:md:rounded-2xl",
         props.className,
       )}
     />

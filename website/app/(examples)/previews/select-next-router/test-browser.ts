@@ -1,6 +1,7 @@
 import { query } from "@ariakit/test/playwright";
-import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../../../../../examples/test-utils.ts";
 
 async function getNewTabModifier(page: Page) {
   const isMac = await page.evaluate(() => navigator.platform.startsWith("Mac"));
@@ -13,10 +14,6 @@ function hasSearchParam(name: string, value: string | string[]) {
     return values.every((v) => url.searchParams.has(name, v));
   };
 }
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-next-router", { waitUntil: "networkidle" });
-});
 
 test("default language", async ({ page }) => {
   const q = query(page);
@@ -112,7 +109,7 @@ test("select statuses with a mouse", async ({ page }) => {
   );
   await expect(q.combobox("Status")).toHaveText("3 selected");
 
-  await q.option("published").click();
+  await q.option("Published").click();
   await page.waitForURL(hasSearchParam("status", ["draft", "archived"]));
   await expect(q.combobox("Status")).toHaveText("2 selected");
 });

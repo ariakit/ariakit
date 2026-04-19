@@ -14,4 +14,4 @@ Overwriting the default [Popover](/components/popover) positioning styles on sma
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>

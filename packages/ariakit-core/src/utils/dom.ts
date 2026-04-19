@@ -1,4 +1,4 @@
-import type { AriaHasPopup, AriaRole } from "./types.js";
+import type { AriaHasPopup, AriaRole } from "./types.ts";
 
 /**
  * It's `true` if it is running in a browser environment or `false` if it is not
@@ -16,14 +16,18 @@ function checkIsBrowser() {
 /**
  * Returns `element.ownerDocument || document`.
  */
-export function getDocument(node?: Node | null): Document {
-  return node ? node.ownerDocument || (node as Document) : document;
+export function getDocument(node?: Window | Document | Node | null): Document {
+  if (!node) return document;
+  if ("self" in node) return node.document;
+  return node.ownerDocument || document;
 }
 
 /**
  * Returns `element.ownerDocument.defaultView || window`.
  */
-export function getWindow(node?: Node | null): Window {
+export function getWindow(node?: Window | Document | Node | null): Window {
+  if (!node) return self;
+  if ("self" in node) return node.self;
   return getDocument(node).defaultView || window;
 }
 
@@ -40,7 +44,7 @@ export function getActiveElement(
     // with elements inside of an iframe.
     return null;
   }
-  if (isFrame(activeElement) && activeElement.contentDocument) {
+  if (isFrame(activeElement) && activeElement.contentDocument?.body) {
     return getActiveElement(
       activeElement.contentDocument.body,
       activeDescendant,
@@ -106,58 +110,18 @@ const buttonInputTypes = [
 ];
 
 /**
- * Ponyfill for `Element.prototype.matches`
- *
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Element/matches
- */
-export function matches(element: Element, selectors: string): boolean {
-  if ("matches" in element) {
-    return element.matches(selectors);
-  }
-  if ("msMatchesSelector" in element) {
-    return (element as any).msMatchesSelector(selectors);
-  }
-  return (element as any).webkitMatchesSelector(selectors);
-}
-
-/**
  * Checks if the element is visible or not.
  */
 export function isVisible(element: Element) {
+  if (typeof element.checkVisibility === "function") {
+    return element.checkVisibility();
+  }
   const htmlElement = element as HTMLElement;
   return (
     htmlElement.offsetWidth > 0 ||
     htmlElement.offsetHeight > 0 ||
     element.getClientRects().length > 0
   );
-}
-
-/**
- * Ponyfill for `Element.prototype.closest`
- * @example
- * closest(document.getElementById("id"), "div");
- * // same as
- * document.getElementById("id").closest("div");
- */
-export function closest<K extends keyof HTMLElementTagNameMap>(
-  element: Element,
-  selectors: K,
-): HTMLElementTagNameMap[K];
-export function closest<K extends keyof SVGElementTagNameMap>(
-  element: Element,
-  selectors: K,
-): SVGElementTagNameMap[K];
-export function closest<T extends Element = Element>(
-  element: Element,
-  selectors: string,
-): T | null;
-export function closest(element: Element, selectors: string) {
-  if ("closest" in element) return element.closest(selectors);
-  do {
-    if (matches(element, selectors)) return element;
-    element = (element.parentElement || element.parentNode) as any;
-  } while (element !== null && element.nodeType === 1);
-  return null;
 }
 
 /**
@@ -177,7 +141,7 @@ export function isTextField(
       element instanceof HTMLInputElement && element.selectionStart !== null;
     const isTextArea = element.tagName === "TEXTAREA";
     return isTextInput || isTextArea || false;
-  } catch (error) {
+  } catch (_error) {
     // Safari throws an exception when trying to get `selectionStart` on
     // non-text <input> elements (which, understandably, don't have the text
     // selection API). We catch this via a try/catch block, as opposed to a more
@@ -295,14 +259,17 @@ export function getScrollingElement(
   element?: Element | null,
 ): HTMLElement | Element | null {
   if (!element) return null;
+  const isScrollableOverflow = (overflow: string) => {
+    if (overflow === "auto") return true;
+    if (overflow === "scroll") return true;
+    return false;
+  };
   if (element.clientHeight && element.scrollHeight > element.clientHeight) {
     const { overflowY } = getComputedStyle(element);
-    const isScrollable = overflowY !== "visible" && overflowY !== "hidden";
-    if (isScrollable) return element;
+    if (isScrollableOverflow(overflowY)) return element;
   } else if (element.clientWidth && element.scrollWidth > element.clientWidth) {
     const { overflowX } = getComputedStyle(element);
-    const isScrollable = overflowX !== "visible" && overflowX !== "hidden";
-    if (isScrollable) return element;
+    if (isScrollableOverflow(overflowX)) return element;
   }
   return (
     getScrollingElement(element.parentElement) ||
@@ -354,4 +321,43 @@ export function setSelectionRange(
   if (/text|search|password|tel|url/i.test(element.type)) {
     element.setSelectionRange(...args);
   }
+}
+
+/**
+ * Sort the items based on their DOM position.
+ */
+export function sortBasedOnDOMPosition<T>(
+  items: T[],
+  getElement: (item: T) => Element | null | undefined,
+) {
+  const pairs = items.map((item, index) => [index, item] as const);
+  let isOrderDifferent = false;
+  pairs.sort(([indexA, a], [indexB, b]) => {
+    const elementA = getElement(a);
+    const elementB = getElement(b);
+    if (elementA === elementB) return 0;
+    if (!elementA || !elementB) return 0;
+    // a before b
+    if (isElementPreceding(elementA, elementB)) {
+      if (indexA > indexB) {
+        isOrderDifferent = true;
+      }
+      return -1;
+    }
+    // a after b
+    if (indexA < indexB) {
+      isOrderDifferent = true;
+    }
+    return 1;
+  });
+  if (isOrderDifferent) {
+    return pairs.map(([_, item]) => item);
+  }
+  return items;
+}
+
+function isElementPreceding(a: Element, b: Element) {
+  return Boolean(
+    b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING,
+  );
 }

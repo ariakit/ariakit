@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import type { ButtonHTMLAttributes } from "react";
 import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
-import { Moon } from "icons/moon.js";
-import { Sun } from "icons/sun.js";
+import type { ButtonHTMLAttributes } from "react";
+import { useState } from "react";
 import { twJoin } from "tailwind-merge";
-import { Command } from "./command.jsx";
-import { TooltipButton } from "./tooltip-button.js";
+import { Moon } from "@/icons/moon.tsx";
+import { Sun } from "@/icons/sun.tsx";
+import { Command } from "./command.tsx";
+import { TooltipButton } from "./tooltip-button.tsx";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement>;
 type Theme = "light" | "dark";

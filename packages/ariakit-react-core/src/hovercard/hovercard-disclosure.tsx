@@ -1,21 +1,21 @@
+import { contains } from "@ariakit/core/utils/dom";
+import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { invariant } from "@ariakit/core/utils/misc";
+import { sync } from "@ariakit/core/utils/store";
 import type {
   ElementType,
   MouseEvent,
   FocusEvent as ReactFocusEvent,
 } from "react";
 import { useEffect, useState } from "react";
-import { contains } from "@ariakit/core/utils/dom";
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
-import { sync } from "@ariakit/core/utils/store";
-import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.js";
-import { useDialogDisclosure } from "../dialog/dialog-disclosure.js";
-import { useEvent, useMergeRefs } from "../utils/hooks.js";
-import { createElement, createHook, forwardRef } from "../utils/system.js";
-import type { Props } from "../utils/types.js";
-import { useVisuallyHidden } from "../visually-hidden/visually-hidden.js";
-import { useHovercardProviderContext } from "./hovercard-context.js";
-import type { HovercardStore } from "./hovercard-store.js";
+import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
+import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
+import { useEvent, useMergeRefs } from "../utils/hooks.ts";
+import { createElement, createHook, forwardRef } from "../utils/system.tsx";
+import type { Props } from "../utils/types.ts";
+import { useVisuallyHidden } from "../visually-hidden/visually-hidden.tsx";
+import { useHovercardProviderContext } from "./hovercard-context.tsx";
+import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -23,7 +23,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `HovercardDisclosure` component.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const store = useHovercardStore();
@@ -154,10 +154,10 @@ export const useHovercardDisclosure = createHook<
 
 /**
  * Renders a hidden disclosure button that will be visible when the
- * [`HovercardAnchor`](https://ariakit.org/reference/hovercard-anchor) receives
+ * [`HovercardAnchor`](https://ariakit.com/reference/hovercard-anchor) receives
  * keyboard focus. The user can then navigate to the button to open the
  * hovercard when using the keyboard.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx {3}
  * <HovercardProvider>
@@ -174,13 +174,14 @@ export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardDisclosureOptions<T extends ElementType = TagName>
-  extends DialogDisclosureOptions<T> {
+export interface HovercardDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
-   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
    * hook. If not provided, the closest
-   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * component's context will be used.
    */
   store?: HovercardStore;

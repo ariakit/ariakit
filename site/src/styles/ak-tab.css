@@ -1,0 +1,149 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+@property --ak-tab-border-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@utility ak-tabs {
+  --ak-tab-border-width: var(--ak-frame-border, 1px);
+  --ak-tab-border-color: var(--ak-border, var(--ak-layer-border, transparent));
+  --ak-tab-bg: var(--ak-layer);
+}
+
+@utility ak-tab-list {
+  @apply ak-frame-overflow ak-layer-down;
+  @apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) pb-0! relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain;
+  scrollbar-width: none;
+
+  &::after {
+    @apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) bg-linear-to-l pointer-events-none sticky h-full w-8 flex-none to-transparent bg-clip-padding content-[''];
+  }
+
+  &:dir(rtl) {
+    &::after {
+      @apply bg-linear-to-r;
+    }
+  }
+}
+
+@utility ak-tab-panel {
+  @apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-cover;
+  @apply border-(--ak-tab-border-color)! relative;
+}
+
+@utility ak-tab_idle {
+  @apply ak-command_idle ak-text/70;
+  @apply z-1 relative flex items-center gap-1.5 whitespace-nowrap font-medium leading-[1em];
+}
+
+@utility ak-tab-folder_idle {
+  @apply ak-tab_idle ak-frame-container ak-frame-border-(--ak-tab-border-width);
+  @apply border-(length:--ak-tab-border-width) border-b-0! border-transparent;
+  padding-block-end: calc(
+    var(--ak-tab-border-width) + var(--ak-frame-padding)
+  ) !important;
+  --ak-tab-folder-padding: var(--ak-frame-padding);
+
+  &:not(:last-child)::after {
+    @apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r transition-colors content-[''];
+  }
+
+  > * {
+    @apply ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))];
+    @apply flex h-full items-center gap-1.5 whitespace-nowrap transition-colors;
+  }
+}
+
+@utility ak-tab-folder_hover {
+  &:not(:last-child)::after {
+    @apply border-transparent;
+  }
+  :has(+ &)::after {
+    @apply border-transparent;
+  }
+  > * {
+    @apply ak-layer-hover;
+  }
+}
+
+@utility ak-tab-folder_focus {
+  @apply ak-command_focus;
+  @apply outline-none;
+  &:not(:last-child)::after {
+    @apply border-transparent;
+  }
+  :has(+ &)::after {
+    @apply border-transparent;
+  }
+  > * {
+    @apply ak-layer-contrast-primary;
+  }
+}
+
+@utility ak-tab-folder_active {
+  > * {
+    @apply ak-command_active;
+  }
+}
+
+@utility ak-tab-folder_selected {
+  @apply ak-layer-(--ak-tab-bg) ak-text;
+  @apply z-2 border-(--ak-tab-border-color)! rounded-b-none!;
+
+  &::after,
+  &::before {
+    @apply pointer-events-none absolute bottom-0 border-none bg-no-repeat content-[''];
+
+    --ak-tab-smoothness: min(0.2px, var(--ak-tab-border-width));
+
+    --ak-tab-inner: var(--ak-frame-radius);
+    --ak-tab-inner-border: calc(var(--ak-tab-inner) - var(--ak-tab-smoothness));
+    --ak-tab-inner-bg: calc(var(--ak-tab-inner) + var(--ak-tab-smoothness));
+
+    --ak-tab-outer: calc(var(--ak-tab-inner) - var(--ak-tab-border-width));
+    --ak-tab-outer-border: calc(var(--ak-tab-outer) + var(--ak-tab-smoothness));
+    --ak-tab-outer-bg: calc(var(--ak-tab-outer) - var(--ak-tab-smoothness));
+
+    --ak-tab-transparent: transparent var(--ak-tab-outer-bg);
+    --ak-tab-border:
+      var(--ak-tab-border-color) var(--ak-tab-outer-border),
+      var(--ak-tab-border-color) var(--ak-tab-inner-border);
+    --ak-tab-bg: var(--ak-layer) var(--ak-tab-inner-bg);
+
+    --ak-tab-gradient:
+      var(--ak-tab-transparent), var(--ak-tab-border), var(--ak-tab-bg);
+    --ak-tab-backdrop:
+      transparent var(--ak-tab-outer),
+      var(--ak-layer) var(--ak-tab-outer-border);
+
+    height: var(--ak-frame-radius);
+    width: var(--ak-frame-radius);
+  }
+
+  &::before {
+    right: 100%;
+    background-image:
+      radial-gradient(circle at 0 0, var(--ak-tab-gradient)),
+      radial-gradient(circle at 0 0, var(--ak-tab-backdrop));
+  }
+
+  &::after {
+    left: 100%;
+    background-position: 100%, 100%;
+    background-image:
+      radial-gradient(circle at 100% 0, var(--ak-tab-gradient)),
+      radial-gradient(circle at 100% 0, var(--ak-tab-backdrop));
+  }
+}
+
+@utility ak-tab-folder {
+  @apply ak-tab-folder_idle hover:not-aria-selected:ak-tab-folder_hover focus-visible:ak-tab-folder_focus aria-selected:ak-tab-folder_selected active:ak-tab-folder_active;
+}

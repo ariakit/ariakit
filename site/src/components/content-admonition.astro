@@ -1,0 +1,78 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { Icon, type IconName } from "#app/icons/icon.react.tsx";
+import { AdmonitionTypeSchema, type AdmonitionType } from "#app/lib/schemas.ts";
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"blockquote"> {
+  type: AdmonitionType;
+  title?: string;
+}
+
+const { type: typeProp = "note", title, ...props } = Astro.props;
+const type = AdmonitionTypeSchema.parse(typeProp);
+
+const titles = {
+  note: "Note",
+  tip: "Tip",
+  warning: "Warning",
+  caution: "Caution",
+} satisfies Record<AdmonitionType, string>;
+
+const colorClasses = {
+  note: "[--color:theme(--color-blue-500)]",
+  tip: "[--color:theme(--color-green-500)]",
+  warning: "[--color:theme(--color-yellow-500)]",
+  caution: "[--color:theme(--color-red-500)]",
+} satisfies Record<AdmonitionType, string>;
+
+const colorClass = colorClasses[type as keyof typeof colorClasses];
+
+const iconNames = {
+  note: "info",
+  tip: "lightBulb",
+  warning: "warning",
+  caution: "danger",
+} satisfies Record<AdmonitionType, IconName>;
+
+const icon = iconNames[type as keyof typeof iconNames];
+
+const titleContent =
+  title ||
+  titles[type as keyof typeof titles] ||
+  type.charAt(0).toUpperCase() + type.slice(1);
+---
+
+<aside
+  data-admonition={type}
+  class:list={[
+    "ak-frame-card",
+    "ak-layer-pop-0.5 ak-frame-border",
+    "[--container-width:theme(--container-content)] not-in-data-content:[--container-width:theme(--container-default)]",
+    "ak-container-size-[calc(min(var(--container-width),100%)+var(--ak-frame-padding)*2)]/0 ak-container",
+    "not-in-data-content:grid not-in-data-content:@3xl:grid-cols-[1fr_var(--container-sidebar)]",
+    colorClass,
+    props.class,
+  ]}
+  {...props}
+>
+  <div class="ak-prose-content ak-prose-text-base/relaxed">
+    <div class:list={["font-medium ak-text-(--color) flex gap-2"]}>
+      <Icon
+        name={icon}
+        className="ak-text-(--color)/0 size-[1.25em] flex-none h-(--ak-prose-leading)"
+      />
+
+      {titleContent}
+    </div>
+    <slot />
+  </div>
+</aside>

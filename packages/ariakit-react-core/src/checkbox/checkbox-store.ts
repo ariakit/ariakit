@@ -1,8 +1,11 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
-import type { PickRequired } from "@ariakit/core/utils/types";
-import { useUpdateEffect } from "../utils/hooks.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+import type {
+  BivariantCallback,
+  PickRequired,
+} from "@ariakit/core/utils/types";
+import { useUpdateEffect } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
   store: T,
@@ -17,7 +20,7 @@ export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
 /**
  * Creates a checkbox store to conveniently manage a checkbox value,
  * whether it's a string, number, boolean, or an array of strings or numbers.
- * @see https://ariakit.org/components/checkbox
+ * @see https://ariakit.com/components/checkbox
  * @example
  * ```jsx
  * const checkbox = useCheckboxStore({ defaultValue: true });
@@ -55,22 +58,22 @@ export interface CheckboxStoreOptions<
 > extends Core.CheckboxStoreOptions<T> {
   /**
    * A callback that gets called when the
-   * [`value`](https://ariakit.org/reference/checkbox-provider#value) state
+   * [`value`](https://ariakit.com/reference/checkbox-provider#value) state
    * changes.
    * @example
    * function MyCheckbox({ value, onChange }) {
    *   const checkbox = useCheckboxStore({ value, setValue: onChange });
    * }
    */
-  setValue?: (value: CheckboxStoreState<T>["value"]) => void;
+  setValue?: BivariantCallback<(value: CheckboxStoreState<T>["value"]) => void>;
 }
 
 export interface CheckboxStoreProps<
   T extends CheckboxStoreValue = CheckboxStoreValue,
-> extends CheckboxStoreOptions<T>,
-    Core.CheckboxStoreProps<T> {}
+>
+  extends CheckboxStoreOptions<T>, Core.CheckboxStoreProps<T> {}
 
 export interface CheckboxStore<
   T extends CheckboxStoreValue = CheckboxStoreValue,
-> extends CheckboxStoreFunctions<T>,
-    Store<Core.CheckboxStore<T>> {}
+>
+  extends CheckboxStoreFunctions<T>, Store<Core.CheckboxStore<T>> {}

@@ -1,3 +1,4 @@
+import { hasOwnProperty } from "@ariakit/core/utils/misc";
 import type {
   HTMLAttributes,
   MutableRefObject,
@@ -6,7 +7,6 @@ import type {
   RefCallback,
 } from "react";
 import { isValidElement } from "react";
-import { hasOwnProperty } from "@ariakit/core/utils/misc";
 
 /**
  * Sets both a function and object React ref.
@@ -25,13 +25,14 @@ export function setRef<T>(
 /**
  * Checks if an element is a valid React element with a ref.
  */
-export function isValidElementWithRef<P>(
+export function isValidElementWithRef<P extends { ref?: Ref<any> }>(
   element: unknown,
 ): element is ReactElement<P> & { ref?: Ref<any> } {
   if (!element) return false;
-  if (!isValidElement(element)) return false;
-  if (!("ref" in element)) return false;
-  return true;
+  if (!isValidElement<{ ref?: Ref<any> }>(element)) return false;
+  if ("ref" in element.props) return true;
+  if ("ref" in element) return true;
+  return false;
 }
 
 /**
@@ -39,7 +40,8 @@ export function isValidElementWithRef<P>(
  */
 export function getRefProperty(element: unknown) {
   if (!isValidElementWithRef(element)) return null;
-  return element.ref;
+  const props = { ...element.props };
+  return props.ref || element.ref;
 }
 
 /**
@@ -56,9 +58,13 @@ export function mergeProps<T extends HTMLAttributes<any>>(
 
     if (key === "className") {
       const prop = "className";
-      props[prop] = base[prop]
-        ? `${base[prop]} ${overrides[prop]}`
-        : overrides[prop];
+      const baseClass = base[prop];
+      const overrideClass = overrides[prop];
+      if (baseClass && overrideClass) {
+        props[prop] = `${baseClass} ${overrideClass}`;
+      } else {
+        props[prop] = overrideClass || baseClass;
+      }
       continue;
     }
 
@@ -72,7 +78,11 @@ export function mergeProps<T extends HTMLAttributes<any>>(
 
     const overrideValue = overrides[key];
 
-    if (typeof overrideValue === "function" && key.startsWith("on")) {
+    if (key.startsWith("on")) {
+      if (typeof overrideValue !== "function") {
+        // Skip non-function event handler overrides to preserve base handlers.
+        continue;
+      }
       const baseValue = base[key];
       if (typeof baseValue === "function") {
         type EventKey = Extract<keyof HTMLAttributes<any>, `on${string}`>;

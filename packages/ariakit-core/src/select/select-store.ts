@@ -1,20 +1,20 @@
-import type { ComboboxStore } from "../combobox/combobox-store.js";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { createCompositeStore } from "../composite/composite-store.js";
+} from "../composite/composite-store.ts";
+import { createCompositeStore } from "../composite/composite-store.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { createPopoverStore } from "../popover/popover-store.js";
-import { toArray } from "../utils/array.js";
-import { defaultValue } from "../utils/misc.js";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.js";
+} from "../popover/popover-store.ts";
+import { createPopoverStore } from "../popover/popover-store.ts";
+import { toArray } from "../utils/array.ts";
+import { defaultValue } from "../utils/misc.ts";
+import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
   batch,
   createStore,
@@ -23,8 +23,8 @@ import {
   setup,
   sync,
   throwOnConflictingProps,
-} from "../utils/store.js";
-import type { PickRequired, SetState } from "../utils/types.js";
+} from "../utils/store.ts";
+import type { PickRequired, SetState } from "../utils/types.ts";
 
 type MutableValue<T extends SelectStoreValue = SelectStoreValue> =
   T extends string ? string : T;
@@ -112,8 +112,9 @@ export function createSelectStore({
       syncState.setValueOnMove,
       false,
     ),
-    selectElement: defaultValue(syncState.selectElement, null),
     labelElement: defaultValue(syncState.labelElement, null),
+    selectElement: defaultValue(syncState.selectElement, null),
+    listElement: defaultValue(syncState.listElement, null),
   };
 
   const select = createStore(initialState, composite, popover, store);
@@ -131,11 +132,24 @@ export function createSelectStore({
     }),
   );
 
+  // Resets the active id to its initial state when the popover is hidden. This
+  // guarantees that the active id won't be pointing to another item when the
+  // popover is shown again, which would cause the selected item to not be
+  // auto-focused. See test "clicking on different tab and clicking outside
+  // resets the selected tab".
+  setup(select, () =>
+    sync(select, ["mounted"], (state) => {
+      if (state.mounted) return;
+      select.setState("activeId", initialState.activeId);
+    }),
+  );
+
   // Sets the active id when the value changes and the popover is hidden.
   setup(select, () =>
     sync(select, ["mounted", "items", "value"], (state) => {
       // TODO: Revisit this. See test "open with keyboard, then try to open
-      // again"
+      // again". Probably deprecate together with using ComboboxProvider as a
+      // parent of SelectProvider.
       if (combobox) return;
       if (state.mounted) return;
       const values = toArray(state.value);
@@ -145,7 +159,6 @@ export function createSelectStore({
         (item) => !item.disabled && item.value === lastValue,
       );
       if (!item) return;
-      // TODO: This may be problematic.
       select.setState("activeId", item.id);
     }),
   );
@@ -173,20 +186,20 @@ export function createSelectStore({
     ...select,
     combobox,
     setValue: (value) => select.setState("value", value),
-    setSelectElement: (element) => select.setState("selectElement", element),
     setLabelElement: (element) => select.setState("labelElement", element),
+    setSelectElement: (element) => select.setState("selectElement", element),
+    setListElement: (element) => select.setState("listElement", element),
   };
 }
 
-export type SelectStoreValue = string | string[];
+export type SelectStoreValue = string | readonly string[];
 
 export interface SelectStoreItem extends CompositeStoreItem {
   value?: string;
 }
 
 export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
-  extends CompositeStoreState<SelectStoreItem>,
-    PopoverStoreState {
+  extends CompositeStoreState<SelectStoreItem>, PopoverStoreState {
   /** @default true */
   virtualFocus: CompositeStoreState<SelectStoreItem>["virtualFocus"];
   /** @default null */
@@ -199,49 +212,55 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
    * The select value.
    *
    * Live examples:
-   * - [Form with Select](https://ariakit.org/examples/form-select)
-   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   * - [Select Grid](https://ariakit.com/examples/select-grid)
    * - [Select with custom
-   *   items](https://ariakit.org/examples/select-item-custom)
-   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
-   * - [Toolbar with Select](https://ariakit.org/examples/toolbar-select)
+   *   items](https://ariakit.com/examples/select-item-custom)
+   * - [Multi-Select](https://ariakit.com/examples/select-multiple)
+   * - [Toolbar with Select](https://ariakit.com/examples/toolbar-select)
    * - [Select with Next.js App
-   *   Router](https://ariakit.org/examples/select-next-router)
+   *   Router](https://ariakit.com/examples/select-next-router)
    */
   value: MutableValue<T>;
   /**
    * Whether the select
-   * [`value`](https://ariakit.org/reference/select-provider#value) should be
+   * [`value`](https://ariakit.com/reference/select-provider#value) should be
    * set when the active item changes by moving (which usually happens when
    * moving to an item using the keyboard).
    *
    * Live examples:
-   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select Grid](https://ariakit.com/examples/select-grid)
    * - [Select with custom
-   *   items](https://ariakit.org/examples/select-item-custom)
+   *   items](https://ariakit.com/examples/select-item-custom)
    * @default false
    */
   setValueOnMove: boolean;
   /**
-   * The select button element.
-   *
-   * Live examples:
-   * - [Form with Select](https://ariakit.org/examples/form-select)
-   */
-  selectElement: HTMLElement | null;
-  /**
    * The select label element.
    */
   labelElement: HTMLElement | null;
+  /**
+   * The select button element.
+   *
+   * Live examples:
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   */
+  selectElement: HTMLElement | null;
+  /**
+   * The select list element.
+   */
+  listElement: HTMLElement | null;
 }
 
 export interface SelectStoreFunctions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends Pick<SelectStoreOptions<T>, "combobox">,
+>
+  extends
+    Pick<SelectStoreOptions<T>, "combobox">,
     CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {
   /**
-   * Sets the [`value`](https://ariakit.org/reference/select-provider#value)
+   * Sets the [`value`](https://ariakit.com/reference/select-provider#value)
    * state.
    * @example
    * store.setValue("Apple");
@@ -250,18 +269,24 @@ export interface SelectStoreFunctions<
    */
   setValue: SetState<SelectStoreState<T>["value"]>;
   /**
+   * Sets the `labelElement` state.
+   */
+  setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
+  /**
    * Sets the `selectElement` state.
    */
   setSelectElement: SetState<SelectStoreState<T>["selectElement"]>;
   /**
-   * Sets the `labelElement` state.
+   * Sets the `listElement` state.
    */
-  setLabelElement: SetState<SelectStoreState<T>["labelElement"]>;
+  setListElement: SetState<SelectStoreState<T>["listElement"]>;
 }
 
 export interface SelectStoreOptions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends StoreOptions<
+>
+  extends
+    StoreOptions<
       SelectStoreState<T>,
       | "virtualFocus"
       | "activeId"
@@ -282,20 +307,20 @@ export interface SelectStoreOptions<
    * The default value. If not set, the first non-disabled item will be used.
    *
    * Live examples:
-   * - [Form with Select](https://ariakit.org/examples/form-select)
-   * - [Animated Select](https://ariakit.org/examples/select-animated)
-   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
-   * - [SelectGroup](https://ariakit.org/examples/select-group)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   * - [Animated Select](https://ariakit.com/examples/select-animated)
+   * - [Select with Combobox](https://ariakit.com/examples/select-combobox)
+   * - [SelectGroup](https://ariakit.com/examples/select-group)
    * - [Select with Next.js App
-   *   Router](https://ariakit.org/examples/select-next-router)
+   *   Router](https://ariakit.com/examples/select-next-router)
+   * - [Select with Combobox and
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    */
   defaultValue?: SelectStoreState<T>["value"];
 }
 
 export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
-  extends SelectStoreOptions<T>,
-    StoreProps<SelectStoreState<T>> {}
+  extends SelectStoreOptions<T>, StoreProps<SelectStoreState<T>> {}
 
 export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
-  extends SelectStoreFunctions<T>,
-    Store<SelectStoreState<T>> {}
+  extends SelectStoreFunctions<T>, Store<SelectStoreState<T>> {}

@@ -3,23 +3,37 @@ import type {
   BivariantCallback,
   PickRequired,
 } from "@ariakit/core/utils/types";
-import { useComboboxProviderContext } from "../combobox/combobox-context.js";
-import type { ComboboxStore } from "../combobox/combobox-store.js";
+import { useComboboxProviderContext } from "../combobox/combobox-context.tsx";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
-} from "../composite/composite-store.js";
-import { useCompositeStoreProps } from "../composite/composite-store.js";
+} from "../composite/composite-store.ts";
+import {
+  useCompositeStoreOptions,
+  useCompositeStoreProps,
+} from "../composite/composite-store.ts";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
-} from "../popover/popover-store.js";
-import { usePopoverStoreProps } from "../popover/popover-store.js";
-import { useUpdateEffect } from "../utils/hooks.js";
-import type { Store } from "../utils/store.js";
-import { useStore, useStoreProps } from "../utils/store.js";
+} from "../popover/popover-store.ts";
+import { usePopoverStoreProps } from "../popover/popover-store.ts";
+import { useUpdateEffect } from "../utils/hooks.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
+
+export function useSelectStoreOptions<T extends Core.SelectStoreOptions>(
+  props: T,
+) {
+  const combobox = useComboboxProviderContext();
+  props = {
+    ...props,
+    combobox: props.combobox !== undefined ? props.combobox : combobox,
+  };
+  return useCompositeStoreOptions(props);
+}
 
 export function useSelectStoreProps<T extends Core.SelectStore>(
   store: T,
@@ -41,8 +55,8 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
 
 /**
  * Creates a select store to control the state of
- * [Select](https://ariakit.org/components/select) components.
- * @see https://ariakit.org/components/select
+ * [Select](https://ariakit.com/components/select) components.
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const select = useSelectStore({ defaultValue: "Apple" });
@@ -61,11 +75,7 @@ export function useSelectStore<T extends SelectStoreValue = SelectStoreValue>(
 export function useSelectStore(props?: SelectStoreProps): SelectStore;
 
 export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
-  const combobox = useComboboxProviderContext();
-  props = {
-    ...props,
-    combobox: props.combobox !== undefined ? props.combobox : combobox,
-  };
+  props = useSelectStoreOptions(props);
   const [store, update] = useStore(Core.createSelectStore, props);
   return useSelectStoreProps(store, update, props);
 }
@@ -75,51 +85,58 @@ export type SelectStoreValue = Core.SelectStoreValue;
 export interface SelectStoreItem extends Core.SelectStoreItem {}
 
 export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
-  extends Core.SelectStoreState<T>,
+  extends
+    Core.SelectStoreState<T>,
     CompositeStoreState<SelectStoreItem>,
     PopoverStoreState {}
 
 export interface SelectStoreFunctions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends Pick<SelectStoreOptions<T>, "combobox" | "disclosure">,
+>
+  extends
+    Pick<SelectStoreOptions<T>, "combobox" | "disclosure">,
     Omit<Core.SelectStoreFunctions<T>, "combobox" | "disclosure">,
     CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {}
 
 export interface SelectStoreOptions<
   T extends SelectStoreValue = SelectStoreValue,
-> extends Omit<Core.SelectStoreOptions<T>, "combobox" | "disclosure">,
+>
+  extends
+    Omit<Core.SelectStoreOptions<T>, "combobox" | "disclosure">,
     CompositeStoreOptions<SelectStoreItem>,
     PopoverStoreOptions {
   /**
    * Function that will be called when the
-   * [`value`](https://ariakit.org/reference/select-provider#value) state
+   * [`value`](https://ariakit.com/reference/select-provider#value) state
    * changes.
    *
    * Live examples:
-   * - [Form with Select](https://ariakit.org/examples/form-select)
-   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   * - [Select Grid](https://ariakit.com/examples/select-grid)
    * - [Select with custom
-   *   items](https://ariakit.org/examples/select-item-custom)
-   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
-   * - [Toolbar with Select](https://ariakit.org/examples/toolbar-select)
+   *   items](https://ariakit.com/examples/select-item-custom)
+   * - [Multi-Select](https://ariakit.com/examples/select-multiple)
+   * - [Toolbar with Select](https://ariakit.com/examples/toolbar-select)
    * - [Select with Next.js App
-   *   Router](https://ariakit.org/examples/select-next-router)
+   *   Router](https://ariakit.com/examples/select-next-router)
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
   /**
    * A reference to a [combobox
-   * store](https://ariakit.org/reference/use-combobox-store). It's
+   * store](https://ariakit.com/reference/use-combobox-store). It's
    * automatically set when composing [Select with
-   * Combobox](https://ariakit.org/examples/select-combobox).
+   * Combobox](https://ariakit.com/examples/select-combobox).
    */
   combobox?: ComboboxStore | null;
 }
 
 export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
-  extends SelectStoreOptions<T>,
+  extends
+    SelectStoreOptions<T>,
     Omit<Core.SelectStoreProps<T>, "combobox" | "disclosure"> {}
 
 export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
-  extends SelectStoreFunctions<T>,
+  extends
+    SelectStoreFunctions<T>,
     Omit<Store<Core.SelectStore<T>>, "combobox" | "disclosure"> {}

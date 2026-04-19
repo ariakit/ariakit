@@ -1,4 +1,4 @@
-import { dirname, resolve } from "path";
+import { dirname, resolve } from "node:path";
 import { visit } from "unist-util-visit";
 import { isPlaygroundNode } from "./ast.js";
 import { getExampleDeps } from "./get-example-deps.js";

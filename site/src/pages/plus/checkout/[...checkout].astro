@@ -1,0 +1,349 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import PageCard from "#app/components/page-card.astro";
+import PlusCheckoutFrame from "#app/components/plus-checkout-frame.astro";
+import { Icon } from "#app/icons/icon.react.tsx";
+import {
+  getCurrentUserPlus,
+  getCurrentUserTeams,
+  isSignedIn,
+} from "#app/lib/auth.ts";
+import { formatCurrency } from "#app/lib/locale.ts";
+import {
+  PLUS_TYPES,
+  PlusCheckoutStepSchema,
+  PlusTypeSchema,
+  URLSchema,
+  type PlusCheckoutStep,
+} from "#app/lib/schemas.ts";
+import { capitalize } from "#app/lib/string.ts";
+import { getPlusPrice, processCheckout } from "#app/lib/stripe.ts";
+import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
+import { SignUp } from "@clerk/astro/components";
+import { formatDistanceToNow } from "date-fns";
+import { z } from "zod";
+import Layout from "./_layout.astro";
+
+export const prerender = false;
+
+const schema = z.tuple([PlusCheckoutStepSchema, PlusTypeSchema]);
+const params = schema.safeParse(Astro.params.checkout?.split("/") ?? []);
+
+const querySchema = z
+  .object({
+    session_id: z.string().optional(),
+    redirect_url: URLSchema,
+  })
+  .transform((data) => ({
+    sessionId: data.session_id,
+    redirectUrl: data.redirect_url,
+  }));
+
+if (!params.success) {
+  return Astro.redirect(getPlusCheckoutPath({ url: Astro.url }));
+}
+
+const { sessionId, redirectUrl } = querySchema.parse(
+  Object.fromEntries(Astro.url.searchParams)
+);
+
+const [step, plusType] = params.data;
+
+const isLoginStep = step === "login";
+const isPaymentStep = step === "payment";
+const isAccessStep = step === "access";
+const shouldShowProductSelector = isLoginStep || isPaymentStep;
+
+const signedIn = isSignedIn(Astro);
+
+function getPath(step: PlusCheckoutStep) {
+  return getPlusCheckoutPath({ step, url: Astro.url });
+}
+
+if (isLoginStep) {
+  if (signedIn) {
+    return Astro.redirect(getPath("payment"));
+  }
+} else {
+  if (!signedIn) {
+    return Astro.redirect(getPath("login"));
+  }
+  const currentUserPlus = await getCurrentUserPlus(Astro, isAccessStep);
+  const hasPersonal = currentUserPlus === "personal";
+  const hasTeam =
+    currentUserPlus === "team" ||
+    !!(await getCurrentUserTeams(Astro, isAccessStep)).size;
+
+  if (sessionId) {
+    const session = await processCheckout({
+      context: Astro,
+      session: sessionId,
+    });
+    const url = new URL(Astro.url);
+    url.searchParams.delete("session_id");
+    const step: PlusCheckoutStep = session ? "access" : "payment";
+    return Astro.redirect(getPlusCheckoutPath({ step, url }), 303);
+  }
+  if (isPaymentStep && plusType === "personal" && hasPersonal) {
+    return Astro.redirect(getPath("access"));
+  }
+  if (isAccessStep && plusType === "personal" && !hasPersonal) {
+    return Astro.redirect(getPath("payment"));
+  }
+  if (isAccessStep && plusType === "team" && !hasTeam) {
+    return Astro.redirect(getPath("payment"));
+  }
+}
+
+async function getPriceData() {
+  const currentUserPlus = await getCurrentUserPlus(Astro);
+  return Promise.all(
+    PLUS_TYPES.map(async (type) => {
+      const price = await getPlusPrice({ context: Astro, type });
+      if (!price) return null;
+      return {
+        ...price,
+        selected: type === plusType,
+        active: currentUserPlus === "personal" && type === currentUserPlus,
+        upgrade: !!price.credit,
+        description:
+          type === "personal"
+            ? "For solo developers"
+            : "For up to 10 people in your company",
+        path: getPlusCheckoutPath({ url: Astro.url, type }),
+        originalAmount: formatCurrency({
+          amount: price.originalAmount / 100,
+          currency: price.currency,
+        }),
+        amount: formatCurrency({
+          amount: price.amount / 100,
+          currency: price.currency,
+        }),
+      };
+    })
+  );
+}
+
+const priceData = getPriceData();
+
+async function getOfferText() {
+  const data = await priceData;
+  const price = data.find((price) => price?.type === "personal");
+  if (!price?.percentOff) return null;
+
+  const formattedExpirationDate = price.expiresAt
+    ? new Date(price.expiresAt * 1000).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      })
+    : null;
+
+  const timeLeft = price.expiresAt
+    ? formatDistanceToNow(price.expiresAt * 1000)
+    : null;
+
+  const secondsLeft = price.expiresAt
+    ? price.expiresAt - Date.now() / 1000
+    : null;
+
+  const isExpiring = !!secondsLeft && secondsLeft < 60 * 60 * 12; // 12 hours
+
+  const licensesLeft = price.maxRedemptions
+    ? price.maxRedemptions - price.timesRedeemed
+    : null;
+
+  const licensesLeftText =
+    price.maxRedemptions === licensesLeft
+      ? ""
+      : ` <span class="opacity-40">—</span> ${licensesLeft} left`;
+
+  const text =
+    price.maxRedemptions &&
+    (!isExpiring || (licensesLeft && licensesLeft <= 10))
+      ? `Special offer for the next ${price.maxRedemptions} customers${licensesLeftText}`
+      : formattedExpirationDate && timeLeft
+        ? `Special offer ends on ${formattedExpirationDate} <span class="opacity-40">—</span> ${timeLeft} left`
+        : `Special offer for a limited time`;
+
+  return text;
+}
+---
+
+<Layout {step} {redirectUrl}>
+  <div class="grid md:grid-cols-2 gap-8 items-start">
+    {
+      shouldShowProductSelector && (
+        <div class="flex flex-col gap-8 sm:pt-9 sm:sticky top-9">
+          <div class="flex flex-col gap-2 items-start">
+            <h2 class="text-xl font-bold">Choose your license</h2>
+            <p class="ak-text/70">
+              One-time payment, lifetime access, free updates
+            </p>
+          </div>
+          {getOfferText().then((text) => {
+            if (!text) return null;
+            return (
+              <Fragment>
+                <div class="ak-badge-yellow-500 self-start gap-1.5 text-sm">
+                  <Icon name="sale" className="ak-badge-icon animate-pulse" />
+                  <div set:html={text} />
+                </div>
+              </Fragment>
+            );
+          })}
+          <div class="flex flex-col gap-4">
+            {priceData.then((prices) =>
+              prices.map((price) => {
+                if (!price) return null;
+                return (
+                  <a
+                    role="link"
+                    href={price.active ? undefined : price.path}
+                    aria-disabled={price.active}
+                    aria-current={price.selected ? "page" : undefined}
+                    class="ak-button ak-frame-card ak-layer-down-0.5 aria-disabled:ak-layer-down-0.5 aria-[current]:ak-layer aria-[current]:ring aria-[current]:shadow-lg aria-[current]:ak-edge-contrast-primary flex flex-col gap-2 items-start"
+                  >
+                    <span class="flex gap-2 items-center w-full">
+                      <span class="text-lg flex-1 flex items-center gap-2">
+                        <span class="size-[1em] text-(--ak-layer-ring) flex-none rounded-full border-2 border-current bg-clip-content p-0.5 in-aria-[current]:bg-current in-aria-[current]:text-primary" />
+                        {capitalize(price.type)}
+                        {price.active && (
+                          <span class="ak-badge-primary">
+                            <Icon name="check" className="ak-badge-icon" />
+                            <span>Purchased</span>
+                          </span>
+                        )}
+                        {price.upgrade && (
+                          <div class="ak-badge-primary ak-layer-primary">
+                            <Icon name="upgrade" className="ak-badge-icon" />
+                            <span>Upgrade</span>
+                          </div>
+                        )}
+                      </span>
+                      {!!price.percentOff && !price.active && (
+                        <>
+                          <span class="ak-badge-yellow-500">
+                            <span>Save {price.percentOff}%</span>
+                          </span>
+                          <del class="ak-text/0 font-normal" aria-hidden="true">
+                            {price.originalAmount}
+                          </del>
+                        </>
+                      )}
+                      {!price.active && (
+                        <span class="text-lg">{price.amount}</span>
+                      )}
+                    </span>
+                    <span class="ak-text/80 text-sm font-normal ms-[1.65rem]">
+                      {price.description}
+                    </span>
+                  </a>
+                );
+              })
+            )}
+            <p class="text-sm ak-text/70 justify-center flex items-center gap-1">
+              <Icon
+                name="info"
+                className="text-base ak-layer-contrast bg-transparent text-(--ak-layer)"
+              />{" "}
+              Taxes will be calculated at checkout
+            </p>
+          </div>
+        </div>
+      )
+    }
+    {
+      step === "login" && (
+        <SignUp
+          signInUrl={getPlusAccountPath({ url: Astro.url, path: "login" })}
+          forceRedirectUrl={getPath("payment")}
+          signInForceRedirectUrl={getPath("payment")}
+          appearance={{
+            elements: {
+              headerSubtitle: { display: "none" },
+              rootBox: { width: "100%", maxWidth: "100%" },
+              cardBox: { width: "100%", maxWidth: "100%" },
+            },
+          }}
+        />
+      )
+    }
+    {step === "payment" && <PlusCheckoutFrame type={plusType} />}
+  </div>
+  {
+    step === "access" && (
+      <div data-access-step>
+        <div class="flex flex-col gap-8 h-full justify-center items-center w-full">
+          <div class="flex flex-col gap-2 items-center">
+            <div class="ak-text-green-500/50 text-8xl">
+              <Icon name="checkCircle" strokeWidth={1} animateStroke={2000} />
+            </div>
+            <h2 class="text-2xl font-bold">Awesome!</h2>
+            <p class="ak-text/70">
+              You can now access all Ariakit Plus features
+            </p>
+          </div>
+          <h3 class="text-lg font-medium">Continue to the content</h3>
+          <div class="flex gap-4 items-center">
+            <PageCard
+              href={getPlusAccountPath({ url: Astro.url })}
+              thumbnailId="combobox-group"
+              title="Manage your team"
+              description="Give your teammates access"
+            />
+          </div>
+          <div class="flex flex-col gap-4 items-center py-8">
+            <h3 class="text-lg font-medium">Access more</h3>
+            <div class="flex gap-4 items-center flex-wrap justify-center">
+              <a href="/" class="ak-button ak-layer-pop">
+                Exclusive examples
+              </a>
+              <a href="/" class="ak-button ak-layer-pop">
+                All examples
+              </a>
+              <a href="/" class="ak-button ak-layer-pop">
+                Ariakit Plus Styles
+              </a>
+              <a href="/" class="ak-button ak-layer-pop">
+                Account
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+</Layout>
+
+<script>
+  async function runConfetti() {
+    const { default: confetti } = await import("canvas-confetti");
+
+    function fire(particleRatio: number, opts: confetti.Options) {
+      confetti({
+        origin: { y: 1, x: 0.5 },
+        disableForReducedMotion: true,
+        ...opts,
+        particleCount: Math.floor(200 * particleRatio),
+      });
+    }
+
+    fire(0.25, { spread: 26, startVelocity: 55, scalar: 1.5 });
+    fire(0.2, { spread: 60 });
+    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 120, startVelocity: 45 });
+  }
+
+  if (document.querySelector("[data-access-step]")) {
+    runConfetti();
+  }
+</script>

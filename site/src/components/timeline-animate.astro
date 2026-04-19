@@ -1,0 +1,122 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLTag, Polymorphic } from "astro/types";
+
+type Range =
+  | string
+  | {
+      start?: string;
+      end?: string;
+    };
+
+type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
+  /**
+   * Enables the timeline-driven animation. If false, behaves like a normal element.
+   * Defaults to true.
+   */
+  enabled?: boolean;
+  /**
+   * Name of the view timeline to follow. Can include or omit "--".
+   * Should match the `name` used in `timeline-anchor.astro`.
+   */
+  anchor?: string;
+  /**
+   * Keyframes identifier. Provide a custom animation name that is defined
+   * either globally or via the `keyframes` prop below.
+   */
+  animation?: string;
+  /**
+   * Optional keyframes CSS (without the `@keyframes` wrapper). If provided,
+   * the component will inject a scoped `@keyframes` with a stable name.
+   */
+  keyframes?: string;
+  /**
+   * Animation timing function. Defaults to "linear".
+   */
+  easing?: string;
+  /**
+   * Animation fill mode. Defaults to "both".
+   */
+  fillMode?: string;
+  /**
+   * Optional range configuration. Can be a full shorthand string or an object
+   * with `start` and `end` parts.
+   */
+  range?: Range;
+  /**
+   * Explicit range-start value. Example: "exit calc(var(--scroll-mt) * -3)".
+   */
+  rangeStart?: string;
+  /**
+   * Explicit range-end value. Example: "exit calc(var(--scroll-mt) * -1)".
+   */
+  rangeEnd?: string;
+};
+
+const {
+  as: Tag = "div",
+  enabled = true,
+  anchor = "anchor",
+  animation = undefined,
+  keyframes = undefined,
+  easing = "linear",
+  fillMode = "both",
+  range = undefined,
+  rangeStart = undefined,
+  rangeEnd = undefined,
+  ...rest
+} = Astro.props as Props<HTMLTag>;
+
+const normalizedTimeline = anchor.startsWith("--") ? anchor : `--${anchor}`;
+
+// Create a per-instance identifier and generate CSS rules targeting it.
+const instanceId = `tl-${normalizedTimeline.replace(/^--/, "")}-${Math.random()
+  .toString(36)
+  .slice(2, 8)}`;
+const animationName = animation || instanceId;
+let globalKeyframesCss = "";
+if (enabled && keyframes) {
+  globalKeyframesCss = `@keyframes ${animationName}{${keyframes}}`;
+}
+
+// Build per-instance CSS instead of inline styles, only when enabled
+let instanceCss = "";
+if (enabled) {
+  const cssParts: string[] = [];
+  cssParts.push(`[data-timeline-animate="${instanceId}"]{`);
+  cssParts.push(`animation-timeline:${normalizedTimeline};`);
+  cssParts.push(`animation-timing-function:${easing};`);
+  cssParts.push(`animation-fill-mode:${fillMode};`);
+  cssParts.push(`animation-name:${animationName};`);
+  if (rangeStart) cssParts.push(`animation-range-start:${rangeStart};`);
+  if (rangeEnd) cssParts.push(`animation-range-end:${rangeEnd};`);
+  if (!rangeStart && !rangeEnd && range) {
+    if (typeof range === "string") cssParts.push(`animation-range:${range};`);
+    else {
+      if (range.start) cssParts.push(`animation-range-start:${range.start};`);
+      if (range.end) cssParts.push(`animation-range-end:${range.end};`);
+    }
+  }
+  cssParts.push(`}`);
+  instanceCss = cssParts.join("");
+}
+---
+
+<Tag data-timeline-animate={enabled ? instanceId : undefined} {...rest}>
+  <slot />
+</Tag>
+
+{
+  enabled && globalKeyframesCss && (
+    <style is:global set:html={globalKeyframesCss} />
+  )
+}
+{enabled && instanceCss && <style is:global set:html={instanceCss} />}

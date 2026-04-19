@@ -1,0 +1,315 @@
+/**
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+
+@custom-variant ak-disclosure-open {
+  @container style(--ak-disclosure-open: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ak-disclosure-hover {
+  &:has(> :where(summary, button, [data-disclosure-button]):hover),
+  &:where(summary, button, [data-disclosure-button]):hover {
+    @slot;
+  }
+}
+
+@custom-variant ak-disclosure-group {
+  @container style(--ak-disclosure-group: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ak-not-disclosure-group {
+  @container not style(--ak-disclosure-group: 1) {
+    @slot;
+  }
+}
+
+/* ak-disclosure-group */
+@utility ak-disclosure-group {
+  @apply ak-frame-none/card;
+  --ak-disclosure-group: 1;
+}
+
+/* ak-disclosure */
+@utility ak-disclosure-split {
+  --ak-disclosure-split: 1;
+  @variant ak-disclosure-hover {
+    @apply ak-layer-hover-0;
+  }
+}
+
+@utility ak-disclosure_idle {
+  @apply p-0! max-w-[inherit] transition-none duration-300;
+  --ak-disclosure-open: 0;
+  --ak-disclosure-padding: var(--ak-frame-padding);
+  --ak-disclosure-radius: var(--ak-frame-radius);
+  --ak-disclosure-border: var(--ak-bordering, var(--ak-frame-border));
+  --ak-disclosure-duration: var(--tw-duration);
+
+  @variant ak-disclosure-group {
+    @apply ak-frame-cover p-0;
+  }
+
+  @variant motion-reduce {
+    @apply duration-0;
+  }
+
+  :where(summary) {
+    @apply ak-disclosure-button;
+  }
+  &::details-content {
+    @apply ak-disclosure-content-base_idle;
+  }
+  :where(summary ~ *) {
+    @apply ak-disclosure-content-body;
+  }
+}
+
+@utility ak-disclosure_hover {
+  @apply ak-layer-hover;
+}
+
+@utility ak-disclosure_open {
+  --ak-disclosure-open: 1;
+  &::details-content {
+    @apply ak-disclosure-content-base_open;
+  }
+}
+
+@utility ak-disclosure {
+  @apply ak-disclosure_idle;
+  @apply open:ak-disclosure_open;
+  @apply ak-disclosure-hover:ak-disclosure_hover;
+}
+
+@utility ak-disclosure-icon-* {
+  --ak-disclosure-icon-size: --spacing(--value(number));
+  --ak-disclosure-icon-size: --value(--spacing, [*]);
+}
+
+/* ak-disclosure-icon */
+@utility ak-disclosure-icon {
+  @apply min-h-(--ak-button-leading) size-(--ak-disclosure-icon-size) flex-none self-start;
+  svg {
+    @apply size-full;
+  }
+}
+
+/* ak-disclosure-button */
+@utility ak-disclosure-button_idle {
+  @apply ak-command-depth-x-3 ak-button_idle ak-text overflow-clip;
+  @apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding);
+  @apply w-full justify-start text-wrap text-start -outline-offset-2 transition-[border-radius];
+  --ak-disclosure-button-radius: calc(
+    var(--ak-disclosure-radius) - var(--ak-disclosure-border)
+  );
+  padding-inline-start: var(--ak-disclosure-ps, var(--ak-frame-padding));
+  transition-duration: calc(var(--ak-disclosure-duration) * 0.5);
+  transition-delay: calc(var(--ak-disclosure-duration) / 1.5);
+  @variant ak-disclosure-group {
+    @apply rounded-[inherit];
+  }
+
+  @container style(--ak-disclosure-icon-size) {
+    gap: var(--ak-disclosure-padding);
+  }
+}
+
+@utility ak-disclosure-button_hover {
+  @container style(--ak-disclosure-split: 1) {
+    @apply ak-layer-hover;
+  }
+}
+
+@utility ak-disclosure-button_open {
+  @apply rounded-b-none delay-0;
+}
+
+@utility ak-disclosure-button_focus {
+  @apply ak-button_focus;
+}
+
+@utility ak-disclosure-button_active {
+  @apply ak-button_active;
+}
+
+@utility ak-disclosure-button_disabled {
+  @apply ak-button_disabled;
+}
+
+@utility ak-disclosure-button {
+  @apply ak-disclosure-button_idle;
+  @apply ak-disclosure-open:ak-disclosure-button_open;
+  @apply ak-disclosure-hover:ak-command-hover:ak-disclosure-button_hover;
+  @apply ak-command-focus:ak-disclosure-button_focus;
+  @apply ak-command-active:ak-disclosure-button_active;
+  @apply ak-command-disabled:ak-disclosure-button_disabled;
+}
+
+/* ak-disclosure-chevron */
+@utility ak-disclosure-chevron-right_idle {
+  @apply ak-icon-chevron;
+  @apply w-(--ak-disclosure-chevron-size) -rotate-90 self-start transition-[rotate,opacity];
+  --ak-disclosure-chevron-size: 1.1em;
+  mask-size: var(--ak-disclosure-chevron-size);
+  transition-duration: var(--ak-disclosure-duration);
+  block-size: max(
+    var(--ak-button-leading),
+    var(--ak-disclosure-icon-size, 0px)
+  );
+}
+
+@utility ak-disclosure-chevron-right_open {
+  @apply rotate-0;
+}
+
+@utility ak-disclosure-chevron-right {
+  @apply ak-disclosure-chevron-right_idle;
+  @variant ak-disclosure-open {
+    @apply ak-disclosure-chevron-right_open;
+  }
+}
+
+@utility ak-disclosure-chevron-down_idle {
+  @apply ak-disclosure-chevron-right_idle rotate-0;
+}
+
+@utility ak-disclosure-chevron-down_open {
+  @apply rotate-180;
+}
+
+@utility ak-disclosure-chevron-down {
+  @apply ak-disclosure-chevron-down_idle;
+  @variant ak-disclosure-open {
+    @apply ak-disclosure-chevron-down_open;
+  }
+}
+
+/* ak-disclosure-plus */
+@utility ak-disclosure-plus_idle {
+  @apply w-(--ak-button-leading) flex-none self-start rounded-full transition-[rotate,background-size,opacity];
+  --ak-plus-line-thickness: 2px;
+  transition-duration:
+    var(--ak-disclosure-duration), calc(var(--ak-disclosure-duration) / 3);
+  background-image:
+    linear-gradient(currentColor 0 0), linear-gradient(currentColor 0 0);
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size:
+    60% var(--ak-plus-line-thickness),
+    var(--ak-plus-line-thickness) 60%;
+  block-size: max(
+    var(--ak-button-leading),
+    var(--ak-disclosure-icon-size, 0px)
+  );
+}
+
+@utility ak-disclosure-plus_open {
+  @apply rotate-90;
+  background-size: var(--ak-plus-line-thickness) 60%;
+}
+
+@utility ak-disclosure-plus {
+  @apply ak-disclosure-plus_idle;
+  @variant ak-disclosure-open {
+    @apply ak-disclosure-plus_open;
+  }
+}
+
+/* ak-disclosure-guide */
+@utility ak-disclosure-guide {
+  --ak-disclosure-guide-shift: var(--ak-disclosure-icon-size, --spacing(4));
+  --ak-disclosure-ps: calc(
+    var(--ak-disclosure-guide-shift) + var(--ak-disclosure-padding) * 2
+  );
+
+  &::before {
+    @apply ak-layer-current;
+    @apply absolute border-e;
+    content: "";
+    inset-block: 0;
+    inset-inline-start: calc(
+      var(--ak-disclosure-padding) + var(--ak-disclosure-guide-shift) * 0.5
+    );
+  }
+}
+
+/* ak-disclosure-content */
+@utility ak-disclosure-content-base_idle {
+  @apply z-1 relative max-h-0 overflow-clip rounded-b-[inherit] p-0 transition-[content-visibility,height,max-height];
+  --ak-disclosure-group: 0;
+  transition-behavior: allow-discrete;
+  interpolate-size: allow-keywords;
+
+  html:focus-within & {
+    @starting-style {
+      @apply max-h-0;
+    }
+  }
+
+  @supports (interpolate-size: allow-keywords) {
+    transition-duration: var(--ak-disclosure-duration);
+  }
+
+  @container style(--ak-disclosure-icon-size) {
+    --ak-disclosure-ps: calc(
+      var(--ak-disclosure-icon-size) + var(--ak-disclosure-padding) * 2
+    );
+  }
+}
+
+@utility ak-disclosure-content-base_open {
+  @apply max-h-max;
+}
+
+@utility ak-disclosure-content_idle {
+  @apply ak-disclosure-content-base_idle;
+  :where(& > *) {
+    @apply ak-disclosure-content-body;
+  }
+}
+
+@utility ak-disclosure-content_open {
+  @apply ak-disclosure-content-base_open;
+}
+
+@utility ak-disclosure-content {
+  @apply ak-disclosure-content_idle;
+  details[open] > & {
+    @apply ak-disclosure-content_open;
+  }
+  @variant ak-disclosure-open {
+    @apply ak-disclosure-content_open;
+  }
+}
+
+@utility ak-disclosure-content-body {
+  @apply ak-layer-current;
+  @apply rounded-b-[inherit];
+  --ak-disclosure-icon-size: unset;
+  padding: var(--ak-frame-padding);
+  padding-inline-start: var(--ak-disclosure-ps, var(--ak-frame-padding));
+  padding-block-start: calc(
+    var(--ak-frame-padding) * var(--ak-disclosure-split, 0)
+  );
+  border-block-start-width: calc(
+    var(--ak-disclosure-border) * var(--ak-disclosure-split, 0)
+  );
+}
+
+/* ak-disclosure-actions */
+@utility ak-disclosure-actions {
+  @apply h-(--ak-button-leading) relative -mt-[0.1875rem] ms-auto;
+  &::before {
+    @apply absolute -inset-4 start-0;
+    content: "";
+  }
+}

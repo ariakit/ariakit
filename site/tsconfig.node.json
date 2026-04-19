@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.node.json",
+  "include": [
+    ".astro/types.d.ts",
+    "**/*.ts",
+    "**/*.astro",
+    "../worker-configuration.d.ts"
+  ],
+  "exclude": ["**/*test.ts", "dist"]
+}

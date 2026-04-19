@@ -13,7 +13,7 @@ Add automatic hierarchy to your page contents so users can easily navigate them.
 
 <div data-tags></div>
 
-<a href="../examples/heading/index.tsx" data-playground>Example</a>
+<a href="../examples/heading/index.react.tsx" data-playground>Example</a>
 
 ## API
 

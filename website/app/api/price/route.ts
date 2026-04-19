@@ -1,4 +1,4 @@
-import { getPlusPrice } from "utils/stripe.js";
+import { getPlusPrice } from "@/lib/stripe.ts";
 
 export const dynamic = "force-dynamic";
 
