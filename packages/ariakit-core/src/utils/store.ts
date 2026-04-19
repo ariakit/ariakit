@@ -110,13 +110,14 @@ export function createStore<S extends State>(
           if (!hasOwnProperty(storeState, key)) return;
           return chain(
             propSync(store, [key], (storeProps) => {
-              if (props[key] === undefined && storeProps[key] === undefined) {
-                return;
-              }
-              storeSetProp(key, storeProps[key], true);
+              const value = storeProps[key];
+              if (value === undefined) return;
+              storeSetProp(key, value, true);
             }),
             internalSync(store, [key], (state) => {
-              storeSetState(key, state[key], true);
+              const value = state[key];
+              if (value === undefined) return;
+              storeSetState(key, value, true);
             }),
           );
         }),
