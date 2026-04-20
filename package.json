@@ -69,7 +69,7 @@
     "@ariakit/solid-core": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "@ariakit/test": "workspace:*",
-    "@changesets/apply-release-plan": "7.1.0",
+    "@changesets/apply-release-plan": "7.1.1",
     "@changesets/cli": "2.30.0",
     "@playwright/test": "1.59.1",
     "@testing-library/jest-dom": "6.9.1",
