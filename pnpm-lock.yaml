@@ -435,8 +435,8 @@ importers:
         specifier: 6.0.1
         version: 6.0.1(@testing-library/jest-dom@6.9.1)(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(solid-js@1.9.12)(terser@5.46.0)(yaml@2.8.3)
       '@clerk/astro':
-        specifier: 3.0.15
-        version: 3.0.15(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 3.0.16
+        version: 3.0.16(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@fontsource-variable/inter':
         specifier: 5.2.8
         version: 5.2.8
@@ -1936,8 +1936,8 @@ packages:
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
 
-  '@clerk/astro@3.0.15':
-    resolution: {integrity: sha512-Q7pMAWoux3rIwsAt9d8jkkVecZIj/+hYpMrKtoWb1em3D5dtNgSpbspFusqNKEJkyu8DlBA1pZGV2NSAMet/Vg==}
+  '@clerk/astro@3.0.16':
+    resolution: {integrity: sha512-L4OVK+boPLCNAOkqTe02wg/8p3HxzcUEQ3P6RIoEkchpwx1eQEpyjJNx4BfyH3MeMqYYadti+b51lER83HulNA==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       astro: ^4.15.0 || ^5.0.0 || ^6.0.0
@@ -1946,8 +1946,8 @@ packages:
     resolution: {integrity: sha512-zmd0jPyb1iALlmyzyRbgujQXrGqw8sf+VpFjm5GkndpBeq5+9+oH7QgMaFEmWi9oxvTd2sZ+EN+QT4+OXPUnGA==}
     engines: {node: '>=14'}
 
-  '@clerk/backend@3.2.11':
-    resolution: {integrity: sha512-EPgFP3c4TpsZGMILW0pD0qkM4mCF0eSFMAVB3c6YyM4bCoEg/pTTgBCkNJtt7T/fo0hlMq6qfOoZA8adWTUaaA==}
+  '@clerk/backend@3.2.12':
+    resolution: {integrity: sha512-pTuD3+3IvLrjx9XMYdbqpttTltrWc7npxkOIDzhtID5/+IOomxZAzsnxU1G1hvOeBoR1Jl68ZgKQw66aZ+DRFQ==}
     engines: {node: '>=20.9.0'}
 
   '@clerk/clerk-react@4.32.5':
@@ -1977,8 +1977,8 @@ packages:
       react:
         optional: true
 
-  '@clerk/shared@4.8.1':
-    resolution: {integrity: sha512-4grzU4Zj/0zaDA30cqCgvcS9x7JjhwFixMoDAOHSIN76OOqarzEf69U27MAunW9a7UYbKO5bNFJZDL4oNsnbzA==}
+  '@clerk/shared@4.8.2':
+    resolution: {integrity: sha512-kBFDNeLdiNZkOHavTkOB00NMuqsmOGgVtDlzCS0/yivxsCUZXk3AT6+UsTfeSBGV7QD80YxjeFMNSrpqnSv4Gg==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -12330,10 +12330,10 @@ snapshots:
       human-id: 4.1.3
       prettier: 2.8.8
 
-  '@clerk/astro@3.0.15(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/astro@3.0.16(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/backend': 3.2.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/shared': 4.8.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/backend': 3.2.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 4.8.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       astro: 5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3)
       nanoid: 5.1.6
       nanostores: 1.0.1
@@ -12355,9 +12355,9 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@clerk/backend@3.2.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/backend@3.2.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/shared': 4.8.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 4.8.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       standardwebhooks: 1.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -12405,7 +12405,7 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  '@clerk/shared@4.8.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/shared@4.8.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/query-core': 5.90.16
       dequal: 2.0.3
