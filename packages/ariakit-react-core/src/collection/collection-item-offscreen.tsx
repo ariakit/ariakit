@@ -27,6 +27,7 @@ function cancelIdleCallback(id: number) {
 
 export function useCollectionItemOffscreen<
   T extends ElementType,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends CollectionItemProps<T>,
 >({ offscreenMode = "active", offscreenRoot, ...props }: P) {
   const id = useId(props.id);

@@ -64,7 +64,7 @@ function isUpdater<T>(
   return typeof argument === "function";
 }
 
-function isLazyValue<T>(value: any): value is () => T {
+function isLazyValue<T>(value: T | (() => T)): value is () => T {
   return typeof value === "function";
 }
 

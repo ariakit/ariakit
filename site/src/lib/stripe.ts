@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { APIContext } from "astro";
+// oxlint-disable-next-line no-named-as-default
 import Stripe from "stripe";
 import { findInOrder } from "./array.ts";
 import type { User } from "./auth.ts";

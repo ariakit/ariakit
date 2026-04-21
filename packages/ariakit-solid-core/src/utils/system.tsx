@@ -51,10 +51,11 @@ export function createInstance(
 /**
  * Returns props with an additional `wrapInstance` prop.
  */
-export function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
-  props: P & { wrapInstance?: WrapInstance },
-  element: WrapInstanceValue,
-): Q {
+export function wrapInstance<
+  P,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
+  Q = P & { wrapInstance: WrapInstance },
+>(props: P & { wrapInstance?: WrapInstance }, element: WrapInstanceValue): Q {
   const wrapInstance = [...(props.wrapInstance ?? []), element];
   return mergeProps(props, { wrapInstance }) as Q;
 }

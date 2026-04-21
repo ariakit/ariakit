@@ -30,6 +30,10 @@
       ]
     },
     {
+      "groupName": "changesets",
+      "matchPackageNames": ["/^@changesets\\//"]
+    },
+    {
       "groupName": "clerk",
       "matchPackageNames": ["/^@clerk\\//"]
     },

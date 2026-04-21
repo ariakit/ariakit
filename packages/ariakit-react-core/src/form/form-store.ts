@@ -119,6 +119,7 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    * // Can also use store.names for type safety.
    * const emailValue = store.useValue(store.names.email);
    */
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   useValue: <T = any>(name: StringLike) => T;
   /**
    * Custom hook that accepts a callback that will be used to validate the form
