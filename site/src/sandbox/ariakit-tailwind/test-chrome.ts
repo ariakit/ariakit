@@ -524,8 +524,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
         const results = await new AxeBuilder({ page })
           .withRules(["color-contrast"])
           .analyze();
-        const violations = await page.evaluate(
-          formatColorContrastViolations,
+        const violations = await page.evaluate<
+          ColorContrastViolationMap,
+          AxeViolation[]
+        >(
+          (violations) => formatColorContrastViolations(violations),
           results.violations,
         );
         if (Object.keys(violations).length > 0) {
