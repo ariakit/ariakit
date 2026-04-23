@@ -2,7 +2,7 @@ import { AxeBuilder } from "@axe-core/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
-type ColorContrastViolationMap = Record<string, number>;
+type ColorContrastViolationMap = Record<string, string>;
 
 interface AxeViolation {
   nodes: AxeViolationNode[];
@@ -18,7 +18,9 @@ interface AxeViolationNode {
 
 interface AxeCheckResult {
   data?: {
+    bgColor?: string;
     contrastRatio?: number;
+    fgColor?: string;
   };
 }
 
@@ -478,17 +480,24 @@ function formatColorContrastViolations(
     for (const check of [...node.any, ...node.all, ...node.none]) {
       const contrastRatio = check.data?.contrastRatio;
       if (typeof contrastRatio === "number") {
-        return contrastRatio;
+        return {
+          bgColor: check.data?.bgColor,
+          contrastRatio,
+          fgColor: check.data?.fgColor,
+        };
       }
     }
     return null;
   };
 
-  const entries = new Map<string, number>();
+  const entries = new Map<
+    string,
+    { bgColor?: string; contrastRatio: number; fgColor?: string }
+  >();
   for (const violation of violations) {
     for (const node of violation.nodes) {
-      const contrastRatio = getContrastRatio(node);
-      if (contrastRatio == null) {
+      const contrastData = getContrastRatio(node);
+      if (contrastData == null) {
         continue;
       }
       const selector = getTargetSelector(node.target);
@@ -500,17 +509,22 @@ function formatColorContrastViolations(
       if (!key) {
         continue;
       }
-      const previousContrastRatio = entries.get(key);
+      const previousContrastData = entries.get(key);
       if (
-        previousContrastRatio == null ||
-        contrastRatio < previousContrastRatio
+        previousContrastData == null ||
+        contrastData.contrastRatio < previousContrastData.contrastRatio
       ) {
-        entries.set(key, contrastRatio);
+        entries.set(key, contrastData);
       }
     }
   }
   return Object.fromEntries(
-    Array.from(entries).sort(([pathA], [pathB]) => pathA.localeCompare(pathB)),
+    Array.from(entries)
+      .sort(([pathA], [pathB]) => pathA.localeCompare(pathB))
+      .map(([path, { bgColor, contrastRatio, fgColor }]) => {
+        const colors = fgColor && bgColor ? ` (${bgColor} > ${fgColor})` : "";
+        return [path, `${contrastRatio}${colors}`];
+      }),
   );
 }
 
@@ -527,10 +541,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         const violations = await page.evaluate<
           ColorContrastViolationMap,
           AxeViolation[]
-        >(
-          (violations) => formatColorContrastViolations(violations),
-          results.violations,
-        );
+        >(formatColorContrastViolations, results.violations);
         if (Object.keys(violations).length > 0) {
           throw new Error(JSON.stringify(violations, null, 2));
         }
