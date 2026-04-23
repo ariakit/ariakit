@@ -3,6 +3,7 @@ import { test as base } from "@playwright/test";
 import {
   appendResults,
   createPerfMeasure,
+  createPerfPageLoadMeasure,
   type PerfMeasureOptions,
   type PerfMetrics,
   type PerfResult,
@@ -16,6 +17,7 @@ export const test = base.extend<{
       interaction: () => Promise<void>,
       options?: PerfMeasureOptions,
     ) => Promise<PerfMetrics>;
+    measurePageLoad: (options?: PerfMeasureOptions) => Promise<PerfMetrics>;
   };
   q: ReturnType<typeof query>;
 }>({
@@ -31,6 +33,8 @@ export const test = base.extend<{
     await use({
       measure: (interaction, options) =>
         createPerfMeasure(page, interaction, results, testInfo, options),
+      measurePageLoad: (options) =>
+        createPerfPageLoadMeasure(page, results, testInfo, options),
     });
     if (results.length > 0) {
       appendResults(results, testInfo);

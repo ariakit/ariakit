@@ -1,6 +1,10 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("page load", async ({ perf }) => {
+    await perf.measurePageLoad();
+  });
+
   test("toggle layer and text classes", async ({ page, perf }) => {
     await perf.measure(async () => {
       await page.evaluate(() => {

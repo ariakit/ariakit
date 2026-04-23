@@ -31,6 +31,11 @@ export interface PerfMeasureOptions {
   label?: string;
 }
 
+interface CreatePerfMeasureOptions extends PerfMeasureOptions {
+  /** Re-navigate to the current page URL before each measured interaction. */
+  resetPage?: boolean;
+}
+
 export interface PerfResult {
   testFile: string;
   testTitle: string;
@@ -145,19 +150,20 @@ async function measureOnce(
 
 /**
  * Runs the interaction multiple times, discards warm-up runs, and returns the
- * median metrics. Each iteration re-navigates to the page URL for a clean
- * state.
+ * median metrics. By default, each iteration re-navigates to the page URL for
+ * a clean state.
  */
 export async function createPerfMeasure(
   page: Page,
   interaction: () => Promise<void>,
   results: PerfResult[],
   testInfo: TestInfo,
-  options: PerfMeasureOptions = {},
+  options: CreatePerfMeasureOptions = {},
 ): Promise<PerfMetrics> {
   const {
     iterations = DEFAULT_ITERATIONS,
     warmup = DEFAULT_WARMUP,
+    resetPage = true,
     label,
   } = options;
 
@@ -177,8 +183,10 @@ export async function createPerfMeasure(
     const url = page.url();
 
     for (let i = 0; i < warmup + iterations; i++) {
-      // Re-navigate for a clean state on every iteration.
-      await page.goto(url, { waitUntil: "networkidle" });
+      if (resetPage) {
+        // Re-navigate for a clean state on every iteration.
+        await page.goto(url, { waitUntil: "networkidle" });
+      }
 
       const metrics = await measureOnce(page, cdp, interaction);
 
@@ -211,6 +219,27 @@ export async function createPerfMeasure(
   });
 
   return medianMetrics;
+}
+
+export async function createPerfPageLoadMeasure(
+  page: Page,
+  results: PerfResult[],
+  testInfo: TestInfo,
+  options: PerfMeasureOptions = {},
+): Promise<PerfMetrics> {
+  const url = page.url();
+  return createPerfMeasure(
+    page,
+    async () => {
+      await page.goto(url, { waitUntil: "networkidle" });
+    },
+    results,
+    testInfo,
+    {
+      ...options,
+      resetPage: false,
+    },
+  );
 }
 
 /**
