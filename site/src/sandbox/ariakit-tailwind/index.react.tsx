@@ -240,6 +240,30 @@ export default function Example() {
             className="ak-layer-[#111C2A] *:ak-text *:ak-text-[#007acc]"
           />
           <Cell
+            label="L62 orange"
+            className="ak-layer-[#0C0E12] *:ak-text *:ak-text-[oklch(0.6243_0.1611_30)]"
+          />
+          <Cell
+            label="L62 green"
+            className="ak-layer-[#0C0E12] *:ak-text *:ak-text-[oklch(0.6243_0.1611_150)]"
+          />
+          <Cell
+            label="L62 magenta"
+            className="ak-layer-[#0C0E12] *:ak-text *:ak-text-[oklch(0.6243_0.1611_330)]"
+          />
+          <Cell
+            label="L57 orange"
+            className="ak-layer-[#111C2A] *:ak-text *:ak-text-[oklch(0.567_0.1616_30)]"
+          />
+          <Cell
+            label="L57 green"
+            className="ak-layer-[#111C2A] *:ak-text *:ak-text-[oklch(0.567_0.1616_150)]"
+          />
+          <Cell
+            label="L57 magenta"
+            className="ak-layer-[#111C2A] *:ak-text *:ak-text-[oklch(0.567_0.1616_330)]"
+          />
+          <Cell
             label="#CB8CC6"
             className="ak-layer-[#131418] *:ak-text *:ak-text-[#CB8CC6]"
           />

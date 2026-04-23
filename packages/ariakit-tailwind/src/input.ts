@@ -50,12 +50,10 @@ const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L = 0.25;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST = 0.03;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_START_L = 0.68;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_FULL_L = 0.74;
-const CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_HUE_MIN = 230;
-const CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_HUE_MAX = 260;
-const CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_CHROMA_START = 0.14;
-const CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_LIGHTNESS_START = 0.54;
-const CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_LIGHTNESS_FULL = 0.57;
-const CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_RELIEF = 0.24;
+const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_CHROMA_START = 0.14;
+const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_START = 0.54;
+const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_FULL = 0.57;
+const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_RELIEF = 0.24;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE = 1.0;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
@@ -1421,16 +1419,11 @@ function getTextDirectional() {
       ),
     ),
   );
-  const darkBlueTextRelief = fn.mul(
-    getRangeMask(
-      h,
-      CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_HUE_MIN,
-      CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_HUE_MAX,
-    ),
+  const darkVividTextRelief = fn.mul(
     fn.binary(
       fn.sub(
         textChromaUncapped,
-        CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_CHROMA_START,
+        CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_CHROMA_START,
       ),
     ),
     fn.clamp01(
@@ -1438,12 +1431,12 @@ function getTextDirectional() {
         fn.relu(
           fn.sub(
             textUserLightness,
-            CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_LIGHTNESS_START,
+            CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_START,
           ),
         ),
         fn.sub(
-          CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_LIGHTNESS_FULL,
-          CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_LIGHTNESS_START,
+          CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_FULL,
+          CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_START,
         ),
       ),
     ),
@@ -1451,7 +1444,7 @@ function getTextDirectional() {
   const darkChromaMinContrast = fn.add(
     fn.sub(
       CHILD_TEXT_MIN_CONTRAST_DARK,
-      fn.mul(CHILD_TEXT_MIN_CONTRAST_DARK_BLUE_RELIEF, darkBlueTextRelief),
+      fn.mul(CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_RELIEF, darkVividTextRelief),
     ),
     fn.mul(
       fn.add(
