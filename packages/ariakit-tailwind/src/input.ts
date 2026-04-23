@@ -48,16 +48,14 @@ const CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE = 22.0;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_MAX_CHROMA = 0.04;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L = 0.25;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST = 0.03;
-const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_PARENT_MAX_L = 0.3;
-const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L = 0.6;
-const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_FULL_L = 0.63;
-const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF = 0.13;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_START_L = 0.68;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_FULL_L = 0.74;
-const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_CHROMA_START = 0.14;
-const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_START = 0.54;
-const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_FULL = 0.57;
-const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_RELIEF = 0.24;
+const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_PARENT_MAX_L = 0.3;
+const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_CHROMA_FULL = 0.14;
+const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_VIVID_START_L = 0.54;
+const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L = 0.03;
+const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL = 0.13;
+const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_VIVID = 0.24;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE = 1.0;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
@@ -325,6 +323,20 @@ function getAutoLightness(
  */
 function lightDark(light: Value, dark: Value) {
   return fn.add(fn.mul(vars.lightL, light), fn.mul(vars.darkL, dark));
+}
+
+/**
+ * Linearly blends two values using a 0..1 weight.
+ */
+function mixValues(from: Value, to: Value, weight: Value) {
+  return fn.add(from, fn.mul(weight, fn.sub(to, from)));
+}
+
+/**
+ * Returns the normalized 0..1 progress of `value` between `start` and `end`.
+ */
+function getRampProgress(value: Value, start: Value, end: Value) {
+  return fn.clamp01(fn.div(fn.relu(fn.sub(value, start)), fn.sub(end, start)));
 }
 
 /**
@@ -1396,88 +1408,70 @@ function getTextDirectional() {
   );
   const darkNeutralTextBoost = fn.mul(
     darkNeutralTextMask,
-    fn.clamp01(
-      fn.div(
-        fn.relu(
-          fn.sub(
-            vars.textParentL,
-            CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L,
-          ),
-        ),
-        fn.sub(
-          DARK_THRESHOLD_L,
-          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L,
-        ),
-      ),
+    getRampProgress(
+      vars.textParentL,
+      CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L,
+      DARK_THRESHOLD_L,
     ),
     CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST,
   );
-  const darkNeutralTextRelief = fn.mul(
-    darkNeutralTextMask,
+  const darkReliefChroma = getRampProgress(
+    textChromaUncapped,
+    CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_MAX_CHROMA,
+    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_CHROMA_FULL,
+  );
+  const darkReliefParentMask = mixValues(
     fn.binary(
       fn.sub(
-        CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_PARENT_MAX_L,
+        CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_PARENT_MAX_L,
         vars.textParentL,
       ),
     ),
-    fn.clamp01(
-      fn.div(
-        fn.relu(
-          fn.sub(
-            textUserLightness,
-            CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L,
-          ),
-        ),
-        fn.sub(
-          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_FULL_L,
-          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L,
-        ),
+    1,
+    darkReliefChroma,
+  );
+  const darkNeutralReliefStartLightness = fn.sub(
+    fn.add(
+      vars.textParentL,
+      fn.sub(
+        CHILD_TEXT_MIN_CONTRAST_DARK,
+        CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL,
+      ),
+    ),
+    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L,
+  );
+  const darkReliefStartLightness = mixValues(
+    darkNeutralReliefStartLightness,
+    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_VIVID_START_L,
+    darkReliefChroma,
+  );
+  const darkAdaptiveTextRelief = fn.mul(
+    darkReliefParentMask,
+    getRampProgress(
+      textUserLightness,
+      darkReliefStartLightness,
+      fn.add(
+        darkReliefStartLightness,
+        CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L,
       ),
     ),
   );
-  const darkTextRelief = fn.clamp01(
-    fn.div(
-      fn.relu(
-        fn.sub(textUserLightness, CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_START_L),
-      ),
-      fn.sub(
-        CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_FULL_L,
-        CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_START_L,
-      ),
-    ),
-  );
-  const darkVividTextRelief = fn.mul(
-    fn.binary(
-      fn.sub(
-        textChromaUncapped,
-        CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_CHROMA_START,
-      ),
-    ),
-    fn.clamp01(
-      fn.div(
-        fn.relu(
-          fn.sub(
-            textUserLightness,
-            CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_START,
-          ),
-        ),
-        fn.sub(
-          CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_FULL,
-          CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_LIGHTNESS_START,
-        ),
-      ),
-    ),
+  const darkTextRelief = getRampProgress(
+    textUserLightness,
+    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_START_L,
+    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_FULL_L,
   );
   const darkChromaMinContrast = fn.add(
     fn.sub(
-      fn.sub(
-        CHILD_TEXT_MIN_CONTRAST_DARK,
-        fn.mul(
-          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF,
-          darkNeutralTextRelief,
+      CHILD_TEXT_MIN_CONTRAST_DARK,
+      fn.mul(
+        mixValues(
+          CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL,
+          CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_VIVID,
+          darkReliefChroma,
         ),
+        darkAdaptiveTextRelief,
       ),
-      fn.mul(CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_RELIEF, darkVividTextRelief),
     ),
     fn.mul(
       fn.add(
