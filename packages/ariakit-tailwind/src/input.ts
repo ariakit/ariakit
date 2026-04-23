@@ -450,7 +450,6 @@ const layerMathVars = {
   forbiddenLb: _ak.var("flb"),
   safeL: _ak.var("sl"),
   autoDirectionToLight: _ak.var("adtl"),
-  autoDirectionToDark: _ak.var("adtd"),
   layerIdleAutoDelta: _ak.var("liad"),
   layerAutoComputedDelta: _ak.var("ladc"),
   layerAutoDelta: _ak.var("lad", 0),
@@ -753,8 +752,8 @@ function getPushL(pushValue: Value) {
   );
   // These are mutually exclusive (l cannot be both below fla and above flb),
   // and each can only fire when the auto-direction aligns with the crossing
-  // direction, so the autoDirectionToLight / autoDirectionToDark weights that
-  // were here before are redundant and have been removed.
+  // direction, so the direction weights that were here before are redundant
+  // and have been removed.
   const crossed = fn.add(crossedFromDarkSide, crossedFromLightSide);
   // When l starts inside the forbidden range (crossed is always 0 there),
   // baseLightness may still sit inside the range, so a second mask is needed.
@@ -994,7 +993,6 @@ const layerMathDeclarations = [
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
-  set(vars.autoDirectionToDark, fn.clamp01(fn.neg(vars.autoLDirection))),
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
   set(vars.layerIdleAutoDelta, getAutoL(inputs.layerIdleAutoL)),
   set(vars.layerAutoComputedDelta, getAutoL(inputs.layerAutoL)),
