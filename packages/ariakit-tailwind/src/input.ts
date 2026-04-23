@@ -452,7 +452,8 @@ const layerMathVars = {
   autoDirectionToLight: _ak.var("adtl"),
   autoDirectionToDark: _ak.var("adtd"),
   layerIdleAutoDelta: _ak.var("liad"),
-  layerAutoDelta: _ak.var("lad"),
+  layerAutoComputedDelta: _ak.var("ladc"),
+  layerAutoDelta: _ak.var("lad", 0),
   layerIdlePushValue: _ak.var("lipv"),
   layerPushValue: _ak.var("lpv"),
   layerIdleContrastValue: _ak.var("licv"),
@@ -996,7 +997,7 @@ const layerMathDeclarations = [
   set(vars.autoDirectionToDark, fn.clamp01(fn.neg(vars.autoLDirection))),
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
   set(vars.layerIdleAutoDelta, getAutoL(inputs.layerIdleAutoL)),
-  set(vars.layerAutoDelta, getAutoL(inputs.layerAutoL)),
+  set(vars.layerAutoComputedDelta, getAutoL(inputs.layerAutoL)),
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
@@ -1143,7 +1144,11 @@ utility(
   ),
 );
 
-utility("state-*", set(inputs.layerAutoL, getPercentTokenValue("[*]")));
+utility(
+  "state-*",
+  set(inputs.layerAutoL, getPercentTokenValue("[*]")),
+  set(vars.layerAutoDelta, vars.layerAutoComputedDelta),
+);
 
 const layerLighten = utility(
   "layer-lighten-*",
