@@ -11,9 +11,9 @@ function Layer({ label, children, ...props }: LayerProps) {
   label =
     label ??
     (children
-      ? /ak-layer-\S+/.exec(props.className ?? "")?.[0]
-      : (/ak-layer[a-z-]*-(\d+)/.exec(props.className ?? "")?.[1] ??
-        /ak-layer-([\w-[\]#]+)/.exec(props.className ?? "")?.[1]));
+      ? /ak-(?:layer|state)-\S+/.exec(props.className ?? "")?.[0]
+      : (/ak-(?:layer|state)[a-z-]*-(\d+)/.exec(props.className ?? "")?.[1] ??
+        /ak-(?:layer|state)-([\w-[\]#]+)/.exec(props.className ?? "")?.[1]));
   return (
     <section
       aria-labelledby={label ? id : undefined}
@@ -62,6 +62,24 @@ function Layers() {
           <Cell className="ak-layer-80" />
           <Cell className="ak-layer-90" />
           <Cell className="ak-layer-100" />
+        </Layer>
+      </Layer>
+      <Layer
+        label="ak-state-<number>"
+        className="ak-layer ak-frame ak-frame-cover ak-frame-border flex-col"
+      >
+        <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row">
+          <Cell className="ak-state-0 *:ak-text *:ak-text-red-600" />
+          <Cell className="ak-state-10 *:ak-text *:ak-text-green-600" />
+          <Cell className="ak-state-20 *:ak-text *:ak-text-blue-600" />
+          <Cell className="ak-state-30 *:ak-text *:ak-text-pink-600" />
+          <Cell className="ak-state-40 *:ak-text *:ak-text-blue-600 *:ak-text-complementary" />
+          <Cell className="ak-state-50 ak-ink-0" />
+          <Cell className="ak-state-60" />
+          <Cell className="ak-state-70" />
+          <Cell className="ak-state-80" />
+          <Cell className="ak-state-90" />
+          <Cell className="ak-state-100" />
         </Layer>
       </Layer>
       <Layer
