@@ -48,6 +48,11 @@ const CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE = 22.0;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_MAX_CHROMA = 0.04;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L = 0.25;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST = 0.03;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_BUCKET_MIN_L = 0.1875;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_BUCKET_MAX_L = 0.3125;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L = 0.58;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_FULL_L = 0.63;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF = 0.09;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE = 1.0;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
@@ -471,6 +476,7 @@ const textMathVars = {
   darkTextContrastChroma: _ak.var("tdtc"),
   darkNeutralTextMask: _ak.var("tdnm"),
   darkNeutralTextBoost: _ak.var("tdnb"),
+  darkNeutralTextRelief: _ak.var("tdnr"),
   darkChromaMinContrast: _ak.var("tdcmc"),
   lightChromaMinContrast: _ak.var("tlcmc"),
   textDarkDirectionMask: _ak.var("tddm"),
@@ -1446,12 +1452,36 @@ function getTextDirectionalDeclarations() {
     ),
     CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST,
   );
+  const darkNeutralTextRelief = fn.mul(
+    darkNeutralTextMask,
+    getRangeMask(
+      vars.textParentL,
+      CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_BUCKET_MIN_L,
+      CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_BUCKET_MAX_L,
+    ),
+    fn.clamp01(
+      fn.div(
+        fn.relu(
+          fn.sub(
+            vars.textUserLightness,
+            CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L,
+          ),
+        ),
+        fn.sub(
+          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_FULL_L,
+          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L,
+        ),
+      ),
+    ),
+    CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF,
+  );
   return [
     set(vars.textChromaUncapped, textChromaUncapped),
     set(vars.textContrastChroma, textContrastChroma),
     set(vars.darkTextContrastChroma, darkTextContrastChroma),
     set(vars.darkNeutralTextMask, darkNeutralTextMask),
     set(vars.darkNeutralTextBoost, darkNeutralTextBoost),
+    set(vars.darkNeutralTextRelief, darkNeutralTextRelief),
     set(
       vars.darkChromaMinContrast,
       fn.add(
@@ -1461,6 +1491,7 @@ function getTextDirectionalDeclarations() {
           fn.mul(vars.darkTextContrastChroma, vars.darkTextContrastChroma),
         ),
         vars.darkNeutralTextBoost,
+        fn.neg(vars.darkNeutralTextRelief),
       ),
     ),
     set(
