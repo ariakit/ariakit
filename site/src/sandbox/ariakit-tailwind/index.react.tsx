@@ -13,7 +13,7 @@ function Layer({ label, children, ...props }: LayerProps) {
     (children
       ? /ak-layer-\S+/.exec(props.className ?? "")?.[0]
       : (/ak-layer[a-z-]*-(\d+)/.exec(props.className ?? "")?.[1] ??
-        /ak-layer-([\w-]+)/.exec(props.className ?? "")?.[1]));
+        /ak-layer-([\w-[\]#]+)/.exec(props.className ?? "")?.[1]));
   return (
     <section
       aria-labelledby={label ? id : undefined}
@@ -29,6 +29,20 @@ function Layer({ label, children, ...props }: LayerProps) {
   );
 }
 
+interface CellProps extends LayerProps {}
+
+function Cell(props: CellProps) {
+  return (
+    <Layer
+      {...props}
+      className={clsx(
+        "ak-layer ak-frame ak-frame-p-1 ak-frame-border",
+        props.className,
+      )}
+    />
+  );
+}
+
 function Layers() {
   return (
     <>
@@ -37,17 +51,17 @@ function Layers() {
         className="ak-layer ak-frame ak-frame-cover ak-frame-border flex-col"
       >
         <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row">
-          <Layer className="ak-layer ak-layer-0 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-red-600" />
-          <Layer className="ak-layer ak-layer-10 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-green-600" />
-          <Layer className="ak-layer ak-layer-20 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-blue-600" />
-          <Layer className="ak-layer ak-layer-30 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-pink-600" />
-          <Layer className="ak-layer ak-layer-40 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-blue-600 *:ak-text-complementary" />
-          <Layer className="ak-layer ak-layer-50 ak-frame ak-frame-p-1 ak-frame-border ak-ink-0" />
-          <Layer className="ak-layer ak-layer-60 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-70 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-80 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-90 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-100 ak-frame ak-frame-p-1 ak-frame-border" />
+          <Cell className="ak-layer-0 *:ak-text *:ak-text-red-600" />
+          <Cell className="ak-layer-10 *:ak-text *:ak-text-green-600" />
+          <Cell className="ak-layer-20 *:ak-text *:ak-text-blue-600" />
+          <Cell className="ak-layer-30 *:ak-text *:ak-text-pink-600" />
+          <Cell className="ak-layer-40 *:ak-text *:ak-text-blue-600 *:ak-text-complementary" />
+          <Cell className="ak-layer-50 ak-ink-0" />
+          <Cell className="ak-layer-60" />
+          <Cell className="ak-layer-70" />
+          <Cell className="ak-layer-80" />
+          <Cell className="ak-layer-90" />
+          <Cell className="ak-layer-100" />
         </Layer>
       </Layer>
       <Layer
@@ -96,16 +110,16 @@ function Layers() {
       >
         <Layer className="ak-layer ak-frame ak-frame-p-1 ak-frame-ring ak-frame-row ak-edge-blue-600 ak-edge-raw">
           <Layer className="ak-layer ak-layer-push-0 ak-frame ak-frame-p-1 ak-frame-ring ak-frame-cover ak-frame-m-1 ak-edge-20" />
-          <Layer className="ak-layer ak-layer-push-10 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-blue-200" />
-          <Layer className="ak-layer ak-layer-push-20 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-warm-50 *:ak-text-saturate-40" />
-          <Layer className="ak-layer ak-layer-push-30 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-lighten-80" />
-          <Layer className="ak-layer ak-layer-push-40 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-darken-80" />
-          <Layer className="ak-layer ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-push-60 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-push-70 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-push-80 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-push-90 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-push-100 ak-frame ak-frame-p-1 ak-frame-border" />
+          <Cell className="ak-layer-push-10 *:ak-text *:ak-text-blue-200" />
+          <Cell className="ak-layer-push-20 *:ak-text *:ak-text-warm-50 *:ak-text-saturate-40" />
+          <Cell className="ak-layer-push-30 *:ak-text *:ak-text-lighten-80" />
+          <Cell className="ak-layer-push-40 *:ak-text *:ak-text-darken-80" />
+          <Cell className="ak-layer-push-50" />
+          <Cell className="ak-layer-push-60" />
+          <Cell className="ak-layer-push-70" />
+          <Cell className="ak-layer-push-80" />
+          <Cell className="ak-layer-push-90" />
+          <Cell className="ak-layer-push-100" />
         </Layer>
       </Layer>
       <Layer
@@ -113,17 +127,17 @@ function Layers() {
         className="ak-layer ak-frame ak-frame-cover ak-frame-border flex-col"
       >
         <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row">
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-0 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-10 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-20 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-30 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-40 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border *:ak-text" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-50 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-60 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-70 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-80 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-90 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-contrast ak-layer-contrast-100 ak-layer-blue-600 ak-frame ak-frame-p-1 ak-frame-border" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-0 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-10 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-20 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-30 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-40 ak-layer-blue-600 *:ak-text" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-50 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-60 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-70 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-80 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-90 ak-layer-blue-600" />
+          <Cell className="ak-layer-contrast ak-layer-contrast-100 ak-layer-blue-600" />
         </Layer>
       </Layer>
       <Layer
@@ -131,17 +145,17 @@ function Layers() {
         className="ak-layer ak-frame ak-frame-cover ak-frame-border flex-col"
       >
         <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row">
-          <Layer className="ak-layer ak-layer-mix-0 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-mix-10 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-h-yellow *:ak-text-neon *:ak-text-max-c-balanced" />
-          <Layer className="ak-layer ak-layer-mix-20 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-neon" />
-          <Layer className="ak-layer ak-layer-mix-30 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-desaturate-20" />
-          <Layer className="ak-layer ak-layer-mix-40 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-cool-50" />
-          <Layer className="ak-layer ak-layer-mix-50 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-mix-60 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-mix-70 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-mix-80 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-mix-90 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-mix-100 ak-layer-orange-600 ak-frame ak-frame-p-1 ak-frame-border" />
+          <Cell className="ak-layer-mix-0 ak-layer-orange-600" />
+          <Cell className="ak-layer-mix-10 ak-layer-orange-600 *:ak-text *:ak-text-h-yellow *:ak-text-neon *:ak-text-max-c-balanced" />
+          <Cell className="ak-layer-mix-20 ak-layer-orange-600 *:ak-text *:ak-text-neon" />
+          <Cell className="ak-layer-mix-30 ak-layer-orange-600 *:ak-text *:ak-text-desaturate-20" />
+          <Cell className="ak-layer-mix-40 ak-layer-orange-600 *:ak-text *:ak-text-cool-50" />
+          <Cell className="ak-layer-mix-50 ak-layer-orange-600" />
+          <Cell className="ak-layer-mix-60 ak-layer-orange-600" />
+          <Cell className="ak-layer-mix-70 ak-layer-orange-600" />
+          <Cell className="ak-layer-mix-80 ak-layer-orange-600" />
+          <Cell className="ak-layer-mix-90 ak-layer-orange-600" />
+          <Cell className="ak-layer-mix-100 ak-layer-orange-600" />
         </Layer>
       </Layer>
       <Layer
@@ -149,11 +163,11 @@ function Layers() {
         className="ak-layer ak-frame ak-frame-2xl/1 ak-frame-m-4 ak-frame-border flex-col"
       >
         <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row">
-          <Layer className="ak-layer ak-layer-saturate-0 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-saturate-10 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-saturate-20 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-saturate-30 ak-frame ak-frame-p-1 ak-frame-border" />
-          <Layer className="ak-layer ak-layer-saturate-40 ak-frame ak-frame-p-1 ak-frame-border" />
+          <Cell className="ak-layer-saturate-0" />
+          <Cell className="ak-layer-saturate-10" />
+          <Cell className="ak-layer-saturate-20" />
+          <Cell className="ak-layer-saturate-30" />
+          <Cell className="ak-layer-saturate-40" />
         </Layer>
       </Layer>
       <Layer
@@ -174,15 +188,15 @@ function Layers() {
         className="ak-layer ak-frame ak-frame-cover ak-frame-border flex-col border-t-0"
       >
         <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row">
-          <Layer className="ak-layer ak-layer-h-rotate-0 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border ak-edge-darken-100 ak-edge-20 *:ak-text *:ak-text-h-rotate-90" />
-          <Layer className="ak-layer ak-layer-h-rotate-30 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border ak-edge-desaturate-100 ak-edge-20 ak-edge-l-100 *:ak-text *:ak-text-h-rotate-90" />
-          <Layer className="ak-layer ak-layer-h-rotate-60 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-h-rotate-90" />
-          <Layer className="ak-layer ak-layer-h-rotate-90 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-h-rotate-90" />
-          <Layer className="ak-layer ak-layer-h-rotate-120 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-h-rotate-90" />
-          <Layer className="ak-layer ak-layer-h-rotate-180 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-h-rotate-90" />
-          <Layer className="ak-layer ak-layer-h-rotate-240 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-h-rotate-90" />
-          <Layer className="ak-layer ak-layer-h-rotate-300 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-h-rotate-90" />
-          <Layer className="ak-layer ak-layer-h-rotate-360 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-0 ak-layer-balanced ak-edge-darken-100 ak-edge-20 *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-30 ak-layer-balanced ak-edge-desaturate-100 ak-edge-20 ak-edge-l-100 *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-60 ak-layer-balanced *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-90 ak-layer-balanced *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-120 ak-layer-balanced *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-180 ak-layer-balanced *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-240 ak-layer-balanced *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-300 ak-layer-balanced *:ak-text *:ak-text-h-rotate-90" />
+          <Cell className="ak-layer-h-rotate-360 ak-layer-balanced *:ak-text *:ak-text-h-rotate-90" />
         </Layer>
       </Layer>
       <Layer
@@ -190,11 +204,11 @@ function Layers() {
         className="ak-layer ak-frame ak-frame-cover ak-frame-border flex-col border-t-0"
       >
         <Layer className="ak-layer ak-frame ak-frame-cover ak-frame-border ak-frame-row justify-between">
-          <Layer className="ak-layer ak-layer-red ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border ak-frame-cover ak-frame-m-1 *:ak-text" />
-          <Layer className="ak-layer ak-layer-green ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text" />
-          <Layer className="ak-layer ak-layer-blue ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text" />
-          <Layer className="ak-layer ak-layer-magenta ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text" />
-          <Layer className="ak-layer ak-layer-split1 ak-layer-balanced ak-frame ak-frame-p-1 ak-frame-border *:ak-text *:ak-text-complementary" />
+          <Cell className="ak-layer-red ak-layer-balanced ak-frame-cover ak-frame-m-1 *:ak-text" />
+          <Cell className="ak-layer-green ak-layer-balanced *:ak-text" />
+          <Cell className="ak-layer-blue ak-layer-balanced *:ak-text" />
+          <Cell className="ak-layer-magenta ak-layer-balanced *:ak-text" />
+          <Cell className="ak-layer-split1 ak-layer-balanced *:ak-text *:ak-text-complementary" />
         </Layer>
       </Layer>
     </>
@@ -204,6 +218,25 @@ function Layers() {
 export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
+      <Layer
+        label="One-off"
+        className="ak-layer ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col"
+      >
+        <Layer className="flex-wrap items-start">
+          <Cell
+            label="#898989"
+            className="ak-layer-[#131418] *:ak-text *:ak-text-[#898989]"
+          />
+          <Cell
+            label="#CB8CC6"
+            className="ak-layer-[#131418] *:ak-text *:ak-text-[#CB8CC6]"
+          />
+          <Cell
+            label="#CE9178"
+            className="ak-layer-[#131418] *:ak-text *:ak-text-[#CE9178]"
+          />
+        </Layer>
+      </Layer>
       <Layer
         label="ak-layer-<number>"
         className="ak-layer ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col"

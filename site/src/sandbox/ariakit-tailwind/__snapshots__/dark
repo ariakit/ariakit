@@ -1,4 +1,12 @@
 {
+  "One-off": {
+    "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[20px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+    "children": {
+      "#898989": "bg-[oklch(0.1919_0.0082_274.531)] text-[oklch(1_0_0)] *:text-[oklch(0.6301_0_23.62)] rounded-[15px] border-[1px] border-[oklch(1_0.0082_274.531_/_0.1)] p-[4px] shadow-[oklch(1_0.0082_274.531_/_0.1)_0px_0px_0px_0px]",
+      "#CB8CC6": "bg-[oklch(0.1919_0.0082_274.531)] text-[oklch(1_0_0)] *:text-[oklch(0.7214_0.1082_329.395)] rounded-[15px] border-[1px] border-[oklch(1_0.0082_274.531_/_0.1)] p-[4px] shadow-[oklch(1_0.0082_274.531_/_0.1)_0px_0px_0px_0px]",
+      "#CE9178": "bg-[oklch(0.1919_0.0082_274.531)] text-[oklch(1_0_0)] *:text-[oklch(0.7104_0.0826_43.1621)] rounded-[15px] border-[1px] border-[oklch(1_0.0082_274.531_/_0.1)] p-[4px] shadow-[oklch(1_0.0082_274.531_/_0.1)_0px_0px_0px_0px]"
+    }
+  },
   "ak-layer-<number>": {
     "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[20px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
     "children": {
