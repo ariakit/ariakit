@@ -1027,6 +1027,9 @@ const edgeDirectionalShift = fn.mul(
 const edgeDirectional = fn.oklch(edgeBaseColor, {
   l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
 });
+const edgeAlpha = fn.clamp01(
+  fn.add(inputs.edgeA, fn.mul(edgeContrastT, CONTRAST_SCALE)),
+);
 const edgeRelative = fn.oklch(edgeDirectional, {
   l: fn.clamp(
     inputs.edgeLMin,
@@ -1039,10 +1042,9 @@ const edgeRelative = fn.oklch(edgeDirectional, {
     inputs.edgeCMax,
   ),
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
+  a: edgeAlpha,
 });
-const edge = fn.oklch(edgeRelative, {
-  a: fn.clamp01(fn.add(inputs.edgeA, fn.mul(edgeContrastT, CONTRAST_SCALE))),
-});
+const edge = edgeRelative;
 
 // Collapse the continuous layer scale into five semantic buckets so variants
 // can target broad tonal ranges instead of exact lightness values.
@@ -1914,13 +1916,19 @@ function getFrameStretchDeclarations({
         [
           fn.mul(
             fn.max(isRow, fn.mul(isCol, inputs.frameStart)),
-            totalNegMargin,
+            vars.frameMargin,
           ),
-          fn.mul(fn.max(isCol, fn.mul(isRow, inputs.frameEnd)), totalNegMargin),
-          fn.mul(fn.max(isRow, fn.mul(isCol, inputs.frameEnd)), totalNegMargin),
+          fn.mul(
+            fn.max(isCol, fn.mul(isRow, inputs.frameEnd)),
+            vars.frameMargin,
+          ),
+          fn.mul(
+            fn.max(isRow, fn.mul(isCol, inputs.frameEnd)),
+            vars.frameMargin,
+          ),
           fn.mul(
             fn.max(isCol, fn.mul(isRow, inputs.frameStart)),
-            totalNegMargin,
+            vars.frameMargin,
           ),
         ],
         " ",
@@ -1930,10 +1938,10 @@ function getFrameStretchDeclarations({
     set.borderRadius(
       fn.join(
         [
-          fn.mul(cornerTL, childRadius),
-          fn.mul(cornerTR, childRadius),
-          fn.mul(cornerBR, childRadius),
-          fn.mul(cornerBL, childRadius),
+          fn.mul(cornerTL, vars.frameRadius),
+          fn.mul(cornerTR, vars.frameRadius),
+          fn.mul(cornerBR, vars.frameRadius),
+          fn.mul(cornerBL, vars.frameRadius),
         ],
         " ",
       ),
