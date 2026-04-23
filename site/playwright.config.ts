@@ -18,8 +18,8 @@ function testMatchersFor(...kinds: string[]): RegExp[] {
 }
 
 export default defineConfig({
-  fullyParallel: !HEADED,
-  workers: HEADED ? 1 : CI ? "100%" : "80%",
+  fullyParallel: !HEADED && !PERF,
+  workers: HEADED || PERF ? 1 : CI ? "100%" : "80%",
   forbidOnly: CI,
   reportSlowTests: null,
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
