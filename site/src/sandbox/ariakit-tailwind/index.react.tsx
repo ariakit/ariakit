@@ -228,6 +228,18 @@ export default function Example() {
             className="ak-layer-[#131418] *:ak-text *:ak-text-[#898989]"
           />
           <Cell
+            label="#248CDF"
+            className="ak-layer-[#0C0E12] *:ak-text *:ak-text-[#248CDF]"
+          />
+          <Cell
+            label="#53b4ff"
+            className="ak-layer-[#111C2A] *:ak-text *:ak-text-[#53b4ff]"
+          />
+          <Cell
+            label="#007acc"
+            className="ak-layer-[#111C2A] *:ak-text *:ak-text-[#007acc]"
+          />
+          <Cell
             label="#CB8CC6"
             className="ak-layer-[#131418] *:ak-text *:ak-text-[#CB8CC6]"
           />
