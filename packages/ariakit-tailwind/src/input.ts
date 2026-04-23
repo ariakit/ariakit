@@ -335,6 +335,20 @@ function mixValues(from: Value, to: Value, weight: Value) {
 }
 
 /**
+ * Pushes `current` toward `target` only when it follows `direction`.
+ */
+function getDirectionalLightness(
+  current: Value,
+  target: Value,
+  direction: Value,
+) {
+  return fn.add(
+    current,
+    fn.mul(direction, fn.relu(fn.mul(fn.sub(target, current), direction))),
+  );
+}
+
+/**
  * Returns the normalized 0..1 progress of `value` between `start` and `end`.
  */
 function getRampProgress(value: Value, start: Value, end: Value) {
@@ -915,14 +929,7 @@ function getContrastL(pushValue: Value, contrastValue: Value) {
   const parentTargetL = fn.clamp01(
     fn.add(vars.layerContrastParentL, parentShift),
   );
-  // On dark parents (direction=1), the target must be >= current l (push
-  // lighter). On light parents (direction=-1), must be <= current l (push
-  // darker). Use a directional clamp like ak-text does.
-  const darkMask = fn.clamp01(direction);
-  const parentDirectedL = fn.add(
-    fn.mul(fn.max(l, parentTargetL), darkMask),
-    fn.mul(fn.min(l, parentTargetL), fn.invert(darkMask)),
-  );
+  const parentDirectedL = getDirectionalLightness(l, parentTargetL, direction);
   // When ak-layer-contrast is active, direction is ±1 so |direction|=1.
   // When inactive, direction=0. Use this as a blend mask.
   const isActive = fn.min(fn.mul(direction, direction), 1);
@@ -1514,15 +1521,10 @@ function getTextDirectional() {
   const textAccessibleLightness = fn.clamp01(
     fn.add(vars.textParentL, textContrastShift),
   );
-  const textDirectedLightness = fn.add(
-    fn.mul(
-      fn.max(textUserLightness, textAccessibleLightness),
-      textDarkDirectionMask,
-    ),
-    fn.mul(
-      fn.min(textUserLightness, textAccessibleLightness),
-      fn.invert(textDarkDirectionMask),
-    ),
+  const textDirectedLightness = getDirectionalLightness(
+    textUserLightness,
+    textAccessibleLightness,
+    vars.textContrastDirection,
   );
   return fn.oklch(textColorAdjusted, {
     l: textDirectedLightness,
@@ -1662,11 +1664,10 @@ const outlineContrastShift = fn.mul(
   vars.outlineContrastDirection,
 );
 const outlineComputedL = fn.add(vars.outlineParentL, outlineContrastShift);
-
-const outlineDarkDirectionMask = fn.clamp01(vars.outlineContrastDirection);
-const outlineDirectedLightness = fn.add(
-  fn.mul(fn.max(l, outlineComputedL), outlineDarkDirectionMask),
-  fn.mul(fn.min(l, outlineComputedL), fn.invert(outlineDarkDirectionMask)),
+const outlineDirectedLightness = getDirectionalLightness(
+  l,
+  outlineComputedL,
+  vars.outlineContrastDirection,
 );
 
 const outlineDirectional = fn.oklch(outlineColorAdjusted, {
