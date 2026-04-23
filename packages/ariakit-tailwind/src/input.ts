@@ -36,14 +36,20 @@ const BAND_LEVEL_DARK_LOW = 0.25;
 const BAND_LEVEL_MID = 0.5;
 const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
-// Chroma-proportional minimum contrast: the base floor is low enough that
-// achromatic text (like #808080) can stay at its natural lightness on dark
-// backgrounds, while the concave chroma bonus (scale*c - damping*c²) adds
-// progressively more lightness for high-chroma hues that need WCAG headroom.
-// The bonus tapers at high chroma so the push doesn't overshoot.
-const CHILD_TEXT_MIN_CONTRAST = 0.38;
-const CHILD_TEXT_MIN_CONTRAST_CHROMA_SCALE = 1.0;
-const CHILD_TEXT_MIN_CONTRAST_CHROMA_DAMPING = 1.5;
+// Child text uses asymmetric floors: light layers need a stronger dark-text
+// push than dark layers need for light text. On dark layers, keep neutrals
+// closer to their authored lightness and reserve the bigger lift for colors
+// that carry enough chroma to need extra WCAG headroom.
+const CHILD_TEXT_MIN_CONTRAST_DARK = 0.47;
+const CHILD_TEXT_MIN_CONTRAST_LIGHT = 0.5;
+const CHILD_TEXT_MIN_CONTRAST_CHROMA_START = 0.03;
+const CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_START = 0.07;
+const CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE = 22.0;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_MAX_CHROMA = 0.04;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L = 0.25;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST = 0.03;
+const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE = 1.0;
+const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
 // mid-tone backgrounds, where the WCAG margin is tighter.
 const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
@@ -51,6 +57,13 @@ const CHILD_TEXT_CHROMA_CAP_DARK_MAX = CHROMA_MAX_P3;
 const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
 const CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L = 0.5;
 const OUTLINE_MIN_CONTRAST = 0.5;
+const INK_DARK_MID_ALPHA_BOOST_START_L = 0.25;
+const INK_DARK_MID_ALPHA_BOOST = 0.08;
+const TEXT_CONTRAST_CYAN_CHROMA_START = 0.29;
+const TEXT_CONTRAST_CYAN_BIAS = 0.2;
+const TEXT_CONTRAST_CHROMA_HUE_MIN = 150;
+const TEXT_CONTRAST_CHROMA_HUE_MAX = 220;
+const TEXT_CONTRAST_CYAN_LIGHTNESS_START = 0.45;
 
 const CONTRAST_SCALE = 0.3334;
 // Text gets a doubled contrast lift because the ancestor layer also shifts
@@ -59,6 +72,24 @@ const CONTRAST_SCALE = 0.3334;
 // background.
 const TEXT_CONTRAST_SCALE = CONTRAST_SCALE * 2;
 const TEXT_CONTRAST_L = fn.inflate(fn.sub(DARK_THRESHOLD_L, l));
+const TEXT_FOREGROUND_CONTRAST_L = fn.inflate(
+  fn.sub(
+    DARK_THRESHOLD_L,
+    fn.add(
+      l,
+      fn.mul(
+        TEXT_CONTRAST_CYAN_BIAS,
+        fn.binary(fn.sub(c, TEXT_CONTRAST_CYAN_CHROMA_START)),
+        getRangeMask(
+          h,
+          TEXT_CONTRAST_CHROMA_HUE_MIN,
+          TEXT_CONTRAST_CHROMA_HUE_MAX,
+        ),
+        fn.binary(fn.sub(l, TEXT_CONTRAST_CYAN_LIGHTNESS_START)),
+      ),
+    ),
+  ),
+);
 const DARK_L = fn.clamp01(TEXT_CONTRAST_L);
 const LIGHT_L = fn.clamp01(fn.invert(TEXT_CONTRAST_L));
 
@@ -336,6 +367,26 @@ const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
 // color channels or fixed numeric constants.
 const constantMathVars = {
   textContrastL: _ak.prop("tcl", { initial: TEXT_CONTRAST_L }),
+  textForegroundContrastL: _ak.prop("tfcl", {
+    initial: TEXT_FOREGROUND_CONTRAST_L,
+  }),
+  textMinAlphaOnLightLayer: _ak.prop("tmal", {
+    initial: fn.div(fn.add(53.6, fn.mul(fn.sub(1, l), 85)), 100),
+  }),
+  textMinAlphaOnDarkLayer: _ak.prop("tmad", {
+    initial: fn.div(fn.add(45.7, fn.mul(fn.mul(l, l), 145)), 100),
+  }),
+  textMinAlphaOnDarkLayerMidBoost: _ak.prop("tmab", {
+    initial: fn.mul(
+      fn.clamp01(
+        fn.div(
+          fn.relu(fn.sub(l, INK_DARK_MID_ALPHA_BOOST_START_L)),
+          fn.sub(DARK_THRESHOLD_L, INK_DARK_MID_ALPHA_BOOST_START_L),
+        ),
+      ),
+      INK_DARK_MID_ALPHA_BOOST,
+    ),
+  }),
   forbiddenLaBase: _ak.prop("flab", {
     initial: fn.sub(LA_BASE, fn.mul(fn.min(c, CHROMA_MAX), LA_CHROMA_SPREAD)),
   }),
@@ -415,6 +466,15 @@ const textMathVars = {
   textChromaCap: _ak.prop.number("tcc", {
     initial: CHILD_TEXT_CHROMA_CAP_DARK_MIN,
   }),
+  textChromaUncapped: _ak.var("tcu"),
+  textContrastChroma: _ak.var("tch"),
+  darkTextContrastChroma: _ak.var("tdtc"),
+  darkNeutralTextMask: _ak.var("tdnm"),
+  darkNeutralTextBoost: _ak.var("tdnb"),
+  darkChromaMinContrast: _ak.var("tdcmc"),
+  lightChromaMinContrast: _ak.var("tlcmc"),
+  textDarkDirectionMask: _ak.var("tddm"),
+  textUserLightness: _ak.var("tul"),
 };
 
 const frameVars = {
@@ -972,28 +1032,23 @@ const layerBand = fn.oklch(vars.layer, {
   h: 0,
 });
 const layerScheme = fn.oklch(vars.layer, {
-  l: vars.textContrastL,
+  l: vars.textForegroundContrastL,
   c: 0,
   h: 0,
 });
 
-// Min alpha adapts to layer lightness — higher for mid-lightness backgrounds
-const textMinAlphaOnLightLayer = fn.div(
-  fn.add(53.6, fn.mul(fn.sub(1, l), 85)),
-  100,
-);
-const textMinAlphaOnDarkLayer = fn.div(
-  fn.add(45.7, fn.mul(fn.mul(l, l), 145)),
-  100,
-);
+// Min alpha adapts to layer lightness — higher for mid-lightness backgrounds.
 const textMinimumAlpha = fn.add(
-  lightDark(textMinAlphaOnLightLayer, textMinAlphaOnDarkLayer),
+  lightDark(
+    vars.textMinAlphaOnLightLayer,
+    fn.add(vars.textMinAlphaOnDarkLayer, vars.textMinAlphaOnDarkLayerMidBoost),
+  ),
   fn.mul(c, 0.135),
   fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
 );
 const textAlpha = fn.max(textMinimumAlpha, inputs.textA);
 const text = fn.oklch(vars.layer, {
-  l: vars.textContrastL,
+  l: vars.textForegroundContrastL,
   c: 0,
   h: 0,
   a: textAlpha,
@@ -1326,21 +1381,12 @@ const textColorAdjusted = fn.oklch(textBaseColor, {
 });
 
 function getTextDirectional() {
-  // Compute text chroma first so the minimum contrast floor can scale with it.
-  const textChromaUncapped = fn.clamp(inputs.textCMin, c, inputs.textCMax);
-  const textChroma = fn.min(textChromaUncapped, vars.textChromaCap);
-  // The contrast bonus uses the uncapped chroma so that high-chroma hues still
-  // get enough lightness push on mid-tone backgrounds where the chroma cap is
-  // tight. The concave formula (scale*c - damping*c²) rises quickly at low
-  // chroma and tapers at high chroma, preventing overshoot.
+  const textChroma = fn.min(vars.textChromaUncapped, vars.textChromaCap);
   const chromaMinContrast = fn.add(
-    CHILD_TEXT_MIN_CONTRAST,
-    fn.sub(
-      fn.mul(CHILD_TEXT_MIN_CONTRAST_CHROMA_SCALE, textChromaUncapped),
-      fn.mul(
-        CHILD_TEXT_MIN_CONTRAST_CHROMA_DAMPING,
-        fn.mul(textChromaUncapped, textChromaUncapped),
-      ),
+    vars.lightChromaMinContrast,
+    fn.mul(
+      vars.textDarkDirectionMask,
+      fn.sub(vars.darkChromaMinContrast, vars.lightChromaMinContrast),
     ),
   );
   const textContrastShift = fn.mul(
@@ -1350,20 +1396,17 @@ function getTextDirectional() {
     ),
     vars.textContrastDirection,
   );
-  const textComputedL = fn.add(vars.textParentL, textContrastShift);
-  const textUserLightness = fn.clamp(inputs.textLMin, l, inputs.textLMax);
-  const textAccessibleLightness = fn.clamp01(textComputedL);
-  // `textContrastDirection` is `1` on dark parents and `-1` on light parents.
-  // Clamp it to a mask so CSS math can switch between max() and min().
-  const textDarkDirectionMask = fn.clamp01(vars.textContrastDirection);
+  const textAccessibleLightness = fn.clamp01(
+    fn.add(vars.textParentL, textContrastShift),
+  );
   const textDirectedLightness = fn.add(
     fn.mul(
-      fn.max(textUserLightness, textAccessibleLightness),
-      textDarkDirectionMask,
+      fn.max(vars.textUserLightness, textAccessibleLightness),
+      vars.textDarkDirectionMask,
     ),
     fn.mul(
-      fn.min(textUserLightness, textAccessibleLightness),
-      fn.invert(textDarkDirectionMask),
+      fn.min(vars.textUserLightness, textAccessibleLightness),
+      fn.invert(vars.textDarkDirectionMask),
     ),
   );
   return fn.oklch(textColorAdjusted, {
@@ -1372,12 +1415,85 @@ function getTextDirectional() {
   });
 }
 
+function getTextDirectionalDeclarations() {
+  // Compute reusable intermediates once so the generated text utility doesn't
+  // repeat the same chroma clamps and masks inside a single calc() tree.
+  const textChromaUncapped = fn.clamp(inputs.textCMin, c, inputs.textCMax);
+  const textContrastChroma = fn.relu(
+    fn.sub(textChromaUncapped, CHILD_TEXT_MIN_CONTRAST_CHROMA_START),
+  );
+  const darkTextContrastChroma = fn.relu(
+    fn.sub(textChromaUncapped, CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_START),
+  );
+  const darkNeutralTextMask = fn.binary(
+    fn.sub(CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_MAX_CHROMA, textChromaUncapped),
+  );
+  const darkNeutralTextBoost = fn.mul(
+    darkNeutralTextMask,
+    fn.clamp01(
+      fn.div(
+        fn.relu(
+          fn.sub(
+            vars.textParentL,
+            CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L,
+          ),
+        ),
+        fn.sub(
+          DARK_THRESHOLD_L,
+          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L,
+        ),
+      ),
+    ),
+    CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST,
+  );
+  return [
+    set(vars.textChromaUncapped, textChromaUncapped),
+    set(vars.textContrastChroma, textContrastChroma),
+    set(vars.darkTextContrastChroma, darkTextContrastChroma),
+    set(vars.darkNeutralTextMask, darkNeutralTextMask),
+    set(vars.darkNeutralTextBoost, darkNeutralTextBoost),
+    set(
+      vars.darkChromaMinContrast,
+      fn.add(
+        CHILD_TEXT_MIN_CONTRAST_DARK,
+        fn.mul(
+          CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE,
+          fn.mul(vars.darkTextContrastChroma, vars.darkTextContrastChroma),
+        ),
+        vars.darkNeutralTextBoost,
+      ),
+    ),
+    set(
+      vars.lightChromaMinContrast,
+      fn.add(
+        CHILD_TEXT_MIN_CONTRAST_LIGHT,
+        fn.sub(
+          fn.mul(
+            CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE,
+            vars.textContrastChroma,
+          ),
+          fn.mul(
+            CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING,
+            fn.mul(vars.textContrastChroma, vars.textContrastChroma),
+          ),
+        ),
+      ),
+    ),
+    set(vars.textDarkDirectionMask, fn.clamp01(vars.textContrastDirection)),
+    set(vars.textUserLightness, fn.clamp(inputs.textLMin, l, inputs.textLMax)),
+  ];
+}
+
 utility(
   "text",
   getBaseDeclarations(vars.layer),
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
-  at.container(fn.style(vars.layerL), set.color(getTextDirectional())),
+  at.container(
+    fn.style(vars.layerL),
+    ...getTextDirectionalDeclarations(),
+    set.color(getTextDirectional()),
+  ),
   mapAncestorLayerLightnessSteps((parentL, isDark) => [
     set(vars.textContrastDirection, isDark ? 1 : -1),
     set(vars.textParentL, parentL),
