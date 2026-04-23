@@ -2,6 +2,26 @@ import { AxeBuilder } from "@axe-core/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
+type ColorContrastViolationMap = Record<string, number>;
+
+interface AxeViolation {
+  nodes: AxeViolationNode[];
+}
+
+interface AxeViolationNode {
+  any: AxeCheckResult[];
+  all: AxeCheckResult[];
+  none: AxeCheckResult[];
+  html: string;
+  target: Array<string | string[]>;
+}
+
+interface AxeCheckResult {
+  data?: {
+    contrastRatio?: number;
+  };
+}
+
 function extractComputedCSS() {
   interface CSSBranch {
     class: string;
@@ -403,6 +423,97 @@ function extractComputedCSS() {
   return walk(document.body);
 }
 
+function formatColorContrastViolations(
+  violations: AxeViolation[],
+): ColorContrastViolationMap {
+  const getSectionLabel = (section: Element, labelledBy: string) => {
+    const labelElement = document.getElementById(labelledBy);
+    let label = labelElement?.textContent?.trim() ?? "";
+    if (label) {
+      return label;
+    }
+    // React renders `0 && <div />` as a text node, so fall back to the
+    // section's own text content when no labelled element has visible text.
+    for (const node of Array.from(section.childNodes)) {
+      if (node.nodeType !== Node.TEXT_NODE) {
+        continue;
+      }
+      const textContent = node.textContent?.trim();
+      if (!textContent) {
+        continue;
+      }
+      label = textContent;
+      break;
+    }
+    return label;
+  };
+
+  const getTargetSelector = (target: AxeViolationNode["target"]) => {
+    const selector = target.at(-1);
+    if (!selector) {
+      return null;
+    }
+    return Array.isArray(selector) ? (selector.at(-1) ?? null) : selector;
+  };
+
+  const getSectionPath = (element: Element) => {
+    const labels: string[] = [];
+    let currentSection = element.closest("section[aria-labelledby]");
+    while (currentSection) {
+      const labelledBy = currentSection.getAttribute("aria-labelledby");
+      if (labelledBy) {
+        const label = getSectionLabel(currentSection, labelledBy);
+        if (label) {
+          labels.unshift(label);
+        }
+      }
+      currentSection =
+        currentSection.parentElement?.closest("section[aria-labelledby]") ??
+        null;
+    }
+    return labels.join(" > ");
+  };
+
+  const getContrastRatio = (node: AxeViolationNode) => {
+    for (const check of [...node.any, ...node.all, ...node.none]) {
+      const contrastRatio = check.data?.contrastRatio;
+      if (typeof contrastRatio === "number") {
+        return contrastRatio;
+      }
+    }
+    return null;
+  };
+
+  const entries = new Map<string, number>();
+  for (const violation of violations) {
+    for (const node of violation.nodes) {
+      const contrastRatio = getContrastRatio(node);
+      if (contrastRatio == null) {
+        continue;
+      }
+      const selector = getTargetSelector(node.target);
+      if (!selector) {
+        continue;
+      }
+      const element = document.querySelector(selector);
+      const key = element ? getSectionPath(element) : selector;
+      if (!key) {
+        continue;
+      }
+      const previousContrastRatio = entries.get(key);
+      if (
+        previousContrastRatio == null ||
+        contrastRatio < previousContrastRatio
+      ) {
+        entries.set(key, contrastRatio);
+      }
+    }
+  }
+  return Object.fromEntries(
+    Array.from(entries).sort(([pathA], [pathB]) => pathA.localeCompare(pathB)),
+  );
+}
+
 withFramework(import.meta.dirname, async ({ test }) => {
   for (const scheme of ["light", "dark"] as const) {
     test.describe(`${scheme} scheme`, () => {
@@ -413,7 +524,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
         const results = await new AxeBuilder({ page })
           .withRules(["color-contrast"])
           .analyze();
-        expect(results.violations).toEqual([]);
+        const violations = await page.evaluate(
+          formatColorContrastViolations,
+          results.violations,
+        );
+        if (Object.keys(violations).length > 0) {
+          throw new Error(JSON.stringify(violations, null, 2));
+        }
       });
 
       for (const contrast of [false, true]) {
