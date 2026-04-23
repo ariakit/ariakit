@@ -916,13 +916,13 @@
 @property --_ak-flab {
   syntax: "*";
   inherits: false;
-  initial-value: calc(0.55 - (min(c, 0.368) * 0.22418478260869568));
+  initial-value: calc(0.55 - (min(c, 0.368) * 0.224185));
 }
 
 @property --_ak-flbb {
   syntax: "*";
   inherits: false;
-  initial-value: calc(0.725 + (min(c, 0.368) * 0.11209239130434784));
+  initial-value: calc(0.725 + (min(c, 0.368) * 0.112092));
 }
 
 @property --_ak-ald {

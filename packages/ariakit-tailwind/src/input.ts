@@ -120,8 +120,10 @@ const LB_CONTRAST_SPREAD = roundToDecimals(
   LB_SPREAD * LB_SPREAD_CONTRAST_SCALE,
   4,
 );
-const LA_CHROMA_SPREAD = LA_SPREAD / CHROMA_MAX;
-const LB_CHROMA_SPREAD = LB_SPREAD / CHROMA_MAX;
+// Build-time CSS transforms round these coefficients, so keep them explicit in
+// source to avoid dev/prod drift around forbidden-range branch points.
+const LA_CHROMA_SPREAD = roundToDecimals(LA_SPREAD / CHROMA_MAX, 6);
+const LB_CHROMA_SPREAD = roundToDecimals(LB_SPREAD / CHROMA_MAX, 6);
 
 const CHROMA_TOKEN_OPTIONS = { max: 40 };
 const HUE_TOKEN_OPTIONS = { max: 360, step: 15 };
