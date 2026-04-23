@@ -48,6 +48,10 @@ const CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE = 22.0;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_MAX_CHROMA = 0.04;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST_START_L = 0.25;
 const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST = 0.03;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_PARENT_MAX_L = 0.3;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L = 0.6;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_FULL_L = 0.63;
+const CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF = 0.13;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_START_L = 0.68;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_FULL_L = 0.74;
 const CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_CHROMA_START = 0.14;
@@ -1408,6 +1412,29 @@ function getTextDirectional() {
     ),
     CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST,
   );
+  const darkNeutralTextRelief = fn.mul(
+    darkNeutralTextMask,
+    fn.binary(
+      fn.sub(
+        CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_PARENT_MAX_L,
+        vars.textParentL,
+      ),
+    ),
+    fn.clamp01(
+      fn.div(
+        fn.relu(
+          fn.sub(
+            textUserLightness,
+            CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L,
+          ),
+        ),
+        fn.sub(
+          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_FULL_L,
+          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF_START_L,
+        ),
+      ),
+    ),
+  );
   const darkTextRelief = fn.clamp01(
     fn.div(
       fn.relu(
@@ -1443,7 +1470,13 @@ function getTextDirectional() {
   );
   const darkChromaMinContrast = fn.add(
     fn.sub(
-      CHILD_TEXT_MIN_CONTRAST_DARK,
+      fn.sub(
+        CHILD_TEXT_MIN_CONTRAST_DARK,
+        fn.mul(
+          CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_RELIEF,
+          darkNeutralTextRelief,
+        ),
+      ),
       fn.mul(CHILD_TEXT_MIN_CONTRAST_DARK_VIVID_RELIEF, darkVividTextRelief),
     ),
     fn.mul(
