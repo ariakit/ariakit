@@ -943,11 +943,19 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   );
 }
 
-const layerIdle = fn.oklch(vars.layerIdleAuto, {
+const layerIdlePushed = fn.oklch(vars.layerIdleAuto, {
+  l: vars.layerIdlePushL,
+});
+
+const layerContrast = fn.oklch(vars.layerIdleAuto, {
   l: getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
 });
 
-const layerBase = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
+const layerBase = fn.oklch(vars.layerIdle, {
+  l: vars.safeL,
+});
+
+const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
   l: vars.safeL,
 });
 
@@ -991,7 +999,6 @@ const layerMathDeclarations = [
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
-  set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
 
@@ -1000,10 +1007,10 @@ const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
   set(vars.layerIdleMixed, layerIdleMixed),
   set(vars.layerIdleAuto, layerIdleAuto),
-  set(vars.layerIdle, layerIdle),
+  set(vars.layerIdle, vars.layerIdleAuto),
   set(vars.layerBase, layerBase),
-  set(vars.layerAuto, layerAuto),
-  set(vars.layerPush, layerPush),
+  set(vars.layerAuto, vars.layerBase),
+  set(vars.layerPush, vars.layerAuto),
 ];
 
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
@@ -1065,6 +1072,11 @@ const textMinimumAlpha = fn.add(
 );
 const textAlpha = fn.max(textMinimumAlpha, inputs.textA);
 const text = fn.oklch(vars.layer, {
+  l: vars.textForegroundContrastL,
+  c: 0,
+  h: 0,
+});
+const inkText = fn.oklch(vars.layer, {
   l: vars.textForegroundContrastL,
   c: 0,
   h: 0,
@@ -1135,6 +1147,7 @@ utility(
 utility(
   "state-*",
   set(inputs.layerAutoL, getAutoL(getPercentTokenValue("[*]"))),
+  set(vars.layerAuto, layerAuto),
 );
 
 const layerLighten = utility(
@@ -1144,12 +1157,17 @@ const layerLighten = utility(
 
 utility("layer-darken-*", getNegatedDeclarations(layerLighten));
 
-const stateLighten = utility(
+utility(
   "state-lighten-*",
   set(inputs.layerRelativeL, getPercentTokenValue("[*]")),
+  set(vars.layerBase, layerState),
 );
 
-utility("state-darken-*", getNegatedDeclarations(stateLighten));
+utility(
+  "state-darken-*",
+  set(inputs.layerRelativeL, fn.neg(getPercentTokenValue("[*]"))),
+  set(vars.layerBase, layerState),
+);
 
 /**
  * Moves a hue toward a target by percentage on the shortest circular path.
@@ -1182,6 +1200,7 @@ utility(
   set(inputs.layerIdlePushL, getPercentTokenValue("[*]")),
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(vars.layerIdlePushL, getPushL(vars.layerIdlePushValue)),
+  set(vars.layerIdle, layerIdlePushed),
 );
 
 utility(
@@ -1189,11 +1208,14 @@ utility(
   set(inputs.layerPushL, getPercentTokenValue("[*]")),
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
   set(vars.layerPushL, getPushL(vars.layerPushValue)),
+  set(vars.layerPush, layerPush),
 );
 
 utility(
   "layer-contrast",
   set(inputs.layerIdleContrastL, 0.25),
+  set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
+  set(vars.layerIdle, layerContrast),
   mapLayerLightnessSteps((parentL, isDark) => [
     set(vars.layerContrastDirection, isDark ? 1 : -1),
     set(vars.layerContrastParentL, parentL),
@@ -1255,11 +1277,20 @@ const layerSaturate = utility(
 );
 utility("layer-desaturate-*", getNegatedDeclarations(layerSaturate));
 
-const stateSaturate = utility(
+utility(
   "state-saturate-*",
   set(inputs.layerRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  set(vars.layerBase, layerState),
 );
-utility("state-desaturate-*", getNegatedDeclarations(stateSaturate));
+
+utility(
+  "state-desaturate-*",
+  set(
+    inputs.layerRelativeC,
+    fn.neg(getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  ),
+  set(vars.layerBase, layerState),
+);
 
 utility(
   "layer-h-rotate-*",
@@ -1272,6 +1303,7 @@ utility(
 utility(
   "state-h-rotate-*",
   set(inputs.layerRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
+  set(vars.layerBase, layerState),
 );
 
 utility(
@@ -1579,7 +1611,7 @@ utility(
 utility(
   "ink-*",
   set(inputs.textA, getPercentTokenValue("[number]")),
-  set(vars.text, text),
+  set(vars.text, inkText),
   set.color(vars.text),
 );
 
