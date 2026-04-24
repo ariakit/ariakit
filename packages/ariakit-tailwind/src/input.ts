@@ -449,10 +449,9 @@ const layerMathVars = {
   forbiddenLb: _ak.var("flb"),
   safeL: _ak.var("sl"),
   autoDirectionToLight: _ak.var("adtl"),
-  layerIdleAutoDelta: _ak.prop("liad", { initial: 0 }),
-  layerAutoDelta: _ak.prop("lad", { initial: 0 }),
-  layerIdlePushValue: _ak.var("lipv"),
-  layerPushValue: _ak.var("lpv"),
+  layerIdlePushValue: _ak.prop("lipv", { initial: 0 }),
+  layerPushValue: _ak.prop("lpv", { initial: 0 }),
+  layerPushL: _ak.prop("lpl", { initial: l }),
   layerIdleContrastValue: _ak.var("licv"),
   edgeContrastValue: _ak.var("ecv"),
   edgePushDirection: _ak.var("epd", -1),
@@ -551,6 +550,7 @@ const inputs = {
   layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", { initial: 0 }),
   layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", { initial: 0 }),
   layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", { initial: 0 }),
+  layerIdleAutoL: _ak.prop("layer-idle-auto-lightness", { initial: 0 }),
   layerIdlePushL: _ak.prop("layer-idle-push-lightness", { initial: 0 }),
   layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", { initial: 0 }),
   layerL: _ak.prop("layer-lightness"),
@@ -563,6 +563,7 @@ const inputs = {
   layerRelativeL: _ak.prop("layer-relative-lightness", { initial: 0 }),
   layerRelativeC: _ak.prop("layer-relative-chroma", { initial: 0 }),
   layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
+  layerAutoL: _ak.prop("layer-auto-lightness", { initial: 0 }),
   layerPushL: _ak.prop("layer-push-lightness", { initial: 0 }),
   layerMix: _ak.prop("layer-mix"),
   layerMixMethod: _ak.prop("layer-mix-method", "oklab"),
@@ -910,7 +911,7 @@ const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
   l: fn.add(
     fn.clamp(
       inputs.layerLMin,
-      getLayerL(vars.layerIdleAutoDelta),
+      getLayerL(inputs.layerIdleAutoL),
       inputs.layerLMax,
     ),
     vars.layerContrastBias,
@@ -951,11 +952,11 @@ const layerBase = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
 });
 
 const layerAuto = fn.oklch(vars.layerBase, {
-  l: getLayerL(vars.layerAutoDelta),
+  l: getLayerL(inputs.layerAutoL),
 });
 
 const layerPush = fn.oklch(vars.layerAuto, {
-  l: getPushL(vars.layerPushValue),
+  l: vars.layerPushL,
 });
 
 const layer = fn.oklch(vars.layerPush, {
@@ -992,7 +993,6 @@ const layerMathDeclarations = [
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
-  set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
 
@@ -1101,7 +1101,7 @@ utility(
   set(inputs.layerC, fn.value(chroma)),
   set(inputs.layerH, fn.value(hue)),
   set(inputs.layerColor, fn.value(color, "[color]")),
-  set(vars.layerIdleAutoDelta, getAutoL(getPercentTokenValue("[number]"))),
+  set(inputs.layerIdleAutoL, getAutoL(getPercentTokenValue("[number]"))),
 );
 
 utility(
@@ -1135,7 +1135,7 @@ utility(
 
 utility(
   "state-*",
-  set(vars.layerAutoDelta, getAutoL(getPercentTokenValue("[*]"))),
+  set(inputs.layerAutoL, getAutoL(getPercentTokenValue("[*]"))),
 );
 
 const layerLighten = utility(
@@ -1183,7 +1183,12 @@ utility(
   set(inputs.layerIdlePushL, getPercentTokenValue("[*]")),
 );
 
-utility("state-push-*", set(inputs.layerPushL, getPercentTokenValue("[*]")));
+utility(
+  "state-push-*",
+  set(inputs.layerPushL, getPercentTokenValue("[*]")),
+  set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
+  set(vars.layerPushL, getPushL(vars.layerPushValue)),
+);
 
 utility(
   "layer-contrast",
