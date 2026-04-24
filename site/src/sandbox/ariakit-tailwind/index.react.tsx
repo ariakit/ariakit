@@ -301,6 +301,10 @@ export default function Example() {
             label="#CE9178"
             className="ak-layer-[#131418] *:ak-text *:ak-text-[#CE9178]"
           />
+          <Cell
+            label="ak-layer!"
+            className="ak-layer! ak-layer-mix-15 ak-layer-blue-600 ak-state-10"
+          />
         </Layer>
       </Layer>
       <Layer
