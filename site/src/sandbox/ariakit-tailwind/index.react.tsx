@@ -242,6 +242,14 @@ export default function Example() {
       >
         <Layer className="flex-wrap items-start">
           <Cell
+            label="local contrast"
+            className="ak-layer-blue-600 ak-layer-contrast ak-layer-contrast-20"
+          />
+          <Cell
+            label="[--contrast:50]"
+            className="[--contrast:50] ak-layer-blue-600 ak-layer-contrast ak-layer-contrast-20"
+          />
+          <Cell
             label="#898989"
             className="ak-layer-[#131418] *:ak-text *:ak-text-[#898989]"
           />

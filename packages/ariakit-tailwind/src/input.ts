@@ -444,7 +444,6 @@ const constantMathVars = {
 // @utility ak-layer.
 const layerMathVars = {
   contrastT: _ak.var("ct", globalContrastT),
-  negativeContrastT: _ak.var("nct"),
   layerContrastBias: _ak.var("lcb"),
   forbiddenLa: _ak.var("fla"),
   forbiddenLb: _ak.var("flb"),
@@ -456,6 +455,7 @@ const layerMathVars = {
   layerIdlePushValue: _ak.var("lipv"),
   layerPushValue: _ak.var("lpv"),
   layerIdleContrastValue: _ak.var("licv"),
+  edgeContrastValue: _ak.var("ecv"),
   edgePushDirection: _ak.var("epd", -1),
 };
 
@@ -967,8 +967,8 @@ const layer = fn.oklch(vars.layerPush, {
 });
 
 /**
- * Shared declarations needed by both ak-layer and ak-text. Sets contrastT
- * and layerL so that container queries and contrast math work.
+ * Shared declarations needed by both ak-layer and ak-text. Sets layerL so that
+ * container queries and contrast math work.
  */
 function getBaseDeclarations(sourceColor: string | VarProperty) {
   return [
@@ -985,10 +985,9 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
 
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
-  set(vars.negativeContrastT, fn.neg(vars.contrastT)),
   set(
     vars.layerContrastBias,
-    fn.mul(vars.negativeContrastT, lightDark(-CONTRAST_SCALE, CONTRAST_SCALE)),
+    fn.mul(fn.neg(vars.contrastT), lightDark(-CONTRAST_SCALE, CONTRAST_SCALE)),
   ),
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
@@ -999,6 +998,7 @@ const layerMathDeclarations = [
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
+  set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
 
 // Build the layered color stages from idle -> base -> auto -> final.
@@ -1013,13 +1013,9 @@ const layerColorDeclarations = [
 ];
 
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
-const edgeContrastT = fn.var(vars.contrastT, globalContrastT);
-// Borders get a small extra push from the global contrast preference so they
+// Borders get a small extra push from the current contrast preference so they
 // stay perceptible even when the user does not specify an edge push value.
-const edgeDirectionalDelta = fn.add(
-  inputs.edgePushL,
-  fn.mul(edgeContrastT, CONTRAST_SCALE),
-);
+const edgeDirectionalDelta = fn.add(inputs.edgePushL, vars.edgeContrastValue);
 const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
   vars.edgePushDirection,
@@ -1027,9 +1023,7 @@ const edgeDirectionalShift = fn.mul(
 const edgeDirectional = fn.oklch(edgeBaseColor, {
   l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
 });
-const edgeAlpha = fn.clamp01(
-  fn.add(inputs.edgeA, fn.mul(edgeContrastT, CONTRAST_SCALE)),
-);
+const edgeAlpha = fn.clamp01(fn.add(inputs.edgeA, vars.edgeContrastValue));
 const edgeRelative = fn.oklch(edgeDirectional, {
   l: fn.clamp(
     inputs.edgeLMin,
