@@ -92,6 +92,8 @@ const TEXT_CONTRAST_CHROMA_HUE_MAX = 220;
 const TEXT_CONTRAST_CYAN_LIGHTNESS_START = 0.45;
 
 const CONTRAST_SCALE = 0.3334;
+const DISABLED_CONTRAST_SCALE = 0.25;
+const DISABLED_TEXT_CONTRAST_SCALE = 0.8;
 // Text gets a doubled contrast lift because the ancestor layer also shifts
 // with `--contrast`; the extra push compensates for the parent's movement so
 // the text actually changes lightness/alpha visibly rather than tracking the
@@ -464,10 +466,29 @@ const constantMathVars = {
   bandLightHigh: _ak.prop("blh", { initial: bandLightHigh }),
 };
 
+const disabledVars = {
+  contrastScale: _ak.prop.number("contrast-scale", {
+    inherits: true,
+    initial: 1,
+  }),
+  textContrastScale: _ak.prop.number("text-contrast-scale", {
+    inherits: true,
+    initial: 1,
+  }),
+  disabledContrastScale: ak.prop.number("disabled-contrast-scale", {
+    inherits: true,
+    initial: DISABLED_CONTRAST_SCALE,
+  }),
+  disabledTextContrastScale: ak.prop.number("disabled-text-contrast-scale", {
+    inherits: true,
+    initial: DISABLED_TEXT_CONTRAST_SCALE,
+  }),
+};
+
 // Utility-assigned math values. These depend on other vars and are resolved in
 // @utility ak-layer.
 const layerMathVars = {
-  contrastT: _ak.var("ct", globalContrastT),
+  contrastT: _ak.var("ct", fn.mul(globalContrastT, disabledVars.contrastScale)),
   contrastPushScale: _ak.var("cps"),
   layerContrastBias: _ak.var("lcb"),
   forbiddenLa: _ak.var("fla"),
@@ -564,6 +585,7 @@ const frameVars = {
 const vars = {
   contrast,
   ...constantMathVars,
+  ...disabledVars,
   ...layerMathVars,
   ...themeTokenVars,
   ...layerColorVars,
@@ -734,6 +756,12 @@ const root = rule(
   ":root",
   set.colorScheme("light dark"),
   at.variant("contrast-more", set(vars.contrast, CONTRAST_HIGH)),
+);
+
+const disabled = rule(
+  ':where(:disabled, [disabled], [aria-disabled="true"])',
+  set(vars.contrastScale, vars.disabledContrastScale),
+  set(vars.textContrastScale, vars.disabledTextContrastScale),
 );
 
 /**
@@ -1093,12 +1121,15 @@ const layerScheme = fn.oklch(vars.layer, {
 });
 
 // Min alpha adapts to layer lightness — higher for mid-lightness backgrounds.
-const textMinimumAlpha = fn.add(
+const textMinimumAlphaBase = fn.add(
   lightDark(
     vars.textMinAlphaOnLightLayer,
     fn.add(vars.textMinAlphaOnDarkLayer, vars.textMinAlphaOnDarkLayerMidBoost),
   ),
   fn.mul(c, 0.135),
+);
+const textMinimumAlpha = fn.add(
+  fn.mul(textMinimumAlphaBase, vars.textContrastScale),
   fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
 );
 const textAlpha = fn.max(textMinimumAlpha, inputs.textA);
@@ -1569,9 +1600,12 @@ function getDarkChromaMinContrast(
 
 function getTextChromaMinContrast(darkChromaMinContrast: Value) {
   const lightChromaMinContrast = getLightChromaMinContrast();
-  return fn.add(
-    fn.mul(lightChromaMinContrast, fn.invert(vars.textDarkDirectionMask)),
-    fn.mul(darkChromaMinContrast, vars.textDarkDirectionMask),
+  return fn.mul(
+    vars.textContrastScale,
+    fn.add(
+      fn.mul(lightChromaMinContrast, fn.invert(vars.textDarkDirectionMask)),
+      fn.mul(darkChromaMinContrast, vars.textDarkDirectionMask),
+    ),
   );
 }
 
@@ -2262,6 +2296,7 @@ utility(
 export const input = [
   theme,
   root,
+  disabled,
   dark,
   light,
   darkHigh,
