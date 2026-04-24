@@ -13,11 +13,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
         );
         for (const section of sections) {
           section.classList.toggle("ak-layer-20");
-          section.classList.toggle("ak-layer-80");
+          section.classList.toggle("ak-state-20");
+          section.classList.toggle("ak-layer-push-10");
+          section.classList.toggle("ak-layer-lighten-10");
+          section.classList.toggle("ak-layer-darken-10");
+          section.classList.toggle("ak-layer-mix-10");
+          section.classList.toggle("ak-layer-saturate-10");
+          section.classList.toggle("ak-layer-desaturate-10");
           section.classList.toggle("*:ak-text");
           section.classList.toggle("*:ak-text-red-600");
-          section.classList.toggle("*:ak-text-blue-600");
-          section.classList.toggle("ak-frame-p-0");
           section.classList.toggle("ak-frame-p-4");
         }
       });
