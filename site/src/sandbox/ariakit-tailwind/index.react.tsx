@@ -301,10 +301,61 @@ export default function Example() {
             label="#CE9178"
             className="ak-layer-[#131418] *:ak-text *:ak-text-[#CE9178]"
           />
-          <Cell
-            label="ak-layer!"
-            className="ak-layer! ak-layer-mix-15 ak-layer-blue-600 ak-state-10"
-          />
+          <Layer
+            label="ak-layer! modifier cascade"
+            className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+          >
+            <Layer className="flex-wrap items-start">
+              <Cell
+                label="base"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)]"
+              />
+              <Cell
+                label="mix"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-layer-mix-15"
+              />
+              <Cell
+                label="state"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-state-10"
+              />
+              <Cell
+                label="state lighten"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-state-lighten-20"
+              />
+              <Cell
+                label="state darken"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-state-darken-20"
+              />
+              <Cell
+                label="state saturate"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-state-saturate-50"
+              />
+              <Cell
+                label="state desaturate"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-state-desaturate-50"
+              />
+              <Cell
+                label="state hue"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-state-h-rotate-90"
+              />
+              <Cell
+                label="layer push"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-layer-push-20"
+              />
+              <Cell
+                label="state push"
+                className="ak-layer! ak-layer-[oklch(0.55_0.08_260)] ak-state-push-20"
+              />
+              <Cell
+                label="contrast base"
+                className="ak-layer! ak-layer-[oklch(0.9_0.08_260)]"
+              />
+              <Cell
+                label="layer contrast"
+                className="ak-layer! ak-layer-[oklch(0.9_0.08_260)] ak-layer-contrast ak-layer-contrast-20"
+              />
+            </Layer>
+          </Layer>
         </Layer>
       </Layer>
       <Layer
