@@ -22,16 +22,16 @@
         "children": {
           "base": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
           "mix": "bg-[oklch(0.9268_0.0125_256.169)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0125_256.169_/_0.1)] p-[4px] shadow-[oklch(0_0.0125_256.169_/_0.1)_0px_0px_0px_0px]",
-          "state": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
-          "state lighten": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
-          "state darken": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
-          "state saturate": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
-          "state desaturate": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
-          "state hue": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
-          "layer push": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
-          "state push": "bg-[oklch(0.5321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
+          "state": "bg-[oklch(0.4321_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
+          "state lighten": "bg-[oklch(0.75_0.08_260)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
+          "state darken": "bg-[oklch(0.35_0.08_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
+          "state saturate": "bg-[oklch(0.4675_0.368_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.368_260_/_0.1)] p-[4px] shadow-[oklch(0_0.368_260_/_0.1)_0px_0px_0px_0px]",
+          "state desaturate": "bg-[oklch(0.55_0_260)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0_260_/_0.1)] p-[4px] shadow-[oklch(0_0_260_/_0.1)_0px_0px_0px_0px]",
+          "state hue": "bg-[oklch(0.5321_0.08_350)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_350_/_0.1)] p-[4px] shadow-[oklch(0_0.08_350_/_0.1)_0px_0px_0px_0px]",
+          "layer push": "bg-[oklch(0.75_0.08_260)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
+          "state push": "bg-[oklch(0.934_0.08_260)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
           "contrast base": "bg-[oklch(0.9_0.08_260)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]",
-          "layer contrast": "bg-[oklch(0.9_0.08_260)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]"
+          "layer contrast": "bg-[oklch(0.8_0.08_260)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.08_260_/_0.1)] p-[4px] shadow-[oklch(0_0.08_260_/_0.1)_0px_0px_0px_0px]"
         }
       }
     }

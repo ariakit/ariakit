@@ -123,14 +123,15 @@
   --_ak-flb: min(0.9, (var(--_ak-flbb) + (var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.175)));
   --_ak-adtl: clamp(0, var(--_ak-ald), 1);
   --_ak-sl: calc(l + (clamp(0, (min((l - var(--_ak-fla)), (var(--_ak-flb) - l)) * 1000000), 1) * ((var(--_ak-fla) + (clamp(0, ((l - ((var(--_ak-fla) + var(--_ak-flb)) / 2)) * 1000000), 1) * (var(--_ak-flb) - var(--_ak-fla)))) - l)));
+  --_ak-licv: calc(var(--_ak-layer-idle-contrast-lightness) * var(--_ak-cps));
   --_ak-ecv: calc(var(--_ak-ct, (max(0, var(--contrast, 0)) / 100)) * 0.3334);
   --_ak-lib: oklch(from var(--_ak-layer-color, var(--ak-layer-parent, canvas)) var(--_ak-layer-lightness, calc(max(l, min(0.13, var(--_ak-layer-idle-relative-lightness))) + var(--_ak-layer-idle-relative-lightness))) var(--_ak-layer-chroma, calc(c + var(--_ak-layer-idle-relative-chroma))) var(--_ak-layer-hue, calc(h + var(--_ak-layer-idle-relative-hue))));
   --_ak-lim: var(--_ak-layer-mix, var(--_ak-lib));
   --_ak-lia: oklch(from var(--_ak-lim) calc(clamp(var(--_ak-layer-lightness-min), (max(l, min(0.13, var(--_ak-layer-idle-auto-lightness))) + var(--_ak-layer-idle-auto-lightness)), var(--_ak-layer-lightness-max)) + var(--_ak-lcb)) c h);
-  --_ak-li: var(--_ak-lia);
-  --_ak-lb: oklch(from var(--_ak-li) var(--_ak-sl) c h);
-  --_ak-la: var(--_ak-lb);
-  --_ak-lp: var(--_ak-la);
+  --_ak-li: oklch(from var(--_ak-lia) calc(((l + (var(--_ak-lcd) * max(0, ((clamp(0, (var(--_ak-lcpl) + (var(--_ak-licv) * var(--_ak-lcd))), 1) - l) * var(--_ak-lcd))))) * (var(--_ak-lcd) * var(--_ak-lcd))) + (var(--_ak-lipl) * (1 - (var(--_ak-lcd) * var(--_ak-lcd))))) c h);
+  --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness))) + var(--_ak-layer-relative-lightness)) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) var(--_ak-sl) c h);
+  --_ak-la: oklch(from var(--_ak-lb) calc(max(l, min(0.13, var(--_ak-layer-auto-lightness))) + var(--_ak-layer-auto-lightness)) c h);
+  --_ak-lp: oklch(from var(--_ak-la) var(--_ak-lpl) c h);
   @variant ak-light {
     --_ak-epd: -1;
   }
@@ -176,7 +177,6 @@
 @utility ak-state-* {
   --_ak-layer-auto-lightness-delta: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-ald));
   --_ak-layer-auto-lightness: calc((var(--_ak-layer-auto-lightness-delta) + (clamp(0, (min(((l + var(--_ak-layer-auto-lightness-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-auto-lightness-delta)))) * 1000000), 1) * ((((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-auto-lightness-delta) * -1)), 1)) * var(--_ak-ald)) - (((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l) * var(--_ak-ald))) * 1000000), 1) * ((var(--_ak-layer-auto-lightness-delta) * -1) - ((var(--_ak-flb) + (var(--_ak-adtl) * (var(--_ak-fla) - var(--_ak-flb)))) - l)))) - var(--_ak-layer-auto-lightness-delta)))) + (0 * (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
-  --_ak-la: oklch(from var(--_ak-lb) calc(max(l, min(0.13, var(--_ak-layer-auto-lightness))) + var(--_ak-layer-auto-lightness)) c h);
 }
 
 @utility ak-layer-lighten-* {
@@ -189,12 +189,10 @@
 
 @utility ak-state-lighten-* {
   --_ak-layer-relative-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
-  --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness))) + var(--_ak-layer-relative-lightness)) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) var(--_ak-sl) c h);
 }
 
 @utility ak-state-darken-* {
   --_ak-layer-relative-lightness: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
-  --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness))) + var(--_ak-layer-relative-lightness)) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) var(--_ak-sl) c h);
 }
 
 @utility ak-layer-cool-* {
@@ -210,7 +208,6 @@
   --_ak-lipv: calc(var(--_ak-layer-idle-push-lightness) * var(--_ak-cps));
   --_ak-lipbl: calc(max(l, min(0.13, (var(--_ak-lipv) * var(--_ak-ald)))) + (var(--_ak-lipv) * var(--_ak-ald)));
   --_ak-lipl: clamp(0, (var(--_ak-lipbl) + (var(--_ak-ald) * (var(--_ak-flb) - var(--_ak-fla)) * max(((clamp(0, ((var(--_ak-fla) - l) * 1000000), 1) * clamp(0, ((var(--_ak-lipbl) - var(--_ak-fla)) * 1000000), 1)) + (clamp(0, ((l - var(--_ak-flb)) * 1000000), 1) * clamp(0, ((var(--_ak-flb) - var(--_ak-lipbl)) * 1000000), 1))), (clamp(0, (min((var(--_ak-lipbl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lipbl))) * 1000000), 1) * clamp(0, (var(--_ak-lipv) * 1000000), 1))))), 1);
-  --_ak-li: oklch(from var(--_ak-lia) var(--_ak-lipl) c h);
 }
 
 @utility ak-state-push-* {
@@ -218,13 +215,10 @@
   --_ak-lpv: calc(var(--_ak-layer-push-lightness) * var(--_ak-cps));
   --_ak-lpbl: calc(max(l, min(0.13, (var(--_ak-lpv) * var(--_ak-ald)))) + (var(--_ak-lpv) * var(--_ak-ald)));
   --_ak-lpl: clamp(0, (var(--_ak-lpbl) + (var(--_ak-ald) * (var(--_ak-flb) - var(--_ak-fla)) * max(((clamp(0, ((var(--_ak-fla) - l) * 1000000), 1) * clamp(0, ((var(--_ak-lpbl) - var(--_ak-fla)) * 1000000), 1)) + (clamp(0, ((l - var(--_ak-flb)) * 1000000), 1) * clamp(0, ((var(--_ak-flb) - var(--_ak-lpbl)) * 1000000), 1))), (clamp(0, (min((var(--_ak-lpbl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lpbl))) * 1000000), 1) * clamp(0, (var(--_ak-lpv) * 1000000), 1))))), 1);
-  --_ak-lp: oklch(from var(--_ak-la) var(--_ak-lpl) c h);
 }
 
 @utility ak-layer-contrast {
   --_ak-layer-idle-contrast-lightness: 0.25;
-  --_ak-licv: calc(var(--_ak-layer-idle-contrast-lightness) * var(--_ak-cps));
-  --_ak-li: oklch(from var(--_ak-lia) calc(((l + (var(--_ak-lcd) * max(0, ((clamp(0, (var(--_ak-lcpl) + (var(--_ak-licv) * var(--_ak-lcd))), 1) - l) * var(--_ak-lcd))))) * (var(--_ak-lcd) * var(--_ak-lcd))) + (var(--_ak-lipl) * (1 - (var(--_ak-lcd) * var(--_ak-lcd))))) c h);
   @container style(--_ak-ll: oklch(0 0 0)) {
     --_ak-lcd: 1;
     --_ak-lcpl: 0;
@@ -305,12 +299,10 @@
 
 @utility ak-state-saturate-* {
   --_ak-layer-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
-  --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness))) + var(--_ak-layer-relative-lightness)) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) var(--_ak-sl) c h);
 }
 
 @utility ak-state-desaturate-* {
   --_ak-layer-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
-  --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness))) + var(--_ak-layer-relative-lightness)) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) var(--_ak-sl) c h);
 }
 
 @utility ak-layer-h-rotate-* {
@@ -319,7 +311,6 @@
 
 @utility ak-state-h-rotate-* {
   --_ak-layer-relative-hue: --value(number, [*], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
-  --_ak-lb: oklch(from oklch(from var(--_ak-li) calc(max(l, min(0.13, var(--_ak-layer-relative-lightness))) + var(--_ak-layer-relative-lightness)) calc(c + var(--_ak-layer-relative-chroma)) calc(h + var(--_ak-layer-relative-hue))) var(--_ak-sl) c h);
 }
 
 @utility ak-layer-l-* {

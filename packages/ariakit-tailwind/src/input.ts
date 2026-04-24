@@ -973,16 +973,8 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   );
 }
 
-const layerIdlePushed = fn.oklch(vars.layerIdleAuto, {
-  l: vars.layerIdlePushL,
-});
-
-const layerContrast = fn.oklch(vars.layerIdleAuto, {
+const layerIdle = fn.oklch(vars.layerIdleAuto, {
   l: getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
-});
-
-const layerBase = fn.oklch(vars.layerIdle, {
-  l: vars.safeL,
 });
 
 const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
@@ -1030,6 +1022,7 @@ const layerMathDeclarations = [
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
+  set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
 
@@ -1038,10 +1031,10 @@ const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
   set(vars.layerIdleMixed, layerIdleMixed),
   set(vars.layerIdleAuto, layerIdleAuto),
-  set(vars.layerIdle, vars.layerIdleAuto),
-  set(vars.layerBase, layerBase),
-  set(vars.layerAuto, vars.layerBase),
-  set(vars.layerPush, vars.layerAuto),
+  set(vars.layerIdle, layerIdle),
+  set(vars.layerBase, layerState),
+  set(vars.layerAuto, layerAuto),
+  set(vars.layerPush, layerPush),
 ];
 
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
@@ -1192,7 +1185,6 @@ utility(
     inputs.layerAutoL,
     withNumericTokenGate(getAutoLDelta(inputs.layerAutoLDelta), "[*]"),
   ),
-  set(vars.layerAuto, layerAuto),
 );
 
 const layerLighten = utility(
@@ -1205,13 +1197,11 @@ utility("layer-darken-*", getNegatedDeclarations(layerLighten));
 utility(
   "state-lighten-*",
   set(inputs.layerRelativeL, getPercentTokenValue("[*]")),
-  set(vars.layerBase, layerState),
 );
 
 utility(
   "state-darken-*",
   set(inputs.layerRelativeL, fn.neg(getPercentTokenValue("[*]"))),
-  set(vars.layerBase, layerState),
 );
 
 /**
@@ -1252,7 +1242,6 @@ utility(
     vars.layerIdlePushL,
     getPushL(vars.layerIdlePushValue, vars.layerIdlePushBaseL),
   ),
-  set(vars.layerIdle, layerIdlePushed),
 );
 
 utility(
@@ -1264,14 +1253,11 @@ utility(
     getLayerL(fn.mul(vars.layerPushValue, vars.autoLDirection)),
   ),
   set(vars.layerPushL, getPushL(vars.layerPushValue, vars.layerPushBaseL)),
-  set(vars.layerPush, layerPush),
 );
 
 utility(
   "layer-contrast",
   set(inputs.layerIdleContrastL, 0.25),
-  set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
-  set(vars.layerIdle, layerContrast),
   mapLayerLightnessSteps((parentL, isDark) => [
     set(vars.layerContrastDirection, isDark ? 1 : -1),
     set(vars.layerContrastParentL, parentL),
@@ -1329,7 +1315,6 @@ utility("layer-desaturate-*", getNegatedDeclarations(layerSaturate));
 utility(
   "state-saturate-*",
   set(inputs.layerRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
-  set(vars.layerBase, layerState),
 );
 
 utility(
@@ -1338,7 +1323,6 @@ utility(
     inputs.layerRelativeC,
     fn.neg(getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
   ),
-  set(vars.layerBase, layerState),
 );
 
 utility(
@@ -1352,7 +1336,6 @@ utility(
 utility(
   "state-h-rotate-*",
   set(inputs.layerRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
-  set(vars.layerBase, layerState),
 );
 
 utility(
