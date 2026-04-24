@@ -67,6 +67,13 @@ const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL_START_OFFSET =
       CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L,
     4,
   );
+// Very dark parents (parentL close to 0) fall outside the perceptual range
+// where the base 0.47 floor reaches 4.5:1 WCAG AA luminance contrast. Ramp in
+// an extra lightness push when parentL is below the first quantization step so
+// `ak-text-<number>` and `ak-text-push-<number>` stay safe on layers like
+// `ak-layer-100` (light) / `ak-layer-0` (dark) and near-black custom layers.
+const CHILD_TEXT_MIN_CONTRAST_DARK_PARENT_BOOST = 0.1;
+const CHILD_TEXT_MIN_CONTRAST_DARK_PARENT_BOOST_END_L = 0.125;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE = 1.0;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
@@ -1484,15 +1491,14 @@ const textDarkReliefChroma = getRampProgress(
 );
 const textDarkDirectionMask = fn.clamp01(vars.textContrastDirection);
 
-function getTextDirectional() {
-  const textChroma = fn.min(vars.textChromaUncapped, vars.textChromaCap);
+function getDarkNeutralTextBoost() {
   const darkNeutralTextMask = fn.binary(
     fn.sub(
       CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_MAX_CHROMA,
       vars.textChromaUncapped,
     ),
   );
-  const darkNeutralTextBoost = fn.mul(
+  return fn.mul(
     darkNeutralTextMask,
     getRampProgress(
       vars.textParentL,
@@ -1501,6 +1507,106 @@ function getTextDirectional() {
     ),
     CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST,
   );
+}
+
+function getDarkParentWcagBoost() {
+  // Bumps the dark floor by up to `CHILD_TEXT_MIN_CONTRAST_DARK_PARENT_BOOST`
+  // as `textParentL` approaches 0. The base 0.47 floor is calibrated for
+  // mid-dark parents where the perceptual-to-luminance ramp already yields a
+  // >=4.5:1 WCAG contrast; near-black parents fall off that ramp and need a
+  // touch more lightness, both for `ak-text-<number>` and `ak-text-push-<number>`.
+  return fn.mul(
+    getRampProgress(
+      fn.sub(CHILD_TEXT_MIN_CONTRAST_DARK_PARENT_BOOST_END_L, vars.textParentL),
+      0,
+      CHILD_TEXT_MIN_CONTRAST_DARK_PARENT_BOOST_END_L,
+    ),
+    CHILD_TEXT_MIN_CONTRAST_DARK_PARENT_BOOST,
+  );
+}
+
+function getDarkTextRelief(userLightness: Value) {
+  return getRampProgress(
+    userLightness,
+    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_START_L,
+    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_FULL_L,
+  );
+}
+
+function getLightChromaMinContrast() {
+  return fn.add(
+    CHILD_TEXT_MIN_CONTRAST_LIGHT,
+    fn.mul(
+      vars.textContrastChroma,
+      fn.sub(
+        CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE,
+        fn.mul(
+          CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING,
+          vars.textContrastChroma,
+        ),
+      ),
+    ),
+  );
+}
+
+function getDarkChromaMinContrast(
+  userLightness: Value,
+  darkNeutralTextBoost: Value,
+  darkParentWcagBoost: Value,
+) {
+  const darkTextRelief = getDarkTextRelief(userLightness);
+  return fn.add(
+    CHILD_TEXT_MIN_CONTRAST_DARK,
+    darkParentWcagBoost,
+    darkNeutralTextBoost,
+    fn.mul(
+      CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE,
+      fn.mul(vars.textDarkContrastChroma, vars.textDarkContrastChroma),
+      fn.invert(darkTextRelief),
+    ),
+  );
+}
+
+function getTextChromaMinContrast(darkChromaMinContrast: Value) {
+  const lightChromaMinContrast = getLightChromaMinContrast();
+  return fn.add(
+    fn.mul(lightChromaMinContrast, fn.invert(vars.textDarkDirectionMask)),
+    fn.mul(darkChromaMinContrast, vars.textDarkDirectionMask),
+  );
+}
+
+function getTextAccessibleLightness(chromaMinContrast: Value) {
+  const textContrastShift = fn.mul(
+    fn.add(
+      fn.max(chromaMinContrast, inputs.textPushL),
+      fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
+    ),
+    vars.textContrastDirection,
+  );
+  return fn.clamp01(fn.add(vars.textParentL, textContrastShift));
+}
+
+function getTextLightnessWithFloor(lightness: Value) {
+  const darkNeutralTextBoost = getDarkNeutralTextBoost();
+  const darkParentWcagBoost = getDarkParentWcagBoost();
+  const darkChromaMinContrast = getDarkChromaMinContrast(
+    lightness,
+    darkNeutralTextBoost,
+    darkParentWcagBoost,
+  );
+  const chromaMinContrast = getTextChromaMinContrast(darkChromaMinContrast);
+  const textAccessibleLightness = getTextAccessibleLightness(chromaMinContrast);
+  return getDirectionalLightness(
+    lightness,
+    textAccessibleLightness,
+    vars.textContrastDirection,
+  );
+}
+
+function getTextDirectional() {
+  const textChroma = fn.min(vars.textChromaUncapped, vars.textChromaCap);
+  const darkNeutralTextBoost = getDarkNeutralTextBoost();
+  const darkParentWcagBoost = getDarkParentWcagBoost();
   const darkReliefParentBaseMask = fn.binary(
     fn.sub(CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_PARENT_MAX_L, vars.textParentL),
   );
@@ -1527,14 +1633,19 @@ function getTextDirectional() {
       CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L,
     ),
   );
-  const darkTextRelief = getRampProgress(
-    vars.textUserLightness,
-    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_START_L,
-    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_FULL_L,
-  );
+  const darkTextRelief = getDarkTextRelief(vars.textUserLightness);
+  // Base floor plus always-on boosts, minus relief reduction, plus the
+  // chroma-scaled boost that only kicks in below the `darkTextRelief` ramp.
+  // Keeping `darkNeutralTextBoost` outside the ramp ensures mid-to-bright dark
+  // parents (parentL ≈ 0.5) still clear 4.5:1 at high `userL` where
+  // `darkTextRelief` would otherwise suppress the boost.
   const darkChromaMinContrast = fn.add(
     fn.sub(
-      CHILD_TEXT_MIN_CONTRAST_DARK,
+      fn.add(
+        CHILD_TEXT_MIN_CONTRAST_DARK,
+        darkParentWcagBoost,
+        darkNeutralTextBoost,
+      ),
       fn.mul(
         mixValues(
           CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL,
@@ -1545,43 +1656,13 @@ function getTextDirectional() {
       ),
     ),
     fn.mul(
-      fn.add(
-        fn.mul(
-          CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE,
-          fn.mul(vars.textDarkContrastChroma, vars.textDarkContrastChroma),
-        ),
-        darkNeutralTextBoost,
-      ),
+      CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE,
+      fn.mul(vars.textDarkContrastChroma, vars.textDarkContrastChroma),
       fn.invert(darkTextRelief),
     ),
   );
-  const lightChromaMinContrast = fn.add(
-    CHILD_TEXT_MIN_CONTRAST_LIGHT,
-    fn.mul(
-      vars.textContrastChroma,
-      fn.sub(
-        CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE,
-        fn.mul(
-          CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING,
-          vars.textContrastChroma,
-        ),
-      ),
-    ),
-  );
-  const chromaMinContrast = fn.add(
-    fn.mul(lightChromaMinContrast, fn.invert(vars.textDarkDirectionMask)),
-    fn.mul(darkChromaMinContrast, vars.textDarkDirectionMask),
-  );
-  const textContrastShift = fn.mul(
-    fn.add(
-      fn.max(chromaMinContrast, inputs.textPushL),
-      fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
-    ),
-    vars.textContrastDirection,
-  );
-  const textAccessibleLightness = fn.clamp01(
-    fn.add(vars.textParentL, textContrastShift),
-  );
+  const chromaMinContrast = getTextChromaMinContrast(darkChromaMinContrast);
+  const textAccessibleLightness = getTextAccessibleLightness(chromaMinContrast);
   const textDirectedLightness = getDirectionalLightness(
     vars.textUserLightness,
     textAccessibleLightness,
@@ -1596,21 +1677,22 @@ function getTextDirectional() {
 function getTextDirectionalDeclarations() {
   return [
     set(vars.textChromaUncapped, textChromaUncapped),
-    set(vars.textUserLightness, textUserLightness),
     set(vars.textContrastChroma, textContrastChroma),
     set(vars.textDarkContrastChroma, textDarkContrastChroma),
     set(vars.textDarkReliefChroma, textDarkReliefChroma),
     set(vars.textDarkDirectionMask, textDarkDirectionMask),
+    set(vars.textUserLightness, textUserLightness),
     set.color(getTextDirectional()),
   ];
 }
 
 function getTextLightnessValue(pattern: string) {
   const lightness = getPercentTokenValue(pattern);
-  return fn.add(
+  const directionalLightness = fn.add(
     0.5,
     fn.mul(fn.sub(lightness, 0.5), vars.textContrastDirection),
   );
+  return getTextLightnessWithFloor(directionalLightness);
 }
 
 utility(
@@ -1673,8 +1755,11 @@ utility(
 
 utility(
   "text-l-*",
-  set(inputs.textL, fn.value("[*]")),
-  set(inputs.textL, getPercentTokenValue("[number]")),
+  set(inputs.textL, getTextLightnessWithFloor(fn.value("[*]"))),
+  set(
+    inputs.textL,
+    getTextLightnessWithFloor(getPercentTokenValue("[number]")),
+  ),
 );
 
 utility(
