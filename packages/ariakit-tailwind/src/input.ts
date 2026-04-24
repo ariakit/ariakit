@@ -449,9 +449,8 @@ const layerMathVars = {
   forbiddenLb: _ak.var("flb"),
   safeL: _ak.var("sl"),
   autoDirectionToLight: _ak.var("adtl"),
-  layerIdleAutoDelta: _ak.var("liad"),
-  layerAutoComputedDelta: _ak.var("ladc"),
-  layerAutoDelta: _ak.var("lad", 0),
+  layerIdleAutoDelta: _ak.prop("liad", { initial: 0 }),
+  layerAutoDelta: _ak.prop("lad", { initial: 0 }),
   layerIdlePushValue: _ak.var("lipv"),
   layerPushValue: _ak.var("lpv"),
   layerIdleContrastValue: _ak.var("licv"),
@@ -549,7 +548,6 @@ const vars = {
 
 const inputs = {
   layerColor: _ak.prop("layer-color"),
-  layerIdleAutoL: _ak.prop("layer-idle-auto-lightness", { initial: 0 }),
   layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", { initial: 0 }),
   layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", { initial: 0 }),
   layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", { initial: 0 }),
@@ -562,7 +560,6 @@ const inputs = {
   layerLMax: _ak.prop("layer-lightness-max", { initial: 1 }),
   layerCMin: _ak.prop("layer-chroma-min", { initial: 0 }),
   layerCMax: _ak.prop("layer-chroma-max", vars.chromaP3Max),
-  layerAutoL: _ak.prop("layer-auto-lightness", { initial: 0 }),
   layerRelativeL: _ak.prop("layer-relative-lightness", { initial: 0 }),
   layerRelativeC: _ak.prop("layer-relative-chroma", { initial: 0 }),
   layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
@@ -993,8 +990,6 @@ const layerMathDeclarations = [
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
-  set(vars.layerIdleAutoDelta, getAutoL(inputs.layerIdleAutoL)),
-  set(vars.layerAutoComputedDelta, getAutoL(inputs.layerAutoL)),
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
@@ -1106,7 +1101,7 @@ utility(
   set(inputs.layerC, fn.value(chroma)),
   set(inputs.layerH, fn.value(hue)),
   set(inputs.layerColor, fn.value(color, "[color]")),
-  set(inputs.layerIdleAutoL, getPercentTokenValue("[number]")),
+  set(vars.layerIdleAutoDelta, getAutoL(getPercentTokenValue("[number]"))),
 );
 
 utility(
@@ -1140,8 +1135,7 @@ utility(
 
 utility(
   "state-*",
-  set(inputs.layerAutoL, getPercentTokenValue("[*]")),
-  set(vars.layerAutoDelta, vars.layerAutoComputedDelta),
+  set(vars.layerAutoDelta, getAutoL(getPercentTokenValue("[*]"))),
 );
 
 const layerLighten = utility(
