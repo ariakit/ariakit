@@ -79,13 +79,13 @@ const CHILD_TEXT_MIN_CONTRAST_HIGH_CHROMA_FULL = 0.245;
 const CHILD_TEXT_MIN_CONTRAST_DARK_HIGH_CHROMA_LOW_L_MAX = 0.565;
 const CHILD_TEXT_MIN_CONTRAST_DARK_HIGH_CHROMA_LOW_L_SPAN = 0.02;
 const CHILD_TEXT_MIN_CONTRAST_DARK_HIGH_CHROMA_DAMPING = 0.9;
-const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE = 0.8;
-const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING = 1.5;
+const CHILD_TEXT_MIN_CONTRAST_DARK_ADAPTIVE_CHROMA_DAMPING = 0.35;
+const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE = 0.326;
 // Child colored text can be more vivid on extreme backgrounds than on
 // mid-tone backgrounds, where the WCAG margin is tighter.
-const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.0399;
+const CHILD_TEXT_CHROMA_CAP_DARK_MIN = 0.051;
 const CHILD_TEXT_CHROMA_CAP_DARK_MAX = CHROMA_MAX_P3;
-const CHILD_TEXT_CHROMA_CAP_LIGHT = 0.2;
+const CHILD_TEXT_CHROMA_CAP_LIGHT = CHROMA_MAX_P3;
 const CHILD_TEXT_CHROMA_CAP_DARK_RAMP_START_L = 0.5;
 const OUTLINE_MIN_CONTRAST = 0.5;
 const INK_DARK_MID_ALPHA_BOOST_START_L = 0.25;
@@ -1597,16 +1597,7 @@ function getDarkTextRelief(userLightness: Value) {
 function getLightChromaMinContrast() {
   return fn.add(
     CHILD_TEXT_MIN_CONTRAST_LIGHT,
-    fn.mul(
-      vars.textContrastChroma,
-      fn.sub(
-        CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE,
-        fn.mul(
-          CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING,
-          vars.textContrastChroma,
-        ),
-      ),
-    ),
+    fn.mul(vars.textContrastChroma, CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE),
   );
 }
 
@@ -1723,6 +1714,13 @@ function getTextDirectional() {
       CHILD_TEXT_MIN_CONTRAST_DARK_CHROMA_SCALE,
       fn.mul(vars.textDarkContrastChroma, vars.textDarkContrastChroma),
       fn.invert(darkTextRelief),
+      fn.sub(
+        1,
+        fn.mul(
+          CHILD_TEXT_MIN_CONTRAST_DARK_ADAPTIVE_CHROMA_DAMPING,
+          darkAdaptiveTextRelief,
+        ),
+      ),
       getDarkHighChromaDamping(),
     ),
   );
