@@ -22,6 +22,10 @@ const CHROMA_MAX = CHROMA_MAX_P3;
 
 const DARK_THRESHOLD_L = 0.645;
 const CONTRAST_HIGH = 100;
+const AUTO_CHROMA_COEFFICIENT = roundToDecimals(
+  CHROMA_MAX / (DARK_THRESHOLD_L * (1 - DARK_THRESHOLD_L)),
+  9,
+);
 
 const LA_BASE = 0.55;
 const LB_BASE = 0.725;
@@ -56,6 +60,13 @@ const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_VIVID_START_L = 0.54;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L = 0.03;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL = 0.13;
 const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_VIVID = 0.24;
+const CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL_START_OFFSET =
+  roundToDecimals(
+    CHILD_TEXT_MIN_CONTRAST_DARK -
+      CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL -
+      CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L,
+    4,
+  );
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE = 1.0;
 const CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING = 1.5;
 // Child colored text can be more vivid on extreme backgrounds than on
@@ -274,14 +285,13 @@ function getSafeLightness(
  * clamp to the entry boundary, whichever yields more lightness distance from
  * the original layer color.
  */
-function getAutoLightness(
-  delta: Value,
+function getAutoLightnessDelta(
+  normalDelta: Value,
   direction: Value,
   lowerBoundary: Value,
   upperBoundary: Value,
   toLight: Value,
 ) {
-  const normalDelta = fn.mul(delta, direction);
   const nextLightness = fn.add(l, normalDelta);
   const inForbidden = getForbiddenRangeMask(
     nextLightness,
@@ -352,7 +362,14 @@ function getDirectionalLightness(
  * Returns the normalized 0..1 progress of `value` between `start` and `end`.
  */
 function getRampProgress(value: Value, start: Value, end: Value) {
-  return fn.clamp01(fn.div(fn.relu(fn.sub(value, start)), fn.sub(end, start)));
+  return getRampProgressBySpan(value, start, fn.sub(end, start));
+}
+
+/**
+ * Returns the normalized 0..1 progress of `value` from `start` over `span`.
+ */
+function getRampProgressBySpan(value: Value, start: Value, span: Value) {
+  return fn.clamp01(fn.div(fn.sub(value, start), span));
 }
 
 /**
@@ -409,10 +426,10 @@ const constantMathVars = {
     initial: TEXT_FOREGROUND_CONTRAST_L,
   }),
   textMinAlphaOnLightLayer: _ak.prop("tmal", {
-    initial: fn.div(fn.add(53.6, fn.mul(fn.sub(1, l), 85)), 100),
+    initial: fn.sub(1.386, fn.mul(l, 0.85)),
   }),
   textMinAlphaOnDarkLayer: _ak.prop("tmad", {
-    initial: fn.div(fn.add(45.7, fn.mul(fn.mul(l, l), 145)), 100),
+    initial: fn.add(0.457, fn.mul(l, l, 1.45)),
   }),
   textMinAlphaOnDarkLayerMidBoost: _ak.prop("tmab", {
     initial: fn.mul(
@@ -431,7 +448,7 @@ const constantMathVars = {
   forbiddenLbBase: _ak.prop("flbb", {
     initial: fn.add(LB_BASE, fn.mul(fn.min(c, CHROMA_MAX), LB_CHROMA_SPREAD)),
   }),
-  autoLDirection: _ak.prop("ald", { initial: fn.sub(DARK_L, LIGHT_L) }),
+  autoLDirection: _ak.prop("ald", { initial: fn.sub(fn.double(DARK_L), 1) }),
   darkL: _ak.prop("dal", { initial: DARK_L }),
   lightL: _ak.prop("lil", { initial: LIGHT_L }),
   bandDarkHigh: _ak.prop("bdh", { initial: bandDarkHigh }),
@@ -444,14 +461,17 @@ const constantMathVars = {
 // @utility ak-layer.
 const layerMathVars = {
   contrastT: _ak.var("ct", globalContrastT),
+  contrastPushScale: _ak.var("cps"),
   layerContrastBias: _ak.var("lcb"),
   forbiddenLa: _ak.var("fla"),
   forbiddenLb: _ak.var("flb"),
   safeL: _ak.var("sl"),
   autoDirectionToLight: _ak.var("adtl"),
   layerIdlePushValue: _ak.prop("lipv", { initial: 0 }),
+  layerIdlePushBaseL: _ak.prop("lipbl", { initial: l }),
   layerIdlePushL: _ak.prop("lipl", { initial: l }),
   layerPushValue: _ak.prop("lpv", { initial: 0 }),
+  layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
   layerIdleContrastValue: _ak.var("licv"),
   edgeContrastValue: _ak.var("ecv"),
@@ -551,6 +571,9 @@ const inputs = {
   layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", { initial: 0 }),
   layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", { initial: 0 }),
   layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", { initial: 0 }),
+  layerIdleAutoLDelta: _ak.prop("layer-idle-auto-lightness-delta", {
+    initial: 0,
+  }),
   layerIdleAutoL: _ak.prop("layer-idle-auto-lightness", { initial: 0 }),
   layerIdlePushL: _ak.prop("layer-idle-push-lightness", { initial: 0 }),
   layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", { initial: 0 }),
@@ -564,6 +587,7 @@ const inputs = {
   layerRelativeL: _ak.prop("layer-relative-lightness", { initial: 0 }),
   layerRelativeC: _ak.prop("layer-relative-chroma", { initial: 0 }),
   layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
+  layerAutoLDelta: _ak.prop("layer-auto-lightness-delta", { initial: 0 }),
   layerAutoL: _ak.prop("layer-auto-lightness", { initial: 0 }),
   layerPushL: _ak.prop("layer-push-lightness", { initial: 0 }),
   layerMix: _ak.prop("layer-mix"),
@@ -709,14 +733,14 @@ const root = rule(
  * Scales local contrast controls by the global contrast preference.
  */
 function getPushValue(value: Value) {
-  return fn.add(value, fn.mul(value, vars.contrastT, 3.334));
+  return fn.mul(value, vars.contrastPushScale);
 }
 
 /**
- * Computes auto lightness using the current forbidden range variables.
+ * Computes auto lightness from an already direction-adjusted delta.
  */
-function getAutoL(value: Value) {
-  return getAutoLightness(
+function getAutoLDelta(value: Value) {
+  return getAutoLightnessDelta(
     value,
     vars.autoLDirection,
     vars.forbiddenLa,
@@ -726,19 +750,25 @@ function getAutoL(value: Value) {
 }
 
 /**
+ * Keeps a declaration tied to numeric utility tokens while using a factored
+ * scratch variable for the expensive expression.
+ */
+function withNumericTokenGate(value: Value, pattern: string) {
+  return fn.calc`${value} + (0 * ${getPercentTokenValue(pattern)})`;
+}
+
+/**
  * Applies contrast lightness with the same baseline progression as
  * `ak-layer-*`, except values that would land inside the forbidden band jump
  * to the opposite boundary and preserve their remaining progress there.
  */
-function getPushL(pushValue: Value) {
+function getPushL(pushValue: Value, baseLightness: Value) {
   const direction = vars.autoLDirection;
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
   const bandWidth = fn.sub(upperBoundary, lowerBoundary);
   const valueEnabled = fn.binary(pushValue);
-  const normalDelta = fn.mul(pushValue, direction);
   const startLightness = l;
-  const baseLightness = getLayerL(normalDelta);
   // Crossed from dark side: l was below fla AND baseLightness moved above fla.
   const crossedFromDarkSide = fn.mul(
     fn.binary(fn.sub(lowerBoundary, startLightness)),
@@ -936,7 +966,7 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   const parentDirectedL = getDirectionalLightness(l, parentTargetL, direction);
   // When ak-layer-contrast is active, direction is ±1 so |direction|=1.
   // When inactive, direction=0. Use this as a blend mask.
-  const isActive = fn.min(fn.mul(direction, direction), 1);
+  const isActive = fn.mul(direction, direction);
   return fn.add(
     fn.mul(parentDirectedL, isActive),
     fn.mul(selfRelativeL, fn.sub(1, isActive)),
@@ -991,9 +1021,10 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
 
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
+  set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
   set(
     vars.layerContrastBias,
-    fn.mul(fn.neg(vars.contrastT), lightDark(-CONTRAST_SCALE, CONTRAST_SCALE)),
+    fn.mul(fn.neg(vars.contrastT), CONTRAST_SCALE, vars.autoLDirection),
   ),
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
@@ -1111,7 +1142,14 @@ utility(
   set(inputs.layerC, fn.value(chroma)),
   set(inputs.layerH, fn.value(hue)),
   set(inputs.layerColor, fn.value(color, "[color]")),
-  set(inputs.layerIdleAutoL, getAutoL(getPercentTokenValue("[number]"))),
+  set(
+    inputs.layerIdleAutoLDelta,
+    fn.mul(getPercentTokenValue("[number]"), vars.autoLDirection),
+  ),
+  set(
+    inputs.layerIdleAutoL,
+    withNumericTokenGate(getAutoLDelta(inputs.layerIdleAutoLDelta), "[number]"),
+  ),
 );
 
 utility(
@@ -1147,7 +1185,14 @@ utility(
 
 utility(
   "state-*",
-  set(inputs.layerAutoL, getAutoL(getPercentTokenValue("[*]"))),
+  set(
+    inputs.layerAutoLDelta,
+    fn.mul(getPercentTokenValue("[*]"), vars.autoLDirection),
+  ),
+  set(
+    inputs.layerAutoL,
+    withNumericTokenGate(getAutoLDelta(inputs.layerAutoLDelta), "[*]"),
+  ),
   set(vars.layerAuto, layerAuto),
 );
 
@@ -1200,7 +1245,14 @@ utility(
   "layer-push-*",
   set(inputs.layerIdlePushL, getPercentTokenValue("[*]")),
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
-  set(vars.layerIdlePushL, getPushL(vars.layerIdlePushValue)),
+  set(
+    vars.layerIdlePushBaseL,
+    getLayerL(fn.mul(vars.layerIdlePushValue, vars.autoLDirection)),
+  ),
+  set(
+    vars.layerIdlePushL,
+    getPushL(vars.layerIdlePushValue, vars.layerIdlePushBaseL),
+  ),
   set(vars.layerIdle, layerIdlePushed),
 );
 
@@ -1208,7 +1260,11 @@ utility(
   "state-push-*",
   set(inputs.layerPushL, getPercentTokenValue("[*]")),
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
-  set(vars.layerPushL, getPushL(vars.layerPushValue)),
+  set(
+    vars.layerPushBaseL,
+    getLayerL(fn.mul(vars.layerPushValue, vars.autoLDirection)),
+  ),
+  set(vars.layerPushL, getPushL(vars.layerPushValue, vars.layerPushBaseL)),
   set(vars.layerPush, layerPush),
 );
 
@@ -1259,14 +1315,7 @@ utility(
 utility(
   "layer-max-c-auto",
   // Keep chroma near zero at lightness extremes and peak at threshold.
-  set(
-    inputs.layerCMax,
-    fn.mul(
-      CHROMA_MAX,
-      fn.div(l, DARK_THRESHOLD_L),
-      fn.div(fn.invert(l), fn.invert(DARK_THRESHOLD_L)),
-    ),
-  ),
+  set(inputs.layerCMax, fn.mul(AUTO_CHROMA_COEFFICIENT, l, fn.invert(l))),
 );
 
 const layerSaturate = utility(
@@ -1472,25 +1521,18 @@ function getTextDirectional() {
     ),
     CHILD_TEXT_MIN_CONTRAST_DARK_NEUTRAL_BOOST,
   );
-  const darkReliefParentMask = mixValues(
-    fn.binary(
-      fn.sub(
-        CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_PARENT_MAX_L,
-        vars.textParentL,
-      ),
-    ),
-    1,
-    vars.textDarkReliefChroma,
+  const darkReliefParentBaseMask = fn.binary(
+    fn.sub(CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_PARENT_MAX_L, vars.textParentL),
   );
-  const darkNeutralReliefStartLightness = fn.sub(
-    fn.add(
-      vars.textParentL,
-      fn.sub(
-        CHILD_TEXT_MIN_CONTRAST_DARK,
-        CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL,
-      ),
+  const darkReliefParentMask = fn.invert(
+    fn.mul(
+      fn.invert(darkReliefParentBaseMask),
+      fn.invert(vars.textDarkReliefChroma),
     ),
-    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L,
+  );
+  const darkNeutralReliefStartLightness = fn.add(
+    vars.textParentL,
+    CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_NEUTRAL_START_OFFSET,
   );
   const darkReliefStartLightness = mixValues(
     darkNeutralReliefStartLightness,
@@ -1499,13 +1541,10 @@ function getTextDirectional() {
   );
   const darkAdaptiveTextRelief = fn.mul(
     darkReliefParentMask,
-    getRampProgress(
+    getRampProgressBySpan(
       vars.textUserLightness,
       darkReliefStartLightness,
-      fn.add(
-        darkReliefStartLightness,
-        CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L,
-      ),
+      CHILD_TEXT_MIN_CONTRAST_DARK_RELIEF_SPAN_L,
     ),
   );
   const darkTextRelief = getRampProgress(
@@ -1538,23 +1577,20 @@ function getTextDirectional() {
   );
   const lightChromaMinContrast = fn.add(
     CHILD_TEXT_MIN_CONTRAST_LIGHT,
-    fn.sub(
-      fn.mul(
+    fn.mul(
+      vars.textContrastChroma,
+      fn.sub(
         CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_SCALE,
-        vars.textContrastChroma,
-      ),
-      fn.mul(
-        CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING,
-        fn.mul(vars.textContrastChroma, vars.textContrastChroma),
+        fn.mul(
+          CHILD_TEXT_MIN_CONTRAST_LIGHT_CHROMA_DAMPING,
+          vars.textContrastChroma,
+        ),
       ),
     ),
   );
   const chromaMinContrast = fn.add(
-    lightChromaMinContrast,
-    fn.mul(
-      vars.textDarkDirectionMask,
-      fn.sub(darkChromaMinContrast, lightChromaMinContrast),
-    ),
+    fn.mul(lightChromaMinContrast, fn.invert(vars.textDarkDirectionMask)),
+    fn.mul(darkChromaMinContrast, vars.textDarkDirectionMask),
   );
   const textContrastShift = fn.mul(
     fn.add(
