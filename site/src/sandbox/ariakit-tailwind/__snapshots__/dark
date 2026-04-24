@@ -42,6 +42,38 @@
       "ak-layer-0": {
         "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.6_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.7_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.9_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.595_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.625_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.725_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.825_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.925_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -205,6 +237,38 @@
       "ak-layer-10": {
         "class": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.6_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.7_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.9_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.72_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.75_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.85_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.95_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.2634_0.0091_264.28)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -368,6 +432,38 @@
       "ak-layer-20": {
         "class": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8513_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.845_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.9_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.8545_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.875_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.975_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -531,6 +627,38 @@
       "ak-layer-30": {
         "class": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.9827_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.97_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.97_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.4634_0.0091_264.28)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -694,6 +822,38 @@
       "ak-layer-40": {
         "class": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.9827_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.97_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.97_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -857,6 +1017,38 @@
       "ak-layer-50": {
         "class": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.9827_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.97_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.97_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(0.989_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.548_0.0091_264.28)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -1020,6 +1212,38 @@
       "ak-layer-60": {
         "class": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.25_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.15_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.05_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.7634_0.0091_264.28)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -1183,6 +1407,38 @@
       "ak-layer-70": {
         "class": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.375_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.275_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.175_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.075_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.8634_0.0091_264.28)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -1346,6 +1602,38 @@
       "ak-layer-80": {
         "class": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.4_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.4_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.9634_0.0091_264.28)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -1509,6 +1797,38 @@
       "ak-layer-90": {
         "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.4_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.4_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -1672,6 +1992,38 @@
       "ak-layer-100": {
         "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.4_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.5_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.4_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] *:text-[oklch(0_0.0091_264.28)] rounded-[5px] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -1840,6 +2192,38 @@
       "ak-layer-0": {
         "class": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(0.8_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(0.9_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.0399_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -2003,6 +2387,38 @@
       "ak-layer-10": {
         "class": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(0.8_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(0.9_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.1834_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.3951_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -2166,6 +2582,38 @@
       "ak-layer-20": {
         "class": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(0.9292_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(0.8_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(0.9_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] *:text-[oklch(1_0.245_262.881)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -2329,6 +2777,38 @@
       "ak-layer-30": {
         "class": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1043_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.05_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.7951_0.245_262.881)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -2492,6 +2972,38 @@
       "ak-layer-40": {
         "class": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2293_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.175_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.075_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.8951_0.245_262.881)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
             "children": {
@@ -2655,6 +3167,38 @@
       "ak-layer-50": {
         "class": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
         "children": {
+          "ak-text-<number>": {
+            "class": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
+          "ak-text-push-<number>": {
+            "class": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+            "children": {
+              "0": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "10": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "20": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "30": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "40": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "50": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "60": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3543_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "70": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.3_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "80": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.2_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "90": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0.1_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
+              "100": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] *:text-[oklch(0_0.2_262.881)] rounded-[5px] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
+            }
+          },
           "ak-layer-<number>": {
             "class": "bg-[oklch(0.9951_0.245_262.881)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.245_262.881_/_0.1)] p-[4px] mr-[-5px] ml-[-5px] shadow-[oklch(0_0.245_262.881_/_0.1)_0px_0px_0px_0px]",
             "children": {

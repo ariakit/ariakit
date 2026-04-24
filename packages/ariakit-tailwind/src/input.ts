@@ -607,7 +607,7 @@ const inputs = {
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
-  textContrastL: _ak.prop("text-contrast-lightness", { initial: 0 }),
+  textPushL: _ak.prop("text-push-lightness", { initial: 0 }),
   textA: _ak.prop("text-alpha", { initial: 1 }),
   textColor: _ak.prop("text-color"),
   textRelativeL: _ak.prop("text-relative-lightness", { initial: 0 }),
@@ -1463,8 +1463,6 @@ const textAdjustedChroma = fn.var(
 );
 const textAdjustedHue = fn.var(inputs.textH, fn.add(h, inputs.textRelativeH));
 
-// Child text preserves the base color alpha so numeric `ak-text-*` tokens can
-// still tune layer text opacity without reducing contrast on `ak-text`.
 const textColorAdjusted = fn.oklch(textBaseColor, {
   l: textAdjustedLightness,
   c: textAdjustedChroma,
@@ -1576,7 +1574,7 @@ function getTextDirectional() {
   );
   const textContrastShift = fn.mul(
     fn.add(
-      fn.max(chromaMinContrast, inputs.textContrastL),
+      fn.max(chromaMinContrast, inputs.textPushL),
       fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
     ),
     vars.textContrastDirection,
@@ -1607,6 +1605,14 @@ function getTextDirectionalDeclarations() {
   ];
 }
 
+function getTextLightnessValue(pattern: string) {
+  const lightness = getPercentTokenValue(pattern);
+  return fn.add(
+    0.5,
+    fn.mul(fn.sub(lightness, 0.5), vars.textContrastDirection),
+  );
+}
+
 utility(
   "text",
   set.backgroundColor(fn.important("transparent")),
@@ -1624,8 +1630,10 @@ utility(
   set(inputs.textC, fn.value(chroma)),
   set(inputs.textH, fn.value(hue)),
   set(inputs.textColor, fn.value(color, "[color]")),
-  set(inputs.textContrastL, getPercentTokenValue("[number]")),
+  set(inputs.textL, getTextLightnessValue("[number]")),
 );
+
+utility("text-push-*", set(inputs.textPushL, getPercentTokenValue("[*]")));
 
 utility(
   "ink-*",

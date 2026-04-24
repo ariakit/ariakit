@@ -13,7 +13,8 @@ function Layer({ label, children, ...props }: LayerProps) {
     (children
       ? /ak-(?:layer|state)-\S+/.exec(props.className ?? "")?.[0]
       : (/ak-(?:layer|state)[a-z-]*-(\d+)/.exec(props.className ?? "")?.[1] ??
-        /ak-(?:layer|state)-([\w-[\]#]+)/.exec(props.className ?? "")?.[1]));
+        /ak-(?:layer|state)-([\w-[\]#]+)/.exec(props.className ?? "")?.[1] ??
+        /ak-text[a-z-]*-(\d+)/.exec(props.className ?? "")?.[1]));
   return (
     <section
       aria-labelledby={label ? id : undefined}
@@ -46,6 +47,42 @@ function Cell(props: CellProps) {
 function Layers() {
   return (
     <>
+      <Layer
+        label="ak-text-<number>"
+        className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+      >
+        <Layer className="flex-wrap items-start">
+          <Cell className="*:ak-text *:ak-text-0" />
+          <Cell className="*:ak-text *:ak-text-10" />
+          <Cell className="*:ak-text *:ak-text-20" />
+          <Cell className="*:ak-text *:ak-text-30" />
+          <Cell className="*:ak-text *:ak-text-40" />
+          <Cell className="*:ak-text *:ak-text-50" />
+          <Cell className="*:ak-text *:ak-text-60" />
+          <Cell className="*:ak-text *:ak-text-70" />
+          <Cell className="*:ak-text *:ak-text-80" />
+          <Cell className="*:ak-text *:ak-text-90" />
+          <Cell className="*:ak-text *:ak-text-100" />
+        </Layer>
+      </Layer>
+      <Layer
+        label="ak-text-push-<number>"
+        className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+      >
+        <Layer className="flex-wrap items-start">
+          <Cell className="*:ak-text *:ak-text-push-0" />
+          <Cell className="*:ak-text *:ak-text-push-10" />
+          <Cell className="*:ak-text *:ak-text-push-20" />
+          <Cell className="*:ak-text *:ak-text-push-30" />
+          <Cell className="*:ak-text *:ak-text-push-40" />
+          <Cell className="*:ak-text *:ak-text-push-50" />
+          <Cell className="*:ak-text *:ak-text-push-60" />
+          <Cell className="*:ak-text *:ak-text-push-70" />
+          <Cell className="*:ak-text *:ak-text-push-80" />
+          <Cell className="*:ak-text *:ak-text-push-90" />
+          <Cell className="*:ak-text *:ak-text-push-100" />
+        </Layer>
+      </Layer>
       <Layer
         label="ak-layer-<number>"
         className="ak-layer ak-frame ak-frame-cover ak-frame-border flex-col"

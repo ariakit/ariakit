@@ -176,7 +176,7 @@ Text opacity is now `ak-ink-N`. It is self-contained and does not require `ak-la
 + ak-ink-80
 ```
 
-Note: the bare `ak-text-N` utility still exists but now only controls **contrast lightness** for the directional `ak-text` text color system (see below). It no longer sets text alpha.
+Note: the bare `ak-text-N` utility still exists but now controls directional absolute lightness for the `ak-text` text color system (see below). It no longer sets text alpha.
 
 ### Bare `ak-text` for opacity reset → `ak-ink-100`
 
@@ -195,7 +195,7 @@ In v0.1, bare `ak-text` was sometimes used to reset text opacity inherited from 
 
 Color text now requires the `ak-text` base class. The `/N` modifier in v0.1 controlled lightness contrast — how far the text color was pushed away from the background for readability (default `/75`, minimum `53` in LCH). In v0.2, contrast is handled automatically with a minimum floor, so the modifier can be dropped in most cases.
 
-If you need to increase contrast beyond the default, add `ak-text-N` alongside the color class, where `N` represents contrast lightness (0 = minimum/default, higher = more contrast). Values at or below the old default of `/75` should simply be dropped — the new automatic minimum (equivalent to ~52 in the new scale) handles them.
+If you need to increase contrast beyond the default, add `ak-text-push-N` alongside the color class, where `N` represents extra lightness push away from the parent layer. Values at or below the old default of `/75` should simply be dropped — the new automatic minimum handles them. In most cases, the strongest push can be written more simply as `ak-text-100`, which preserves the current text hue and chroma while setting directional absolute lightness. For example, `ak-text-90` is 90% lightness on dark layers and 10% lightness on light layers, before the readable floor and `--contrast` adjustments are applied.
 
 ```diff
 - ak-text-primary/0
@@ -206,6 +206,9 @@ If you need to increase contrast beyond the default, add `ak-text-N` alongside t
 
 - ak-text-primary/70
 + ak-text ak-text-primary
+
+- ak-text-primary/100
++ ak-text ak-text-primary ak-text-100
 
 - ak-text-primary
 + ak-text ak-text-primary
