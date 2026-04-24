@@ -255,7 +255,7 @@ test("solid-vite project emits generated utilities", () => {
       &::before,
       &::after,
       :where(& > *) {
-        @apply ak-text ak-text-(color:--ak-badge-color);
+        @apply ak-text ak-text-(color:--ak-badge-color) ak-dark:ak-text-80;
       }
     }
 
