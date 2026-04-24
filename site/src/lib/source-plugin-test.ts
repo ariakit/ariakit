@@ -218,6 +218,7 @@ test("disclosure sources", () => {
           "ak-edge-20",
           "ak-text",
           "ak-text-primary",
+          "ak-text-80",
           "ak-list-item-padding-2",
           "ak-list-item-border-1",
           "ak-list-item-border-0",
