@@ -1005,7 +1005,7 @@ const layerMathDeclarations = [
 // Build the layered color stages from idle -> base -> auto -> final.
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
-  set(vars.layerIdleMixed, layerIdleMixed),
+  set(vars.layerIdleMixed, vars.layerIdleBase),
   set(vars.layerIdleAuto, layerIdleAuto),
   set(vars.layerIdle, vars.layerIdleAuto),
   set(vars.layerBase, layerBase),
@@ -1055,8 +1055,7 @@ const layerBand = fn.oklch(vars.layer, {
   c: 0,
   h: 0,
 });
-const layerScheme = fn.oklch(vars.layer, {
-  l: vars.textForegroundContrastL,
+const layerScheme = fn.oklch(vars.text, {
   c: 0,
   h: 0,
 });
@@ -1126,6 +1125,7 @@ utility(
       inputs.layerMixAmount,
     ),
   ),
+  set(vars.layerIdleMixed, layerIdleMixed),
 );
 
 utility(
@@ -1142,6 +1142,7 @@ utility(
       inputs.layerMixAmount,
     ),
   ),
+  set(vars.layerIdleMixed, layerIdleMixed),
 );
 
 utility(
