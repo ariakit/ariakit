@@ -338,6 +338,7 @@ export default function Example() {
             label="#CE9178"
             className="ak-layer-[#131418] *:ak-text *:ak-text-[#CE9178]"
           />
+          <Cell label="#165DFC" className="*:ak-text *:ak-text-[#165DFC]" />
           <Layer
             label="ak-layer! modifier cascade"
             className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
