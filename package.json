@@ -98,8 +98,8 @@
     "lint-staged": "16.4.0",
     "next": "14.2.35",
     "open-cli": "9.0.0",
-    "oxfmt": "0.45.0",
-    "oxlint": "1.60.0",
+    "oxfmt": "0.46.0",
+    "oxlint": "1.61.0",
     "oxlint-tsgolint": "0.21.1",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
@@ -115,11 +115,11 @@
     "tailwindcss-animate": "1.0.7",
     "tsup": "8.5.1",
     "typescript": "6.0.3",
-    "vite": "8.0.8",
+    "vite": "8.0.9",
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.4",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.83.0"
+    "wrangler": "4.84.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
