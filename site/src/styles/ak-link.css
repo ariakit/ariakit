@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 @utility ak-link_idle {
-  @apply ak-text ak-text-primary ak-outline ak-outline-primary;
+  @apply ak-text ak-text-primary ak-outline ak-outline-primary ak-dark:ak-text-80;
   @apply -mb-1.5 -mt-1 rounded-sm pb-1.5 pt-1 font-medium underline decoration-1 underline-offset-[0.25em];
 }
 
