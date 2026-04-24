@@ -450,6 +450,7 @@ const layerMathVars = {
   safeL: _ak.var("sl"),
   autoDirectionToLight: _ak.var("adtl"),
   layerIdlePushValue: _ak.prop("lipv", { initial: 0 }),
+  layerIdlePushL: _ak.prop("lipl", { initial: l }),
   layerPushValue: _ak.prop("lpv", { initial: 0 }),
   layerPushL: _ak.prop("lpl", { initial: l }),
   layerIdleContrastValue: _ak.var("licv"),
@@ -924,8 +925,7 @@ const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
  * parent layer's lightness rather than the current color's lightness. Falls
  * back to the self-relative `getContrastL` when inactive.
  */
-function getContrastL(pushValue: Value, contrastValue: Value) {
-  const selfRelativeL = getPushL(pushValue);
+function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   const direction = vars.layerContrastDirection;
   // Use the contrast value as the shift magnitude, pushed in the parent-
   // relative direction (positive = lighter, negative = darker).
@@ -944,7 +944,7 @@ function getContrastL(pushValue: Value, contrastValue: Value) {
 }
 
 const layerIdle = fn.oklch(vars.layerIdleAuto, {
-  l: getContrastL(vars.layerIdlePushValue, vars.layerIdleContrastValue),
+  l: getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
 });
 
 const layerBase = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
@@ -991,7 +991,6 @@ const layerMathDeclarations = [
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
-  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
@@ -1181,6 +1180,8 @@ utility(
 utility(
   "layer-push-*",
   set(inputs.layerIdlePushL, getPercentTokenValue("[*]")),
+  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
+  set(vars.layerIdlePushL, getPushL(vars.layerIdlePushValue)),
 );
 
 utility(
