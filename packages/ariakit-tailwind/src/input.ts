@@ -41,7 +41,8 @@ const BAND_LEVEL_MID = 0.5;
 const BAND_LEVEL_LIGHT_LOW = 0.75;
 const BAND_LEVEL_LIGHT_HIGH = 1;
 const LCH_LIGHTNESS_MAX = 100;
-const LCH_DARK_THRESHOLD_L = 50;
+const LCH_DARK_THRESHOLD_L = 56.27;
+const LCH_REFERENCE_DARK_THRESHOLD_L = 50;
 const LCH_QUANTIZED_LIGHTNESS_STEPS = 32;
 const LCH_QUANTIZED_LIGHTNESS_INTERVAL =
   LCH_LIGHTNESS_MAX / LCH_QUANTIZED_LIGHTNESS_STEPS;
@@ -51,11 +52,33 @@ const LCH_TEXT_CHROMA_CAP_MID = 0;
 const LCH_TEXT_CHROMA_CAP_NEAR_MID = 20;
 const LCH_TEXT_CHROMA_CAP_LOW = 40;
 const LCH_TEXT_CHROMA_CAP_HIGH = 80;
+const LCH_TEXT_CHROMA_CAP_DARK_MID_MIN =
+  LCH_REFERENCE_DARK_THRESHOLD_L - LCH_QUANTIZED_LIGHTNESS_INTERVAL * 2;
+const LCH_TEXT_CHROMA_CAP_DARK_NEAR_MID_MIN =
+  LCH_REFERENCE_DARK_THRESHOLD_L - LCH_QUANTIZED_LIGHTNESS_INTERVAL * 4;
+const LCH_TEXT_CHROMA_CAP_DARK_LOW_MIN =
+  LCH_REFERENCE_DARK_THRESHOLD_L - LCH_QUANTIZED_LIGHTNESS_INTERVAL * 8;
+const LCH_TEXT_CHROMA_CAP_LIGHT_MID_MAX =
+  LCH_REFERENCE_DARK_THRESHOLD_L + LCH_QUANTIZED_LIGHTNESS_INTERVAL * 2;
+const LCH_TEXT_CHROMA_CAP_LIGHT_NEAR_MID_MAX =
+  LCH_REFERENCE_DARK_THRESHOLD_L + LCH_QUANTIZED_LIGHTNESS_INTERVAL * 4;
+const LCH_TEXT_CHROMA_CAP_LIGHT_LOW_MAX =
+  LCH_REFERENCE_DARK_THRESHOLD_L + LCH_QUANTIZED_LIGHTNESS_INTERVAL * 8;
 const LCH_LAYER_LIGHT_CHROMA_DAMPING = 0.18;
+const LCH_LAYER_LIGHT_CHROMA_DAMPING_START_L = LCH_REFERENCE_DARK_THRESHOLD_L;
+const LCH_LAYER_LIGHT_CHROMA_DAMPING_RANGE =
+  LCH_LIGHTNESS_MAX - LCH_LAYER_LIGHT_CHROMA_DAMPING_START_L;
 const LCH_LAYER_DARK_CHROMA_BOOST = 0.11;
-const LCH_LAYER_DARK_CHROMA_BOOST_MAX_L = 20;
+const LCH_LAYER_DARK_CHROMA_BOOST_MAX_L = roundToDecimals(
+  LCH_REFERENCE_DARK_THRESHOLD_L * 0.4,
+  4,
+);
 const LCH_TEXT_FOREGROUND_CYAN_CHROMA_START = 95;
-const LCH_TEXT_FOREGROUND_CYAN_BIAS = 12;
+const LCH_TEXT_FOREGROUND_CYAN_DARK_MAX_L = 38;
+const LCH_TEXT_FOREGROUND_CYAN_BIAS = roundToDecimals(
+  Math.max(0, LCH_DARK_THRESHOLD_L - LCH_TEXT_FOREGROUND_CYAN_DARK_MAX_L),
+  4,
+);
 const LCH_TEXT_FOREGROUND_CYAN_HUE_MIN = 170;
 const LCH_TEXT_FOREGROUND_CYAN_HUE_MAX = 230;
 const OUTLINE_MIN_CONTRAST = 0.5;
@@ -934,15 +957,26 @@ function getConservativeLchParentLightness(
   );
 }
 
-function getLchTextChromaCap(parentLightness: number) {
-  const distanceFromMidpoint = Math.abs(parentLightness - LCH_DARK_THRESHOLD_L);
-  if (distanceFromMidpoint <= LCH_QUANTIZED_LIGHTNESS_INTERVAL * 2) {
+function getLchTextChromaCap(parentLightness: number, isDark: boolean) {
+  if (isDark) {
+    if (parentLightness >= LCH_TEXT_CHROMA_CAP_DARK_MID_MIN) {
+      return LCH_TEXT_CHROMA_CAP_MID;
+    }
+    if (parentLightness >= LCH_TEXT_CHROMA_CAP_DARK_NEAR_MID_MIN) {
+      return LCH_TEXT_CHROMA_CAP_NEAR_MID;
+    }
+    if (parentLightness >= LCH_TEXT_CHROMA_CAP_DARK_LOW_MIN) {
+      return LCH_TEXT_CHROMA_CAP_LOW;
+    }
+    return LCH_TEXT_CHROMA_CAP_HIGH;
+  }
+  if (parentLightness <= LCH_TEXT_CHROMA_CAP_LIGHT_MID_MAX) {
     return LCH_TEXT_CHROMA_CAP_MID;
   }
-  if (distanceFromMidpoint <= LCH_QUANTIZED_LIGHTNESS_INTERVAL * 4) {
+  if (parentLightness <= LCH_TEXT_CHROMA_CAP_LIGHT_NEAR_MID_MAX) {
     return LCH_TEXT_CHROMA_CAP_NEAR_MID;
   }
-  if (distanceFromMidpoint <= LCH_QUANTIZED_LIGHTNESS_INTERVAL * 8) {
+  if (parentLightness <= LCH_TEXT_CHROMA_CAP_LIGHT_LOW_MAX) {
     return LCH_TEXT_CHROMA_CAP_LOW;
   }
   return LCH_TEXT_CHROMA_CAP_HIGH;
@@ -952,7 +986,12 @@ function getLayerTextLightness() {
   const lightChromaDamping = fn.mul(
     c,
     LCH_LAYER_LIGHT_CHROMA_DAMPING,
-    fn.clamp01(fn.div(fn.sub(l, LCH_DARK_THRESHOLD_L), LCH_DARK_THRESHOLD_L)),
+    fn.clamp01(
+      fn.div(
+        fn.sub(l, LCH_LAYER_LIGHT_CHROMA_DAMPING_START_L),
+        LCH_LAYER_LIGHT_CHROMA_DAMPING_RANGE,
+      ),
+    ),
   );
   const darkChromaBoost = fn.mul(
     c,
@@ -1627,7 +1666,7 @@ utility(
         vars.textAccessibleL,
         getWcagLightnessTarget(contrastParentL, isDark),
       ),
-      set(vars.textChromaCap, getLchTextChromaCap(parentL)),
+      set(vars.textChromaCap, getLchTextChromaCap(parentL, isDark)),
     ];
   }),
 );
