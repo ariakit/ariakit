@@ -423,7 +423,7 @@
   background-color: transparent !important;
   color: var(--ak-text);
   @container style(--_ak-ltl) {
-    color: oklch(from lch(from oklch(from var(--_ak-text-color, var(--ak-layer)) clamp(var(--_ak-text-lightness-min), (var(--_ak-text-lightness, (l + var(--_ak-text-relative-lightness))) + (var(--_ak-text-push-lightness) * var(--_ak-tcd))), var(--_ak-text-lightness-max)) clamp(var(--_ak-text-chroma-min), var(--_ak-text-chroma, (c + var(--_ak-text-relative-chroma))), var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc(l + (var(--_ak-tcd) * max(0, ((clamp(0, ((var(--_ak-tpl) + ((var(--_ak-tal) - var(--_ak-tpl)) * var(--_ak-text-contrast-scale))) + (var(--_ak-ct, ((max(0, var(--contrast, 0)) / 100) * var(--_ak-contrast-scale))) * 0.6668 * 100 * var(--_ak-tcd))), 100) - l) * var(--_ak-tcd))))) min(c, var(--_ak-tcc)) h) l c h);
+    color: lch(from oklch(from var(--_ak-text-color, var(--ak-layer)) clamp(var(--_ak-text-lightness-min), (var(--_ak-text-lightness, (l + var(--_ak-text-relative-lightness))) + (var(--_ak-text-push-lightness) * var(--_ak-tcd))), var(--_ak-text-lightness-max)) clamp(var(--_ak-text-chroma-min), var(--_ak-text-chroma, (c + var(--_ak-text-relative-chroma))), var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc(l + (var(--_ak-tcd) * max(0, ((clamp(0, ((var(--_ak-tpl) + ((var(--_ak-tal) - var(--_ak-tpl)) * var(--_ak-text-contrast-scale))) + (var(--_ak-ct, ((max(0, var(--contrast, 0)) / 100) * var(--_ak-contrast-scale))) * 0.6668 * 100 * var(--_ak-tcd))), 100) - l) * var(--_ak-tcd))))) min(c, var(--_ak-tcc)) h);
   }
   @container style(--_ak-ltl: lch(0 0 0)) {
     --_ak-tcd: 1;

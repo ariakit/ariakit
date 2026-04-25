@@ -1589,11 +1589,10 @@ function getTextDirectional() {
     textAccessibleLightness,
     vars.textContrastDirection,
   );
-  const textLch = fn.lch(textColorAdjusted, {
+  return fn.lch(textColorAdjusted, {
     l: textDirectedLightness,
     c: fn.min(c, vars.textChromaCap),
   });
-  return fn.oklch(textLch, {});
 }
 
 function getTextLightnessValue(pattern: string) {

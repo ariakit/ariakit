@@ -32,110 +32,27 @@ function extractComputedCSS() {
 
   type CSSNode = string | CSSBranch;
 
-  const roundTo = (n: number, decimals: number) => {
-    const factor = 10 ** decimals;
-    return Math.round(n * factor) / factor;
-  };
-
-  const srgbToLinear = (c: number) => {
-    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  };
-
-  const rgbToOklch = (
-    r: number,
-    g: number,
-    b: number,
-  ): [number, number, number] => {
-    const lr = srgbToLinear(r);
-    const lg = srgbToLinear(g);
-    const lb = srgbToLinear(b);
-    const l = 0.4122214708 * lr + 0.5363325363 * lg + 0.0514459929 * lb;
-    const m = 0.2119034982 * lr + 0.6806995451 * lg + 0.1073969566 * lb;
-    const s = 0.0883024619 * lr + 0.2024632962 * lg + 0.6890572419 * lb;
-    const lp = Math.cbrt(l);
-    const mp = Math.cbrt(m);
-    const sp = Math.cbrt(s);
-    const L = 0.2104542553 * lp + 0.793617785 * mp - 0.0040720468 * sp;
-    const a = 1.9779984951 * lp - 2.428592205 * mp + 0.4505937099 * sp;
-    const b2 = 0.0259040371 * lp + 0.7827717662 * mp - 0.808675766 * sp;
-    const C = Math.sqrt(a * a + b2 * b2);
-    let H = (Math.atan2(b2, a) * 180) / Math.PI;
-    if (H < 0) {
-      H += 360;
+  const roundColorNumber = (value: string) => {
+    const number = Number(value);
+    if (!Number.isFinite(number)) {
+      return value;
     }
-    return [L, C, H];
+    const rounded = Math.round(number * 10_000) / 10_000;
+    return Object.is(rounded, -0) ? "0" : String(rounded);
   };
 
-  const parseNum = (s: string | undefined) => {
-    if (!s || s === "none") {
-      return 0;
-    }
-    const n = parseFloat(s);
-    return s.endsWith("%") ? n / 100 : n;
-  };
-
-  const formatOklch = (l: number, c: number, h: number, a?: number) => {
-    const parts = [roundTo(l, 4), roundTo(c, 4), roundTo(h, 4)];
-    if (a != null && roundTo(a, 4) !== 1) {
-      return `oklch(${parts.join("_")}_/_${roundTo(a, 4)})`;
-    }
-    return `oklch(${parts.join("_")})`;
-  };
-
-  const formatRgbMatch = (
-    match: RegExpMatchArray,
-    normalizeChannel: (value: string) => number,
-  ) => {
-    const alpha = match[4] != null ? parseNum(match[4]) : 1;
-    if (alpha === 0) {
-      return null;
-    }
-    const [l, c, h] = rgbToOklch(
-      normalizeChannel(match[1] ?? ""),
-      normalizeChannel(match[2] ?? ""),
-      normalizeChannel(match[3] ?? ""),
-    );
-    return formatOklch(l, c, h, alpha !== 1 ? alpha : undefined);
+  const formatCssValue = (value: string) => {
+    return value
+      .trim()
+      .replace(/-?(?:\d*\.\d+|\d+)(?:e[+-]?\d+)?/gi, roundColorNumber)
+      .replace(/\s+/g, "_");
   };
 
   const formatColor = (str: string): string | null => {
     if (!str || str === "transparent" || str === "rgba(0, 0, 0, 0)") {
       return null;
     }
-    // oklch(L C H) or oklch(L C H / A)
-    const oklch = str.match(
-      /oklch\(\s*([\d.e+-]+%?|none)\s+([\d.e+-]+|none)\s+([\d.e+-]+|none)\s*(?:\/\s*([\d.e+-]+%?|none))?\s*\)/,
-    );
-    if (oklch) {
-      return formatOklch(
-        parseNum(oklch[1]),
-        parseNum(oklch[2]),
-        parseNum(oklch[3]),
-        oklch[4] != null ? parseNum(oklch[4]) : undefined,
-      );
-    }
-    // rgba(R, G, B, A) comma syntax
-    const rgbC = str.match(
-      /rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+%?))?\s*\)/,
-    );
-    if (rgbC) {
-      return formatRgbMatch(rgbC, (value) => +value / 255);
-    }
-    // rgb(R G B / A) modern space syntax
-    const rgbS = str.match(
-      /rgba?\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)\s*(?:\/\s*([\d.]+%?))?\s*\)/,
-    );
-    if (rgbS) {
-      return formatRgbMatch(rgbS, (value) => +value / 255);
-    }
-    // color(srgb R G B / A)
-    const srgb = str.match(
-      /color\(srgb\s+([\d.e+-]+)\s+([\d.e+-]+)\s+([\d.e+-]+)\s*(?:\/\s*([\d.e+-]+%?))?\s*\)/,
-    );
-    if (srgb) {
-      return formatRgbMatch(srgb, (value) => +value);
-    }
-    return null;
+    return formatCssValue(str);
   };
 
   const formatShadow = (str: string): string | null => {
@@ -172,7 +89,7 @@ function extractComputedCSS() {
     const formatted = visible
       .join(", ")
       .replace(
-        /oklch\([^)]+\)|rgba?\([^)]+\)|color\(srgb[^)]+\)/g,
+        /oklch\([^)]+\)|lch\([^)]+\)|rgba?\([^)]+\)|color\(srgb[^)]+\)/g,
         (m) => formatColor(m) ?? m,
       );
     return formatted.replaceAll(" ", "_");
