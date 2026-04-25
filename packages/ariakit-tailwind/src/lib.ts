@@ -288,10 +288,10 @@ export function createContext(reset?: boolean) {
     if (reset) {
       return getChildren();
     }
+    const initialParity = `(${fn.style(id, "even")}) or (not ${fn.style(id)})`;
     return [
-      at.container(fn.style(id, "even"), ...getChildren("even")),
+      at.container(initialParity, ...getChildren("even")),
       at.container(fn.style(id, "odd"), ...getChildren("odd")),
-      at.container(`not ${fn.style(id)}`, ...getChildren()),
     ];
   };
 
