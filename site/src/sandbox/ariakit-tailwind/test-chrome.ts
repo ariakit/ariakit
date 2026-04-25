@@ -474,6 +474,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
             });
             await page.reload({ waitUntil: "networkidle" });
           }
+          await page.waitForFunction(() => document.body?.children.length);
           const tree = await page.evaluate(extractComputedCSS);
           expect(JSON.stringify(tree, null, 2)).toMatchSnapshot(
             `${scheme}${contrast ? "-high-contrast" : ""}`,
