@@ -1214,14 +1214,6 @@ const textMinimumAlpha = fn.add(
   fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
 );
 const textAlpha = fn.max(textMinimumAlpha, inputs.textA);
-const text = fn.oklch(
-  fn.lch(vars.layer, {
-    l: getLayerTextForegroundLightness(),
-    c: 0,
-    h: 0,
-  }),
-  {},
-);
 const inkText = fn.oklch(
   fn.lch(fn.oklch(vars.layer, { a: textAlpha }), {
     l: getLayerTextForegroundLightness(),
@@ -1241,7 +1233,7 @@ utility(
   set.backgroundColor(vars.layer),
   at.apply`ring-[color:${vars.edge}]`,
   set(vars.layer, layer),
-  set(vars.text, text),
+  set(vars.text, vars.layerScheme),
   set(vars.edge, edge),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),
