@@ -81,7 +81,7 @@
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "6.0.1",
-    "@vitest/coverage-v8": "4.1.4",
+    "@vitest/coverage-v8": "4.1.5",
     "autoprefixer": "10.5.0",
     "chalk": "5.6.2",
     "chokidar": "5.0.0",
@@ -117,9 +117,9 @@
     "typescript": "6.0.3",
     "vite": "8.0.9",
     "vite-plugin-solid": "2.11.12",
-    "vitest": "4.1.4",
+    "vitest": "4.1.5",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.84.0"
+    "wrangler": "4.84.1"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
@@ -128,5 +128,5 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.1"
 }
