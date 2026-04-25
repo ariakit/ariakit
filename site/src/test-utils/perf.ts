@@ -5,6 +5,7 @@ import type { CDPSession, Page, TestInfo } from "@playwright/test";
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const DEFAULT_ITERATIONS = 10;
 const DEFAULT_WARMUP = 1;
+const initializedResultFiles = new Set<string>();
 
 // CDP metric names (values are in seconds).
 const SCRIPT_DURATION = "ScriptDuration";
@@ -254,9 +255,10 @@ export function appendResults(results: PerfResult[], testInfo: TestInfo) {
   const fileName = `${prefix}-worker${testInfo.workerIndex}.json`;
   const filePath = path.join(RESULTS_DIR, fileName);
   let existing: PerfResult[] = [];
-  if (existsSync(filePath)) {
+  if (initializedResultFiles.has(filePath) && existsSync(filePath)) {
     existing = JSON.parse(readFileSync(filePath, "utf-8"));
   }
+  initializedResultFiles.add(filePath);
   existing.push(...results);
   writeFileSync(filePath, JSON.stringify(existing, null, 2));
 }
