@@ -62,14 +62,6 @@ const LCH_LAYER_LIGHT_CHROMA_DAMPING_START_L = 50;
 const LCH_LAYER_LIGHT_CHROMA_DAMPING_RANGE = 50;
 const LCH_LAYER_DARK_CHROMA_BOOST = 0.11;
 const LCH_LAYER_DARK_CHROMA_BOOST_MAX_L = 20;
-const LCH_TEXT_FOREGROUND_CYAN_CHROMA_START = 95;
-const LCH_TEXT_FOREGROUND_CYAN_DARK_MAX_L = 38;
-const LCH_TEXT_FOREGROUND_CYAN_BIAS = roundToDecimals(
-  Math.max(0, LCH_DARK_THRESHOLD_L - LCH_TEXT_FOREGROUND_CYAN_DARK_MAX_L),
-  4,
-);
-const LCH_TEXT_FOREGROUND_CYAN_HUE_MIN = 170;
-const LCH_TEXT_FOREGROUND_CYAN_HUE_MAX = 230;
 const OUTLINE_MIN_CONTRAST = 0.5;
 const INK_DARK_MID_ALPHA_BOOST_START_L = 0.25;
 const INK_DARK_MID_ALPHA_BOOST = 0.08;
@@ -999,24 +991,6 @@ function getLayerTextLightness() {
   );
 }
 
-function getLayerTextForegroundLightness() {
-  const cyanBias = fn.mul(
-    LCH_TEXT_FOREGROUND_CYAN_BIAS,
-    fn.binary(fn.sub(c, LCH_TEXT_FOREGROUND_CYAN_CHROMA_START)),
-    getRangeMask(
-      h,
-      LCH_TEXT_FOREGROUND_CYAN_HUE_MIN,
-      LCH_TEXT_FOREGROUND_CYAN_HUE_MAX,
-    ),
-  );
-  return fn.mul(
-    fn.binary(
-      fn.sub(LCH_DARK_THRESHOLD_L, fn.add(getLayerTextLightness(), cyanBias)),
-    ),
-    LCH_LIGHTNESS_MAX,
-  );
-}
-
 const idleLayerChannels = {
   l: getLayerL(inputs.layerIdleRelativeL, inputs.layerL),
   c: getLayerC(inputs.layerIdleRelativeC, inputs.layerC),
@@ -1214,15 +1188,12 @@ const textMinimumAlpha = fn.add(
   fn.mul(vars.contrastT, TEXT_CONTRAST_SCALE),
 );
 const textAlpha = fn.max(textMinimumAlpha, inputs.textA);
-const inkText = fn.oklch(
-  fn.lch(fn.oklch(vars.layer, { a: textAlpha }), {
-    l: getLayerTextForegroundLightness(),
-    c: 0,
-    h: 0,
-    a: "alpha",
-  }),
-  {},
-);
+const inkText = fn.oklch(vars.layer, {
+  l: vars.textForegroundContrastL,
+  c: 0,
+  h: 0,
+  a: textAlpha,
+});
 
 const layerContext = createContext();
 

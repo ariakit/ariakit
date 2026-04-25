@@ -638,7 +638,7 @@
 
 @utility ak-ink-* {
   --_ak-text-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
-  --ak-text: oklch(from lch(from oklch(from var(--ak-layer) l c h / max((((((var(--_ak-lil) * var(--_ak-tmal)) + (var(--_ak-dal) * (var(--_ak-tmad) + var(--_ak-tmab)))) + (c * 0.135)) * var(--_ak-text-contrast-scale)) + (var(--_ak-ct, ((max(0, var(--contrast, 0)) / 100) * var(--_ak-contrast-scale))) * 0.6668)), var(--_ak-text-alpha))) calc(clamp(0, ((56.27 - (clamp(0, (l + (c * 0.11 * clamp(0, ((20 - l) / 20), 1)) + ((c * 0.18 * clamp(0, ((l - 50) / 50), 1)) * -1)), 100) + (18.27 * clamp(0, ((c - 95) * 1000000), 1) * (clamp(0, ((h - 169.999999) * 1000000), 1) * clamp(0, ((230 - h) * 1000000), 1))))) * 1000000), 1) * 100) 0 0 / alpha) l c h);
+  --ak-text: oklch(from var(--ak-layer) var(--_ak-tfcl) 0 0 / max((((((var(--_ak-lil) * var(--_ak-tmal)) + (var(--_ak-dal) * (var(--_ak-tmad) + var(--_ak-tmab)))) + (c * 0.135)) * var(--_ak-text-contrast-scale)) + (var(--_ak-ct, ((max(0, var(--contrast, 0)) / 100) * var(--_ak-contrast-scale))) * 0.6668)), var(--_ak-text-alpha)));
   color: var(--ak-text);
 }
 
