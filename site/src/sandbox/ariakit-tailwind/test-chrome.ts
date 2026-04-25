@@ -1,5 +1,5 @@
 import { AxeBuilder } from "@axe-core/playwright";
-import { expect } from "@playwright/test";
+import { expect, type Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 type ColorContrastViolationMap = Record<string, string>;
@@ -32,25 +32,78 @@ function extractComputedCSS() {
 
   type CSSNode = string | CSSBranch;
 
-  const roundColorNumber = (value: string) => {
+  const COLOR_NUMBER_PRECISION = 4;
+  const LCH_CHROMA_PRECISION = 2;
+  const LCH_HUE_PRECISION = 3;
+  const LCH_HUELESS_CHROMA = 1;
+  const colorNumberRegex = /-?(?:\d*\.\d+|\d+)(?:e[+-]?\d+)?/gi;
+
+  const roundColorNumber = (
+    value: string,
+    precision = COLOR_NUMBER_PRECISION,
+  ) => {
     const number = Number(value);
     if (!Number.isFinite(number)) {
       return value;
     }
-    const rounded = Math.round(number * 10_000) / 10_000;
+    const factor = 10 ** precision;
+    const rounded = Math.round(number * factor) / factor;
     return Object.is(rounded, -0) ? "0" : String(rounded);
+  };
+
+  const getColorChannelNumber = (value: string) => {
+    if (value === "none") {
+      return 0;
+    }
+    const number = Number(value);
+    return Number.isFinite(number) ? number : null;
+  };
+
+  const formatPolarColor = (str: string) => {
+    const match = /^lch\((.*)\)$/.exec(str.trim());
+    if (!match) {
+      return null;
+    }
+    const [, content] = match;
+    if (!content) {
+      return null;
+    }
+    const [colorContent, alphaContent] = content.split(/\s*\/\s*/);
+    const colorChannels = colorContent?.trim().split(/\s+/) ?? [];
+    const [lightness, chroma, hue] = colorChannels;
+    if (!lightness || !chroma || !hue) {
+      return null;
+    }
+    const chromaNumber = getColorChannelNumber(chroma);
+    const normalizedHue =
+      chromaNumber != null && Math.abs(chromaNumber) < LCH_HUELESS_CHROMA
+        ? "0"
+        : hue;
+    const result = [
+      roundColorNumber(lightness),
+      roundColorNumber(chroma, LCH_CHROMA_PRECISION),
+      roundColorNumber(normalizedHue, LCH_HUE_PRECISION),
+    ];
+    if (alphaContent) {
+      result.push("/", roundColorNumber(alphaContent));
+    }
+    return `lch(${result.join("_")})`;
   };
 
   const formatCssValue = (value: string) => {
     return value
       .trim()
-      .replace(/-?(?:\d*\.\d+|\d+)(?:e[+-]?\d+)?/gi, roundColorNumber)
+      .replace(colorNumberRegex, (value) => roundColorNumber(value))
       .replace(/\s+/g, "_");
   };
 
   const formatColor = (str: string): string | null => {
     if (!str || str === "transparent" || str === "rgba(0, 0, 0, 0)") {
       return null;
+    }
+    const polarColor = formatPolarColor(str);
+    if (polarColor) {
+      return polarColor;
     }
     return formatCssValue(str);
   };
@@ -445,6 +498,56 @@ function formatColorContrastViolations(
   );
 }
 
+async function waitForPreviewReady(page: Page) {
+  await page.waitForFunction(async () => {
+    if (document.querySelector("astro-island[ssr]")) {
+      return false;
+    }
+    const getSectionLabel = (section: Element) => {
+      const labelledBy = section.getAttribute("aria-labelledby");
+      if (!labelledBy) {
+        return null;
+      }
+      const labelElement = document.getElementById(labelledBy);
+      const label = labelElement?.textContent?.trim();
+      if (label) {
+        return label;
+      }
+      for (const node of Array.from(section.childNodes)) {
+        if (node.nodeType !== Node.TEXT_NODE) {
+          continue;
+        }
+        const textContent = node.textContent?.trim();
+        if (textContent) {
+          return textContent;
+        }
+      }
+      return null;
+    };
+    const getSectionLabels = () => {
+      const sections = Array.from(
+        document.querySelectorAll("section[aria-labelledby]"),
+      );
+      const labels = sections.map(getSectionLabel);
+      if (labels.some((label) => label == null)) {
+        return null;
+      }
+      return labels.join("\n");
+    };
+    const sectionLabels = getSectionLabels();
+    if (sectionLabels == null || sectionLabels.length === 0) {
+      return false;
+    }
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => resolve());
+    });
+    return sectionLabels === getSectionLabels();
+  });
+}
+
 withFramework(import.meta.dirname, async ({ test }) => {
   for (const scheme of ["light", "dark"] as const) {
     test.describe(`${scheme} scheme`, () => {
@@ -474,7 +577,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
             });
             await page.reload({ waitUntil: "networkidle" });
           }
-          await page.waitForFunction(() => document.body?.children.length);
+          await waitForPreviewReady(page);
           const tree = await page.evaluate(extractComputedCSS);
           expect(JSON.stringify(tree, null, 2)).toMatchSnapshot(
             `${scheme}${contrast ? "-high-contrast" : ""}`,
