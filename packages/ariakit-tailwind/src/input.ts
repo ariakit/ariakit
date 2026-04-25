@@ -1639,8 +1639,6 @@ utility(
   set.color(vars.text),
 );
 
-utility("text-layer", set(inputs.textColor, vars.layer));
-
 const textLighten = utility(
   "text-lighten-*",
   set(inputs.textRelativeL, getPercentTokenValue("[*]")),

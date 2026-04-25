@@ -642,10 +642,6 @@
   color: var(--ak-text);
 }
 
-@utility ak-text-layer {
-  --_ak-text-color: var(--ak-layer);
-}
-
 @utility ak-text-lighten-* {
   --_ak-text-relative-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
