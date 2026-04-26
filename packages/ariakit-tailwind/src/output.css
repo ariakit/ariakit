@@ -841,7 +841,9 @@
   @apply ring-[length:var(--ak-frame-ring)];
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * max((max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px)) - (max(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - (1rem - 0.5px)), 0px) * 1000000000)), min(var(--_ak-frame-radius), (max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px)) + (max(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - (1rem - 0.5px)), 0px) * 1000000000))))));
+    --_ak-far: max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-even, var(--_ak-frame-radius)) - (var(--_ak-fppc-even, 0px) + var(--_ak-fpbc-even, 0px) + var(--ak-frame-margin))), 0px));
+    --_ak-fie: calc(max(((var(--_ak-fppc-even, 0px) + var(--ak-frame-margin)) - (1rem - 0.5px)), 0px) * 1000000000);
+    --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * max((var(--_ak-far) - var(--_ak-fie)), min(var(--_ak-frame-radius), (var(--_ak-far) + var(--_ak-fie))))));
     --_ak-fprc-odd: var(--ak-frame-radius);
     --_ak-fppc-odd: var(--ak-frame-padding);
     --_ak-fpbc-odd: var(--ak-frame-border);
@@ -854,7 +856,9 @@
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * max((max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-odd, var(--_ak-frame-radius)) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), 0px)) - (max(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - (1rem - 0.5px)), 0px) * 1000000000)), min(var(--_ak-frame-radius), (max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-odd, var(--_ak-frame-radius)) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), 0px)) + (max(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - (1rem - 0.5px)), 0px) * 1000000000))))));
+    --_ak-far: max(min(0.125rem, var(--_ak-frame-radius)), max((var(--_ak-fprc-odd, var(--_ak-frame-radius)) - (var(--_ak-fppc-odd, 0px) + var(--_ak-fpbc-odd, 0px) + var(--ak-frame-margin))), 0px));
+    --_ak-fie: calc(max(((var(--_ak-fppc-odd, 0px) + var(--ak-frame-margin)) - (1rem - 0.5px)), 0px) * 1000000000);
+    --ak-frame-radius: calc((var(--_ak-frame-force) * var(--_ak-frame-radius)) + ((1 - var(--_ak-frame-force)) * max((var(--_ak-far) - var(--_ak-fie)), min(var(--_ak-frame-radius), (var(--_ak-far) + var(--_ak-fie))))));
     --_ak-fprc-even: var(--ak-frame-radius);
     --_ak-fppc-even: var(--ak-frame-padding);
     --_ak-fpbc-even: var(--ak-frame-border);
@@ -919,7 +923,7 @@
     --_ak-fpcbl-odd: calc(max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-even, 1));
     --_ak-fpcbr-odd: calc(var(--_ak-frame-end) * var(--_ak-fpcbr-even, 1));
     margin: calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--ak-frame-margin)) calc(max(var(--_ak-fpwc-even, 0), ((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end))) * var(--ak-frame-margin)) calc(max((1 - var(--_ak-fpwc-even, 0)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--ak-frame-margin));
-    border-radius: calc((var(--_ak-frame-start) * var(--_ak-fpctl-even, 1)) * var(--ak-frame-radius)) calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-even, 1)) * var(--ak-frame-radius)) calc((var(--_ak-frame-end) * var(--_ak-fpcbr-even, 1)) * var(--ak-frame-radius)) calc((max(((1 - var(--_ak-fpwc-even, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-even, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-even, 1)) * var(--ak-frame-radius));
+    border-radius: calc(var(--_ak-fpctl-odd) * var(--ak-frame-radius)) calc(var(--_ak-fpctr-odd) * var(--ak-frame-radius)) calc(var(--_ak-fpcbr-odd) * var(--ak-frame-radius)) calc(var(--_ak-fpcbl-odd) * var(--ak-frame-radius));
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
@@ -939,7 +943,7 @@
     --_ak-fpcbl-even: calc(max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-odd, 1));
     --_ak-fpcbr-even: calc(var(--_ak-frame-end) * var(--_ak-fpcbr-odd, 1));
     margin: calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start))) * var(--ak-frame-margin)) calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * var(--ak-frame-margin)) calc(max(var(--_ak-fpwc-odd, 0), ((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end))) * var(--ak-frame-margin)) calc(max((1 - var(--_ak-fpwc-odd, 0)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--ak-frame-margin));
-    border-radius: calc((var(--_ak-frame-start) * var(--_ak-fpctl-odd, 1)) * var(--ak-frame-radius)) calc((max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-start)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-end))) * var(--_ak-fpctr-odd, 1)) * var(--ak-frame-radius)) calc((var(--_ak-frame-end) * var(--_ak-fpcbr-odd, 1)) * var(--ak-frame-radius)) calc((max(((1 - var(--_ak-fpwc-odd, 0)) * var(--_ak-frame-end)), (var(--_ak-fpwc-odd, 0) * var(--_ak-frame-start))) * var(--_ak-fpcbl-odd, 1)) * var(--ak-frame-radius));
+    border-radius: calc(var(--_ak-fpctl-even) * var(--ak-frame-radius)) calc(var(--_ak-fpctr-even) * var(--ak-frame-radius)) calc(var(--_ak-fpcbr-even) * var(--ak-frame-radius)) calc(var(--_ak-fpcbl-even) * var(--ak-frame-radius));
   }
 }
 
@@ -981,30 +985,32 @@
 
 @utility ak-frame-bordering {
   --_ak-frame-bordering: 1px;
+  --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
   @variant ak-dark {
-    --_ak-frame-border: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
-    border-width: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
-    --_ak-frame-ring: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
+    --_ak-frame-border: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+    border-width: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+    --_ak-frame-ring: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
   }
   @variant ak-light {
-    --_ak-frame-border: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
-    border-width: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
-    --_ak-frame-ring: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
+    --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
+    border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
+    --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
 }
 
 @utility ak-frame-bordering-* {
   --_ak-frame-bordering: --value([*]);
   --_ak-frame-bordering: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
+  --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
   @variant ak-dark {
-    --_ak-frame-border: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
-    border-width: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
-    --_ak-frame-ring: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
+    --_ak-frame-border: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+    border-width: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
+    --_ak-frame-ring: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
   }
   @variant ak-light {
-    --_ak-frame-border: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
-    border-width: calc(clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1) * var(--_ak-frame-bordering));
-    --_ak-frame-ring: calc((1 - clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1)) * var(--_ak-frame-bordering));
+    --_ak-frame-border: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
+    border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
+    --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
 }
 
@@ -1018,6 +1024,12 @@
   syntax: "*";
   inherits: false;
   initial-value: calc((0.645 - (l + (0.2 * clamp(0, ((c - 0.29) * 1000000), 1) * (clamp(0, ((h - 149.999999) * 1000000), 1) * clamp(0, ((220 - h) * 1000000), 1)) * clamp(0, ((l - 0.45) * 1000000), 1)))) * 1000000);
+}
+
+@property --_ak-ltlv {
+  syntax: "*";
+  inherits: false;
+  initial-value: clamp(0, (l + (c * 0.11 * clamp(0, ((20 - l) / 20), 1)) + ((c * 0.18 * clamp(0, ((l - 50) / 50), 1)) * -1)), 100);
 }
 
 @property --_ak-tmal {

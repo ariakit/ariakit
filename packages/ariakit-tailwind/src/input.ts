@@ -414,6 +414,34 @@ const bandDarkLow = getRangeMask(l, DARK_HIGH_MAX_L, LA_BASE);
 const bandLightLow = getRangeMask(l, LB_BASE, LIGHT_LOW_MAX_L);
 const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
 
+function getLayerTextLightness() {
+  const lightChromaDamping = fn.mul(
+    c,
+    LCH_LAYER_LIGHT_CHROMA_DAMPING,
+    fn.clamp01(
+      fn.div(
+        fn.sub(l, LCH_LAYER_LIGHT_CHROMA_DAMPING_START_L),
+        LCH_LAYER_LIGHT_CHROMA_DAMPING_RANGE,
+      ),
+    ),
+  );
+  const darkChromaBoost = fn.mul(
+    c,
+    LCH_LAYER_DARK_CHROMA_BOOST,
+    fn.clamp01(
+      fn.div(
+        fn.sub(LCH_LAYER_DARK_CHROMA_BOOST_MAX_L, l),
+        LCH_LAYER_DARK_CHROMA_BOOST_MAX_L,
+      ),
+    ),
+  );
+  return fn.clamp(
+    0,
+    fn.add(l, darkChromaBoost, fn.neg(lightChromaDamping)),
+    LCH_LIGHTNESS_MAX,
+  );
+}
+
 // Constants registered once as @property initial values. They only depend on
 // color channels or fixed numeric constants.
 const constantMathVars = {
@@ -421,6 +449,7 @@ const constantMathVars = {
   textForegroundContrastL: _ak.prop("tfcl", {
     initial: TEXT_FOREGROUND_CONTRAST_L,
   }),
+  layerTextLightness: _ak.prop("ltlv", { initial: getLayerTextLightness() }),
   textMinAlphaOnLightLayer: _ak.prop("tmal", {
     initial: fn.sub(1.386, fn.mul(l, 0.85)),
   }),
@@ -565,6 +594,9 @@ const frameVars = {
   frameParentCornerTRContext: _ak.var("fpctr"),
   frameParentCornerBLContext: _ak.var("fpcbl"),
   frameParentCornerBRContext: _ak.var("fpcbr"),
+  frameAutoRadius: _ak.var("far"),
+  frameInflatedExcess: _ak.var("fie"),
+  frameBorderingDarkening: _ak.var("fbd"),
 };
 
 const vars = {
@@ -956,34 +988,6 @@ function getLchTextChromaCap(parentLightness: number, isDark: boolean) {
     return LCH_TEXT_CHROMA_CAP_LOW;
   }
   return LCH_TEXT_CHROMA_CAP_HIGH;
-}
-
-function getLayerTextLightness() {
-  const lightChromaDamping = fn.mul(
-    c,
-    LCH_LAYER_LIGHT_CHROMA_DAMPING,
-    fn.clamp01(
-      fn.div(
-        fn.sub(l, LCH_LAYER_LIGHT_CHROMA_DAMPING_START_L),
-        LCH_LAYER_LIGHT_CHROMA_DAMPING_RANGE,
-      ),
-    ),
-  );
-  const darkChromaBoost = fn.mul(
-    c,
-    LCH_LAYER_DARK_CHROMA_BOOST,
-    fn.clamp01(
-      fn.div(
-        fn.sub(LCH_LAYER_DARK_CHROMA_BOOST_MAX_L, l),
-        LCH_LAYER_DARK_CHROMA_BOOST_MAX_L,
-      ),
-    ),
-  );
-  return fn.clamp(
-    0,
-    fn.add(l, darkChromaBoost, fn.neg(lightChromaDamping)),
-    LCH_LIGHTNESS_MAX,
-  );
 }
 
 const idleLayerChannels = {
@@ -1935,6 +1939,10 @@ function getFrameStretchDeclarations({
   const cornerTR = fn.mul(ownCornerTR, parentCornerTR);
   const cornerBL = fn.mul(ownCornerBL, parentCornerBL);
   const cornerBR = fn.mul(ownCornerBR, parentCornerBR);
+  const childCornerTL = provide(vars.frameParentCornerTLContext);
+  const childCornerTR = provide(vars.frameParentCornerTRContext);
+  const childCornerBL = provide(vars.frameParentCornerBLContext);
+  const childCornerBR = provide(vars.frameParentCornerBRContext);
 
   return [
     rule("&:first-child", set(inputs.frameStart, 1)),
@@ -1952,10 +1960,10 @@ function getFrameStretchDeclarations({
     // the stretch-derived value rather than the frame-* hint radius.
     set(vars.frameRadius, childRadius),
     // Propagate per-corner flags to children.
-    set(provide(vars.frameParentCornerTLContext), cornerTL),
-    set(provide(vars.frameParentCornerTRContext), cornerTR),
-    set(provide(vars.frameParentCornerBLContext), cornerBL),
-    set(provide(vars.frameParentCornerBRContext), cornerBR),
+    set(childCornerTL, cornerTL),
+    set(childCornerTR, cornerTR),
+    set(childCornerBL, cornerBL),
+    set(childCornerBR, cornerBR),
     // Cross-axis margins always applied; main-axis margins only at edges
     // Col: inline = cross, block = main
     // Row: block = cross, inline = main
@@ -1986,10 +1994,10 @@ function getFrameStretchDeclarations({
     set.borderRadius(
       fn.join(
         [
-          fn.mul(cornerTL, vars.frameRadius),
-          fn.mul(cornerTR, vars.frameRadius),
-          fn.mul(cornerBR, vars.frameRadius),
-          fn.mul(cornerBL, vars.frameRadius),
+          fn.mul(childCornerTL, vars.frameRadius),
+          fn.mul(childCornerTR, vars.frameRadius),
+          fn.mul(childCornerBR, vars.frameRadius),
+          fn.mul(childCornerBL, vars.frameRadius),
         ],
         " ",
       ),
@@ -2040,8 +2048,11 @@ utility(
     // infinity-based radii like rounded-full). 0.5px * 1e9 = 5e8 >> 3.35e7.
     const inflatedExcess = fn.mul(excess, 1e9);
     const cappedRadius = fn.max(
-      fn.sub(autoRadius, inflatedExcess),
-      fn.min(inputs.frameRadius, fn.add(autoRadius, inflatedExcess)),
+      fn.sub(vars.frameAutoRadius, vars.frameInflatedExcess),
+      fn.min(
+        inputs.frameRadius,
+        fn.add(vars.frameAutoRadius, vars.frameInflatedExcess),
+      ),
     );
     // When forced, use the declared radius directly.
     const frameRadius = fn.add(
@@ -2049,6 +2060,8 @@ utility(
       fn.mul(fn.sub(1, inputs.frameForce), cappedRadius),
     );
     return [
+      set(vars.frameAutoRadius, autoRadius),
+      set(vars.frameInflatedExcess, inflatedExcess),
       set(vars.frameRadius, frameRadius),
       set(provide(vars.frameParentRadiusContext), vars.frameRadius),
       set(provide(vars.frameParentPaddingContext), vars.framePadding),
@@ -2137,11 +2150,15 @@ function getFrameBorderingDarkLight() {
   // When the layer is darkening relative to its parent (ak-layer-darken-*),
   // reverse the border/ring condition so the edge style matches the visual
   // context: border for darker surfaces, ring for lighter ones.
-  const isDarkening = fn.binary(fn.neg(inputs.layerIdleRelativeL));
-  const isLightening = fn.invert(isDarkening);
+  const isDarkening = vars.frameBorderingDarkening;
+  const isLightening = fn.invert(vars.frameBorderingDarkening);
   const borderVal = fn.mul(isLightening, inputs.frameBordering);
   const ringVal = fn.mul(isDarkening, inputs.frameBordering);
   return [
+    set(
+      vars.frameBorderingDarkening,
+      fn.binary(fn.neg(inputs.layerIdleRelativeL)),
+    ),
     at.variant(
       dark,
       set(inputs.frameBorder, borderVal),
