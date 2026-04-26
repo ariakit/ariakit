@@ -314,7 +314,7 @@ function getAutoLightnessDelta(
   direction: Value,
   lowerBoundary: Value,
   upperBoundary: Value,
-  toLight: Value,
+  entryBoundary: Value,
 ) {
   const nextLightness = fn.add(l, normalDelta);
   const inForbidden = getForbiddenRangeMask(
@@ -329,13 +329,6 @@ function getAutoLightnessDelta(
   // where travel direction is well-defined, so we can avoid abs() which
   // would duplicate the sub-expression in max(x, -x).
   const flippedDist = fn.mul(fn.sub(l, flippedL), direction);
-  // Entry boundary: the near side of the forbidden range from the current
-  // travel direction. Going lighter hits lowerBoundary first; going darker
-  // hits upperBoundary first.
-  const entryBoundary = fn.add(
-    upperBoundary,
-    fn.mul(toLight, fn.sub(lowerBoundary, upperBoundary)),
-  );
   const boundaryDelta = fn.sub(entryBoundary, l);
   const boundaryDist = fn.mul(boundaryDelta, direction);
   // Only flip if it produces more distance from the original lightness.
@@ -482,21 +475,23 @@ const disabledVars = {
 // Utility-assigned math values. These depend on other vars and are resolved in
 // @utility ak-layer.
 const layerMathVars = {
-  contrastT: _ak.var("ct", fn.mul(globalContrastT, disabledVars.contrastScale)),
-  contrastPushScale: _ak.var("cps"),
+  contrastT: _ak.prop.zero("ct", { inherits: true }),
+  contrastPushScale: _ak.prop.number("cps", { inherits: true, initial: 1 }),
   layerContrastBias: _ak.var("lcb"),
   forbiddenLa: _ak.var("fla"),
   forbiddenLb: _ak.var("flb"),
   safeL: _ak.var("sl"),
   autoDirectionToLight: _ak.var("adtl"),
-  layerIdlePushValue: _ak.prop("lipv", { initial: 0 }),
+  forbiddenBandWidth: _ak.var("bw"),
+  forbiddenEntryBoundary: _ak.var("eb"),
+  layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushBaseL: _ak.prop("lipbl", { initial: l }),
   layerIdlePushL: _ak.prop("lipl", { initial: l }),
-  layerPushValue: _ak.prop("lpv", { initial: 0 }),
+  layerPushValue: _ak.prop.zero("lpv"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
-  layerIdleContrastValue: _ak.var("licv"),
-  edgeContrastValue: _ak.var("ecv"),
+  layerIdleContrastValue: _ak.prop.zero("licv", { inherits: true }),
+  edgeContrastValue: _ak.prop.zero("ecv", { inherits: true }),
   edgePushDirection: _ak.var("epd", -1),
 };
 
@@ -536,8 +531,8 @@ const layerContrastMathVars = {
 };
 
 const outlineMathVars = {
-  outlineContrastDirection: _ak.prop("ocd", { initial: 1 }),
-  outlineParentL: _ak.prop("opl", { initial: 0 }),
+  outlineContrastDirection: _ak.prop.number("ocd", { initial: 1 }),
+  outlineParentL: _ak.prop.zero("opl"),
 };
 
 const textMathVars = {
@@ -770,7 +765,7 @@ function getAutoLDelta(value: Value) {
     vars.autoLDirection,
     vars.forbiddenLa,
     vars.forbiddenLb,
-    vars.autoDirectionToLight,
+    vars.forbiddenEntryBoundary,
   );
 }
 
@@ -791,7 +786,7 @@ function getPushL(pushValue: Value, baseLightness: Value) {
   const direction = vars.autoLDirection;
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
-  const bandWidth = fn.sub(upperBoundary, lowerBoundary);
+  const bandWidth = vars.forbiddenBandWidth;
   const valueEnabled = fn.binary(pushValue);
   const startLightness = l;
   // Crossed from dark side: l was below fla AND baseLightness moved above fla.
@@ -1103,6 +1098,10 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
 
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
+  // Set contrastT explicitly so the 5+ references inside this body resolve
+  // to the cached value instead of re-evaluating the var(--contrast) /
+  // contrast-scale math at each call site.
+  set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
   set(
     vars.layerContrastBias,
@@ -1111,6 +1110,17 @@ const layerMathDeclarations = [
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
+  set(vars.forbiddenBandWidth, fn.sub(vars.forbiddenLb, vars.forbiddenLa)),
+  set(
+    vars.forbiddenEntryBoundary,
+    fn.add(
+      vars.forbiddenLb,
+      fn.mul(
+        vars.autoDirectionToLight,
+        fn.sub(vars.forbiddenLa, vars.forbiddenLb),
+      ),
+    ),
+  ),
   set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
   set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
