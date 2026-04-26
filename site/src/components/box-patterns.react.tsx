@@ -310,7 +310,7 @@ export function BoxPatternsFull() {
     <div className="absolute start-full ms-4 top-0 flex gap-4">
       <div className="flex flex-col gap-2 w-max">
         <div className="flex gap-2">
-          <div className="ak-frame-border ak-button_idle text-[70%]">
+          <div className="ak-layer ak-frame-border ak-button_idle text-[70%]">
             <div>
               Pick{" "}
               <span className="font-semibold ak-text ak-text-primary">
