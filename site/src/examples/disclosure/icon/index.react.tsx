@@ -12,7 +12,9 @@ export default function Example() {
         defaultOpen
         className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering ak-disclosure-icon-5"
       >
-        <DisclosureButton icon={<icons.Rocket className="ak-text-primary" />}>
+        <DisclosureButton
+          icon={<icons.Rocket className="ak-text ak-text-primary" />}
+        >
           How do I get started?
         </DisclosureButton>
         <DisclosureContent prose>

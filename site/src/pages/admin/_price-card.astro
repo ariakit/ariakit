@@ -76,7 +76,7 @@ const priceTypes = [personal, team].filter(nonNullable);
                 </td>
                 <td
                   style={`anchor-name: --${id}-2`}
-                  class="text-start text-xs ak-text-green-500"
+                  class="text-start text-xs ak-text ak-text-green-500"
                 >
                   {priceType.type === "team" &&
                     `${(priceType.amount / personal.amount).toFixed(2)}x`}

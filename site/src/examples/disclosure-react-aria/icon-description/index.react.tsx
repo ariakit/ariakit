@@ -13,7 +13,7 @@ export default function Example() {
         className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering ak-disclosure-icon-5"
       >
         <DisclosureButton
-          icon={<icons.Rocket className="ak-text-primary" />}
+          icon={<icons.Rocket className="ak-text ak-text-primary" />}
           description="Account, email, setup"
         >
           How do I get started?

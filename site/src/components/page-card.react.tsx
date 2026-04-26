@@ -42,7 +42,7 @@ export function PageCard({
     <a
       {...props}
       className={clsx(
-        "ak-button ak-command-depth-4 text-wrap ak-layer-lighten-0 ak-command-focus:outline-0 ak-command-focus:ak-state-6 ak-frame ak-frame-card/card flex flex-col gap-2 items-stretch font-normal outline-offset-2 group/card justify-start",
+        "ak-button ak-command-depth-4 text-wrap ak-layer ak-layer-lighten-0 ak-command-focus:outline-0 ak-command-focus:ak-state-6 ak-frame ak-frame-card/card flex flex-col gap-2 items-stretch font-normal outline-offset-2 group/card justify-start",
         className,
       )}
       aria-labelledby={labelId}
