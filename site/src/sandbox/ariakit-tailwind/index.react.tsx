@@ -48,6 +48,24 @@ function Layers() {
   return (
     <>
       <Layer
+        label="ak-text-l-<number>"
+        className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+      >
+        <Layer className="flex-wrap items-start">
+          <Cell className="*:ak-text *:ak-text-l-0" />
+          <Cell className="*:ak-text *:ak-text-l-10" />
+          <Cell className="*:ak-text *:ak-text-l-20" />
+          <Cell className="*:ak-text *:ak-text-l-30" />
+          <Cell className="*:ak-text *:ak-text-l-40" />
+          <Cell className="*:ak-text *:ak-text-l-50" />
+          <Cell className="*:ak-text *:ak-text-l-60" />
+          <Cell className="*:ak-text *:ak-text-l-70" />
+          <Cell className="*:ak-text *:ak-text-l-80" />
+          <Cell className="*:ak-text *:ak-text-l-90" />
+          <Cell className="*:ak-text *:ak-text-l-100" />
+        </Layer>
+      </Layer>
+      <Layer
         label="ak-text-<number>"
         className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
       >
@@ -63,24 +81,6 @@ function Layers() {
           <Cell className="*:ak-text *:ak-text-80" />
           <Cell className="*:ak-text *:ak-text-90" />
           <Cell className="*:ak-text *:ak-text-100" />
-        </Layer>
-      </Layer>
-      <Layer
-        label="ak-text-push-<number>"
-        className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
-      >
-        <Layer className="flex-wrap items-start">
-          <Cell className="*:ak-text *:ak-text-push-0" />
-          <Cell className="*:ak-text *:ak-text-push-10" />
-          <Cell className="*:ak-text *:ak-text-push-20" />
-          <Cell className="*:ak-text *:ak-text-push-30" />
-          <Cell className="*:ak-text *:ak-text-push-40" />
-          <Cell className="*:ak-text *:ak-text-push-50" />
-          <Cell className="*:ak-text *:ak-text-push-60" />
-          <Cell className="*:ak-text *:ak-text-push-70" />
-          <Cell className="*:ak-text *:ak-text-push-80" />
-          <Cell className="*:ak-text *:ak-text-push-90" />
-          <Cell className="*:ak-text *:ak-text-push-100" />
         </Layer>
       </Layer>
       <Layer
@@ -395,21 +395,21 @@ export default function Example() {
             </Layer>
           </Layer>
           <Layer
-            label="ak-layer-l-[6.24999497075] ak-text-push-<number>"
+            label="ak-layer-l-[6.24999497075] ak-text-<number>"
             className="ak-layer ak-layer-l-[6.24999497075] ak-frame ak-frame-p-1 ak-frame-border flex-col"
           >
             <Layer className="flex-wrap items-start">
-              <Cell className="*:ak-text *:ak-text-push-0" />
-              <Cell className="*:ak-text *:ak-text-push-10" />
-              <Cell className="*:ak-text *:ak-text-push-20" />
-              <Cell className="*:ak-text *:ak-text-push-30" />
-              <Cell className="*:ak-text *:ak-text-push-40" />
-              <Cell className="*:ak-text *:ak-text-push-50" />
-              <Cell className="*:ak-text *:ak-text-push-60" />
-              <Cell className="*:ak-text *:ak-text-push-70" />
-              <Cell className="*:ak-text *:ak-text-push-80" />
-              <Cell className="*:ak-text *:ak-text-push-90" />
-              <Cell className="*:ak-text *:ak-text-push-100" />
+              <Cell className="*:ak-text *:ak-text-0" />
+              <Cell className="*:ak-text *:ak-text-10" />
+              <Cell className="*:ak-text *:ak-text-20" />
+              <Cell className="*:ak-text *:ak-text-30" />
+              <Cell className="*:ak-text *:ak-text-40" />
+              <Cell className="*:ak-text *:ak-text-50" />
+              <Cell className="*:ak-text *:ak-text-60" />
+              <Cell className="*:ak-text *:ak-text-70" />
+              <Cell className="*:ak-text *:ak-text-80" />
+              <Cell className="*:ak-text *:ak-text-90" />
+              <Cell className="*:ak-text *:ak-text-100" />
             </Layer>
           </Layer>
         </Layer>

@@ -1595,14 +1595,6 @@ function getTextDirectional() {
   });
 }
 
-function getTextLightnessValue(pattern: string) {
-  const lightness = getPercentTokenValue(pattern);
-  return fn.add(
-    0.5,
-    fn.mul(fn.sub(lightness, 0.5), vars.textContrastDirection),
-  );
-}
-
 utility(
   "text",
   set.backgroundColor(fn.important("transparent")),
@@ -1627,10 +1619,8 @@ utility(
   set(inputs.textC, fn.value(chroma)),
   set(inputs.textH, fn.value(hue)),
   set(inputs.textColor, fn.value(color, "[color]")),
-  set(inputs.textL, getTextLightnessValue("[number]")),
+  set(inputs.textPushL, getPercentTokenValue("[number]")),
 );
-
-utility("text-push-*", set(inputs.textPushL, getPercentTokenValue("[*]")));
 
 utility(
   "ink-*",

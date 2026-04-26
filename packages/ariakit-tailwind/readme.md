@@ -253,25 +253,24 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Setting the text color
 
-| Utility            | Description                                                                                                                                                                                                                                                                           |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-text`          | Required base class for colored text.                                                                                                                                                                                                                                                 |
-| `ak-text-<color>`  | Applies a color with automatic contrast, e.g. `ak-text-primary`, `ak-text-[#c33]`.                                                                                                                                                                                                    |
-| `ak-text-<number>` | Directional absolute lightness (`0`–`100`) that preserves the current text hue and chroma. With `--contrast: 0`, `90` means 90% lightness on dark layers and 10% lightness on light layers. Values below the readable floor are shifted to the minimum lightness needed for contrast. |
-| `ak-text-<chroma>` | Sets chroma from a named preset (`ak-text-vivid`).                                                                                                                                                                                                                                    |
-| `ak-text-<hue>`    | Sets hue from a named preset (`ak-text-blue`).                                                                                                                                                                                                                                        |
+| Utility            | Description                                                                        |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `ak-text`          | Required base class for colored text.                                              |
+| `ak-text-<color>`  | Applies a color with automatic contrast, e.g. `ak-text-primary`, `ak-text-[#c33]`. |
+| `ak-text-<number>` | Pushes lightness away from the parent layer beyond the automatic readable floor.   |
+| `ak-text-<chroma>` | Sets chroma from a named preset (`ak-text-vivid`).                                 |
+| `ak-text-<hue>`    | Sets hue from a named preset (`ak-text-blue`).                                     |
 
 ### Adjustments
 
-| Utility                       | Description                                                                      |
-| ----------------------------- | -------------------------------------------------------------------------------- |
-| `ak-text-lighten-<number>`    | Lightens the text color.                                                         |
-| `ak-text-darken-<number>`     | Darkens the text color.                                                          |
-| `ak-text-saturate-<number>`   | Increases chroma.                                                                |
-| `ak-text-desaturate-<number>` | Decreases chroma.                                                                |
-| `ak-text-warm-<number>`       | Shifts hue toward `--hue-warm`.                                                  |
-| `ak-text-cool-<number>`       | Shifts hue toward `--hue-cool`.                                                  |
-| `ak-text-push-<number>`       | Pushes lightness away from the parent layer beyond the automatic readable floor. |
+| Utility                       | Description                     |
+| ----------------------------- | ------------------------------- |
+| `ak-text-lighten-<number>`    | Lightens the text color.        |
+| `ak-text-darken-<number>`     | Darkens the text color.         |
+| `ak-text-saturate-<number>`   | Increases chroma.               |
+| `ak-text-desaturate-<number>` | Decreases chroma.               |
+| `ak-text-warm-<number>`       | Shifts hue toward `--hue-warm`. |
+| `ak-text-cool-<number>`       | Shifts hue toward `--hue-cool`. |
 
 ### Channels and bounds
 

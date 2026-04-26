@@ -238,7 +238,7 @@
               "name": "&::before,\n  &::after,\n  :where(& > *)",
               "value": [
                 {
-                  "name": "@apply ak-text ak-text-(color:--ak-badge-color) ak-dark:ak-text-80",
+                  "name": "@apply ak-text ak-text-(color:--ak-badge-color) ak-text-25",
                   "value": {}
                 }
               ]
@@ -297,7 +297,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text-80",
+              "name": "ak-text-25",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -6483,7 +6483,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text ak-text-primary ak-outline ak-outline-primary ak-dark:ak-text-80",
+              "name": "@apply ak-text ak-text-primary ak-outline ak-outline-primary ak-dark:ak-text-20",
               "value": {}
             },
             {
@@ -6519,7 +6519,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text-80",
+              "name": "ak-text-20",
               "import": "@ariakit/tailwind"
             }
           ]
