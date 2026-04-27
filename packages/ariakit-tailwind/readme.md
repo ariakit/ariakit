@@ -185,7 +185,7 @@ Use [`ak-edge`](#ak-edge) to fine-tune border, ring, and shadow colors without t
 
 | Utility                        | Description                                                                                                                                             |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-saturate-<number>`   | Increases chroma by `<number>`%. Accepts named presets (`ak-layer-saturate-vivid`).                                                                     |
+| `ak-layer-saturate-<number>`   | Increases chroma by `<number>`%.                                                                                                                        |
 | `ak-layer-desaturate-<number>` | Decreases chroma by `<number>`%.                                                                                                                        |
 | `ak-layer-c-<value>`           | Sets absolute chroma. Accepts a percentage, named preset, or raw value.                                                                                 |
 | `ak-layer-max-c-<value>`       | Caps chroma (percentage, named preset, or raw value).                                                                                                   |

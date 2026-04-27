@@ -862,9 +862,10 @@ function getPushL(pushValue: Value, baseLightness: Value) {
  * Resolves layer lightness from relative offset and optional absolute input.
  */
 function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
-  // Preserve the parent lightness as a floor so nested layers do not collapse
-  // into black when multiple negative offsets stack.
-  const baseLightnessFloor = fn.max(l, fn.min(0.13, relativeLightness));
+  // Floor the parent channel only while darkening, so repeated small negative
+  // offsets converge instead of stacking all the way to black.
+  const darkeningMask = fn.binary(fn.neg(relativeLightness));
+  const baseLightnessFloor = fn.max(l, fn.mul(0.13, darkeningMask));
   const fallbackLightness = fn.add(baseLightnessFloor, relativeLightness);
   return absoluteLightness
     ? fn.var(absoluteLightness, fallbackLightness)
@@ -1407,7 +1408,6 @@ utility(
 
 const layerSaturate = utility(
   "layer-saturate-*",
-  set(inputs.layerIdleRelativeC, fn.value(chroma)),
   set(
     inputs.layerIdleRelativeC,
     getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS),
@@ -1417,7 +1417,6 @@ utility("layer-desaturate-*", getNegatedDeclarations(layerSaturate));
 
 utility(
   "state-saturate-*",
-  set(inputs.layerRelativeC, fn.value(chroma)),
   set(inputs.layerRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
@@ -1497,7 +1496,6 @@ utility("edge-push-*", set(inputs.edgePushL, getPercentTokenValue("[*]")));
 
 const edgeSaturate = utility(
   "edge-saturate-*",
-  set(inputs.edgeRelativeC, fn.value(chroma)),
   set(inputs.edgeRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 utility("edge-desaturate-*", getNegatedDeclarations(edgeSaturate));
@@ -1664,7 +1662,6 @@ utility(
 
 const textSaturate = utility(
   "text-saturate-*",
-  set(inputs.textRelativeC, fn.value(chroma)),
   set(inputs.textRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 utility("text-desaturate-*", getNegatedDeclarations(textSaturate));
@@ -1804,7 +1801,6 @@ utility(
 
 const outlineSaturate = utility(
   "outline-saturate-*",
-  set(inputs.outlineRelativeC, fn.value(chroma)),
   set(
     inputs.outlineRelativeC,
     getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS),
