@@ -408,17 +408,6 @@ Custom color badges now use the `color:` prefix.
 
 ## Known issues
 
-### `ak-text` sets `background-color: transparent !important`
-
-The `ak-text` utility forces `background-color: transparent !important`. If a custom utility needs both `ak-layer` (for background) and `ak-text` (for text color), it must re-apply the background after `ak-text`:
-
-```css
-@utility my-utility {
-  @apply ak-layer ak-text;
-  background-color: var(--ak-layer) !important;
-}
-```
-
 ### `ak-layer-(color:--var)` does not reset same-element darken/lighten
 
 In v0.1, compound utilities like `ak-layer-(--var)` replaced the entire layer, including any darken/lighten. In v0.2, `ak-layer-(color:--var)` only sets the layer color — it does **not** reset `ak-layer-darken-*` or `ak-layer-lighten-*` that were set on the same element by another utility.
@@ -444,10 +433,6 @@ The same applies in CSS custom utilities when a `_checked` or `_disabled` state 
   @apply ak-layer ak-layer-(color:--my-color) ak-layer-darken-0;
 }
 ```
-
-### `ak-frame-*/[calc(...)]` arbitrary modifier generates invalid CSS
-
-The `ak-frame-*` utility generates a `--spacing()` multiplication for arbitrary bracket modifiers, which can produce invalid `<length> × <length>` values. Workaround: use the frame preset without modifier and set the padding with `ak-frame-p-*`.
 
 ### Responsive `ak-frame-cover` overrides non-responsive `rounded-*!`
 

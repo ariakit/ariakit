@@ -423,7 +423,7 @@
 }
 
 @utility ak-text {
-  background-color: transparent !important;
+  background-color: transparent;
   color: var(--ak-text);
   @container style(--_ak-ltl) {
     color: lch(from oklch(from var(--_ak-text-color, var(--ak-layer)) clamp(var(--_ak-text-lightness-min), (var(--_ak-text-lightness, (l + var(--_ak-text-relative-lightness))) + (var(--_ak-text-push-lightness) * var(--_ak-tcd))), var(--_ak-text-lightness-max)) clamp(var(--_ak-text-chroma-min), var(--_ak-text-chroma, (c + var(--_ak-text-relative-chroma))), var(--_ak-text-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-text-hue, calc(h + var(--_ak-text-relative-hue)))) calc(l + (var(--_ak-tcd) * max(0, ((clamp(0, ((var(--_ak-tpl) + ((var(--_ak-tal) - var(--_ak-tpl)) * var(--_ak-text-contrast-scale))) + (var(--_ak-ct) * 0.6668 * 100 * var(--_ak-tcd))), 100) - l) * var(--_ak-tcd))))) min(c, var(--_ak-tcc)) h);
@@ -848,7 +848,7 @@
     --_ak-fppc-odd: var(--ak-frame-padding);
     --_ak-fpbc-odd: var(--ak-frame-border);
     --_ak-fpgc-odd: var(--ak-frame-ring);
-    --_ak-fpwc-odd: var(--_ak-frame-col);
+    --_ak-fpwc-odd: var(--_ak-frame-row);
     --_ak-fpctl-odd: 1;
     --_ak-fpctr-odd: 1;
     --_ak-fpcbl-odd: 1;
@@ -863,7 +863,7 @@
     --_ak-fppc-even: var(--ak-frame-padding);
     --_ak-fpbc-even: var(--ak-frame-border);
     --_ak-fpgc-even: var(--ak-frame-ring);
-    --_ak-fpwc-even: var(--_ak-frame-col);
+    --_ak-fpwc-even: var(--_ak-frame-row);
     --_ak-fpctl-even: 1;
     --_ak-fpctr-even: 1;
     --_ak-fpcbl-even: 1;
@@ -877,8 +877,9 @@
 
 @utility ak-frame-* {
   --_ak-frame-radius: --value(--radius-*, [*]);
-  --_ak-frame-padding: --modifier(--spacing-*, [*]);
+  --_ak-frame-padding: --modifier(--spacing-*);
   --_ak-frame-padding: --spacing(--modifier(number));
+  --_ak-frame-padding: --modifier([length], [*]);
 }
 
 @utility ak-frame-rounded-* {
@@ -948,11 +949,11 @@
 }
 
 @utility ak-frame-row {
-  --_ak-frame-col: 1;
+  --_ak-frame-row: 1;
 }
 
 @utility ak-frame-col {
-  --_ak-frame-col: 0;
+  --_ak-frame-row: 0;
 }
 
 @utility ak-frame-start {
@@ -1089,7 +1090,7 @@
 @property --_ak-bdl {
   syntax: "*";
   inherits: false;
-  initial-value: calc(clamp(0, ((l - 0.27499900000000005) * 1000000), 1) * clamp(0, ((0.55 - l) * 1000000), 1));
+  initial-value: calc(clamp(0, ((l - 0.274999) * 1000000), 1) * clamp(0, ((0.55 - l) * 1000000), 1));
 }
 
 @property --_ak-bll {
@@ -1740,7 +1741,7 @@
   initial-value: 0px;
 }
 
-@property --_ak-frame-col {
+@property --_ak-frame-row {
   syntax: "<number>";
   inherits: true;
   initial-value: 0;

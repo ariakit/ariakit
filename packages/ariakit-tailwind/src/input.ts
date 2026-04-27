@@ -238,7 +238,7 @@ function getWcagLightnessTarget(parentLightness: number, isDark: boolean) {
  */
 function getRangeMask(value: Value, min: number, max: number) {
   return fn.mul(
-    fn.binary(fn.sub(value, min - 1e-6)),
+    fn.binary(fn.sub(value, roundToDecimals(min - 1e-6, 6))),
     fn.binary(fn.sub(max, value)),
   );
 }
@@ -684,7 +684,7 @@ const inputs = {
   frameBorder: _ak.prop.len("frame-border", { initial: "0px" }),
   frameRing: _ak.prop.len("frame-ring", { initial: "0px" }),
   frameBordering: _ak.prop.len("frame-bordering", { initial: "0px" }),
-  frameRow: _ak.prop.number("frame-col", { initial: 0, inherits: true }),
+  frameRow: _ak.prop.number("frame-row", { initial: 0, inherits: true }),
   frameStart: _ak.prop.number("frame-start", { initial: 0 }),
   frameEnd: _ak.prop.number("frame-end", { initial: 0 }),
   frameForce: _ak.prop.number("frame-force", { initial: 0 }),
@@ -1611,7 +1611,7 @@ function getTextDirectional() {
 
 utility(
   "text",
-  set.backgroundColor(fn.important("transparent")),
+  set.backgroundColor("transparent"),
   set.color(vars.text),
   at.container(fn.style(vars.layerTextL), set.color(getTextDirectional())),
   mapLayerTextLightnessSteps((parentL, isDark) => {
@@ -2082,8 +2082,9 @@ utility("frame-force", set(inputs.frameForce, 1));
 utility(
   "frame-*",
   set(inputs.frameRadius, fn.value(radius, "[*]")),
-  set(inputs.framePadding, fn.modifier(spacing, "[*]")),
+  set(inputs.framePadding, fn.modifier(spacing)),
   set(inputs.framePadding, fn.spacing(fn.modifier("number"))),
+  set(inputs.framePadding, fn.modifier("[length]", "[*]")),
 );
 
 utility("frame-rounded-*", set(inputs.frameRadius, fn.value(radius, "[*]")));
