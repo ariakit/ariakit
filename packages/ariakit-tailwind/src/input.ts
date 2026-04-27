@@ -1611,7 +1611,7 @@ function getTextDirectional() {
 
 utility(
   "text",
-  set.backgroundColor("transparent"),
+  set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
   at.container(fn.style(vars.layerTextL), set.color(getTextDirectional())),
   mapLayerTextLightnessSteps((parentL, isDark) => {
@@ -2082,9 +2082,8 @@ utility("frame-force", set(inputs.frameForce, 1));
 utility(
   "frame-*",
   set(inputs.frameRadius, fn.value(radius, "[*]")),
-  set(inputs.framePadding, fn.modifier(spacing)),
+  set(inputs.framePadding, fn.modifier(spacing, "[*]")),
   set(inputs.framePadding, fn.spacing(fn.modifier("number"))),
-  set(inputs.framePadding, fn.modifier("[length]", "[*]")),
 );
 
 utility("frame-rounded-*", set(inputs.frameRadius, fn.value(radius, "[*]")));
