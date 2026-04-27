@@ -294,14 +294,17 @@
 }
 
 @utility ak-layer-saturate-* {
+  --_ak-layer-idle-relative-chroma: --value(--chroma-*);
   --_ak-layer-idle-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
 }
 
 @utility ak-layer-desaturate-* {
+  --_ak-layer-idle-relative-chroma: calc(--value(--chroma-*) * -1);
   --_ak-layer-idle-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
 }
 
 @utility ak-state-saturate-* {
+  --_ak-layer-relative-chroma: --value(--chroma-*);
   --_ak-layer-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
 }
 
@@ -371,10 +374,12 @@
 }
 
 @utility ak-edge-saturate-* {
+  --_ak-edge-relative-chroma: --value(--chroma-*);
   --_ak-edge-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
 }
 
 @utility ak-edge-desaturate-* {
+  --_ak-edge-relative-chroma: calc(--value(--chroma-*) * -1);
   --_ak-edge-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
 }
 
@@ -658,10 +663,12 @@
 }
 
 @utility ak-text-saturate-* {
+  --_ak-text-relative-chroma: --value(--chroma-*);
   --_ak-text-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
 }
 
 @utility ak-text-desaturate-* {
+  --_ak-text-relative-chroma: calc(--value(--chroma-*) * -1);
   --_ak-text-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
 }
 
@@ -778,10 +785,12 @@
 }
 
 @utility ak-outline-saturate-* {
+  --_ak-outline-relative-chroma: --value(--chroma-*);
   --_ak-outline-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
 }
 
 @utility ak-outline-desaturate-* {
+  --_ak-outline-relative-chroma: calc(--value(--chroma-*) * -1);
   --_ak-outline-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
 }
 
