@@ -70,7 +70,7 @@ export function Playground({ children }: PropsWithChildren) {
         render={<div className="ak-frame-border-3" />}
         tabList={<div className="ak-tab-list-p-1" />}
       />
-      <Tabs render={<div className="ak-edge-contrast-primary" />} />
+      <Tabs render={<div className="ak-edge-primary ak-edge-raw" />} />
       <Tabs render={<div className="ak-edge-primary ak-frame-border-3" />} />
       {children}
     </div>
