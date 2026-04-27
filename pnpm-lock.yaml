@@ -453,8 +453,8 @@ importers:
         specifier: 1.11.0
         version: 1.11.0
       '@stripe/stripe-js':
-        specifier: 9.3.0
-        version: 9.3.0
+        specifier: 9.3.1
+        version: 9.3.1
       '@tailwindcss/vite':
         specifier: 4.2.4
         version: 4.2.4(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.3))
@@ -540,8 +540,8 @@ importers:
         specifier: 1.9.12
         version: 1.9.12
       stripe:
-        specifier: 22.0.2
-        version: 22.0.2(@types/node@24.12.2)
+        specifier: 22.1.0
+        version: 22.1.0(@types/node@24.12.2)
       tailwindcss:
         specifier: 4.2.4
         version: 4.2.4
@@ -4695,8 +4695,8 @@ packages:
     resolution: {integrity: sha512-/5zxRol+MU4I7fjZXPxP2M6E1nuHOxAzoc0tOEC/TLnC31Gzc+5EE93mIjoAnu28O1Sqpl7/BkceDHwnGmn75A==}
     engines: {node: '>=12.16'}
 
-  '@stripe/stripe-js@9.3.0':
-    resolution: {integrity: sha512-BPiTYrt8OEpvm5W/gyWUfGdHCk2L9DmZ2R8WmsNVhgjNCEl40CAYtyPHFQFic+j9rJbyjxifDkU+MO0sFUGkUQ==}
+  '@stripe/stripe-js@9.3.1':
+    resolution: {integrity: sha512-oWpAEENuVg8aw4W2OUAM9WxRDtIV2YTLr2nr6qHT+D8tHPW7bya61ufinPpUespyRNUVXqesnHo+jQdUNsGywA==}
     engines: {node: '>=12.16'}
 
   '@swc/counter@0.1.3':
@@ -9326,8 +9326,8 @@ packages:
     resolution: {integrity: sha512-aT2BU9KkizY9SATf14WhhYVv2uOapBWX0OFWF4xvcj1mPaNotlSc2CsxpS4DS46ZueSppmCF5BX1sNYBtwBvfw==}
     engines: {node: '>=12.*'}
 
-  stripe@22.0.2:
-    resolution: {integrity: sha512-2/BLrQ3oB1zlNfeL/LfHFjTGx6EQn0j+ztrrTJHuDjV5VVIpk92oSDaxyKLUr3pG3dnee2LZqhFUv2Bf0G1/3g==}
+  stripe@22.1.0:
+    resolution: {integrity: sha512-w/xHyJGxXWnLPbNHG13sz/fae0MrFGC80Oz7YbICQymbfpqfEcsoG+6yG+9BWb81PWc4rrkeSO4wmTcmefmbLw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': '>=18'
@@ -14718,7 +14718,7 @@ snapshots:
 
   '@stripe/stripe-js@6.1.0': {}
 
-  '@stripe/stripe-js@9.3.0': {}
+  '@stripe/stripe-js@9.3.1': {}
 
   '@swc/counter@0.1.3': {}
 
@@ -20495,7 +20495,7 @@ snapshots:
       '@types/node': 24.12.2
       qs: 6.15.0
 
-  stripe@22.0.2(@types/node@24.12.2):
+  stripe@22.1.0(@types/node@24.12.2):
     optionalDependencies:
       '@types/node': 24.12.2
 
