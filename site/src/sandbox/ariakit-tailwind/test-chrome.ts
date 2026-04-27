@@ -348,30 +348,31 @@ function extractComputedCSS() {
     return classes.join(" ");
   };
 
-  const getSectionLabel = (section: Element, labelledBy: string) => {
-    const labelElement = document.getElementById(labelledBy);
-    let label = labelElement?.textContent?.trim() ?? "";
-    if (label) {
-      return label;
-    }
+  const getSectionTextNodeLabel = (section: Element) => {
     // React renders `0 && <div />` as a text node, so fall back to the
-    // section's own text content when no labelled element has visible text.
+    // section's own direct text content when no labelled element has visible
+    // text.
     for (const node of Array.from(section.childNodes)) {
       if (node.nodeType !== Node.TEXT_NODE) {
         continue;
       }
       const textContent = node.textContent?.trim();
-      if (!textContent) {
-        continue;
+      if (textContent) {
+        return textContent;
       }
-      label = textContent;
-      break;
     }
-    return label;
+    return "";
+  };
+
+  const getSectionLabel = (section: Element, labelledBy: string) => {
+    const labelElement = document.getElementById(labelledBy);
+    const label = labelElement?.textContent?.trim() ?? "";
+    return label || getSectionTextNodeLabel(section);
   };
 
   const walk = (el: Element): Record<string, CSSNode> => {
     const result: Record<string, CSSNode> = {};
+    const labelCounts = new Map<string, number>();
     for (const child of Array.from(el.children)) {
       const labelledBy =
         child.tagName === "SECTION"
@@ -381,7 +382,10 @@ function extractComputedCSS() {
         const label = getSectionLabel(child, labelledBy);
         const className = extractClass(child);
         const children = walk(child);
-        result[label] =
+        const count = labelCounts.get(label) ?? 0;
+        labelCounts.set(label, count + 1);
+        const key = count === 0 ? label : `${label} (${count + 1})`;
+        result[key] =
           Object.keys(children).length > 0
             ? { class: className, children }
             : className;
@@ -398,26 +402,26 @@ function extractComputedCSS() {
 function formatColorContrastViolations(
   violations: AxeViolation[],
 ): ColorContrastViolationMap {
-  const getSectionLabel = (section: Element, labelledBy: string) => {
-    const labelElement = document.getElementById(labelledBy);
-    let label = labelElement?.textContent?.trim() ?? "";
-    if (label) {
-      return label;
-    }
+  const getSectionTextNodeLabel = (section: Element) => {
     // React renders `0 && <div />` as a text node, so fall back to the
-    // section's own text content when no labelled element has visible text.
+    // section's own direct text content when no labelled element has visible
+    // text.
     for (const node of Array.from(section.childNodes)) {
       if (node.nodeType !== Node.TEXT_NODE) {
         continue;
       }
       const textContent = node.textContent?.trim();
-      if (!textContent) {
-        continue;
+      if (textContent) {
+        return textContent;
       }
-      label = textContent;
-      break;
     }
-    return label;
+    return "";
+  };
+
+  const getSectionLabel = (section: Element, labelledBy: string) => {
+    const labelElement = document.getElementById(labelledBy);
+    const label = labelElement?.textContent?.trim() ?? "";
+    return label || getSectionTextNodeLabel(section);
   };
 
   const getTargetSelector = (target: AxeViolationNode["target"]) => {
@@ -474,7 +478,10 @@ function formatColorContrastViolations(
       if (!selector) {
         continue;
       }
-      const element = document.querySelector(selector);
+      let element: Element | null = null;
+      try {
+        element = document.querySelector(selector);
+      } catch {}
       const key = element ? getSectionPath(element) : selector;
       if (!key) {
         continue;
@@ -503,6 +510,21 @@ async function waitForPreviewReady(page: Page) {
     if (document.querySelector("astro-island[ssr]")) {
       return false;
     }
+    const getSectionTextNodeLabel = (section: Element) => {
+      // React renders `0 && <div />` as a text node, so fall back to the
+      // section's own direct text content when no labelled element has visible
+      // text.
+      for (const node of Array.from(section.childNodes)) {
+        if (node.nodeType !== Node.TEXT_NODE) {
+          continue;
+        }
+        const textContent = node.textContent?.trim();
+        if (textContent) {
+          return textContent;
+        }
+      }
+      return "";
+    };
     const getSectionLabel = (section: Element) => {
       const labelledBy = section.getAttribute("aria-labelledby");
       if (!labelledBy) {
@@ -513,16 +535,7 @@ async function waitForPreviewReady(page: Page) {
       if (label) {
         return label;
       }
-      for (const node of Array.from(section.childNodes)) {
-        if (node.nodeType !== Node.TEXT_NODE) {
-          continue;
-        }
-        const textContent = node.textContent?.trim();
-        if (textContent) {
-          return textContent;
-        }
-      }
-      return null;
+      return getSectionTextNodeLabel(section) || null;
     };
     const getSectionLabels = () => {
       const sections = Array.from(
