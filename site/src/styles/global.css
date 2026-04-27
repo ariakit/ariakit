@@ -9,6 +9,9 @@
 @import "tailwindcss";
 @import "./ariakit.css";
 
+@source not "./styles.json";
+@source not "../sandbox/ariakit-tailwind";
+
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
   --color-brand: oklch(56.7% 0.1546 248.5156);

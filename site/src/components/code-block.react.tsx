@@ -337,9 +337,9 @@ export function CodeBlockPreviewIframe({
       if (!doc) return;
       const html = doc.documentElement;
       doc.body.classList.add(
-        "!ak-layer",
-        "!ak-layer-canvas",
-        "!ak-layer-darken-1",
+        "ak-layer!",
+        "ak-layer-canvas!",
+        "ak-layer-darken-1!",
       );
       html.classList.add("scheme-light", "dark:scheme-dark");
       html.classList.add(

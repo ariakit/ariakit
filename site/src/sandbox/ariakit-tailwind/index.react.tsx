@@ -1,3 +1,4 @@
+import "./style.css";
 import { clsx } from "clsx";
 import type { ComponentProps, ReactNode } from "react";
 import { useId } from "react";
