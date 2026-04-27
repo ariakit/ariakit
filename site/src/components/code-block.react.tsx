@@ -877,7 +877,7 @@ export function CodeBlockTabs({
               {preview && (
                 <div
                   className={clsx(
-                    "absolute @max-[64rem]:hidden z-1 text-lg ak-ink-0 top-1/2 inset-e-0 -translate-y-1/2 translate-x-7 ak-layer ak-light:ak-edge-15 ak-dark:ak-edge-[13] size-10 grid place-items-center border touch-none rounded-full",
+                    "absolute @max-[64rem]:hidden z-1 text-lg ak-ink-0 top-1/2 inset-e-0 -translate-y-1/2 translate-x-7 ak-layer ak-light:ak-edge-15 ak-dark:ak-edge-13 size-10 grid place-items-center border touch-none rounded-full",
                   )}
                 >
                   <Icon name="chevronRight" />
