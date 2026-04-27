@@ -28,8 +28,25 @@ interface ComparisonSummary {
   rows: ComparisonRow[];
   hasSignificantChanges: boolean;
   currentResults: PerfResult[];
+  profileModeMismatches: ProfileModeMismatch[];
   newTests: PerfResult[];
   removedTests: PerfResult[];
+}
+
+interface PersistedComparisonSummary {
+  rows: ComparisonRow[];
+  hasSignificantChanges: boolean;
+  profileModeMismatches: ProfileModeMismatch[];
+  newTests: PerfResult[];
+  removedTests: PerfResult[];
+}
+
+interface ProfileModeMismatch {
+  testFile: string;
+  label: string;
+  profile: "script" | "selectors";
+  baseline: boolean;
+  current: boolean;
 }
 
 // Primary metrics shown in the summary table.
@@ -95,11 +112,19 @@ function formatPercent(value: number): string {
 }
 
 function escapeTableCell(value: string): string {
-  return value.replace(/\|/g, "\\|").replace(/\s+/g, " ").trim();
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/\|/g, "\\|")
+    .replace(/[\r\n\t]/g, " ")
+    .trim();
 }
 
 function resultKey(result: PerfResult): string {
   return `${result.testFile}::${result.label}`;
+}
+
+function hasProfile(result: PerfResult, profile: "script" | "selectors") {
+  return (result.profiles?.[profile]?.length ?? 0) > 0;
 }
 
 function compare(): ComparisonSummary {
@@ -117,6 +142,7 @@ function compare(): ComparisonSummary {
   }
 
   const rows: ComparisonRow[] = [];
+  const profileModeMismatches: ProfileModeMismatch[] = [];
   const newTests: PerfResult[] = [];
   const removedTests: PerfResult[] = [];
 
@@ -126,6 +152,18 @@ function compare(): ComparisonSummary {
     if (!base) {
       newTests.push(cur);
       continue;
+    }
+    for (const profile of ["script", "selectors"] as const) {
+      const baselineHasProfile = hasProfile(base, profile);
+      const currentHasProfile = hasProfile(cur, profile);
+      if (baselineHasProfile === currentHasProfile) continue;
+      profileModeMismatches.push({
+        testFile: cur.testFile,
+        label: cur.label,
+        profile,
+        baseline: baselineHasProfile,
+        current: currentHasProfile,
+      });
     }
     for (const metric of ALL_METRICS) {
       const baseVal = base.metrics[metric];
@@ -160,6 +198,7 @@ function compare(): ComparisonSummary {
     rows,
     hasSignificantChanges: rows.some((r) => r.significant),
     currentResults: current,
+    profileModeMismatches,
     newTests,
     removedTests,
   };
@@ -251,6 +290,25 @@ function formatProfiles(result?: PerfResult): string[] {
   return [...formatScriptProfile(result), ...formatSelectorProfile(result)];
 }
 
+function formatProfileModeWarning(mismatches: ProfileModeMismatch[]): string[] {
+  if (mismatches.length === 0) return [];
+
+  const lines: string[] = [];
+  lines.push(
+    ":warning: Profile data differs between baseline and current. Run both sides with the same profiling flags before comparing aggregate metrics.",
+  );
+  lines.push("");
+  lines.push("| Test | Profile | Baseline | Current |");
+  lines.push("|------|---------|----------|---------|");
+  for (const mismatch of mismatches) {
+    lines.push(
+      `| ${escapeTableCell(mismatch.label)} | ${mismatch.profile} | ${mismatch.baseline ? "yes" : "no"} | ${mismatch.current ? "yes" : "no"} |`,
+    );
+  }
+  lines.push("");
+  return lines;
+}
+
 function formatDetailedBreakdown(
   rows: ComparisonRow[],
   keys: string[],
@@ -289,6 +347,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
     rows,
     hasSignificantChanges,
     currentResults,
+    profileModeMismatches,
     newTests,
     removedTests,
   } = summary;
@@ -319,6 +378,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
   }
 
   lines.push("");
+  lines.push(...formatProfileModeWarning(profileModeMismatches));
   lines.push(`<details>`);
   lines.push(`<summary>Full breakdown (${totalTests} tests)</summary>`);
   lines.push("");
@@ -366,6 +426,18 @@ function formatMarkdown(summary: ComparisonSummary): string {
   return lines.join("\n");
 }
 
+function toPersistedSummary(
+  summary: ComparisonSummary,
+): PersistedComparisonSummary {
+  return {
+    rows: summary.rows,
+    hasSignificantChanges: summary.hasSignificantChanges,
+    profileModeMismatches: summary.profileModeMismatches,
+    newTests: summary.newTests,
+    removedTests: summary.removedTests,
+  };
+}
+
 // Main
 const summary = compare();
 const markdown = formatMarkdown(summary);
@@ -373,7 +445,7 @@ const markdown = formatMarkdown(summary);
 mkdirSync(RESULTS_DIR, { recursive: true });
 writeFileSync(
   path.join(RESULTS_DIR, "comparison.json"),
-  JSON.stringify(summary, null, 2),
+  JSON.stringify(toPersistedSummary(summary), null, 2),
 );
 writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
 

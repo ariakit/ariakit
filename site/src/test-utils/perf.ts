@@ -7,7 +7,6 @@ const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const DEFAULT_ITERATIONS = 10;
 const DEFAULT_WARMUP = 1;
 const DEFAULT_PROFILE_LIMIT = 10;
-const SCRIPT_PROFILE_INTERVAL = 100;
 const initializedResultFiles = new Set<string>();
 
 // CDP metric names (values are in seconds).
@@ -74,9 +73,9 @@ export interface PerfMeasureOptions {
   warmup?: number;
   /** Override the auto-generated label for this measurement. */
   label?: string;
-  /** Collect the most expensive JS functions during measured iterations. */
+  /** Collect expensive JS functions. Adds overhead to measured metrics. */
   scriptProfile?: boolean;
-  /** Collect the most expensive CSS selectors during measured iterations. */
+  /** Collect expensive CSS selectors. Adds overhead to measured metrics. */
   selectorProfile?: boolean;
   /** Maximum number of profile entries stored per profile type. */
   profileLimit?: number;
@@ -160,7 +159,6 @@ interface SelectorTraceSession {
 interface MeasureOnceOptions {
   scriptProfile: boolean;
   selectorProfile: boolean;
-  profileLimit: number;
   styleSheetUrls: Map<string, string>;
 }
 
@@ -171,6 +169,14 @@ interface MeasureOnceResult {
 
 interface MutableSelectorProfileEntry extends PerfSelectorProfileEntry {
   fastRejectCount: number;
+}
+
+interface SelectorProfileAccumulator extends PerfSelectorProfileEntry {
+  weightedSlowPathSum: number;
+}
+
+interface MetricsResponse {
+  metrics: Array<{ name: string; value: number }>;
 }
 
 function getMetricValue(
@@ -266,10 +272,7 @@ function getScriptProfileEntry(
   return entry;
 }
 
-function parseScriptProfile(
-  profile: CdpProfile,
-  limit: number,
-): PerfScriptProfileEntry[] {
+function parseScriptProfile(profile: CdpProfile): PerfScriptProfileEntry[] {
   const nodes = new Map<number, CdpProfileNode>();
   const parents = new Map<number, number>();
 
@@ -311,9 +314,9 @@ function parseScriptProfile(
     }
   }
 
-  return [...entries.values()]
-    .sort((a, b) => b.selfTime - a.selfTime || b.totalTime - a.totalTime)
-    .slice(0, limit);
+  return [...entries.values()].sort(
+    (a, b) => b.selfTime - a.selfTime || b.totalTime - a.totalTime,
+  );
 }
 
 function selectorProfileKey(timing: CdpSelectorTiming): string {
@@ -350,7 +353,6 @@ function getSelectorProfileEntry(
 function parseSelectorTrace(
   events: CdpTraceEvent[],
   styleSheetUrls: Map<string, string>,
-  limit: number,
 ): PerfSelectorProfileEntry[] {
   const entries = new Map<string, MutableSelectorProfileEntry>();
 
@@ -384,7 +386,6 @@ function parseSelectorTrace(
 
   return [...entries.values()]
     .sort((a, b) => b.elapsed - a.elapsed)
-    .slice(0, limit)
     .map((entry) => ({
       selector: entry.selector,
       styleSheetId: entry.styleSheetId,
@@ -400,7 +401,6 @@ function parseSelectorTrace(
 async function startSelectorTrace(
   cdp: CDPSession,
   styleSheetUrls: Map<string, string>,
-  limit: number,
 ): Promise<SelectorTraceSession> {
   const events: CdpTraceEvent[] = [];
   let resolveTracingComplete: () => void = () => {};
@@ -435,7 +435,7 @@ async function startSelectorTrace(
       try {
         await cdp.send("Tracing.end");
         await tracingComplete;
-        return parseSelectorTrace(events, styleSheetUrls, limit);
+        return parseSelectorTrace(events, styleSheetUrls);
       } finally {
         cdp.off("Tracing.dataCollected", onDataCollected);
         cdp.off("Tracing.tracingComplete", onTracingComplete);
@@ -475,43 +475,41 @@ function mergeSelectorProfiles(
   profiles: PerfSelectorProfileEntry[][],
   limit: number,
 ): PerfSelectorProfileEntry[] {
-  const entries = new Map<string, PerfSelectorProfileEntry>();
+  const entries = new Map<string, SelectorProfileAccumulator>();
 
   for (const profile of profiles) {
     for (const item of profile) {
       const key = `${item.styleSheetId}\0${item.selector}`;
+      const weightedSlowPathSum =
+        item.matchAttempts * item.slowPathNonMatchPercent;
       const existingItem = entries.get(key);
       if (existingItem) {
         existingItem.elapsed += item.elapsed;
         existingItem.matchAttempts += item.matchAttempts;
         existingItem.matchCount += item.matchCount;
         existingItem.invalidationCount += item.invalidationCount;
+        existingItem.weightedSlowPathSum += weightedSlowPathSum;
         continue;
       }
-      entries.set(key, { ...item });
+      entries.set(key, { ...item, weightedSlowPathSum });
     }
-  }
-
-  for (const item of entries.values()) {
-    const originalItems = profiles.flatMap((profile) =>
-      profile.filter(
-        (entry) =>
-          entry.styleSheetId === item.styleSheetId &&
-          entry.selector === item.selector,
-      ),
-    );
-    const weightedSlowPathNonMatches = originalItems.reduce((sum, entry) => {
-      return sum + entry.matchAttempts * entry.slowPathNonMatchPercent;
-    }, 0);
-    item.slowPathNonMatchPercent =
-      item.matchAttempts > 0
-        ? weightedSlowPathNonMatches / item.matchAttempts
-        : 0;
   }
 
   return [...entries.values()]
     .sort((a, b) => b.elapsed - a.elapsed)
-    .slice(0, limit);
+    .slice(0, limit)
+    .map(({ weightedSlowPathSum, ...item }) => ({
+      ...item,
+      slowPathNonMatchPercent:
+        item.matchAttempts > 0 ? weightedSlowPathSum / item.matchAttempts : 0,
+    }));
+}
+
+function hasProfileEntries(profiles: PerfProfiles): boolean {
+  return (
+    (profiles.script != null && profiles.script.length > 0) ||
+    (profiles.selectors != null && profiles.selectors.length > 0)
+  );
 }
 
 function createProfiles(
@@ -521,13 +519,40 @@ function createProfiles(
 ): PerfProfiles | undefined {
   const profiles: PerfProfiles = {};
   if (scriptProfiles.length > 0) {
-    profiles.script = mergeScriptProfiles(scriptProfiles, limit);
+    const script = mergeScriptProfiles(scriptProfiles, limit);
+    if (script.length > 0) {
+      profiles.script = script;
+    }
   }
   if (selectorProfiles.length > 0) {
-    profiles.selectors = mergeSelectorProfiles(selectorProfiles, limit);
+    const selectors = mergeSelectorProfiles(selectorProfiles, limit);
+    if (selectors.length > 0) {
+      profiles.selectors = selectors;
+    }
   }
-  if (!profiles.script && !profiles.selectors) return;
+  if (!hasProfileEntries(profiles)) return;
   return profiles;
+}
+
+async function disconnectPerfObserver(page: Page) {
+  await page
+    .evaluate(() => {
+      const w = window as any;
+      if (w.__perfObserver) {
+        w.__perfObserver.disconnect();
+      }
+    })
+    .catch(() => {});
+}
+
+async function collectInpValues(page: Page): Promise<number[]> {
+  return page.evaluate(() => {
+    const w = window as any;
+    if (w.__perfObserver) {
+      w.__perfObserver.disconnect();
+    }
+    return w.__perfInpEntries ?? [];
+  });
 }
 
 /**
@@ -555,22 +580,23 @@ async function measureOnce(
     w.__perfObserver = observer;
   });
 
-  const before = await cdp.send("Performance.getMetrics");
-  const selectorTrace = options.selectorProfile
-    ? await startSelectorTrace(
-        cdp,
-        options.styleSheetUrls,
-        options.profileLimit,
-      )
-    : undefined;
-
-  if (options.scriptProfile) {
-    await cdp.send("Profiler.start");
-  }
-
-  let interactionError: unknown;
+  let before: MetricsResponse | undefined;
+  let selectorTrace: SelectorTraceSession | undefined;
+  let scriptProfilerStarted = false;
+  let measureError: unknown;
+  let profilingError: unknown;
+  const profiles: PerfProfiles = {};
 
   try {
+    before = await cdp.send("Performance.getMetrics");
+    if (options.selectorProfile) {
+      selectorTrace = await startSelectorTrace(cdp, options.styleSheetUrls);
+    }
+    if (options.scriptProfile) {
+      await cdp.send("Profiler.start");
+      scriptProfilerStarted = true;
+    }
+
     await interaction();
 
     // Let paint and layout settle.
@@ -584,45 +610,51 @@ async function measureOnce(
     );
     await page.waitForTimeout(50);
   } catch (error) {
-    interactionError = error;
+    measureError = error;
   }
 
-  const profiles: PerfProfiles = {};
+  if (scriptProfilerStarted) {
+    try {
+      const response: ProfilerStopResponse = await cdp.send("Profiler.stop");
+      profiles.script = parseScriptProfile(response.profile);
+    } catch (error) {
+      profilingError = error;
+    }
+  }
+
+  if (selectorTrace) {
+    try {
+      profiles.selectors = await selectorTrace.stop();
+    } catch (error) {
+      profilingError ??= error;
+    }
+  }
+
+  if (measureError) {
+    await disconnectPerfObserver(page);
+    throw measureError;
+  }
+
+  if (profilingError) {
+    await disconnectPerfObserver(page);
+    throw profilingError;
+  }
+
+  if (!before) {
+    await disconnectPerfObserver(page);
+    throw new Error("Missing perf metrics snapshot.");
+  }
+
+  let after: MetricsResponse;
+  let inpValues: number[];
 
   try {
-    if (options.scriptProfile) {
-      const response: ProfilerStopResponse = await cdp.send("Profiler.stop");
-      profiles.script = parseScriptProfile(
-        response.profile,
-        options.profileLimit,
-      );
-    }
-  } finally {
-    if (selectorTrace) {
-      profiles.selectors = await selectorTrace.stop();
-    }
+    after = await cdp.send("Performance.getMetrics");
+    inpValues = await collectInpValues(page);
+  } catch (error) {
+    await disconnectPerfObserver(page);
+    throw error;
   }
-
-  if (interactionError) {
-    await page.evaluate(() => {
-      const w = window as any;
-      if (w.__perfObserver) {
-        w.__perfObserver.disconnect();
-      }
-    });
-    throw interactionError;
-  }
-
-  const after = await cdp.send("Performance.getMetrics");
-
-  // Collect INP entries and disconnect the observer.
-  const inpValues: number[] = await page.evaluate(() => {
-    const w = window as any;
-    if (w.__perfObserver) {
-      w.__perfObserver.disconnect();
-    }
-    return w.__perfInpEntries ?? [];
-  });
 
   const scriptBefore = getMetricValue(before.metrics, SCRIPT_DURATION);
   const scriptAfter = getMetricValue(after.metrics, SCRIPT_DURATION);
@@ -654,7 +686,7 @@ async function measureOnce(
 
   return {
     metrics,
-    profiles: profiles.script || profiles.selectors ? profiles : undefined,
+    profiles: hasProfileEntries(profiles) ? profiles : undefined,
   };
 }
 
@@ -709,9 +741,6 @@ export async function createPerfMeasure(
   try {
     if (scriptProfile) {
       await cdp.send("Profiler.enable");
-      await cdp.send("Profiler.setSamplingInterval", {
-        interval: SCRIPT_PROFILE_INTERVAL,
-      });
     }
     if (selectorProfile) {
       cdp.on("CSS.styleSheetAdded", onStyleSheetAdded);
@@ -730,17 +759,19 @@ export async function createPerfMeasure(
       const result = await measureOnce(page, cdp, interaction, {
         scriptProfile,
         selectorProfile,
-        profileLimit,
         styleSheetUrls,
       });
 
       // Only keep measured (non-warmup) iterations.
       if (i >= warmup) {
         allMetrics.push(result.metrics);
-        if (result.profiles?.script) {
+        if (result.profiles?.script && result.profiles.script.length > 0) {
           scriptProfiles.push(result.profiles.script);
         }
-        if (result.profiles?.selectors) {
+        if (
+          result.profiles?.selectors &&
+          result.profiles.selectors.length > 0
+        ) {
           selectorProfiles.push(result.profiles.selectors);
         }
       }
