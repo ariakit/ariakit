@@ -40,9 +40,6 @@ importers:
       '@ariakit/test':
         specifier: workspace:*
         version: link:packages/ariakit-test
-      '@axe-core/playwright':
-        specifier: 4.11.1
-        version: 4.11.1(playwright-core@1.59.1)
       '@changesets/apply-release-plan':
         specifier: 7.1.1
         version: 7.1.1(patch_hash=f29011b4c524844645e36619b9ff9456017c62b0591f411a98e3f4826ea22852)
@@ -575,6 +572,9 @@ importers:
       '@ariakit/test':
         specifier: workspace:*
         version: link:../packages/ariakit-test
+      '@axe-core/playwright':
+        specifier: 4.11.1
+        version: 4.11.1(playwright-core@1.59.1)
       '@playwright/test':
         specifier: 1.59.1
         version: 1.59.1

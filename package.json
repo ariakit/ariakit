@@ -69,7 +69,6 @@
     "@ariakit/solid-core": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "@ariakit/test": "workspace:*",
-    "@axe-core/playwright": "4.11.1",
     "@changesets/apply-release-plan": "7.1.1",
     "@changesets/cli": "2.31.0",
     "@playwright/test": "1.59.1",
