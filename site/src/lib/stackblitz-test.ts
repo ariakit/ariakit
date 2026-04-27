@@ -80,7 +80,7 @@ test("react-vite project includes tailwind v4 setup", () => {
     }
 
     body {
-      @apply ak-layer-canvas;
+      @apply ak-layer ak-layer-canvas;
     }
     "
   `);
@@ -245,22 +245,22 @@ test("solid-vite project emits generated utilities", () => {
     }
 
     body {
-      @apply ak-layer-canvas;
+      @apply ak-layer ak-layer-canvas;
     }
 
     @utility ak-badge-* {
       --ak-badge-color: --value(--color, [*]);
       @apply ak-badge_base;
-      @apply ak-layer-mix-(--ak-badge-color)/15 ak-dark:ak-edge-(--ak-badge-color)/10 ak-light:ak-edge-(--ak-badge-color)/15;
+      @apply ak-layer ak-layer-(color:--ak-badge-color) ak-layer-mix-15 ak-dark:ak-edge-(color:--ak-badge-color) ak-edge-20 ak-light:ak-edge-(color:--ak-badge-color);
       &::before,
       &::after,
       :where(& > *) {
-        @apply ak-text-(--ak-badge-color)/70;
+        @apply ak-text ak-text-(color:--ak-badge-color) ak-text-25;
       }
     }
 
     @utility ak-badge_base {
-      @apply ak-frame-badge;
+      @apply ak-frame ak-frame-badge/badge;
       @apply flex items-center gap-1 text-xs font-medium leading-[1em];
       padding-inline: calc(var(--spacing-badge) * 1.5);
     }

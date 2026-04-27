@@ -6,7 +6,6 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-@import "tailwindcss";
 @import "@ariakit/tailwind";
 
 @import "./ak-aurora.css";
@@ -90,8 +89,4 @@
     /* --color-canvas: theme(--color-slate-950); */
     --color-canvas: oklch(16.34% 0.0091 264.28);
   }
-}
-
-body {
-  @apply ak-layer-canvas;
 }

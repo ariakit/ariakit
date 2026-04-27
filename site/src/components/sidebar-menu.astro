@@ -65,7 +65,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
   id={id}
   data-sidebar-menu={id}
   class:list={[
-    "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size+--spacing(4))] z-3 @max-5xl:hidden ak-layer-current border-e max-h-[inherit] h-full",
+    "sidebar-menu justify-self-end-safe @max-overlap:w-full w-[calc-size(auto,size+--spacing(4))] z-3 @max-5xl:hidden ak-layer border-e max-h-[inherit] h-full",
     props.class,
   ]}
   {...props}
@@ -91,7 +91,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
         items.map((item) => {
           if (!isLinkItem(item)) {
             return (
-              <li class="ak-text/0 font-medium p-field text-sm mt-2">
+              <li class="ak-ink-0 font-medium p-field text-sm mt-2">
                 {item.label}
               </li>
             );
@@ -104,7 +104,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
               <a
                 href={href}
                 aria-current={isCurrentPage(item) ? "page" : undefined}
-                class="peer ak-button justify-start font-normal whitespace-normal aria-[current]:ak-layer-pop overflow-x-clip relative scroll-m-1"
+                class="peer ak-button justify-start font-normal whitespace-normal ak-layer aria-[current]:ak-layer-6 overflow-x-clip relative scroll-m-1"
               >
                 {referenceProps?.kind ? (
                   <ReferenceLabel {...referenceProps} set:text={label} />
@@ -114,7 +114,7 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
                 <span class="absolute inset-y-0 end-0 w-(--ak-frame-padding) bg-linear-to-l from-(--ak-layer) from-25% to-transparent z-10 rounded-r-[inherit]" />
               </a>
               <div
-                class="absolute inset-y-0 -right-(--p) w-[calc(2px+0.03rem*var(--contrast))] bg-current opacity-0 peer-aria-[current=page]:opacity-100"
+                class="absolute inset-y-0 -right-(--p) w-[calc(2px+0.001rem*var(--contrast))] bg-current opacity-0 peer-aria-[current=page]:opacity-100"
                 data-indicator
               />
             </li>

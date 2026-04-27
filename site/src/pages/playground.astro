@@ -47,7 +47,7 @@ import Layout from "./_layout.astro";
       Button
     </label>
   </div>
-  <div class="ak-segmented m-2 w-max ring ak-frame-container/0">
+  <div class="ak-segmented m-2 w-max ring ak-frame ak-frame-container/0">
     <label class="ak-segmented-button">
       <input name="test" type="radio" />
       Button
@@ -100,17 +100,17 @@ export default App;`,
     />
   </div>
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer">button</button>
-    <button class="ak-button ak-layer" disabled>button</button>
-    <button class="ak-button-classic ak-layer _!h-40 _text-7xl">Open</button>
-    <div class="ak-button-classic_idle ak-layer">idle</div>
-    <div class="base:ak-button-classic_idle ak-button-classic_hover ak-layer">
+    <button class="ak-button ak-layer ak-layer-lighten-6">button</button>
+    <button class="ak-button ak-layer ak-layer-lighten-6" disabled>button</button>
+    <button class="ak-button-classic ak-layer ak-layer-lighten-6 _!h-40 _text-7xl">Open</button>
+    <div class="ak-button-classic_idle ak-layer ak-layer-lighten-6">idle</div>
+    <div class="base:ak-button-classic_idle ak-button-classic_hover ak-layer ak-layer-lighten-6">
       hover
     </div>
-    <div class="base:ak-button-classic_idle ak-button-classic_active ak-layer">
+    <div class="base:ak-button-classic_idle ak-button-classic_active ak-layer ak-layer-lighten-6">
       active
     </div>
-    <div class="base:ak-button-classic_idle ak-button-classic_focus ak-layer">
+    <div class="base:ak-button-classic_idle ak-button-classic_focus ak-layer ak-layer-lighten-6">
       focus
     </div>
     <div
@@ -121,7 +121,7 @@ export default App;`,
   </div>
 
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer-contrast">button</button>
+    <button class="ak-button ak-layer ak-layer-contrast">button</button>
     <button class="ak-button-classic ak-layer-contrast">button</button>
     <div class="ak-button-classic_idle ak-layer-contrast">idle</div>
     <div
@@ -146,58 +146,58 @@ export default App;`,
     </div>
   </div>
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer-contrast-primary">button</button>
-    <button class="ak-button-classic ak-layer-contrast-primary">button</button>
-    <div class="ak-button-classic_idle ak-layer-contrast-primary">idle</div>
+    <button class="ak-button ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0">button</button>
+    <button class="ak-button-classic ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0">button</button>
+    <div class="ak-button-classic_idle ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0">idle</div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer-contrast-primary"
+      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0"
     >
       hover
     </div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_active ak-layer-contrast-primary"
+      class="base:ak-button-classic_idle ak-button-classic_active ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0"
     >
       active
     </div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer-contrast-primary"
+      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0"
     >
       focus
     </div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer-contrast-primary"
+      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-0"
     >
       disabled
     </div>
   </div>
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer-contrast-secondary">button</button>
-    <button class="ak-button-classic ak-layer-contrast-secondary">button</button
+    <button class="ak-button ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0">button</button>
+    <button class="ak-button-classic ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0">button</button
     >
-    <div class="ak-button-classic_idle ak-layer-contrast-secondary">idle</div>
+    <div class="ak-button-classic_idle ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0">idle</div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer-contrast-secondary"
+      class="base:ak-button-classic_idle ak-button-classic_hover ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0"
     >
       hover
     </div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_active ak-layer-contrast-secondary"
+      class="base:ak-button-classic_idle ak-button-classic_active ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0"
     >
       active
     </div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer-contrast-secondary"
+      class="base:ak-button-classic_idle ak-button-classic_focus ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0"
     >
       focus
     </div>
     <div
-      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer-contrast-secondary"
+      class="base:ak-button-classic_idle ak-button-classic_disabled base:ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0"
     >
       disabled
     </div>
   </div>
   <div class="flex flex-wrap gap-2 p-2 *:h-10">
-    <button class="ak-button ak-layer-black">button</button>
+    <button class="ak-button ak-layer ak-layer-black">button</button>
     <button class="ak-button-classic ak-layer-black">button</button>
     <div class="ak-button-classic_idle ak-layer-black">idle</div>
     <div
@@ -311,7 +311,7 @@ export default App;`,
       highlightTokens={[
         "Separator",
         "Example",
-        "ak-layer-current",
+        "ak-layer",
         "@ariakit/react",
       ]}
     />

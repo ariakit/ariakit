@@ -78,7 +78,7 @@ const descriptionText = await descriptionToText(
         >
           {
             Description && (
-              <div class="ak-text/70 ak-prose-elements text-lg/[1.8] [&_p]:ak-text/70 [&_a]:not-hover:ak-text/70 [&_code]:ring-0">
+              <div class="ak-ink-70 ak-prose-elements text-lg/[1.8] [&_p]:ak-ink-70 [&_a]:not-hover:ak-ink-70 [&_code]:ring-0">
                 <Description {framework} {components} />
               </div>
             )
@@ -90,7 +90,7 @@ const descriptionText = await descriptionToText(
                   <li>
                     <a
                       href={`/${framework}/examples/${tag.id}/`}
-                      class="ak-badge ak-button ak-layer-pop"
+                      class="ak-badge ak-button ak-layer ak-layer-6"
                     >
                       {tag.label}
                     </a>
@@ -104,23 +104,23 @@ const descriptionText = await descriptionToText(
           <BoxPatternsRightOnly />
           <div class="grid gap-2">
             <button
-              class="ak-button ak-layer-current ak-border ak-command-depth-x-3 ak-edge/40 border-dashed grid grid-cols-[1fr_auto_1fr]"
+              class="ak-button ak-layer ak-frame-border ak-command-depth-x-3 ak-edge-40 border-dashed grid grid-cols-[1fr_auto_1fr]"
             >
               <Icon name="copyAi" />
               Copy AI prompt
-              <kbd class="ak-text/0 justify-self-end">
+              <kbd class="ak-ink-0 justify-self-end">
                 <span class="font-sans">⌘</span>I
               </kbd>
             </button>
             <button
-              class="ak-button ak-layer-pop ak-command-depth-x-3 font-mono grid grid-cols-[1fr_auto_1fr]"
+              class="ak-button ak-layer ak-layer-6 ak-command-depth-x-3 font-mono grid grid-cols-[1fr_auto_1fr]"
             >
               <Icon name="terminal" />
               <span class="overflow-hidden text-sm"
                 >npx shadcn@latest add https://ariakit.com/r/disclosure.json</span
               >
               <kbd
-                class="ak-text/0 justify-self-end relative after:absolute after:h-full after:end-full after:w-10 after:bg-linear-to-l after:from-(--ak-layer) after:from-20%"
+                class="ak-layer bg-transparent ak-ink-0 justify-self-end relative after:absolute after:h-full after:end-full after:w-10 after:bg-linear-to-l after:from-(--ak-layer) after:from-20%"
               >
                 <span class="font-sans">⌘</span>S
               </kbd>

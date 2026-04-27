@@ -29,17 +29,15 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    ".": "./src/index.css",
+    ".": "./src/output.css",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": ""
-  },
-  "dependencies": {
-    "color-string": "^2.0.0"
+    "build": "node src/build.ts",
+    "lint": "oxlint . && oxfmt --check ."
   },
   "devDependencies": {
-    "@types/color-string": "1.5.5",
+    "csstype": "3.2.3",
     "tailwindcss": "4.2.4"
   },
   "peerDependencies": {

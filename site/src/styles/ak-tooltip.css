@@ -7,7 +7,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 @utility ak-tooltip_idle {
-  @apply ak-popover_idle ak-frame-force-tooltip;
+  @apply ak-popover_idle ak-frame ak-frame-force ak-frame-tooltip/tooltip;
   @apply px-2 text-sm shadow-md;
 }
 

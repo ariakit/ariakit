@@ -34,7 +34,7 @@
 
 /* ak-disclosure-group */
 @utility ak-disclosure-group {
-  @apply ak-frame-none/card;
+  @apply ak-frame ak-frame-none/card;
   --ak-disclosure-group: 1;
 }
 
@@ -42,20 +42,21 @@
 @utility ak-disclosure-split {
   --ak-disclosure-split: 1;
   @variant ak-disclosure-hover {
-    @apply ak-layer-hover-0;
+    @apply ak-state-0;
   }
 }
 
 @utility ak-disclosure_idle {
+  @apply ak-layer;
   @apply p-0! max-w-[inherit] transition-none duration-300;
   --ak-disclosure-open: 0;
   --ak-disclosure-padding: var(--ak-frame-padding);
   --ak-disclosure-radius: var(--ak-frame-radius);
-  --ak-disclosure-border: var(--ak-bordering, var(--ak-frame-border));
+  --ak-disclosure-border: calc(var(--ak-frame-border) + var(--ak-frame-ring));
   --ak-disclosure-duration: var(--tw-duration);
 
   @variant ak-disclosure-group {
-    @apply ak-frame-cover p-0;
+    @apply ak-frame ak-frame-cover p-0;
   }
 
   @variant motion-reduce {
@@ -74,7 +75,7 @@
 }
 
 @utility ak-disclosure_hover {
-  @apply ak-layer-hover;
+  @apply ak-layer ak-state-6;
 }
 
 @utility ak-disclosure_open {
@@ -105,8 +106,8 @@
 
 /* ak-disclosure-button */
 @utility ak-disclosure-button_idle {
-  @apply ak-command-depth-x-3 ak-button_idle ak-text overflow-clip;
-  @apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding);
+  @apply ak-command-depth-x-3 ak-button_idle overflow-clip;
+  @apply ak-frame ak-frame-force ak-frame-(--ak-disclosure-button-radius)/(--ak-disclosure-padding);
   @apply w-full justify-start text-wrap text-start -outline-offset-2 transition-[border-radius];
   --ak-disclosure-button-radius: calc(
     var(--ak-disclosure-radius) - var(--ak-disclosure-border)
@@ -125,7 +126,7 @@
 
 @utility ak-disclosure-button_hover {
   @container style(--ak-disclosure-split: 1) {
-    @apply ak-layer-hover;
+    @apply ak-layer ak-state-6;
   }
 }
 
@@ -232,7 +233,7 @@
   );
 
   &::before {
-    @apply ak-layer-current;
+    @apply ak-layer;
     @apply absolute border-e;
     content: "";
     inset-block: 0;
@@ -292,7 +293,7 @@
 }
 
 @utility ak-disclosure-content-body {
-  @apply ak-layer-current;
+  @apply ak-layer;
   @apply rounded-b-[inherit];
   --ak-disclosure-icon-size: unset;
   padding: var(--ak-frame-padding);

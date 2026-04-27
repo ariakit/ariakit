@@ -38,7 +38,7 @@ const REACT_HOOKS_PREFIX = "examples/_lib/react-hooks/";
 const THEME_CSS = {
   '@import "@ariakit/tailwind"': {},
   body: {
-    "@apply ak-layer-canvas": {},
+    "@apply ak-layer ak-layer-canvas": {},
   },
 };
 

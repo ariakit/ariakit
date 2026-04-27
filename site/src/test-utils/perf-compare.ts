@@ -64,9 +64,9 @@ const RENDERING_SUB_METRICS = new Set<MetricKey>([
 
 function loadResults(prefix: string): PerfResult[] {
   if (!existsSync(RESULTS_DIR)) return [];
-  const files = readdirSync(RESULTS_DIR).filter(
-    (f) => f.startsWith(prefix) && f.endsWith(".json"),
-  );
+  const files = readdirSync(RESULTS_DIR)
+    .filter((f) => f.startsWith(prefix) && f.endsWith(".json"))
+    .sort();
   const all: PerfResult[] = [];
   for (const file of files) {
     const data = JSON.parse(

@@ -32,7 +32,7 @@ export function PlaceholderPopoverArrow({
   return (
     <div
       style={{ [position]: "100%", fontSize: size, strokeWidth }}
-      className="size-[1em] absolute fill-(--ak-layer) stroke-(--ak-layer-border) left-1/2 -translate-x-1/2"
+      className="size-[1em] absolute fill-(--ak-layer) stroke-(--ak-edge) left-1/2 -translate-x-1/2"
     >
       <svg display="block" viewBox="0 0 30 30">
         <g transform={transform}>

@@ -18,13 +18,14 @@ function testMatchersFor(...kinds: string[]): RegExp[] {
 }
 
 export default defineConfig({
-  fullyParallel: !HEADED,
-  workers: HEADED ? 1 : CI ? "100%" : "80%",
+  fullyParallel: !HEADED && !PERF,
+  workers: HEADED || PERF ? 1 : CI ? "100%" : "80%",
   forbidOnly: CI,
   reportSlowTests: null,
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
   testDir: "src",
+  snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
   webServer: [
     {
       command: `pnpm run preview-lite --log-level warn --port ${port} --var NEXTJS_PORT:${nextjsPort}`,
@@ -49,6 +50,7 @@ export default defineConfig({
   },
   expect: {
     toHaveScreenshot: {
+      threshold: 0,
       maxDiffPixelRatio: 0.0005,
       pathTemplate: "{testDir}/{testFileDir}/__screenshots__/{arg}{ext}",
     },

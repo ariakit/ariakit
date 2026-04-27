@@ -503,26 +503,117 @@ async function discoverModulePaths(): Promise<string[]> {
  */
 interface GlobalIndex {
   utilToModule: Map<string, string>;
+  utilWildcards: Array<{ name: string; module: string; re: RegExp }>;
   variantToModule: Map<string, string>;
+  variantWildcards: Array<{ name: string; module: string; re: RegExp }>;
   atPropToModule: Map<string, string>;
+}
+
+function isWildcard(name: string): boolean {
+  return name.includes("*");
+}
+
+function escapeRegexSpecialChars(input: string) {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function toRegexFromWildcard(pattern: string) {
+  let regexBody = "";
+  for (let i = 0; i < pattern.length; i++) {
+    const char = pattern.charAt(i);
+    regexBody += char === "*" ? ".*" : escapeRegexSpecialChars(char);
+  }
+  return new RegExp(`^${regexBody}$`);
+}
+
+function splitVariantSegments(token: string) {
+  const segments: string[] = [];
+  let start = 0;
+  let bracketDepth = 0;
+  let parenDepth = 0;
+  for (let i = 0; i < token.length; i++) {
+    const char = token.charAt(i);
+    if (char === "[") {
+      bracketDepth++;
+    } else if (char === "]") {
+      bracketDepth = Math.max(0, bracketDepth - 1);
+    } else if (char === "(") {
+      parenDepth++;
+    } else if (char === ")") {
+      parenDepth = Math.max(0, parenDepth - 1);
+    } else if (char === ":" && bracketDepth === 0 && parenDepth === 0) {
+      segments.push(token.slice(start, i));
+      start = i + 1;
+    }
+  }
+  segments.push(token.slice(start));
+  return segments;
 }
 
 function buildGlobalIndex(modules: ModuleJson[]): GlobalIndex {
   const utilToModule = new Map<string, string>();
+  const utilWildcards: GlobalIndex["utilWildcards"] = [];
   const variantToModule = new Map<string, string>();
+  const variantWildcards: GlobalIndex["variantWildcards"] = [];
   const atPropToModule = new Map<string, string>();
   for (const mod of modules) {
     for (const name of Object.keys(mod.utilities)) {
       utilToModule.set(name, mod.id);
+      if (isWildcard(name)) {
+        utilWildcards.push({
+          name,
+          module: mod.id,
+          re: toRegexFromWildcard(name),
+        });
+      }
     }
     for (const name of Object.keys(mod.variants)) {
       variantToModule.set(name, mod.id);
+      if (isWildcard(name)) {
+        variantWildcards.push({
+          name,
+          module: mod.id,
+          re: toRegexFromWildcard(name),
+        });
+      }
     }
     for (const name of Object.keys(mod.atProperties)) {
       atPropToModule.set(name, mod.id);
     }
   }
-  return { utilToModule, variantToModule, atPropToModule };
+  return {
+    utilToModule,
+    utilWildcards,
+    variantToModule,
+    variantWildcards,
+    atPropToModule,
+  };
+}
+
+interface IndexedEntry {
+  name: string;
+  module: string;
+}
+
+function getIndexedEntry(
+  exactIndex: Map<string, string>,
+  wildcardIndex: Array<{ name: string; module: string; re: RegExp }>,
+  token: string,
+) {
+  const exact = exactIndex.get(token);
+  if (exact) {
+    return { name: token, module: exact };
+  }
+  let best: IndexedEntry | null = null;
+  for (const entry of wildcardIndex) {
+    if (!entry.re.test(token)) {
+      continue;
+    }
+    if (!best || entry.name.length > best.name.length) {
+      best = { name: entry.name, module: entry.module };
+    }
+  }
+  return best;
 }
 
 function extractAkTokensFromApplyLine(line: string) {
@@ -532,7 +623,7 @@ function extractAkTokensFromApplyLine(line: string) {
   for (const tok of tokens) {
     // Resolve last segment after colons as the actual utility,
     // keep any ak-* segments as potential variants or utilities
-    const segments = tok.split(":");
+    const segments = splitVariantSegments(tok);
     for (let i = 0; i < segments.length; i++) {
       const seg = segments[i];
       if (!seg) {
@@ -669,6 +760,36 @@ function resolveDependencies(modules: ModuleJson[]): void {
     list.push(dep);
   };
 
+  const addAkTokenDep = (deps: Dependency[], token: string) => {
+    const util = getIndexedEntry(
+      index.utilToModule,
+      index.utilWildcards,
+      token,
+    );
+    if (util) {
+      addDep(deps, { type: "utility", name: util.name, module: util.module });
+    }
+    const variant = getIndexedEntry(
+      index.variantToModule,
+      index.variantWildcards,
+      token,
+    );
+    if (variant) {
+      addDep(deps, {
+        type: "variant",
+        name: variant.name,
+        module: variant.module,
+      });
+    }
+    if (!util && !variant && token.startsWith("ak-")) {
+      addDep(deps, {
+        type: "utility",
+        name: token,
+        import: externalImport,
+      });
+    }
+  };
+
   for (const mod of modules) {
     for (const util of Object.values(mod.utilities)) {
       const deps: Dependency[] = [];
@@ -678,21 +799,7 @@ function resolveDependencies(modules: ModuleJson[]): void {
         // others are declarations We still scan all strings for ak-* tokens
         const akTokens = extractAkTokensFromApplyLine(v);
         for (const t of akTokens) {
-          const utilMod = index.utilToModule.get(t);
-          if (utilMod) {
-            addDep(deps, { type: "utility", name: t, module: utilMod });
-          } else {
-            const variantMod = index.variantToModule.get(t);
-            if (variantMod) {
-              addDep(deps, { type: "variant", name: t, module: variantMod });
-            } else if (t.startsWith("ak-")) {
-              addDep(deps, {
-                type: "utility",
-                name: t,
-                import: externalImport,
-              });
-            }
-          }
+          addAkTokenDep(deps, t);
         }
         // Also scan for var(--prop)
         for (const varName of findVarNamesInString(v)) {
@@ -737,21 +844,7 @@ function resolveDependencies(modules: ModuleJson[]): void {
       for (const v of values) {
         const akTokens = extractAkTokensFromApplyLine(v);
         for (const t of akTokens) {
-          const utilMod = index.utilToModule.get(t);
-          if (utilMod) {
-            addDep(deps, { type: "utility", name: t, module: utilMod });
-          } else {
-            const variantMod = index.variantToModule.get(t);
-            if (variantMod) {
-              addDep(deps, { type: "variant", name: t, module: variantMod });
-            } else if (t.startsWith("ak-")) {
-              addDep(deps, {
-                type: "utility",
-                name: t,
-                import: externalImport,
-              });
-            }
-          }
+          addAkTokenDep(deps, t);
         }
         for (const varName of findVarNamesInString(v)) {
           const propModule = index.atPropToModule.get(varName);

@@ -21,7 +21,7 @@ export function Logo({ iconOnly, responsive }: LogoProps) {
         aria-hidden
         height="2em"
         viewBox="0 0 48 48"
-        className="ak-text-primary/0 fill-current"
+        className="ak-text ak-text-primary fill-current"
       >
         <circle cx="29" cy="24" r="5" />
         <path
@@ -41,7 +41,7 @@ export function Logo({ iconOnly, responsive }: LogoProps) {
           height="1.25em"
           viewBox="0 0 150 40"
           className={clsx(
-            "fill-current ak-dark:ak-text/80",
+            "fill-current ak-dark:ak-ink-80",
             responsive && "hidden sm:block",
           )}
         >

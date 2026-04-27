@@ -50,10 +50,10 @@
 }
 
 @utility ak-checkbox-card_idle {
-  @apply ak-button_idle ak-layer ak-frame-card ak-bordering;
+  @apply ak-button_idle ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering;
   @apply outline-offset-3 flex flex-wrap content-start justify-start text-wrap;
 
-  --ak-checkbox-card-edge: var(--ak-layer-border);
+  --ak-checkbox-card-edge: var(--ak-edge);
   gap: calc(var(--ak-frame-padding) / 2) calc(var(--ak-frame-padding) * 0.75);
 
   input[type="checkbox"] {
@@ -80,7 +80,7 @@
 @utility ak-checkbox-card_disabled {
   --ak-checkbox-disabled: 1;
   && {
-    @apply ak-edge/5 ak-layer-mix/20 ak-text/0;
+    @apply ak-edge-5 ak-layer-mix-20 ak-ink-0;
   }
   svg,
   img {
@@ -89,8 +89,12 @@
 }
 
 @utility ak-checkbox-card_checked {
-  @apply not-has-disabled:not-has-aria-disabled:ak-edge-contrast-primary;
   --ak-checkbox-checked: 1;
+  @variant not-has-disabled {
+    @variant not-has-aria-disabled {
+      @apply ak-edge-primary ak-edge-raw;
+    }
+  }
 }
 
 @utility ak-checkbox-card {
@@ -108,7 +112,7 @@
 }
 
 @utility ak-checkbox-card-round {
-  @apply ak-frame-full/2;
+  @apply ak-frame ak-frame-full/2;
   --ak-checkbox-round: 1;
 }
 
@@ -124,7 +128,7 @@
 }
 
 @utility ak-checkbox-card-check_idle {
-  @apply ak-layer-down ak-frame-force-full/1 ak-bordering;
+  @apply ak-layer ak-layer-darken-6 ak-frame ak-frame-force ak-frame-full/1 ak-frame-bordering;
   @apply size-6 flex-none self-start *:hidden;
   @variant ak-checkbox-vertical {
     @apply justify-self-end;
@@ -134,12 +138,12 @@
 }
 
 @utility ak-checkbox-card-check_checked {
-  @apply ak-layer-(--ak-checkbox-card-edge) empty:before:ak-icon-check;
+  @apply ak-layer ak-layer-(color:--ak-checkbox-card-edge) ak-layer-darken-0 empty:before:ak-icon-check;
   @apply ring-(--ak-layer) border-0 ring *:block;
 }
 
 @utility ak-checkbox-card-check_disabled {
-  @apply ak-layer-(--ak-layer-parent) ak-text/0 ak-edge/10;
+  @apply ak-layer ak-layer-(color:--ak-layer-parent) ak-layer-darken-0 ak-ink-0 ak-edge-10;
 }
 
 @utility ak-checkbox-card-check {
@@ -153,7 +157,7 @@
 }
 
 @utility ak-checkbox-card-image {
-  @apply ak-frame/2 flex h-full w-20 items-center justify-center;
+  @apply ak-frame ak-frame-p-2 flex h-full w-20 items-center justify-center;
   @variant ak-checkbox-vertical {
     @apply max-w-4/5 w-full justify-self-center;
     grid-column: 1;
@@ -162,10 +166,10 @@
 }
 
 @utility ak-checkbox-card-description {
-  @apply ak-text/70;
+  @apply ak-ink-70;
   @apply w-full self-start font-normal;
   @variant ak-checkbox-disabled {
-    @apply ak-text/0;
+    @apply ak-ink-0;
   }
 }
 

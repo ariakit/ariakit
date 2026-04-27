@@ -99,7 +99,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply block size-full flex-none bg-current",
+              "name": "@apply block size-full flex-none bg-current!",
               "value": {}
             },
             {
@@ -176,7 +176,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-badge",
+              "name": "@apply ak-frame ak-frame-badge/badge",
               "value": {}
             },
             {
@@ -191,7 +191,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-frame-badge",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-badge/badge",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -226,14 +231,14 @@
               "value": {}
             },
             {
-              "name": "@apply ak-layer-mix-(--ak-badge-color)/15 ak-dark:ak-edge-(--ak-badge-color)/10 ak-light:ak-edge-(--ak-badge-color)/15",
+              "name": "@apply ak-layer ak-layer-(color:--ak-badge-color) ak-layer-mix-15 ak-dark:ak-edge-(color:--ak-badge-color) ak-edge-20 ak-light:ak-edge-(color:--ak-badge-color)",
               "value": {}
             },
             {
               "name": "&::before,\n  &::after,\n  :where(& > *)",
               "value": [
                 {
-                  "name": "@apply ak-text-(--ak-badge-color)/70",
+                  "name": "@apply ak-text ak-text-(color:--ak-badge-color) ak-text-25",
                   "value": {}
                 }
               ]
@@ -247,7 +252,17 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-mix-(--ak-badge-color)/15",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-(color:--ak-badge-color)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-mix-15",
               "import": "@ariakit/tailwind"
             },
             {
@@ -257,7 +272,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-edge-(--ak-badge-color)/10",
+              "name": "ak-edge-(color:--ak-badge-color)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-20",
               "import": "@ariakit/tailwind"
             },
             {
@@ -267,12 +287,17 @@
             },
             {
               "type": "utility",
-              "name": "ak-edge-(--ak-badge-color)/15",
+              "name": "ak-text",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-text-(--ak-badge-color)/70",
+              "name": "ak-text-(color:--ak-badge-color)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-text-25",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -576,11 +601,11 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-command_idle ak-outline-primary ak-frame-field",
+              "name": "@apply ak-command_idle ak-outline ak-outline-primary ak-frame ak-frame-field/field",
               "value": {}
             },
             {
-              "name": "@apply leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+50*var(--contrast))]",
+              "name": "@apply leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+2*var(--contrast))]",
               "value": {}
             },
             {
@@ -608,12 +633,22 @@
             },
             {
               "type": "utility",
+              "name": "ak-outline",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-outline-primary",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-frame-field",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-field/field",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -623,14 +658,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-hover",
+              "name": "@apply ak-layer ak-state-6",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-hover",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-state-6",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -674,7 +714,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text/50 ak-layer-mix/20",
+              "name": "@apply ak-layer ak-ink-50 ak-layer-mix-20",
               "value": {}
             },
             {
@@ -685,12 +725,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-text/50",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-mix/20",
+              "name": "ak-ink-50",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-mix-20",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -803,7 +848,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-button_idle ak-layer",
+              "name": "@apply ak-button_idle ak-layer ak-layer-lighten-6",
               "value": {}
             },
             {
@@ -881,6 +926,11 @@
             {
               "type": "utility",
               "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-lighten-6",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1118,8 +1168,8 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-aurora-(--ak-button-aurora-color-1)/(--ak-button-aurora-color-2)",
-              "import": "@ariakit/tailwind"
+              "name": "ak-aurora-*",
+              "module": "aurora"
             },
             {
               "type": "variant",
@@ -1176,7 +1226,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-button_idle ak-layer ak-frame-card ak-bordering",
+              "name": "@apply ak-button_idle ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering",
               "value": {}
             },
             {
@@ -1185,7 +1235,7 @@
             },
             {
               "name": "--ak-checkbox-card-edge",
-              "value": "var(--ak-layer-border)"
+              "value": "var(--ak-edge)"
             },
             {
               "name": "gap",
@@ -1218,23 +1268,33 @@
             },
             {
               "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-card/card",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-frame-card",
+              "name": "ak-layer-lighten-6",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-bordering",
+              "name": "ak-frame-bordering",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-command-depth-4",
-              "import": "@ariakit/tailwind"
+              "name": "ak-command-depth-*",
+              "module": "command"
             }
           ]
         },
@@ -1301,7 +1361,7 @@
               "name": "&&",
               "value": [
                 {
-                  "name": "@apply ak-edge/5 ak-layer-mix/20 ak-text/0",
+                  "name": "@apply ak-edge-5 ak-layer-mix-20 ak-ink-0",
                   "value": {}
                 }
               ]
@@ -1319,17 +1379,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-edge/5",
+              "name": "ak-edge-5",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-mix/20",
+              "name": "ak-layer-mix-20",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-text/0",
+              "name": "ak-ink-0",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -1339,18 +1399,33 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply not-has-disabled:not-has-aria-disabled:ak-edge-contrast-primary",
-              "value": {}
-            },
-            {
               "name": "--ak-checkbox-checked",
               "value": "1"
+            },
+            {
+              "name": "@variant not-has-disabled",
+              "value": [
+                {
+                  "name": "@variant not-has-aria-disabled",
+                  "value": [
+                    {
+                      "name": "@apply ak-edge-primary ak-edge-raw",
+                      "value": {}
+                    }
+                  ]
+                }
+              ]
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-edge-contrast-primary",
+              "name": "ak-edge-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-raw",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -1447,7 +1522,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-full/2",
+              "name": "@apply ak-frame ak-frame-full/2",
               "value": {}
             },
             {
@@ -1456,6 +1531,11 @@
             }
           ],
           "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
             {
               "type": "utility",
               "name": "ak-frame-full/2",
@@ -1512,7 +1592,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-down ak-frame-force-full/1 ak-bordering",
+              "name": "@apply ak-layer ak-layer-darken-6 ak-frame ak-frame-force ak-frame-full/1 ak-frame-bordering",
               "value": {}
             },
             {
@@ -1540,17 +1620,32 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-down",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-full/1",
+              "name": "ak-layer-darken-6",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-bordering",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-full/1",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-bordering",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1565,7 +1660,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-(--ak-checkbox-card-edge) empty:before:ak-icon-check",
+              "name": "@apply ak-layer ak-layer-(color:--ak-checkbox-card-edge) ak-layer-darken-0 empty:before:ak-icon-check",
               "value": {}
             },
             {
@@ -1576,7 +1671,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-(--ak-checkbox-card-edge)",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-(color:--ak-checkbox-card-edge)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-darken-0",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1591,24 +1696,34 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-(--ak-layer-parent) ak-text/0 ak-edge/10",
+              "name": "@apply ak-layer ak-layer-(color:--ak-layer-parent) ak-layer-darken-0 ak-ink-0 ak-edge-10",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-(--ak-layer-parent)",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-text/0",
+              "name": "ak-layer-(color:--ak-layer-parent)",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge/10",
+              "name": "ak-layer-darken-0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-10",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -1673,7 +1788,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame/2 flex h-full w-20 items-center justify-center",
+              "name": "@apply ak-frame ak-frame-p-2 flex h-full w-20 items-center justify-center",
               "value": {}
             },
             {
@@ -1697,7 +1812,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-frame/2",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-p-2",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1712,7 +1832,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text/70",
+              "name": "@apply ak-ink-70",
               "value": {}
             },
             {
@@ -1723,7 +1843,7 @@
               "name": "@variant ak-checkbox-disabled",
               "value": [
                 {
-                  "name": "@apply ak-text/0",
+                  "name": "@apply ak-ink-0",
                   "value": {}
                 }
               ]
@@ -1732,12 +1852,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-text/70",
+              "name": "ak-ink-70",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-text/0",
+              "name": "ak-ink-0",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1870,7 +1990,7 @@
               "name": "@variant before",
               "value": [
                 {
-                  "name": "@apply ak-text/50",
+                  "name": "@apply ak-ink-50",
                   "value": {}
                 },
                 {
@@ -1888,7 +2008,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text/50",
+              "name": "ak-ink-50",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -1969,7 +2089,7 @@
               "name": "@variant before",
               "value": [
                 {
-                  "name": "@apply ak-text-primary/50",
+                  "name": "@apply ak-text ak-text-primary",
                   "value": {}
                 },
                 {
@@ -1982,7 +2102,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-text-primary/50",
+              "name": "ak-text",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-text-primary",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2062,7 +2187,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-command_idle ak-frame-field/2",
+              "name": "@apply ak-command_idle ak-layer ak-frame ak-frame-field/2",
               "value": {}
             }
           ],
@@ -2071,6 +2196,16 @@
               "type": "utility",
               "name": "ak-command_idle",
               "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
@@ -2084,14 +2219,14 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-hover",
+              "name": "@apply ak-state-6",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-hover",
+              "name": "ak-state-6",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2101,7 +2236,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-command_focus ak-layer-contrast-primary",
+              "name": "@apply ak-command_focus ak-layer-primary ak-layer-contrast",
               "value": {}
             },
             {
@@ -2117,7 +2252,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-contrast-primary",
+              "name": "ak-layer-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2144,19 +2284,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text/50 ak-layer-mix/20",
+              "name": "@apply ak-ink-50 ak-layer-mix-20",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-text/50",
+              "name": "ak-ink-50",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-mix/20",
+              "name": "ak-layer-mix-20",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2259,7 +2399,7 @@
             },
             {
               "name": "--ak-tab-border-color",
-              "value": "var(--ak-border, var(--ak-layer-border, transparent))"
+              "value": "var(--ak-edge)"
             },
             {
               "name": "--ak-tab-bg",
@@ -2273,7 +2413,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-overflow ak-layer-down",
+              "name": "@apply ak-frame ak-frame-cover ak-layer ak-layer-darken-6 -ak-frame-m-(--ak-tab-border-width)",
               "value": {}
             },
             {
@@ -2311,12 +2451,22 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-frame-overflow",
+              "name": "ak-frame",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-down",
+              "name": "ak-frame-cover",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-darken-6",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2326,7 +2476,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-border-(--ak-tab-border-width) ak-layer-(--ak-tab-bg) ak-frame-cover",
+              "name": "@apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-(color:--ak-tab-bg) ak-frame ak-frame-cover",
               "value": {}
             },
             {
@@ -2342,7 +2492,17 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(--ak-tab-bg)",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-(color:--ak-tab-bg)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2357,7 +2517,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-command_idle ak-text/70",
+              "name": "@apply ak-command_idle ak-ink-70",
               "value": {}
             },
             {
@@ -2373,7 +2533,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text/70",
+              "name": "ak-ink-70",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2383,7 +2543,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-tab_idle ak-frame-container ak-frame-border-(--ak-tab-border-width)",
+              "name": "@apply ak-tab_idle ak-frame ak-frame-container/container ak-frame-border-(--ak-tab-border-width)",
               "value": {}
             },
             {
@@ -2411,7 +2571,7 @@
               "name": "> *",
               "value": [
                 {
-                  "name": "@apply ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]",
+                  "name": "@apply ak-frame ak-frame-field ak-frame-p-[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]",
                   "value": {}
                 },
                 {
@@ -2429,7 +2589,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-container",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-container/container",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2444,7 +2609,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-field/[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]",
+              "name": "ak-frame-field",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-p-[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2475,7 +2645,7 @@
               "name": "> *",
               "value": [
                 {
-                  "name": "@apply ak-layer-hover",
+                  "name": "@apply ak-layer ak-state-6",
                   "value": {}
                 }
               ]
@@ -2484,7 +2654,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-hover",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-state-6",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2523,7 +2698,7 @@
               "name": "> *",
               "value": [
                 {
-                  "name": "@apply ak-layer-contrast-primary",
+                  "name": "@apply ak-layer ak-layer-primary ak-layer-contrast ak-ink-100",
                   "value": {}
                 }
               ]
@@ -2537,7 +2712,22 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-contrast-primary",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-100",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -2569,12 +2759,30 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-(--ak-tab-bg) ak-text",
+              "name": "@apply ak-layer ak-layer-(color:--ak-tab-bg) ak-ink-100",
               "value": {}
             },
             {
               "name": "@apply z-2 border-(--ak-tab-border-color)! rounded-b-none!",
               "value": {}
+            },
+            {
+              "name": "&:not(:last-child)::after",
+              "value": [
+                {
+                  "name": "@apply border-transparent",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":has(+ &)::after",
+              "value": [
+                {
+                  "name": "@apply border-transparent",
+                  "value": {}
+                }
+              ]
             },
             {
               "name": "&::after,\n  &::before",
@@ -2675,12 +2883,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-(--ak-tab-bg)",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-text",
+              "name": "ak-layer-(color:--ak-tab-bg)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-100",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2741,14 +2954,14 @@
           "properties": [
             {
               "name": "--ak-popover-ring-color",
-              "value": "var(--ak-ring, var(--ak-layer-ring))"
+              "value": "var(--ak-edge)"
             },
             {
               "name": "transition-property",
               "value": "overlay, display, scale, opacity"
             },
             {
-              "name": "@apply ak-layer ak-frame-force-dialog ak-light:ring ak-dark:ak-frame-border ak-light:border-none",
+              "name": "@apply ak-layer ak-layer-lighten-6 ak-frame ak-frame-force ak-frame-dialog/dialog ak-light:ring ak-dark:ak-frame-border ak-light:border-none",
               "value": {}
             },
             {
@@ -2773,7 +2986,22 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-dialog",
+              "name": "ak-layer-lighten-6",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-dialog/dialog",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2899,11 +3127,16 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-cover overflow-auto overscroll-contain",
+              "name": "@apply ak-frame ak-frame-cover overflow-auto overscroll-contain",
               "value": {}
             }
           ],
           "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
             {
               "type": "utility",
               "name": "ak-frame-cover",
@@ -3055,7 +3288,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-current bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30",
+              "name": "@apply ak-layer bg-(--ak-layer)/10 ak-dark:bg-(--ak-layer)/30",
               "value": {}
             },
             {
@@ -3066,7 +3299,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
@@ -3106,7 +3339,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-none/card",
+              "name": "@apply ak-frame ak-frame-none/card",
               "value": {}
             },
             {
@@ -3115,6 +3348,11 @@
             }
           ],
           "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
             {
               "type": "utility",
               "name": "ak-frame-none/card",
@@ -3134,7 +3372,7 @@
               "name": "@variant ak-disclosure-hover",
               "value": [
                 {
-                  "name": "@apply ak-layer-hover-0",
+                  "name": "@apply ak-state-0",
                   "value": {}
                 }
               ]
@@ -3143,7 +3381,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-hover-0",
+              "name": "ak-state-0",
               "import": "@ariakit/tailwind"
             },
             {
@@ -3157,6 +3395,10 @@
           "name": "ak-disclosure_idle",
           "type": "utility",
           "properties": [
+            {
+              "name": "@apply ak-layer",
+              "value": {}
+            },
             {
               "name": "@apply p-0! max-w-[inherit] transition-none duration-300",
               "value": {}
@@ -3175,7 +3417,7 @@
             },
             {
               "name": "--ak-disclosure-border",
-              "value": "var(--ak-bordering, var(--ak-frame-border))"
+              "value": "calc(var(--ak-frame-border) + var(--ak-frame-ring))"
             },
             {
               "name": "--ak-disclosure-duration",
@@ -3185,7 +3427,7 @@
               "name": "@variant ak-disclosure-group",
               "value": [
                 {
-                  "name": "@apply ak-frame-cover p-0",
+                  "name": "@apply ak-frame ak-frame-cover p-0",
                   "value": {}
                 }
               ]
@@ -3230,6 +3472,16 @@
           "dependencies": [
             {
               "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-frame-cover",
               "import": "@ariakit/tailwind"
             },
@@ -3260,14 +3512,19 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-hover",
+              "name": "@apply ak-layer ak-state-6",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-hover",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-state-6",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -3378,11 +3635,11 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-command-depth-x-3 ak-button_idle ak-text overflow-clip",
+              "name": "@apply ak-command-depth-x-3 ak-button_idle overflow-clip",
               "value": {}
             },
             {
-              "name": "@apply ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)",
+              "name": "@apply ak-frame ak-frame-force ak-frame-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)",
               "value": {}
             },
             {
@@ -3427,8 +3684,8 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-command-depth-x-3",
-              "import": "@ariakit/tailwind"
+              "name": "ak-command-depth-x-*",
+              "module": "command"
             },
             {
               "type": "utility",
@@ -3437,12 +3694,17 @@
             },
             {
               "type": "utility",
-              "name": "ak-text",
+              "name": "ak-frame",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -3460,7 +3722,7 @@
               "name": "@container style(--ak-disclosure-split: 1)",
               "value": [
                 {
-                  "name": "@apply ak-layer-hover",
+                  "name": "@apply ak-layer ak-state-6",
                   "value": {}
                 }
               ]
@@ -3469,7 +3731,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-hover",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-state-6",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -3882,7 +4149,7 @@
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply ak-layer-current",
+                  "name": "@apply ak-layer",
                   "value": {}
                 },
                 {
@@ -3907,7 +4174,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -4076,7 +4343,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-current",
+              "name": "@apply ak-layer",
               "value": {}
             },
             {
@@ -4107,7 +4374,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -4260,8 +4527,8 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-nav-gap-1",
-              "import": "@ariakit/tailwind"
+              "name": "ak-nav-gap-*",
+              "module": "nav"
             },
             {
               "type": "utility",
@@ -4332,7 +4599,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-button_idle ak-dark:ak-text/70",
+              "name": "@apply ak-button_idle ak-layer ak-dark:ak-ink-70",
               "value": {}
             },
             {
@@ -4365,12 +4632,17 @@
             },
             {
               "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-dark",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-text/70",
+              "name": "ak-ink-70",
               "import": "@ariakit/tailwind"
             },
             {
@@ -4397,7 +4669,7 @@
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply -z-1 ak-layer-(--ak-layer) absolute inset-x-0 rounded-[inherit]",
+                  "name": "@apply -z-1 ak-layer ak-layer-(color:--ak-layer) absolute inset-x-0 rounded-[inherit]",
                   "value": {}
                 },
                 {
@@ -4414,7 +4686,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-(--ak-layer)",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-(color:--ak-layer)",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -4424,7 +4701,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-button_hover ak-nav-link-overlay",
+              "name": "@apply ak-button_hover ak-nav-link-overlay ak-ink-100",
               "value": {}
             }
           ],
@@ -4438,6 +4715,11 @@
               "type": "utility",
               "name": "ak-nav-link-overlay",
               "module": "nav"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-100",
+              "import": "@ariakit/tailwind"
             }
           ]
         },
@@ -4497,7 +4779,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-pop ak-nav-link-overlay",
+              "name": "@apply ak-layer ak-layer-6 ak-nav-link-overlay ak-ink-100",
               "value": {}
             },
             {
@@ -4508,7 +4790,7 @@
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply ak-edge/0",
+                  "name": "@apply ak-edge-0",
                   "value": {}
                 },
                 {
@@ -4521,7 +4803,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-pop",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-6",
               "import": "@ariakit/tailwind"
             },
             {
@@ -4531,7 +4818,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-edge/0",
+              "name": "ak-ink-100",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-0",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -4628,7 +4920,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-button_idle ak-frame-force-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2))",
+              "name": "@apply ak-button_idle ak-frame ak-frame-force ak-frame-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2))",
               "value": {}
             },
             {
@@ -4673,7 +4965,17 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2))",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-(--ak-disclosure-radius,theme(--radius-field))/(--ak-disclosure-padding,--spacing(2))",
               "import": "@ariakit/tailwind"
             },
             {
@@ -4875,7 +5177,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-disclosure ak-disclosure-split ak-frame-field/2",
+              "name": "@apply ak-disclosure ak-disclosure-split ak-frame ak-frame-field/2",
               "value": {}
             },
             {
@@ -4901,13 +5203,18 @@
             },
             {
               "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-frame-field/2",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-disclosure-icon-(--ak-nav-icon-size)",
-              "import": "@ariakit/tailwind"
+              "name": "ak-disclosure-icon-*",
+              "module": "disclosure"
             }
           ]
         },
@@ -5005,7 +5312,7 @@
               "value": {}
             },
             {
-              "name": "@apply ak-frame-force-(--ak-nav-disclosure-content-body-radius)/(--ak-nav-disclosure-content-body-padding)",
+              "name": "@apply ak-frame ak-frame-force ak-frame-(--ak-nav-disclosure-content-body-radius)/(--ak-nav-disclosure-content-body-padding)",
               "value": {}
             },
             {
@@ -5029,7 +5336,17 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-(--ak-nav-disclosure-content-body-radius)/(--ak-nav-disclosure-content-body-padding)",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-(--ak-nav-disclosure-content-body-radius)/(--ak-nav-disclosure-content-body-padding)",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -5064,7 +5381,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-popover_idle ak-frame-force-tooltip",
+              "name": "@apply ak-popover_idle ak-frame ak-frame-force ak-frame-tooltip/tooltip",
               "value": {}
             },
             {
@@ -5080,7 +5397,17 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-tooltip",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-tooltip/tooltip",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -5347,7 +5674,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-popover_idle ak-frame-force-container ak-layer-canvas-1",
+              "name": "@apply ak-popover_idle ak-frame ak-frame-force ak-frame-container/container ak-layer-canvas",
               "value": {}
             },
             {
@@ -5375,12 +5702,22 @@
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-container",
+              "name": "ak-frame",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-canvas-1",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-container/container",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-canvas",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -5777,14 +6114,14 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text/0",
+              "name": "@apply ak-ink-0",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-text/0",
+              "name": "ak-ink-0",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -5794,7 +6131,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-edge-contrast ak-frame-field ak-frame-border",
+              "name": "@apply ak-edge-30 ak-frame ak-frame-field/field ak-frame-border",
               "value": {}
             },
             {
@@ -5802,10 +6139,14 @@
               "value": {}
             },
             {
+              "name": "@apply ak-layer",
+              "value": {}
+            },
+            {
               "name": "@variant ak-light",
               "value": [
                 {
-                  "name": "@apply ak-layer",
+                  "name": "@apply ak-layer-lighten-6",
                   "value": {}
                 }
               ]
@@ -5814,7 +6155,7 @@
               "name": "@variant ak-dark",
               "value": [
                 {
-                  "name": "@apply not-hover:not-focus-within:ak-layer-down-0.5",
+                  "name": "@apply not-hover:not-focus-within:ak-layer-darken-3",
                   "value": {}
                 }
               ]
@@ -5850,12 +6191,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-edge-contrast",
+              "name": "ak-edge-30",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-frame-field",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-field/field",
               "import": "@ariakit/tailwind"
             },
             {
@@ -5870,7 +6216,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-down-0.5",
+              "name": "ak-layer-lighten-6",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-darken-3",
               "import": "@ariakit/tailwind"
             },
             {
@@ -5902,7 +6253,7 @@
               "name": "@variant ak-light",
               "value": [
                 {
-                  "name": "@apply ak-layer-hover-0.5",
+                  "name": "@apply ak-state-3",
                   "value": {}
                 }
               ]
@@ -5911,7 +6262,7 @@
               "name": "@variant ak-dark",
               "value": [
                 {
-                  "name": "@apply ak-layer-current",
+                  "name": "@apply ak-layer",
                   "value": {}
                 }
               ]
@@ -5920,12 +6271,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-hover-0.5",
+              "name": "ak-state-3",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
@@ -5945,23 +6296,14 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-outline-primary outline-2",
+              "name": "@apply ak-outline ak-outline-primary outline-2",
               "value": {}
-            },
-            {
-              "name": "@variant ak-light",
-              "value": [
-                {
-                  "name": "@apply ak-layer",
-                  "value": {}
-                }
-              ]
             },
             {
               "name": "@variant ak-dark",
               "value": [
                 {
-                  "name": "@apply ak-layer-current",
+                  "name": "@apply ak-layer",
                   "value": {}
                 }
               ]
@@ -5970,22 +6312,17 @@
           "dependencies": [
             {
               "type": "utility",
+              "name": "ak-outline",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-outline-primary",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
               "name": "ak-layer",
-              "import": "@ariakit/tailwind"
-            },
-            {
-              "type": "utility",
-              "name": "ak-layer-current",
-              "import": "@ariakit/tailwind"
-            },
-            {
-              "type": "variant",
-              "name": "ak-light",
               "import": "@ariakit/tailwind"
             },
             {
@@ -6035,7 +6372,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-pop-1.5 ak-edge-5/100",
+              "name": "@apply ak-layer ak-layer-9 ak-edge-100 ak-edge-lighten-60",
               "value": {}
             },
             {
@@ -6052,7 +6389,7 @@
             },
             {
               "name": "border-color",
-              "value": "white transparent var(--ak-border)"
+              "value": "white transparent var(--ak-edge)"
             },
             {
               "name": "background-image",
@@ -6060,7 +6397,7 @@
             },
             {
               "name": "box-shadow",
-              "value": "0 0 0 max(1px, 0.034em) var(--ak-border)"
+              "value": "0 0 0 max(1px, 0.034em) var(--ak-edge)"
             },
             {
               "name": "padding",
@@ -6074,7 +6411,7 @@
               "name": "@variant ak-dark",
               "value": [
                 {
-                  "name": "@apply ak-edge/16",
+                  "name": "@apply ak-edge-16",
                   "value": {}
                 },
                 {
@@ -6095,7 +6432,7 @@
                 },
                 {
                   "name": "box-shadow",
-                  "value": "0 min(-1px, -0.06em) var(--ak-border),\n      0 0 0 max(1px, 0.06em) var(--ak-border)"
+                  "value": "0 min(-1px, -0.06em) var(--ak-edge),\n      0 0 0 max(1px, 0.06em) var(--ak-edge)"
                 }
               ]
             }
@@ -6103,17 +6440,27 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-pop-1.5",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge-5/100",
+              "name": "ak-layer-9",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge/16",
+              "name": "ak-edge-100",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-lighten-60",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-16",
               "import": "@ariakit/tailwind"
             },
             {
@@ -6136,7 +6483,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text-primary ak-outline-primary",
+              "name": "@apply ak-text ak-text-primary ak-outline ak-outline-primary ak-dark:ak-text-20",
               "value": {}
             },
             {
@@ -6147,12 +6494,32 @@
           "dependencies": [
             {
               "type": "utility",
+              "name": "ak-text",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-text-primary",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
+              "name": "ak-outline",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-outline-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-text-20",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -6260,7 +6627,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-pop-2 ak-edge/0 ak-frame-force-full ak-progress-thickness-2",
+              "name": "@apply ak-layer ak-layer-12 ak-edge-0 ak-frame ak-frame-force ak-frame-full/0 ak-progress-thickness-2",
               "value": {}
             },
             {
@@ -6269,13 +6636,13 @@
             },
             {
               "name": "--ak-progress-ring",
-              "value": "var(--ak-ring)"
+              "value": "var(--ak-edge)"
             },
             {
               "name": "&::-webkit-progress-bar",
               "value": [
                 {
-                  "name": "@apply ak-frame ak-layer-current",
+                  "name": "@apply ak-frame ak-layer",
                   "value": {}
                 },
                 {
@@ -6297,22 +6664,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-pop-2",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge/0",
+              "name": "ak-layer-12",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-full",
-              "import": "@ariakit/tailwind"
-            },
-            {
-              "type": "utility",
-              "name": "ak-progress-thickness-2",
+              "name": "ak-edge-0",
               "import": "@ariakit/tailwind"
             },
             {
@@ -6322,8 +6684,18 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-frame-force",
               "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-full/0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-progress-thickness-*",
+              "module": "progress"
             },
             {
               "type": "utility",
@@ -6337,7 +6709,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-contrast-primary ak-frame",
+              "name": "@apply ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-50 ak-frame",
               "value": {}
             },
             {
@@ -6357,7 +6729,22 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-contrast-primary",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast-50",
               "import": "@ariakit/tailwind"
             },
             {
@@ -6398,7 +6785,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-pop-2 ak-edge/0 ak-frame-force-full ak-progress-thickness-2",
+              "name": "@apply ak-layer ak-layer-12 ak-edge-0 ak-frame ak-frame-force ak-frame-full/0 ak-progress-thickness-2",
               "value": {}
             },
             {
@@ -6411,13 +6798,13 @@
             },
             {
               "name": "--ak-progress-ring",
-              "value": "var(--ak-ring)"
+              "value": "var(--ak-edge)"
             },
             {
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply ak-layer-(--ak-progress-layer-parent)",
+                  "name": "@apply ak-layer ak-layer-(color:--ak-progress-layer-parent)",
                   "value": {}
                 },
                 {
@@ -6434,27 +6821,42 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-pop-2",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge/0",
+              "name": "ak-layer-12",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-frame-force-full",
+              "name": "ak-edge-0",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-progress-thickness-2",
+              "name": "ak-frame",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-(--ak-progress-layer-parent)",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-full/0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-progress-thickness-*",
+              "module": "progress"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-(color:--ak-progress-layer-parent)",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -6464,7 +6866,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-contrast-primary",
+              "name": "@apply ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-50",
               "value": {}
             },
             {
@@ -6509,7 +6911,22 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-contrast-primary",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast-50",
               "import": "@ariakit/tailwind"
             },
             {
@@ -6633,18 +7050,13 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-list-item-padding-2",
-              "import": "@ariakit/tailwind"
+              "name": "ak-list-item-padding-*",
+              "module": "list"
             },
             {
               "type": "utility",
-              "name": "ak-list-item-border-1",
-              "import": "@ariakit/tailwind"
-            },
-            {
-              "type": "utility",
-              "name": "ak-list-item-border-0",
-              "import": "@ariakit/tailwind"
+              "name": "ak-list-item-border-*",
+              "module": "list"
             }
           ]
         },
@@ -6770,13 +7182,13 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-list-gap-4",
-              "import": "@ariakit/tailwind"
+              "name": "ak-list-gap-*",
+              "module": "list"
             },
             {
               "type": "utility",
-              "name": "ak-list-leading-normal",
-              "import": "@ariakit/tailwind"
+              "name": "ak-list-leading-*",
+              "module": "list"
             },
             {
               "type": "utility",
@@ -6785,11 +7197,16 @@
             },
             {
               "type": "utility",
-              "name": "ak-list-item-padding-1",
-              "import": "@ariakit/tailwind"
+              "name": "ak-list-item-padding-*",
+              "module": "list"
             },
             {
               "type": "utility",
+              "name": "ak-list-ul",
+              "module": "list"
+            },
+            {
+              "type": "variant",
               "name": "ak-list-ul",
               "module": "list"
             },
@@ -6799,23 +7216,23 @@
               "module": "list"
             },
             {
-              "type": "utility",
-              "name": "ak-list-gap-2",
-              "import": "@ariakit/tailwind"
+              "type": "variant",
+              "name": "ak-list-ol",
+              "module": "list"
             },
             {
               "type": "utility",
+              "name": "ak-list-blocks",
+              "module": "list"
+            },
+            {
+              "type": "variant",
               "name": "ak-list-blocks",
               "module": "list"
             },
             {
               "type": "utility",
               "name": "ak-list-sections",
-              "module": "list"
-            },
-            {
-              "type": "variant",
-              "name": "ak-list-blocks",
               "module": "list"
             },
             {
@@ -6875,7 +7292,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-pop-2 ak-list-counter-content",
+              "name": "@apply ak-layer ak-layer-12 ak-list-counter-content",
               "value": {}
             },
             {
@@ -6910,7 +7327,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-pop-2",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-12",
               "import": "@ariakit/tailwind"
             },
             {
@@ -6925,7 +7347,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-current ak-edge/40",
+              "name": "@apply ak-layer ak-edge-40",
               "value": {}
             },
             {
@@ -6952,12 +7374,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge/40",
+              "name": "ak-edge-40",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -7040,7 +7462,7 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply ak-layer-pop-2",
+                  "name": "@apply ak-layer ak-layer-12",
                   "value": {}
                 },
                 {
@@ -7090,7 +7512,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-pop-2",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-12",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -7150,7 +7577,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-card/(--ak-list-item-padding)",
+              "name": "@apply ak-frame ak-frame-card/(--ak-list-item-padding)",
               "value": {}
             },
             {
@@ -7185,6 +7612,11 @@
             }
           ],
           "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
             {
               "type": "utility",
               "name": "ak-frame-card/(--ak-list-item-padding)",
@@ -7289,6 +7721,11 @@
               "module": "list"
             },
             {
+              "type": "variant",
+              "name": "ak-list-item-blocks",
+              "module": "list"
+            },
+            {
               "type": "utility",
               "name": "ak-disclosure",
               "module": "disclosure"
@@ -7306,11 +7743,6 @@
             {
               "type": "utility",
               "name": "ak-list-disclosure-content-body",
-              "module": "list"
-            },
-            {
-              "type": "variant",
-              "name": "ak-list-item-blocks",
               "module": "list"
             }
           ]
@@ -7463,6 +7895,11 @@
               "type": "utility",
               "name": "ak-list-item-blocks",
               "module": "list"
+            },
+            {
+              "type": "variant",
+              "name": "ak-list-item-blocks",
+              "module": "list"
             }
           ]
         },
@@ -7471,7 +7908,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-list-item-ol-marker ak-layer-pop ak-edge/25",
+              "name": "@apply ak-list-item-ol-marker ak-layer ak-layer-6 ak-edge-25",
               "value": {}
             },
             {
@@ -7496,12 +7933,17 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-pop",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge/25",
+              "name": "ak-layer-6",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-25",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -7604,7 +8046,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-contrast-primary",
+              "name": "@apply ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-50",
               "value": {}
             },
             {
@@ -7632,7 +8074,22 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-contrast-primary",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast-50",
               "import": "@ariakit/tailwind"
             },
             {
@@ -7675,7 +8132,7 @@
               "name": "@variant ak-list-ul",
               "value": [
                 {
-                  "name": "@apply ak-progress-thickness-[calc(30%+5%*var(--contrast,0))]",
+                  "name": "@apply ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))]",
                   "value": {}
                 }
               ]
@@ -7689,18 +8146,13 @@
             },
             {
               "type": "utility",
-              "name": "ak-progress-value-(--value)",
-              "import": "@ariakit/tailwind"
+              "name": "ak-progress-value-*",
+              "module": "progress"
             },
             {
               "type": "utility",
-              "name": "ak-progress-thickness-[0.15em]",
-              "import": "@ariakit/tailwind"
-            },
-            {
-              "type": "utility",
-              "name": "ak-progress-thickness-[calc(30%+5%*var(--contrast,0))]",
-              "import": "@ariakit/tailwind"
+              "name": "ak-progress-thickness-*",
+              "module": "progress"
             },
             {
               "type": "variant",
@@ -7872,7 +8324,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text mb-[0.5em] font-medium",
+              "name": "@apply ak-ink-100 mb-[0.5em] font-medium",
               "value": {}
             },
             {
@@ -7897,7 +8349,7 @@
               "name": "a",
               "value": [
                 {
-                  "name": "@apply hover:ak-link_idle hover:ak-text font-[weight:inherit] text-current no-underline",
+                  "name": "@apply hover:ak-link_idle hover:ak-ink-100 font-[weight:inherit] text-current no-underline",
                   "value": {}
                 }
               ]
@@ -7960,7 +8412,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-text",
+              "name": "ak-ink-100",
               "import": "@ariakit/tailwind"
             },
             {
@@ -8008,7 +8460,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-full/container ak-layer-down-0.25 ak-bordering after:ak-segmented-indicator",
+              "name": "@apply ak-frame ak-frame-full/container ak-layer ak-layer-darken-3 ak-frame-bordering after:ak-segmented-indicator",
               "value": {}
             },
             {
@@ -8023,17 +8475,27 @@
           "dependencies": [
             {
               "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-frame-full/container",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-down-0.25",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-bordering",
+              "name": "ak-layer-darken-3",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-bordering",
               "import": "@ariakit/tailwind"
             },
             {
@@ -8048,7 +8510,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-current",
+              "name": "@apply ak-layer",
               "value": {}
             },
             {
@@ -8067,7 +8529,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -8077,18 +8539,23 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-2 ak-dark:ak-edge/0",
+              "name": "@apply ak-layer ak-layer-lighten-12 ak-dark:ak-edge-0 ak-frame-bordering",
               "value": {}
             },
             {
-              "name": "@apply ak-dark:ring-inset ring shadow",
+              "name": "@apply shadow",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-2",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-lighten-12",
               "import": "@ariakit/tailwind"
             },
             {
@@ -8098,7 +8565,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-edge/0",
+              "name": "ak-edge-0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-bordering",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -8108,7 +8580,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-segmented-indicator-base ak-frame-field/0",
+              "name": "@apply ak-segmented-indicator-base ak-frame ak-frame-field/0",
               "value": {}
             },
             {
@@ -8132,6 +8604,11 @@
             },
             {
               "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-frame-field/0",
               "import": "@ariakit/tailwind"
             }
@@ -8142,7 +8619,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-button_idle ak-text/70",
+              "name": "@apply ak-button_idle ak-ink-70",
               "value": {}
             },
             {
@@ -8180,7 +8657,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text/70",
+              "name": "ak-ink-70",
               "import": "@ariakit/tailwind"
             },
             {
@@ -8195,6 +8672,10 @@
           "type": "utility",
           "properties": [
             {
+              "name": "@apply ak-ink-100",
+              "value": {}
+            },
+            {
               "name": "&::before,\n  & + *::before",
               "value": [
                 {
@@ -8207,7 +8688,7 @@
               "name": "@supports (anchor-name: --a)",
               "value": [
                 {
-                  "name": "@apply ak-layer-2",
+                  "name": "@apply ak-layer ak-layer-lighten-12",
                   "value": {}
                 },
                 {
@@ -8233,7 +8714,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-2",
+              "name": "ak-ink-100",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-lighten-12",
               "import": "@ariakit/tailwind"
             },
             {
@@ -8463,7 +8954,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-card/0 ak-layer-current",
+              "name": "@apply ak-frame ak-frame-card/0 ak-layer",
               "value": {}
             },
             {
@@ -8490,12 +8981,17 @@
           "dependencies": [
             {
               "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-frame-card/0",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -8580,7 +9076,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-field",
+              "name": "@apply ak-frame ak-frame-field/field",
               "value": {}
             },
             {
@@ -8672,7 +9168,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-frame-field",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-field/field",
               "import": "@ariakit/tailwind"
             },
             {
@@ -8727,7 +9228,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-current",
+              "name": "@apply ak-layer",
               "value": {}
             },
             {
@@ -8756,7 +9257,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -8766,7 +9267,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-table-rowgroup ak-layer-pop-0.5",
+              "name": "@apply ak-table-rowgroup ak-layer ak-layer-3",
               "value": {}
             },
             {
@@ -8782,7 +9283,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-pop-0.5",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-3",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -8843,7 +9349,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-current",
+              "name": "@apply ak-layer",
               "value": {}
             },
             {
@@ -8868,7 +9374,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -8878,14 +9384,14 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-hover-0.5 z-2 *:z-2",
+              "name": "@apply ak-state-3 z-2 *:z-2",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-hover-0.5",
+              "name": "ak-state-3",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -8938,14 +9444,14 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text/70 text-start font-semibold",
+              "name": "@apply ak-ink-70 text-start font-semibold",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-text/70",
+              "name": "ak-ink-70",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -8955,7 +9461,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-current z-1 relative",
+              "name": "@apply ak-layer z-1 relative",
               "value": {}
             },
             {
@@ -8970,7 +9476,7 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply ak-layer-current -z-1 pointer-events-none absolute inset-0",
+                  "name": "@apply ak-layer -z-1 pointer-events-none absolute inset-0",
                   "value": {}
                 },
                 {
@@ -8995,7 +9501,7 @@
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply ak-layer-current -z-1 pointer-events-none absolute inset-0",
+                  "name": "@apply ak-layer -z-1 pointer-events-none absolute inset-0",
                   "value": {}
                 },
                 {
@@ -9038,7 +9544,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -9346,7 +9852,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-pop-0.5 ak-frame-dialog/2 ak-sidebar-max-width-60 ak-sidebar-min-width-14",
+              "name": "@apply ak-layer ak-layer-3 ak-frame ak-frame-dialog/2 ak-sidebar-max-width-60 ak-sidebar-min-width-14",
               "value": {}
             },
             {
@@ -9377,7 +9883,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-pop-0.5",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-3",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
               "import": "@ariakit/tailwind"
             },
             {
@@ -9387,13 +9903,13 @@
             },
             {
               "type": "utility",
-              "name": "ak-sidebar-max-width-60",
-              "import": "@ariakit/tailwind"
+              "name": "ak-sidebar-max-width-*",
+              "module": "sidebar"
             },
             {
               "type": "utility",
-              "name": "ak-sidebar-min-width-14",
-              "import": "@ariakit/tailwind"
+              "name": "ak-sidebar-min-width-*",
+              "module": "sidebar"
             }
           ]
         },
@@ -9402,7 +9918,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-dialog/1",
+              "name": "@apply ak-frame ak-frame-dialog/1",
               "value": {}
             },
             {
@@ -9421,6 +9937,11 @@
           "dependencies": [
             {
               "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
               "name": "ak-frame-dialog/1",
               "import": "@ariakit/tailwind"
             }
@@ -9431,7 +9952,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-cover",
+              "name": "@apply ak-frame ak-frame-cover",
               "value": {}
             },
             {
@@ -9440,6 +9961,11 @@
             }
           ],
           "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
             {
               "type": "utility",
               "name": "ak-frame-cover",
@@ -9532,7 +10058,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-pop ak-edge/15",
+              "name": "@apply ak-layer ak-layer-6 ak-edge-15",
               "value": {}
             },
             {
@@ -9547,12 +10073,17 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-pop",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge/15",
+              "name": "ak-layer-6",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-15",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -9562,7 +10093,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer-current ak-edge/20",
+              "name": "@apply ak-layer ak-edge-20",
               "value": {}
             },
             {
@@ -9586,12 +10117,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-layer-current",
+              "name": "ak-layer",
               "import": "@ariakit/tailwind"
             },
             {
               "type": "utility",
-              "name": "ak-edge/20",
+              "name": "ak-edge-20",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -9601,14 +10132,14 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-text font-medium",
+              "name": "@apply ak-ink-100 font-medium",
               "value": {}
             }
           ],
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-text",
+              "name": "ak-ink-100",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -9694,7 +10225,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-dark:ak-text/75 ak-light:ak-text/90",
+              "name": "@apply ak-dark:ak-ink-75 ak-light:ak-ink-90",
               "value": {}
             }
           ],
@@ -9706,7 +10237,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text/75",
+              "name": "ak-ink-75",
               "import": "@ariakit/tailwind"
             },
             {
@@ -9716,7 +10247,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text/90",
+              "name": "ak-ink-90",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -9742,8 +10273,8 @@
             },
             {
               "type": "utility",
-              "name": "ak-prose-text-base/relaxed",
-              "import": "@ariakit/tailwind"
+              "name": "ak-prose-text-*",
+              "module": "prose"
             },
             {
               "type": "utility",
@@ -9861,13 +10392,13 @@
             },
             {
               "type": "utility",
-              "name": "ak-list-leading-(--ak-prose-leading)",
-              "import": "@ariakit/tailwind"
+              "name": "ak-list-leading-*",
+              "module": "list"
             },
             {
               "type": "utility",
-              "name": "ak-list-gap-(--ak-prose-gap)",
-              "import": "@ariakit/tailwind"
+              "name": "ak-list-gap-*",
+              "module": "list"
             },
             {
               "type": "utility",

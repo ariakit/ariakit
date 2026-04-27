@@ -24,7 +24,7 @@
 }
 
 @utility ak-sidebar {
-  @apply ak-layer-pop-0.5 ak-frame-dialog/2 ak-sidebar-max-width-60 ak-sidebar-min-width-14;
+  @apply ak-layer ak-layer-3 ak-frame ak-frame-dialog/2 ak-sidebar-max-width-60 ak-sidebar-min-width-14;
   @apply transition-discrete fixed start-0 top-0 z-10 flex flex-col overflow-clip rounded-none border-e transition-[inline-size,padding,inset] duration-300;
   --ak-sidebar-gap: var(--ak-frame-padding);
   --ak-sidebar-duration: var(--tw-duration);
@@ -34,14 +34,14 @@
 }
 
 @utility ak-sidebar-collapsed {
-  @apply ak-frame-dialog/1;
+  @apply ak-frame ak-frame-dialog/1;
   @apply rounded-none;
   --ak-sidebar-collapsed: 1;
   inline-size: var(--ak-sidebar-min-width);
 }
 
 @utility ak-sidebar-section {
-  @apply ak-frame-cover;
+  @apply ak-frame ak-frame-cover;
   @apply gap-(--ak-sidebar-gap) grid;
 }
 

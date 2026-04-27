@@ -24,7 +24,7 @@ const ariaCurrent = current ? "page" : undefined;
 <a
   aria-current={ariaCurrent}
   class:list={[
-    "ak-button ak-layer-pop text-sm aria-[current]:ak-layer-pop-12 rounded-full ak-frame-field/1 scroll-m-4 gap-0",
+    "ak-button ak-frame ak-frame-field/1 ak-layer ak-layer-6 text-sm aria-[current]:ak-layer aria-[current]:ak-layer-100 rounded-full scroll-m-4 gap-0",
     props.class,
   ]}
   {...props}
@@ -34,7 +34,7 @@ const ariaCurrent = current ? "page" : undefined;
   </span>
   {
     Astro.slots.has("badge") && (
-      <span class="-ms-0.5 ak-text/0 rounded-full ak-edge/0 ring px-1.5 ak-layer-pop min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer-pop-3">
+      <span class="-ms-0.5 ak-ink-0 rounded-full ak-edge-0 ring px-1.5 ak-layer ak-layer-6 min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer in-aria-[current]:ak-layer-30">
         <slot name="badge" />
       </span>
     )

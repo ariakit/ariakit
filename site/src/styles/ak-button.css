@@ -7,8 +7,8 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 @utility ak-button_idle {
-  @apply ak-command_idle ak-outline-primary ak-frame-field;
-  @apply leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+50*var(--contrast))];
+  @apply ak-command_idle ak-outline ak-outline-primary ak-frame ak-frame-field/field;
+  @apply leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+2*var(--contrast))];
   --ak-button-leading: 1.5em;
   --ak-button-padding-block: calc(
     var(--ak-frame-padding) - (var(--ak-button-leading) - 1em) * 0.5
@@ -18,7 +18,7 @@
 }
 
 @utility ak-button_hover {
-  @apply ak-layer-hover;
+  @apply ak-layer ak-state-6;
 }
 
 @utility ak-button_focus {
@@ -30,7 +30,7 @@
 }
 
 @utility ak-button_disabled {
-  @apply ak-text/50 ak-layer-mix/20;
+  @apply ak-layer ak-ink-50 ak-layer-mix-20;
   @apply inset-shadow-none bg-none shadow-none;
 }
 
@@ -53,7 +53,7 @@
 }
 
 @utility ak-button-classic_idle {
-  @apply ak-button_idle ak-layer;
+  @apply ak-button_idle ak-layer ak-layer-lighten-6;
   @apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-linear-to-b from-50% bg-clip-padding;
 
   --ak-button-min-l: 0.25;

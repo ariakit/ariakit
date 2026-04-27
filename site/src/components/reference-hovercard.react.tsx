@@ -173,13 +173,13 @@ export function ReferenceHovercard({
       portalElement={portalElement}
       {...props}
       className={clsx(
-        "ak-popover ak-edge/15 data-open:ak-popover_open origin-(--popover-transform-origin) ak-frame-force-dialog/0",
-        inHovercard && "ak-layer-(--ak-layer-parent)",
+        "ak-popover ak-edge-15 data-open:ak-popover_open origin-(--popover-transform-origin) ak-frame ak-frame-force ak-frame-dialog/0",
+        inHovercard && "ak-layer-lighten-0",
         className,
       )}
     >
       <ak.HovercardArrow />
-      <div className="ak-frame-cover/0 ak-frame-cover-start ak-frame-cover-end overflow-clip">
+      <div className="ak-frame ak-frame-cover ak-frame-p-0 ak-frame-start ak-frame-end overflow-clip">
         <div
           className={clsx(
             "overflow-y-auto overscroll-contain w-124 @container",
@@ -191,16 +191,16 @@ export function ReferenceHovercard({
           {data ? (
             <div dangerouslySetInnerHTML={{ __html: data }} />
           ) : (
-            <div className="ak-prose ak-frame/2 animate-pulse">
-              <div className="ak-layer-pop-2 w-32 h-7 ak-frame"></div>
+            <div className="ak-prose ak-frame ak-frame-p-2 animate-pulse">
+              <div className="ak-layer ak-layer-12 w-32 h-7 ak-frame"></div>
               <div className="flex flex-col gap-3">
-                <div className="ak-layer-pop w-full h-4 rounded-sm"></div>
-                <div className="ak-layer-pop w-full h-4 rounded-sm"></div>
-                <div className="ak-layer-pop w-1/3 h-4 rounded-sm"></div>
+                <div className="ak-layer ak-layer-6 w-full h-4 rounded-sm"></div>
+                <div className="ak-layer ak-layer-6 w-full h-4 rounded-sm"></div>
+                <div className="ak-layer ak-layer-6 w-1/3 h-4 rounded-sm"></div>
               </div>
               <div className="flex flex-col gap-3">
-                <div className="ak-layer-pop w-full h-4 rounded-sm"></div>
-                <div className="ak-layer-pop w-1/2 h-4 rounded-sm"></div>
+                <div className="ak-layer ak-layer-6 w-full h-4 rounded-sm"></div>
+                <div className="ak-layer ak-layer-6 w-1/2 h-4 rounded-sm"></div>
               </div>
             </div>
           )}

@@ -51,7 +51,7 @@ const Thumbnail2 = await importThumbnail("popover");
   </head>
   <body class="flex items-center justify-center">
     <div
-      class="h-[315px] w-[600px] ak-layer-current ring overflow-clip relative isolate"
+      class="h-[315px] w-[600px] ak-layer ring overflow-clip relative isolate"
     >
       {
         type === "pages" && title ? (
@@ -82,7 +82,7 @@ const Thumbnail2 = await importThumbnail("popover");
                 Thumbnail ? "pe-60" : "pe-32",
               ]}
             >
-              <div class="relative w-max ak-text-primary flex items-center gap-1">
+              <div class="relative w-max ak-text ak-text-15 ak-text-primary flex items-center gap-1">
                 <Icon name={framework.icon} />
                 {framework.label}
                 {capitalize(type)}
