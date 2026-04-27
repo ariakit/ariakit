@@ -326,7 +326,7 @@ test("generated style dependencies resolve local wildcard utilities", () => {
     expect.arrayContaining([
       {
         type: "utility",
-        name: "ak-progress-thickness-2",
+        name: "ak-progress-thickness-*",
         module: "progress",
       },
     ]),
@@ -339,13 +339,31 @@ test("generated style dependencies resolve local wildcard utilities", () => {
     expect.arrayContaining([
       {
         type: "utility",
-        name: "ak-progress-thickness-[0.15em]",
+        name: "ak-progress-value-*",
         module: "progress",
       },
       {
         type: "utility",
-        name: "ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))]",
+        name: "ak-progress-thickness-*",
         module: "progress",
+      },
+    ]),
+  );
+});
+
+test("generated style dependencies include dual utility and variant tokens", () => {
+  const list = getStyleDefinition("ak-list", "utility");
+  expect(list?.dependencies).toEqual(
+    expect.arrayContaining([
+      {
+        type: "utility",
+        name: "ak-list-blocks",
+        module: "list",
+      },
+      {
+        type: "variant",
+        name: "ak-list-blocks",
+        module: "list",
       },
     ]),
   );

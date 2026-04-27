@@ -590,16 +590,21 @@ function buildGlobalIndex(modules: ModuleJson[]): GlobalIndex {
   };
 }
 
-function getIndexedModule(
+interface IndexedEntry {
+  name: string;
+  module: string;
+}
+
+function getIndexedEntry(
   exactIndex: Map<string, string>,
   wildcardIndex: Array<{ name: string; module: string; re: RegExp }>,
   token: string,
 ) {
   const exact = exactIndex.get(token);
   if (exact) {
-    return exact;
+    return { name: token, module: exact };
   }
-  let best: null | { name: string; module: string } = null;
+  let best: IndexedEntry | null = null;
   for (const entry of wildcardIndex) {
     if (!entry.re.test(token)) {
       continue;
@@ -608,7 +613,7 @@ function getIndexedModule(
       best = { name: entry.name, module: entry.module };
     }
   }
-  return best?.module ?? null;
+  return best;
 }
 
 function extractAkTokensFromApplyLine(line: string) {
@@ -756,25 +761,27 @@ function resolveDependencies(modules: ModuleJson[]): void {
   };
 
   const addAkTokenDep = (deps: Dependency[], token: string) => {
-    const utilMod = getIndexedModule(
+    const util = getIndexedEntry(
       index.utilToModule,
       index.utilWildcards,
       token,
     );
-    if (utilMod) {
-      addDep(deps, { type: "utility", name: token, module: utilMod });
-      return;
+    if (util) {
+      addDep(deps, { type: "utility", name: util.name, module: util.module });
     }
-    const variantMod = getIndexedModule(
+    const variant = getIndexedEntry(
       index.variantToModule,
       index.variantWildcards,
       token,
     );
-    if (variantMod) {
-      addDep(deps, { type: "variant", name: token, module: variantMod });
-      return;
+    if (variant) {
+      addDep(deps, {
+        type: "variant",
+        name: variant.name,
+        module: variant.module,
+      });
     }
-    if (token.startsWith("ak-")) {
+    if (!util && !variant && token.startsWith("ak-")) {
       addDep(deps, {
         type: "utility",
         name: token,

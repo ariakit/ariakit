@@ -1168,7 +1168,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-aurora-(--ak-button-aurora-color-1)/(--ak-button-aurora-color-2)",
+              "name": "ak-aurora-*",
               "module": "aurora"
             },
             {
@@ -1293,7 +1293,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-command-depth-4",
+              "name": "ak-command-depth-*",
               "module": "command"
             }
           ]
@@ -3684,7 +3684,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-command-depth-x-3",
+              "name": "ak-command-depth-x-*",
               "module": "command"
             },
             {
@@ -4527,7 +4527,7 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-nav-gap-1",
+              "name": "ak-nav-gap-*",
               "module": "nav"
             },
             {
@@ -5213,7 +5213,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-disclosure-icon-(--ak-nav-icon-size)",
+              "name": "ak-disclosure-icon-*",
               "module": "disclosure"
             }
           ]
@@ -6694,7 +6694,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-progress-thickness-2",
+              "name": "ak-progress-thickness-*",
               "module": "progress"
             },
             {
@@ -6851,7 +6851,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-progress-thickness-2",
+              "name": "ak-progress-thickness-*",
               "module": "progress"
             },
             {
@@ -7050,17 +7050,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-list-item-padding-2",
+              "name": "ak-list-item-padding-*",
               "module": "list"
             },
             {
               "type": "utility",
-              "name": "ak-list-item-border-1",
-              "module": "list"
-            },
-            {
-              "type": "utility",
-              "name": "ak-list-item-border-0",
+              "name": "ak-list-item-border-*",
               "module": "list"
             }
           ]
@@ -7187,12 +7182,12 @@
           "dependencies": [
             {
               "type": "utility",
-              "name": "ak-list-gap-4",
+              "name": "ak-list-gap-*",
               "module": "list"
             },
             {
               "type": "utility",
-              "name": "ak-list-leading-normal",
+              "name": "ak-list-leading-*",
               "module": "list"
             },
             {
@@ -7202,11 +7197,16 @@
             },
             {
               "type": "utility",
-              "name": "ak-list-item-padding-1",
+              "name": "ak-list-item-padding-*",
               "module": "list"
             },
             {
               "type": "utility",
+              "name": "ak-list-ul",
+              "module": "list"
+            },
+            {
+              "type": "variant",
               "name": "ak-list-ul",
               "module": "list"
             },
@@ -7216,23 +7216,23 @@
               "module": "list"
             },
             {
-              "type": "utility",
-              "name": "ak-list-gap-2",
+              "type": "variant",
+              "name": "ak-list-ol",
               "module": "list"
             },
             {
               "type": "utility",
+              "name": "ak-list-blocks",
+              "module": "list"
+            },
+            {
+              "type": "variant",
               "name": "ak-list-blocks",
               "module": "list"
             },
             {
               "type": "utility",
               "name": "ak-list-sections",
-              "module": "list"
-            },
-            {
-              "type": "variant",
-              "name": "ak-list-blocks",
               "module": "list"
             },
             {
@@ -7721,6 +7721,11 @@
               "module": "list"
             },
             {
+              "type": "variant",
+              "name": "ak-list-item-blocks",
+              "module": "list"
+            },
+            {
               "type": "utility",
               "name": "ak-disclosure",
               "module": "disclosure"
@@ -7738,11 +7743,6 @@
             {
               "type": "utility",
               "name": "ak-list-disclosure-content-body",
-              "module": "list"
-            },
-            {
-              "type": "variant",
-              "name": "ak-list-item-blocks",
               "module": "list"
             }
           ]
@@ -7893,6 +7893,11 @@
             },
             {
               "type": "utility",
+              "name": "ak-list-item-blocks",
+              "module": "list"
+            },
+            {
+              "type": "variant",
               "name": "ak-list-item-blocks",
               "module": "list"
             }
@@ -8141,17 +8146,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-progress-value-(--value)",
+              "name": "ak-progress-value-*",
               "module": "progress"
             },
             {
               "type": "utility",
-              "name": "ak-progress-thickness-[0.15em]",
-              "module": "progress"
-            },
-            {
-              "type": "utility",
-              "name": "ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))]",
+              "name": "ak-progress-thickness-*",
               "module": "progress"
             },
             {
@@ -9903,12 +9903,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-sidebar-max-width-60",
+              "name": "ak-sidebar-max-width-*",
               "module": "sidebar"
             },
             {
               "type": "utility",
-              "name": "ak-sidebar-min-width-14",
+              "name": "ak-sidebar-min-width-*",
               "module": "sidebar"
             }
           ]
@@ -10273,7 +10273,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-prose-text-base/relaxed",
+              "name": "ak-prose-text-*",
               "module": "prose"
             },
             {
@@ -10392,12 +10392,12 @@
             },
             {
               "type": "utility",
-              "name": "ak-list-leading-(--ak-prose-leading)",
+              "name": "ak-list-leading-*",
               "module": "list"
             },
             {
               "type": "utility",
-              "name": "ak-list-gap-(--ak-prose-gap)",
+              "name": "ak-list-gap-*",
               "module": "list"
             },
             {
