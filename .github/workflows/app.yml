@@ -246,6 +246,7 @@ jobs:
 
       - name: Find base app artifact
         id: find-base-artifact
+        continue-on-error: true
         uses: actions/github-script@v9
         with:
           script: |
